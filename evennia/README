@@ -1,0 +1,16 @@
+Starting the Server
+-------------------
+Prior to starting up Evennia, you'll need the following environmental variable
+set.
+
+export DJANGO_SETTINGS_MODULE="settings"
+
+You may wish to put this in your .bashrc file, or you can simple copy/paste
+it before each startup. I'll fix this later so you don't have to, but it'll
+do for now.
+
+Once you've got the evar set, simply enter the following:
+
+python server.py
+
+The default port is 4000.
