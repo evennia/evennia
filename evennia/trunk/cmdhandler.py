@@ -23,7 +23,7 @@ class GenCommands:
       session = cdat['session']
       server = session.server
       player_loc = session.player_loc
-      player_loc_obj = Object.objects.filter(id=player_loc)[0]
+      player_loc_obj = server.object_list[player_loc]
       
       retval = "%s%s%s%s\n\r%s\n\r" % (
          ansi["normal"],
@@ -62,7 +62,7 @@ class GenCommands:
       """
       session_list = cdat['server'].session_list
       session = cdat['session']
-      speech = cdat['uinput'][1:]
+      speech = cdat['uinput']['splitted'][1:]
       players_present = [player for player in session_list if player.player_loc == session.player_loc and player != session]
       
       retval = "You say, '%s'\n\r" % (''.join(speech),)
@@ -70,12 +70,6 @@ class GenCommands:
          player.push("%s says, '%s'\n\r" % (session.name, speech,))
       
       session.push(retval)
-      
-   def do_sa(self, cdat):
-      """
-      Temporary alias until we come up with a command alias system.
-      """
-      self.do_say(cdat)
       
    def do_version(self, cdat):
       """
@@ -129,8 +123,8 @@ class UnLoggedInCommands:
       uses the Django database API and User model to make it extremely simple.
       """
       session = cdat['session']
-      uname = cdat['uinput'][1]
-      password = cdat['uinput'][2]
+      uname = cdat['uinput']['splitted'][1]
+      password = cdat['uinput']['splitted'][2]
       
       account = User.objects.filter(username=uname)
       user = account[0]
@@ -149,9 +143,9 @@ class UnLoggedInCommands:
       Handle the creation of new accounts.
       """
       session = cdat['session']
-      uname = cdat['uinput'][1]
-      email = cdat['uinput'][2]
-      password = cdat['uinput'][3]
+      uname = cdat['uinput']['splitted'][1]
+      email = cdat['uinput']['splitted'][2]
+      password = cdat['uinput']['splitted'][3]
       account = User.objects.filter(username=uname)
       
       if not account.count() == 0:
@@ -188,19 +182,40 @@ class Handler:
       class.
       """
       session = cdat['session']
-      uinput = cdat['uinput']
+      server = cdat['server']
+      uinput = cdat['uinput'].split()
       
+      parsed_input = {}
+      
+      # First we split the input up by spaces.
+      parsed_input['splitted'] = uinput
+      # Now we find the root command chunk (with switches attached).
+      parsed_input['root_chunk'] = parsed_input['splitted'][0].split('/')
+      # And now for the actual root command. It's the first entry in root_chunk.
+      parsed_input['root_cmd'] = parsed_input['root_chunk'][0].lower()
+      
+      # Now we'll see if the user is using an alias. We do a dictionary lookup,
+      # if the key (the player's root command) doesn't exist on the dict, we
+      # don't replace the existing root_cmd. If the key exists, its value
+      # replaces the previously splitted root_cmd. For example, sa -> say.
+      alias_list = server.cmd_alias_list
+      parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
+
       if session.logged_in:
          # If it's prefixed by an '@', it's a staff command.
-         if uinput[0].find('@') == -1:
+         if parsed_input['root_cmd'][0] != '@':
             cmdtable = gencommands
          else:
             cmdtable = staffcommands
       else:
          cmdtable = unloggedincommands
-      cmd = getattr(cmdtable, 'do_' + uinput[0].lower(), None)
+      
+      # cmdtable now equals the command table we need to use. Do a command
+      # lookup for a particular function based on the user's input.   
+      cmd = getattr(cmdtable, 'do_' + parsed_input['root_cmd'], None )
       
       if callable(cmd):
+         cdat['uinput'] = parsed_input
          cmd(cdat)
       else:
          session.push("Unknown command.\n\r")

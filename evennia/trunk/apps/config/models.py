@@ -10,18 +10,12 @@ class CommandAlias(models.Model):
    class Admin:
       list_display = ('user_input', 'equiv_command',)
 
-class Config(models.Model):
+class ConfigValue(models.Model):
    """
-   Although we technically have the ability to create more than one Config
-   object via the admin interface, we only really need one. This also leaves
-   the possibility for multiple games hosted on the same codebase or database
-   in the future, although this is not a priority. In any case, this model
-   contains most of the game-specific configuration.
+   Experimental new config model.
    """
-   site_name = models.CharField(maxlength=100)
-   site_description = models.TextField(blank=True)
-   site_website = models.URLField(blank=True)
-   player_start_dbnum = models.IntegerField()
-
+   conf_key = models.CharField(maxlength=100)
+   conf_value = models.CharField(maxlength=255  )
+   
    class Admin:
-      list_display = ('site_name', 'site_website',)
+      list_display = ('conf_key', 'conf_value',)

@@ -38,12 +38,11 @@ class PlayerSession(async_chat):
    def found_terminator(self):
       """
       Any line return indicates a command for the purpose of a MUD. So we take
-      the user input, split it up by spaces into a list, and pass it to our
-      command handler.
+      the user input and pass it to our command handler.
       """
       line = (''.join(self.data))
       line = line.strip('\r')
-      uinput = line.split(' ')
+      uinput = line
       self.data = []
       
       # Increment our user's command counter.
