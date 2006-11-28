@@ -54,8 +54,16 @@ class Object(models.Model):
    type = models.SmallIntegerField(choices=OBJECT_TYPES)
    description = models.TextField(blank=True)
    location = models.ForeignKey('self', related_name="olocation", blank=True, null=True)
-   content = models.ManyToManyField("Object", related_name="contents", blank=True, null=True)
-   attrib = models.ManyToManyField(Attribute, related_name="attributes", blank=True, null=True)
+   
+   # Rather than keeping another relation for this, we're just going to use
+   # foreign keys and populate each object's contents and attribute lists at
+   # server startup. It'll keep some of the tables more simple, but at the
+   # cost of a little bit more memory usage. No biggy.
+   
+   # A list of objects located inside the object.
+   contents_list = []
+   # A dictionary of attributes assocated with the object. The keys are the
+   # attribute's names.
    attrib_list = {}
    
    def __str__(self):
@@ -76,19 +84,3 @@ class Object(models.Model):
    
    class Admin:
       list_display = ('name',)
-"""
-class Player(models.Model):
-# 
-#   Model representation of our players.
-#
-   # Link back to our Django User class for password, username, email, etc.
-   account = models.ForeignKey(User)
-   location = models.ForeignKey(Object, related_name="plocation")
-   is_connected = models.BooleanField()
-   last_connected = models.DateTimeField()
-   contents = models.ManyToManyField(Object)
-   attributes = models.ManyToManyField(Attribute)
-
-   def __str__(self):
-      return "%s(%d)" % (self.name, self.id,)
-"""

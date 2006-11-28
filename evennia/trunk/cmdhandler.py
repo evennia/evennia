@@ -23,21 +23,21 @@ class GenCommands:
       player_loc = session.player_loc
       player_loc_obj = server.object_list[player_loc]
       
-      retval = "%s%s%s%s\n\r%s\n\r" % (
+      retval = "%s%s%s%s\n\r%s" % (
          ansi["normal"],
          ansi["hilite"], 
          player_loc_obj.name,
          ansi["normal"],
          player_loc_obj.description,
       )
-      session.push(retval)
+      session.msg(retval)
       
    def do_quit(self, cdat):
       """
       Gracefully disconnect the user as per his own request.
       """
       session = cdat['session']
-      session.push("Quitting!\n\r")
+      session.msg("Quitting!")
       session.handle_close()
       
    def do_who(self, cdat):
@@ -50,9 +50,9 @@ class GenCommands:
       retval = "Player Name\n\r"
       for player in session_list:
          retval += '%s\n\r' % (player,)
-      retval += '%d Players logged in.\n\r' % (len(session_list),)
+      retval += '%d Players logged in.' % (len(session_list),)
       
-      session.push(retval)
+      session.msg(retval)
    
    def do_say(self, cdat):
       """
@@ -63,11 +63,11 @@ class GenCommands:
       speech = cdat['uinput']['splitted'][1:]
       players_present = [player for player in session_list if player.player_loc == session.player_loc and player != session]
       
-      retval = "You say, '%s'\n\r" % (''.join(speech),)
+      retval = "You say, '%s'" % (''.join(speech),)
       for player in players_present:
-         player.push("%s says, '%s'\n\r" % (session.name, speech,))
+         player.msg("%s says, '%s'" % (session.name, speech,))
       
-      session.push(retval)
+      session.msg(retval)
       
    def do_version(self, cdat):
       """
@@ -76,8 +76,8 @@ class GenCommands:
       session = cdat['session']
       retval = "-"*50 +"\n\r"
       retval += "Evennia %s\n\r" % (settings.EVENNIA_VERSION,)
-      retval += "-"*50 +"\n\r"
-      session.push(retval)
+      retval += "-"*50
+      session.msg(retval)
 
 class StaffCommands:
    """
@@ -92,7 +92,7 @@ class StaffCommands:
       roomname = ''.join(uinput[1:])
       
       if roomname == '':
-         session.push("You must supply a room name!")
+         session.msg("You must supply a room name!")
       else:
          newroom = Object()
          newroom.name = roomname
@@ -106,9 +106,9 @@ class StaffCommands:
       server = cdat['server']
       
       nextfree = server.get_nextfree_dbnum()
-      retval = "Next free object number: %s\n\r" % (nextfree,)
+      retval = "Next free object number: %s" % (nextfree,)
       
-      session.push(retval)
+      session.msg(retval)
 
 class UnLoggedInCommands:
    """
@@ -126,11 +126,11 @@ class UnLoggedInCommands:
       account = User.objects.filter(username=uname)
       user = account[0]
       
-      autherror = "Invalid username or password!\n\r"
+      autherror = "Invalid username or password!"
       if account.count() == 0:
-         session.push(autherror)
+         session.msg(autherror)
       if not user.check_password(password):
-         session.push(autherror)
+         session.msg(autherror)
       else:
          uname = user.username
          session.login(user)
@@ -147,9 +147,9 @@ class UnLoggedInCommands:
       account = User.objects.filter(username=uname)
       
       if not account.count() == 0:
-         session.push("There is already a player with that name!\n\r")
+         session.msg("There is already a player with that name!")
       elif len(password) < 3:
-         session.push("Your password must be 3 characters or longer.\n\r")
+         session.msg("Your password must be 3 characters or longer.")
       else:
          server.create_user(session, uname, email, password)         
          
@@ -160,7 +160,7 @@ class UnLoggedInCommands:
       version will be a bit more complicated.
       """
       session = cdat['session']
-      session.push("Disconnecting...\n\r")
+      session.msg("Disconnecting...")
       session.handle_close()
 
 # We'll use this for our getattr() in the Handler class.
@@ -229,5 +229,5 @@ class Handler:
             raise UnknownCommand
             
       except UnknownCommand:
-         session.push("Unknown command.\n\r")
+         session.msg("Unknown command.")
       

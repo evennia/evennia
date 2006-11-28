@@ -21,7 +21,7 @@ class PlayerSession(async_chat):
       self.data = []
       self.sock = sock
       self.logged_in = False
-      self.user = None
+      self.pobject = None
       # The time the user last issued a command.
       self.cmd_last = time.time()
       # Total number of commands issued.
@@ -74,19 +74,33 @@ class PlayerSession(async_chat):
       buffer += """Please type one of the following to begin:\n\r 
          connect <username> <password>\n\r
          create <username> <email> <password>\n\r"""
-      buffer += '-'*50 + '\n\r'
-      session.push(buffer)
+      buffer += '-'*50
+      session.msg(buffer)
       
    def login(self, user):
       """
       After the user has authenticated, handle logging him in.
       """
-      self.user = user
+      self.pobject = user
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()
-      self.push("Logging in as %s.\n\r" % (self.name,))
+      self.msg("Logging in as %s." % (self.name,))
       print "Login: %s" % (self,)
+      
+   def msg(self, message):
+      """
+      Sends a message with the newline/return included. Use this instead of
+      directly calling push().
+      """
+      self.push("%s\n\r" % (message,))
+      
+   def msg_no_nl(self, message):
+      """
+      Sends a message without the newline/return included. Use this instead of
+      directly calling push().
+      """
+      self.push("%s" % (message,))
           
    def __str__(self):
       """
