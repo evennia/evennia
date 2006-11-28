@@ -13,15 +13,13 @@ class GenCommands:
    """
    Generic command class. Pretty much every command should go here for
    now.
-   """
-   def __init__(self): pass
-   
+   """   
    def do_look(self, cdat):
       """
       Handle looking at objects.
       """
       session = cdat['session']
-      server = session.server
+      server = cdat['server']
       player_loc = session.player_loc
       player_loc_obj = server.object_list[player_loc]
       
@@ -107,8 +105,8 @@ class StaffCommands:
       session = cdat['session']
       server = cdat['server']
       
-      nextfree = server.nextfree_objnum()
-      retval = "Next free object number: %d" % (nextfree,)
+      nextfree = server.get_nextfree_dbnum()
+      retval = "Next free object number: %s\n\r" % (nextfree,)
       
       session.push(retval)
 
@@ -116,7 +114,6 @@ class UnLoggedInCommands:
    """
    Commands that are available from the connect screen.
    """
-   def __init__(self): pass
    def do_connect(self, cdat):
       """
       This is the connect command at the connection screen. Fairly simple,
@@ -143,17 +140,18 @@ class UnLoggedInCommands:
       Handle the creation of new accounts.
       """
       session = cdat['session']
+      server = cdat['server']
       uname = cdat['uinput']['splitted'][1]
       email = cdat['uinput']['splitted'][2]
       password = cdat['uinput']['splitted'][3]
       account = User.objects.filter(username=uname)
       
       if not account.count() == 0:
-         session.push("There is already a player with that name!")
+         session.push("There is already a player with that name!\n\r")
       elif len(password) < 3:
-         session.push("Your password must be 3 characters or longer.")
+         session.push("Your password must be 3 characters or longer.\n\r")
       else:
-         session.create_user(uname, email, password)         
+         server.create_user(session, uname, email, password)         
          
    def do_quit(self, cdat):
       """
@@ -170,8 +168,12 @@ gencommands = GenCommands()
 staffcommands = StaffCommands()
 unloggedincommands = UnLoggedInCommands()
 
+class UnknownCommand(Exception):
+   """
+   Throw this when a user enters an an invalid command.
+   """
+
 class Handler:
-   def __init__(self): pass
    def handle(self, cdat):
       """
       Use the spliced (list) uinput variable to retrieve the correct
@@ -183,40 +185,49 @@ class Handler:
       """
       session = cdat['session']
       server = cdat['server']
-      uinput = cdat['uinput'].split()
       
-      parsed_input = {}
-      
-      # First we split the input up by spaces.
-      parsed_input['splitted'] = uinput
-      # Now we find the root command chunk (with switches attached).
-      parsed_input['root_chunk'] = parsed_input['splitted'][0].split('/')
-      # And now for the actual root command. It's the first entry in root_chunk.
-      parsed_input['root_cmd'] = parsed_input['root_chunk'][0].lower()
-      
-      # Now we'll see if the user is using an alias. We do a dictionary lookup,
-      # if the key (the player's root command) doesn't exist on the dict, we
-      # don't replace the existing root_cmd. If the key exists, its value
-      # replaces the previously splitted root_cmd. For example, sa -> say.
-      alias_list = server.cmd_alias_list
-      parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
+      try:
+         # TODO: Protect against non-standard characters.
+         if cdat['uinput'] == '':
+            raise UnknownCommand
+            
+         uinput = cdat['uinput'].split()
+         parsed_input = {}
+         
+         # First we split the input up by spaces.
+         parsed_input['splitted'] = uinput
+         # Now we find the root command chunk (with switches attached).
+         parsed_input['root_chunk'] = parsed_input['splitted'][0].split('/')
+         # And now for the actual root command. It's the first entry in root_chunk.
+         parsed_input['root_cmd'] = parsed_input['root_chunk'][0].lower()
+         
+         # Now we'll see if the user is using an alias. We do a dictionary lookup,
+         # if the key (the player's root command) doesn't exist on the dict, we
+         # don't replace the existing root_cmd. If the key exists, its value
+         # replaces the previously splitted root_cmd. For example, sa -> say.
+         alias_list = server.cmd_alias_list
+         parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
 
-      if session.logged_in:
-         # If it's prefixed by an '@', it's a staff command.
-         if parsed_input['root_cmd'][0] != '@':
-            cmdtable = gencommands
+         if session.logged_in:
+            # If it's prefixed by an '@', it's a staff command.
+            if parsed_input['root_cmd'][0] != '@':
+               cmdtable = gencommands
+            else:
+               parsed_input['root_cmd'] = parsed_input['root_cmd'][1:]
+               cmdtable = staffcommands
          else:
-            cmdtable = staffcommands
-      else:
-         cmdtable = unloggedincommands
-      
-      # cmdtable now equals the command table we need to use. Do a command
-      # lookup for a particular function based on the user's input.   
-      cmd = getattr(cmdtable, 'do_' + parsed_input['root_cmd'], None )
-      
-      if callable(cmd):
-         cdat['uinput'] = parsed_input
-         cmd(cdat)
-      else:
+            cmdtable = unloggedincommands
+         
+         # cmdtable now equals the command table we need to use. Do a command
+         # lookup for a particular function based on the user's input.   
+         cmd = getattr(cmdtable, 'do_%s' % (parsed_input['root_cmd'],), None )
+         
+         if callable(cmd):
+            cdat['uinput'] = parsed_input
+            cmd(cdat)
+         else:
+            raise UnknownCommand
+            
+      except UnknownCommand:
          session.push("Unknown command.\n\r")
       

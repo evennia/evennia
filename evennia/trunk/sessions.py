@@ -2,6 +2,8 @@ from asyncore import dispatcher
 from asynchat import async_chat
 import socket, asyncore, time, sys
 from cmdhandler import *
+from apps.objects.models import Object
+from django.contrib.auth.models import User
 
 chandler = Handler()
 
@@ -27,7 +29,7 @@ class PlayerSession(async_chat):
       # The time when the user connected.
       self.conn_time = time.time()
       # Player's room location. Move this to a player sub-class.
-      self.player_loc = 4
+      self.player_loc = 1
                 
    def collect_incoming_data(self, data):
       """
@@ -85,22 +87,7 @@ class PlayerSession(async_chat):
       self.conn_time = time.time()
       self.push("Logging in as %s.\n\r" % (self.name,))
       print "Login: %s" % (self,)
-      
-   def create_user(self, uname, email, password):
-      """
-      Handles the creation of new users.
-      """
-      # print uname, email, password
-      user = User.objects.create_user(uname, email, password)
-      self.login(user)
-      print 'Registration: %s' % (self,)
-      self.push("Welcome to the game, %s.\n\r" % (self.name,))
-      
-   def nextfree_objnum(self):
-      """
-      Returns the next free object number.
-      """
-      
+          
    def __str__(self):
       """
       String representation of the user session class. We use

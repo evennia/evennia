@@ -40,21 +40,23 @@ class Object(models.Model):
    field. The different otypes denote an object's behaviors.
    """
    
-   # Do not mess with the default types (0-4).
+   # Do not mess with the default types (0-5).
    OBJECT_TYPES = (
       (0, 'NOTHING'),
       (1, 'PLAYER'),
       (2, 'ROOM'),
       (3, 'THING'),
       (4, 'EXIT'),
+      (5, 'GARBAGE'),
    )
    
    name = models.CharField(maxlength=255)
    type = models.SmallIntegerField(choices=OBJECT_TYPES)
    description = models.TextField(blank=True)
    location = models.ForeignKey('self', related_name="olocation", blank=True, null=True)
-   contents = models.ManyToManyField("Object", related_name="object", blank=True, null=True)
-   attributes = models.ManyToManyField(Attribute, related_name="attributes", blank=True, null=True)
+   content = models.ManyToManyField("Object", related_name="contents", blank=True, null=True)
+   attrib = models.ManyToManyField(Attribute, related_name="attributes", blank=True, null=True)
+   attrib_list = {}
    
    def __str__(self):
       return "%s(%d)" % (self.name, self.id,)

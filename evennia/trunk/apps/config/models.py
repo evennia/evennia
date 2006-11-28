@@ -2,7 +2,8 @@ from django.db import models
 
 class CommandAlias(models.Model):
    """
-   Command aliases.
+   Command aliases. If the player enters the value equal to user_input, the
+   command denoted by equiv_command is used instead.
    """
    user_input = models.CharField(maxlength=50)
    equiv_command = models.CharField(maxlength=50)
