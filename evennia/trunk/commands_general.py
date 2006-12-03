@@ -13,9 +13,7 @@ def do_look(cdat):
    Handle looking at objects.
    """
    session = cdat['session']
-   server = cdat['server']
-   player_loc = session.player_loc
-   player_loc_obj = server.object_list[player_loc]
+   player_loc_obj = session.pobject.location
    
    retval = "%s%s%s%s\n\r%s" % (
       ansi["normal"],

@@ -67,6 +67,12 @@ class Object(models.Model):
    # attribute's names.
    attrib_list = {}
    
+   def __cmp__(self, other):
+      """
+      Used to figure out if one object is the same as another.
+      """
+      return self.id == other.id
+   
    class Meta:
       permissions = (
          ("can_examine", "Can examine objects"),

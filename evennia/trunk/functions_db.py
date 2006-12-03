@@ -1,3 +1,4 @@
+import sets
 from apps.objects.models import Object
 
 def list_search_object_namestr(searchlist, ostring, dbref_only=False):
@@ -10,23 +11,26 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    else:
       return [prospect for prospect in searchlist if prospect.name_match(ostring)]
       
-def local_and_global_search(object, ostring):
+def local_and_global_search(object, ostring, local_only=False):
    """
    Searches an object's location then globally for a dbref or name match.
+   local_only: Only compare the objects in the player's location if True.
    """
    search_query = ''.join(ostring)
-   
+
+   if is_dbref(ostring) and not local_only:
+      search_num = search_query[1:]
+      dbref_match = list(Object.objects.filter(id=search_num))
+      if len(dbref_match) > 0:
+         return dbref_match
+
    local_matches = list_search_object_namestr(object.location.contents_list, search_query)
    
    # If the object the invoker is in matches, add it as well.
    if object.location.dbref_match(ostring) or ostring == 'here':
       local_matches.append(object.location)
    
-   global_matches = []
-   if is_dbref(ostring):
-      global_matches = list(Object.objects.filter(id=search_query))
-   
-   return local_matches + global_matches
+   return local_matches
 
 def is_dbref(dbstring):
    """
