@@ -1,4 +1,4 @@
 from apps.objects.models import Object, Attribute
 
-def object_find_neighbor(searcher, target_string):
-   pass
+def list_search_object_str(searchlist, ostring):
+   [prospect for prospect in searchlist if prospect.name_match(ostring)]

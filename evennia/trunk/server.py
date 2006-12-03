@@ -51,6 +51,7 @@ class Server(dispatcher):
       # Load stuff up into memory for easy/quick access.
       self.load_configvalues()
       self.load_objects()
+      self.load_objects_contents()
       self.load_attributes()
       self.load_cmd_aliases()
       
@@ -87,7 +88,19 @@ class Server(dispatcher):
          dbnum = object.id
          self.object_list[dbnum] = object
       print ' Objects Loaded: %d' % (len(self.object_list),)
+
+   def load_objects_contents(self):
+      """
+      Populate the 'contents_list' list for each object.
       
+      TODO: Make this a lot more efficient or merge into
+      load_objects.
+      """
+      for key, object in self.object_list.iteritems():
+         if object.location:
+            object.location.contents_list.append(object)
+      print '  * Object Inventories Populated'
+
    def load_attributes(self):
       """
       Load all of our attributes into memory.

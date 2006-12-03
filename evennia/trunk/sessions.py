@@ -81,7 +81,7 @@ class PlayerSession(async_chat):
       """
       After the user has authenticated, handle logging him in.
       """
-      self.pobject = user
+      self.pobject = Object.objects.filter(id=user.id)[0]
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()

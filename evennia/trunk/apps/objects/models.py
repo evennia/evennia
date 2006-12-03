@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class ObjectClass(models.Model):
    """
    Each object class can have different behaviors to apply to it.
@@ -66,21 +67,63 @@ class Object(models.Model):
    # attribute's names.
    attrib_list = {}
    
-   def __str__(self):
-      return "%s(%d)" % (self.name, self.id,)
-      
-   def is_type(self, typename):
-      """
-      Do a string comparison of user's input and the object's type class object's
-      name.
-      """
-      return self.type.name == typename
-      
-   def set_type(self, typename):
-      """
-      Sets a object's type.
-      """
-      pass
+   class Meta:
+      permissions = (
+         ("can_examine", "Can examine objects"),
+      )
    
    class Admin:
       list_display = ('name',)
+   
+   """
+   BEGIN COMMON METHODS
+   """
+   def move_to(self, target):
+      """
+      Moves the object to a new location.
+      """
+      self.location.contents_list.remove(self)
+      self.location = target
+      target.contents_list.append(self)
+      self.save()
+      
+   def dbref_match(self, oname):
+      import functions_db
+      """
+      Check if the input (oname) can be used to identify this particular object
+      by means of a dbref match.
+      """
+      if not functions_db.is_dbref(oname):
+         return False
+         
+      try:
+         is_match = int(oname[1:]) == self.id
+      except ValueError:
+         return false
+         
+      return is_match
+      
+   def name_match(self, oname):
+      import functions_db
+      """   
+      See if the input (oname) can be used to identify this particular object.
+      Check the # sign for dbref (exact) reference, and anything else is a
+      name comparison.
+      
+      NOTE: A 'name' can be a dbref or the actual name of the object. See
+      dbref_match for an exclusively name-based match.
+      """
+      if oname[0] == '#':
+         return self.dbref_match(oname)
+      else:
+         return oname.lower() in self.name.lower()
+         
+   def filter_contents_from_str(self, oname):
+      """
+      Search an object's contents for name and dbref matches. Don't put any
+      logic in here, we'll do that from the end of the command or function.
+      """
+      return [prospect for prospect in self.contents_list if prospect.name_match(oname)]
+   
+   def __str__(self):
+      return "%s(%d)" % (self.name, self.id,)
