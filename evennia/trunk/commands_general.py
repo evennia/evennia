@@ -1,4 +1,6 @@
 import settings
+import time
+import functions_general
 from ansi import *
 
 """
@@ -39,9 +41,25 @@ def do_who(cdat):
    session_list = cdat['server'].session_list
    session = cdat['session']
    
-   retval = "Player Name\n\r"
+   retval = "Player Name        On For Idle   Room    Cmds   Host\n\r"
    for player in session_list:
-      retval += '%s\n\r' % (player,)
+      delta_cmd = time.time() - player.cmd_last
+      delta_conn = time.time() - player.conn_time
+
+      retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
+         (player.name, \
+         # On-time
+         functions_general.time_format(delta_conn,0), \
+         # Idle time
+         functions_general.time_format(delta_cmd,1), \
+         # Flags
+         '', \
+         # Location
+         player.pobject.location.id, \
+         player.cmd_total, \
+         # More flags?
+         '', \
+         player.address[0])
    retval += '%d Players logged in.' % (len(session_list),)
    
    session.msg(retval)
@@ -52,10 +70,10 @@ def do_say(cdat):
    """
    session_list = cdat['server'].session_list
    session = cdat['session']
-   speech = cdat['uinput']['splitted'][1:]
+   speech = ''.join(cdat['uinput']['splitted'][1:])
    players_present = [player for player in session_list if player.player_loc == session.player_loc and player != session]
    
-   retval = "You say, '%s'" % (''.join(speech),)
+   retval = "You say, '%s'" % (speech,)
    for player in players_present:
       player.msg("%s says, '%s'" % (session.name, speech,))
    
