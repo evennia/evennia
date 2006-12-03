@@ -1,11 +1,9 @@
 from asyncore import dispatcher
 from asynchat import async_chat
 import socket, asyncore, time, sys
-from cmdhandler import *
+import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
-
-chandler = Handler()
 
 class PlayerSession(async_chat):
    """
@@ -53,7 +51,7 @@ class PlayerSession(async_chat):
       self.cmd_last = time.time()
       # Stuff anything we need to pass in this dictionary.
       cdat = {"server": self.server, "uinput": uinput, "session": self}
-      chandler.handle(cdat)
+      cmdhandler.handle(cdat)
          
    def handle_close(self):
       """
