@@ -139,6 +139,12 @@ class Server(dispatcher):
    """
    BEGIN GENERAL METHODS
    """
+   def add_object_to_cache(self, object):
+      """
+      Adds an object to the cached object list.
+      """
+      self.object_list[object.id] = object
+      
    def get_object_from_dbref(self, dbref):
       """
       Returns an object when given a dbref.
@@ -165,6 +171,7 @@ class Server(dispatcher):
       # Create a player object of the same ID in the Objects table.
       user_object = Object(id=uid, type=1, name=uname, location=start_room_obj)
       user_object.save()
+      self.add_object_to_cache(user_object)
 
       # Activate the player's session and set them loose.
       session.login(user)
