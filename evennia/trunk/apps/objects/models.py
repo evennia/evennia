@@ -84,14 +84,36 @@ class Object(models.Model):
    """
    BEGIN COMMON METHODS
    """
-   def move_to(self, target):
+   def load_to_location(self):
       """
-      Moves the object to a new location.
+      Adds an object to its location.
+      """ 
+      print 'Adding %s to %s.' % (self.id, self.location.id,)
+      self.location.contents_list.append(self)
+      
+   def get_contents(self):
       """
-      self.location.contents_list.remove(self)
-      self.location = target
-      target.contents_list.append(self)
-      self.save()
+      Returns the contents of an object.
+      
+      TODO: Make this use the object's contents_list field. There's
+      something horribly long with the load routine right now.
+      """
+      return list(Object.objects.filter(location__id=self.id))
+   
+   def move_to(self, server, target):
+      """
+      Moves the object to a new location. We're going to modify the server's
+      cached version of the object rather than the one we're given due
+      to the way references are passed. We can firm this up by other means
+      but this is more or less fool-proof for now.
+      """
+      #if self in self.location.contents_list:
+      #   self.location.contents_list.remove(self)
+      #target.contents_list.append(self)
+      
+      cached_object = server.get_object_from_dbref(self.id)
+      cached_object.location = target
+      cached_object.save()
       
    def dbref_match(self, oname):
       import functions_db
@@ -130,6 +152,35 @@ class Object(models.Model):
       logic in here, we'll do that from the end of the command or function.
       """
       return [prospect for prospect in self.contents_list if prospect.name_match(oname)]
-   
+
+   # Type comparison methods.
+   def is_player(self):
+      return self.type is 1
+   def is_room(self):   
+      return self.type is 2
+   def is_thing(self):
+      return self.type is 3
+   def is_exit(self):
+      return self.type is 4
+   def is_garbage(self):
+      return self.type is 5
+      
+   def is_type(self, otype):
+      """
+      See if an object is a certain type.
+      """
+      otype = otype[0]
+      
+      if otype is 'p':
+         return self.is_player()
+      elif otype is 'r':
+         return self.is_room()
+      elif otype is 't':
+         return self.is_thing()
+      elif otype is 'e':
+         return self.is_exit()
+      elif otype is 'g':
+         return self.is_garbage()
+
    def __str__(self):
       return "%s(%d)" % (self.name, self.id,)

@@ -93,13 +93,19 @@ class Server(dispatcher):
       """
       Populate the 'contents_list' list for each object.
       
-      TODO: Make this a lot more efficient or merge into
-      load_objects.
+      TODO: This thing is just completely shot. No idea what's going on but
+      it's bad mojo.
       """
-      for key, object in self.object_list.iteritems():
-         if object.location:
-            object.location.contents_list.append(object)
+      """
+      object_list = Object.objects.all()
+      for object in object_list:
+         if object.location and not object.is_room():
+            object.load_to_location()
+            #print 'Adding %s to %s' % (object.id, object.location.id,)
+      for object in object_list:
+         print 'OBJ: %s CON: %s' % (object.id, object.location,)
       print '  * Object Inventories Populated'
+      """
 
    def load_attributes(self):
       """
@@ -133,12 +139,18 @@ class Server(dispatcher):
    """
    BEGIN GENERAL METHODS
    """
+   def get_object_from_dbref(self, dbref):
+      """
+      Returns an object when given a dbref.
+      """
+      return self.object_list.get(dbref, False)
+      
    def create_user(self, session, uname, email, password):
       """
       Handles the creation of new users.
       """
       start_room = int(self.get_configvalue('player_dbnum_start'))
-      start_room_obj = self.object_list[start_room]
+      start_room_obj = self.get_object_from_dbref(start_room)
 
       # The user's entry in the User table must match up to an object
       # on the object table. The id's are the same, we need to figure out

@@ -1,6 +1,7 @@
 import settings
 import time
 import functions_general
+import functions_db
 from ansi import *
 
 """
@@ -13,16 +14,58 @@ def do_look(cdat):
    Handle looking at objects.
    """
    session = cdat['session']
-   player_loc_obj = session.pobject.location
+   pobject = session.pobject
+   args = cdat['uinput']['splitted'][1:]
    
-   retval = "%s%s%s%s\n\r%s" % (
+   if len(args) == 0:   
+      target_obj = session.pobject.location
+   else:
+      results = functions_db.local_and_global_search(pobject, ''.join(args))
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s(#%s)" % (result.name, result.id,))
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+      else:
+         target_obj = results[0]
+   
+   retval = "%s%s%s(#%i)%s\r\n%s" % (
       ansi["normal"],
       ansi["hilite"], 
-      player_loc_obj.name,
+      target_obj.name,
+      target_obj.id,
       ansi["normal"],
-      player_loc_obj.description,
+      target_obj.description,
    )
    session.msg(retval)
+   
+   con_players = []
+   con_things = []
+   con_exits = []
+   
+   for obj in target_obj.get_contents():
+      if obj.is_player:
+         if obj != session.pobject:
+            con_players.append(obj)
+      elif obj.is_exit:
+         con_exits.append(obj)
+      else:
+         con_things.append(obj)
+   
+   if con_players:
+      session.msg("%sPlayers:%s" % (ansi["hilite"], ansi["normal"],))
+      for player in con_players:
+         session.msg('%s(#%s)' %(player.name, player.id,))
+   if con_things:
+      session.msg("%sThings:%s" % (ansi["hilite"], ansi["normal"],))
+      for thing in con_things:
+         session.msg('%s(#%s)' %(thing.name, thing.id,))
+   if con_exits:
+      session.msg("%sExits:%s" % (ansi["hilite"], ansi["normal"],))
+      for exit in con_exits:
+         session.msg('%s(#%s)' %(exit.name, exit.id,))
    
 def do_quit(cdat):
    """
@@ -69,7 +112,7 @@ def do_say(cdat):
    session_list = cdat['server'].session_list
    session = cdat['session']
    speech = ''.join(cdat['uinput']['splitted'][1:])
-   players_present = [player for player in session_list if player.player_loc == session.player_loc and player != session]
+   players_present = [player for player in session_list if player.pobject.location == session.pobject.location and player != session]
    
    retval = "You say, '%s'" % (speech,)
    for player in players_present:

@@ -4,6 +4,7 @@ import socket, asyncore, time, sys
 import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
+import commands_general
 
 class PlayerSession(async_chat):
    """
@@ -26,8 +27,6 @@ class PlayerSession(async_chat):
       self.cmd_total = 0
       # The time when the user connected.
       self.conn_time = time.time()
-      # Player's room location. Move this to a player sub-class.
-      self.player_loc = 1
                 
    def collect_incoming_data(self, data):
       """
@@ -79,11 +78,14 @@ class PlayerSession(async_chat):
       """
       After the user has authenticated, handle logging him in.
       """
-      self.pobject = Object.objects.filter(id=user.id)[0]
+      self.pobject = self.server.get_object_from_dbref(user.id)
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()
-      self.msg("Logging in as %s." % (self.name,))
+      
+      self.msg("You are now logged in as %s." % (self.name,))
+      cdat = {"session": self, "uinput":'look', "server": self.server}
+      cmdhandler.handle(cdat)
       print "Login: %s" % (self,)
       
    def msg(self, message):

@@ -24,7 +24,7 @@ def local_and_global_search(object, ostring, local_only=False):
       if len(dbref_match) > 0:
          return dbref_match
 
-   local_matches = list_search_object_namestr(object.location.contents_list, search_query)
+   local_matches = list_search_object_namestr(object.location.get_contents(), search_query)
    
    # If the object the invoker is in matches, add it as well.
    if object.location.dbref_match(ostring) or ostring == 'here':
@@ -48,4 +48,23 @@ def is_dbref(dbstring):
    else:
       return True
    
-   
+def session_from_object(session_list, targobject):
+   """
+   Return the session object given a object (if there is one open).
+   """
+   results = [prospect for prospect in session_list if prospect.pobject == targobject]
+   if results:
+      return results[0]
+   else:
+      return False
+
+def session_from_dbref(session_list, dbstring):
+   """
+   Return the session object given a dbref (if there is one open).
+   """
+   if is_dbref(dbstring):
+      results = [prospect for prospect in session_list if prospect.pobject.dbref_match(dbstring)]
+      if results:
+         return results[0]
+   else:
+      return False
