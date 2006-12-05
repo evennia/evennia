@@ -79,7 +79,7 @@ def do_who(cdat):
    """
    Generic WHO command.
    """
-   session_list = cdat['server'].session_list
+   session_list = cdat['server'].get_session_list()
    session = cdat['session']
    
    retval = "Player Name        On For Idle   Room    Cmds   Host\n\r"
@@ -109,7 +109,7 @@ def do_say(cdat):
    """
    Room-based speech command.
    """
-   session_list = cdat['server'].session_list
+   session_list = cdat['server'].get_session_list()
    session = cdat['session']
    speech = ''.join(cdat['uinput']['splitted'][1:])
    players_present = [player for player in session_list if player.pobject.location == session.pobject.location and player != session]
@@ -129,3 +129,21 @@ def do_version(cdat):
    retval += "Evennia %s\n\r" % (settings.EVENNIA_VERSION,)
    retval += "-"*50
    session.msg(retval)
+
+def do_time(cdat):
+   """
+   Server local time.
+   """
+   session = cdat['session']
+   session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
+   
+def do_uptime(cdat):
+   """
+   Server uptime and stats.
+   """
+   session = cdat['session']
+   server = cdat['server']
+   start_delta = time.time() - server.start_time
+   session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
+   session.msg('Server start time   : %s' % (time.strftime('%a %b %d %H:%M %Y', time.localtime(server.start_time),)))
+   session.msg('Server uptime       : %s' % functions_general.time_format(start_delta, style=2))

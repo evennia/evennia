@@ -59,7 +59,7 @@ class PlayerSession(async_chat):
       """
       async_chat.handle_close(self)
       self.logged_in = False
-      self.server.session_list.remove(self)
+      self.server.remove_session(self)
       print 'Sessions active:', len(self.server.session_list)
       
    def game_connect_screen(self, session):

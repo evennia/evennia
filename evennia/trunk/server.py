@@ -6,9 +6,10 @@ from django.db import models
 from apps.config.models import ConfigValue, CommandAlias
 from apps.objects.models import Object, Attribute
 from django.contrib.auth.models import User
-import functions_db
 from scheduler import Scheduler
-  
+import functions_db
+import functions_general
+
 class Server(dispatcher):
    """
    The main server class from which everything branches.
@@ -34,6 +35,7 @@ class Server(dispatcher):
       self.set_reuse_addr()
       self.bind(('', int(self.configvalue['site_port'])))
       self.listen(100)
+      self.start_time = time.time()
       print ' %s started on port %s.' % (self.configvalue['site_name'], self.configvalue['site_port'],)
       print '-'*50
       
@@ -117,30 +119,28 @@ class Server(dispatcher):
       Adds an object to the cached object list.
       """
       self.object_list[object.id] = object
-              
-   def announce_all(self, message, with_ann_prefix=True, with_nl=True):
-      """
-      Announces something to all connected players.
-      """
-      if with_ann_prefix:
-         prefix = 'Announcement:'
-      else:
-         prefix = ''
-         
-      if with_nl:
-         newline = '\r\n'
-      else:
-         newline = ''
-         
-      for session in self.session_list:
-         session.push('%s %s%s' % (prefix, message,newline,))
-      
+                  
    def get_configvalue(self, configname):
       """
       Retrieve a configuration value.
       """
       return self.configvalue[configname]
       
+   def get_session_list(self):
+      """
+      Lists the server's connected session objects.
+      """
+      return self.session_list
+      
+   def remove_session(self, session):
+      """
+      Removes a session from the server's session list.
+      """
+      self.session_list.remove(session)
+      
+   def shutdown(self):
+      functions_general.announce_all(server, 'The server has been shutdown. Please check back soon.')
+      self.game_running = False
    """
    END Server CLASS
    """   
@@ -158,5 +158,5 @@ if __name__ == '__main__':
          scheduler.heartbeat()
                   
    except KeyboardInterrupt:
-      server.announce_all('The server has been shutdown. Please check back soon.')
+      functions_general.announce_all(server, 'The server has been shutdown. Please check back soon.')
       print '--> Server killed by keystroke.'

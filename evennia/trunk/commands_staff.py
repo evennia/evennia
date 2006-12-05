@@ -132,3 +132,14 @@ def do_find(cdat):
          session.msg("%d matches returned." % (len(results),))
       else:
          session.msg("No name matches found for: %s" % (searchstring,))
+         
+def do_shutdown(cdat):
+   """
+   Shut the server down gracefully.
+   """
+   session = cdat['session']
+   server = cdat['server']
+
+   session.msg('Shutting down...')
+   print 'Server shutdown by %s(#%d)' % (session.name, session.pobject.id,)
+   server.shutdown()
