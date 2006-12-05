@@ -29,8 +29,8 @@ def do_nextfree(cdat):
    session = cdat['session']
    server = cdat['server']
    
-   nextfree = server.get_nextfree_dbnum()
-   retval = "Next free object number: %s" % (nextfree,)
+   nextfree = functions_db.get_nextfree_dbnum()
+   retval = "Next free object number: #%s" % (nextfree,)
    
    session.msg(retval)
    
