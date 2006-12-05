@@ -1,5 +1,22 @@
 import sets
+from django.contrib.auth.models import User
 from apps.objects.models import Object
+
+def get_nextfree_dbnum():
+   """
+   Figure out what our next free database reference number is.
+   """
+   # First we'll see if there's an object of type 5 (GARBAGE) that we
+   # can recycle.
+   nextfree = Object.objects.filter(type__exact=5)
+   if nextfree:
+      # We've got at least one garbage object to recycle.
+      #return nextfree.id
+      return nextfree[0].id
+   else:
+      # No garbage to recycle, find the highest dbnum and increment it
+      # for our next free.
+      return Object.objects.order_by('-id')[0].id + 1
 
 def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    """
@@ -68,3 +85,38 @@ def session_from_dbref(session_list, dbstring):
          return results[0]
    else:
       return False
+      
+def get_object_from_dbref(server, dbref):
+   """
+   Returns an object when given a dbref.
+   """
+   return server.object_list.get(dbref, False)
+   
+def create_user(cdat, uname, email, password):
+   """
+   Handles the creation of new users.
+   """
+   session = cdat['session']
+   server = cdat['server']
+   start_room = int(server.get_configvalue('player_dbnum_start'))
+   start_room_obj = get_object_from_dbref(server, start_room)
+
+   # The user's entry in the User table must match up to an object
+   # on the object table. The id's are the same, we need to figure out
+   # the next free unique ID to use and make sure the two entries are
+   # the same number.
+   uid = get_nextfree_dbnum()
+   user = User.objects.create_user(uname, email, password)
+   # It stinks to have to do this but it's the only trivial way now.
+   user.id = uid
+   user.save
+
+   # Create a player object of the same ID in the Objects table.
+   user_object = Object(id=uid, type=1, name=uname, location=start_room_obj)
+   user_object.save()
+   server.add_object_to_cache(user_object)
+
+   # Activate the player's session and set them loose.
+   session.login(user)
+   print 'Registration: %s' % (session,)
+   session.push("Welcome to %s, %s.\n\r" % (server.get_configvalue('site_name'), session.name,))

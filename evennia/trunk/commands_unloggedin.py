@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+import functions_db
 
 """
 Commands that are available from the connect screen.
@@ -30,10 +31,11 @@ def do_create(cdat):
    Handle the creation of new accounts.
    """
    session = cdat['session']
-   server = cdat['server']
    uname = cdat['uinput']['splitted'][1]
    email = cdat['uinput']['splitted'][2]
    password = cdat['uinput']['splitted'][3]
+   
+   # Search for a user object with the specified username.
    account = User.objects.filter(username=uname)
    
    if not account.count() == 0:
@@ -41,7 +43,7 @@ def do_create(cdat):
    elif len(password) < 3:
       session.msg("Your password must be 3 characters or longer.")
    else:
-      server.create_user(session, uname, email, password)         
+      functions_db.create_user(cdat, uname, email, password)         
       
 def do_quit(cdat):
    """

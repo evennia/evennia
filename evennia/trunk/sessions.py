@@ -5,6 +5,7 @@ import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
 import commands_general
+import functions_db
 
 class PlayerSession(async_chat):
    """
@@ -78,7 +79,7 @@ class PlayerSession(async_chat):
       """
       After the user has authenticated, handle logging him in.
       """
-      self.pobject = self.server.get_object_from_dbref(user.id)
+      self.pobject = functions_db.get_object_from_dbref(self.server, user.id)
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()

@@ -6,6 +6,7 @@ from django.db import models
 from apps.config.models import ConfigValue, CommandAlias
 from apps.objects.models import Object, Attribute
 from django.contrib.auth.models import User
+import functions_db
 
 #
 ## Begin: Time Functions
@@ -144,40 +145,7 @@ class Server(dispatcher):
       Adds an object to the cached object list.
       """
       self.object_list[object.id] = object
-      
-   def get_object_from_dbref(self, dbref):
-      """
-      Returns an object when given a dbref.
-      """
-      return self.object_list.get(dbref, False)
-      
-   def create_user(self, session, uname, email, password):
-      """
-      Handles the creation of new users.
-      """
-      start_room = int(self.get_configvalue('player_dbnum_start'))
-      start_room_obj = self.get_object_from_dbref(start_room)
-
-      # The user's entry in the User table must match up to an object
-      # on the object table. The id's are the same, we need to figure out
-      # the next free unique ID to use and make sure the two entries are
-      # the same number.
-      uid = self.get_nextfree_dbnum()
-      user = User.objects.create_user(uname, email, password)
-      # It stinks to have to do this but it's the only trivial way now.
-      user.id = uid
-      user.save
-
-      # Create a player object of the same ID in the Objects table.
-      user_object = Object(id=uid, type=1, name=uname, location=start_room_obj)
-      user_object.save()
-      self.add_object_to_cache(user_object)
-
-      # Activate the player's session and set them loose.
-      session.login(user)
-      print 'Registration: %s' % (session,)
-      session.push("Welcome to %s, %s.\n\r" % (self.get_configvalue('site_name'), session.name,))
-         
+              
    def announce_all(self, message, with_ann_prefix=True):
       """
       Announces something to all connected players.
@@ -196,21 +164,6 @@ class Server(dispatcher):
       """
       return self.configvalue[configname]
       
-   def get_nextfree_dbnum(self):
-      """
-      Figure out what our next free database reference number is.
-      """
-      # First we'll see if there's an object of type 5 (GARBAGE) that we
-      # can recycle.
-      nextfree = Object.objects.filter(type__exact=5)
-      if nextfree:
-         # We've got at least one garbage object to recycle.
-         #return nextfree.id
-         return nextfree[0].id
-      else:
-         # No garbage to recycle, find the highest dbnum and increment it
-         # for our next free.
-         return Object.objects.order_by('-id')[0].id + 1
    """
    END Server CLASS
    """   

@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class ObjectClass(models.Model):
    """
    Each object class can have different behaviors to apply to it.
@@ -111,12 +110,11 @@ class Object(models.Model):
       #   self.location.contents_list.remove(self)
       #target.contents_list.append(self)
       
-      cached_object = server.get_object_from_dbref(self.id)
+      cached_object = functions_db.get_object_from_dbref(server, self.id)
       cached_object.location = target
       cached_object.save()
       
    def dbref_match(self, oname):
-      import functions_db
       """
       Check if the input (oname) can be used to identify this particular object
       by means of a dbref match.
@@ -132,7 +130,6 @@ class Object(models.Model):
       return is_match
       
    def name_match(self, oname):
-      import functions_db
       """   
       See if the input (oname) can be used to identify this particular object.
       Check the # sign for dbref (exact) reference, and anything else is a
@@ -184,3 +181,5 @@ class Object(models.Model):
 
    def __str__(self):
       return "%s(%d)" % (self.name, self.id,)
+
+import functions_db
