@@ -80,7 +80,7 @@ def do_teleport(cdat):
          # to do it sometime else. If we can find a session in the server's
          # session list matching the object we're teleporting, force it to
          # look. This is going to typically be a player.
-         victim_session = functions_db.session_from_object(server.session_list, victim[0])
+         victim_session = functions_db.session_from_object(server.get_session_list(), victim[0])
          if victim_session:
             # We need to form up a new cdat dictionary to pass with the command.
             # Kinda yucky I guess.
