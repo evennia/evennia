@@ -1,16 +1,58 @@
-Starting the Server
--------------------
-Prior to starting up Evennia, you'll need the following environmental variable
-set.
+About Evennia
+-------------
+Evennia is a proof-of-concept MU* server that aims to provide a functional
+base for developers. While there are quite a few codebases that do the same
+(and very well in many cases), we are taking a unique spin on the problem.
+Some of our flagship features include (or will one day include):
 
-export DJANGO_SETTINGS_MODULE="settings"
+* Extensive web integration.
+* The ability to build/administer through a web browser.
+* Shared accounts between the website and the game.
+* Optional web-based character creation.
+* Extremely easy-to-manipulate SQL database back-end via Django 
+  (djangoproject.com)
+* Simple and easily extensible design.
+* Very granular permissions. Individual and group based.
 
-You may wish to put this in your .bashrc file, or you can simple copy/paste
-it before each startup. I'll fix this later so you don't have to, but it'll
-do for now.
+The essential points here are the web integration and the SQL backing via
+Django. The Django framework has database abstraction abilities that give us
+many features free, such as:
 
-Once you've got the evar set, simply enter the following:
+* The codebase will run transparently on MySQL, SQLite, or Postgres
+* At the time of this document's writing, our SQL-backed application here
+  contains 0 lines of SQL. Django's database abstraction layer is absolutely
+  simple yet very powerful.
+* For any model we outline for the server's use, we have the ability to
+  more or less automatically generate a web-based admin interface for it with
+  two lines of code. This lets you Create, Update, or Delete entries.
+* On the web-based side of things, features such as automatic form validation,
+  abstraction of sessions and cookies, and access to whatever game data you
+  desire are all attractive.
+  
+Installation
+------------
+At this point in time, the codebase is changing so rapidly that writing
+installation instructions is pretty much pointless. When we get to that stage
+in development, we'll make sure to update this. But for the really determined
+(or stubborn), here's a rough outline:
 
-python server.py
+* Install Django.
+* Copy the Evennia source somewhere.
+* Set up your apache2.conf to point mod-python to the settings.py file if you
+  want the web features.
+* Edit settings.py with your database info.
+* Run 'python manage.py syncdb' 
+* Run prepenv.sh. This will start the MU* server on port 4000 by default. You
+  may change this via the web interface or by editing the config table in SQL.
+  
+Support and Development
+-----------------------
+Since we're so early in development, we really can't hope to offer much support.
+However, if you'd like to report bugs, make suggestions, or help with the
+code work, visit either or both of the following links:
 
-The default port is 4000.
+* Evennia Code Page
+  http://code.google.com/p/evennia/
+  
+* Evennia Google Group
+  http://groups-beta.google.com/group/evennia?hl=en
