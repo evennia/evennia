@@ -138,8 +138,8 @@ class Server(dispatcher):
       """
       self.session_list.remove(session)
       
-   def shutdown(self):
-      functions_general.announce_all(server, 'The server has been shutdown. Please check back soon.')
+   def shutdown(self, message='The server has been shutdown. Please check back soon.'):
+      functions_general.announce_all(server, message)
       self.game_running = False
    """
    END Server CLASS
@@ -158,5 +158,5 @@ if __name__ == '__main__':
          scheduler.heartbeat()
                   
    except KeyboardInterrupt:
-      functions_general.announce_all(server, 'The server has been shutdown. Please check back soon.')
+      server.shutdown()
       print '--> Server killed by keystroke.'
