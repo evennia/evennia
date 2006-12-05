@@ -9,7 +9,7 @@ Generic command module. Pretty much every command should go here for
 now.
 """   
 
-def do_look(cdat):
+def cmd_look(cdat):
    """
    Handle looking at objects.
    """
@@ -67,7 +67,7 @@ def do_look(cdat):
       for exit in con_exits:
          session.msg('%s(#%s)' %(exit.name, exit.id,))
    
-def do_quit(cdat):
+def cmd_quit(cdat):
    """
    Gracefully disconnect the user as per his own request.
    """
@@ -75,7 +75,7 @@ def do_quit(cdat):
    session.msg("Quitting!")
    session.handle_close()
    
-def do_who(cdat):
+def cmd_who(cdat):
    """
    Generic WHO command.
    """
@@ -105,7 +105,7 @@ def do_who(cdat):
    
    session.msg(retval)
 
-def do_say(cdat):
+def cmd_say(cdat):
    """
    Room-based speech command.
    """
@@ -120,7 +120,7 @@ def do_say(cdat):
    
    session.msg(retval)
    
-def do_version(cdat):
+def cmd_version(cdat):
    """
    Version info command.
    """
@@ -130,14 +130,14 @@ def do_version(cdat):
    retval += "-"*50
    session.msg(retval)
 
-def do_time(cdat):
+def cmd_time(cdat):
    """
    Server local time.
    """
    session = cdat['session']
    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
    
-def do_uptime(cdat):
+def cmd_uptime(cdat):
    """
    Server uptime and stats.
    """

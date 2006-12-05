@@ -5,7 +5,7 @@ import functions_db
 Commands that are available from the connect screen.
 """
 
-def do_connect(cdat):
+def cmd_connect(cdat):
    """
    This is the connect command at the connection screen. Fairly simple,
    uses the Django database API and User model to make it extremely simple.
@@ -26,7 +26,7 @@ def do_connect(cdat):
       uname = user.username
       session.login(user)
       
-def do_create(cdat):
+def cmd_create(cdat):
    """
    Handle the creation of new accounts.
    """
@@ -45,7 +45,7 @@ def do_create(cdat):
    else:
       functions_db.create_user(cdat, uname, email, password)         
       
-def do_quit(cdat):
+def cmd_quit(cdat):
    """
    We're going to maintain a different version of the quit command
    here for unconnected users for the sake of simplicity. The logged in

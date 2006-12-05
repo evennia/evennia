@@ -7,7 +7,7 @@ import cmdhandler
 Restricted staff commands.
 """
 
-def do_dig(cdat):      
+def cmd_dig(cdat):      
    """
    Digs a new room out.
    """
@@ -22,7 +22,7 @@ def do_dig(cdat):
       newroom.name = roomname
       newroom.type = "Room"
       
-def do_nextfree(cdat):
+def cmd_nextfree(cdat):
    """
    Returns the next free object number.
    """
@@ -34,7 +34,7 @@ def do_nextfree(cdat):
    
    session.msg(retval)
    
-def do_teleport(cdat):
+def cmd_teleport(cdat):
    """
    Teleports an object somewhere.
    """
@@ -104,11 +104,11 @@ def do_teleport(cdat):
             return
          session.msg("Teleported.")
          pobject.move_to(server, results[0])
-         commands_general.do_look(cdat)
+         commands_general.cmd_look(cdat)
          
    #session.msg("Args: %s\n\rEqargs: %s" % (args, eq_args,))
 
-def do_find(cdat):
+def cmd_find(cdat):
    """
    Searches for an object of a particular name.
    """
@@ -133,7 +133,7 @@ def do_find(cdat):
       else:
          session.msg("No name matches found for: %s" % (searchstring,))
          
-def do_shutdown(cdat):
+def cmd_shutdown(cdat):
    """
    Shut the server down gracefully.
    """

@@ -19,7 +19,7 @@ def handle(cdat):
    command, or return an invalid command error.
 
    We're basically grabbing the player's command by tacking
-   their input on to 'do_' and looking it up in the GenCommands
+   their input on to 'cmd_' and looking it up in the GenCommands
    class.
    """
    session = cdat['session']
@@ -50,12 +50,12 @@ def handle(cdat):
       if session.logged_in:
          # If it's prefixed by an '@', it's a staff command.
          if parsed_input['root_cmd'][0] != '@':
-            cmd = getattr(commands_general, 'do_%s' % (parsed_input['root_cmd'],), None )
+            cmd = getattr(commands_general, 'cmd_%s' % (parsed_input['root_cmd'],), None )
          else:
             parsed_input['root_cmd'] = parsed_input['root_cmd'][1:]
-            cmd = getattr(commands_staff, 'do_%s' % (parsed_input['root_cmd'],), None )
+            cmd = getattr(commands_staff, 'cmd_%s' % (parsed_input['root_cmd'],), None )
       else:
-         cmd = getattr(commands_unloggedin, 'do_%s' % (parsed_input['root_cmd'],), None )
+         cmd = getattr(commands_unloggedin, 'cmd_%s' % (parsed_input['root_cmd'],), None )
       
       if callable(cmd):
          cdat['uinput'] = parsed_input
