@@ -118,7 +118,7 @@ class Server(dispatcher):
       """
       self.object_list[object.id] = object
               
-   def announce_all(self, message, with_ann_prefix=True):
+   def announce_all(self, message, with_ann_prefix=True, with_nl=True):
       """
       Announces something to all connected players.
       """
@@ -127,8 +127,13 @@ class Server(dispatcher):
       else:
          prefix = ''
          
+      if with_nl:
+         newline = '\r\n'
+      else:
+         newline = ''
+         
       for session in self.session_list:
-         session.push('%s %s' % (prefix, message,))
+         session.push('%s %s%s' % (prefix, message,newline,))
       
    def get_configvalue(self, configname):
       """
@@ -153,5 +158,5 @@ if __name__ == '__main__':
          scheduler.heartbeat()
                   
    except KeyboardInterrupt:
-      server.announce_all('The server has been shutdown. Please check back soon.\n\r')
+      server.announce_all('The server has been shutdown. Please check back soon.')
       print '--> Server killed by keystroke.'
