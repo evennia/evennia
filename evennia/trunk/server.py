@@ -7,35 +7,7 @@ from apps.config.models import ConfigValue, CommandAlias
 from apps.objects.models import Object, Attribute
 from django.contrib.auth.models import User
 import functions_db
-
-#
-## Begin: Time Functions
-#
-
-schedule = {'heal':100.0}
-lastrun = {}
-
-def heal():
-        pass
-
-# The timer loop
-def Timer(timer):
-
-   sched = schedule.iteritems()
-   for i in sched:
-      try: lastrun[i[0]]
-      except: lastrun[i[0]] = time.time()
-
-      diff = timer - lastrun[i[0]]
-
-   # Every 100 seconds, run heal(), defined above.
-   if diff >= schedule['heal']:
-      heal()
-      lastrun['heal'] = time.time()
-                        
-#
-## End: Time Functions
-#
+from scheduler import Scheduler
   
 class Server(dispatcher):
    """
@@ -173,11 +145,12 @@ BEGIN MAIN APPLICATION LOGIC
 """
 if __name__ == '__main__':
    server = Server()
-
+   scheduler = Scheduler(server)
+   
    try:
       while server.game_running:
-         asyncore.loop(timeout=5, count=1) # Timer() called every 5 seconds.
-         Timer(time.time())
+         asyncore.loop(timeout=5, count=1)
+         scheduler.heartbeat()
                   
    except KeyboardInterrupt:
       server.announce_all('The server has been shutdown. Please check back soon.\n\r')
