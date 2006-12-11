@@ -20,22 +20,25 @@ def cmd_look(cdat):
    if len(args) == 0:   
       target_obj = session.pobject.location
    else:
-      results = functions_db.local_and_global_search(pobject, ''.join(args))
+      results = functions_db.local_and_global_search(pobject, ''.join(args), searcher=pobject)
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s(#%s)" % (result.name, result.id,))
+            session.msg(" %s" % (result,))
+         return
       elif len(results) == 0:
          session.msg("I don't see that here.")
+         return
       else:
          target_obj = results[0]
    
-   retval = "%s%s%s(#%i)%s\r\n%s" % (
+   retval = "%s%s%s(#%i%s)%s\r\n%s" % (
       ansi["normal"],
       ansi["hilite"], 
       target_obj.name,
       target_obj.id,
+      target_obj.flag_string(),
       ansi["normal"],
       target_obj.description,
    )
@@ -57,15 +60,15 @@ def cmd_look(cdat):
    if con_players:
       session.msg("%sPlayers:%s" % (ansi["hilite"], ansi["normal"],))
       for player in con_players:
-         session.msg('%s(#%s)' %(player.name, player.id,))
+         session.msg('%s' %(player,))
    if con_things:
       session.msg("%sThings:%s" % (ansi["hilite"], ansi["normal"],))
       for thing in con_things:
-         session.msg('%s(#%s)' %(thing.name, thing.id,))
+         session.msg('%s' %(thing,))
    if con_exits:
       session.msg("%sExits:%s" % (ansi["hilite"], ansi["normal"],))
       for exit in con_exits:
-         session.msg('%s(#%s)' %(exit.name, exit.id,))
+         session.msg('%s' %(exit,))
    
 def cmd_quit(cdat):
    """

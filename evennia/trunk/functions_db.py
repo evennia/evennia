@@ -1,6 +1,7 @@
 import sets
 from django.contrib.auth.models import User
 from apps.objects.models import Object
+import functions_db
 
 def get_nextfree_dbnum():
    """
@@ -28,7 +29,7 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    else:
       return [prospect for prospect in searchlist if prospect.name_match(ostring)]
       
-def local_and_global_search(object, ostring, local_only=False):
+def local_and_global_search(object, ostring, local_only=False, searcher=None):
    """
    Searches an object's location then globally for a dbref or name match.
    local_only: Only compare the objects in the player's location if True.
@@ -46,6 +47,8 @@ def local_and_global_search(object, ostring, local_only=False):
    # If the object the invoker is in matches, add it as well.
    if object.location.dbref_match(ostring) or ostring == 'here':
       local_matches.append(object.location)
+   elif ostring == 'me' and searcher:
+      local_matches.append(searcher)
    
    return local_matches
 
@@ -92,6 +95,45 @@ def get_object_from_dbref(server, dbref):
    """
    return server.object_list.get(dbref, False)
    
+def create_object(server, odat):
+   """
+   Create a new object. odat is a dictionary that contains the following keys.
+   REQUIRED KEYS:
+    * type: Integer representing the object's type.
+    * name: The name of the new object.
+    * location: Reference to another object for the new object to reside in.
+    * owner: The creator of the object.
+   OPTIONAL KEYS:
+    * home: Reference to another object to home to. If not specified, use 
+      location key for home.
+   """
+   new_object = Object()
+   new_object.name = odat["name"]
+   new_object.type = odat["type"]
+
+   #if odat["home"]:
+   #   new_object.home = odat["home"]
+   #else:
+   #   new_object.home = odat["location"]
+      
+   #if odat["owner"].zone:
+   #   new_object.zone = odat["owner"].zone
+   #else:
+   #   new_object.zone = None
+   
+   #if odat["type"] is 1:
+   #   new_object.owner = new_object
+   #else:
+   #   new_object.owner = odat["owner"]
+      
+   new_object.save()
+   
+   # Add the object to our server's dictionary of objects.
+   server.add_object_to_cache(new_object)
+   new_object.move_to(server, odat['location'])
+   
+   return new_object
+
 def create_user(cdat, uname, email, password):
    """
    Handles the creation of new users.
@@ -112,9 +154,8 @@ def create_user(cdat, uname, email, password):
    user.save
 
    # Create a player object of the same ID in the Objects table.
-   user_object = Object(id=uid, type=1, name=uname, location=start_room_obj)
-   user_object.save()
-   server.add_object_to_cache(user_object)
+   odat = {"id": uid, "name": uname, "type": 1, "location": start_room_obj, "owner": None}
+   user_object = functions_db.create_object(server, odat)
 
    # Activate the player's session and set them loose.
    session.login(user)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import global_defines
 
 class ObjectClass(models.Model):
    """
@@ -40,18 +41,11 @@ class Object(models.Model):
    field. The different otypes denote an object's behaviors.
    """
    
-   # Do not mess with the default types (0-5).
-   OBJECT_TYPES = (
-      (0, 'NOTHING'),
-      (1, 'PLAYER'),
-      (2, 'ROOM'),
-      (3, 'THING'),
-      (4, 'EXIT'),
-      (5, 'GARBAGE'),
-   )
-   
    name = models.CharField(maxlength=255)
-   type = models.SmallIntegerField(choices=OBJECT_TYPES)
+   #owner = models.ForeignKey('self', related_name="owner")
+   #zone = models.ForeignKey('self', related_name="zone")
+   #home = models.ForeignKey('self', related_name="home")
+   type = models.SmallIntegerField(choices=global_defines.OBJECT_TYPES)
    description = models.TextField(blank=True)
    location = models.ForeignKey('self', related_name="olocation", blank=True, null=True)
    
@@ -65,7 +59,7 @@ class Object(models.Model):
    # A dictionary of attributes assocated with the object. The keys are the
    # attribute's names.
    attrib_list = {}
-   
+
    def __cmp__(self, other):
       """
       Used to figure out if one object is the same as another.
@@ -179,7 +173,16 @@ class Object(models.Model):
       elif otype is 'g':
          return self.is_garbage()
 
+   def flag_string(self):
+      """
+      Returns the flag string for an object. This abbreviates all of the flags
+      set on the object into a list of single-character flag characters.
+      """
+      # TODO: Once we add a flag system, add the other flag types here.
+      type_string = global_defines.OBJECT_TYPES[self.type][1][0]
+      return type_string
+
    def __str__(self):
-      return "%s(%d)" % (self.name, self.id,)
+      return "%s(#%d%s)" % (self.name, self.id, self.flag_string())
 
 import functions_db

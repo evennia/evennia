@@ -12,7 +12,7 @@ def cmd_dig(cdat):
    Digs a new room out.
    """
    session = cdat['session']
-   uinput= cdat['uinput']
+   uinput= cdat['uinput']['splitted']
    roomname = ''.join(uinput[1:])
    
    if roomname == '':
@@ -22,6 +22,24 @@ def cmd_dig(cdat):
       newroom.name = roomname
       newroom.type = "Room"
       
+def cmd_create(cdat):
+   """
+   Creates a new object of type 'THING'.
+   """
+   session = cdat['session']
+   server = session.server
+   uinput= cdat['uinput']['splitted']
+   thingname = ''.join(uinput[1:])
+   
+   if thingname == '':
+      session.msg("You must supply a room name!")
+   else:
+      # Create and set the object up.
+      odat = {"name": thingname, "type": 3, "location": session.pobject.location, "owner": session.pobject}
+      new_object = functions_db.create_object(server, odat)
+      
+      session.msg("You create a new object: %s" % (new_object,))
+   
 def cmd_nextfree(cdat):
    """
    Returns the next free object number.
@@ -55,8 +73,8 @@ def cmd_teleport(cdat):
    # a direct teleport, @tel <destination>.
    if len(eq_args) > 1:
       # Equal sign teleport.
-      victim = functions_db.local_and_global_search(pobject, eq_args[0])
-      destination = functions_db.local_and_global_search(pobject, eq_args[1])
+      victim = functions_db.local_and_global_search(pobject, eq_args[0], searcher=pobject)
+      destination = functions_db.local_and_global_search(pobject, eq_args[1], searcher=pobject)
       
       if len(victim) == 0:
          session.msg("I can't find the victim to teleport.")
@@ -89,12 +107,12 @@ def cmd_teleport(cdat):
          
    else:
       # Direct teleport (no equal sign)
-      results = functions_db.local_and_global_search(pobject, search_str)
+      results = functions_db.local_and_global_search(pobject, search_str, searcher=pobject)
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s(#%s)" % (result.name, result.id,))
+            session.msg(" %s" % (result,))
       elif len(results) == 0:
          session.msg("I don't see that here.")
          return
@@ -128,7 +146,7 @@ def cmd_find(cdat):
       if len(results) > 0:
          session.msg("Name matches for: %s" % (searchstring,))
          for result in results:
-            session.msg(" %s(#%s)" % (result.name, result.id,))
+            session.msg(" %s" % (result,))
          session.msg("%d matches returned." % (len(results),))
       else:
          session.msg("No name matches found for: %s" % (searchstring,))
