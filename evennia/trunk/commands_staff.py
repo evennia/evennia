@@ -9,18 +9,21 @@ Restricted staff commands.
 
 def cmd_dig(cdat):      
    """
-   Digs a new room out.
+   Creates a new object of type 'ROOM'.
    """
    session = cdat['session']
+   server = session.server
    uinput= cdat['uinput']['splitted']
-   roomname = ''.join(uinput[1:])
+   roomname = ' '.join(uinput[1:])
    
    if roomname == '':
-      session.msg("You must supply a room name!")
+      session.msg("You must supply a name!")
    else:
-      newroom = Object()
-      newroom.name = roomname
-      newroom.type = "Room"
+      # Create and set the object up.
+      odat = {"name": roomname, "type": 2, "location": None, "owner": session.pobject}
+      new_object = functions_db.create_object(server, odat)
+      
+      session.msg("You create a new room: %s" % (new_object,))
       
 def cmd_create(cdat):
    """
@@ -29,16 +32,16 @@ def cmd_create(cdat):
    session = cdat['session']
    server = session.server
    uinput= cdat['uinput']['splitted']
-   thingname = ''.join(uinput[1:])
+   thingname = ' '.join(uinput[1:])
    
    if thingname == '':
-      session.msg("You must supply a room name!")
+      session.msg("You must supply a name!")
    else:
       # Create and set the object up.
-      odat = {"name": thingname, "type": 3, "location": session.pobject.location, "owner": session.pobject}
+      odat = {"name": thingname, "type": 3, "location": session.pobject, "owner": session.pobject}
       new_object = functions_db.create_object(server, odat)
       
-      session.msg("You create a new object: %s" % (new_object,))
+      session.msg("You create a new thing: %s" % (new_object,))
    
 def cmd_nextfree(cdat):
    """
@@ -132,7 +135,7 @@ def cmd_find(cdat):
    """
    session = cdat['session']
    server = cdat['server']
-   searchstring = ''.join(cdat['uinput']['splitted'][1:])
+   searchstring = ' '.join(cdat['uinput']['splitted'][1:])
    
    if searchstring == '':
       session.msg("No search pattern given.")

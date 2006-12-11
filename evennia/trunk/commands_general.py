@@ -20,7 +20,7 @@ def cmd_look(cdat):
    if len(args) == 0:   
       target_obj = session.pobject.location
    else:
-      results = functions_db.local_and_global_search(pobject, ''.join(args), searcher=pobject)
+      results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
@@ -69,6 +69,72 @@ def cmd_look(cdat):
       session.msg("%sExits:%s" % (ansi["hilite"], ansi["normal"],))
       for exit in con_exits:
          session.msg('%s' %(exit,))
+         
+def cmd_examine(cdat):
+   """
+   Detailed object examine command
+   """
+   session = cdat['session']
+   pobject = session.pobject
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:   
+      target_obj = session.pobject.location
+   else:
+      results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result,))
+         return
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+         return
+      else:
+         target_obj = results[0]
+   
+   session.msg("%s%s%s(#%i%s)%s" % (
+      ansi["normal"],
+      ansi["hilite"], 
+      target_obj.name,
+      target_obj.id,
+      target_obj.flag_string(),
+      ansi["normal"],
+   ))
+   session.msg("Type: %s Flags: <TBI>" % (target_obj.get_type(),))
+   session.msg("Zone: <TBI>")
+   
+   for attribute in target_obj.attrib_list:
+      session.msg("%s%s%s: %s" % (ansi["hilite"], attribute, ansi["normal"], target_obj.get_attribute(attribute)))
+   
+   con_players = []
+   con_things = []
+   con_exits = []
+   
+   for obj in target_obj.get_contents():
+      if obj.is_player:
+         con_players.append(obj)
+      elif obj.is_exit:
+         con_exits.append(obj)
+      else:
+         con_things.append(obj)
+   
+   if con_players or con_things:
+      session.msg("Contents:")
+      for player in con_players:
+         session.msg('%s' %(player,))
+      for thing in con_things:
+         session.msg('%s' %(thing,))
+         
+   if con_exits:
+      session.msg("%sExits:%s" % (ansi["hilite"], ansi["normal"],))
+      for exit in con_exits:
+         session.msg('%s' %(exit,))
+         
+   if not target_obj.is_room():
+      session.msg("Home: <TBI>")
+      session.msg("Location: %s" % (target_obj.location,))
    
 def cmd_quit(cdat):
    """
@@ -114,7 +180,7 @@ def cmd_say(cdat):
    """
    session_list = cdat['server'].get_session_list()
    session = cdat['session']
-   speech = ''.join(cdat['uinput']['splitted'][1:])
+   speech = ' '.join(cdat['uinput']['splitted'][1:])
    players_present = [player for player in session_list if player.pobject.location == session.pobject.location and player != session]
    
    retval = "You say, '%s'" % (speech,)

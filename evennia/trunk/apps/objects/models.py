@@ -2,18 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 import global_defines
 
-class ObjectClass(models.Model):
-   """
-   Each object class can have different behaviors to apply to it.
-   """
-   name = models.CharField(maxlength=255)
-   description = models.TextField()
+#class ObjectClass(models.Model):
+#   """
+#   Each object class can have different behaviors to apply to it.
+#   """
+#   name = models.CharField(maxlength=255)
+#   description = models.TextField()
    
-   def __str__(self):
-      return "%s(%d)" % (self.name, self.id,)
+#   def __str__(self):
+#      return "%s(%d)" % (self.name, self.id,)
    
-   class Admin:
-      list_display = ('name', 'description',)
+#   class Admin:
+#      list_display = ('name', 'description',)
 
 class Attribute(models.Model):
    """
@@ -26,6 +26,7 @@ class Attribute(models.Model):
    """
    name = models.CharField(maxlength=255)
    value = models.CharField(maxlength=255)
+   is_hidden = models.BooleanField()
    object = models.ForeignKey("Object")
    
    def __str__(self):
@@ -42,12 +43,13 @@ class Object(models.Model):
    """
    
    name = models.CharField(maxlength=255)
-   #owner = models.ForeignKey('self', related_name="owner")
-   #zone = models.ForeignKey('self', related_name="zone")
-   #home = models.ForeignKey('self', related_name="home")
+   owner = models.ForeignKey('self', related_name="obj_owner")
+   zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
+   home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
    type = models.SmallIntegerField(choices=global_defines.OBJECT_TYPES)
    description = models.TextField(blank=True)
-   location = models.ForeignKey('self', related_name="olocation", blank=True, null=True)
+   location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
+   date_created = models.DateField(editable=False, auto_now_add=True)
    
    # Rather than keeping another relation for this, we're just going to use
    # foreign keys and populate each object's contents and attribute lists at
@@ -77,6 +79,12 @@ class Object(models.Model):
    """
    BEGIN COMMON METHODS
    """
+   def get_attribute(self, attrib):
+      """
+      Returns the value of an attribute on an object.
+      """
+      return self.attrib_list.get(attrib, False)
+   
    def load_to_location(self):
       """
       Adds an object to its location.
@@ -119,7 +127,7 @@ class Object(models.Model):
       try:
          is_match = int(oname[1:]) == self.id
       except ValueError:
-         return false
+         return False
          
       return is_match
       
@@ -146,31 +154,40 @@ class Object(models.Model):
 
    # Type comparison methods.
    def is_player(self):
-      return self.type is 1
+      return self.type == 1
    def is_room(self):   
-      return self.type is 2
+      return self.type == 2
    def is_thing(self):
-      return self.type is 3
+      return self.type == 3
    def is_exit(self):
-      return self.type is 4
+      return self.type == 4
    def is_garbage(self):
-      return self.type is 5
-      
+      return self.type == 5
+   
+   def get_type(self, return_number=False):
+      """
+      Returns the numerical or string representation of an object's type.
+      """
+      if return_number:
+         return self.type
+      else:
+         return global_defines.OBJECT_TYPES[self.type][1]
+    
    def is_type(self, otype):
       """
       See if an object is a certain type.
       """
       otype = otype[0]
       
-      if otype is 'p':
+      if otype == 'p':
          return self.is_player()
-      elif otype is 'r':
+      elif otype == 'r':
          return self.is_room()
-      elif otype is 't':
+      elif otype == 't':
          return self.is_thing()
-      elif otype is 'e':
+      elif otype == 'e':
          return self.is_exit()
-      elif otype is 'g':
+      elif otype == 'g':
          return self.is_garbage()
 
    def flag_string(self):
