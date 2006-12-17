@@ -107,7 +107,7 @@ def cmd_examine(cdat):
    session.msg("Zone: %s" % (target_obj.get_zone(),))
    
    for attribute in target_obj.attrib_list:
-      session.msg("%s%s%s: %s" % (ansi["hilite"], attribute, ansi["normal"], target_obj.get_attribute(attribute)))
+      session.msg("%s%s%s: %s" % (ansi["hilite"], attribute, ansi["normal"], target_obj.get_attribute_value(attribute)))
    
    con_players = []
    con_things = []

@@ -89,7 +89,7 @@ class Server(dispatcher):
       """
       attribute_list = Attribute.objects.all()
       for attrib in attribute_list:
-         attrib.object.attrib_list[attrib.name] = attrib.value
+         attrib.object.attrib_list[attrib.name] = attrib
       print ' Attributes Loaded: %d' % (len(attribute_list),)
       
    def load_cmd_aliases(self):

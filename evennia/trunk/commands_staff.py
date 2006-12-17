@@ -168,8 +168,23 @@ def cmd_set(cdat):
    if len(attrib_args) > 1:
       # We're dealing with an attribute/value pair.
       attrib_name = attrib_args[0].upper()
-      attrib_value = ' '.join(attrib_args[1:])
-      session.msg("%s - %s set." % (victim.get_name(), attrib_name))
+      splicenum = eq_args[1].find(':') + 1
+      attrib_value = eq_args[1][splicenum:]
+      
+      # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
+      if not functions_db.modifiable_attrib(attrib_name):
+         session.msg("You can't modify that attribute.")
+         return
+      
+      if attrib_value:
+         # An attribute value was specified, create or set the attribute.
+         verb = 'set'
+         victim.set_attribute(attrib_name, attrib_value)
+      else:
+         # No value was given, this means we delete the attribute.
+         verb = 'cleared'
+         victim.clear_attribute(attrib_name)
+      session.msg("%s - %s %s." % (victim.get_name(), attrib_name, verb))
    else:
       # Flag manipulation form.
       flag_list = eq_args[1].split()

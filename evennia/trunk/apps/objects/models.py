@@ -13,7 +13,7 @@ class Attribute(models.Model):
    """
    name = models.CharField(maxlength=255)
    value = models.CharField(maxlength=255)
-   is_hidden = models.BooleanField()
+   is_hidden = models.BooleanField(default=0)
    object = models.ForeignKey("Object")
    
    def __str__(self):
@@ -97,6 +97,50 @@ class Object(models.Model):
       """
       return ' '.join(self.flags_active)
       
+   def clear_attribute(self, attribute):
+      """
+      Removes an attribute entirely.
+      
+      attribute: (str) The attribute's name.
+      """
+      if self.has_attribute(attribute):
+         attrib_obj = self.get_attribute_obj(attribute)
+         attrib_obj.delete()
+         del self.attrib_list[attribute]
+         return True
+      else:
+         return False
+      
+   def set_attribute(self, attribute, new_value):
+      """
+      Sets an attribute on an object. Creates the attribute if need
+      be.
+      
+      attribute: (str) The attribute's name.
+      new_value: (str) The value to set the attribute to.
+      """
+      if self.has_attribute(attribute):
+         # Attribute already exists, update it.
+         attrib_obj = self.attrib_list[attribute]
+         attrib_obj.value = new_value
+         attrib_obj.save()
+      else:
+         # Attribute object doesn't exist, create it.
+         new_attrib = Attribute()
+         new_attrib.name = attribute
+         new_attrib.value = new_value
+         new_attrib.object = self
+         new_attrib.save()
+         self.attrib_list[attribute] = new_attrib
+         
+   def has_attribute(self, attribute):
+      """
+      See if we have an attribute set on the object.
+      
+      attribute: (str) The attribute's name.
+      """
+      return self.attrib_list.has_key(attribute)
+      
    def has_flag(self, flag):
       """
       Does our object have a certain flag?
@@ -165,11 +209,29 @@ class Object(models.Model):
       """
       return self.location
          
-   def get_attribute(self, attrib):
+   def get_attribute_value(self, attrib):
       """
       Returns the value of an attribute on an object.
+      
+      attrib: (str) The attribute's name.
       """
-      return self.attrib_list.get(attrib, False)
+      if self.has_attribute(attrib):
+         attrib_value = self.attrib_list[attrib]
+         return attrib_value.value
+      else:
+         return False
+         
+   def get_attribute_obj(self, attrib):
+      """
+      Returns the attribute object matching the specified name.
+      
+      attrib: (str) The attribute's name.
+      """
+      if self.has_attribute(attrib):
+         attrib_obj = self.attrib_list[attrib]
+         return attrib_obj
+      else:
+         return False
    
    def load_to_location(self):
       """
@@ -246,6 +308,8 @@ class Object(models.Model):
       """
       Search an object's contents for name and dbref matches. Don't put any
       logic in here, we'll do that from the end of the command or function.
+      
+      oname: (str) The string to filter from.
       """
       return [prospect for prospect in self.contents_list if prospect.name_match(oname)]
 
@@ -264,6 +328,8 @@ class Object(models.Model):
    def get_type(self, return_number=False):
       """
       Returns the numerical or string representation of an object's type.
+      
+      return_number: (bool) True returns numeric type, False returns string.
       """
       if return_number:
          return self.type
@@ -273,6 +339,8 @@ class Object(models.Model):
    def is_type(self, otype):
       """
       See if an object is a certain type.
+      
+      otype: (str) A string representation of the object's type (ROOM, THING)
       """
       otype = otype[0]
       

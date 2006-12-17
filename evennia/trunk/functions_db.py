@@ -11,7 +11,16 @@ def modifiable_flag(flagname):
       return True
    else:
       return False
-
+      
+def modifiable_attrib(attribname):
+   """
+   Check to see if a particular attribute is modifiable.
+   """
+   if attribname not in global_defines.NOSET_ATTRIBS:
+      return True
+   else:
+      return False
+      
 def get_nextfree_dbnum():
    """
    Figure out what our next free database reference number is.
