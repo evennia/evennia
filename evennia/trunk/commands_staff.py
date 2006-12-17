@@ -5,7 +5,10 @@ import commands_general
 import cmdhandler
 
 """
-Restricted staff commands.
+Staff commands may be a bad description for this file, but it'll do for now.
+Any command here is prefixed by an '@' sign, usually denoting a builder, staff
+or otherwise manipulative command that doesn't fall within the scope of
+normal gameplay.
 """
 
 def cmd_dig(cdat):      
@@ -128,7 +131,66 @@ def cmd_teleport(cdat):
          pobject.move_to(server, results[0])
          commands_general.cmd_look(cdat)
          
-   #session.msg("Args: %s\n\rEqargs: %s" % (args, eq_args,))
+def cmd_set(cdat):
+   """
+   Sets flags or attributes on objects.
+   """
+   session = cdat['session']
+   pobject = session.pobject
+   server = cdat['server']
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:
+      session.msg("Set what?")
+      return
+   
+   # There's probably a better way to do this. Break the arguments (minus
+   # the root command) up so we have two items in the list, 0 being the victim,
+   # 1 being the list of flags or the attribute/value pair.   
+   eq_args = ' '.join(args).split('=')
+   
+   if len(eq_args) < 2:
+      session.msg("Set what?")
+      return
+      
+   victim = functions_db.local_and_global_search(pobject, eq_args[0], searcher=pobject)
+   
+   if len(victim) == 0:
+      session.msg("I don't see that here.")
+      return
+   elif len(victim) > 1:
+      session.msg("I don't know which one you mean!")
+      return
+      
+   victim = victim[0]
+   attrib_args = eq_args[1].split(':')
+
+   if len(attrib_args) > 1:
+      # We're dealing with an attribute/value pair.
+      attrib_name = attrib_args[0].upper()
+      attrib_value = ' '.join(attrib_args[1:])
+      session.msg("%s - %s set." % (victim.get_name(), attrib_name))
+   else:
+      # Flag manipulation form.
+      flag_list = eq_args[1].split()
+      
+      for flag in flag_list:
+         flag = flag.upper()
+         if flag[0] == '!':
+            # We're un-setting the flag.
+            flag = flag[1:]
+            if not functions_db.modifiable_flag(flag):
+               session.msg("You can't set/unset the flag - %s." % (flag,))
+            else:
+               session.msg('%s - %s cleared.' % (victim.get_name(), flag.upper(),))
+               victim.set_flag(flag, False)
+         else:
+            # We're setting the flag.
+            if not functions_db.modifiable_flag(flag):
+               session.msg("You can't set/unset the flag - %s." % (flag,))
+            else:
+               session.msg('%s - %s set.' % (victim.get_name(), flag.upper(),))
+               victim.set_flag(flag, True)
 
 def cmd_find(cdat):
    """

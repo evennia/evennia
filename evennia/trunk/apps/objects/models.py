@@ -56,6 +56,10 @@ class Object(models.Model):
    # attribute's names. This lets us look up and manipulate attributes really
    # easily.
    attrib_list = {}
+   
+   # We keep a separate list of active flags in memory so we can store some of
+   # the non-saved flags such as CONNECTED. 
+   flags_active = []
 
    def __cmp__(self, other):
       """
@@ -73,12 +77,25 @@ class Object(models.Model):
    
    """
    BEGIN COMMON METHODS
-   """         
+   """
+   def load_flags(self):
+      """
+      Toss the flags from self.flags into our flags_active list, where we
+      pull from.
+      """
+      self.flags_active = self.flags.split()
+            
+   def get_name(self):
+      """
+      Returns an object's name.
+      """
+      return self.name
+   
    def get_flags(self):
       """
       Returns an object's flag list.
       """
-      return self.flags
+      return ' '.join(self.flags_active)
       
    def has_flag(self, flag):
       """
@@ -86,7 +103,7 @@ class Object(models.Model):
       
       flag: (str) Flag name
       """
-      return flag in self.flags.split()
+      return flag in self.flags_active
       
    def set_flag(self, flag, value):
       """
@@ -95,17 +112,20 @@ class Object(models.Model):
       flag: (str) Flag name
       value: (bool) Set (True) or un-set (False)
       """
+      flag = flag.upper()
       has_flag = self.has_flag(flag)
       
       if value == False and has_flag:
          # The flag is there and we want to un-set it.
-         flags_list = self.flags.split()
-         flags_list.remove(flag)
-         self.flags = ' '.join(flags_list)
+         self.flags_active.remove(flag)
          
          # Not all flags are saved, such as CONNECTED.
          # Don't waste queries on these things.
          if flag not in global_defines.NOSAVE_FLAGS:
+            flag_templist = self.flags.split()
+            flag_templist.remove(flag)
+
+            self.flags = ' '.join(flag_templist)
             self.save()
       elif value == False and not has_flag:
          # Object doesn't have the flag to begin with.
@@ -114,11 +134,13 @@ class Object(models.Model):
          # We've already go it.
          pass
       else:
-         # Add the flag.
-         flags_list = self.flags.split()
-         flags_list.append(flag.upper())
-         self.flags = ' '.join(flags_list)
+         # Add the flag to our active, memory-resident list no matter what.
+         self.flags_active.append(flag)
          if flag not in global_defines.NOSAVE_FLAGS:
+            flag_templist = self.flags.split()
+            flag_templist.append(flag)
+
+            self.flags = ' '.join(flag_templist)
             self.save()
    
    def get_owner(self):

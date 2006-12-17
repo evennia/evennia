@@ -1,7 +1,16 @@
 import sets
 from django.contrib.auth.models import User
 from apps.objects.models import Object
-import functions_db
+import global_defines
+
+def modifiable_flag(flagname):
+   """
+   Check to see if a particular flag is modifiable.
+   """
+   if flagname not in global_defines.NOSET_FLAGS:
+      return True
+   else:
+      return False
 
 def get_nextfree_dbnum():
    """

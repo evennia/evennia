@@ -60,6 +60,7 @@ class Server(dispatcher):
       """
       object_list = Object.objects.all()
       for object in object_list:
+         object.load_flags()
          dbnum = object.id
          self.object_list[dbnum] = object
       print ' Objects Loaded: %d' % (len(self.object_list),)

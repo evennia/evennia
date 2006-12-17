@@ -13,3 +13,5 @@ OBJECT_TYPES = (
 SERVER_FLAGS = ["CONNECTED"]
 # These flags are not saved.
 NOSAVE_FLAGS = ["CONNECTED"]
+# These flags can't be modified by players.
+NOSET_FLAGS = ["CONNECTED"]
