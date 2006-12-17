@@ -2,19 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 import global_defines
 
-#class ObjectClass(models.Model):
-#   """
-#   Each object class can have different behaviors to apply to it.
-#   """
-#   name = models.CharField(maxlength=255)
-#   description = models.TextField()
-   
-#   def __str__(self):
-#      return "%s(%d)" % (self.name, self.id,)
-   
-#   class Admin:
-#      list_display = ('name', 'description',)
-
 class Attribute(models.Model):
    """
    Attributes are things that are specific to different types of objects. For
@@ -37,11 +24,14 @@ class Attribute(models.Model):
 
 class Object(models.Model):
    """
-   The Object class is very generic. We put all of our common attributes
-   here and anything very particular into the attribute field. Notice the otype
-   field. The different otypes denote an object's behaviors.
-   """
+   The Object class is very generic representation of a THING, PLAYER, EXIT,
+   ROOM, or other entities within the database. Pretty much anything in the
+   game is an object. Objects may be one of several different types, and
+   may be parented to allow for differing behaviors.
    
+   We eventually want to find some way to implement object parents via loadable 
+   modules or sub-classing.
+   """
    name = models.CharField(maxlength=255)
    owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
@@ -55,14 +45,16 @@ class Object(models.Model):
    # Rather than keeping another relation for this, we're just going to use
    # foreign keys and populate each object's contents and attribute lists at
    # server startup. It'll keep some of the tables more simple, but at the
-   # cost of a little bit more memory usage. No biggy.
+   # cost of a little bit more memory usage. There may be a better way to do
+   # this, I'm all ears.
    
    # A list of objects located inside the object.
    # TODO: Re-activate this once we get the contents loader working.
    # contents_list = []
    
    # A dictionary of attributes assocated with the object. The keys are the
-   # attribute's names.
+   # attribute's names. This lets us look up and manipulate attributes really
+   # easily.
    attrib_list = {}
 
    def __cmp__(self, other):
@@ -91,12 +83,17 @@ class Object(models.Model):
    def has_flag(self, flag):
       """
       Does our object have a certain flag?
+      
+      flag: (str) Flag name
       """
       return flag in self.flags.split()
       
    def set_flag(self, flag, value):
       """
       Add a flag to our object's flag list.
+      
+      flag: (str) Flag name
+      value: (bool) Set (True) or un-set (False)
       """
       has_flag = self.has_flag(flag)
       
@@ -180,6 +177,9 @@ class Object(models.Model):
       cached version of the object rather than the one we're given due
       to the way references are passed. We can firm this up by other means
       but this is more or less fool-proof for now.
+      
+      server: (Server) Reference to the main game server.
+      target: (Object) Reference to the object to move to.
       """
       #if self in self.location.contents_list:
       #   self.location.contents_list.remove(self)
@@ -193,6 +193,8 @@ class Object(models.Model):
       """
       Check if the input (oname) can be used to identify this particular object
       by means of a dbref match.
+      
+      oname: (str) Name to match against.
       """
       if not functions_db.is_dbref(oname):
          return False
