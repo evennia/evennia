@@ -102,8 +102,9 @@ def cmd_examine(cdat):
       target_obj.flag_string(),
       ansi["normal"],
    ))
-   session.msg("Type: %s Flags: <TBI>" % (target_obj.get_type(),))
-   session.msg("Zone: <TBI>")
+   session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
+   session.msg("Owner: %s " % (target_obj.get_owner(),))
+   session.msg("Zone: %s" % (target_obj.get_zone(),))
    
    for attribute in target_obj.attrib_list:
       session.msg("%s%s%s: %s" % (ansi["hilite"], attribute, ansi["normal"], target_obj.get_attribute(attribute)))
@@ -133,8 +134,8 @@ def cmd_examine(cdat):
          session.msg('%s' %(exit,))
          
    if not target_obj.is_room():
-      session.msg("Home: <TBI>")
-      session.msg("Location: %s" % (target_obj.location,))
+      session.msg("Home: %s" % (target_obj.get_home(),))
+      session.msg("Location: %s" % (target_obj.get_location(),))
    
 def cmd_quit(cdat):
    """

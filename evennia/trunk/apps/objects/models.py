@@ -43,12 +43,13 @@ class Object(models.Model):
    """
    
    name = models.CharField(maxlength=255)
-   owner = models.ForeignKey('self', related_name="obj_owner")
+   owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
    type = models.SmallIntegerField(choices=global_defines.OBJECT_TYPES)
    description = models.TextField(blank=True)
    location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
+   flags = models.TextField(blank=True)
    date_created = models.DateField(editable=False, auto_now_add=True)
    
    # Rather than keeping another relation for this, we're just going to use
@@ -57,7 +58,9 @@ class Object(models.Model):
    # cost of a little bit more memory usage. No biggy.
    
    # A list of objects located inside the object.
-   contents_list = []
+   # TODO: Re-activate this once we get the contents loader working.
+   # contents_list = []
+   
    # A dictionary of attributes assocated with the object. The keys are the
    # attribute's names.
    attrib_list = {}
@@ -78,7 +81,71 @@ class Object(models.Model):
    
    """
    BEGIN COMMON METHODS
-   """
+   """         
+   def get_flags(self):
+      """
+      Returns an object's flag list.
+      """
+      return self.flags
+      
+   def has_flag(self, flag):
+      """
+      Does our object have a certain flag?
+      """
+      return flag in self.flags.split()
+      
+   def set_flag(self, flag, value):
+      """
+      Add a flag to our object's flag list.
+      """
+      has_flag = self.has_flag(flag)
+      
+      if value == False and has_flag:
+         # The flag is there and we want to un-set it.
+         flags_list = self.flags.split()
+         flags_list.remove(flag)
+         self.flags = ' '.join(flags_list)
+         
+         # Not all flags are saved, such as CONNECTED.
+         # Don't waste queries on these things.
+         if flag not in global_defines.NOSAVE_FLAGS:
+            self.save()
+      elif value == False and not has_flag:
+         # Object doesn't have the flag to begin with.
+         pass
+      elif value == True and has_flag:
+         # We've already go it.
+         pass
+      else:
+         # Add the flag.
+         flags_list = self.flags.split()
+         flags_list.append(flag.upper())
+         self.flags = ' '.join(flags_list)
+         if flag not in global_defines.NOSAVE_FLAGS:
+            self.save()
+   
+   def get_owner(self):
+      """
+      Returns an object's owner.
+      """
+      # Players always own themselves.
+      if self.is_player():
+         return self
+      else:
+         return self.owner
+   
+   def get_home(self):
+      """
+      Returns an object's home.
+      """
+      return self.home
+   
+   def get_location(self):
+      """
+      Returns an object's location.
+      """
+      return self.location
+         
    def get_attribute(self, attrib):
       """
       Returns the value of an attribute on an object.
@@ -100,6 +167,12 @@ class Object(models.Model):
       something horribly long with the load routine right now.
       """
       return list(Object.objects.filter(location__id=self.id))
+      
+   def get_zone(self):
+      """
+      Returns the object that is marked as this object's zone.
+      """
+      return self.zone
    
    def move_to(self, server, target):
       """

@@ -7,3 +7,9 @@ OBJECT_TYPES = (
    (4, 'EXIT'),
    (5, 'GARBAGE'),
 )
+
+# This is a list of flags that the server actually uses. Anything not in this
+# list is a custom flag.
+SERVER_FLAGS = ["CONNECTED"]
+# These flags are not saved.
+NOSAVE_FLAGS = ["CONNECTED"]

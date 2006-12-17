@@ -1,5 +1,6 @@
 from apps.objects.models import Object
 import functions_db
+import functions_general
 import commands_general
 import cmdhandler
 
@@ -141,19 +142,31 @@ def cmd_find(cdat):
       session.msg("No search pattern given.")
       return
    
-   memory_based = True
-   
-   if memory_based:
-      results = functions_db.list_search_object_namestr(server.object_list.values(), searchstring)
+   results = functions_db.list_search_object_namestr(server.object_list.values(), searchstring)
 
-      if len(results) > 0:
-         session.msg("Name matches for: %s" % (searchstring,))
-         for result in results:
-            session.msg(" %s" % (result,))
-         session.msg("%d matches returned." % (len(results),))
-      else:
-         session.msg("No name matches found for: %s" % (searchstring,))
+   if len(results) > 0:
+      session.msg("Name matches for: %s" % (searchstring,))
+      for result in results:
+         session.msg(" %s" % (result,))
+      session.msg("%d matches returned." % (len(results),))
+   else:
+      session.msg("No name matches found for: %s" % (searchstring,))
          
+def cmd_wall(cdat):
+   """
+   Announces a message to all connected players.
+   """
+   session = cdat['session']
+   server = cdat['server']
+   wallstring = ' '.join(cdat['uinput']['splitted'][1:])
+   
+   if wallstring == '':
+      session.msg("Announce what?")
+      return
+      
+   message = "%s shouts \"%s\"" % (session.pobject.name, wallstring)
+   functions_general.announce_all(server, message)   
+
 def cmd_shutdown(cdat):
    """
    Shut the server down gracefully.

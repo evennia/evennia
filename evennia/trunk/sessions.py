@@ -57,6 +57,7 @@ class PlayerSession(async_chat):
       """
       Break the connection and do some accounting.
       """
+      self.pobject.set_flag("CONNECTED", False)
       async_chat.handle_close(self)
       self.logged_in = False
       self.server.remove_session(self)
@@ -83,7 +84,8 @@ class PlayerSession(async_chat):
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()
-      
+      self.pobject.set_flag("CONNECTED", True)
+
       self.msg("You are now logged in as %s." % (self.name,))
       cdat = {"session": self, "uinput":'look', "server": self.server}
       cmdhandler.handle(cdat)

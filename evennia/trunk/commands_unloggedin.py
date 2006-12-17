@@ -15,14 +15,20 @@ def cmd_connect(cdat):
    password = cdat['uinput']['splitted'][2]
    
    account = User.objects.filter(username=uname)
-   user = account[0]
    
    autherror = "Invalid username or password!"
+   # No username match
    if account.count() == 0:
       session.msg(autherror)
+      return
+   
+   # We have at least one result, so we can check hte password.   
+   user = account[0]
+      
    if not user.check_password(password):
       session.msg(autherror)
    else:
+      user = account[0]
       uname = user.username
       session.login(user)
       
@@ -31,6 +37,7 @@ def cmd_create(cdat):
    Handle the creation of new accounts.
    """
    session = cdat['session']
+   server = session.server
    uname = cdat['uinput']['splitted'][1]
    email = cdat['uinput']['splitted'][2]
    password = cdat['uinput']['splitted'][3]

@@ -111,21 +111,23 @@ def create_object(server, odat):
    new_object.name = odat["name"]
    new_object.type = odat["type"]
 
-   #if odat["home"]:
-   #   new_object.home = odat["home"]
-   #else:
-   #   new_object.home = odat["location"]
+   # If this is a player, set him to own himself.
+   if odat["type"] == 1:
+      new_object.owner = None
+      new_object.zone = None
+   else:
+      new_object.owner = odat["owner"]
       
-   #if odat["owner"].zone:
-   #   new_object.zone = odat["owner"].zone
-   #else:
-   #   new_object.zone = None
-   
-   #if odat["type"] is 1:
-   #   new_object.owner = new_object
-   #else:
-   #   new_object.owner = odat["owner"]
-      
+      if new_object.owner.zone:
+         new_object.zone = new_object.owner.zone
+
+   # If we have a 'home' key, use that for our home value. Otherwise use
+   # the location key.
+   if odat.get("home",False):
+      new_object.home = odat["home"]
+   else:
+      new_object.home = odat["location"]
+         
    new_object.save()
    
    # Add the object to our server's dictionary of objects.
