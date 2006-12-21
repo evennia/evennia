@@ -11,11 +11,76 @@ or otherwise manipulative command that doesn't fall within the scope of
 normal gameplay.
 """
 
+def cmd_destroy(cdat):
+   """
+   Destroy an object.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:   
+      session.msg("Destroy what?")
+      return
+   else:
+      results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result,))
+         return
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+         return
+      elif results[0].is_player():
+         session.msg("You must @nuke players, not @destroy them.")
+         return
+      else:
+         target_obj = results[0]
+   
+   session.msg("You destroy %s." % (target_obj,))
+   target_obj.delete(session.server)
+
+def cmd_name(cdat):
+   """
+   Handle naming an object.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   eq_args = ' '.join(args).split('=')
+   searchstring = ''.join(eq_args[0])
+   
+   if len(args) == 0:   
+      session.msg("What do you want to name?")
+   elif len(eq_args) < 2:
+      session.msg("What would you like to name that object?")
+   else:
+      results = functions_db.local_and_global_search(pobject, searchstring, searcher=pobject)
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result,))
+         return
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+         return
+      elif len(eq_args[1]) == 0:
+         session.msg("What would you like to name that object?")
+      else:
+         newname = '='.join(eq_args[1:])
+         target_obj = results[0]
+         session.msg("You have renamed %s to %s." % (target_obj,newname))
+         target_obj.set_name(newname)
+
 def cmd_dig(cdat):      
    """
    Creates a new object of type 'ROOM'.
    """
    session = cdat['session']
+   pobject = session.get_pobject()
    server = session.server
    uinput= cdat['uinput']['splitted']
    roomname = ' '.join(uinput[1:])
@@ -24,7 +89,7 @@ def cmd_dig(cdat):
       session.msg("You must supply a name!")
    else:
       # Create and set the object up.
-      odat = {"name": roomname, "type": 2, "location": None, "owner": session.pobject}
+      odat = {"name": roomname, "type": 2, "location": None, "owner": pobject}
       new_object = functions_db.create_object(server, odat)
       
       session.msg("You create a new room: %s" % (new_object,))
@@ -35,6 +100,7 @@ def cmd_create(cdat):
    """
    session = cdat['session']
    server = session.server
+   pobject = session.get_pobject()
    uinput= cdat['uinput']['splitted']
    thingname = ' '.join(uinput[1:])
    
@@ -42,7 +108,7 @@ def cmd_create(cdat):
       session.msg("You must supply a name!")
    else:
       # Create and set the object up.
-      odat = {"name": thingname, "type": 3, "location": session.pobject, "owner": session.pobject}
+      odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
       new_object = functions_db.create_object(server, odat)
       
       session.msg("You create a new thing: %s" % (new_object,))
@@ -59,12 +125,65 @@ def cmd_nextfree(cdat):
    
    session.msg(retval)
    
+def cmd_open(cdat):
+   """
+   Handle the opening of exits.
+   
+   Forms:
+   @open <Name>
+   @open <Name>=<Dbref>
+   @open <Name>=<Dbref>,<Name>
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   server = cdat['server']
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:
+      session.msg("Open an exit to where?")
+      return
+      
+   eq_args = args[0].split('=')
+   exit_name = eq_args[0]
+   
+   if len(exit_name) == 0:
+      session.msg("You must supply an exit name.")
+      return
+      
+   # If we have more than one entry in our '=' delimited argument list,
+   # then we're doing a @open <Name>=<Dbref>[,<Name>]. If not, we're doing
+   # an un-linked exit, @open <Name>.
+   if len(eq_args) > 1:
+      # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
+      destination = functions_db.local_and_global_search(pobject, eq_args[1], searcher=pobject)
+      
+      if len(destination) == 0:
+         session.msg("I can't find the location to link to.")
+         return
+      elif len(destination) > 1:
+         session.msg("Multiple results returned for exit destination!")
+      else:
+         if destination.is_exit():
+            session.msg("You can't open an exit to an exit!")
+            return
+         session.msg("You open the exit.")
+         #victim[0].move_to(server, destination[0])
+         
+         # Create the object and stuff.
+         
+   else:
+      # Create an un-linked exit.
+      odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
+      new_object = functions_db.create_object(server, odat)
+
+      session.msg("You create a new thing: %s" % (new_object,))
+         
 def cmd_teleport(cdat):
    """
    Teleports an object somewhere.
    """
    session = cdat['session']
-   pobject = session.pobject
+   pobject = session.get_pobject()
    server = cdat['server']
    args = cdat['uinput']['splitted'][1:]
    
@@ -99,7 +218,7 @@ def cmd_teleport(cdat):
             session.msg("You can't teleport an object inside of itself!")
             return
          session.msg("Teleported.")
-         victim[0].move_to(server, destination[0])
+         victim[0].move_to(destination[0])
          
          # This is somewhat kludgy right now, we'll have to find a better way
          # to do it sometime else. If we can find a session in the server's
@@ -128,7 +247,7 @@ def cmd_teleport(cdat):
             session.msg("You can't teleport inside yourself!")
             return
          session.msg("Teleported.")
-         pobject.move_to(server, results[0])
+         pobject.move_to(results[0])
          commands_general.cmd_look(cdat)
          
 def cmd_set(cdat):
@@ -136,7 +255,7 @@ def cmd_set(cdat):
    Sets flags or attributes on objects.
    """
    session = cdat['session']
-   pobject = session.pobject
+   pobject = session.get_pobject()
    server = cdat['server']
    args = cdat['uinput']['splitted'][1:]
    
@@ -241,7 +360,7 @@ def cmd_wall(cdat):
       session.msg("Announce what?")
       return
       
-   message = "%s shouts \"%s\"" % (session.pobject.name, wallstring)
+   message = "%s shouts \"%s\"" % (session.get_pobject().get_name(), wallstring)
    functions_general.announce_all(server, message)   
 
 def cmd_shutdown(cdat):
@@ -252,5 +371,5 @@ def cmd_shutdown(cdat):
    server = cdat['server']
 
    session.msg('Shutting down...')
-   print 'Server shutdown by %s(#%d)' % (session.name, session.pobject.id,)
+   print 'Server shutdown by %s(#%d)' % (session.get_pobject().get_name(), session.get_pobject().id,)
    server.shutdown()

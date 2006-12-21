@@ -1,7 +1,14 @@
 import sets
+from django.db import connection
 from django.contrib.auth.models import User
 from apps.objects.models import Object
 import global_defines
+
+def not_saved_flag(flagname):
+   """
+   Returns TRUE if the flag is not a savable flag.
+   """
+   return flagname in global_defines.NOSAVE_FLAGS
 
 def modifiable_flag(flagname):
    """
@@ -25,9 +32,9 @@ def get_nextfree_dbnum():
    """
    Figure out what our next free database reference number is.
    """
-   # First we'll see if there's an object of type 5 (GARBAGE) that we
+   # First we'll see if there's an object of type 6 (GARBAGE) that we
    # can recycle.
-   nextfree = Object.objects.filter(type__exact=5)
+   nextfree = Object.objects.filter(type__exact=6)
    if nextfree:
       # We've got at least one garbage object to recycle.
       #return nextfree.id
@@ -56,7 +63,7 @@ def local_and_global_search(object, ostring, local_only=False, searcher=None):
 
    if is_dbref(ostring) and not local_only:
       search_num = search_query[1:]
-      dbref_match = list(Object.objects.filter(id=search_num))
+      dbref_match = list(Object.objects.filter(id=search_num).exclude(type=6))
       if len(dbref_match) > 0:
          return dbref_match
 
@@ -90,7 +97,7 @@ def session_from_object(session_list, targobject):
    """
    Return the session object given a object (if there is one open).
    """
-   results = [prospect for prospect in session_list if prospect.pobject == targobject]
+   results = [prospect for prospect in session_list if prospect.get_pobject() == targobject]
    if results:
       return results[0]
    else:
@@ -101,17 +108,17 @@ def session_from_dbref(session_list, dbstring):
    Return the session object given a dbref (if there is one open).
    """
    if is_dbref(dbstring):
-      results = [prospect for prospect in session_list if prospect.pobject.dbref_match(dbstring)]
+      results = [prospect for prospect in session_list if prospect.get_pobject().dbref_match(dbstring)]
       if results:
          return results[0]
    else:
       return False
       
-def get_object_from_dbref(server, dbref):
+def get_object_from_dbref(dbref):
    """
    Returns an object when given a dbref.
    """
-   return server.object_list.get(dbref, False)
+   return Object.objects.get(id=dbref)
    
 def create_object(server, odat):
    """
@@ -149,8 +156,7 @@ def create_object(server, odat):
    new_object.save()
    
    # Add the object to our server's dictionary of objects.
-   server.add_object_to_cache(new_object)
-   new_object.move_to(server, odat['location'])
+   new_object.move_to(odat['location'])
    
    return new_object
 
@@ -161,7 +167,7 @@ def create_user(cdat, uname, email, password):
    session = cdat['session']
    server = cdat['server']
    start_room = int(server.get_configvalue('player_dbnum_start'))
-   start_room_obj = get_object_from_dbref(server, start_room)
+   start_room_obj = get_object_from_dbref(start_room)
 
    # The user's entry in the User table must match up to an object
    # on the object table. The id's are the same, we need to figure out
@@ -170,14 +176,22 @@ def create_user(cdat, uname, email, password):
    uid = get_nextfree_dbnum()
    user = User.objects.create_user(uname, email, password)
    # It stinks to have to do this but it's the only trivial way now.
-   user.id = uid
-   user.save
+   user.save()
+   
+   # We can't use the user model to change the id because of the way keys
+   # are handled, so we actually need to fall back to raw SQL. Boo hiss.
+   cursor = connection.cursor()
+   cursor.execute("UPDATE auth_user SET id=%d WHERE id=%d" % (uid, user.id))
+   
+   # Grab the user object again since we've changed it and the old reference
+   # is no longer valid.
+   user = User.objects.get(id=uid)
 
    # Create a player object of the same ID in the Objects table.
    odat = {"id": uid, "name": uname, "type": 1, "location": start_room_obj, "owner": None}
-   user_object = functions_db.create_object(server, odat)
+   user_object = create_object(server, odat)
 
    # Activate the player's session and set them loose.
    session.login(user)
    print 'Registration: %s' % (session,)
-   session.push("Welcome to %s, %s.\n\r" % (server.get_configvalue('site_name'), session.name,))
+   session.push("Welcome to %s, %s.\n\r" % (server.get_configvalue('site_name'), session.get_pobject().get_name(),))

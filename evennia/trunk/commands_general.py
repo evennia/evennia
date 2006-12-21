@@ -14,11 +14,11 @@ def cmd_look(cdat):
    Handle looking at objects.
    """
    session = cdat['session']
-   pobject = session.pobject
+   pobject = session.get_pobject()
    args = cdat['uinput']['splitted'][1:]
    
    if len(args) == 0:   
-      target_obj = session.pobject.location
+      target_obj = pobject.get_location()
    else:
       results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
       
@@ -50,7 +50,7 @@ def cmd_look(cdat):
    
    for obj in target_obj.get_contents():
       if obj.is_player:
-         if obj != session.pobject:
+         if obj != pobject:
             con_players.append(obj)
       elif obj.is_exit:
          con_exits.append(obj)
@@ -75,11 +75,11 @@ def cmd_examine(cdat):
    Detailed object examine command
    """
    session = cdat['session']
-   pobject = session.pobject
+   pobject = session.get_pobject()
    args = cdat['uinput']['splitted'][1:]
    
    if len(args) == 0:   
-      target_obj = session.pobject.location
+      target_obj = pobject.get_location()
    else:
       results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
       
@@ -106,8 +106,8 @@ def cmd_examine(cdat):
    session.msg("Owner: %s " % (target_obj.get_owner(),))
    session.msg("Zone: %s" % (target_obj.get_zone(),))
    
-   for attribute in target_obj.attrib_list:
-      session.msg("%s%s%s: %s" % (ansi["hilite"], attribute, ansi["normal"], target_obj.get_attribute_value(attribute)))
+   for attribute in target_obj.get_all_attributes():
+      session.msg("%s%s%s: %s" % (ansi["hilite"], attribute.name, ansi["normal"], attribute.value))
    
    con_players = []
    con_things = []
@@ -151,14 +151,16 @@ def cmd_who(cdat):
    """
    session_list = cdat['server'].get_session_list()
    session = cdat['session']
+   pobject = session.get_pobject()
    
    retval = "Player Name        On For Idle   Room    Cmds   Host\n\r"
    for player in session_list:
       delta_cmd = time.time() - player.cmd_last
       delta_conn = time.time() - player.conn_time
-
+      plr_pobject = player.get_pobject()
+      
       retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-         (player.name, \
+         (plr_pobject.get_name(), \
          # On-time
          functions_general.time_format(delta_conn,0), \
          # Idle time
@@ -166,7 +168,7 @@ def cmd_who(cdat):
          # Flags
          '', \
          # Location
-         player.pobject.location.id, \
+         plr_pobject.get_location().id, \
          player.cmd_total, \
          # More flags?
          '', \
@@ -181,12 +183,14 @@ def cmd_say(cdat):
    """
    session_list = cdat['server'].get_session_list()
    session = cdat['session']
+   pobject = session.get_pobject()
    speech = ' '.join(cdat['uinput']['splitted'][1:])
-   players_present = [player for player in session_list if player.pobject.location == session.pobject.location and player != session]
+   
+   players_present = [player for player in session_list if player.get_pobject().get_location() == session.get_pobject().get_location() and player != session]
    
    retval = "You say, '%s'" % (speech,)
    for player in players_present:
-      player.msg("%s says, '%s'" % (session.name, speech,))
+      player.msg("%s says, '%s'" % (pobject.get_name(), speech,))
    
    session.msg(retval)
    

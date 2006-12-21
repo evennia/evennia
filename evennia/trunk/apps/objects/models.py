@@ -40,26 +40,8 @@ class Object(models.Model):
    description = models.TextField(blank=True)
    location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
    flags = models.TextField(blank=True)
+   nosave_flags = models.TextField(blank=True)
    date_created = models.DateField(editable=False, auto_now_add=True)
-   
-   # Rather than keeping another relation for this, we're just going to use
-   # foreign keys and populate each object's contents and attribute lists at
-   # server startup. It'll keep some of the tables more simple, but at the
-   # cost of a little bit more memory usage. There may be a better way to do
-   # this, I'm all ears.
-   
-   # A list of objects located inside the object.
-   # TODO: Re-activate this once we get the contents loader working.
-   # contents_list = []
-   
-   # A dictionary of attributes assocated with the object. The keys are the
-   # attribute's names. This lets us look up and manipulate attributes really
-   # easily.
-   attrib_list = {}
-   
-   # We keep a separate list of active flags in memory so we can store some of
-   # the non-saved flags such as CONNECTED. 
-   flags_active = []
 
    def __cmp__(self, other):
       """
@@ -78,12 +60,18 @@ class Object(models.Model):
    """
    BEGIN COMMON METHODS
    """
-   def load_flags(self):
+   def set_name(self, new_name):
       """
-      Toss the flags from self.flags into our flags_active list, where we
-      pull from.
+      Rename an object.
       """
-      self.flags_active = self.flags.split()
+      self.name = new_name
+      self.save()
+      
+      # If it's a player, we need to update their user object as well.
+      if self.is_player():
+         pobject = User.objects.get(id=self.id)
+         pobject.name = new_name
+         pobject.save()
             
    def get_name(self):
       """
@@ -95,7 +83,7 @@ class Object(models.Model):
       """
       Returns an object's flag list.
       """
-      return ' '.join(self.flags_active)
+      return '%s %s' % (self.flags, self.nosave_flags)
       
    def clear_attribute(self, attribute):
       """
@@ -106,10 +94,35 @@ class Object(models.Model):
       if self.has_attribute(attribute):
          attrib_obj = self.get_attribute_obj(attribute)
          attrib_obj.delete()
-         del self.attrib_list[attribute]
          return True
       else:
          return False
+         
+   def clear_all_attributes(self):
+      """
+      Clears all of an object's attributes.
+      """
+      attribs = Attribute.objects.filter(object=self)
+      for attrib in attribs:
+         self.delete()
+         
+   def get_all_attributes(self):
+      """
+      Returns a QuerySet of an object's attributes.
+      """
+      attribs = Attribute.objects.filter(object=self)
+      return attribs
+      
+   def delete(self, server):
+      """
+      Deletes an object.
+      
+      server: (Server) Reference to the server object.
+      """
+      # Set the object to type GARBAGE.
+      self.type = 6
+      self.save()
+      self.clear_all_attributes()
       
    def set_attribute(self, attribute, new_value):
       """
@@ -121,7 +134,7 @@ class Object(models.Model):
       """
       if self.has_attribute(attribute):
          # Attribute already exists, update it.
-         attrib_obj = self.attrib_list[attribute]
+         attrib_obj = Attribute.objects.filter(object=self).filter(name=attribute)
          attrib_obj.value = new_value
          attrib_obj.save()
       else:
@@ -131,7 +144,6 @@ class Object(models.Model):
          new_attrib.value = new_value
          new_attrib.object = self
          new_attrib.save()
-         self.attrib_list[attribute] = new_attrib
          
    def has_attribute(self, attribute):
       """
@@ -139,7 +151,11 @@ class Object(models.Model):
       
       attribute: (str) The attribute's name.
       """
-      return self.attrib_list.has_key(attribute)
+      attr = Attribute.objects.filter(object=self).filter(name=attribute)
+      if attr.count() == 0:
+         return False
+      else:
+         return True
       
    def has_flag(self, flag):
       """
@@ -147,7 +163,7 @@ class Object(models.Model):
       
       flag: (str) Flag name
       """
-      return flag in self.flags_active
+      return flag in self.flags or flag in self.nosave_flags
       
    def set_flag(self, flag, value):
       """
@@ -160,17 +176,19 @@ class Object(models.Model):
       has_flag = self.has_flag(flag)
       
       if value == False and has_flag:
-         # The flag is there and we want to un-set it.
-         self.flags_active.remove(flag)
+         # Clear the flag.
+         if functions_db.not_saved_flag(flag):
+            # Not a savable flag.
+            flags = self.nosave_flags.split()
+            flags.remove(flag)
+            self.nosave_flags = ' '.join(flags)
+         else:
+            # Is a savable flag.
+            flags = self.flags.split()
+            flags.remove(flag)
+            self.flags = ' '.join(flags)
+         self.save()
          
-         # Not all flags are saved, such as CONNECTED.
-         # Don't waste queries on these things.
-         if flag not in global_defines.NOSAVE_FLAGS:
-            flag_templist = self.flags.split()
-            flag_templist.remove(flag)
-
-            self.flags = ' '.join(flag_templist)
-            self.save()
       elif value == False and not has_flag:
          # Object doesn't have the flag to begin with.
          pass
@@ -178,14 +196,18 @@ class Object(models.Model):
          # We've already go it.
          pass
       else:
-         # Add the flag to our active, memory-resident list no matter what.
-         self.flags_active.append(flag)
-         if flag not in global_defines.NOSAVE_FLAGS:
-            flag_templist = self.flags.split()
-            flag_templist.append(flag)
-
-            self.flags = ' '.join(flag_templist)
-            self.save()
+         # Setting a flag.
+         if functions_db.not_saved_flag(flag):
+            # Not a savable flag.
+            flags = self.nosave_flags.split()
+            flags.append(flag)
+            self.nosave_flags = ' '.join(flags)
+         else:
+            # Is a savable flag.
+            flags = self.flags.split()
+            flags.append(flag)
+            self.flags = ' '.join(flags)
+         self.save()
    
    def get_owner(self):
       """
@@ -216,7 +238,8 @@ class Object(models.Model):
       attrib: (str) The attribute's name.
       """
       if self.has_attribute(attrib):
-         attrib_value = self.attrib_list[attrib]
+         attrib = Attribute.objects.filter(object=self).filter(name=attrib)
+         attrib_value = attrib[0].value
          return attrib_value.value
       else:
          return False
@@ -228,26 +251,16 @@ class Object(models.Model):
       attrib: (str) The attribute's name.
       """
       if self.has_attribute(attrib):
-         attrib_obj = self.attrib_list[attrib]
+         attrib_obj = Attribute.objects.filter(object=self).filter(name=attrib)
          return attrib_obj
       else:
          return False
    
-   def load_to_location(self):
-      """
-      Adds an object to its location.
-      """ 
-      print 'Adding %s to %s.' % (self.id, self.location.id,)
-      self.location.contents_list.append(self)
-      
    def get_contents(self):
       """
       Returns the contents of an object.
-      
-      TODO: Make this use the object's contents_list field. There's
-      something horribly long with the load routine right now.
       """
-      return list(Object.objects.filter(location__id=self.id))
+      return list(Object.objects.filter(location__id=self.id).exclude(type__gt=4))
       
    def get_zone(self):
       """
@@ -255,23 +268,14 @@ class Object(models.Model):
       """
       return self.zone
    
-   def move_to(self, server, target):
+   def move_to(self, target):
       """
-      Moves the object to a new location. We're going to modify the server's
-      cached version of the object rather than the one we're given due
-      to the way references are passed. We can firm this up by other means
-      but this is more or less fool-proof for now.
+      Moves the object to a new location.
       
-      server: (Server) Reference to the main game server.
       target: (Object) Reference to the object to move to.
       """
-      #if self in self.location.contents_list:
-      #   self.location.contents_list.remove(self)
-      #target.contents_list.append(self)
-      
-      cached_object = functions_db.get_object_from_dbref(server, self.id)
-      cached_object.location = target
-      cached_object.save()
+      self.location = target
+      self.save()
       
    def dbref_match(self, oname):
       """
@@ -311,7 +315,8 @@ class Object(models.Model):
       
       oname: (str) The string to filter from.
       """
-      return [prospect for prospect in self.contents_list if prospect.name_match(oname)]
+      contents = self.get_contents()
+      return [prospect for prospect in contents if prospect.name_match(oname)]
 
    # Type comparison methods.
    def is_player(self):
@@ -322,8 +327,10 @@ class Object(models.Model):
       return self.type == 3
    def is_exit(self):
       return self.type == 4
-   def is_garbage(self):
+   def is_going(self):
       return self.type == 5
+   def is_garbage(self):
+      return self.type == 6
    
    def get_type(self, return_number=False):
       """

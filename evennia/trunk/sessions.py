@@ -19,9 +19,9 @@ class PlayerSession(async_chat):
       self.set_terminator("\n")
       self.name = None
       self.data = []
+      self.uid = None
       self.sock = sock
       self.logged_in = False
-      self.pobject = None
       # The time the user last issued a command.
       self.cmd_last = time.time()
       # Total number of commands issued.
@@ -57,11 +57,19 @@ class PlayerSession(async_chat):
       """
       Break the connection and do some accounting.
       """
-      self.pobject.set_flag("CONNECTED", False)
+      self.get_pobject().set_flag("CONNECTED", False)
       async_chat.handle_close(self)
       self.logged_in = False
       self.server.remove_session(self)
       print 'Sessions active:', len(self.server.session_list)
+      
+   def get_pobject(self):
+      """
+      Returns the object associated with a session.
+      """
+      result = Object.objects.get(id=self.uid)
+      #print 'RES', result
+      return result
       
    def game_connect_screen(self, session):
       """
@@ -80,11 +88,11 @@ class PlayerSession(async_chat):
       """
       After the user has authenticated, handle logging him in.
       """
-      self.pobject = functions_db.get_object_from_dbref(self.server, user.id)
+      self.uid = user.id
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()
-      self.pobject.set_flag("CONNECTED", True)
+      self.get_pobject().set_flag("CONNECTED", True)
 
       self.msg("You are now logged in as %s." % (self.name,))
       cdat = {"session": self, "uinput":'look', "server": self.server}
@@ -116,5 +124,5 @@ class PlayerSession(async_chat):
          symbol = '?'
       return "<%s> %s@%s" % (symbol, self.name, self.address,)
 
-#       def handle_error(self):
-#               self.handle_close()
+#   def handle_error(self):
+#      self.handle_close()

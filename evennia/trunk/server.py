@@ -3,9 +3,10 @@ from asynchat import async_chat
 import socket, asyncore, time, sys
 from sessions import PlayerSession
 from django.db import models
+from django.db import connection
+from django.contrib.auth.models import User
 from apps.config.models import ConfigValue, CommandAlias
 from apps.objects.models import Object, Attribute
-from django.contrib.auth.models import User
 from scheduler import Scheduler
 import functions_db
 import functions_general
@@ -21,12 +22,13 @@ class Server(dispatcher):
       self.configvalue = {}
       self.game_running = True
       
+      # Wipe our temporary flags on all of the objects.
+      cursor = connection.cursor()
+      cursor.execute("UPDATE objects_object SET nosave_flags=''")
+      
       print '-'*50
       # Load stuff up into memory for easy/quick access.
       self.load_configvalues()
-      self.load_objects()
-      self.load_objects_contents()
-      self.load_attributes()
       self.load_cmd_aliases()
       
       # Start accepting connections.
@@ -53,44 +55,6 @@ class Server(dispatcher):
          self.configvalue[conf.conf_key] = conf.conf_value
          
       print ' Configuration Loaded.'
-      
-   def load_objects(self):
-      """
-      Load all of our objects into memory.
-      """
-      object_list = Object.objects.all()
-      for object in object_list:
-         object.load_flags()
-         dbnum = object.id
-         self.object_list[dbnum] = object
-      print ' Objects Loaded: %d' % (len(self.object_list),)
-
-   def load_objects_contents(self):
-      """
-      Populate the 'contents_list' list for each object.
-      
-      TODO: This thing is just completely shot. No idea what's going on but
-      it's bad mojo.
-      """
-      """
-      object_list = Object.objects.all()
-      for object in object_list:
-         if object.location and not object.is_room():
-            object.load_to_location()
-            #print 'Adding %s to %s' % (object.id, object.location.id,)
-      for object in object_list:
-         print 'OBJ: %s CON: %s' % (object.id, object.location,)
-      print '  * Object Inventories Populated'
-      """
-
-   def load_attributes(self):
-      """
-      Load all of our attributes into memory.
-      """
-      attribute_list = Attribute.objects.all()
-      for attrib in attribute_list:
-         attrib.object.attrib_list[attrib.name] = attrib
-      print ' Attributes Loaded: %d' % (len(attribute_list),)
       
    def load_cmd_aliases(self):
       """
@@ -120,6 +84,15 @@ class Server(dispatcher):
       Adds an object to the cached object list.
       """
       self.object_list[object.id] = object
+      
+   def remove_object_from_cache(self, object):
+      """
+      Removes an object from the cache.
+      """
+      if self.object_list.has_key(object.id):
+         del self.object_list[object.id]
+      else:
+         print 'ERROR: Trying to remove non-cached object: %s' % (object,)
                   
    def get_configvalue(self, configname):
       """

@@ -5,7 +5,8 @@ OBJECT_TYPES = (
    (2, 'ROOM'),
    (3, 'THING'),
    (4, 'EXIT'),
-   (5, 'GARBAGE'),
+   (5, 'GOING'),
+   (6, 'GARBAGE'),
 )
 
 # This is a list of flags that the server actually uses. Anything not in this
