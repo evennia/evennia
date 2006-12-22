@@ -3,6 +3,7 @@ import time
 import functions_general
 import functions_db
 import global_defines
+import session_mgr
 from ansi import *
 
 """
@@ -168,7 +169,7 @@ def cmd_who(cdat):
    """
    Generic WHO command.
    """
-   session_list = cdat['server'].get_session_list()
+   session_list = session_mgr.get_session_list()
    session = cdat['session']
    pobject = session.get_pobject()
    
@@ -200,7 +201,7 @@ def cmd_say(cdat):
    """
    Room-based speech command.
    """
-   session_list = cdat['server'].get_session_list()
+   session_list = session_mgr.get_session_list()
    session = cdat['session']
    pobject = session.get_pobject()
    speech = ' '.join(cdat['uinput']['splitted'][1:])

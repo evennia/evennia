@@ -3,6 +3,7 @@ import functions_db
 import functions_general
 import commands_general
 import cmdhandler
+import session_mgr
 
 """
 Staff commands may be a bad description for this file, but it'll do for now.
@@ -59,7 +60,7 @@ def cmd_destroy(cdat):
          target_obj = results[0]
    
    session.msg("You destroy %s." % (target_obj,))
-   target_obj.destroy(session.server.session_list)
+   target_obj.destroy(session_mgr.get_session_list())
 
 def cmd_name(cdat):
    """
@@ -245,7 +246,7 @@ def cmd_teleport(cdat):
          # to do it sometime else. If we can find a session in the server's
          # session list matching the object we're teleporting, force it to
          # look. This is going to typically be a player.
-         victim_session = functions_db.session_from_object(server.get_session_list(), victim[0])
+         victim_session = session_mgr.session_from_object(victim[0])
          if victim_session:
             # We need to form up a new cdat dictionary to pass with the command.
             # Kinda yucky I guess.

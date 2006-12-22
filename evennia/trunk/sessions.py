@@ -6,6 +6,7 @@ from apps.objects.models import Object
 from django.contrib.auth.models import User
 import commands_general
 import functions_db
+import session_mgr
 
 class PlayerSession(async_chat):
    """
@@ -60,8 +61,8 @@ class PlayerSession(async_chat):
       self.get_pobject().set_flag("CONNECTED", False)
       async_chat.handle_close(self)
       self.logged_in = False
-      self.server.remove_session(self)
-      print 'Sessions active:', len(self.server.get_session_list())
+      session_mgr.remove_session(self)
+      print 'Sessions active:', len(session_mgr.get_session_list())
       
    def get_pobject(self):
       """

@@ -104,32 +104,6 @@ def is_dbref(dbstring):
    else:
       return True
    
-def session_from_object(session_list, targobject):
-   """
-   Return the session object given a object (if there is one open).
-   
-   session_list: (list) The server's session_list attribute.
-   targobject: (Object) The object to match.
-   """
-   results = [prospect for prospect in session_list if prospect.get_pobject().id == targobject.id]
-   if results:
-      return results[0]
-   else:
-      return False
-
-def session_from_dbref(session_list, dbstring):
-   """
-   Return the session object given a dbref (if there is one open).
-   
-   dbstring: (int) The dbref number to match against.
-   """
-   if is_dbref(dbstring):
-      results = [prospect for prospect in session_list if prospect.get_pobject().dbref_match(dbstring)]
-      if results:
-         return results[0]
-   else:
-      return False
-      
 def get_object_from_dbref(dbref):
    """
    Returns an object when given a dbref.

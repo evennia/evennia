@@ -1,7 +1,6 @@
 from asyncore import dispatcher
 from asynchat import async_chat
 import socket, asyncore, time, sys
-from sessions import PlayerSession
 from django.db import models
 from django.db import connection
 from django.contrib.auth.models import User
@@ -11,6 +10,7 @@ from scheduler import Scheduler
 import functions_db
 import functions_general
 import global_defines
+import session_mgr
 
 class Server(dispatcher):
    """
@@ -72,11 +72,10 @@ class Server(dispatcher):
       What to do when we get a connection.
       """
       conn, addr = self.accept()
-      session = PlayerSession(self, conn, addr)
+      session = session_mgr.new_session(self, conn, addr)
       session.game_connect_screen(session)
       print 'Connection:', str(session)
-      self.session_list.append(session)
-      print 'Sessions active:', len(self.session_list)
+      print 'Sessions active:', len(session_mgr.get_session_list())
       
    """
    BEGIN GENERAL METHODS
@@ -106,13 +105,13 @@ class Server(dispatcher):
       """
       Lists the server's connected session objects.
       """
-      return self.session_list
+      return session_mgr.get_session_list()
       
    def remove_session(self, session):
       """
       Removes a session from the server's session list.
       """
-      self.session_list.remove(session)
+      session_mgr.remove_session(session)
       
    def shutdown(self, message='The server has been shutdown. Please check back soon.'):
       functions_general.announce_all(server, message)
