@@ -2,12 +2,31 @@ import settings
 import time
 import functions_general
 import functions_db
+import global_defines
 from ansi import *
 
 """
 Generic command module. Pretty much every command should go here for
 now.
 """   
+def cmd_inventory(cdat):
+   """
+   Shows a player's inventory.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   session.msg("You are carrying:")
+   
+   for item in pobject.get_contents():
+      session.msg(" %s" % (item,))
+      
+   money = pobject.get_attribute_value("MONEY", default=0)
+   if money > 0:
+      money_name = functions_db.get_server_config("MONEY_NAME_PLURAL")
+   else:
+      money_name = functions_db.get_server_config("MONEY_NAME_SINGULAR")
+      
+   session.msg("You have %d %s." % (money,money_name))
 
 def cmd_look(cdat):
    """
@@ -16,7 +35,7 @@ def cmd_look(cdat):
    session = cdat['session']
    pobject = session.get_pobject()
    args = cdat['uinput']['splitted'][1:]
-   
+
    if len(args) == 0:   
       target_obj = pobject.get_location()
    else:
@@ -49,10 +68,10 @@ def cmd_look(cdat):
    con_exits = []
    
    for obj in target_obj.get_contents():
-      if obj.is_player:
+      if obj.is_player():
          if obj != pobject:
             con_players.append(obj)
-      elif obj.is_exit:
+      elif obj.is_exit():
          con_exits.append(obj)
       else:
          con_things.append(obj)
@@ -62,7 +81,7 @@ def cmd_look(cdat):
       for player in con_players:
          session.msg('%s' %(player,))
    if con_things:
-      session.msg("%sThings:%s" % (ansi["hilite"], ansi["normal"],))
+      session.msg("%sContents:%s" % (ansi["hilite"], ansi["normal"],))
       for thing in con_things:
          session.msg('%s' %(thing,))
    if con_exits:

@@ -20,4 +20,4 @@ NOSAVE_FLAGS = ["CONNECTED"]
 NOSET_FLAGS = ["CONNECTED"]
 
 # These attribute names can't be modified by players.
-NOSET_ATTRIBS = ["TEST"]
+NOSET_ATTRIBS = ["MONEY"]

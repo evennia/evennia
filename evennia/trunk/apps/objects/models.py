@@ -60,6 +60,41 @@ class Object(models.Model):
    """
    BEGIN COMMON METHODS
    """
+   def emit_to(self, message):
+      """
+      Emits something to any sessions attached to the object.
+      
+      message: (str) The message to send
+      """
+   
+   def is_staff(self):
+      """
+      Returns TRUE if the object is a staff player.
+      """
+      if not self.is_player():
+         return False
+      
+      profile = User.objects.filter(id=self.id)
+      
+      if len(profile) == 0:
+         return False
+      else:
+         return profile[0].is_staff
+
+   def is_superuser(self):
+      """
+      Returns TRUE if the object is a super user player.
+      """
+      if not self.is_player():
+         return False
+      
+      profile = User.objects.filter(id=self.id)
+      
+      if len(profile) == 0:
+         return False
+      else:
+         return profile[0].is_superuser
+
    def set_name(self, new_name):
       """
       Rename an object.
@@ -112,13 +147,45 @@ class Object(models.Model):
       """
       attribs = Attribute.objects.filter(object=self)
       return attribs
-      
-   def delete(self, server):
+   
+   def destroy(self, session_list):   
       """
-      Deletes an object.
+      Destroys an object, sets it to GOING. Can still be recovered
+      if the user decides to.
       
-      server: (Server) Reference to the server object.
+      session_list: (list) The server's session_list attribute.
       """
+      
+      # See if we need to kick the player off.
+      session = functions_db.session_from_object(session_list, self)
+      if session:
+         session.msg("You have been destroyed, goodbye.")
+         session.handle_close()
+         
+      # If the object is a player, set the player account object to inactive.
+      # It can still be recovered at this point.      
+      if self.is_player():
+         print 'PLAYER'
+         uobj = User.objects.get(id=self.id)
+         print 'VICTIM', uobj
+         uobj.is_active = False
+         uobj.save()
+         
+      # Set the object type to GOING
+      self.type = 5
+      self.save()
+           
+   def delete(self, session_list):
+      """
+      Deletes an object permanently. Marks it for re-use by a new object.
+      
+      session_list: (list) The server's session_list attribute.
+      """
+      # Delete the associated player object permanently.
+      uobj = User.objects.filter(id=self.id)
+      if len(uobj) > 0:
+         uobj[0].delete()
+         
       # Set the object to type GARBAGE.
       self.type = 6
       self.save()
@@ -177,8 +244,8 @@ class Object(models.Model):
       
       if value == False and has_flag:
          # Clear the flag.
-         if functions_db.not_saved_flag(flag):
-            # Not a savable flag.
+         if functions_db.is_unsavable_flag(flag):
+            # Not a savable flag (CONNECTED, etc)
             flags = self.nosave_flags.split()
             flags.remove(flag)
             self.nosave_flags = ' '.join(flags)
@@ -197,8 +264,8 @@ class Object(models.Model):
          pass
       else:
          # Setting a flag.
-         if functions_db.not_saved_flag(flag):
-            # Not a savable flag.
+         if functions_db.is_unsavable_flag(flag):
+            # Not a savable flag (CONNECTED, etc)
             flags = self.nosave_flags.split()
             flags.append(flag)
             self.nosave_flags = ' '.join(flags)
@@ -231,7 +298,7 @@ class Object(models.Model):
       """
       return self.location
          
-   def get_attribute_value(self, attrib):
+   def get_attribute_value(self, attrib, default=False):
       """
       Returns the value of an attribute on an object.
       
@@ -242,7 +309,10 @@ class Object(models.Model):
          attrib_value = attrib[0].value
          return attrib_value.value
       else:
-         return False
+         if default:
+            return default
+         else:
+            return False
          
    def get_attribute_obj(self, attrib):
       """

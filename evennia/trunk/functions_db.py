@@ -2,15 +2,22 @@ import sets
 from django.db import connection
 from django.contrib.auth.models import User
 from apps.objects.models import Object
+from apps.config.models import ConfigValue
 import global_defines
 
-def not_saved_flag(flagname):
+def get_server_config(configname):
    """
-   Returns TRUE if the flag is not a savable flag.
+   Returns a server config value.
+   """
+   return ConfigValue.objects.get(conf_key=configname).conf_value
+
+def is_unsavable_flag(flagname):
+   """
+   Returns TRUE if the flag is an unsavable flag.
    """
    return flagname in global_defines.NOSAVE_FLAGS
 
-def modifiable_flag(flagname):
+def is_modifiable_flag(flagname):
    """
    Check to see if a particular flag is modifiable.
    """
@@ -19,7 +26,7 @@ def modifiable_flag(flagname):
    else:
       return False
       
-def modifiable_attrib(attribname):
+def is_modifiable_attrib(attribname):
    """
    Check to see if a particular attribute is modifiable.
    """
@@ -31,18 +38,22 @@ def modifiable_attrib(attribname):
 def get_nextfree_dbnum():
    """
    Figure out what our next free database reference number is.
+   
+   If we need to recycle a GARBAGE object, return the object to recycle
+   Otherwise, return the first free dbref.
    """
    # First we'll see if there's an object of type 6 (GARBAGE) that we
    # can recycle.
    nextfree = Object.objects.filter(type__exact=6)
    if nextfree:
       # We've got at least one garbage object to recycle.
-      #return nextfree.id
-      return nextfree[0].id
+      print 'GARB'
+      return nextfree[0]
    else:
       # No garbage to recycle, find the highest dbnum and increment it
       # for our next free.
-      return Object.objects.order_by('-id')[0].id + 1
+      print 'NOTGARB'
+      return int(Object.objects.order_by('-id')[0].id + 1)
 
 def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    """
@@ -96,8 +107,11 @@ def is_dbref(dbstring):
 def session_from_object(session_list, targobject):
    """
    Return the session object given a object (if there is one open).
+   
+   session_list: (list) The server's session_list attribute.
+   targobject: (Object) The object to match.
    """
-   results = [prospect for prospect in session_list if prospect.get_pobject() == targobject]
+   results = [prospect for prospect in session_list if prospect.get_pobject().id == targobject.id]
    if results:
       return results[0]
    else:
@@ -106,6 +120,8 @@ def session_from_object(session_list, targobject):
 def session_from_dbref(session_list, dbstring):
    """
    Return the session object given a dbref (if there is one open).
+   
+   dbstring: (int) The dbref number to match against.
    """
    if is_dbref(dbstring):
       results = [prospect for prospect in session_list if prospect.get_pobject().dbref_match(dbstring)]
@@ -120,7 +136,7 @@ def get_object_from_dbref(dbref):
    """
    return Object.objects.get(id=dbref)
    
-def create_object(server, odat):
+def create_object(odat):
    """
    Create a new object. odat is a dictionary that contains the following keys.
    REQUIRED KEYS:
@@ -132,7 +148,13 @@ def create_object(server, odat):
     * home: Reference to another object to home to. If not specified, use 
       location key for home.
    """
-   new_object = Object()
+   next_dbref = get_nextfree_dbnum()
+   if not str(next_dbref).isdigit():
+      # Recycle a garbage object.
+      new_object = next_dbref
+   else:
+      new_object = Object()
+      
    new_object.name = odat["name"]
    new_object.type = odat["type"]
 
@@ -154,8 +176,6 @@ def create_object(server, odat):
       new_object.home = odat["location"]
          
    new_object.save()
-   
-   # Add the object to our server's dictionary of objects.
    new_object.move_to(odat['location'])
    
    return new_object
@@ -189,7 +209,7 @@ def create_user(cdat, uname, email, password):
 
    # Create a player object of the same ID in the Objects table.
    odat = {"id": uid, "name": uname, "type": 1, "location": start_room_obj, "owner": None}
-   user_object = create_object(server, odat)
+   user_object = create_object(odat)
 
    # Activate the player's session and set them loose.
    session.login(user)

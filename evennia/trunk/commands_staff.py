@@ -18,6 +18,11 @@ def cmd_destroy(cdat):
    session = cdat['session']
    pobject = session.get_pobject()
    args = cdat['uinput']['splitted'][1:]
+   switches = cdat['uinput']['root_chunk'][1:]
+   switch_override = False
+   
+   if "override" in switches:
+      switch_override = True
    
    if len(args) == 0:   
       session.msg("Destroy what?")
@@ -34,13 +39,27 @@ def cmd_destroy(cdat):
          session.msg("I don't see that here.")
          return
       elif results[0].is_player():
-         session.msg("You must @nuke players, not @destroy them.")
+         if pobject.id == results[0].id:
+            session.msg("You can't destroy yourself.")
+            return
+         if not switch_override:
+            session.msg("You must use @destroy/override on players.")
+            return
+         if results[0].is_superuser():
+            session.msg("You can't destroy a superuser.")
+            return
+         target_obj = results[0]
+      elif results[0].is_going():
+         session.msg("That object is already destroyed.")
+         return
+      elif results[0].is_garbage():
+         session.msg("That object is already destroyed.")
          return
       else:
          target_obj = results[0]
    
    session.msg("You destroy %s." % (target_obj,))
-   target_obj.delete(session.server)
+   target_obj.destroy(session.server.session_list)
 
 def cmd_name(cdat):
    """
@@ -90,7 +109,7 @@ def cmd_dig(cdat):
    else:
       # Create and set the object up.
       odat = {"name": roomname, "type": 2, "location": None, "owner": pobject}
-      new_object = functions_db.create_object(server, odat)
+      new_object = functions_db.create_object(odat)
       
       session.msg("You create a new room: %s" % (new_object,))
       
@@ -109,7 +128,7 @@ def cmd_create(cdat):
    else:
       # Create and set the object up.
       odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
-      new_object = functions_db.create_object(server, odat)
+      new_object = functions_db.create_object(odat)
       
       session.msg("You create a new thing: %s" % (new_object,))
    
@@ -118,10 +137,12 @@ def cmd_nextfree(cdat):
    Returns the next free object number.
    """
    session = cdat['session']
-   server = cdat['server']
    
    nextfree = functions_db.get_nextfree_dbnum()
-   retval = "Next free object number: #%s" % (nextfree,)
+   if str(nextfree).isdigit():
+      retval = "Next free object number: #%s" % (nextfree,)
+   else:
+      retval = "Next free object number: #%s (GARBAGE)" % (nextfree.id,)
    
    session.msg(retval)
    
@@ -174,7 +195,7 @@ def cmd_open(cdat):
    else:
       # Create an un-linked exit.
       odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
-      new_object = functions_db.create_object(server, odat)
+      new_object = functions_db.create_object(odat)
 
       session.msg("You create a new thing: %s" % (new_object,))
          
@@ -291,7 +312,7 @@ def cmd_set(cdat):
       attrib_value = eq_args[1][splicenum:]
       
       # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
-      if not functions_db.modifiable_attrib(attrib_name):
+      if not functions_db.is_modifiable_attrib(attrib_name):
          session.msg("You can't modify that attribute.")
          return
       
@@ -313,14 +334,14 @@ def cmd_set(cdat):
          if flag[0] == '!':
             # We're un-setting the flag.
             flag = flag[1:]
-            if not functions_db.modifiable_flag(flag):
+            if not functions_db.is_modifiable_flag(flag):
                session.msg("You can't set/unset the flag - %s." % (flag,))
             else:
                session.msg('%s - %s cleared.' % (victim.get_name(), flag.upper(),))
                victim.set_flag(flag, False)
          else:
             # We're setting the flag.
-            if not functions_db.modifiable_flag(flag):
+            if not functions_db.is_modifiable_flag(flag):
                session.msg("You can't set/unset the flag - %s." % (flag,))
             else:
                session.msg('%s - %s set.' % (victim.get_name(), flag.upper(),))

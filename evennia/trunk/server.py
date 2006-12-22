@@ -10,6 +10,7 @@ from apps.objects.models import Object, Attribute
 from scheduler import Scheduler
 import functions_db
 import functions_general
+import global_defines
 
 class Server(dispatcher):
    """
@@ -38,6 +39,7 @@ class Server(dispatcher):
       self.bind(('', int(self.configvalue['site_port'])))
       self.listen(100)
       self.start_time = time.time()
+
       print ' %s started on port %s.' % (self.configvalue['site_name'], self.configvalue['site_port'],)
       print '-'*50
       
