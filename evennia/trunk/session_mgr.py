@@ -1,4 +1,4 @@
-from sessions import PlayerSession
+from session import PlayerSession
 
 """
 Session manager, handles connected players.
