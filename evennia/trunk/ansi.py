@@ -1,3 +1,4 @@
+import re
 """
 ANSI related stuff.
 """
@@ -34,3 +35,36 @@ ansi["back_blue"]    = "\033[44m"
 ansi["back_magenta"] = "\033[45m"
 ansi["back_cyan"]    = "\033[46m"
 ansi["back_white"]   = "\033[47m"
+
+def parse_ansi(string):
+   """
+   Parses a string, subbing color codes as needed.
+   """
+   ansi_subs = [
+      (r'%cf', ansi["blink"]),
+      (r'%ci', ansi["inverse"]),
+      (r'%ch', ansi["hilite"]),
+      (r'%cn', ansi["normal"]),
+      (r'%cx', ansi["black"]),
+      (r'%cX', ansi["back_black"]),
+      (r'%cr', ansi["red"]),
+      (r'%cR', ansi["back_red"]),
+      (r'%cg', ansi["green"]),
+      (r'%cG', ansi["back_green"]),
+      (r'%cy', ansi["yellow"]),
+      (r'%cY', ansi["back_yellow"]),
+      (r'%cb', ansi["blue"]),
+      (r'%cB', ansi["back_blue"]),
+      (r'%cm', ansi["magenta"]),
+      (r'%cM', ansi["back_magenta"]),
+      (r'%cc', ansi["cyan"]),
+      (r'%cC', ansi["back_cyan"]),
+      (r'%cw', ansi["white"]),
+      (r'%cW', ansi["back_white"]),
+   ]
+   
+   for sub in ansi_subs:
+      p = re.compile(sub[0], re.DOTALL)
+      string = p.sub(sub[1], string)
+      
+   print '%s%s' % (string, ansi["normal"])
