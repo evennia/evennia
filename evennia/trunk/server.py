@@ -3,10 +3,9 @@ from asynchat import async_chat
 import socket, asyncore, time, sys
 from django.db import models
 from django.db import connection
-from django.contrib.auth.models import User
+
 from apps.config.models import ConfigValue, CommandAlias
-from apps.objects.models import Object, Attribute
-from scheduler import Scheduler
+import scheduler
 import functions_db
 import functions_general
 import global_defines
@@ -17,8 +16,6 @@ class Server(dispatcher):
    The main server class from which everything branches.
    """
    def __init__(self):
-      self.session_list = []
-      self.object_list = {}
       self.cmd_alias_list = {}
       self.configvalue = {}
       self.game_running = True
@@ -101,20 +98,8 @@ class Server(dispatcher):
       """
       return self.configvalue[configname]
       
-   def get_session_list(self):
-      """
-      Lists the server's connected session objects.
-      """
-      return session_mgr.get_session_list()
-      
-   def remove_session(self, session):
-      """
-      Removes a session from the server's session list.
-      """
-      session_mgr.remove_session(session)
-      
    def shutdown(self, message='The server has been shutdown. Please check back soon.'):
-      functions_general.announce_all(server, message)
+      functions_general.announce_all(message)
       self.game_running = False
    """
    END Server CLASS
@@ -125,7 +110,6 @@ BEGIN MAIN APPLICATION LOGIC
 """
 if __name__ == '__main__':
    server = Server()
-   scheduler = Scheduler(server)
    
    try:
       while server.game_running:

@@ -148,16 +148,14 @@ class Object(models.Model):
       attribs = Attribute.objects.filter(object=self)
       return attribs
    
-   def destroy(self, session_list):   
+   def destroy(self):   
       """
       Destroys an object, sets it to GOING. Can still be recovered
       if the user decides to.
-      
-      session_list: (list) The server's session_list attribute.
       """
       
       # See if we need to kick the player off.
-      session = functions_db.session_from_object(session_list, self)
+      session = session_mgr.session_from_object(self)
       if session:
          session.msg("You have been destroyed, goodbye.")
          session.handle_close()
@@ -165,9 +163,7 @@ class Object(models.Model):
       # If the object is a player, set the player account object to inactive.
       # It can still be recovered at this point.      
       if self.is_player():
-         print 'PLAYER'
          uobj = User.objects.get(id=self.id)
-         print 'VICTIM', uobj
          uobj.is_active = False
          uobj.save()
          
@@ -175,11 +171,9 @@ class Object(models.Model):
       self.type = 5
       self.save()
            
-   def delete(self, session_list):
+   def delete(self):
       """
       Deletes an object permanently. Marks it for re-use by a new object.
-      
-      session_list: (list) The server's session_list attribute.
       """
       # Delete the associated player object permanently.
       uobj = User.objects.filter(id=self.id)
@@ -445,3 +439,4 @@ class Object(models.Model):
       return "%s(#%d%s)" % (self.name, self.id, self.flag_string())
 
 import functions_db
+import session_mgr

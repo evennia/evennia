@@ -1,3 +1,4 @@
+import session_mgr
 """
 General commonly used functions.
 """
@@ -62,7 +63,7 @@ def time_format(seconds, style=0):
       retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str,)
       return retval  
 
-def announce_all(server, message, with_ann_prefix=True, with_nl=True):
+def announce_all(message, with_ann_prefix=True, with_nl=True):
    """
    Announces something to all connected players.
    """
@@ -76,5 +77,5 @@ def announce_all(server, message, with_ann_prefix=True, with_nl=True):
    else:
       newline = ''
       
-   for session in server.get_session_list():
+   for session in session_mgr.get_session_list():
       session.msg_no_nl('%s %s%s' % (prefix, message,newline,))

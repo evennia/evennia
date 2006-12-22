@@ -2,10 +2,7 @@
 This is the events module, where all of the code for periodic events needs
 to reside.
 
-ADDING AN EVENT:
-* Add an entry to the 'schedule' dictionary.
-* Add the proper event_ function here.
-* Profit.
+
 """
 
 schedule = {

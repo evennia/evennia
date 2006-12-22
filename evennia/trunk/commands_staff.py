@@ -1,10 +1,9 @@
-from apps.objects.models import Object
 import functions_db
 import functions_general
 import commands_general
 import cmdhandler
 import session_mgr
-
+from apps.objects.models import Object
 """
 Staff commands may be a bad description for this file, but it'll do for now.
 Any command here is prefixed by an '@' sign, usually denoting a builder, staff
@@ -60,7 +59,7 @@ def cmd_destroy(cdat):
          target_obj = results[0]
    
    session.msg("You destroy %s." % (target_obj,))
-   target_obj.destroy(session_mgr.get_session_list())
+   target_obj.destroy()
 
 def cmd_name(cdat):
    """
@@ -375,7 +374,6 @@ def cmd_wall(cdat):
    Announces a message to all connected players.
    """
    session = cdat['session']
-   server = cdat['server']
    wallstring = ' '.join(cdat['uinput']['splitted'][1:])
    
    if wallstring == '':
@@ -383,7 +381,7 @@ def cmd_wall(cdat):
       return
       
    message = "%s shouts \"%s\"" % (session.get_pobject().get_name(), wallstring)
-   functions_general.announce_all(server, message)   
+   functions_general.announce_all(message)   
 
 def cmd_shutdown(cdat):
    """
