@@ -4,12 +4,13 @@ import socket, asyncore, time, sys
 from django.db import models
 from django.db import connection
 
-from apps.config.models import ConfigValue, CommandAlias
+from apps.config.models import CommandAlias
 import scheduler
 import functions_db
 import functions_general
 import global_defines
 import session_mgr
+import gameconf
 
 class Server(dispatcher):
    """
@@ -17,7 +18,6 @@ class Server(dispatcher):
    """
    def __init__(self):
       self.cmd_alias_list = {}
-      self.configvalue = {}
       self.game_running = True
       
       # Wipe our temporary flags on all of the objects.
@@ -26,34 +26,23 @@ class Server(dispatcher):
       
       print '-'*50
       # Load stuff up into memory for easy/quick access.
-      self.load_configvalues()
       self.load_cmd_aliases()
+      self.port = gameconf.get_configvalue('site_port')
       
       # Start accepting connections.
       dispatcher.__init__(self)
       self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
       self.set_reuse_addr()
-      self.bind(('', int(self.configvalue['site_port'])))
+      self.bind(('', int(self.port)))
       self.listen(100)
       self.start_time = time.time()
 
-      print ' %s started on port %s.' % (self.configvalue['site_name'], self.configvalue['site_port'],)
+      print ' %s started on port %s.' % (gameconf.get_configvalue('site_name'), self.port,)
       print '-'*50
       
    """
    BEGIN SERVER STARTUP METHODS
    """
-      
-   def load_configvalues(self):
-      """
-      Loads our site's configuration up for easy access.
-      """
-      configs = ConfigValue.objects.all()
-      
-      for conf in configs:
-         self.configvalue[conf.conf_key] = conf.conf_value
-         
-      print ' Configuration Loaded.'
       
    def load_cmd_aliases(self):
       """
@@ -62,7 +51,7 @@ class Server(dispatcher):
       alias_list = CommandAlias.objects.all()
       for alias in alias_list:
          self.cmd_alias_list[alias.user_input] = alias.equiv_command
-      print ' Aliases Loaded: %i' % (len(self.cmd_alias_list),)
+      print ' Command Aliases Loaded: %i' % (len(self.cmd_alias_list),)
       
    def handle_accept(self):
       """
@@ -76,28 +65,7 @@ class Server(dispatcher):
       
    """
    BEGIN GENERAL METHODS
-   """
-   def add_object_to_cache(self, object):
-      """
-      Adds an object to the cached object list.
-      """
-      self.object_list[object.id] = object
-      
-   def remove_object_from_cache(self, object):
-      """
-      Removes an object from the cache.
-      """
-      if self.object_list.has_key(object.id):
-         del self.object_list[object.id]
-      else:
-         print 'ERROR: Trying to remove non-cached object: %s' % (object,)
-                  
-   def get_configvalue(self, configname):
-      """
-      Retrieve a configuration value.
-      """
-      return self.configvalue[configname]
-      
+   """      
    def shutdown(self, message='The server has been shutdown. Please check back soon.'):
       functions_general.announce_all(message)
       self.game_running = False

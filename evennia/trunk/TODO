@@ -1,1 +1,2 @@
-* Since we now have support for GARBAGE, we need to handle creating over a garbage object gracefully.
+Add any things that need work here:
+* We're going to need a delayed event queue in addition to the scheduler.
