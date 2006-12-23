@@ -37,10 +37,10 @@ class Object(models.Model):
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
    type = models.SmallIntegerField(choices=global_defines.OBJECT_TYPES)
-   description = models.TextField(blank=True)
+   description = models.TextField(blank=True, null=True)
    location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
-   flags = models.TextField(blank=True)
-   nosave_flags = models.TextField(blank=True)
+   flags = models.TextField(blank=True, null=True)
+   nosave_flags = models.TextField(blank=True, null=True)
    date_created = models.DateField(editable=False, auto_now_add=True)
 
    def __cmp__(self, other):
@@ -118,7 +118,14 @@ class Object(models.Model):
       """
       Returns an object's flag list.
       """
-      return '%s %s' % (self.flags, self.nosave_flags)
+      flags = self.flags
+      nosave_flags = self.nosave_flags
+      if not flags:
+         flags = ""
+      if not nosave_flags:
+         nosave_flags = ""
+         
+      return '%s %s' % (flags, nosave_flags)
       
    def clear_attribute(self, attribute):
       """
@@ -224,7 +231,11 @@ class Object(models.Model):
       
       flag: (str) Flag name
       """
-      return flag in self.flags or flag in self.nosave_flags
+      # For whatever reason, we have to do this so things work
+      # in SQLite.
+      flags = str(self.flags).split()
+      nosave_flags = str(self.nosave_flags).split()
+      return flag in flags or flag in nosave_flags
       
    def set_flag(self, flag, value):
       """
@@ -260,12 +271,12 @@ class Object(models.Model):
          # Setting a flag.
          if functions_db.is_unsavable_flag(flag):
             # Not a savable flag (CONNECTED, etc)
-            flags = self.nosave_flags.split()
+            flags = str(self.nosave_flags).split()
             flags.append(flag)
             self.nosave_flags = ' '.join(flags)
          else:
             # Is a savable flag.
-            flags = self.flags.split()
+            flags = str(self.flags).split()
             flags.append(flag)
             self.flags = ' '.join(flags)
          self.save()
@@ -284,13 +295,19 @@ class Object(models.Model):
       """
       Returns an object's home.
       """
-      return self.home
+      try:
+         return self.home
+      except:
+         return None
    
    def get_location(self):
       """
       Returns an object's location.
       """
-      return self.location
+      try:
+         return self.location
+      except:
+         return False
          
    def get_attribute_value(self, attrib, default=False):
       """
@@ -330,7 +347,10 @@ class Object(models.Model):
       """
       Returns the object that is marked as this object's zone.
       """
-      return self.zone
+      try:
+         return self.zone
+      except:
+         return None
    
    def move_to(self, target):
       """

@@ -40,7 +40,7 @@ def cmd_look(cdat):
    if len(args) == 0:   
       target_obj = pobject.get_location()
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
+      results = functions_db.local_and_global_search(pobject, ' '.join(args))
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
@@ -101,7 +101,7 @@ def cmd_examine(cdat):
    if len(args) == 0:   
       target_obj = pobject.get_location()
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
+      results = functions_db.local_and_global_search(pobject, ' '.join(args))
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")

@@ -5,10 +5,10 @@ import cmdhandler
 import session_mgr
 from apps.objects.models import Object
 """
-Staff commands may be a bad description for this file, but it'll do for now.
-Any command here is prefixed by an '@' sign, usually denoting a builder, staff
-or otherwise manipulative command that doesn't fall within the scope of
-normal gameplay.
+Staff commands may be a bad description for this file, but it'll do for
+now. Any command here is prefixed by an '@' sign, usually denoting a 
+builder, staff or otherwise manipulative command that doesn't fall within 
+the scope of normal gameplay.
 """
 
 def cmd_destroy(cdat):
@@ -28,7 +28,7 @@ def cmd_destroy(cdat):
       session.msg("Destroy what?")
       return
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args), searcher=pobject)
+      results = functions_db.local_and_global_search(pobject, ' '.join(args))
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
@@ -76,7 +76,7 @@ def cmd_name(cdat):
    elif len(eq_args) < 2:
       session.msg("What would you like to name that object?")
    else:
-      results = functions_db.local_and_global_search(pobject, searchstring, searcher=pobject)
+      results = functions_db.local_and_global_search(pobject, searchstring)
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
@@ -176,7 +176,7 @@ def cmd_open(cdat):
    # an un-linked exit, @open <Name>.
    if len(eq_args) > 1:
       # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
-      destination = functions_db.local_and_global_search(pobject, eq_args[1], searcher=pobject)
+      destination = functions_db.local_and_global_search(pobject, eq_args[1])
       
       if len(destination) == 0:
          session.msg("I can't find the location to link to.")
@@ -220,8 +220,8 @@ def cmd_teleport(cdat):
    # a direct teleport, @tel <destination>.
    if len(eq_args) > 1:
       # Equal sign teleport.
-      victim = functions_db.local_and_global_search(pobject, eq_args[0], searcher=pobject)
-      destination = functions_db.local_and_global_search(pobject, eq_args[1], searcher=pobject)
+      victim = functions_db.local_and_global_search(pobject, eq_args[0])
+      destination = functions_db.local_and_global_search(pobject, eq_args[1])
       
       if len(victim) == 0:
          session.msg("I can't find the victim to teleport.")
@@ -254,7 +254,7 @@ def cmd_teleport(cdat):
          
    else:
       # Direct teleport (no equal sign)
-      results = functions_db.local_and_global_search(pobject, search_str, searcher=pobject)
+      results = functions_db.local_and_global_search(pobject, search_str)
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
@@ -293,7 +293,7 @@ def cmd_set(cdat):
       session.msg("Set what?")
       return
       
-   victim = functions_db.local_and_global_search(pobject, eq_args[0], searcher=pobject)
+   victim = functions_db.local_and_global_search(pobject, eq_args[0])
    
    if len(victim) == 0:
       session.msg("I don't see that here.")
@@ -359,7 +359,7 @@ def cmd_find(cdat):
       session.msg("No search pattern given.")
       return
    
-   results = functions_db.list_search_object_namestr(server.object_list.values(), searchstring)
+   results = functions_db.global_object_name_search(searchstring)
 
    if len(results) > 0:
       session.msg("Name matches for: %s" % (searchstring,))

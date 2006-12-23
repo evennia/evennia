@@ -14,7 +14,7 @@ def cmd_connect(cdat):
    uname = cdat['uinput']['splitted'][1]
    password = cdat['uinput']['splitted'][2]
    
-   account = User.objects.filter(username=uname)
+   account = User.objects.filter(username__iexact=uname)
    
    autherror = "Invalid username or password!"
    # No username match

@@ -9,7 +9,7 @@ def get_server_config(configname):
    """
    Returns a server config value.
    """
-   return ConfigValue.objects.get(conf_key=configname).conf_value
+   return ConfigValue.objects.get(conf_key__iexact=configname).conf_value
 
 def is_unsavable_flag(flagname):
    """
@@ -55,6 +55,12 @@ def get_nextfree_dbnum():
       print 'NOTGARB'
       return int(Object.objects.order_by('-id')[0].id + 1)
 
+def global_object_name_search(ostring):
+   """
+   Searches through all objects for a name match.
+   """
+   return Object.objects.filter(name__icontains=ostring).exclude(type=6)
+   
 def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    """
    Iterates through a list of objects and returns a list of
@@ -65,7 +71,7 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    else:
       return [prospect for prospect in searchlist if prospect.name_match(ostring)]
       
-def local_and_global_search(object, ostring, local_only=False, searcher=None):
+def local_and_global_search(searcher, ostring, local_only=False, dbref_only=False):
    """
    Searches an object's location then globally for a dbref or name match.
    local_only: Only compare the objects in the player's location if True.
@@ -78,11 +84,11 @@ def local_and_global_search(object, ostring, local_only=False, searcher=None):
       if len(dbref_match) > 0:
          return dbref_match
 
-   local_matches = list_search_object_namestr(object.location.get_contents(), search_query)
+   local_matches = list_search_object_namestr(searcher.get_location().get_contents(), search_query) + list_search_object_namestr(searcher.get_contents(), search_query)
    
    # If the object the invoker is in matches, add it as well.
-   if object.location.dbref_match(ostring) or ostring == 'here':
-      local_matches.append(object.location)
+   if searcher.get_location().dbref_match(ostring) or ostring == 'here':
+      local_matches.append(searcher.get_location())
    elif ostring == 'me' and searcher:
       local_matches.append(searcher)
    
@@ -132,15 +138,17 @@ def create_object(odat):
    new_object.name = odat["name"]
    new_object.type = odat["type"]
 
-   # If this is a player, set him to own himself.
+   # If this is a player, we don't want him owned by anyone.
+   # The get_owner() function will return that the player owns
+   # himself.
    if odat["type"] == 1:
       new_object.owner = None
       new_object.zone = None
    else:
       new_object.owner = odat["owner"]
       
-      if new_object.owner.zone:
-         new_object.zone = new_object.owner.zone
+      if new_object.get_owner().get_zone():
+         new_object.zone = new_object.get_owner().get_zone()
 
    # If we have a 'home' key, use that for our home value. Otherwise use
    # the location key.
