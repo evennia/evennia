@@ -47,12 +47,10 @@ def get_nextfree_dbnum():
    nextfree = Object.objects.filter(type__exact=6)
    if nextfree:
       # We've got at least one garbage object to recycle.
-      print 'GARB'
       return nextfree[0]
    else:
       # No garbage to recycle, find the highest dbnum and increment it
       # for our next free.
-      print 'NOTGARB'
       return int(Object.objects.order_by('-id')[0].id + 1)
 
 def global_object_name_search(ostring):

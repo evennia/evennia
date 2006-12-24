@@ -36,11 +36,19 @@ ansi["back_magenta"] = "\033[45m"
 ansi["back_cyan"]    = "\033[46m"
 ansi["back_white"]   = "\033[47m"
 
-def parse_ansi(string):
+# Formatting Characters
+ansi["return"] = "\n\r"
+ansi["tab"]    = "\t"
+ansi["space"]  = " "
+
+def parse_ansi(string, strip_ansi=False):
    """
    Parses a string, subbing color codes as needed.
    """
    ansi_subs = [
+      (r'%r',  ansi["return"]),
+      (r'%t',  ansi["tab"]),
+      (r'%b',  ansi["space"]),
       (r'%cf', ansi["blink"]),
       (r'%ci', ansi["inverse"]),
       (r'%ch', ansi["hilite"]),
@@ -65,6 +73,9 @@ def parse_ansi(string):
    
    for sub in ansi_subs:
       p = re.compile(sub[0], re.DOTALL)
-      string = p.sub(sub[1], string)
+      if strip_ansi:
+         string = p.sub("", string)
+      else:
+         string = p.sub(sub[1], string)
       
-   print '%s%s' % (string, ansi["normal"])
+   return '%s%s' % (string, ansi["normal"])

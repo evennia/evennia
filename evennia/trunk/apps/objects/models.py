@@ -8,8 +8,8 @@ class Attribute(models.Model):
    example, a drink container needs to store its fill level, whereas an exit
    needs to store its open/closed/locked/unlocked state. These are done via
    attributes, rather than making different classes for each object type and
-   storing them directly. The added benefit is that we can add/remove attributes
-   on the fly as we like.
+   storing them directly. The added benefit is that we can add/remove 
+   attributes on the fly as we like.
    """
    name = models.CharField(maxlength=255)
    value = models.CharField(maxlength=255)
@@ -33,6 +33,7 @@ class Object(models.Model):
    modules or sub-classing.
    """
    name = models.CharField(maxlength=255)
+   ansi_name = models.CharField(maxlength=255)
    owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)

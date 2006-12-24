@@ -135,7 +135,7 @@ def cmd_examine(cdat):
    
    for obj in target_obj.get_contents():
       if obj.is_player:
-         con_players.append(obj)
+         con_players.append(obj)  
       elif obj.is_exit:
          con_exits.append(obj)
       else:

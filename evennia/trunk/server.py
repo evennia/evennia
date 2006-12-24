@@ -11,6 +11,7 @@ import functions_general
 import global_defines
 import session_mgr
 import gameconf
+import settings
 
 class Server(dispatcher):
    """
@@ -21,6 +22,8 @@ class Server(dispatcher):
       self.game_running = True
       
       # Wipe our temporary flags on all of the objects.
+      if settings.DATABASE_ENGINE == "sqlite3":
+         self.sqlite3_prep()
       cursor = connection.cursor()
       cursor.execute("UPDATE objects_object SET nosave_flags=''")
       
@@ -62,6 +65,17 @@ class Server(dispatcher):
       session.game_connect_screen(session)
       print 'Connection:', str(session)
       print 'Sessions active:', len(session_mgr.get_session_list())
+      
+   def sqlite3_prep(self):
+      """
+      Optimize some SQLite stuff at startup since we can't save it to the
+      database.
+      """
+      cursor = connection.cursor()
+      cursor.execute("PRAGMA cache_size=10000")
+      cursor.execute("PRAGMA synchronous=OFF")
+      cursor.execute("PRAGMA count_changes=OFF")
+      cursor.execute("PRAGMA temp_store=2")
       
    """
    BEGIN GENERAL METHODS
