@@ -11,8 +11,24 @@ High Priority Tasks
   a built-in permissions system, it should be trivial to use it for
   the purpose.
 * Figure out how to handle our scripting support.
+* Handle multi-word account names gracefully. Need to modify login prompt
+  to use quotes like MUX.
+* Look into logging in with your email address instead of username.
+* Implement @alias. Can probably just use an attribute instead of a new
+  object DB field. Shouldn't be too bad. Also needs proper search
+  functions in functions_db.py.
+* Implement player to player paging/telling.
+* Implement a global comsys of some sort. Use MUX2's commands and stuff.
+* Implement @newpass and @password.
 
 Medium Priority Tasks
 ---------------------
 * We're going to need a delayed event queue in addition to the scheduler.
   For example: I want player X to perform this action in Y seconds.
+* Implement some of the @list command from MUX2. Most importantly,
+  '@list commands'.
+
+Low Priority Tasks
+------------------
+* Write lots of in-game help files.
+* Start webbifying the room/thing/exit building process.
