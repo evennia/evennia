@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from apps.objects.models import Object
 from apps.config.models import ConfigValue
 import global_defines
-
+import gameconf
+"""
+Common database functions.
+"""
 def get_server_config(configname):
    """
    Returns a server config value.
@@ -169,7 +172,7 @@ def create_user(cdat, uname, email, password):
    """
    session = cdat['session']
    server = cdat['server']
-   start_room = int(server.get_configvalue('player_dbnum_start'))
+   start_room = int(gameconf.get_configvalue('player_dbnum_start'))
    start_room_obj = get_object_from_dbref(start_room)
 
    # The user's entry in the User table must match up to an object
@@ -197,4 +200,4 @@ def create_user(cdat, uname, email, password):
    # Activate the player's session and set them loose.
    session.login(user)
    print 'Registration: %s' % (session,)
-   session.push("Welcome to %s, %s.\n\r" % (server.get_configvalue('site_name'), session.get_pobject().get_name(),))
+   session.push("Welcome to %s, %s.\n\r" % (gameconf.get_configvalue('site_name'), session.get_pobject().get_name(),))

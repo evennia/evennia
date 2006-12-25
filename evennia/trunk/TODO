@@ -1,2 +1,18 @@
-Add any things that need work here:
+TODO List
+---------
+The TODO list has all of the things currently needing attention the most in it.
+If you are feeling ambitious, tackle as much as you can and send patches
+to the project site or via email to gtaylor@clemson.edu.
+
+High Priority Tasks
+-------------------
+* Pretty much all of the commands need some kind of required permission(s).
+  Right now, pretty much everyone has access to everything. Django has
+  a built-in permissions system, it should be trivial to use it for
+  the purpose.
+* Figure out how to handle our scripting support.
+
+Medium Priority Tasks
+---------------------
 * We're going to need a delayed event queue in addition to the scheduler.
+  For example: I want player X to perform this action in Y seconds.

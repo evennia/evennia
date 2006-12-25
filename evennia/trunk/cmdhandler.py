@@ -1,6 +1,7 @@
 import commands_staff
 import commands_general
 import commands_unloggedin
+import functions_db
 
 """
 This is the command processing module. It is instanced once in the main
@@ -12,6 +13,13 @@ class UnknownCommand(Exception):
    """
    Throw this when a user enters an an invalid command.
    """
+
+def match_exits(pobject, searchstr):
+   """
+   See if we can find an input match to exits.
+   """
+   exits = pobject.get_location().get_contents(filter_type=4)
+   return functions_db.list_search_object_namestr(exits, searchstr)
 
 def handle(cdat):
    """
@@ -60,8 +68,22 @@ def handle(cdat):
       if callable(cmd):
          cdat['uinput'] = parsed_input
          cmd(cdat)
-      else:
-         raise UnknownCommand
+         return
+      
+      pobject = session.get_pobject()
+      exit_matches = match_exits(pobject, ' '.join(parsed_input['splitted']))
+      if exit_matches:
+         exit = exit_matches[0]
+         if exit.get_home():
+            cdat['uinput'] = parsed_input
+            pobject.move_to(exit.get_home())
+            commands_general.cmd_look(cdat)
+         else:
+            session.msg("That exit leads to nowhere.")
+         return
+         
+      # If we reach this point, we haven't matched anything.   
+      raise UnknownCommand
          
    except UnknownCommand:
       session.msg("Unknown command.")

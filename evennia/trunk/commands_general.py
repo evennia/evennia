@@ -2,10 +2,10 @@ import settings
 import time
 import functions_general
 import functions_db
+import functions_help
 import global_defines
 import session_mgr
-from ansi import *
-
+import ansi
 """
 Generic command module. Pretty much every command should go here for
 now.
@@ -55,7 +55,7 @@ def cmd_look(cdat):
    
    retval = "%s%s(#%i%s)\r\n%s" % (
       target_obj.get_ansiname(),
-      ansi["normal"],
+      ansi.ansi["normal"],
       target_obj.id,
       target_obj.flag_string(),
       target_obj.get_description(),
@@ -68,7 +68,7 @@ def cmd_look(cdat):
    
    for obj in target_obj.get_contents():
       if obj.is_player():
-         if obj != pobject:
+         if obj != pobject and obj.is_connected_plr():
             con_players.append(obj)
       elif obj.is_exit():
          con_exits.append(obj)
@@ -76,15 +76,15 @@ def cmd_look(cdat):
          con_things.append(obj)
    
    if con_players:
-      session.msg("%sPlayers:%s" % (ansi["hilite"], ansi["normal"],))
+      session.msg("%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for player in con_players:
          session.msg('%s' %(player,))
    if con_things:
-      session.msg("%sContents:%s" % (ansi["hilite"], ansi["normal"],))
+      session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for thing in con_things:
          session.msg('%s' %(thing,))
    if con_exits:
-      session.msg("%sExits:%s" % (ansi["hilite"], ansi["normal"],))
+      session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
          session.msg('%s' %(exit,))
          
@@ -111,19 +111,19 @@ def cmd_examine(cdat):
          return
       else:
          target_obj = results[0]
-   
-   session.msg("%s%s(#%i%s)" % (
+   session.msg("%s%s(#%i%s)\r\n%s" % (
       target_obj.get_ansiname(fullname=True),
-      ansi["normal"],
+      ansi.ansi["normal"],
       target_obj.id,
       target_obj.flag_string(),
+      target_obj.get_description(no_parsing=True),
    ))
    session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
    session.msg("Owner: %s " % (target_obj.get_owner(),))
    session.msg("Zone: %s" % (target_obj.get_zone(),))
    
    for attribute in target_obj.get_all_attributes():
-      session.msg("%s%s%s: %s" % (ansi["hilite"], attribute.name, ansi["normal"], attribute.value))
+      session.msg("%s%s%s: %s" % (ansi.ansi["hilite"], attribute.name, ansi.ansi["normal"], attribute.value))
    
    con_players = []
    con_things = []
@@ -145,7 +145,7 @@ def cmd_examine(cdat):
          session.msg('%s' %(thing,))
          
    if con_exits:
-      session.msg("%sExits:%s" % (ansi["hilite"], ansi["normal"],))
+      session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
          session.msg('%s' %(exit,))
          
@@ -214,13 +214,41 @@ def cmd_say(cdat):
    
    session.msg(retval)
    
+def cmd_help(cdat):
+   """
+   Help system commands.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   topicstr = ' '.join(cdat['uinput']['splitted'][1:])
+   
+   if len(topicstr) == 0:
+      topicstr = "Help Index"   
+   elif len(topicstr) < 2 and not topicstr.isdigit():
+      session.msg("Your search query is too short. It must be at least three letters long.")
+      return
+      
+   topics = functions_help.find_topicmatch(topicstr, pobject)      
+      
+   if len(topics) == 0:
+      session.msg("No matching topics found, please refine your search.")
+   elif len(topics) > 1:
+      session.msg("More than one match found:")
+      for result in topics:
+         session.msg(" %s" % (result,))
+      session.msg("You may type 'help <#>' to see any of these topics.")
+   else:   
+      topic = topics[0]
+      session.msg("\r\n%s%s%s" % (ansi.ansi["hilite"], topic.get_topicname(), ansi.ansi["normal"]))
+      session.msg(topic.get_entrytext_ingame())
+   
 def cmd_version(cdat):
    """
    Version info command.
    """
    session = cdat['session']
    retval = "-"*50 +"\n\r"
-   retval += "Evennia %s\n\r" % (settings.EVENNIA_VERSION,)
+   retval += "Evennia %s\n\r" % (global_defines.EVENNIA_VERSION,)
    retval += "-"*50
    session.msg(retval)
 

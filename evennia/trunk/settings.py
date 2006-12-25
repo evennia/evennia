@@ -9,10 +9,10 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'           # 'postgresql', 'mysql', 'sqlite3' or 'ado_mssql'.
-DATABASE_NAME = 'evennia.sql'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'evennia'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'CvAPpy:FFRTmTMHf'         # Not used with sqlite3.
+DATABASE_ENGINE = 'sqlite3'    # 'postgresql', 'mysql', 'sqlite3' or 'ado_mssql'.
+DATABASE_NAME = 'evennia.sql'  # Or path to database file if using sqlite3.
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
@@ -76,10 +76,5 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'evennia.apps.config',
     'evennia.apps.objects',
-#    'django.contrib.sites',
+    'evennia.apps.helpsys',
 )
-
-# 
-## Evennia Config
-#
-EVENNIA_VERSION = 'Pre-Alpha 0.0'

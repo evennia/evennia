@@ -68,6 +68,23 @@ class Object(models.Model):
       
       message: (str) The message to send
       """
+      # We won't allow emitting to objects... yet.
+      if not self.is_player():
+         return False
+         
+      session = session_mgr.session_from_object(self)
+      if session:
+         session.msg(ansi.parse_ansi(message))
+      else:
+         return False
+         
+   def emit_to_contents(self, message):
+      """
+      Emits something to all objects inside an object.
+      """
+      contents = self.get_contents()
+      for obj in contents:
+         obj.emit_to(message)
    
    def is_staff(self):
       """
@@ -118,13 +135,6 @@ class Object(models.Model):
          pobject.name = new_name
          pobject.save()
          
-   def set_description(self, new_desc):
-      """
-      Rename an object.
-      """
-      self.description = ansi.parse_ansi(new_desc)
-      self.save()
-         
    def get_name(self, fullname=False):
       """
       Returns an object's name.
@@ -143,12 +153,28 @@ class Object(models.Model):
       else:
          return ansi.parse_ansi(self.ansi_name.split(';')[0])
 
-   def get_description(self):
+   def set_description(self, new_desc):
+      """
+      Rename an object.
+      """
+      self.description = new_desc
+      self.save()
+
+   def get_description(self, no_parsing=False, wrap_width=False):
       """
       Returns an object's ANSI'd description.
       """
       try:
-         return ansi.parse_ansi(self.description)      
+         if no_parsing:
+            retval = self.description
+         else:
+            retval = ansi.parse_ansi(self.description)      
+            
+         if wrap_width:
+            # TODO: Broken for some reason? Returning None.
+            return functions_general.word_wrap(retval, width=wrap_width)
+         else:
+            return retval
       except:
          return None
    
@@ -319,6 +345,18 @@ class Object(models.Model):
             self.flags = ' '.join(flags)
          self.save()
    
+   def is_connected_plr(self):
+      """
+      Is this object a connected player?
+      """
+      if self.is_player():
+         if session_mgr.session_from_object(self):
+            return True
+         else:
+            return False
+      else:
+         return False
+      
    def get_owner(self):
       """
       Returns an object's owner.
@@ -375,11 +413,16 @@ class Object(models.Model):
       else:
          return False
    
-   def get_contents(self):
+   def get_contents(self, filter_type=None):
       """
       Returns the contents of an object.
+      
+      filter_type: (int) An object type number to filter by.
       """
-      return list(Object.objects.filter(location__id=self.id).exclude(type__gt=4))
+      if filter_type:
+         return list(Object.objects.filter(location__id=self.id).filter(type=filter_type))
+      else:
+         return list(Object.objects.filter(location__id=self.id).exclude(type__gt=4))
       
    def get_zone(self):
       """

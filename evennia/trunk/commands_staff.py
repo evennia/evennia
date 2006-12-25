@@ -132,7 +132,6 @@ def cmd_dig(cdat):
    """
    session = cdat['session']
    pobject = session.get_pobject()
-   server = session.server
    uinput= cdat['uinput']['splitted']
    roomname = ' '.join(uinput[1:])
    
@@ -144,6 +143,20 @@ def cmd_dig(cdat):
       new_object = functions_db.create_object(odat)
       
       session.msg("You create a new room: %s" % (new_object,))
+      
+def cmd_emit(cdat):      
+   """
+   Emits something to your location.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   uinput= cdat['uinput']['splitted']
+   message = ' '.join(uinput[1:])
+   
+   if message == '':
+      session.msg("Emit what?")
+   else:
+      pobject.get_location().emit_to_contents(message)
       
 def cmd_create(cdat):
    """
