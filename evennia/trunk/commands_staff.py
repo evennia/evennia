@@ -3,6 +3,7 @@ import functions_general
 import commands_general
 import cmdhandler
 import session_mgr
+import ansi
 from apps.objects.models import Object
 """
 Staff commands may be a bad description for this file, but it'll do for
@@ -61,6 +62,37 @@ def cmd_destroy(cdat):
    session.msg("You destroy %s." % (target_obj,))
    target_obj.destroy()
 
+def cmd_description(cdat):
+   """
+   Set an object's description.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   eq_args = ' '.join(args).split('=')
+   searchstring = ''.join(eq_args[0])
+   
+   if len(args) == 0:   
+      session.msg("What do you want to describe?")
+   elif len(eq_args) < 2:
+      session.msg("How would you like to describe that object?")
+   else:
+      results = functions_db.local_and_global_search(pobject, searchstring)
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result,))
+         return
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+         return
+      else:
+         new_desc = '='.join(eq_args[1:])
+         target_obj = results[0]
+         session.msg("%s - DESCRIPTION set." % (target_obj,))
+         target_obj.set_description(new_desc)
+
 def cmd_name(cdat):
    """
    Handle naming an object.
@@ -91,7 +123,7 @@ def cmd_name(cdat):
       else:
          newname = '='.join(eq_args[1:])
          target_obj = results[0]
-         session.msg("You have renamed %s to %s." % (target_obj,newname))
+         session.msg("You have renamed %s to %s." % (target_obj, ansi.parse_ansi(newname, strip_formatting=True)))
          target_obj.set_name(newname)
 
 def cmd_dig(cdat):      
@@ -176,7 +208,8 @@ def cmd_open(cdat):
    # an un-linked exit, @open <Name>.
    if len(eq_args) > 1:
       # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
-      destination = functions_db.local_and_global_search(pobject, eq_args[1])
+      comma_split = eq_args[1].split(',')
+      destination = functions_db.local_and_global_search(pobject, comma_split[0])
       
       if len(destination) == 0:
          session.msg("I can't find the location to link to.")
@@ -184,21 +217,114 @@ def cmd_open(cdat):
       elif len(destination) > 1:
          session.msg("Multiple results returned for exit destination!")
       else:
+         destination = destination[0]
          if destination.is_exit():
             session.msg("You can't open an exit to an exit!")
             return
-         session.msg("You open the exit.")
-         #victim[0].move_to(server, destination[0])
+            
+         odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
+         new_object = functions_db.create_object(odat)
          
-         # Create the object and stuff.
+         session.msg("You open the exit - %s" % (new_object,))
          
+         if len(comma_split) > 1:
+            second_exit_name = ','.join(comma_split[1:])
+            odat = {"name": second_exit_name, "type": 4, "location": destination, "owner": pobject, "home": pobject.get_location()}
+            new_object = functions_db.create_object(odat)
    else:
       # Create an un-linked exit.
-      odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
+      odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":None}
       new_object = functions_db.create_object(odat)
 
-      session.msg("You create a new thing: %s" % (new_object,))
+      session.msg("You open an unlinked exit - %s" % (new_object,))
          
+def cmd_link(cdat):
+   """
+   Sets an object's home or an exit's destination.
+   
+   Forms:
+   @link <Object>=<Target>
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   server = cdat['server']
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:
+      session.msg("Link what?")
+      return
+      
+   eq_args = args[0].split('=')
+   target_name = eq_args[0]
+   dest_name = '='.join(eq_args[1:])   
+   
+   if len(target_name) == 0:
+      session.msg("What do you want to link?")
+      return
+      
+   if len(eq_args) > 1:
+      target = functions_db.local_and_global_search(pobject, target_name)
+      
+      if len(target) == 0:
+         session.msg("I can't find the object you want to link.")
+         return
+      elif len(target) > 1:
+         session.msg("Multiple results returned for link target.")
+         return
+         
+      # We know we can get the first entry now. 
+      target = target[0]
+      
+      # If we do something like "@link blah=", we unlink the object.
+      if len(dest_name) == 0:
+         target.set_home(None)
+         session.msg("You have unlinked %s." % (target,))
+         return
+      
+      destination = functions_db.local_and_global_search(pobject, dest_name)
+      
+      if len(destination) == 0:
+         session.msg("I can't find the location to link to.")
+         return
+      elif len(destination) > 1:
+         session.msg("Multiple results returned for destination.")
+         return
+         
+      destination = destination[0]
+      target.set_home(destination)
+      session.msg("You link %s to %s." % (target,destination))
+         
+   else:
+      # We haven't provided a target.
+      session.msg("You must provide a destination to link to.")
+      return
+      
+def cmd_unlink(cdat):
+   """
+   Unlinks an object.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:   
+      session.msg("Unlink what?")
+      return
+   else:
+      results = functions_db.local_and_global_search(pobject, ' '.join(args))
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result,))
+         return
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+         return
+      else:
+         results[0].set_home(None)
+         session.msg("You have unlinked %s." % (results[0],))
+
 def cmd_teleport(cdat):
    """
    Teleports an object somewhere.

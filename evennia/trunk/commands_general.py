@@ -53,14 +53,12 @@ def cmd_look(cdat):
       else:
          target_obj = results[0]
    
-   retval = "%s%s%s(#%i%s)%s\r\n%s" % (
+   retval = "%s%s(#%i%s)\r\n%s" % (
+      target_obj.get_ansiname(),
       ansi["normal"],
-      ansi["hilite"], 
-      target_obj.name,
       target_obj.id,
       target_obj.flag_string(),
-      ansi["normal"],
-      target_obj.description,
+      target_obj.get_description(),
    )
    session.msg(retval)
    
@@ -114,13 +112,11 @@ def cmd_examine(cdat):
       else:
          target_obj = results[0]
    
-   session.msg("%s%s%s(#%i%s)%s" % (
+   session.msg("%s%s(#%i%s)" % (
+      target_obj.get_ansiname(fullname=True),
       ansi["normal"],
-      ansi["hilite"], 
-      target_obj.name,
       target_obj.id,
       target_obj.flag_string(),
-      ansi["normal"],
    ))
    session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
    session.msg("Owner: %s " % (target_obj.get_owner(),))
@@ -154,7 +150,11 @@ def cmd_examine(cdat):
          session.msg('%s' %(exit,))
          
    if not target_obj.is_room():
-      session.msg("Home: %s" % (target_obj.get_home(),))
+      if target_obj.is_exit():
+         session.msg("Destination: %s" % (target_obj.get_home(),))
+      else:
+         session.msg("Home: %s" % (target_obj.get_home(),))
+         
       session.msg("Location: %s" % (target_obj.get_location(),))
    
 def cmd_quit(cdat):

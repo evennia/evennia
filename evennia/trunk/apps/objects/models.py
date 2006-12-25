@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import global_defines
+import ansi
 
 class Attribute(models.Model):
    """
@@ -96,11 +97,19 @@ class Object(models.Model):
       else:
          return profile[0].is_superuser
 
+   def set_home(self, new_home):
+      """
+      Sets an object's home.
+      """
+      self.home = new_home
+      self.save()
+
    def set_name(self, new_name):
       """
       Rename an object.
       """
-      self.name = new_name
+      self.name = ansi.parse_ansi(new_name, strip_ansi=True)
+      self.ansi_name = ansi.parse_ansi(new_name, strip_formatting=True)
       self.save()
       
       # If it's a player, we need to update their user object as well.
@@ -108,12 +117,40 @@ class Object(models.Model):
          pobject = User.objects.get(id=self.id)
          pobject.name = new_name
          pobject.save()
-            
-   def get_name(self):
+         
+   def set_description(self, new_desc):
+      """
+      Rename an object.
+      """
+      self.description = ansi.parse_ansi(new_desc)
+      self.save()
+         
+   def get_name(self, fullname=False):
       """
       Returns an object's name.
       """
-      return self.name
+      if fullname:
+         return ansi.parse_ansi(self.name, strip_ansi=True)
+      else:
+         return ansi.parse_ansi(self.name.split(';')[0], strip_ansi=True)
+
+   def get_ansiname(self, fullname=False):
+      """
+      Returns an object's ANSI'd name.
+      """
+      if fullname:
+         return ansi.parse_ansi(self.ansi_name)
+      else:
+         return ansi.parse_ansi(self.ansi_name.split(';')[0])
+
+   def get_description(self):
+      """
+      Returns an object's ANSI'd description.
+      """
+      try:
+         return ansi.parse_ansi(self.description)      
+      except:
+         return None
    
    def get_flags(self):
       """
@@ -457,7 +494,7 @@ class Object(models.Model):
       return type_string
 
    def __str__(self):
-      return "%s(#%d%s)" % (self.name, self.id, self.flag_string())
+      return "%s(#%d%s)" % (self.get_ansiname(), self.id, self.flag_string())
 
 import functions_db
 import session_mgr

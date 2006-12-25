@@ -79,3 +79,20 @@ def announce_all(message, with_ann_prefix=True, with_nl=True):
       
    for session in session_mgr.get_session_list():
       session.msg_no_nl('%s %s%s' % (prefix, message,newline,))
+
+def word_wrap(text, width=78):
+   """
+   A word-wrap function that preserves existing line breaks
+   and most spaces in the text. Expects that existing line
+   breaks are posix newlines (\n).
+    
+   Function originally by Mike Brown
+   """
+   return reduce(lambda line, word, width=width: '%s%s%s' %
+                 (line,
+                  ' \n'[(len(line)-line.rfind('\n')-1
+                        + len(word.split('\n',1)[0]
+                             ) >= width)],
+                  word),
+                 text.split(' ')
+                )

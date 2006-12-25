@@ -133,8 +133,8 @@ def create_object(odat):
    else:
       new_object = Object()
       
-   new_object.name = odat["name"]
    new_object.type = odat["type"]
+   new_object.set_name(odat["name"])
 
    # If this is a player, we don't want him owned by anyone.
    # The get_owner() function will return that the player owns
@@ -150,10 +150,13 @@ def create_object(odat):
 
    # If we have a 'home' key, use that for our home value. Otherwise use
    # the location key.
-   if odat.get("home",False):
+   if odat.has_key("home"):
       new_object.home = odat["home"]
    else:
-      new_object.home = odat["location"]
+      if new_object.is_exit():
+         new_object.home = None
+      else:
+         new_object.home = odat["location"]
          
    new_object.save()
    new_object.move_to(odat['location'])

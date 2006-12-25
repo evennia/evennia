@@ -41,14 +41,23 @@ ansi["return"] = "\n\r"
 ansi["tab"]    = "\t"
 ansi["space"]  = " "
 
-def parse_ansi(string, strip_ansi=False):
+def parse_ansi(string, strip_ansi=False, strip_formatting=False):
    """
    Parses a string, subbing color codes as needed.
    """
+   if strip_formatting:
+      char_return = ""
+      char_tab = ""
+      char_space = ""
+   else:
+      char_return = ansi["return"]
+      char_tab = ansi["tab"]
+      char_space = ansi["space"]
+      
    ansi_subs = [
-      (r'%r',  ansi["return"]),
-      (r'%t',  ansi["tab"]),
-      (r'%b',  ansi["space"]),
+      (r'%r',  char_return),
+      (r'%t',  char_tab),
+      (r'%b',  char_space),
       (r'%cf', ansi["blink"]),
       (r'%ci', ansi["inverse"]),
       (r'%ch', ansi["hilite"]),
@@ -77,5 +86,9 @@ def parse_ansi(string, strip_ansi=False):
          string = p.sub("", string)
       else:
          string = p.sub(sub[1], string)
-      
-   return '%s%s' % (string, ansi["normal"])
+
+   if strip_ansi:
+      return '%s' % (string)
+   else:
+      return '%s%s' % (string, ansi["normal"])
+
