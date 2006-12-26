@@ -4,6 +4,7 @@ import commands_general
 import cmdhandler
 import session_mgr
 import ansi
+from django.contrib.auth.models import User
 from apps.objects.models import Object
 """
 Staff commands may be a bad description for this file, but it'll do for
@@ -92,6 +93,75 @@ def cmd_description(cdat):
          target_obj = results[0]
          session.msg("%s - DESCRIPTION set." % (target_obj,))
          target_obj.set_description(new_desc)
+
+def cmd_newpassword(cdat):
+   """
+   Set a player's password.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   eq_args = ' '.join(args).split('=')
+   searchstring = ''.join(eq_args[0])
+   newpass = ''.join(eq_args[1:])
+   
+   if len(args) == 0:   
+      session.msg("What player's password do you want to change")
+      return
+   if len(newpass) == 0:
+      session.msg("You must supply a new password.")
+      return
+
+   results = functions_db.local_and_global_search(pobject, searchstring)
+   
+
+   if len(results) > 1:
+      session.msg("More than one match found (please narrow target):")
+      for result in results:
+         session.msg(" %s" % (result,))
+   elif len(results) == 0:
+      session.msg("I don't see that here.")
+   elif not pobject.controls_other(results[0]):
+      session.msg("You do not control %s." % (results[0],))
+   else:
+      uaccount = results[0].get_user_account()
+      if len(newpass) == 0:
+         uaccount.set_password()
+      else:
+         uaccount.set_password(newpass)
+      uaccount.save()
+      session.msg("%s - PASSWORD set." % (results[0],))
+      results[0].emit_to("%s has changed your password." % (pobject,))
+
+def cmd_password(cdat):
+   """
+   Changes your own password.
+   
+   @newpass <Oldpass>=<Newpass>
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   eq_args = ' '.join(args).split('=')
+   oldpass = ''.join(eq_args[0])
+   newpass = ''.join(eq_args[1:])
+   
+   if len(oldpass) == 0:   
+      session.msg("You must provide your old password.")
+   elif len(newpass) == 0:
+      session.msg("You must provide your new password.")
+   else:
+      uaccount = User.objects.get(id=pobject.id)
+      
+      if not uaccount.check_password(oldpass):
+         session.msg("The specified old password isn't correct.")
+      elif len(newpass) < 3:
+         session.msg("Passwords must be at least three characters long.")
+         return
+      else:
+         uaccount.set_password(newpass)
+         uaccount.save()
+         session.msg("Password changed.")
 
 def cmd_name(cdat):
    """

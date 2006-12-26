@@ -114,6 +114,36 @@ class Object(models.Model):
       else:
          return profile[0].is_superuser
 
+   def owns_other(self, other_obj):
+      """
+      See if the envoked object owns another object.
+      other_obj: (Object) Reference for object to check ownership of.
+      """
+      return self.id == other_obj.get_owner().id
+
+   def controls_other(self, other_obj):
+      """
+      See if the envoked object controls another object.
+      other_obj: (Object) Reference for object to check dominance of.
+      """
+      if self == other_obj:
+         return True
+         
+      if self.is_superuser():
+         # Don't allow superusers to dominate other superusers.
+         if not other_obj.is_superuser():
+            return True
+         else:
+            return False
+      
+      if self.owns_other(other_obj):
+         # If said object owns the target, then give it the green.
+         return True
+      else:
+         # Still pending more stuff here, for now assume we have
+         # dominance. Bad assumption.
+         return True
+
    def set_home(self, new_home):
       """
       Sets an object's home.
@@ -135,6 +165,14 @@ class Object(models.Model):
          pobject.name = new_name
          pobject.save()
          
+   def get_user_account(self):
+      """
+      Returns the player object's account object.
+      """
+      if not self.is_player():
+         return False
+      return User.objects.get(id=self.id)
+
    def get_name(self, fullname=False):
       """
       Returns an object's name.

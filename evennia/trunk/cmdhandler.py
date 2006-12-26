@@ -70,17 +70,19 @@ def handle(cdat):
          cmd(cdat)
          return
       
-      pobject = session.get_pobject()
-      exit_matches = match_exits(pobject, ' '.join(parsed_input['splitted']))
-      if exit_matches:
-         exit = exit_matches[0]
-         if exit.get_home():
-            cdat['uinput'] = parsed_input
-            pobject.move_to(exit.get_home())
-            commands_general.cmd_look(cdat)
-         else:
-            session.msg("That exit leads to nowhere.")
-         return
+      if session.logged_in:
+         # If we're not logged in, don't check exits.
+         pobject = session.get_pobject()
+         exit_matches = match_exits(pobject, ' '.join(parsed_input['splitted']))
+         if exit_matches:
+            exit = exit_matches[0]
+            if exit.get_home():
+               cdat['uinput'] = parsed_input
+               pobject.move_to(exit.get_home())
+               commands_general.cmd_look(cdat)
+            else:
+               session.msg("That exit leads to nowhere.")
+            return
          
       # If we reach this point, we haven't matched anything.   
       raise UnknownCommand

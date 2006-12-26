@@ -19,7 +19,6 @@ High Priority Tasks
   functions in functions_db.py.
 * Implement player to player paging/telling.
 * Implement a global comsys of some sort. Use MUX2's commands and stuff.
-* Implement @newpass and @password.
 
 Medium Priority Tasks
 ---------------------
