@@ -475,14 +475,16 @@ class Object(models.Model):
       except:
          return None
    
-   def move_to(self, target):
+   def move_to(self, target, quiet=False):
       """
       Moves the object to a new location.
       
       target: (Object) Reference to the object to move to.
       """
+      self.get_location().emit_to_contents("%s has left." % (self.get_name(),), exclude=self)
       self.location = target
       self.save()
+      self.get_location().emit_to_contents("%s has arrived." % (self.get_name(),), exclude=self)
       
    def dbref_match(self, oname):
       """
