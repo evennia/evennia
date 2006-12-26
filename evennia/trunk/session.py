@@ -69,7 +69,6 @@ class PlayerSession(async_chat):
       Returns the object associated with a session.
       """
       result = Object.objects.get(id=self.uid)
-      #print 'RES', result
       return result
       
    def game_connect_screen(self, session):
@@ -93,9 +92,11 @@ class PlayerSession(async_chat):
       self.name = user.username
       self.logged_in = True
       self.conn_time = time.time()
-      self.get_pobject().set_flag("CONNECTED", True)
+      pobject = self.get_pobject()
+      pobject.set_flag("CONNECTED", True)
 
       self.msg("You are now logged in as %s." % (self.name,))
+      pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(),), exclude=pobject)
       cdat = {"session": self, "uinput":'look', "server": self.server}
       cmdhandler.handle(cdat)
       print "Login: %s" % (self,)

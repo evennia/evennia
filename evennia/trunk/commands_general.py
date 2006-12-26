@@ -176,6 +176,8 @@ def cmd_who(cdat):
    
    retval = "Player Name        On For Idle   Room    Cmds   Host\n\r"
    for player in session_list:
+      if not player.logged_in:
+         continue
       delta_cmd = time.time() - player.cmd_last
       delta_conn = time.time() - player.conn_time
       plr_pobject = player.get_pobject()
@@ -267,7 +269,8 @@ def cmd_uptime(cdat):
    session = cdat['session']
    server = cdat['server']
    start_delta = time.time() - server.start_time
+   loadavg = os.getloadavg()
    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
    session.msg('Server start time   : %s' % (time.strftime('%a %b %d %H:%M %Y', time.localtime(server.start_time),)))
    session.msg('Server uptime       : %s' % functions_general.time_format(start_delta, style=2))
-   session.msg('Server load (1 min) : %s' % os.getloadavg())
+   session.msg('Server load (1 min) : %.2f' % loadavg[0])

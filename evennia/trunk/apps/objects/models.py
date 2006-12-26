@@ -78,11 +78,15 @@ class Object(models.Model):
       else:
          return False
          
-   def emit_to_contents(self, message):
+   def emit_to_contents(self, message, exclude=None):
       """
       Emits something to all objects inside an object.
       """
       contents = self.get_contents()
+
+      if exclude:
+         contents.remove(exclude)
+         
       for obj in contents:
          obj.emit_to(message)
    
