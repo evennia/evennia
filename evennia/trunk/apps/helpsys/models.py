@@ -9,7 +9,10 @@ class HelpEntry(models.Model):
    topicname = models.CharField(maxlength=255)
    entrytext = models.TextField(blank=True, null=True)
    staff_only = models.BooleanField(default=0)
-   
+
+   class Admin:
+      list_display = ('topicname', 'staff_only',)
+      
    def __str__(self):
       return "%3d. %s" % (self.id, self.topicname)
 
