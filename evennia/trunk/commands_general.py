@@ -6,6 +6,7 @@ import functions_help
 import global_defines
 import session_mgr
 import ansi
+import os
 """
 Generic command module. Pretty much every command should go here for
 now.
@@ -269,3 +270,4 @@ def cmd_uptime(cdat):
    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
    session.msg('Server start time   : %s' % (time.strftime('%a %b %d %H:%M %Y', time.localtime(server.start_time),)))
    session.msg('Server uptime       : %s' % functions_general.time_format(start_delta, style=2))
+   session.msg('Server load (1 min) : %s' % os.getloadavg())

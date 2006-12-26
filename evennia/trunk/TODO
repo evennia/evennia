@@ -24,8 +24,6 @@ Medium Priority Tasks
 ---------------------
 * We're going to need a delayed event queue in addition to the scheduler.
   For example: I want player X to perform this action in Y seconds.
-* Implement some of the @list command from MUX2. Most importantly,
-  '@list commands'.
 
 Low Priority Tasks
 ------------------

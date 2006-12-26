@@ -5,6 +5,7 @@ from apps.objects.models import Object
 from apps.config.models import ConfigValue
 import global_defines
 import gameconf
+
 """
 Common database functions.
 """

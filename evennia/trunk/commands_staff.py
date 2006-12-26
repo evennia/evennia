@@ -1,6 +1,10 @@
+import os
+import resource
+
 import functions_db
 import functions_general
 import commands_general
+import commands_unloggedin
 import cmdhandler
 import session_mgr
 import ansi
@@ -62,6 +66,25 @@ def cmd_destroy(cdat):
    
    session.msg("You destroy %s." % (target_obj,))
    target_obj.destroy()
+
+def cmd_list(cdat):
+   """
+   Shows some game related information.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   argstr = ''.join(args)
+   
+   if len(argstr) == 0:   
+      session.msg("Unknown option. Use one of: commands, process")
+   elif argstr == "commands":
+      session.msg('Commands: '+' '.join(functions_general.command_list()))
+   elif argstr == "process":
+      loadvg = os.getloadavg()
+      rusage = resource.getrusage(resource.RUSAGE_SELF)
+      session.msg("Process ID: %d" % (os.getpid(),))
+      session.msg("Time used:   %d user   %d sys" % (rusage[0],rusage[1]))
 
 def cmd_description(cdat):
    """
