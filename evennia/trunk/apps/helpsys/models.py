@@ -1,5 +1,5 @@
 from django.db import models
-import ansi
+import evennia.ansi
 
 # Create your models here.
 class HelpEntry(models.Model):
