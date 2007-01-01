@@ -2,17 +2,28 @@ from apps.helpsys.models import HelpEntry
 """
 Help system functions.
 """
-def find_topicmatch(topicstr, pobject):
+def find_topicmatch(pobject, topicstr):
    """
    Searches for matching topics based on player's input.
    """
+   is_staff = pobject.is_staff()
    if topicstr.isdigit():
-      return HelpEntry.objects.filter(id=topicstr)
+      if is_staff:
+         return HelpEntry.objects.filter(id=topicstr)
+      else:
+         return HelpEntry.objects.filter(id=topicstr).exclude(staff_only=1)
    else:
-      return HelpEntry.objects.filter(topicname__istartswith=topicstr)
+      if is_staff:
+         return HelpEntry.objects.filter(topicname__istartswith=topicstr)
+      else:
+         return HelpEntry.objects.filter(topicname__istartswith=topicstr).exclude(staff_only=1)
    
-def find_topicsuggestions(topicstr, pobject):
+def find_topicsuggestions(pobject, topicstr):
    """
    Do a fuzzier "contains" match.
    """
-   return HelpEntry.objects.filter(topicname__icontains=topicstr)
+   is_staff = pobject.is_staff()
+   if is_staff:
+      return HelpEntry.objects.filter(topicname__icontains=topicstr)
+   else:
+      return HelpEntry.objects.filter(topicname__icontains=topicstr).exclude(staff_only=1)

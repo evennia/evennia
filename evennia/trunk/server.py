@@ -1,6 +1,6 @@
 from asyncore import dispatcher
 from asynchat import async_chat
-import socket, asyncore, time, sys
+import socket, asyncore, time
 from django.db import models
 from django.db import connection
 
@@ -8,7 +8,7 @@ from apps.config.models import CommandAlias
 import scheduler
 import functions_db
 import functions_general
-import global_defines
+import evennia.defines_global as global_defines
 import session_mgr
 import gameconf
 import settings

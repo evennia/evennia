@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-import global_defines
-import ansi
+import evennia.defines_global as global_defines
+import evennia.ansi
 
 class Attribute(models.Model):
    """
@@ -21,7 +21,7 @@ class Attribute(models.Model):
       return "%s(%d)" % (self.name, self.id,)
    
    class Admin:
-      list_display = ('name', 'value',)
+      list_display = ('object', 'name', 'value',)
 
 class Object(models.Model):
    """
@@ -57,7 +57,7 @@ class Object(models.Model):
       )
    
    class Admin:
-      list_display = ('name',)
+      list_display = ('id', 'name', 'type', 'owner', 'date_created')
    
    """
    BEGIN COMMON METHODS
@@ -583,5 +583,5 @@ class Object(models.Model):
    def __str__(self):
       return "%s(#%d%s)" % (self.get_ansiname(), self.id, self.flag_string())
 
-import functions_db
-import session_mgr
+import evennia.functions_db
+import evennia.session_mgr

@@ -3,7 +3,7 @@ import time
 import functions_general
 import functions_db
 import functions_help
-import global_defines
+import evennia.defines_global as global_defines
 import session_mgr
 import ansi
 import os
@@ -231,10 +231,16 @@ def cmd_help(cdat):
       session.msg("Your search query is too short. It must be at least three letters long.")
       return
       
-   topics = functions_help.find_topicmatch(topicstr, pobject)      
+   topics = functions_help.find_topicmatch(pobject, topicstr)      
       
    if len(topics) == 0:
       session.msg("No matching topics found, please refine your search.")
+      suggestions = functions_help.find_topicsuggestions(pobject, topicstr)
+      if len(suggestions) > 0:
+         session.msg("Matching similarly named topics:")
+         for result in suggestions:
+            session.msg(" %s" % (result,))
+            session.msg("You may type 'help <#>' to see any of these topics.")
    elif len(topics) > 1:
       session.msg("More than one match found:")
       for result in topics:
