@@ -40,6 +40,7 @@ in development, we'll make sure to update this. But for the really determined
 * Copy the Evennia source somewhere.
 * Set up your apache2.conf to point mod-python to the settings.py file if you
   want the web features.
+* Copy settings.py.dist to settings.py.
 * Edit settings.py with your database info.
 * Run 'python manage.py syncdb' 
 * Run prepenv.sh. This will start the MU* server on port 4000 by default. You
