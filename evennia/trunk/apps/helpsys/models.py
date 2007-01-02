@@ -1,7 +1,6 @@
 from django.db import models
 import ansi
 
-# Create your models here.
 class HelpEntry(models.Model):
    """
    A generic help entry.

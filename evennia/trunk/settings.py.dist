@@ -77,4 +77,5 @@ INSTALLED_APPS = (
     'apps.config',
     'apps.objects',
     'apps.helpsys',
+    'apps.genperms',
 )

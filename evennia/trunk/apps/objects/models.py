@@ -18,7 +18,7 @@ class Attribute(models.Model):
    object = models.ForeignKey("Object")
    
    def __str__(self):
-      return "%s(%d)" % (self.name, self.id,)
+      return "%s(%s)" % (self.name, self.id)
    
    class Admin:
       list_display = ('object', 'name', 'value',)
@@ -62,15 +62,13 @@ class Object(models.Model):
       return "%s" % (self.get_name(),)
    
    class Meta:
-      permissions = (
-         ("can_examine", "Can examine objects"),
-      )
       ordering = ['-date_created', 'id']
    
    class Admin:
       list_display = ('id', 'name', 'type', 'date_created')
       list_filter = ('type',)
       search_fields = ['name']
+      save_on_top = True
    
    """
    BEGIN COMMON METHODS
@@ -195,18 +193,21 @@ class Object(models.Model):
       Returns an object's name.
       """
       if fullname:
-         return "%s(#%d%s)" % (ansi.parse_ansi(self.name, strip_ansi=True),self.id, self.flag_string())
+         return "%s(#%s%s)" % (ansi.parse_ansi(self.name, strip_ansi=True),self.id, self.flag_string())
       else:
-         return "%s(#%d%s)" % (ansi.parse_ansi(self.name.split(';')[0], strip_ansi=True),self.id, self.flag_string())
+         return "%s(#%s%s)" % (ansi.parse_ansi(self.name.split(';')[0], strip_ansi=True), self.id, self.flag_string())
 
    def get_ansiname(self, fullname=False):
       """
       Returns an object's ANSI'd name.
       """
-      if fullname:
-         return "%s(#%d%s)" % (ansi.parse_ansi(self.ansi_name), self.id, self.flag_string())
+      if self.ansi_name:
+         if fullname:
+            return "%s(#%s%s)" % (ansi.parse_ansi(self.ansi_name), self.id, self.flag_string())
+         else:
+            return "%s(#%s%s)" % (ansi.parse_ansi(self.ansi_name.split(';')[0]), self.id, self.flag_string())
       else:
-         return "%s(#%d%s)" % (ansi.parse_ansi(self.ansi_name.split(';')[0]), self.id, self.flag_string())
+         return self.get_name()
 
    def set_description(self, new_desc):
       """
@@ -492,6 +493,7 @@ class Object(models.Model):
       Moves the object to a new location.
       
       target: (Object) Reference to the object to move to.
+      quiet:  (bool)   If true, don't emit left/arrived messages.
       """
       if not quiet:
          self.get_location().emit_to_contents("%s has left." % (self.get_ansiname(),), exclude=self)
@@ -592,9 +594,10 @@ class Object(models.Model):
       Returns the flag string for an object. This abbreviates all of the flags
       set on the object into a list of single-character flag characters.
       """
-      # TODO: Once we add a flag system, add the other flag types here.
-      type_string = global_defines.OBJECT_TYPES[self.type][1][0]
-      return type_string
+      # We have to cast this because the admin interface is really picky
+      # about tuple index types. Bleh.
+      otype = int(self.type)
+      return global_defines.OBJECT_TYPES[otype][1][0]
 
 import functions_db
 import session_mgr
