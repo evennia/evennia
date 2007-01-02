@@ -1,5 +1,5 @@
 import session_mgr
-import commands_staff
+import commands_privileged
 import commands_general
 import commands_unloggedin
 """
@@ -10,7 +10,7 @@ def command_list():
    Return a list of all commands.
    """
    commands = dir(commands_unloggedin) + dir(commands_general)
-   stf_commands = dir(commands_staff)
+   stf_commands = dir(commands_privileged)
    filtered = [prospect for prospect in commands if "cmd_" in prospect]
    stf_filtered = [prospect for prospect in stf_commands if "cmd_" in prospect]
    processed = []

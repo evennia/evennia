@@ -12,8 +12,7 @@ import defines_global
 from django.contrib.auth.models import User
 from apps.objects.models import Object
 """
-Staff commands may be a bad description for this file, but it'll do for
-now. Any command here is prefixed by an '@' sign, usually denoting a 
+Any command here is prefixed by an '@' sign, usually denoting a 
 builder, staff or otherwise manipulative command that doesn't fall within 
 the scope of normal gameplay.
 """
@@ -77,7 +76,7 @@ def cmd_list(cdat):
    args = cdat['uinput']['splitted'][1:]
    argstr = ''.join(args)
    
-   msg_invalid = "Unknown option. Use one of: commands, process"
+   msg_invalid = "Unknown option. Use one of: commands, flags, process"
    
    if len(argstr) == 0:   
       session.msg(msg_invalid)

@@ -1,4 +1,4 @@
-import commands_staff
+import commands_privileged
 import commands_general
 import commands_unloggedin
 import functions_db
@@ -61,7 +61,7 @@ def handle(cdat):
             cmd = getattr(commands_general, 'cmd_%s' % (parsed_input['root_cmd'],), None )
          else:
             parsed_input['root_cmd'] = parsed_input['root_cmd'][1:]
-            cmd = getattr(commands_staff, 'cmd_%s' % (parsed_input['root_cmd'],), None )
+            cmd = getattr(commands_privileged, 'cmd_%s' % (parsed_input['root_cmd'],), None )
       else:
          cmd = getattr(commands_unloggedin, 'cmd_%s' % (parsed_input['root_cmd'],), None )
       
