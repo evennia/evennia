@@ -24,8 +24,8 @@
         <Directory "/home/evennia/evennia">
                 SetHandler python-program
                 PythonHandler django.core.handlers.modpython
-                PythonPath "['/home/evennia'] + sys.path"
-                SetEnv DJANGO_SETTINGS_MODULE evennia.settings
+                PythonPath "['/home/evennia/evennia'] + sys.path"
+                SetEnv DJANGO_SETTINGS_MODULE settings
                 PythonDebug On
         </Directory>
 

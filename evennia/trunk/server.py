@@ -8,7 +8,7 @@ from apps.config.models import CommandAlias
 import scheduler
 import functions_db
 import functions_general
-import evennia.defines_global as global_defines
+import defines_global as global_defines
 import session_mgr
 import gameconf
 import settings

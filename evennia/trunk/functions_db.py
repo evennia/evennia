@@ -3,7 +3,7 @@ from django.db import connection
 from django.contrib.auth.models import User
 from apps.objects.models import Object
 from apps.config.models import ConfigValue
-import evennia.defines_global as global_defines
+import defines_global as global_defines
 import gameconf
 
 """

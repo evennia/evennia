@@ -3,7 +3,7 @@ import time
 import functions_general
 import functions_db
 import functions_help
-import evennia.defines_global as global_defines
+import defines_global as global_defines
 import session_mgr
 import ansi
 import os
