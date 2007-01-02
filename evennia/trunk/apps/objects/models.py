@@ -493,10 +493,14 @@ class Object(models.Model):
       
       target: (Object) Reference to the object to move to.
       """
-      self.get_location().emit_to_contents("%s has left." % (self.get_name(),), exclude=self)
+      if not quiet:
+         self.get_location().emit_to_contents("%s has left." % (self.get_ansiname(),), exclude=self)
+         
       self.location = target
       self.save()
-      self.get_location().emit_to_contents("%s has arrived." % (self.get_name(),), exclude=self)
+      
+      if not quiet:
+         self.get_location().emit_to_contents("%s has arrived." % (self.get_ansiname(),), exclude=self)
       
    def dbref_match(self, oname):
       """

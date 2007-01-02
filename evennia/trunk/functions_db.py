@@ -73,20 +73,30 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False):
    else:
       return [prospect for prospect in searchlist if prospect.name_match(ostring)]
       
-def local_and_global_search(searcher, ostring, local_only=False, dbref_only=False):
+def local_and_global_search(searcher, ostring, search_contents=True, search_location=True, dbref_only=False):
    """
    Searches an object's location then globally for a dbref or name match.
-   local_only: Only compare the objects in the player's location if True.
+   search_contents: (bool) While true, check the contents of the searcher.
+   search_location: (bool) While true, check the searcher's surroundings.
    """
    search_query = ''.join(ostring)
 
-   if is_dbref(ostring) and not local_only:
+   # This is a global dbref search. Not applicable if we're only searching
+   # searcher's contents/locations, dbref comparisons for location/contents
+   # searches are handled by list_search_object_namestr() below.
+   if is_dbref(ostring) and search_contents and search_location:
       search_num = search_query[1:]
       dbref_match = list(Object.objects.filter(id=search_num).exclude(type=6))
       if len(dbref_match) > 0:
          return dbref_match
-
-   local_matches = list_search_object_namestr(searcher.get_location().get_contents(), search_query) + list_search_object_namestr(searcher.get_contents(), search_query)
+         
+   local_matches = []
+   # Handle our location/contents searches. list_search_object_namestr() does
+   # name and dbref comparisons against search_query.
+   if search_contents: 
+      local_matches += list_search_object_namestr(searcher.get_contents(), search_query)
+   if search_location:
+      local_matches += list_search_object_namestr(searcher.get_location().get_contents(), search_query)
    
    # If the object the invoker is in matches, add it as well.
    if searcher.get_location().dbref_match(ostring) or ostring == 'here':

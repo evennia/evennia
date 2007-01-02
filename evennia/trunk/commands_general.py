@@ -27,7 +27,7 @@ def cmd_inventory(cdat):
    session.msg("You are carrying:")
    
    for item in pobject.get_contents():
-      session.msg(" %s" % (item,))
+      session.msg(" %s" % (item.get_ansiname(),))
       
    money = pobject.get_attribute_value("MONEY", default=0)
    if money > 0:
@@ -92,6 +92,84 @@ def cmd_look(cdat):
       session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
          session.msg('%s' %(exit.get_ansiname(),))
+         
+def cmd_get(cdat):
+   """
+   Get an object and put it in a player's inventory.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   plr_is_staff = pobject.is_staff()
+
+   if len(args) == 0:   
+      session.msg("Get what?")
+      return
+   else:
+      results = functions_db.local_and_global_search(pobject, ' '.join(args), search_contents=False)
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result.get_ansiname(),))
+         return
+      elif len(results) == 0:
+         session.msg("I don't see that here.")
+         return
+      else:
+         # We've got a victim to get now.
+         target_obj = results[0]
+
+   if pobject == target_obj:
+      session.msg("You can't get yourself.")
+      return
+   
+   if not plr_is_staff and (target_obj.is_player() or target_obj.is_exit()):
+      session.msg("You can't get that.")
+      return
+      
+   if target_obj.is_room() or target_obj.is_garbage() or target_obj.is_going():
+      session.msg("You can't get that.")
+      return
+      
+   target_obj.move_to(pobject, quiet=True)
+   session.msg("You pick up %s." % (target_obj.get_ansiname(),))
+   pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_ansiname(), target_obj.get_ansiname()), exclude=pobject)
+         
+def cmd_drop(cdat):
+   """
+   Drop an object from a player's inventory into their current location.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   plr_is_staff = pobject.is_staff()
+
+   if len(args) == 0:   
+      session.msg("Drop what?")
+      return
+   else:
+      results = functions_db.local_and_global_search(pobject, ' '.join(args), search_location=False)
+      
+      if len(results) > 1:
+         session.msg("More than one match found (please narrow target):")
+         for result in results:
+            session.msg(" %s" % (result.get_ansiname(),))
+         return
+      elif len(results) == 0:
+         session.msg("You don't appear to be carrying that.")
+         return
+      else:
+         # We've got a victim to get now.
+         target_obj = results[0]
+
+   if not pobject == target_obj.get_location():
+      session.msg("You don't appear to be carrying that.")
+      return
+      
+   target_obj.move_to(pobject.get_location(), quiet=True)
+   session.msg("You drop %s." % (target_obj.get_ansiname(),))
+   pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_ansiname(), target_obj.get_ansiname()), exclude=pobject)
          
 def cmd_examine(cdat):
    """
