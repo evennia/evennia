@@ -245,7 +245,7 @@ def cmd_help(cdat):
    elif len(topics) > 1:
       session.msg("More than one match found:")
       for result in topics:
-         session.msg(" %s" % (result,))
+         session.msg("%3d. %s" % (result.id, result.get_topicname()))
       session.msg("You may type 'help <#>' to see any of these topics.")
    else:   
       topic = topics[0]

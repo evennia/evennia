@@ -11,7 +11,7 @@ OBJECT_TYPES = (
 
 # This is a list of flags that the server actually uses. Anything not in this
 # list is a custom flag.
-SERVER_FLAGS = ["CONNECTED"]
+SERVER_FLAGS = ["CONNECTED", "DARK", "FLOATING", "GAGGED", "HAVEN", "OPAQUE", "SAFE", "SLAVE", "SUSPECT", "TRANSPARENT"]
 
 # These flags are not saved.
 NOSAVE_FLAGS = ["CONNECTED"]
@@ -20,7 +20,7 @@ NOSAVE_FLAGS = ["CONNECTED"]
 NOSET_FLAGS = ["CONNECTED"]
 
 # These attribute names can't be modified by players.
-NOSET_ATTRIBS = ["MONEY"]
+NOSET_ATTRIBS = ["MONEY", "ALIAS"]
 
 # Server version number.
 EVENNIA_VERSION = 'Pre-Alpha'

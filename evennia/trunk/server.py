@@ -83,6 +83,7 @@ class Server(dispatcher):
    def shutdown(self, message='The server has been shutdown. Please check back soon.'):
       functions_general.announce_all(message)
       self.game_running = False
+      
    """
    END Server CLASS
    """   
