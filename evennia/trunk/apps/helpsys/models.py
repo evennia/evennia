@@ -11,7 +11,13 @@ class HelpEntry(models.Model):
    staff_only = models.BooleanField(default=0)
 
    class Admin:
-      list_display = ('topicname', 'staff_only',)
+      list_display = ('topicname', 'staff_only')
+      list_filter = ('staff_only',)
+      search_fields = ['entrytext']
+      
+   class Meta:
+      verbose_name_plural = "Help entries"
+      ordering = ['topicname']
       
    def __str__(self):
       return "%3d. %s" % (self.id, self.topicname)

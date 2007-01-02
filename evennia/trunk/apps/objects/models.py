@@ -22,6 +22,7 @@ class Attribute(models.Model):
    
    class Admin:
       list_display = ('object', 'name', 'value',)
+      search_fields = ['name']
 
 class Object(models.Model):
    """
@@ -55,9 +56,12 @@ class Object(models.Model):
       permissions = (
          ("can_examine", "Can examine objects"),
       )
+      ordering = ['-date_created', 'id']
    
    class Admin:
       list_display = ('id', 'name', 'type', 'date_created')
+      list_filter = ('type',)
+      search_fields = ['name']
    
    """
    BEGIN COMMON METHODS

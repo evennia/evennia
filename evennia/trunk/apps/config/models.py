@@ -10,6 +10,10 @@ class CommandAlias(models.Model):
    
    class Admin:
       list_display = ('user_input', 'equiv_command',)
+      
+   class Meta:
+      verbose_name_plural = "Command aliases"
+      ordering = ['user_input']
 
 class ConfigValue(models.Model):
    """
