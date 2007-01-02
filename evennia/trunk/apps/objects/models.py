@@ -23,6 +23,12 @@ class Attribute(models.Model):
    class Admin:
       list_display = ('object', 'name', 'value',)
       search_fields = ['name']
+      
+   def get_name(self):
+      """
+      Returns an attribute's name.
+      """
+      return self.name
 
 class Object(models.Model):
    """
@@ -51,6 +57,9 @@ class Object(models.Model):
       Used to figure out if one object is the same as another.
       """
       return self.id == other.id
+
+   def __str__(self):
+      return "%s" % (self.get_name(),)
    
    class Meta:
       permissions = (
@@ -186,18 +195,18 @@ class Object(models.Model):
       Returns an object's name.
       """
       if fullname:
-         return ansi.parse_ansi(self.name, strip_ansi=True)
+         return "%s(#%d%s)" % (ansi.parse_ansi(self.name, strip_ansi=True),self.id, self.flag_string())
       else:
-         return ansi.parse_ansi(self.name.split(';')[0], strip_ansi=True)
+         return "%s(#%d%s)" % (ansi.parse_ansi(self.name.split(';')[0], strip_ansi=True),self.id, self.flag_string())
 
    def get_ansiname(self, fullname=False):
       """
       Returns an object's ANSI'd name.
       """
       if fullname:
-         return ansi.parse_ansi(self.ansi_name)
+         return "%s(#%d%s)" % (ansi.parse_ansi(self.ansi_name), self.id, self.flag_string())
       else:
-         return ansi.parse_ansi(self.ansi_name.split(';')[0])
+         return "%s(#%d%s)" % (ansi.parse_ansi(self.ansi_name.split(';')[0]), self.id, self.flag_string())
 
    def set_description(self, new_desc):
       """
@@ -222,7 +231,7 @@ class Object(models.Model):
          else:
             return retval
       except:
-         return None
+         return ""
    
    def get_flags(self):
       """
@@ -250,20 +259,19 @@ class Object(models.Model):
       else:
          return False
          
-   def clear_all_attributes(self):
-      """
-      Clears all of an object's attributes.
-      """
-      attribs = Attribute.objects.filter(object=self)
-      for attrib in attribs:
-         self.delete()
-         
    def get_all_attributes(self):
       """
       Returns a QuerySet of an object's attributes.
       """
-      attribs = Attribute.objects.filter(object=self)
-      return attribs
+      return self.attribute_set.all()
+      
+   def clear_all_attributes(self):
+      """
+      Clears all of an object's attributes.
+      """
+      self.get_all_attributes()
+      for attrib in attribs:
+         self.delete()
    
    def destroy(self):   
       """
@@ -583,9 +591,6 @@ class Object(models.Model):
       # TODO: Once we add a flag system, add the other flag types here.
       type_string = global_defines.OBJECT_TYPES[self.type][1][0]
       return type_string
-
-   def __str__(self):
-      return "%s(#%d%s)" % (self.get_ansiname(), self.id, self.flag_string())
 
 import functions_db
 import session_mgr

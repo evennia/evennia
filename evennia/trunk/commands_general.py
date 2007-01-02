@@ -11,6 +11,13 @@ import os
 Generic command module. Pretty much every command should go here for
 now.
 """   
+def cmd_idle(cdat):
+   """
+   Returns nothing, this lets the player set an idle timer without spamming
+   his screen.
+   """
+   pass
+   
 def cmd_inventory(cdat):
    """
    Shows a player's inventory.
@@ -46,7 +53,7 @@ def cmd_look(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result,))
+            session.msg(" %s" % (result.get_ansiname(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -54,11 +61,8 @@ def cmd_look(cdat):
       else:
          target_obj = results[0]
    
-   retval = "%s%s(#%i%s)\r\n%s" % (
+   retval = "%s\r\n%s" % (
       target_obj.get_ansiname(),
-      ansi.ansi["normal"],
-      target_obj.id,
-      target_obj.flag_string(),
       target_obj.get_description(),
    )
    session.msg(retval)
@@ -79,15 +83,15 @@ def cmd_look(cdat):
    if con_players:
       session.msg("%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for player in con_players:
-         session.msg('%s' %(player,))
+         session.msg('%s' %(player.get_ansiname(),))
    if con_things:
       session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for thing in con_things:
-         session.msg('%s' %(thing,))
+         session.msg('%s' %(thing.get_ansiname(),))
    if con_exits:
       session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
-         session.msg('%s' %(exit,))
+         session.msg('%s' %(exit.get_ansiname(),))
          
 def cmd_examine(cdat):
    """
@@ -105,18 +109,15 @@ def cmd_examine(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result,))
+            session.msg(" %s" % (result.get_ansiname(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
          return
       else:
          target_obj = results[0]
-   session.msg("%s%s(#%i%s)\r\n%s" % (
+   session.msg("%s\r\n%s" % (
       target_obj.get_ansiname(fullname=True),
-      ansi.ansi["normal"],
-      target_obj.id,
-      target_obj.flag_string(),
       target_obj.get_description(no_parsing=True),
    ))
    session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
@@ -124,31 +125,31 @@ def cmd_examine(cdat):
    session.msg("Zone: %s" % (target_obj.get_zone(),))
    
    for attribute in target_obj.get_all_attributes():
-      session.msg("%s%s%s: %s" % (ansi.ansi["hilite"], attribute.name, ansi.ansi["normal"], attribute.value))
+      session.msg("%s%s%s: %s" % (ansi.ansi["hilite"], attribute.get_name(), ansi.ansi["normal"], attribute.value))
    
    con_players = []
    con_things = []
    con_exits = []
    
    for obj in target_obj.get_contents():
-      if obj.is_player:
+      if obj.is_player():
          con_players.append(obj)  
-      elif obj.is_exit:
+      elif obj.is_exit():
          con_exits.append(obj)
-      else:
+      elif obj.is_thing():
          con_things.append(obj)
    
    if con_players or con_things:
-      session.msg("Contents:")
+      session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for player in con_players:
-         session.msg('%s' %(player,))
+         session.msg('%s' % (player.get_ansiname(fullname=True),))
       for thing in con_things:
-         session.msg('%s' %(thing,))
+         session.msg('%s' % (thing.get_ansiname(fullname=True),))
          
    if con_exits:
       session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
-         session.msg('%s' %(exit,))
+         session.msg('%s' %(exit.get_ansiname(fullname=True),))
          
    if not target_obj.is_room():
       if target_obj.is_exit():
