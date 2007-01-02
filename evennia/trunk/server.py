@@ -6,9 +6,7 @@ from django.db import connection
 
 from apps.config.models import CommandAlias
 import scheduler
-import functions_db
 import functions_general
-import defines_global as global_defines
 import session_mgr
 import gameconf
 import settings
@@ -21,14 +19,16 @@ class Server(dispatcher):
       self.cmd_alias_list = {}
       self.game_running = True
       
-      # Wipe our temporary flags on all of the objects.
+      # Database-specific startup optimizations.
       if settings.DATABASE_ENGINE == "sqlite3":
          self.sqlite3_prep()
+         
+      # Wipe our temporary flags on all of the objects.
       cursor = connection.cursor()
       cursor.execute("UPDATE objects_object SET nosave_flags=''")
       
       print '-'*50
-      # Load stuff up into memory for easy/quick access.
+      # Load command aliases into memory for easy/quick access.
       self.load_cmd_aliases()
       self.port = gameconf.get_configvalue('site_port')
       
@@ -102,3 +102,7 @@ if __name__ == '__main__':
    except KeyboardInterrupt:
       server.shutdown()
       print '--> Server killed by keystroke.'
+
+   except:
+      server.shutdown(message="The server has encountered an error and has been shut down. Please check back soon.")
+      print '-!> Server crashed.'
