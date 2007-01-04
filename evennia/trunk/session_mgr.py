@@ -33,7 +33,7 @@ def session_from_object(targobject):
    session_list: (list) The server's session_list attribute.
    targobject: (Object) The object to match.
    """
-   results = [prospect for prospect in session_list if prospect.get_pobject().id == targobject.id]
+   results = [prospect for prospect in session_list if prospect.get_pobject() == targobject]
    if results:
       return results[0]
    else:

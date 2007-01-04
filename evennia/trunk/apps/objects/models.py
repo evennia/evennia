@@ -499,7 +499,8 @@ class Object(models.Model):
       quiet:  (bool)   If true, don't emit left/arrived messages.
       """
       if not quiet:
-         self.get_location().emit_to_contents("%s has left." % (self.get_ansiname(),), exclude=self)
+         if self.get_location():
+            self.get_location().emit_to_contents("%s has left." % (self.get_ansiname(),), exclude=self)
          
       self.location = target
       self.save()

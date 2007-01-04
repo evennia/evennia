@@ -191,6 +191,14 @@ def create_user(cdat, uname, email, password):
    # the next free unique ID to use and make sure the two entries are
    # the same number.
    uid = get_nextfree_dbnum()
+   print 'UID', uid
+
+   # If this is an object, we know to recycle it since it's garbage. We'll
+   # pluck the user ID from it.
+   if not str(uid).isdigit():
+      uid = uid.id
+   print 'UID2', uid
+
    user = User.objects.create_user(uname, email, password)
    # It stinks to have to do this but it's the only trivial way now.
    user.save()

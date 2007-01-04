@@ -70,8 +70,11 @@ class PlayerSession(async_chat):
       """
       Returns the object associated with a session.
       """
-      result = Object.objects.get(id=self.uid)
-      return result
+      try:
+         result = Object.objects.get(id=self.uid)
+         return result
+      except:
+         return False
       
    def game_connect_screen(self, session):
       """
