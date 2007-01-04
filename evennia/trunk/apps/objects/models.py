@@ -270,7 +270,7 @@ class Object(models.Model):
       """
       Clears all of an object's attributes.
       """
-      self.get_all_attributes()
+      attribs = self.get_all_attributes()
       for attrib in attribs:
          self.delete()
    
@@ -289,10 +289,13 @@ class Object(models.Model):
       # If the object is a player, set the player account object to inactive.
       # It can still be recovered at this point.      
       if self.is_player():
-         uobj = User.objects.get(id=self.id)
-         uobj.is_active = False
-         uobj.save()
-         
+         try:
+            uobj = User.objects.get(id=self.id)
+            uobj.is_active = False
+            uobj.save()
+         except:
+            functions_general.print_errmsg('Destroying object %s but no matching player.' % (self,))
+            
       # Set the object type to GOING
       self.type = 5
       self.save()
@@ -600,4 +603,5 @@ class Object(models.Model):
       return global_defines.OBJECT_TYPES[otype][1][0]
 
 import functions_db
+import functions_general
 import session_mgr

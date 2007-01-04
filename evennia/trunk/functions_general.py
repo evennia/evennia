@@ -5,6 +5,13 @@ import commands_unloggedin
 """
 General commonly used functions.
 """
+def print_errmsg(errormsg):
+   """
+   Prints/logs an error message. Pipe any errors to be logged through here.
+   For now we're just printing to standard out.
+   """
+   print 'ERROR: %s' % (errormsg,)
+
 def command_list():
    """
    Return a list of all commands.
