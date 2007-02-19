@@ -37,7 +37,7 @@ ansi["back_cyan"]    = "\033[46m"
 ansi["back_white"]   = "\033[47m"
 
 # Formatting Characters
-ansi["return"] = "\n\r"
+ansi["return"] = "\r\n"
 ansi["tab"]    = "\t"
 ansi["space"]  = " "
 
