@@ -283,8 +283,12 @@ def cmd_say(cdat):
    """
    Room-based speech command.
    """
-   session_list = session_mgr.get_session_list()
    session = cdat['session']
+
+   if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Say What?"):
+      return
+   
+   session_list = session_mgr.get_session_list()
    pobject = session.get_pobject()
    speech = ' '.join(cdat['uinput']['splitted'][1:])
    

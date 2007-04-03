@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 import functions_db
+import functions_general
 
 """
 Commands that are available from the connect screen.
@@ -13,8 +14,8 @@ def cmd_connect(cdat):
 
    session = cdat['session']
 
-   if len(cdat['uinput']['splitted']) != 3:
-      session.msg("Missing arguments!")
+   # Argument check.
+   if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 2):
       return
    
    uemail = cdat['uinput']['splitted'][1]
@@ -44,10 +45,20 @@ def cmd_create(cdat):
    Handle the creation of new accounts.
    """
    session = cdat['session']
+
+   # Argument check.
+   if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 2):
+      return
+   
    server = session.server
    quote_split = ' '.join(cdat['uinput']['splitted']).split("\"")
    uname = quote_split[1]
    lastarg_split = quote_split[2].split()
+
+   if len(lastarg_split) != 2:
+      session.msg("You must specify an email address, followed by a password!")
+      return
+   
    email = lastarg_split[0]
    password = lastarg_split[1]
 

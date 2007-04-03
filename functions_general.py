@@ -5,6 +5,17 @@ import commands_unloggedin
 """
 General commonly used functions.
 """
+
+def cmd_check_num_args(session, arg_list, min_args, errortext="Missing arguments!"):
+   """
+   Check a player command's splitted argument list to make sure it contains
+   the minimum allowable number of arguments.
+   """
+   if len(arg_list) < min_args+1:
+      session.msg(errortext)
+      return False
+   return True
+
 def print_errmsg(errormsg):
    """
    Prints/logs an error message. Pipe any errors to be logged through here.
