@@ -10,25 +10,32 @@ def cmd_connect(cdat):
    This is the connect command at the connection screen. Fairly simple,
    uses the Django database API and User model to make it extremely simple.
    """
+
    session = cdat['session']
-   uname = cdat['uinput']['splitted'][1]
+
+   if len(cdat['uinput']['splitted']) != 3:
+      session.msg("Missing arguments!")
+      return
+   
+   uemail = cdat['uinput']['splitted'][1]
    password = cdat['uinput']['splitted'][2]
+
+   # Match an email address to an account.
+   email_matches = functions_db.get_dbref_from_email(uemail)
    
-   account = User.objects.filter(username__iexact=uname)
-   
-   autherror = "Invalid username or password!"
+   autherror = "Specified email does not match any accounts!"
    # No username match
-   if account.count() == 0:
+   if email_matches.count() == 0:
       session.msg(autherror)
       return
    
-   # We have at least one result, so we can check hte password.   
-   user = account[0]
+   # We have at least one result, so we can check the password.
+   user = email_matches[0]
       
    if not user.check_password(password):
       session.msg(autherror)
    else:
-      user = account[0]
+      user = email_matches[0]
       uname = user.username
       session.login(user)
       
@@ -38,15 +45,21 @@ def cmd_create(cdat):
    """
    session = cdat['session']
    server = session.server
-   uname = cdat['uinput']['splitted'][1]
-   email = cdat['uinput']['splitted'][2]
-   password = cdat['uinput']['splitted'][3]
-   
+   quote_split = ' '.join(cdat['uinput']['splitted']).split("\"")
+   uname = quote_split[1]
+   lastarg_split = quote_split[2].split()
+   email = lastarg_split[0]
+   password = lastarg_split[1]
+
    # Search for a user object with the specified username.
    account = User.objects.filter(username=uname)
+   # Match an email address to an account.
+   email_matches = functions_db.get_dbref_from_email(email)
    
    if not account.count() == 0:
       session.msg("There is already a player with that name!")
+   elif not email_matches.count() == 0:
+      session.msg("There is already a player with that email address!")
    elif len(password) < 3:
       session.msg("Your password must be 3 characters or longer.")
    else:

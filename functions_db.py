@@ -122,6 +122,12 @@ def is_dbref(dbstring):
    else:
       return True
    
+def get_dbref_from_email(uemail):
+   """
+   Returns a player's dbref when given an email address.
+   """
+   return User.objects.filter(email__iexact=uemail)
+
 def get_object_from_dbref(dbref):
    """
    Returns an object when given a dbref.

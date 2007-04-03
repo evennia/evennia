@@ -78,14 +78,14 @@ class PlayerSession(async_chat):
       
    def game_connect_screen(self, session):
       """
-      Show our banner screen.
+      Show the banner screen.
       """
       buffer =  '-'*50
       buffer += ' \n\rWelcome to Evennia!\n\r'
       buffer += '-'*50 + '\n\r'
       buffer += """Please type one of the following to begin:\n\r 
-         connect <username> <password>\n\r
-         create <username> <email> <password>\n\r"""
+         connect <email> <password>\n\r
+         create \"<username>\" <email> <password>\n\r"""
       buffer += '-'*50
       session.msg(buffer)
       
