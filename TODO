@@ -11,8 +11,6 @@ High Priority Tasks
   a built-in permissions system, it should be trivial to use it for
   the purpose.
 * Figure out how to handle our scripting support.
-* Handle multi-word account names gracefully. Need to modify login prompt
-  to use quotes like MUX.
 * Look into logging in with your email address instead of username.
 * Implement @alias. Can probably just use an attribute instead of a new
   object DB field. Shouldn't be too bad. Also needs proper search
