@@ -324,7 +324,7 @@ class Object(models.Model):
       """
       if self.has_attribute(attribute):
          # Attribute already exists, update it.
-         attrib_obj = Attribute.objects.filter(object=self).filter(name=attribute)
+         attrib_obj = Attribute.objects.filter(object=self).filter(name=attribute)[0]
          attrib_obj.value = new_value
          attrib_obj.save()
       else:
@@ -445,14 +445,14 @@ class Object(models.Model):
          
    def get_attribute_value(self, attrib, default=False):
       """
-      Returns the value of an attribute on an object.
+      Returns the value of an attribute on an object. You may need to
+      type cast the returned value from this function!
       
       attrib: (str) The attribute's name.
       """
       if self.has_attribute(attrib):
          attrib = Attribute.objects.filter(object=self).filter(name=attrib)
-         attrib_value = attrib[0].value
-         return attrib_value.value
+         return attrib[0].value
       else:
          if default:
             return default

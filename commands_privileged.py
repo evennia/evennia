@@ -557,7 +557,7 @@ def cmd_set(cdat):
       attrib_value = eq_args[1][splicenum:]
       
       # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
-      if not functions_db.is_modifiable_attrib(attrib_name):
+      if not functions_db.is_modifiable_attrib(attrib_name) and not pobject.is_superuser():
          session.msg("You can't modify that attribute.")
          return
       

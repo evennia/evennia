@@ -29,12 +29,12 @@ def cmd_inventory(cdat):
    for item in pobject.get_contents():
       session.msg(" %s" % (item.get_ansiname(),))
       
-   money = pobject.get_attribute_value("MONEY", default=0)
-   if money > 0:
-      money_name = functions_db.get_server_config("MONEY_NAME_PLURAL")
-   else:
+   money = int(pobject.get_attribute_value("MONEY", default=0))
+   if money == 1:
       money_name = functions_db.get_server_config("MONEY_NAME_SINGULAR")
-      
+   else:
+      money_name = functions_db.get_server_config("MONEY_NAME_PLURAL")
+
    session.msg("You have %d %s." % (money,money_name))
 
 def cmd_look(cdat):
