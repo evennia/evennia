@@ -5,7 +5,7 @@ A really simple scheduler. We can probably get a lot fancier with this
 in the future, but it'll do for now.
 
 ADDING AN EVENT:
-* Add an entry to the 'schedule' dictionary.
+* Add an entry to the 'schedule' dictionary in the 'events' file.
 * Add the proper event_ function here.
 * Profit.
 """

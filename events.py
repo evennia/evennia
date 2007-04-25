@@ -1,15 +1,17 @@
+import session_mgr
+
 """
 Holds the events scheduled in scheduler.py.
 """
 
 schedule = {
-              'event_example': 60,
+              'check_sessions': 60,
            }
            
 lastrun = {}
 
-def event_example():
+def check_sessions():
    """
-   This is where the example event would be placed. 
+   Check all of the connected sessions.
    """
-   pass
+   session_mgr.check_all_sessions()

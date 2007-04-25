@@ -19,6 +19,17 @@ def get_session_list():
    Lists the connected session objects.
    """
    return session_list
+
+def check_all_sessions():
+   """
+   Check all currently connected sessions and see if any are dead.
+   """
+   for sess in get_session_list():
+      if not sess.writable() or not sess.readable():
+         print 'Problematic Session:'
+         print 'Readable ', sess.readable()
+         print 'Writable ', sess.writable()
+         
    
 def remove_session(session):
    """
