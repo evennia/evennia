@@ -8,10 +8,10 @@ export DJANGO_SETTINGS_MODULE="settings"
 PYTHON_BIN="python2.5"
 
 ## The name of your logfile.
-LOGNAME="evennia.log"
+LOGNAME="logs/evennia.log"
 ## Where to put the last log file from the game's last running
 ## on next startup.
-LOGNAME_OLD="evennia.log.old"
+LOGNAME_OLD="logs/evennia.log.old"
 mv $LOGNAME $LOGNAME_OLD
 
 ## There are several different ways you can run the server, read the
