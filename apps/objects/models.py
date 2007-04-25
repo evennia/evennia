@@ -441,6 +441,7 @@ class Object(models.Model):
       try:
          return self.location
       except:
+         functions_general.print_errmsg("Object '%s(#%d)' has invalid location: #%s" % (self.name,self.id,self.location_id))
          return False
          
    def get_attribute_value(self, attrib, default=False):

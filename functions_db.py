@@ -179,7 +179,10 @@ def create_object(odat):
          new_object.home = odat["location"]
          
    new_object.save()
-   new_object.move_to(odat['location'])
+
+   # Rooms have a NULL location.
+   if not new_object.is_room():
+      new_object.move_to(odat['location'])
    
    return new_object
 
