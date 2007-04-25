@@ -10,6 +10,7 @@ import functions_general
 import session_mgr
 import gameconf
 import settings
+import initial_setup
 
 class Server(dispatcher):
    """
@@ -31,7 +32,11 @@ class Server(dispatcher):
       # Load command aliases into memory for easy/quick access.
       self.load_cmd_aliases()
       self.port = gameconf.get_configvalue('site_port')
-      
+
+      if gameconf.get_configvalue('game_firstrun') == '1':
+         print ' Game started for the first time, setting defaults.'
+         initial_setup.handle_setup()
+
       # Start accepting connections.
       dispatcher.__init__(self)
       self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
