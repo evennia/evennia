@@ -182,32 +182,30 @@ class Object(models.Model):
          
    def get_user_account(self):
       """
-      Returns the player object's account object.
+      Returns the player object's account object (User object).
       """
       if not self.is_player():
          return False
       return User.objects.get(id=self.id)
 
-   def get_name(self, fullname=False):
+   def get_name(self, fullname=False, show_dbref=True, no_ansi=False):
       """
       Returns an object's name.
       """
+      if not no_ansi and self.ansi_name:
+         name_string = self.ansi_name
+      else:
+         name_string = self.name
+         
+      if show_dbref:
+         dbref_string = "(#%s%s)" % (self.id, self.flag_string())
+      else:
+         dbref_string = ""
+      
       if fullname:
-         return "%s(#%s%s)" % (ansi.parse_ansi(self.name, strip_ansi=True),self.id, self.flag_string())
+         return "%s%s" % (ansi.parse_ansi(name_string, strip_ansi=no_ansi), dbref_string)
       else:
-         return "%s(#%s%s)" % (ansi.parse_ansi(self.name.split(';')[0], strip_ansi=True), self.id, self.flag_string())
-
-   def get_ansiname(self, fullname=False):
-      """
-      Returns an object's ANSI'd name.
-      """
-      if self.ansi_name:
-         if fullname:
-            return "%s(#%s%s)" % (ansi.parse_ansi(self.ansi_name), self.id, self.flag_string())
-         else:
-            return "%s(#%s%s)" % (ansi.parse_ansi(self.ansi_name.split(';')[0]), self.id, self.flag_string())
-      else:
-         return self.get_name()
+         return "%s%s" % (ansi.parse_ansi(name_string.split(';')[0], strip_ansi=no_ansi), dbref_string)
 
    def set_description(self, new_desc):
       """
@@ -501,13 +499,13 @@ class Object(models.Model):
       """
       if not quiet:
          if self.get_location():
-            self.get_location().emit_to_contents("%s has left." % (self.get_ansiname(),), exclude=self)
+            self.get_location().emit_to_contents("%s has left." % (self.get_name(),), exclude=self)
          
       self.location = target
       self.save()
       
       if not quiet:
-         self.get_location().emit_to_contents("%s has arrived." % (self.get_ansiname(),), exclude=self)
+         self.get_location().emit_to_contents("%s has arrived." % (self.get_name(),), exclude=self)
       
    def dbref_match(self, oname):
       """

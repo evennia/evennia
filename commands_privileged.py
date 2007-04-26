@@ -39,7 +39,7 @@ def cmd_destroy(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -119,7 +119,7 @@ def cmd_description(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -154,7 +154,7 @@ def cmd_newpassword(cdat):
    if len(results) > 1:
       session.msg("More than one match found (please narrow target):")
       for result in results:
-         session.msg(" %s" % (result.get_ansiname(),))
+         session.msg(" %s" % (result.get_name(),))
    elif len(results) == 0:
       session.msg("I don't see that here.")
    elif not pobject.controls_other(results[0]):
@@ -219,7 +219,7 @@ def cmd_name(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -435,7 +435,7 @@ def cmd_unlink(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -504,7 +504,7 @@ def cmd_teleport(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
       elif len(results) == 0:
          session.msg("I don't see that here.")
          return
@@ -609,7 +609,7 @@ def cmd_find(cdat):
    if len(results) > 0:
       session.msg("Name matches for: %s" % (searchstring,))
       for result in results:
-         session.msg(" %s" % (result.get_ansiname(fullname=True),))
+         session.msg(" %s" % (result.get_name(fullname=True),))
       session.msg("%d matches returned." % (len(results),))
    else:
       session.msg("No name matches found for: %s" % (searchstring,))

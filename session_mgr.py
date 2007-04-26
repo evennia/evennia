@@ -24,11 +24,14 @@ def check_all_sessions():
    """
    Check all currently connected sessions and see if any are dead.
    """
-   for sess in get_session_list():
-      if not sess.writable() or not sess.readable():
-         print 'Problematic Session:'
-         print 'Readable ', sess.readable()
-         print 'Writable ', sess.writable()
+   pass
+   #for sess in get_session_list():
+      ## This doesn't seem to provide an accurate indication of timed out
+      ## sessions.
+      #if not sess.writable() or not sess.readable():
+      #   print 'Problematic Session:'
+      #   print 'Readable ', sess.readable()
+      #   print 'Writable ', sess.writable()
          
    
 def remove_session(session):

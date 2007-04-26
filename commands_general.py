@@ -27,7 +27,7 @@ def cmd_inventory(cdat):
    session.msg("You are carrying:")
    
    for item in pobject.get_contents():
-      session.msg(" %s" % (item.get_ansiname(),))
+      session.msg(" %s" % (item.get_name(),))
       
    money = int(pobject.get_attribute_value("MONEY", default=0))
    if money == 1:
@@ -53,7 +53,7 @@ def cmd_look(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -62,7 +62,7 @@ def cmd_look(cdat):
          target_obj = results[0]
    
    retval = "%s\r\n%s" % (
-      target_obj.get_ansiname(),
+      target_obj.get_name(),
       target_obj.get_description(),
    )
    session.msg(retval)
@@ -83,15 +83,15 @@ def cmd_look(cdat):
    if con_players:
       session.msg("%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for player in con_players:
-         session.msg('%s' %(player.get_ansiname(),))
+         session.msg('%s' %(player.get_name(),))
    if con_things:
       session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for thing in con_things:
-         session.msg('%s' %(thing.get_ansiname(),))
+         session.msg('%s' %(thing.get_name(),))
    if con_exits:
       session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
-         session.msg('%s' %(exit.get_ansiname(),))
+         session.msg('%s' %(exit.get_name(),))
          
 def cmd_get(cdat):
    """
@@ -111,7 +111,7 @@ def cmd_get(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -133,8 +133,8 @@ def cmd_get(cdat):
       return
       
    target_obj.move_to(pobject, quiet=True)
-   session.msg("You pick up %s." % (target_obj.get_ansiname(),))
-   pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_ansiname(), target_obj.get_ansiname()), exclude=pobject)
+   session.msg("You pick up %s." % (target_obj.get_name(),))
+   pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
          
 def cmd_drop(cdat):
    """
@@ -154,7 +154,7 @@ def cmd_drop(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("You don't appear to be carrying that.")
@@ -168,8 +168,8 @@ def cmd_drop(cdat):
       return
       
    target_obj.move_to(pobject.get_location(), quiet=True)
-   session.msg("You drop %s." % (target_obj.get_ansiname(),))
-   pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_ansiname(), target_obj.get_ansiname()), exclude=pobject)
+   session.msg("You drop %s." % (target_obj.get_name(),))
+   pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
          
 def cmd_examine(cdat):
    """
@@ -187,7 +187,7 @@ def cmd_examine(cdat):
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
          for result in results:
-            session.msg(" %s" % (result.get_ansiname(),))
+            session.msg(" %s" % (result.get_name(),))
          return
       elif len(results) == 0:
          session.msg("I don't see that here.")
@@ -195,7 +195,7 @@ def cmd_examine(cdat):
       else:
          target_obj = results[0]
    session.msg("%s\r\n%s" % (
-      target_obj.get_ansiname(fullname=True),
+      target_obj.get_name(fullname=True),
       target_obj.get_description(no_parsing=True),
    ))
    session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
@@ -220,14 +220,14 @@ def cmd_examine(cdat):
    if con_players or con_things:
       session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for player in con_players:
-         session.msg('%s' % (player.get_ansiname(fullname=True),))
+         session.msg('%s' % (player.get_name(fullname=True),))
       for thing in con_things:
-         session.msg('%s' % (thing.get_ansiname(fullname=True),))
+         session.msg('%s' % (thing.get_name(fullname=True),))
          
    if con_exits:
       session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
       for exit in con_exits:
-         session.msg('%s' %(exit.get_ansiname(fullname=True),))
+         session.msg('%s' %(exit.get_name(fullname=True),))
          
    if not target_obj.is_room():
       if target_obj.is_exit():
@@ -285,7 +285,7 @@ def cmd_say(cdat):
    """
    session = cdat['session']
 
-   if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Say What?"):
+   if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Say what?"):
       return
    
    session_list = session_mgr.get_session_list()
@@ -296,9 +296,27 @@ def cmd_say(cdat):
    
    retval = "You say, '%s'" % (speech,)
    for player in players_present:
-      player.msg("%s says, '%s'" % (pobject.get_name(), speech,))
+      player.msg("%s says, '%s'" % (pobject.get_name(show_dbref=False), speech,))
    
    session.msg(retval)
+
+def cmd_pose(cdat):
+   """
+   Pose/emote command.
+   """
+   session = cdat['session']
+
+   if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Do what?"):
+      return
+   
+   session_list = session_mgr.get_session_list()
+   pobject = session.get_pobject()
+   speech = ' '.join(cdat['uinput']['splitted'][1:])
+   
+   players_present = [player for player in session_list if player.get_pobject().get_location() == session.get_pobject().get_location()]
+   
+   for player in players_present:
+      player.msg("%s %s" % (pobject.get_name(show_dbref=False), speech))
    
 def cmd_help(cdat):
    """
