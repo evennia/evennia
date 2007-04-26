@@ -237,6 +237,23 @@ def cmd_examine(cdat):
          
       session.msg("Location: %s" % (target_obj.get_location(),))
    
+def cmd_page(cdat):
+   """
+   Send a message to target user (if online).
+   """
+   session = cdat['session']
+   target_name = cdat['uinput']['splitted'][1:][0]
+   message = cdat['uinput']['splitted'][1:][1:]
+   target = Object.objects.get(name__iexact=target_name)
+   try:
+      if target.is_connected_plr():
+         target.emit_to("% pages you with: %s" % (session.something, message))
+         session.get_pobject().emit_to("Page sent.")
+      else:
+         session.get_pobject().emit_to("User %s is not logged on." % target_name.capitalize())
+   except:
+      session.get_pobject().emit_to("User %s not found." % target_name)
+
 def cmd_quit(cdat):
    """
    Gracefully disconnect the user as per his own request.
