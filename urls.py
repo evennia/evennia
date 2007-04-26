@@ -1,9 +1,14 @@
+#
+# File that determines what each URL points to. This uses _Python_ regular
+# expressions, not Perl's.
+#
+# See:
+# http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
+#
+
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^evennia/', include('evennia.apps.foo.urls.foo')),
-
-    # Uncomment this for admin:
-     (r'^admin/', include('django.contrib.admin.urls')),
+    # Admin interface
+    (r'^admin/', include('django.contrib.admin.urls')),
 )
