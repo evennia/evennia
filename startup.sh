@@ -20,6 +20,6 @@ mv $LOGNAME $LOGNAME_OLD
 ## Generate profile data for use with cProfile.
 # $PYTHON_BIN -m cProfile -o profiler.log -s time server.py
 ## Interactive mode. Good for development and debugging.
-$PYTHON_BIN server.py
+#$PYTHON_BIN server.py
 ## Stand-alone mode. Good for running games.
-#nohup $PYTHON_BIN server.py > $LOGNAME &
+nohup $PYTHON_BIN server.py > $LOGNAME &
