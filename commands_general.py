@@ -241,18 +241,26 @@ def cmd_page(cdat):
    """
    Send a message to target user (if online).
    """
+   from apps.objects.models import Object
    session = cdat['session']
-   target_name = cdat['uinput']['splitted'][1:][0]
-   message = cdat['uinput']['splitted'][1:][1:]
+   # discard command name
+   cdat['uinput']['splitted'].pop(0)
+   target_name = cdat['uinput']['splitted'].pop(0)
+   message = ' '.join(cdat['uinput']['splitted'])
    target = Object.objects.get(name__iexact=target_name)
-   try:
-      if target.is_connected_plr():
-         target.emit_to("% pages you with: %s" % (session.something, message))
-         session.get_pobject().emit_to("Page sent.")
-      else:
-         session.get_pobject().emit_to("User %s is not logged on." % (target_name.capitalize(),))
-   except:
-      session.get_pobject().emit_to("User %s not found." % (target_name,))
+   if target:
+      session.msg("Found user %s.", (target.get_name(),))
+      try:
+         if target.is_connected_plr():
+            target.emit_to("% pages you with: %s" %
+                (session.get_pobject().name.capitalize(), message))
+            session.msg("Page sent.")
+         else:
+            session.msg("User %s is not logged on." % (target_name.capitalize(),))
+      except:
+         pass
+   else:
+      session.msg("User %s not found." % (target_name,))
 
 def cmd_quit(cdat):
    """
