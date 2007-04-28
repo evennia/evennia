@@ -250,9 +250,9 @@ def cmd_page(cdat):
          target.emit_to("% pages you with: %s" % (session.something, message))
          session.get_pobject().emit_to("Page sent.")
       else:
-         session.get_pobject().emit_to("User %s is not logged on." % target_name.capitalize())
+         session.get_pobject().emit_to("User %s is not logged on." % (target_name.capitalize(),))
    except:
-      session.get_pobject().emit_to("User %s not found." % target_name)
+      session.get_pobject().emit_to("User %s not found." % (target_name,))
 
 def cmd_quit(cdat):
    """
