@@ -247,19 +247,14 @@ def cmd_page(cdat):
    cdat['uinput']['splitted'].pop(0)
    target_name = cdat['uinput']['splitted'].pop(0)
    message = ' '.join(cdat['uinput']['splitted'])
-   target = Object.objects.get(name__iexact=target_name)
-   if target:
-      session.msg("Found user %s.", (target.get_name(),))
-      try:
-         if target.is_connected_plr():
-            target.emit_to("% pages you with: %s" %
-                (session.get_pobject().name.capitalize(), message))
-            session.msg("Page sent.")
-         else:
-            session.msg("User %s is not logged on." % (target_name.capitalize(),))
-      except:
-         pass
-   else:
+   try:
+      target = Object.objects.get(name__iexact=target_name)
+      if target.is_connected_plr():
+         target.emit_to("%s pages you with: %s" % (session.get_pobject().get_name(), message))
+         session.msg("Page sent.")
+      else:
+         session.msg("User %s is not logged on." % (target_name.capitalize(),))
+   except:
       session.msg("User %s not found." % (target_name,))
 
 def cmd_quit(cdat):
