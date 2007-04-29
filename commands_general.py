@@ -254,7 +254,7 @@ def cmd_page(cdat):
       eq_args = args[0].split('=')
       if len(eq_args) > 1:
          target = functions_db.local_and_global_search(pobject, eq_args[0])
-         message = eq_args[1]
+         message = eq_args[1:]
    
          if len(target) == 0:
             session.msg("I can't find the user %s." % (eq_args[0].capitalize(),))
@@ -268,7 +268,7 @@ def cmd_page(cdat):
          else:
            if target[0].is_connected_plr():
               target[0].emit_to("%s pages you with: %s" %
-                  (pobject.get_name(), message))
+                  (pobject.get_name(), ' '.join(message)))
               session.msg("Page sent.")
            else:
               session.msg("Player %s does not exist or is not online." %
