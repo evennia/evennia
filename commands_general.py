@@ -241,44 +241,40 @@ def cmd_page(cdat):
    """
    Send a message to target user (if online).
    """
-   try:
-      session = cdat['session']
-      pobject = session.get_pobject()
-      server = cdat['server']
-      args = cdat['uinput']['splitted'][1:]
-   
-      if len(args) == 0:
-         session.msg("Page who/what?")
-         return
+   session = cdat['session']
+   pobject = session.get_pobject()
+   server = cdat['server']
+   args = cdat['uinput']['splitted'][1:]
 
-      # Combine the arguments into one string, split it by equal signs into
-      # victim (entry 0 in the list), and message (entry 1 and above).
-      eq_args = ' '.join(args).split('=')
-      if len(eq_args) > 1:
-         target = functions_db.local_and_global_search(pobject, eq_args[0])
-         message = ' '.join(eq_args[1:])
-   
-         if len(target) == 0:
-            session.msg("I can't find the user %s." % (eq_args[0].capitalize(),))
-            return
-         elif len(message) == 0:
-            session.msg("I need a message to deliver.")
-            return
-         elif len(target) > 1:
-            session.msg("Try a more unique spelling of their name.")
-            return
+   if len(args) == 0:
+      session.msg("Page who/what?")
+      return
+
+   # Combine the arguments into one string, split it by equal signs into
+   # victim (entry 0 in the list), and message (entry 1 and above).
+   eq_args = ' '.join(args).split('=')
+   if len(eq_args) > 1:
+      target = functions_db.player_search(pobject, eq_args[0])
+      message = ' '.join(eq_args[1:])
+
+      if len(target) == 0:
+         session.msg("I don't recognize \"%s\"." % (eq_args[0].capitalize(),))
+         return
+      elif len(message) == 0:
+         session.msg("I need a message to deliver.")
+         return
+      elif len(target) > 1:
+         session.msg("Try a more unique spelling of their name.")
+         return
+      else:
+         if target[0].is_connected_plr():
+            target[0].emit_to("%s pages: %s" %
+               (pobject.get_name(show_dbref=False), message))
+            session.msg("You paged %s with '%s'." %
+               (target[0].get_name(show_dbref=False), message))
          else:
-           if target[0].is_connected_plr():
-              target[0].emit_to("%s pages: %s" %
-                  (pobject.get_name(show_dbref=False), message))
-              session.msg("You paged %s with '%s'." %
-                  (target[0].get_name(show_dbref=False), message))
-           else:
-              session.msg("Player %s does not exist or is not online." %
-                  (target[0].get_name(show_dbref=False),))
-   except:
-      from traceback import format_exc
-      session.msg("Untrapped error: %s" % (format_exc(),))
+            session.msg("Player %s does not exist or is not online." %
+               (target[0].get_name(show_dbref=False),))
 
 def cmd_quit(cdat):
    """

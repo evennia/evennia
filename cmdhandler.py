@@ -1,3 +1,4 @@
+from traceback import format_exc
 import commands_privileged
 import commands_general
 import commands_unloggedin
@@ -67,7 +68,10 @@ def handle(cdat):
       
       if callable(cmd):
          cdat['uinput'] = parsed_input
-         cmd(cdat)
+         try:
+            cmd(cdat)
+         except:
+            session.msg("Untrapped error: %s" % (format_exc(),))
          return
       
       if session.logged_in:

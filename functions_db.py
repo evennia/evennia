@@ -1,7 +1,7 @@
 import sets
 from django.db import connection
 from django.contrib.auth.models import User
-from apps.objects.models import Object
+from apps.objects.models import Object, Attribute
 from apps.config.models import ConfigValue
 import defines_global as global_defines
 import gameconf
@@ -33,6 +33,8 @@ def is_modifiable_flag(flagname):
 def is_modifiable_attrib(attribname):
    """
    Check to see if a particular attribute is modifiable.
+
+   attribname: (string) An attribute name to check.
    """
    if attribname not in global_defines.NOSET_ATTRIBS:
       return True
@@ -48,7 +50,7 @@ def get_nextfree_dbnum():
    """
    # First we'll see if there's an object of type 6 (GARBAGE) that we
    # can recycle.
-   nextfree = Object.objects.filter(type__exact=6)
+   nextfree = Object.objects.filter(type__exact=global_defines.OTYPE_GARBAGE)
    if nextfree:
       # We've got at least one garbage object to recycle.
       return nextfree[0]
@@ -57,27 +59,71 @@ def get_nextfree_dbnum():
       # for our next free.
       return int(Object.objects.order_by('-id')[0].id + 1)
 
-def global_object_name_search(ostring):
+def global_object_name_search(ostring, exact_match=False):
    """
    Searches through all objects for a name match.
    """
-   return Object.objects.filter(name__icontains=ostring).exclude(type=6)
+   if exact_match:
+      return Object.objects.filter(name__iexact=ostring).exclude(type=global_defines.OTYPE_GARBAGE)
+   else:
+      return Object.objects.filter(name__icontains=ostring).exclude(type=global_defines.OTYPE_GARBAGE)
    
-def list_search_object_namestr(searchlist, ostring, dbref_only=False):
+def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_types=False):
    """
    Iterates through a list of objects and returns a list of
    name matches.
+   searchlist: (List of Objects) The objects to perform name comparisons on.
+   ostring:    (string) The string to match against.
+   dbref_only: (bool) Only compare dbrefs.
+   limit_types: (list of int) A list of Object type numbers to filter by.
    """
+   
    if dbref_only:
-      return [prospect for prospect in searchlist if prospect.dbref_match(ostring)]
+      if limit_types:
+         return [prospect for prospect in searchlist if prospect.dbref_match(ostring) and prospect.type in limit_types]
+      else:
+         return [prospect for prospect in searchlist if prospect.dbref_match(ostring)]
    else:
-      return [prospect for prospect in searchlist if prospect.name_match(ostring)]
+      if limit_types:
+         return [prospect for prospect in searchlist if prospect.name_match(ostring) and prospect.type in limit_types]
+      else:
+         return [prospect for prospect in searchlist if prospect.name_match(ostring)]
+
+def player_search(searcher, ostring):
+   """
+   Combines an aias and local/global search for a player's name.
+   searcher: (Object) The object doing the searching.
+   ostring:  (string) The alias string to search for.
+   """
+   alias_results = alias_search(searcher, ostring)
+   if len(alias_results) > 0:
+      return alias_results
+   else:
+      return local_and_global_search(searcher, ostring, limit_types=[global_defines.OTYPE_PLAYER])
+
+def alias_search(searcher, ostring):
+   """
+   Search players by alias. Returns a list of objects whose "ALIAS" attribute
+   exactly (not case-sensitive) matches ostring. If there isn't an alias match,
+   perform a local_and_global_search().
+   
+   searcher: (Object) The object doing the searching.
+   ostring:  (string) The alias string to search for.
+   """
+   search_query = ''.join(ostring)
+   results = Attribute.objects.select_related().filter(value__iexact=ostring)
+   return [prospect.object for prospect in results if prospect.object.is_player()]
       
-def local_and_global_search(searcher, ostring, search_contents=True, search_location=True, dbref_only=False):
+def local_and_global_search(searcher, ostring, search_contents=True, search_location=True, dbref_only=False, limit_types=False):
    """
    Searches an object's location then globally for a dbref or name match.
+   
+   searcher: (Object) The object performing the search.
+   ostring: (string) The string to compare names against.
    search_contents: (bool) While true, check the contents of the searcher.
    search_location: (bool) While true, check the searcher's surroundings.
+   dbref_only: (bool) Only compare dbrefs.
+   limit_types: (list of int) A list of Object type numbers to filter by.
    """
    search_query = ''.join(ostring)
 
@@ -86,7 +132,14 @@ def local_and_global_search(searcher, ostring, search_contents=True, search_loca
    # searches are handled by list_search_object_namestr() below.
    if is_dbref(ostring) and search_contents and search_location:
       search_num = search_query[1:]
-      dbref_match = list(Object.objects.filter(id=search_num).exclude(type=6))
+      dbref_results = Object.objects.filter(id=search_num).exclude(type=6)
+
+      # If there is a type limiter in, filter by it.
+      if limit_types:
+         for limiter in limit_types:
+            dbref_results.filter(type=limiter)
+            
+      dbref_match = list(dbref_results)
       if len(dbref_match) > 0:
          return dbref_match
          
@@ -94,9 +147,9 @@ def local_and_global_search(searcher, ostring, search_contents=True, search_loca
    # Handle our location/contents searches. list_search_object_namestr() does
    # name and dbref comparisons against search_query.
    if search_contents: 
-      local_matches += list_search_object_namestr(searcher.get_contents(), search_query)
+      local_matches += list_search_object_namestr(searcher.get_contents(), search_query, limit_types)
    if search_location:
-      local_matches += list_search_object_namestr(searcher.get_location().get_contents(), search_query)
+      local_matches += list_search_object_namestr(searcher.get_location().get_contents(), search_query, limit_types=limit_types)
    
    # If the object the invoker is in matches, add it as well.
    if searcher.get_location().dbref_match(ostring) or ostring == 'here':
