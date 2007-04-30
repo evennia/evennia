@@ -30,7 +30,7 @@ NOSAVE_FLAGS = ["CONNECTED"]
 NOSET_FLAGS = ["CONNECTED"]
 
 # These attribute names can't be modified by players.
-NOSET_ATTRIBS = ["MONEY", "ALIAS"]
+NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED"]
 
 # Server version number.
 EVENNIA_VERSION = 'Pre-Alpha'

@@ -253,6 +253,13 @@ def cmd_page(cdat):
    # Combine the arguments into one string, split it by equal signs into
    # victim (entry 0 in the list), and message (entry 1 and above).
    eq_args = ' '.join(args).split('=')
+
+   # If no equal sign is in the passed arguments, see if the player has
+   # a LASTPAGED attribute. If they do, default the page to them, if not,
+   # don't touch anything and error out.
+   if len(eq_args) == 1 and pobject.has_attribute("LASTPAGED"):
+      eq_args.insert(0, "#%s" % (pobject.get_attribute_value("LASTPAGED"),))
+         
    if len(eq_args) > 1:
       target = functions_db.player_search(pobject, eq_args[0])
       message = ' '.join(eq_args[1:])
@@ -272,9 +279,13 @@ def cmd_page(cdat):
                (pobject.get_name(show_dbref=False), message))
             session.msg("You paged %s with '%s'." %
                (target[0].get_name(show_dbref=False), message))
+            pobject.set_attribute("LASTPAGED", target[0].id)
          else:
             session.msg("Player %s does not exist or is not online." %
                (target[0].get_name(show_dbref=False),))
+   else:
+      session.msg("Page who?")
+      return
 
 def cmd_quit(cdat):
    """
