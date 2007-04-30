@@ -71,7 +71,9 @@ def handle(cdat):
          try:
             cmd(cdat)
          except:
-            session.msg("Untrapped error: %s" % (format_exc(),))
+            session.msg("Untrapped error, please file a bug report:\n%s" % (format_exc(),))
+            functions_general.print_errmsg("Untrapped error, evoker %s: %s" %
+               (session, format_exc()))
          return
       
       if session.logged_in:
