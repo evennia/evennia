@@ -250,11 +250,13 @@ def cmd_page(cdat):
       if len(args) == 0:
          session.msg("Page who/what?")
          return
-   
-      eq_args = args[0].split('=')
+
+      # Combine the arguments into one string, split it by equal signs into
+      # victim (entry 0 in the list), and message (entry 1 and above).
+      eq_args = ' '.join(args).split('=')
       if len(eq_args) > 1:
          target = functions_db.local_and_global_search(pobject, eq_args[0])
-         message = eq_args[1:]
+         message = ' '.join(eq_args[1:])
    
          if len(target) == 0:
             session.msg("I can't find the user %s." % (eq_args[0].capitalize(),))
@@ -267,12 +269,13 @@ def cmd_page(cdat):
             return
          else:
            if target[0].is_connected_plr():
-              target[0].emit_to("%s pages you with: %s" %
-                  (pobject.get_name(), ' '.join(message)))
-              session.msg("Page sent.")
+              target[0].emit_to("%s pages: %s" %
+                  (pobject.get_name(show_dbref=False), message))
+              session.msg("You paged %s with '%s'." %
+                  (target[0].get_name(show_dbref=False), message))
            else:
               session.msg("Player %s does not exist or is not online." %
-                  (target[0].name.capitalize(),))
+                  (target[0].get_name(show_dbref=False),))
    except:
       from traceback import format_exc
       session.msg("Untrapped error: %s" % (format_exc(),))
