@@ -292,7 +292,7 @@ def cmd_who(cdat):
    session = cdat['session']
    pobject = session.get_pobject()
    
-   retval = "Player Name            On For Idle   Room    Cmds   Host\n\r"
+   retval = "Player Name           On For Idle   Room    Cmds   Host\n\r"
    for player in session_list:
       if not player.logged_in:
          continue
@@ -301,7 +301,7 @@ def cmd_who(cdat):
       plr_pobject = player.get_pobject()
       
       retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-         (plr_pobject.get_name(), \
+         (plr_pobject.get_name()[:25].ljust(27), \
          # On-time
          functions_general.time_format(delta_conn,0), \
          # Idle time
