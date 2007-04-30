@@ -62,13 +62,11 @@ this tandem of MU* server, SQL, and Django.
 
 Support
 -------
-At this time, I am offering no formal support for Evennia. It is not ready for
-use and is subject to change in a major way from week to week. I can't hope
-to support such a young product. However, if you have questions or ideas,
-please direct them to squishywaffle@gmail.com. 
+The best place for support is the Evennia website, located at:
+	http://evennia.com
 
 Reporting Bugs
 --------------
-Feel free to contact me by email at squishywaffle@gmail.com with as much
-details on the bug that you can find. Copy/pasting server logs is generally
-a good idea.
+Make sure to report any bugs you encounter on the issue tracker on our Google
+Code project. This is easily reached at:
+	http://code.evennia.com
