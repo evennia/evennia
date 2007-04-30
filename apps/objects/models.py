@@ -176,8 +176,8 @@ class Object(models.Model):
       
       # If it's a player, we need to update their user object as well.
       if self.is_player():
-         pobject = User.objects.get(id=self.id)
-         pobject.name = new_name
+         pobject = self.get_user_account()
+         pobject.username = new_name
          pobject.save()
          
    def get_user_account(self):
@@ -292,7 +292,7 @@ class Object(models.Model):
             uobj.is_active = False
             uobj.save()
          except:
-            functions_general.print_errmsg('Destroying object %s but no matching player.' % (self,))
+            functions_general.log_errmsg('Destroying object %s but no matching player.' % (self,))
             
       # Set the object type to GOING
       self.type = 5
@@ -439,7 +439,7 @@ class Object(models.Model):
       try:
          return self.location
       except:
-         functions_general.print_errmsg("Object '%s(#%d)' has invalid location: #%s" % (self.name,self.id,self.location_id))
+         functions_general.log_errmsg("Object '%s(#%d)' has invalid location: #%s" % (self.name,self.id,self.location_id))
          return False
          
    def get_attribute_value(self, attrib, default=False):

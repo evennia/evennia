@@ -3,6 +3,7 @@ import commands_privileged
 import commands_general
 import commands_unloggedin
 import functions_db
+import functions_general
 
 """
 This is the command processing module. It is instanced once in the main
@@ -57,6 +58,9 @@ def handle(cdat):
       parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
 
       if session.logged_in:
+         # Lets the users get around badly configured NAT timeouts.
+         if parsed_input['root_cmd'] == 'idle':
+            return
          # If it's prefixed by an '@', it's a staff command.
          if parsed_input['root_cmd'][0] != '@':
             cmd = getattr(commands_general, 'cmd_%s' % (parsed_input['root_cmd'],), None )
@@ -72,7 +76,7 @@ def handle(cdat):
             cmd(cdat)
          except:
             session.msg("Untrapped error, please file a bug report:\n%s" % (format_exc(),))
-            functions_general.print_errmsg("Untrapped error, evoker %s: %s" %
+            functions_general.log_errmsg("Untrapped error, evoker %s: %s" %
                (session, format_exc()))
          return
       
@@ -94,5 +98,5 @@ def handle(cdat):
       raise UnknownCommand
          
    except UnknownCommand:
-      session.msg("Unknown command.")
+      session.msg("Huh?  (Type \"help\" for help.)")
    

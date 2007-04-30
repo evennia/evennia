@@ -292,7 +292,7 @@ def cmd_who(cdat):
    session = cdat['session']
    pobject = session.get_pobject()
    
-   retval = "Player Name        On For Idle   Room    Cmds   Host\n\r"
+   retval = "Player Name            On For Idle   Room    Cmds   Host\n\r"
    for player in session_list:
       if not player.logged_in:
          continue

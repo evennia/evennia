@@ -17,6 +17,13 @@ builder, staff or otherwise manipulative command that doesn't fall within
 the scope of normal gameplay.
 """
 
+def cmd_reload(cdat):
+   """
+   Reloads all modules.
+   """
+   session = cdat['session']
+   server = session.server.reload(session)
+
 def cmd_destroy(cdat):
    """
    Destroy an object.

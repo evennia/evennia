@@ -5,6 +5,7 @@ from django.db import models
 from django.db import connection
 
 from apps.config.models import CommandAlias
+import sys
 import scheduler
 import functions_general
 import session_mgr
@@ -88,7 +89,25 @@ class Server(dispatcher):
    def shutdown(self, message='The server has been shutdown. Please check back soon.'):
       functions_general.announce_all(message)
       self.game_running = False
-      
+
+
+   def reload(self, session):
+      """
+      Reload modules that don't have any variables that can be reset.
+      For changes to the scheduler, server, or session_mgr modules, a cold
+      restart is needed.
+      """
+      reload_list = ['ansi', 'cmdhandler', 'commands_general',
+         'commands_privileged', 'commands_unloggedin', 'defines_global',
+         'events', 'functions_db', 'functions_general', 'functions_help',
+         'gameconf', 'session', 'apps.objects.models',
+         'apps.helpsys.models', 'apps.config.models']
+         
+      for mod in reload_list:
+         reload(sys.modules[mod])
+
+      session.msg("Modules reloaded.")
+      functions_general.log_infomsg("Modules reloaded by %s." % (session,))
    """
    END Server CLASS
    """   

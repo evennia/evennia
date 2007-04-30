@@ -16,12 +16,21 @@ def cmd_check_num_args(session, arg_list, min_args, errortext="Missing arguments
       return False
    return True
 
-def print_errmsg(errormsg):
+def log_errmsg(errormsg):
    """
-   Prints/logs an error message. Pipe any errors to be logged through here.
-   For now we're just printing to standard out.
+   Prints/logs an error message to the server log.
+
+   errormsg: (string) The message to be logged.
    """
    print 'ERROR: %s' % (errormsg,)
+
+def log_infomsg(infomsg):
+   """
+   Prints any generic debugging/informative info that should appear in the log.
+
+   debugmsg: (string) The message to be logged.
+   """
+   print '%s' % (infomsg,)
 
 def command_list():
    """
