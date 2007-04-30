@@ -63,12 +63,32 @@ def handle(cdat):
             return
          # If it's prefixed by an '@', it's a staff command.
          if parsed_input['root_cmd'][0] != '@':
+            # Shortened say alias.
+            if parsed_input['root_cmd'][0] == '"':
+               parsed_input['splitted'].insert(0, "say")
+               parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
+               parsed_input['root_cmd'] = 'say'
+            # Shortened pose alias.
+            elif parsed_input['root_cmd'][0] == ':':
+               parsed_input['splitted'].insert(0, "pose")
+               parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
+               parsed_input['root_cmd'] = 'pose'
+            # Pose without space alias.
+            elif parsed_input['root_cmd'][0] == ';':
+               parsed_input['splitted'].insert(0, "pose/nospace")
+               parsed_input['root_chunk'] = ['pose', 'nospace']
+               parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
+               parsed_input['root_cmd'] = 'pose'
             cmd = getattr(commands_general, 'cmd_%s' % (parsed_input['root_cmd'],), None )
          else:
             parsed_input['root_cmd'] = parsed_input['root_cmd'][1:]
             cmd = getattr(commands_privileged, 'cmd_%s' % (parsed_input['root_cmd'],), None )
       else:
          cmd = getattr(commands_unloggedin, 'cmd_%s' % (parsed_input['root_cmd'],), None )
+
+      # Debugging stuff.
+      #session.msg("ROOT : %s" % (parsed_input['root_cmd'],))
+      #session.msg("SPLIT: %s" % (parsed_input['splitted'],))
       
       if callable(cmd):
          cdat['uinput'] = parsed_input

@@ -355,6 +355,7 @@ def cmd_pose(cdat):
    Pose/emote command.
    """
    session = cdat['session']
+   switches = cdat['uinput']['root_chunk'][1:]
 
    if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Do what?"):
       return
@@ -363,10 +364,15 @@ def cmd_pose(cdat):
    pobject = session.get_pobject()
    speech = ' '.join(cdat['uinput']['splitted'][1:])
    
+   if "nospace" in switches:
+      sent_msg = "%s%s" % (pobject.get_name(show_dbref=False), speech)
+   else:
+      sent_msg = "%s %s" % (pobject.get_name(show_dbref=False), speech)
+   
    players_present = [player for player in session_list if player.get_pobject().get_location() == session.get_pobject().get_location()]
    
    for player in players_present:
-      player.msg("%s %s" % (pobject.get_name(show_dbref=False), speech))
+      player.msg(sent_msg)
    
 def cmd_help(cdat):
    """
