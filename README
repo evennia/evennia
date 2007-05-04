@@ -29,32 +29,6 @@ many features free, such as:
   abstraction of sessions and cookies, and access to whatever game data you
   desire are all attractive.
   
-Requirements
-------------
-* Python 2.5 strongly recommended, although may work just fine.
-* PySqlite2
-* Django (Latest trunk from Subversion recommended)
-* Optional: Apache2 or equivalent webserver with a Python interpreter
-  module. Required for web interface.
-
-Installation
-------------
-At this point in time, the codebase is changing so rapidly that writing
-installation instructions is pretty much pointless. When we get to that stage
-in development, we'll make sure to update this. But for the really determined
-(or stubborn), here's a rough outline:
-
-* Install Django.
-* Get a copy of the Evennia source.
-* Optional: Set up your apache2.conf to point mod-python to the settings.py 
-  file if you want the web features.
-* Copy settings.py.dist to settings.py.
-* Edit settings.py with your database info.
-* Run 'python manage.py syncdb' 
-* Run startup.sh. This will start the MU* server on port 4000 by default. You
-  may change this via the web interface or by editing the config table in SQL.
-* Login with the email address and password you provided to the syncdb script.
-  
 Support and Development
 -----------------------
 Since we're so early in development, we really can't hope to offer much support.
