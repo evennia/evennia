@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 import defines_global as global_defines
 import ansi
 
@@ -601,6 +601,44 @@ class Object(models.Model):
       # about tuple index types. Bleh.
       otype = int(self.type)
       return global_defines.OBJECT_TYPES[otype][1][0]
+
+class CommChannel(models.Model):
+   """
+   The CommChannel class represents a comsys channel in the vein of MUX/MUSH.
+   """
+   name = models.CharField(maxlength=255)
+   ansi_name = models.CharField(maxlength=255)
+   owner = models.ForeignKey(Object, related_name="chan_owner")
+   description = models.CharField(maxlength=80)
+   members = models.ManyToManyField(Object, blank=True, null=True)
+   req_grp = models.ManyToManyField(Group, blank=True, null=True)
+
+   def __str__(self):
+      return "%s" % (self.name,)
+   
+   class Meta:
+      ordering = ['-name']
+   
+   class Admin:
+      list_display = ('name', 'owner')
+
+class CommChannelMessage(models.Model):
+   """
+   A single logged channel message.
+   """
+   channel = models.ForeignKey(CommChannel, related_name="msg_channel")
+   sender = models.ForeignKey(Object, related_name="msg_sender", blank=True, null=True)
+   message = models.CharField(maxlength=255)
+   date_sent = models.DateField(editable=False, auto_now_add=True)
+
+   def __str__(self):
+      return "%s: %s" % (self.sender.name, self.message)
+   
+   class Meta:
+      ordering = ['-date_sent']
+   
+   class Admin:
+      list_display = ('channel', 'sender', 'message')
 
 import functions_db
 import functions_general
