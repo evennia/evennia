@@ -1,4 +1,6 @@
+import time
 from session import PlayerSession
+import gameconf
 
 """
 Session manager, handles connected players.
@@ -24,8 +26,18 @@ def check_all_sessions():
    """
    Check all currently connected sessions and see if any are dead.
    """
-   pass
-   #for sess in get_session_list():
+   idle_timeout = int(gameconf.get_configvalue('idle_timeout'))
+
+   if len(session_list) <= 0:
+      return
+
+   if idle_timeout <= 0:
+      return
+   
+   for sess in get_session_list():
+      if (time.time() - sess.cmd_last) > idle_timeout:
+         sess.msg("Idle timeout exceeded, disconnecting.")
+         sess.handle_close()
       ## This doesn't seem to provide an accurate indication of timed out
       ## sessions.
       #if not sess.writable() or not sess.readable():

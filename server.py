@@ -1,3 +1,4 @@
+from traceback import format_exc
 from asyncore import dispatcher
 from asynchat import async_chat
 import socket, asyncore, time
@@ -128,5 +129,6 @@ if __name__ == '__main__':
       print '--> Server killed by keystroke.'
 
    except:
-      server.shutdown(message="The server has encountered an error and has been shut down. Please check back soon.")
-      print '-!> Server crashed.'
+      server.shutdown(message="The server has encountered a fatal error and has been shut down. Please check back soon.")
+      functions_general.log_errmsg("Untrapped error: %s" %
+         (format_exc()))

@@ -1,4 +1,5 @@
 from traceback import format_exc
+import time
 import commands_privileged
 import commands_general
 import commands_unloggedin
@@ -58,9 +59,18 @@ def handle(cdat):
       parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
 
       if session.logged_in:
+         # Store the timestamp of the user's last command.
+         session.cmd_last = time.time()
+         
          # Lets the users get around badly configured NAT timeouts.
          if parsed_input['root_cmd'] == 'idle':
             return
+
+         # Increment our user's command counter.
+         session.cmd_total += 1
+         # Player-visible idle time, not used in idle timeout calcs.
+         session.cmd_last_visible = time.time()
+         
          # If it's prefixed by an '@', it's a staff command.
          if parsed_input['root_cmd'][0] != '@':
             # Shortened say alias.

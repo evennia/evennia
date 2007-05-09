@@ -25,6 +25,8 @@ class PlayerSession(async_chat):
       self.logged_in = False
       # The time the user last issued a command.
       self.cmd_last = time.time()
+      # Player-visible idle time, excluding the IDLE command.
+      self.cmd_last_visible = time.time()
       # Total number of commands issued.
       self.cmd_total = 0
       # The time when the user connected.
@@ -46,10 +48,6 @@ class PlayerSession(async_chat):
       uinput = line
       self.data = []
       
-      # Increment our user's command counter.
-      self.cmd_total += 1
-      # Store the timestamp of the user's last command.
-      self.cmd_last = time.time()
       # Stuff anything we need to pass in this dictionary.
       cdat = {"server": self.server, "uinput": uinput, "session": self}
       cmdhandler.handle(cdat)

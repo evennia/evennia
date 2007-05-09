@@ -307,12 +307,12 @@ def cmd_who(cdat):
    for player in session_list:
       if not player.logged_in:
          continue
-      delta_cmd = time.time() - player.cmd_last
+      delta_cmd = time.time() - player.cmd_last_visible
       delta_conn = time.time() - player.conn_time
       plr_pobject = player.get_pobject()
       
       retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-         (plr_pobject.get_name()[:25].ljust(27), \
+         (plr_pobject.get_name(show_dbref=False)[:25].ljust(27), \
          # On-time
          functions_general.time_format(delta_conn,0), \
          # Idle time
