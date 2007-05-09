@@ -21,4 +21,5 @@ class GenericPerm(models.Model):
          ("shutdown", "May @shutdown the site"),
          ("tel_anywhere", "May @teleport anywhere"),
          ("tel_anyone", "May @teleport anything"),
+         ("see_session_data", "May see detailed player session data"),
       )

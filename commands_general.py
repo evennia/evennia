@@ -302,29 +302,46 @@ def cmd_who(cdat):
    session_list = session_mgr.get_session_list()
    session = cdat['session']
    pobject = session.get_pobject()
-   
-   retval = "Player Name           On For Idle   Room    Cmds   Host\n\r"
+   show_session_data = pobject.user_has_perm("genperms.see_session_data")
+
+   # Only those with the see_session_data or superuser status can see
+   # session details.
+   if show_session_data:
+      retval = "Player Name           On For Idle   Room    Cmds   Host\n\r"
+   else:
+      retval = "Player Name           On For Idle\n\r"
+      
    for player in session_list:
       if not player.logged_in:
          continue
       delta_cmd = time.time() - player.cmd_last_visible
       delta_conn = time.time() - player.conn_time
       plr_pobject = player.get_pobject()
-      
-      retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-         (plr_pobject.get_name(show_dbref=False)[:25].ljust(27), \
-         # On-time
-         functions_general.time_format(delta_conn,0), \
-         # Idle time
-         functions_general.time_format(delta_cmd,1), \
-         # Flags
-         '', \
-         # Location
-         plr_pobject.get_location().id, \
-         player.cmd_total, \
-         # More flags?
-         '', \
-         player.address[0])
+
+      if show_session_data:
+         retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
+            (plr_pobject.get_name(show_dbref=False)[:25].ljust(27), \
+            # On-time
+            functions_general.time_format(delta_conn,0), \
+            # Idle time
+            functions_general.time_format(delta_cmd,1), \
+            # Flags
+            '', \
+            # Location
+            plr_pobject.get_location().id, \
+            player.cmd_total, \
+            # More flags?
+            '', \
+            player.address[0])
+      else:
+         retval += '%-16s%9s %4s%-3s\r\n' % \
+            (plr_pobject.get_name(show_dbref=False)[:25].ljust(27), \
+            # On-time
+            functions_general.time_format(delta_conn,0), \
+            # Idle time
+            functions_general.time_format(delta_cmd,1), \
+            # Flags
+            '')
    retval += '%d Players logged in.' % (len(session_list),)
    
    session.msg(retval)

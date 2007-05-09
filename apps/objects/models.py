@@ -129,6 +129,22 @@ class Object(models.Model):
       else:
          return profile[0].is_superuser
 
+   def user_has_perm(self, perm):
+      """
+      Checks to see whether a user has the specified permission or is a super
+      user.
+      """
+      if not self.is_player():
+         return False
+
+      if self.is_superuser():
+         return True
+
+      if self.get_user_account().has_perm(perm):
+         return True
+      else:
+         return False
+
    def owns_other(self, other_obj):
       """
       See if the envoked object owns another object.
