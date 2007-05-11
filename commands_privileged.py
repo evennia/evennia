@@ -3,7 +3,6 @@ import resource
 
 import functions_db
 import functions_general
-import functions_comsys
 import commands_general
 import commands_unloggedin
 import cmdhandler
@@ -271,24 +270,6 @@ def cmd_emit(cdat):
       session.msg("Emit what?")
    else:
       pobject.get_location().emit_to_contents(message)
-
-def cmd_ccreate(cdat):
-   """
-   Creates a new channel.
-   """
-   session = cdat['session']
-   pobject = session.get_pobject()
-   uinput= cdat['uinput']['splitted']
-   cname = ' '.join(uinput[1:])
-   
-   if cname == '':
-      session.msg("You must supply a name!")
-   else:
-      # Create and set the object up.
-      cdat = {"name": cname, "owner": pobject}
-      new_chan = functions_comsys.create_channel(cdat)
-      
-      session.msg("Channel %s created." % (new_chan.get_name(),))
       
 def cmd_create(cdat):
    """

@@ -3,6 +3,7 @@ import time
 import functions_general
 import functions_db
 import functions_help
+import functions_comsys
 import defines_global as global_defines
 import session_mgr
 import ansi
@@ -121,6 +122,26 @@ def cmd_cwho(cdat):
   as well.
   """
   pass
+
+def cmd_ccreate(cdat):
+   """
+   @ccreate
+   
+   Creates a new channel with the invoker being the default owner.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   uinput= cdat['uinput']['splitted']
+   cname = ' '.join(uinput[1:])
+   
+   if cname == '':
+      session.msg("You must supply a name!")
+   else:
+      # Create and set the object up.
+      cdat = {"name": cname, "owner": pobject}
+      new_chan = functions_comsys.create_channel(cdat)
+      
+      session.msg("Channel %s created." % (new_chan.get_name(),))
 
 def cmd_cchown(cdat):
   """

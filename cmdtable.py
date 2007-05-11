@@ -27,7 +27,7 @@ ctable = {
    "uptime":       commands_general.cmd_uptime,
    "version":      commands_general.cmd_version,
    "who":          commands_general.cmd_who,
-   "@ccreate":     commands_privileged.cmd_ccreate,
+   "@ccreate":     commands_comsys.cmd_ccreate,
    "@create":      commands_privileged.cmd_create,
    "@description": commands_privileged.cmd_description,
    "@destroy":     commands_privileged.cmd_destroy,
