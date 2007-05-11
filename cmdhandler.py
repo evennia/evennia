@@ -2,7 +2,9 @@ from traceback import format_exc
 import time
 import commands_privileged
 import commands_general
+import commands_comsys
 import commands_unloggedin
+import cmdtable
 import functions_db
 import functions_general
 
@@ -40,17 +42,17 @@ def handle(cdat):
       # TODO: Protect against non-standard characters.
       if cdat['uinput'] == '':
          raise UnknownCommand
-         
+
       uinput = cdat['uinput'].split()
       parsed_input = {}
-      
+
       # First we split the input up by spaces.
       parsed_input['splitted'] = uinput
       # Now we find the root command chunk (with switches attached).
       parsed_input['root_chunk'] = parsed_input['splitted'][0].split('/')
       # And now for the actual root command. It's the first entry in root_chunk.
       parsed_input['root_cmd'] = parsed_input['root_chunk'][0].lower()
-      
+
       # Now we'll see if the user is using an alias. We do a dictionary lookup,
       # if the key (the player's root command) doesn't exist on the dict, we
       # don't replace the existing root_cmd. If the key exists, its value
@@ -61,7 +63,7 @@ def handle(cdat):
       if session.logged_in:
          # Store the timestamp of the user's last command.
          session.cmd_last = time.time()
-         
+
          # Lets the users get around badly configured NAT timeouts.
          if parsed_input['root_cmd'] == 'idle':
             return
@@ -70,36 +72,34 @@ def handle(cdat):
          session.cmd_total += 1
          # Player-visible idle time, not used in idle timeout calcs.
          session.cmd_last_visible = time.time()
-         
-         # If it's prefixed by an '@', it's a staff command.
-         if parsed_input['root_cmd'][0] != '@':
-            # Shortened say alias.
-            if parsed_input['root_cmd'][0] == '"':
-               parsed_input['splitted'].insert(0, "say")
-               parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
-               parsed_input['root_cmd'] = 'say'
-            # Shortened pose alias.
-            elif parsed_input['root_cmd'][0] == ':':
-               parsed_input['splitted'].insert(0, "pose")
-               parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
-               parsed_input['root_cmd'] = 'pose'
-            # Pose without space alias.
-            elif parsed_input['root_cmd'][0] == ';':
-               parsed_input['splitted'].insert(0, "pose/nospace")
-               parsed_input['root_chunk'] = ['pose', 'nospace']
-               parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
-               parsed_input['root_cmd'] = 'pose'
-            cmd = getattr(commands_general, 'cmd_%s' % (parsed_input['root_cmd'],), None )
-         else:
-            parsed_input['root_cmd'] = parsed_input['root_cmd'][1:]
-            cmd = getattr(commands_privileged, 'cmd_%s' % (parsed_input['root_cmd'],), None )
+
+         # Shortened say alias.
+         if parsed_input['root_cmd'][0] == '"':
+            parsed_input['splitted'].insert(0, "say")
+            parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
+            parsed_input['root_cmd'] = 'say'
+         # Shortened pose alias.
+         elif parsed_input['root_cmd'][0] == ':':
+            parsed_input['splitted'].insert(0, "pose")
+            parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
+            parsed_input['root_cmd'] = 'pose'
+         # Pose without space alias.
+         elif parsed_input['root_cmd'][0] == ';':
+            parsed_input['splitted'].insert(0, "pose/nospace")
+            parsed_input['root_chunk'] = ['pose', 'nospace']
+            parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
+            parsed_input['root_cmd'] = 'pose'
+
+         # Get the command's function reference (Or False)
+         cmd = cmdtable.return_cfunc(parsed_input['root_cmd'])
       else:
-         cmd = getattr(commands_unloggedin, 'cmd_%s' % (parsed_input['root_cmd'],), None )
+         # Not logged in, look through the unlogged-in command table.
+         cmd = cmdtable.return_cfunc(parsed_input['root_cmd'], unlogged_cmd=True)
 
       # Debugging stuff.
       #session.msg("ROOT : %s" % (parsed_input['root_cmd'],))
       #session.msg("SPLIT: %s" % (parsed_input['splitted'],))
-      
+
       if callable(cmd):
          cdat['uinput'] = parsed_input
          try:
@@ -109,7 +109,7 @@ def handle(cdat):
             functions_general.log_errmsg("Untrapped error, evoker %s: %s" %
                (session, format_exc()))
          return
-      
+
       if session.logged_in:
          # If we're not logged in, don't check exits.
          pobject = session.get_pobject()
@@ -123,10 +123,10 @@ def handle(cdat):
             else:
                session.msg("That exit leads to nowhere.")
             return
-         
+
       # If we reach this point, we haven't matched anything.   
       raise UnknownCommand
-         
+
    except UnknownCommand:
       session.msg("Huh?  (Type \"help\" for help.)")
-   
+

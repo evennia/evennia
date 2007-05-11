@@ -638,6 +638,47 @@ class CommChannel(models.Model):
    class Admin:
       list_display = ('name', 'owner')
 
+   def get_name(self):
+      """
+      Returns a channel's name.
+      """
+      return self.name
+
+   def get_header(self):
+      """
+      Returns the channel's header text, or what is shown before each channel
+      message.
+      """
+      return ansi.parse_ansi(self.header)
+
+   def get_owner(self):
+      """
+      Returns a channels' owner.
+      """
+      return self.owner
+
+   def set_name(self, new_name):
+      """
+      Rename a channel
+      """
+      self.name = ansi.parse_ansi(new_name, strip_ansi=True)
+      self.header = "[%s]" % (ansi.parse_ansi(new_name),)
+      self.save()
+
+   def set_header(self, new_header):
+      """
+      Sets a channel's header text.
+      """
+      self.header = ansi.parse_ansi(new_header)
+      self.save()
+
+   def set_owner(self, new_owner):
+      """
+      Sets a channel's owner.
+      """
+      self.owner = new_owner
+      self.save()
+
 class CommChannelMessage(models.Model):
    """
    A single logged channel message.

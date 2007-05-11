@@ -10,7 +10,8 @@ import os
 """
 Comsys command module. Pretty much every comsys command should go here for
 now.
-"""   
+"""
+
 def cmd_addcom(cdat):
   """
   addcom
@@ -51,14 +52,6 @@ def cmd_clist(cdat):
   @clist
 
   Lists all available channels on the game.
-  """
-  pass
-
-def cmd_ccreate(cdat):
-  """
-  @ccreate
-
-  Creates a channel.
   """
   pass
 

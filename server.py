@@ -102,7 +102,8 @@ class Server(dispatcher):
          'commands_privileged', 'commands_unloggedin', 'defines_global',
          'events', 'functions_db', 'functions_general', 'functions_help',
          'gameconf', 'session', 'apps.objects.models',
-         'apps.helpsys.models', 'apps.config.models']
+         'apps.helpsys.models', 'apps.config.models', 'functions_comsys',
+         'commands_comsys']
          
       for mod in reload_list:
          reload(sys.modules[mod])
