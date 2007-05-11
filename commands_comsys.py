@@ -14,148 +14,150 @@ now.
 """
 
 def cmd_addcom(cdat):
-  """
-  addcom
+   """
+   addcom
 
-  Adds an alias for a channel.
-  addcom foo=Bar
-  """
-  pass
+   Adds an alias for a channel.
+   addcom foo=Bar
+   """
+   pass
 
 def cmd_allcom(cdat):
-  """
-  allcom
+   """
+   allcom
 
-  Allows the user to universally turn off or on all channels they are on, 
-  as well as perform a "who" for all channels they are on.
-  """
-  pass
+   Allows the user to universally turn off or on all channels they are on,
+   as well as perform a "who" for all channels they are on.
+   """
+   pass
 
 def cmd_comtitle(cdat):
-  """
-  comtitle
+   """
+   comtitle
 
-  Sets a prefix to the user's name on the specified channel.
-  """
-  pass
+   Sets a prefix to the user's name on the specified channel.
+   """
+   pass
 
 def cmd_clearcom(cdat):
-  """
-  clearcom
+   """
+   clearcom
 
-  Effectively runs delcom on all channels the user is on.  It will remove their aliases,
-  remove them from the channel, and clear any titles they have set.
-  """
-  pass
+   Effectively runs delcom on all channels the user is on.  It will remove their aliases,
+   remove them from the channel, and clear any titles they have set.
+   """
+   pass
 
 def cmd_clist(cdat):
-  """
-  @clist
+   """
+   @clist
 
-  Lists all available channels on the game.
-  """
-  pass
+   Lists all available channels on the game.
+   """
+   session = cdat['session']
+   session.msg("*** Channel       Owner           Description")
+   for chan in functions_comsys.get_all_channels():
+   session.msg("--- %s %s" % (chan.get_name(), chan.get_owner().get_name())
 
 def cmd_cdestroy(cdat):
-  """
-  @cdestroy
+   """
+   @cdestroy
 
-  Destroys a channel.
-  """
-  pass
+   Destroys a channel.
+   """
+   pass
 
 def cmd_cset(cdat):
-  """
-  @cset
+   """
+   @cset
 
-  Sets various flags on a channel.
-  """
-  pass
+   Sets various flags on a channel.
+   """
+   pass
 
 def cmd_cpflags(cdat):
-  """
-  @cpflags
+   """
+   @cpflags
 
-  Sets various flags on a channel relating to players.
-  """
-  pass
+   Sets various flags on a channel relating to players.
+   """
+   pass
 
 def cmd_coflags(cdat):
-  """
-  @coflags
+   """
+   @coflags
 
-  Sets various flags on a channel relating to objects.
-  """
-  pass
+   Sets various flags on a channel relating to objects.
+   """
+   pass
 
 def cmd_ccharge(cdat):
-  """
-  @ccharge
+   """
+   @ccharge
 
-  Sets the cost to transmit over a channel.  Default is free.
-  """
-  pass
+   Sets the cost to transmit over a channel.  Default is free.
+   """
+   pass
 
 def cmd_cboot(cdat):
-  """
-  @cboot
+   """
+   @cboot
 
-  Kicks a player or object from the channel.
-  """
-  pass
+   Kicks a player or object from the channel.
+   """
+   pass
 
 def cmd_cemit(cdat):
-  """
-  @cemit
+   """
+   @cemit
 
-  Allows the user to send a message over a channel as long as
-  they own or control it.  It does not show the user's name.
-  """
-  pass
+   Allows the user to send a message over a channel as long as
+   they own or control it.  It does not show the user's name.
+   """
+   pass
 
 def cmd_cwho(cdat):
-  """
-  @cwho
+   """
+   @cwho
 
-  Displays the name, status and object type for a given channel.
-  Adding /all after the channel name will list disconnected players
-  as well.
-  """
-  pass
+   Displays the name, status and object type for a given channel.
+   Adding /all after the channel name will list disconnected players
+   as well.
+   """
+   pass
 
 def cmd_ccreate(cdat):
    """
    @ccreate
-   
+
    Creates a new channel with the invoker being the default owner.
    """
    session = cdat['session']
    pobject = session.get_pobject()
    uinput= cdat['uinput']['splitted']
    cname = ' '.join(uinput[1:])
-   
+
    if cname == '':
       session.msg("You must supply a name!")
    else:
       # Create and set the object up.
       cdat = {"name": cname, "owner": pobject}
       new_chan = functions_comsys.create_channel(cdat)
-      
       session.msg("Channel %s created." % (new_chan.get_name(),))
 
 def cmd_cchown(cdat):
-  """
-  @cchown
+   """
+   @cchown
 
-  Changes the owner of a channel.
-  """
-  pass
+   Changes the owner of a channel.
+   """
+   pass
 
 def cmd_delcom(cdat):
-  """
-  delcom
+   """
+   delcom
 
-  Removes the specified alias to a channel.  If this is the last alias,
-  the user is effectively removed from the channel.
-  """
-  pass
+   Removes the specified alias to a channel.  If this is the last alias,
+   the user is effectively removed from the channel.
+   """
+   pass

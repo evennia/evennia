@@ -24,6 +24,12 @@ def get_com_who(channel, muted=False, disconnected=False):
 def get_user_channels(player):
   pass
 
+def get_all_channels():
+   """
+   Returns all channel objects.
+   """
+   return CommChannel.objects.all()
+
 def create_channel(cdat):
    """
    Create a new channel. cdat is a dictionary that contains the following keys.
