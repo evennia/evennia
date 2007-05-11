@@ -57,7 +57,7 @@ def cmd_clist(cdat):
    session = cdat['session']
    session.msg("*** Channel       Owner           Description")
    for chan in functions_comsys.get_all_channels():
-   session.msg("--- %s %s" % (chan.get_name(), chan.get_owner().get_name())
+      session.msg("--- %s %s" % (chan.get_name(), chan.get_owner().get_name()))
 
 def cmd_cdestroy(cdat):
    """
