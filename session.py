@@ -1,7 +1,7 @@
 from asyncore import dispatcher
 from asynchat import async_chat
 import socket, asyncore, time, sys
-import pickle
+import cPickle as pickle
 import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
