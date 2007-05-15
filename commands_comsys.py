@@ -55,9 +55,11 @@ def cmd_clist(cdat):
    Lists all available channels on the game.
    """
    session = cdat['session']
-   session.msg("*** Channel       Owner           Description")
+   session.msg("** Channel       Owner           Description")
    for chan in functions_comsys.get_all_channels():
-      session.msg("--- %s %s" % (chan.get_name(), chan.get_owner().get_name()))
+      session.msg("%s%s %-13.13s %-15.15s %-45.45s" %
+         ('-', '-', chan.get_name(), chan.get_owner().get_name(), 'No Description'))
+   session.msg("-- End of Channel List --")
 
 def cmd_cdestroy(cdat):
    """
@@ -65,7 +67,23 @@ def cmd_cdestroy(cdat):
 
    Destroys a channel.
    """
-   pass
+   session = cdat['session']
+   pobject = session.get_pobject()
+   uinput= cdat['uinput']['splitted']
+   cname = ' '.join(uinput[1:])
+
+   if cname == '':
+      session.msg("You must supply a name!")
+      return
+
+   name_matches = functions_comsys.cname_search(cname, exact=True)
+
+   if not name_matches:
+      session.msg("Could not find channel %s." % (cname,))
+   else:
+      session.msg("Channel %s destroyed." % (name_matches[0],))
+      name_matches.delete()
+      
 
 def cmd_cset(cdat):
    """

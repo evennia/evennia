@@ -28,6 +28,7 @@ ctable = {
    "version":      commands_general.cmd_version,
    "who":          commands_general.cmd_who,
    "@ccreate":     commands_comsys.cmd_ccreate,
+   "@cdestroy":    commands_comsys.cmd_cdestroy,
    "@clist":       commands_comsys.cmd_clist,
    "@create":      commands_privileged.cmd_create,
    "@description": commands_privileged.cmd_description,
