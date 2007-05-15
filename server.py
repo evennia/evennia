@@ -12,6 +12,7 @@ import functions_general
 import session_mgr
 import gameconf
 import settings
+import cmdtable
 import initial_setup
 
 class Server(dispatcher):
@@ -91,6 +92,12 @@ class Server(dispatcher):
       functions_general.announce_all(message)
       self.game_running = False
 
+
+   def command_list(self):
+      """
+      Return a string representing the server's command list.
+      """
+      return cmdtable.ctable.keys()
 
    def reload(self, session):
       """

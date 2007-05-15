@@ -12,6 +12,9 @@ uncon_ctable = {
 
 # Command Table
 ctable = {
+   "addcom":       commands_comsys.cmd_addcom,
+   "comlist":      commands_comsys.cmd_comlist,
+   "delcom":       commands_comsys.cmd_delcom,
    "drop":         commands_general.cmd_drop,
    "examine":      commands_general.cmd_examine,
    "get":          commands_general.cmd_get,

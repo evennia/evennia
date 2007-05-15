@@ -1,6 +1,7 @@
 from asyncore import dispatcher
 from asynchat import async_chat
 import socket, asyncore, time, sys
+import pickle
 import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
@@ -31,7 +32,28 @@ class PlayerSession(async_chat):
       self.cmd_total = 0
       # The time when the user connected.
       self.conn_time = time.time()
-                
+      self.channels_subscribed = {}
+
+   def set_user_channel(self, alias, cname, listening):
+      """
+      Add a channel to a session's channel list.
+      """
+      self.channels_subscribed[alias] = [cname, listening]
+      self.get_pobject().set_attribute("CHANLIST", pickle.dumps(self.channels_subscribed))
+
+   def del_user_channel(self, alias):
+      """
+      Remove a channel from a session's channel list.
+      """
+      del self.channels_subscribed[alias]
+
+   def load_user_channels(self):
+      """
+      Un-pickle a user's channel list from their CHANLIST attribute.
+      """
+      chan_list = self.get_pobject().get_attribute_value("CHANLIST")
+      self.channels_subscribed = pickle.loads(chan_list)
+      
    def collect_incoming_data(self, data):
       """
       Stuff any incoming data into our buffer, self.data
@@ -103,6 +125,7 @@ class PlayerSession(async_chat):
       cdat = {"session": self, "uinput":'look', "server": self.server}
       cmdhandler.handle(cdat)
       print "Login: %s" % (self,)
+      self.load_user_channels()
       
    def msg(self, message):
       """

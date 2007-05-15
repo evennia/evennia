@@ -2,6 +2,7 @@ import session_mgr
 import commands_privileged
 import commands_general
 import commands_unloggedin
+
 """
 General commonly used functions.
 """
@@ -31,21 +32,6 @@ def log_infomsg(infomsg):
    debugmsg: (string) The message to be logged.
    """
    print '%s' % (infomsg,)
-
-def command_list():
-   """
-   Return a list of all commands.
-   """
-   commands = dir(commands_unloggedin) + dir(commands_general)
-   stf_commands = dir(commands_privileged)
-   filtered = [prospect for prospect in commands if "cmd_" in prospect]
-   stf_filtered = [prospect for prospect in stf_commands if "cmd_" in prospect]
-   processed = []
-   for cmd in filtered:
-      processed.append(cmd[4:])
-   for cmd in stf_filtered:
-      processed.append('@%s' %(cmd[4:],))
-   return processed
    
 def time_format(seconds, style=0):
    """

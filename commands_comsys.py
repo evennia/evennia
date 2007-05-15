@@ -20,22 +20,89 @@ def cmd_addcom(cdat):
    Adds an alias for a channel.
    addcom foo=Bar
    """
-   pass
+   session = cdat['session']
+   server = cdat['server']
+   args = cdat['uinput']['splitted'][1:]
+   
+   if len(args) == 0:
+      session.msg("You need to specify a channel alias and name.")
+      return
+      
+   eq_args = args[0].split('=')
 
+   if len(eq_args) < 2:
+      session.msg("You need to specify a channel name.")
+      return
+   
+   chan_alias = eq_args[0]
+   chan_name = eq_args[1]
+
+   if len(chan_name) == 0:
+      session.msg("You need to specify a channel name.")
+      return
+
+   if chan_alias in session.channels_subscribed:
+      session.msg("You are already on that channel.")
+      return
+
+   name_matches = functions_comsys.cname_search(chan_name, exact=True)
+
+   if name_matches:
+      session.set_user_channel(chan_alias, chan_name, True)
+      session.msg("You join %s, with an alias of %s." % (name_matches[0], chan_alias))
+   else:
+      session.msg("Could not find channel %s." % (chan_name,))
+
+def cmd_delcom(cdat):
+   """
+   delcom
+
+   Removes the specified alias to a channel.  If this is the last alias,
+   the user is effectively removed from the channel.
+   """
+   """
+   @cdestroy
+
+   Destroys a channel.
+   """
+   session = cdat['session']
+   uinput= cdat['uinput']['splitted']
+   chan_alias = ' '.join(uinput[1:])
+
+   if len(chan_alias) == 0:
+      session.msg("You must specify a channel alias.")
+      return
+
+   if chan_alias not in session.channels_subscribed:
+      session.msg("You are not on that channel.")
+      return
+
+   session.msg("You have left %s." % (session.channels_subscribed[chan_alias][0],))
+   session.del_user_channel(chan_alias)
+
+def cmd_comlist(cdat):
+   """
+   Lists the channels a user is subscribed to.
+   """
+   session = cdat['session']
+
+   session.msg("Alias     Channel             Status")
+   for chan in session.channels_subscribed:
+      if session.channels_subscribed[chan][1]:
+         chan_on = "On"
+      else:
+         chan_on = "Off"
+         
+      session.msg("%-9.9s %-19.19s %s" %
+         (chan, session.channels_subscribed[chan][0], chan_on))
+   session.msg("-- End of comlist --")
+   
 def cmd_allcom(cdat):
    """
    allcom
 
    Allows the user to universally turn off or on all channels they are on,
    as well as perform a "who" for all channels they are on.
-   """
-   pass
-
-def cmd_comtitle(cdat):
-   """
-   comtitle
-
-   Sets a prefix to the user's name on the specified channel.
    """
    pass
 
@@ -68,7 +135,6 @@ def cmd_cdestroy(cdat):
    Destroys a channel.
    """
    session = cdat['session']
-   pobject = session.get_pobject()
    uinput= cdat['uinput']['splitted']
    cname = ' '.join(uinput[1:])
 
@@ -93,21 +159,6 @@ def cmd_cset(cdat):
    """
    pass
 
-def cmd_cpflags(cdat):
-   """
-   @cpflags
-
-   Sets various flags on a channel relating to players.
-   """
-   pass
-
-def cmd_coflags(cdat):
-   """
-   @coflags
-
-   Sets various flags on a channel relating to objects.
-   """
-   pass
 
 def cmd_ccharge(cdat):
    """
@@ -151,7 +202,6 @@ def cmd_ccreate(cdat):
    Creates a new channel with the invoker being the default owner.
    """
    session = cdat['session']
-   pobject = session.get_pobject()
    uinput= cdat['uinput']['splitted']
    cname = ' '.join(uinput[1:])
 
@@ -174,14 +224,5 @@ def cmd_cchown(cdat):
    @cchown
 
    Changes the owner of a channel.
-   """
-   pass
-
-def cmd_delcom(cdat):
-   """
-   delcom
-
-   Removes the specified alias to a channel.  If this is the last alias,
-   the user is effectively removed from the channel.
    """
    pass

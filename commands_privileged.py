@@ -6,6 +6,7 @@ import functions_general
 import commands_general
 import commands_unloggedin
 import cmdhandler
+
 import session_mgr
 import ansi
 import defines_global
@@ -88,7 +89,7 @@ def cmd_list(cdat):
    if len(argstr) == 0:   
       session.msg(msg_invalid)
    elif argstr == "commands":
-      session.msg('Commands: '+' '.join(functions_general.command_list()))
+      session.msg('Commands: '+ ' '.join(session.server.command_list()))
    elif argstr == "process":
       loadvg = os.getloadavg()
       psize = resource.getpagesize()
