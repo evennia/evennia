@@ -139,6 +139,12 @@ def cmd_ccreate(cdat):
 
    if cname == '':
       session.msg("You must supply a name!")
+      return
+
+   name_matches = functions_comsys.cname_search(cname, exact=True)
+
+   if name_matches:
+      session.msg("A channel with that name already exists.")
    else:
       # Create and set the object up.
       cdat = {"name": cname, "owner": pobject}

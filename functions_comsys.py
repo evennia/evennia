@@ -43,3 +43,15 @@ def create_channel(cdat):
    new_chan.set_owner(cdat["owner"])
    new_chan.save()
    return new_chan
+
+def cname_search(search_text, exact=False):
+   """
+   Searches for a particular channel name. Returns a QuerySet with the
+   results.
+   
+   exact: (bool) Do an exact (case-insensitive) name match if true.
+   """
+   if exact:
+      return CommChannel.objects.filter(name__iexact=search_text)
+   else:
+      return CommChannel.objects.filter(name__istartswith=search_text)
