@@ -89,7 +89,8 @@ class PlayerSession(async_chat):
       Un-pickle a user's channel list from their CHANLIST attribute.
       """
       chan_list = self.get_pobject().get_attribute_value("CHANLIST")
-      self.channels_subscribed = pickle.loads(chan_list)
+      if chan_list:
+         self.channels_subscribed = pickle.loads(chan_list)
       
    def collect_incoming_data(self, data):
       """
