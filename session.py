@@ -79,8 +79,10 @@ class PlayerSession(async_chat):
       Break the connection and do some accounting.
       """
       pobject = self.get_pobject()
-      pobject.set_flag("CONNECTED", False)
-      pobject.get_location().emit_to_contents("%s has disconnected." % (pobject.get_name(),), exclude=pobject)
+      if pobject:
+         pobject.set_flag("CONNECTED", False)
+         pobject.get_location().emit_to_contents("%s has disconnected." % (pobject.get_name(),), exclude=pobject)
+         
       async_chat.handle_close(self)
       self.logged_in = False
       session_mgr.remove_session(self)
