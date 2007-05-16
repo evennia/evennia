@@ -97,7 +97,9 @@ class Server(dispatcher):
       """
       Return a string representing the server's command list.
       """
-      return cmdtable.ctable.keys()
+      clist = cmdtable.ctable.keys()
+      clist.sort()
+      return clist
 
    def reload(self, session):
       """
