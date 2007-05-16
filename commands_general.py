@@ -372,13 +372,13 @@ def cmd_pose(cdat):
    Pose/emote command.
    """
    session = cdat['session']
+   pobject = session.get_pobject()
    switches = cdat['uinput']['root_chunk'][1:]
 
    if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Do what?"):
       return
    
    session_list = session_mgr.get_session_list()
-   pobject = session.get_pobject()
    speech = ' '.join(cdat['uinput']['splitted'][1:])
    
    if "nospace" in switches:

@@ -89,6 +89,14 @@ def handle(cdat):
             parsed_input['root_chunk'] = ['pose', 'nospace']
             parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
             parsed_input['root_cmd'] = 'pose'
+         # Channel alias match.
+         elif session.has_user_channel(parsed_input['root_cmd'], alias_search=True, return_muted=False):
+            cname = session.channels_subscribed.get(parsed_input['root_cmd'])[0]
+            cmessage = ' '.join(parsed_input['splitted'][1:])
+            second_arg = "%s=%s" % (cname, cmessage)
+            parsed_input['splitted'] = ["@cemit/sendername", second_arg]
+            parsed_input['root_chunk'] = ['@cemit', 'sendername', 'quiet']
+            parsed_input['root_cmd'] = '@cemit'
 
          # Get the command's function reference (Or False)
          cmd = cmdtable.return_cfunc(parsed_input['root_cmd'])

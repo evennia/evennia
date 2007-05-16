@@ -9,20 +9,30 @@ import ansi
 Comsys functions.
 """
 
-def set_new_title(channel, player, title):
-  pass
-
-def get_com_who(channel, muted=False, disconnected=False):
+def get_cwho_list(channel_name, return_muted=False):
   """
   Get all users on a channel.
 
-  If muted = True, return users who have it muted as well.
-  If disconnected = True, return users who are not connected as well.
+  channel_name: (string) The name of the channel.
+  return_muted: (bool)   Return those who have the channel muted if True.
   """
-  pass
+  sess_list = session_mgr.get_session_list()
+  result_list = []
+  for sess in sess_list:
+     if sess.has_user_channel(channel_name, return_muted):
+        result_list.append(sess)
 
-def get_user_channels(player):
-  pass
+  return result_list
+
+def send_cmessage(channel_name, message):
+   """
+   Sends a message to all players on the specified channel.
+
+   channel_name: (string) The name of the channel.
+   message:      (string) Message to send.
+   """
+   for user in get_cwho_list(channel_name, return_muted=False):
+      user.msg(message)
 
 def get_all_channels():
    """

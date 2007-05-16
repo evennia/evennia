@@ -34,6 +34,43 @@ class PlayerSession(async_chat):
       self.conn_time = time.time()
       self.channels_subscribed = {}
 
+   def has_user_channel(self, cname, alias_search=False, return_muted=False):
+      """
+      Is this session subscribed to the named channel?
+      return_muted: (bool) Take the user's enabling/disabling of the channel
+                           into consideration?
+      """
+      has_channel = False
+
+      if alias_search:
+         # Search by aliases only.
+         cdat = self.channels_subscribed.get(cname, False)
+         # No key match, fail immediately.
+         if not cdat:
+            return False
+         
+         # If channel status is taken into consideration, see if the user
+         # has the channel muted or not.
+         if return_muted:
+            return cdat[1]
+         else:
+            return True
+      else:
+         # Search by complete channel name.
+         chan_list = self.channels_subscribed.values()
+         for chan in chan_list:
+            # Check for a name match
+            if cname == chan[0]:
+               has_channel = True
+
+               # If channel status is taken into consideration, see if the user
+               # has the channel muted or not.
+               if return_muted is False and not chan[1]:
+                  has_channel = False
+               break
+
+      return has_channel
+      
    def set_user_channel(self, alias, cname, listening):
       """
       Add a channel to a session's channel list.

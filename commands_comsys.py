@@ -21,6 +21,7 @@ def cmd_addcom(cdat):
    addcom foo=Bar
    """
    session = cdat['session']
+   pobject = session.get_pobject()
    server = cdat['server']
    args = cdat['uinput']['splitted'][1:]
    
@@ -48,8 +49,15 @@ def cmd_addcom(cdat):
    name_matches = functions_comsys.cname_search(chan_name, exact=True)
 
    if name_matches:
-      session.set_user_channel(chan_alias, chan_name, True)
-      session.msg("You join %s, with an alias of %s." % (name_matches[0], chan_alias))
+      chan_name_parsed = name_matches[0].get_name()
+      session.msg("You join %s, with an alias of %s." % \
+         (chan_name_parsed, chan_alias))
+      session.set_user_channel(chan_alias, chan_name_parsed, True)
+
+      # Announce the user's joining.
+      join_msg = "[%s] %s has joined the channel." % \
+         (chan_name_parsed, pobject.get_name(show_dbref=False))
+      functions_comsys.send_cmessage(chan_name_parsed, join_msg)
    else:
       session.msg("Could not find channel %s." % (chan_name,))
 
@@ -57,15 +65,11 @@ def cmd_delcom(cdat):
    """
    delcom
 
-   Removes the specified alias to a channel.  If this is the last alias,
+   Removes the specified alias to a channel. If this is the last alias,
    the user is effectively removed from the channel.
    """
-   """
-   @cdestroy
-
-   Destroys a channel.
-   """
    session = cdat['session']
+   pobject = session.get_pobject()
    uinput= cdat['uinput']['splitted']
    chan_alias = ' '.join(uinput[1:])
 
@@ -77,8 +81,14 @@ def cmd_delcom(cdat):
       session.msg("You are not on that channel.")
       return
 
-   session.msg("You have left %s." % (session.channels_subscribed[chan_alias][0],))
+   chan_name = session.channels_subscribed[chan_alias][0]
+   session.msg("You have left %s." % (chan_name,))
    session.del_user_channel(chan_alias)
+
+   # Announce the user's leaving.
+   leave_msg = "[%s] %s has left the channel." % \
+      (chan_name, pobject.get_name(show_dbref=False))
+   functions_comsys.send_cmessage(chan_name, leave_msg)
 
 def cmd_comlist(cdat):
    """
@@ -179,11 +189,58 @@ def cmd_cboot(cdat):
 def cmd_cemit(cdat):
    """
    @cemit
+   @cemit/noheader <message>
+   @cemit/sendername <message>
 
    Allows the user to send a message over a channel as long as
-   they own or control it.  It does not show the user's name.
+   they own or control it. It does not show the user's name unless they
+   provide the /sendername switch.
    """
-   pass
+   session = cdat['session']
+   pobject = session.get_pobject()
+   server = cdat['server']
+   args = cdat['uinput']['splitted'][1:]
+   switches = cdat['uinput']['root_chunk'][1:]
+
+   if len(args) == 0:
+      session.msg("Channel emit what?")
+      return
+
+   # Combine the arguments into one string, split it by equal signs into
+   # channel (entry 0 in the list), and message (entry 1 and above).
+   eq_args = ' '.join(args).split('=')
+   cname = eq_args[0]
+   cmessage = ' '.join(eq_args[1:])
+   if len(eq_args) != 2:
+      session.msg("You must provide a channel name and a message to emit.")
+      return
+   if len(cname) == 0:
+      session.msg("You must provide a channel name to emit to.")
+      return
+   if len(cmessage) == 0:
+      session.msg("You must provide a message to emit.")
+      return
+
+   name_matches = functions_comsys.cname_search(cname, exact=True)
+
+   try:
+      # Safety first, kids!
+      cname_parsed = name_matches[0].get_name()
+   except:
+      session.msg("Could not find channel %s." % (cname,))
+      return
+
+   if "noheader" in switches:
+      final_cmessage = cmessage
+   else:
+      if "sendername":
+         final_cmessage = "[%s] %s: %s" % (cname_parsed, pobject.get_name(show_dbref=False), cmessage)
+      else:
+         final_cmessage = "[%s] %s" % (cname_parsed, cmessage)
+
+   if not "quiet" in switches:
+      session.msg("Sent - %s" % (name_matches[0],))
+   functions_comsys.send_cmessage(cname_parsed, final_cmessage)
 
 def cmd_cwho(cdat):
    """
@@ -202,6 +259,7 @@ def cmd_ccreate(cdat):
    Creates a new channel with the invoker being the default owner.
    """
    session = cdat['session']
+   pobject = session.get_pobject()
    uinput= cdat['uinput']['splitted']
    cname = ' '.join(uinput[1:])
 

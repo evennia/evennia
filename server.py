@@ -107,12 +107,11 @@ class Server(dispatcher):
       For changes to the scheduler, server, or session_mgr modules, a cold
       restart is needed.
       """
-      reload_list = ['ansi', 'cmdhandler', 'commands_general',
+      reload_list = ['ansi', 'cmdhandler', 'commands_comsys', 'commands_general',
          'commands_privileged', 'commands_unloggedin', 'defines_global',
-         'events', 'functions_db', 'functions_general', 'functions_help',
-         'gameconf', 'session', 'apps.objects.models',
-         'apps.helpsys.models', 'apps.config.models', 'functions_comsys',
-         'commands_comsys']
+         'events', 'functions_db', 'functions_general', 'functions_comsys',
+         'functions_help', 'gameconf', 'session', 'apps.objects.models',
+         'apps.helpsys.models', 'apps.config.models']
          
       for mod in reload_list:
          reload(sys.modules[mod])
