@@ -7,6 +7,7 @@ from apps.objects.models import Object
 from django.contrib.auth.models import User
 import commands_general
 import functions_db
+import functions_general
 import session_mgr
 
 class PlayerSession(async_chat):
@@ -164,7 +165,9 @@ class PlayerSession(async_chat):
       pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(),), exclude=pobject)
       cdat = {"session": self, "uinput":'look', "server": self.server}
       cmdhandler.handle(cdat)
-      print "Login: %s" % (self,)
+      functions_general.log_infomsg("Login: %s" % (self,))
+      pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
+      pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
       self.load_user_channels()
       
    def msg(self, message):
