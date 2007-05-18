@@ -19,13 +19,13 @@ def is_unsavable_flag(flagname):
    """
    Returns TRUE if the flag is an unsavable flag.
    """
-   return flagname in global_defines.NOSAVE_FLAGS
+   return flagname.upper() in global_defines.NOSAVE_FLAGS
 
 def is_modifiable_flag(flagname):
    """
    Check to see if a particular flag is modifiable.
    """
-   if flagname not in global_defines.NOSET_FLAGS:
+   if flagname.upper() not in global_defines.NOSET_FLAGS:
       return True
    else:
       return False
@@ -36,7 +36,7 @@ def is_modifiable_attrib(attribname):
 
    attribname: (string) An attribute name to check.
    """
-   if attribname not in global_defines.NOSET_ATTRIBS:
+   if attribname.upper() not in global_defines.NOSET_ATTRIBS:
       return True
    else:
       return False
@@ -281,4 +281,4 @@ def create_user(cdat, uname, email, password):
    # Activate the player's session and set them loose.
    session.login(user)
    print 'Registration: %s' % (session,)
-   session.push("Welcome to %s, %s.\n\r" % (gameconf.get_configvalue('site_name'), session.get_pobject().get_name(),))
+   session.push("Welcome to %s, %s.\n\r" % (gameconf.get_configvalue('site_name'), session.get_pobject().get_name(show_dbref=False),))
