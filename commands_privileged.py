@@ -1,17 +1,16 @@
 import os
 import resource
 
-import functions_db
-import functions_general
-import commands_general
-import commands_unloggedin
-import cmdhandler
-
-import session_mgr
-import ansi
 import defines_global
 from django.contrib.auth.models import User
 from apps.objects.models import Object
+import cmdhandler
+import session_mgr
+import functions_general
+import functions_db
+import commands_general
+import commands_unloggedin
+import ansi
 """
 Any command here is prefixed by an '@' sign, usually denoting a 
 builder, staff or otherwise manipulative command that doesn't fall within 
@@ -323,7 +322,7 @@ def cmd_open(cdat):
       session.msg("Open an exit to where?")
       return
       
-   eq_args = args[0].split('=')
+   eq_args = ' '.join(args).split('=')
    exit_name = eq_args[0]
    
    if len(exit_name) == 0:
@@ -348,16 +347,19 @@ def cmd_open(cdat):
          if destination.is_exit():
             session.msg("You can't open an exit to an exit!")
             return
-            
+         
+         print exit_name
          odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
          new_object = functions_db.create_object(odat)
          
-         session.msg("You open the exit - %s" % (new_object,))
+         session.msg("You open the an exit - %s to %s" % (new_object.get_name(),destination.get_name()))
          
          if len(comma_split) > 1:
             second_exit_name = ','.join(comma_split[1:])
             odat = {"name": second_exit_name, "type": 4, "location": destination, "owner": pobject, "home": pobject.get_location()}
             new_object = functions_db.create_object(odat)
+            session.msg("You open the an exit - %s to %s" % (new_object.get_name(),pobject.get_location().get_name()))
+
    else:
       # Create an un-linked exit.
       odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":None}

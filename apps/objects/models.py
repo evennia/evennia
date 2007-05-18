@@ -540,7 +540,7 @@ class Object(models.Model):
          
       return is_match
       
-   def name_match(self, oname):
+   def name_match(self, oname, match_type="fuzzy"):
       """   
       See if the input (oname) can be used to identify this particular object.
       Check the # sign for dbref (exact) reference, and anything else is a
@@ -550,8 +550,17 @@ class Object(models.Model):
       dbref_match for an exclusively name-based match.
       """
       if oname[0] == '#':
+         # First character is a pound sign, looks to be a dbref.
          return self.dbref_match(oname)
+      elif match_type == "exact":
+         # Exact matching
+         name_chunks = self.name.lower().split(';')
+         for chunk in name_chunks:
+            if oname.lower() == chunk:
+               return True
+         return False
       else:
+         # Fuzzy matching.
          return oname.lower() in self.name.lower()
          
    def filter_contents_from_str(self, oname):

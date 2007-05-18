@@ -68,7 +68,7 @@ def global_object_name_search(ostring, exact_match=False):
    else:
       return Object.objects.filter(name__icontains=ostring).exclude(type=global_defines.OTYPE_GARBAGE)
    
-def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_types=False):
+def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_types=False, match_type="fuzzy"):
    """
    Iterates through a list of objects and returns a list of
    name matches.
@@ -85,9 +85,9 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_type
          return [prospect for prospect in searchlist if prospect.dbref_match(ostring)]
    else:
       if limit_types:
-         return [prospect for prospect in searchlist if prospect.name_match(ostring) and prospect.type in limit_types]
+         return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type) and prospect.type in limit_types]
       else:
-         return [prospect for prospect in searchlist if prospect.name_match(ostring)]
+         return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
 
 def player_search(searcher, ostring):
    """

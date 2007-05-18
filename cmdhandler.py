@@ -24,7 +24,7 @@ def match_exits(pobject, searchstr):
    See if we can find an input match to exits.
    """
    exits = pobject.get_location().get_contents(filter_type=4)
-   return functions_db.list_search_object_namestr(exits, searchstr)
+   return functions_db.list_search_object_namestr(exits, searchstr, match_type="exact")
 
 def handle(cdat):
    """
