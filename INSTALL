@@ -1,7 +1,7 @@
 Requirements
 ------------
 * Python 2.5 strongly recommended, although 2.3 or 2.4 may work just fine.
-* PySqlite2
+* PySqlite2 (If you're using the default SQLite driver)
 * Django (Latest trunk from Subversion recommended)
 * Optional: Apache2 or equivalent webserver with a Python interpreter
   module. Required for web interface.
