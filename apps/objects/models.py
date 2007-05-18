@@ -59,7 +59,7 @@ class Object(models.Model):
       return self.id == other.id
 
    def __str__(self):
-      return "%s" % (self.get_name(),)
+      return "%s" % (self.get_name(no_ansi=True),)
    
    class Meta:
       ordering = ['-date_created', 'id']
