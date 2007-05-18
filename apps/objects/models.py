@@ -338,7 +338,7 @@ class Object(models.Model):
       """
       if self.has_attribute(attribute):
          # Attribute already exists, update it.
-         attrib_obj = Attribute.objects.filter(object=self).filter(name=attribute)[0]
+         attrib_obj = Attribute.objects.filter(object=self).filter(name__iexact=attribute)[0]
          attrib_obj.value = new_value
          attrib_obj.save()
       else:
@@ -355,7 +355,7 @@ class Object(models.Model):
       
       attribute: (str) The attribute's name.
       """
-      attr = Attribute.objects.filter(object=self).filter(name=attribute)
+      attr = Attribute.objects.filter(object=self).filter(name__iexact=attribute)
       if attr.count() == 0:
          return False
       else:
