@@ -1,7 +1,8 @@
-from asyncore import dispatcher
-from asynchat import async_chat
-import socket, asyncore, time, sys
+import time, sys
 import cPickle as pickle
+
+from twisted.conch.telnet import StatefulTelnetProtocol
+
 import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
@@ -10,20 +11,34 @@ import functions_db
 import functions_general
 import session_mgr
 
-class PlayerSession(async_chat):
+class SessionProtocol(StatefulTelnetProtocol):
    """
    This class represents a player's sesssion. From here we branch down into
    other various classes, please try to keep this one tidy!
    """
-   def __init__(self, server, sock, addr):
-      async_chat.__init__(self, sock)
-      self.server = server
-      self.address = addr
-      self.set_terminator("\n")
+
+   def connectionMade(self):
+      """
+      What to do when we get a connection.
+      """
+      session_mgr.add_session(self)
+      self.game_connect_screen()
+      self.prep_session()
+      print 'Connection:', self
+      print 'Sessions active:', len(session_mgr.get_session_list())
+
+   def getClientAddress(self):
+      """
+      Returns the client's address and port in a tuple. For example
+      ('127.0.0.1', 41917)
+      """
+      return self.transport.client
+
+   def prep_session(self):
+      #self.server = server
+      self.address = self.getClientAddress()
       self.name = None
-      self.data = []
       self.uid = None
-      self.sock = sock
       self.logged_in = False
       # The time the user last issued a command.
       self.cmd_last = time.time()
@@ -34,6 +49,18 @@ class PlayerSession(async_chat):
       # The time when the user connected.
       self.conn_time = time.time()
       self.channels_subscribed = {}
+
+   def disconnectClient(self):
+      """
+      Manually disconnect the client.
+      """
+      self.transport.loseConnection()
+
+   def connectionLost(self, reason):
+      """
+      Execute this when a client abruplty loses their connection.
+      """
+      print "DISCONNECT:", reason.getErrorMessage()
 
    def has_user_channel(self, cname, alias_search=False, return_muted=False):
       """
@@ -93,24 +120,17 @@ class PlayerSession(async_chat):
       if chan_list:
          self.channels_subscribed = pickle.loads(chan_list)
       
-   def collect_incoming_data(self, data):
-      """
-      Stuff any incoming data into our buffer, self.data
-      """
-      self.data.append(data)
-                
-   def found_terminator(self):
+   def lineReceived(self, data):
       """
       Any line return indicates a command for the purpose of a MUD. So we take
       the user input and pass it to our command handler.
       """
-      line = (''.join(self.data))
+      line = (''.join(data))
       line = line.strip('\r')
       uinput = line
-      self.data = []
       
       # Stuff anything we need to pass in this dictionary.
-      cdat = {"server": self.server, "uinput": uinput, "session": self}
+      cdat = {"server": self.factory.server, "uinput": uinput, "session": self}
       cmdhandler.handle(cdat)
          
    def handle_close(self):
@@ -122,7 +142,7 @@ class PlayerSession(async_chat):
          pobject.set_flag("CONNECTED", False)
          pobject.get_location().emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
          
-      async_chat.handle_close(self)
+      self.disconnectClient()
       self.logged_in = False
       session_mgr.remove_session(self)
       print 'Sessions active:', len(session_mgr.get_session_list())
@@ -137,7 +157,7 @@ class PlayerSession(async_chat):
       except:
          return False
       
-   def game_connect_screen(self, session):
+   def game_connect_screen(self):
       """
       Show the banner screen.
       """
@@ -148,7 +168,7 @@ class PlayerSession(async_chat):
          connect <email> <password>\n\r
          create \"<username>\" <email> <password>\n\r"""
       buffer += '-'*50
-      session.msg(buffer)
+      self.msg(buffer)
       
    def login(self, user):
       """
@@ -163,27 +183,19 @@ class PlayerSession(async_chat):
 
       self.msg("You are now logged in as %s." % (self.name,))
       pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(),), exclude=pobject)
-      cdat = {"session": self, "uinput":'look', "server": self.server}
+      cdat = {"session": self, "uinput":'look', "server": self.factory.server}
       cmdhandler.handle(cdat)
       functions_general.log_infomsg("Login: %s" % (self,))
       pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
-      pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
+      pobject.set_attribute("Lastsite", "%s" % (self.address,))
       self.load_user_channels()
       
    def msg(self, message):
       """
-      Sends a message with the newline/return included. Use this instead of
-      directly calling push().
+      Sends a message to the session.
       """
-      self.push("%s\n\r" % (message,))
+      self.sendLine("%s" % (message,))
       
-   def msg_no_nl(self, message):
-      """
-      Sends a message without the newline/return included. Use this instead of
-      directly calling push().
-      """
-      self.push("%s" % (message,))
-          
    def __str__(self):
       """
       String representation of the user session class. We use
@@ -194,6 +206,3 @@ class PlayerSession(async_chat):
       else:
          symbol = '?'
       return "<%s> %s@%s" % (symbol, self.name, self.address,)
-
-#   def handle_error(self):
-#      self.handle_close()

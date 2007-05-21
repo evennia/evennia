@@ -1,5 +1,5 @@
-import time
 import events
+from twisted.internet import protocol, reactor, defer
 """
 A really simple scheduler. We can probably get a lot fancier with this
 in the future, but it'll do for now.
@@ -11,24 +11,12 @@ ADDING AN EVENT:
 """
    
 # The timer method to be triggered by the main server loop.
-def heartbeat():
+def start_events():
    """
    Handle one tic/heartbeat.
    """
-   tictime = time.time()
    for event in events.schedule:
-      try: 
-         events.lastrun[event]
-      except: 
-         events.lastrun[event] = time.time()
-      
-      diff = tictime - events.lastrun[event]
+      event_func = getattr(events, event)
 
-      if diff >= events.schedule[event]:
-         event_func = getattr(events, event)
-   
-         if callable(event_func):
-            event_func()
-            
-         # We'll get a new reading for time for accuracy.
-         events.lastrun[event] = time.time()
+      if callable(event_func):
+         reactor.callLater(events.schedule[event][0], event_func)

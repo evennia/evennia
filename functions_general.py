@@ -108,7 +108,7 @@ def announce_all(message, with_ann_prefix=True, with_nl=True):
       newline = ''
       
    for session in session_mgr.get_session_list():
-      session.msg_no_nl('%s %s%s' % (prefix, message,newline,))
+      session.msg('%s %s%s' % (prefix, message,newline,))
 
 def word_wrap(text, width=78):
    """

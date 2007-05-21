@@ -1,5 +1,4 @@
 import time
-from session import PlayerSession
 import gameconf
 
 """
@@ -8,19 +7,25 @@ Session manager, handles connected players.
 # Our list of connected sessions.
 session_list = []
 
-def new_session(server, conn, addr):
+def add_session(session):
    """
-   Create and return a new session.
+   Adds a session to the session list.
    """
-   session = PlayerSession(server, conn, addr)
    session_list.insert(0, session)
-   return session
+   print 'Sessions active:', len(get_session_list())
    
 def get_session_list():
    """
    Lists the connected session objects.
    """
    return session_list
+
+def disconnect_all_sessions():
+   """
+   Cleanly disconnect all of the connected sessions.
+   """
+   for sess in get_session_list():
+      sess.handle_close()
 
 def check_all_sessions():
    """
@@ -38,14 +43,7 @@ def check_all_sessions():
       if (time.time() - sess.cmd_last) > idle_timeout:
          sess.msg("Idle timeout exceeded, disconnecting.")
          sess.handle_close()
-      ## This doesn't seem to provide an accurate indication of timed out
-      ## sessions.
-      #if not sess.writable() or not sess.readable():
-      #   print 'Problematic Session:'
-      #   print 'Readable ', sess.readable()
-      #   print 'Writable ', sess.writable()
-         
-   
+
 def remove_session(session):
    """
    Removes a session from the session list.
