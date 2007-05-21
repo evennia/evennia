@@ -10,4 +10,4 @@ export DJANGO_SETTINGS_MODULE="settings"
 ## Interactive mode. Good for development and debugging.
 #twistd -noy twistd -ny server.py
 ## Stand-alone mode. Good for running games.
-twistd -ny server.py
+twistd -y server.py
