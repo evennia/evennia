@@ -4,7 +4,6 @@ import resource
 from django.contrib.auth.models import User
 from apps.objects.models import Object
 import defines_global
-import cmdhandler
 import session_mgr
 import functions_general
 import functions_db
