@@ -3,65 +3,79 @@ import commands_general
 import commands_privileged
 import commands_comsys
 
+"""
+Command Table Entries
+---------------------
+Each command entry consists of a key and a tuple containing a reference to the
+command's function, and a tuple of the permissions to match against. The user
+only need have one of the permissions in the permissions tuple to gain
+access to the command. Obviously, super users don't have to worry about this
+stuff. If the command is open to all (or you want to implement your own
+privilege checking in the command function), use None in place of the
+permissions tuple.
+"""
+
 # Unlogged-in Command Table
 uncon_ctable = {
-   "connect": commands_unloggedin.cmd_connect,
-   "create":  commands_unloggedin.cmd_create,
-   "quit":    commands_unloggedin.cmd_quit,
+   "connect": (commands_unloggedin.cmd_connect, None),
+   "create":  (commands_unloggedin.cmd_create, None),
+   "quit":    (commands_unloggedin.cmd_quit, None),
 }
+
 
 # Command Table
 ctable = {
-   "addcom":       commands_comsys.cmd_addcom,
-   "comlist":      commands_comsys.cmd_comlist,
-   "delcom":       commands_comsys.cmd_delcom,
-   "drop":         commands_general.cmd_drop,
-   "examine":      commands_general.cmd_examine,
-   "get":          commands_general.cmd_get,
-   "help":         commands_general.cmd_help,
-   "idle":         commands_general.cmd_idle,
-   "inventory":    commands_general.cmd_inventory,
-   "look":         commands_general.cmd_look,
-   "page":         commands_general.cmd_page,
-   "pose":         commands_general.cmd_pose,
-   "quit":         commands_general.cmd_quit,
-   "say":          commands_general.cmd_say,
-   "time":         commands_general.cmd_time,
-   "uptime":       commands_general.cmd_uptime,
-   "version":      commands_general.cmd_version,
-   "who":          commands_general.cmd_who,
-   "@ccreate":     commands_comsys.cmd_ccreate,
-   "@cdestroy":    commands_comsys.cmd_cdestroy,
-   "@cemit":       commands_comsys.cmd_cemit,
-   "@clist":       commands_comsys.cmd_clist,
-   "@create":      commands_privileged.cmd_create,
-   "@description": commands_privileged.cmd_description,
-   "@destroy":     commands_privileged.cmd_destroy,
-   "@dig":         commands_privileged.cmd_dig,
-   "@emit":        commands_privileged.cmd_emit,
-   "@find":        commands_privileged.cmd_find,
-   "@link":        commands_privileged.cmd_link,
-   "@list":        commands_privileged.cmd_list,
-   "@name":        commands_privileged.cmd_name,
-   "@nextfree":    commands_privileged.cmd_nextfree,
-   "@newpassword": commands_privileged.cmd_newpassword,
-   "@open":        commands_privileged.cmd_open,
-   "@password":    commands_privileged.cmd_password,
-   "@reload":      commands_privileged.cmd_reload,
-   "@set":         commands_privileged.cmd_set,
-   "@shutdown":    commands_privileged.cmd_shutdown,
-   "@teleport":    commands_privileged.cmd_teleport,
-   "@unlink":      commands_privileged.cmd_unlink,
-   "@wall":        commands_privileged.cmd_wall,
-   
+   "addcom":       (commands_comsys.cmd_addcom, None),
+   "comlist":      (commands_comsys.cmd_comlist, None),
+   "delcom":       (commands_comsys.cmd_delcom, None),
+   "drop":         (commands_general.cmd_drop, None),
+   "examine":      (commands_general.cmd_examine, None),
+   "get":          (commands_general.cmd_get, None),
+   "help":         (commands_general.cmd_help, None),
+   "idle":         (commands_general.cmd_idle, None),
+   "inventory":    (commands_general.cmd_inventory, None),
+   "look":         (commands_general.cmd_look, None),
+   "page":         (commands_general.cmd_page, None),
+   "pose":         (commands_general.cmd_pose, None),
+   "quit":         (commands_general.cmd_quit, None),
+   "say":          (commands_general.cmd_say, None),
+   "time":         (commands_general.cmd_time, None),
+   "uptime":       (commands_general.cmd_uptime, None),
+   "version":      (commands_general.cmd_version, None),
+   "who":          (commands_general.cmd_who, None),
+   "@ccreate":     (commands_comsys.cmd_ccreate, ("objects.add_commchannel")),
+   "@cdestroy":    (commands_comsys.cmd_cdestroy, ("objects.delete_commchannel")),
+   "@cemit":       (commands_comsys.cmd_cemit, ("objects.emit_commchannel")),
+   "@clist":       (commands_comsys.cmd_clist, None),
+   "@create":      (commands_privileged.cmd_create, ("genperms.builder")),
+   "@description": (commands_privileged.cmd_description, None),
+   "@destroy":     (commands_privileged.cmd_destroy, ("genperms.builder")),
+   "@dig":         (commands_privileged.cmd_dig, ("genperms.builder")),
+   "@emit":        (commands_privileged.cmd_emit, ("genperms.announce")),
+   "@find":        (commands_privileged.cmd_find, ("genperms.builder")),
+   "@link":        (commands_privileged.cmd_link, ("genperms.builder")),
+   "@list":        (commands_privileged.cmd_list, ("genperms.process_control")),
+   "@name":        (commands_privileged.cmd_name, None),
+   "@nextfree":    (commands_privileged.cmd_nextfree, ("genperms.builder")),
+   "@newpassword": (commands_privileged.cmd_newpassword, ("genperms.manage_players")),
+   "@open":        (commands_privileged.cmd_open, ("genperms.builder")),
+   "@password":    (commands_privileged.cmd_password, None),
+   "@reload":      (commands_privileged.cmd_reload, ("genperms.process_control")),
+   "@set":         (commands_privileged.cmd_set, None),
+   "@shutdown":    (commands_privileged.cmd_shutdown, ("genperms.process_control")),
+   "@teleport":    (commands_privileged.cmd_teleport, ("genperms.builder")),
+   "@unlink":      (commands_privileged.cmd_unlink, ("genperms.builder")),
+   "@wall":        (commands_privileged.cmd_wall, ("genperms.announce")),
 } 
 
-def return_cfunc(func_name, unlogged_cmd=False):
+def return_cmdtuple(func_name, unlogged_cmd=False):
    """
-   Returns a reerence to the command's function. If there are no matches,
+   Returns a reference to the command's tuple. If there are no matches,
    returns false.
    """
    if not unlogged_cmd:
-      return ctable.get(func_name, False)
+      cfunc = ctable.get(func_name, False)
    else:
-      return uncon_ctable.get(func_name, False)
+      cfunc = uncon_ctable.get(func_name, False)
+      
+   return cfunc

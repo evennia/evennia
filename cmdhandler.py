@@ -1,5 +1,7 @@
 from traceback import format_exc
 import time
+
+import defines_global
 import commands_privileged
 import commands_general
 import commands_comsys
@@ -60,6 +62,9 @@ def handle(cdat):
       alias_list = server.cmd_alias_list
       parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
 
+      # This will hold the reference to the command's function.
+      cmd = None
+      
       if session.logged_in:
          # Store the timestamp of the user's last command.
          session.cmd_last = time.time()
@@ -99,15 +104,28 @@ def handle(cdat):
             parsed_input['root_cmd'] = '@cemit'
 
          # Get the command's function reference (Or False)
-         cmd = cmdtable.return_cfunc(parsed_input['root_cmd'])
+         cmdtuple = cmdtable.return_cmdtuple(parsed_input['root_cmd'])
+         if cmdtuple:
+            # If there is a permissions element to the entry, check perms.
+            if cmdtuple[1]:
+               if not session.get_pobject().user_has_perm_list(cmdtuple[1]):
+                  session.msg(defines_global.NOPERMS_MSG)
+                  return
+            # If flow reaches this point, user has perms and command is ready.
+            cmd = cmdtuple[0]
+               
       else:
          # Not logged in, look through the unlogged-in command table.
-         cmd = cmdtable.return_cfunc(parsed_input['root_cmd'], unlogged_cmd=True)
+         cmdtuple = cmdtable.return_cmdtuple(parsed_input['root_cmd'], unlogged_cmd=True)
+         if cmdtuple:
+            cmd = cmdtuple[0]
 
       # Debugging stuff.
       #session.msg("ROOT : %s" % (parsed_input['root_cmd'],))
       #session.msg("SPLIT: %s" % (parsed_input['splitted'],))
-
+      if not cmd:
+         raise UnknownCommand
+      
       if callable(cmd):
          cdat['uinput'] = parsed_input
          try:

@@ -34,3 +34,9 @@ NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "CHANLIST", "LAST", "LASTSITE"]
 
 # Server version number.
 EVENNIA_VERSION = 'Pre-Alpha'
+
+# The message to show when the user lacks permissions for something.
+NOPERMS_MSG = "You do not have the necessary permissions to do that."
+
+# Message seen when object doesn't control the other object.
+NOCONTROL_MSG = "You don't have authority over that object."

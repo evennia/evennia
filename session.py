@@ -35,7 +35,7 @@ class SessionProtocol(StatefulTelnetProtocol):
       return self.transport.client
 
    def prep_session(self):
-      #self.server = server
+      self.server = self.factory.server
       self.address = self.getClientAddress()
       self.name = None
       self.uid = None
@@ -187,7 +187,7 @@ class SessionProtocol(StatefulTelnetProtocol):
       cmdhandler.handle(cdat)
       functions_general.log_infomsg("Login: %s" % (self,))
       pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
-      pobject.set_attribute("Lastsite", "%s" % (self.address,))
+      pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
       self.load_user_channels()
       
    def msg(self, message):

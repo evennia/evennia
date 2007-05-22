@@ -133,6 +133,8 @@ class Object(models.Model):
       """
       Checks to see whether a user has the specified permission or is a super
       user.
+
+      perm: (string) A string representing the desired permission.
       """
       if not self.is_player():
          return False
@@ -144,6 +146,28 @@ class Object(models.Model):
          return True
       else:
          return False
+
+   def user_has_perm_list(self, perm_list):
+      """
+      Checks to see whether a user has the specified permission or is a super
+      user. This form accepts an iterable of strings representing permissions,
+      if the user has any of them return true.
+
+      perm: (iterable) An iterable of strings of permissions.
+      """
+      if not self.is_player():
+         return False
+
+      if self.is_superuser():
+         return True
+
+      for perm in perm_list:
+         # Stop searching perms on the first match.
+         if self.get_user_account().has_perm(perm):
+            return True
+         
+      # Fall through to failure
+      return False
 
    def owns_other(self, other_obj):
       """
@@ -170,10 +194,9 @@ class Object(models.Model):
       if self.owns_other(other_obj):
          # If said object owns the target, then give it the green.
          return True
-      else:
-         # Still pending more stuff here, for now assume we have
-         # dominance. Bad assumption.
-         return True
+
+      # They've failed to meet any of the above conditions.
+      return False
 
    def set_home(self, new_home):
       """
@@ -643,6 +666,9 @@ class CommChannel(models.Model):
    
    class Meta:
       ordering = ['-name']
+      permissions = (
+         ("emit_commchannel", "May @cemit over channels."),
+      )
    
    class Admin:
       list_display = ('name', 'owner')

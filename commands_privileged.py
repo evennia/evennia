@@ -1,9 +1,9 @@
 import os
 import resource
 
-import defines_global
 from django.contrib.auth.models import User
 from apps.objects.models import Object
+import defines_global
 import cmdhandler
 import session_mgr
 import functions_general
@@ -132,8 +132,12 @@ def cmd_description(cdat):
          session.msg("I don't see that here.")
          return
       else:
-         new_desc = '='.join(eq_args[1:])
          target_obj = results[0]
+         if not pobject.controls_other(target):
+            session.msg(defines_global.NOCONTROL_MSG)
+            return
+         
+         new_desc = '='.join(eq_args[1:])
          session.msg("%s - DESCRIPTION set." % (target_obj,))
          target_obj.set_description(new_desc)
 
@@ -403,6 +407,10 @@ def cmd_link(cdat):
          
       # We know we can get the first entry now. 
       target = target[0]
+
+      if not pobject.controls_other(target):
+         session.msg(defines_global.NOCONTROL_MSG)
+         return
       
       # If we do something like "@link blah=", we unlink the object.
       if len(dest_name) == 0:
@@ -451,6 +459,10 @@ def cmd_unlink(cdat):
          session.msg("I don't see that here.")
          return
       else:
+         if not pobject.controls_other(results[0]):
+            session.msg(defines_global.NOCONTROL_MSG)
+            return
+         
          results[0].set_home(None)
          session.msg("You have unlinked %s." % (results[0],))
 
@@ -558,6 +570,10 @@ def cmd_set(cdat):
       return
       
    victim = victim[0]
+   if not pobject.controls_other(victim):
+      session.msg(defines_global.NOCONTROL_MSG)
+      return
+   
    attrib_args = eq_args[1].split(':')
 
    if len(attrib_args) > 1:
@@ -609,7 +625,9 @@ def cmd_find(cdat):
    session = cdat['session']
    server = cdat['server']
    searchstring = ' '.join(cdat['uinput']['splitted'][1:])
-   
+   pobject = session.get_pobject()
+   can_find = pobject.user_has_perm("genperms.builder")
+
    if searchstring == '':
       session.msg("No search pattern given.")
       return
@@ -630,7 +648,8 @@ def cmd_wall(cdat):
    """
    session = cdat['session']
    wallstring = ' '.join(cdat['uinput']['splitted'][1:])
-   
+   pobject = session.get_pobject()
+      
    if wallstring == '':
       session.msg("Announce what?")
       return
@@ -644,7 +663,8 @@ def cmd_shutdown(cdat):
    """
    session = cdat['session']
    server = cdat['server']
-
+   pobject = session.get_pobject()
+   
    session.msg('Shutting down...')
-   print 'Server shutdown by %s(#%d)' % (session.get_pobject().get_name(), session.get_pobject().id,)
+   print 'Server shutdown by %s' % (pobject.get_name(show_dbref=False),)
    server.shutdown()
