@@ -231,11 +231,17 @@ def cmd_cemit(cdat):
       return
 
    if "noheader" in switches:
+      if not pobject.user_has_perm("objects.emit_commchannel"):
+         session.msg(defines_global.NOPERMS_MSG)
+         return
       final_cmessage = cmessage
    else:
-      if "sendername":
+      if "sendername" in switches:
          final_cmessage = "[%s] %s: %s" % (cname_parsed, pobject.get_name(show_dbref=False), cmessage)
       else:
+         if not pobject.user_has_perm("objects.emit_commchannel"):
+            session.msg(defines_global.NOPERMS_MSG)
+            return
          final_cmessage = "[%s] %s" % (cname_parsed, cmessage)
 
    if not "quiet" in switches:

@@ -45,7 +45,7 @@ ctable = {
    "who":          (commands_general.cmd_who, None),
    "@ccreate":     (commands_comsys.cmd_ccreate, ("objects.add_commchannel")),
    "@cdestroy":    (commands_comsys.cmd_cdestroy, ("objects.delete_commchannel")),
-   "@cemit":       (commands_comsys.cmd_cemit, ("objects.emit_commchannel")),
+   "@cemit":       (commands_comsys.cmd_cemit, None),
    "@clist":       (commands_comsys.cmd_clist, None),
    "@create":      (commands_privileged.cmd_create, ("genperms.builder")),
    "@description": (commands_privileged.cmd_description, None),
