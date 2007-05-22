@@ -142,7 +142,14 @@ def local_and_global_search(searcher, ostring, search_contents=True, search_loca
       dbref_match = list(dbref_results)
       if len(dbref_match) > 0:
          return dbref_match
-         
+
+   # If the search string is one of the following, return immediately with
+   # the appropriate result.
+   if searcher.get_location().dbref_match(ostring) or ostring == 'here':
+      return [searcher.get_location()]
+   elif ostring == 'me' and searcher:
+      return [searcher]
+
    local_matches = []
    # Handle our location/contents searches. list_search_object_namestr() does
    # name and dbref comparisons against search_query.
@@ -150,12 +157,6 @@ def local_and_global_search(searcher, ostring, search_contents=True, search_loca
       local_matches += list_search_object_namestr(searcher.get_contents(), search_query, limit_types)
    if search_location:
       local_matches += list_search_object_namestr(searcher.get_location().get_contents(), search_query, limit_types=limit_types)
-   
-   # If the object the invoker is in matches, add it as well.
-   if searcher.get_location().dbref_match(ostring) or ostring == 'here':
-      local_matches.append(searcher.get_location())
-   elif ostring == 'me' and searcher:
-      local_matches.append(searcher)
    
    return local_matches
 
