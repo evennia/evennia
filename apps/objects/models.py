@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-import defines_global as global_defines
+import defines_global
 import ansi
 
 class Attribute(models.Model):
@@ -45,7 +45,7 @@ class Object(models.Model):
    owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
-   type = models.SmallIntegerField(choices=global_defines.OBJECT_TYPES)
+   type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
    description = models.TextField(blank=True, null=True)
    location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
    flags = models.TextField(blank=True, null=True)
@@ -301,7 +301,7 @@ class Object(models.Model):
       """
       Returns a QuerySet of an object's attributes.
       """
-      return self.attribute_set.all()
+      return [attr for attr in self.attribute_set.all() if attr.name.upper() not in defines_global.HIDDEN_ATTRIBS]
       
    def clear_all_attributes(self):
       """
@@ -619,7 +619,7 @@ class Object(models.Model):
       if return_number:
          return self.type
       else:
-         return global_defines.OBJECT_TYPES[self.type][1]
+         return defines_global.OBJECT_TYPES[self.type][1]
     
    def is_type(self, otype):
       """
@@ -648,7 +648,7 @@ class Object(models.Model):
       # We have to cast this because the admin interface is really picky
       # about tuple index types. Bleh.
       otype = int(self.type)
-      return global_defines.OBJECT_TYPES[otype][1][0]
+      return defines_global.OBJECT_TYPES[otype][1][0]
 
 class CommChannel(models.Model):
    """

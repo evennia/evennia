@@ -32,6 +32,9 @@ NOSET_FLAGS = ["CONNECTED"]
 # These attribute names can't be modified by players.
 NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "CHANLIST", "LAST", "LASTSITE"]
 
+# These attributes don't show up on objects when examined.
+HIDDEN_ATTRIBS = ["CHANLIST"]
+
 # Server version number.
 EVENNIA_VERSION = 'Alpha'
 
