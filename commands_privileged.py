@@ -351,7 +351,6 @@ def cmd_open(cdat):
             session.msg("You can't open an exit to an exit!")
             return
          
-         print exit_name
          odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
          new_object = functions_db.create_object(odat)
          

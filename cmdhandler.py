@@ -123,8 +123,6 @@ def handle(cdat):
       # Debugging stuff.
       #session.msg("ROOT : %s" % (parsed_input['root_cmd'],))
       #session.msg("SPLIT: %s" % (parsed_input['splitted'],))
-      if not cmd:
-         raise UnknownCommand
       
       if callable(cmd):
          cdat['uinput'] = parsed_input

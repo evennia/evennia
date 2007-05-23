@@ -77,7 +77,6 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_type
    dbref_only: (bool) Only compare dbrefs.
    limit_types: (list of int) A list of Object type numbers to filter by.
    """
-   
    if dbref_only:
       if limit_types:
          return [prospect for prospect in searchlist if prospect.dbref_match(ostring) and prospect.type in limit_types]
