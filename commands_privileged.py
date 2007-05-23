@@ -74,10 +74,7 @@ def cmd_destroy(cdat):
             session.msg("You can't destroy a superuser.")
             return
          target_obj = results[0]
-      elif results[0].is_going():
-         session.msg("That object is already destroyed.")
-         return
-      elif results[0].is_garbage():
+      elif results[0].is_going() or results[0].is_garbage():
          session.msg("That object is already destroyed.")
          return
       else:
