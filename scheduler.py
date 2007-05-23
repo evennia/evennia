@@ -2,6 +2,8 @@ import time
 from twisted.internet import task
 import events
 """
+This file contains the event scheduler system.
+
 ADDING AN EVENT:
 * Create an event function to call.
 * Add an entry to the 'schedule' dictionary here.
@@ -11,7 +13,7 @@ ADDING AN EVENT:
 # Dictionary of events with a list in the form of:
 #  [<function>, <interval>, <lastrantime>, <taskobject>, <description>]
 schedule = {
-   'check_sessions': [events.check_sessions, 60, time.time(), None, "Session consistency checks."]
+   'evt_check_sessions': [events.evt_check_sessions, 60, time.time(), None, "Session consistency checks."]
 }
 
 def start_events():

@@ -10,10 +10,10 @@ import functions_general
 import functions_db
 import commands_general
 import ansi
+
 """
-Any command here is prefixed by an '@' sign, usually denoting a 
-builder, staff or otherwise manipulative command that doesn't fall within 
-the scope of normal gameplay.
+This file contains commands that require special permissions to use. These
+are generally @-prefixed commands, but there are exceptions.
 """
 
 def cmd_reload(cdat):
