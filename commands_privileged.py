@@ -8,7 +8,6 @@ import session_mgr
 import functions_general
 import functions_db
 import commands_general
-import commands_unloggedin
 import ansi
 """
 Any command here is prefixed by an '@' sign, usually denoting a 

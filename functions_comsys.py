@@ -1,9 +1,5 @@
 from apps.objects.models import CommChannel
 import session_mgr
-import commands_privileged
-import commands_general
-import commands_comsys
-import commands_unloggedin
 import ansi
 """
 Comsys functions.

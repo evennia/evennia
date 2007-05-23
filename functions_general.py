@@ -7,6 +7,30 @@ import commands_unloggedin
 General commonly used functions.
 """
 
+def wildcard_to_regexp(instring):
+   """
+   Converts a player-supplied string that may have wildcards in it to regular
+   expressions. This is useful for name matching.
+
+   instring: (string) A string that may potentially contain wildcards (* or ?).
+   """
+   regexp_string = ""
+
+   # If the string starts with an asterisk, we can't impose the beginning of
+   # string (^) limiter.
+   if instring[0] != "*":
+      regexp_string += "^"
+
+   # Replace any occurances of * or ? with the appropriate groups.
+   regexp_string += instring.replace("*","(.*)").replace("?", "(.{1})")
+
+   # If there's an asterisk at the end of the string, we can't impose the
+   # end of string ($) limiter.
+   if instring[-1] != "*":
+      regexp_string += "$"
+
+   return regexp_string
+
 def cmd_check_num_args(session, arg_list, min_args, errortext="Missing arguments!"):
    """
    Check a player command's splitted argument list to make sure it contains
