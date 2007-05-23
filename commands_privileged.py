@@ -4,6 +4,7 @@ import resource
 from django.contrib.auth.models import User
 from apps.objects.models import Object
 import defines_global
+import scheduler
 import session_mgr
 import functions_general
 import functions_db
@@ -21,6 +22,19 @@ def cmd_reload(cdat):
    """
    session = cdat['session']
    server = session.server.reload(session)
+
+def cmd_ps(cdat):
+   """
+   Shows the process/event table.
+   """
+   session = cdat['session']
+   session.msg("-- Interval Events --")
+   for event in scheduler.schedule:
+      session.msg(" [%d/%d] %s" % (scheduler.get_event_nextfire(event),
+         scheduler.get_event_interval(event),
+         scheduler.get_event_description(event)))
+   session.msg("Totals: %d interval events" % (len(scheduler.schedule),))
+   
 
 def cmd_destroy(cdat):
    """

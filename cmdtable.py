@@ -60,6 +60,7 @@ ctable = {
    "@newpassword": (commands_privileged.cmd_newpassword, ("genperms.manage_players")),
    "@open":        (commands_privileged.cmd_open, ("genperms.builder")),
    "@password":    (commands_privileged.cmd_password, None),
+   "@ps":          (commands_privileged.cmd_ps, ("genperms.process_control")),
    "@reload":      (commands_privileged.cmd_reload, ("genperms.process_control")),
    "@set":         (commands_privileged.cmd_set, None),
    "@shutdown":    (commands_privileged.cmd_shutdown, ("genperms.process_control")),
