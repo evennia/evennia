@@ -45,7 +45,7 @@ def create_channel(cdat):
    """
    new_chan = CommChannel()
    new_chan.name = ansi.parse_ansi(cdat["name"], strip_ansi=True)
-   new_chan.header = "[%s]" % (ansi.parse_ansi(cdat["name"]),)
+   new_chan.ansi_name = "[%s]" % (ansi.parse_ansi(cdat["name"]),)
    new_chan.set_owner(cdat["owner"])
    new_chan.save()
    return new_chan
