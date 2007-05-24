@@ -1,6 +1,8 @@
 #!/bin/bash
 export DJANGO_SETTINGS_MODULE="settings"
 
+mv logs/evennia.log logs/evennia.logs.old
+
 ## There are several different ways you can run the server, read the
 ## description for each and uncomment the desired mode.
 
