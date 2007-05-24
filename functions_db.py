@@ -100,6 +100,28 @@ def player_search(searcher, ostring):
    else:
       return local_and_global_search(searcher, ostring, limit_types=[global_defines.OTYPE_PLAYER])
 
+def standard_plr_objsearch(session, ostring, search_contents=True, search_location=True, dbref_only=False, limit_types=False):
+   """
+   Perform a standard object search via a player session, handling multiple
+   results and lack thereof gracefully.
+
+   session: (SessionProtocol) Reference to the player's session.
+   ostring: (str) The string to match object names against.
+   """
+   pobject = session.get_pobject()
+   results = local_and_global_search(pobject, ostring, search_contents=search_contents, search_location=search_location, dbref_only=dbref_only, limit_types=limit_types)
+
+   if len(results) > 1:
+      session.msg("More than one match found (please narrow target):")
+      for result in results:
+         session.msg(" %s" % (result.get_name(),))
+      return False
+   elif len(results) == 0:
+      session.msg("I don't see that here.")
+      return False
+   else:
+      return results[0]
+
 def alias_search(searcher, ostring):
    """
    Search players by alias. Returns a list of objects whose "ALIAS" attribute

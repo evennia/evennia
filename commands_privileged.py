@@ -53,34 +53,26 @@ def cmd_destroy(cdat):
       session.msg("Destroy what?")
       return
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args))
+      target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
+         return
       
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
-         return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
-         return
-      elif results[0].is_player():
-         if pobject.id == results[0].id:
+      if target_obj.is_player():
+         if pobject.id == target_obj.id:
             session.msg("You can't destroy yourself.")
             return
          if not switch_override:
             session.msg("You must use @destroy/override on players.")
             return
-         if results[0].is_superuser():
+         if target_obj.is_superuser():
             session.msg("You can't destroy a superuser.")
             return
-         target_obj = results[0]
-      elif results[0].is_going() or results[0].is_garbage():
+      elif target_obj.is_going() or target_obj.is_garbage():
          session.msg("That object is already destroyed.")
          return
-      else:
-         target_obj = results[0]
    
-   session.msg("You destroy %s." % (target_obj,))
+   session.msg("You destroy %s." % (target_obj.get_name(),))
    target_obj.destroy()
 
 def cmd_list(cdat):
@@ -130,25 +122,18 @@ def cmd_description(cdat):
    elif len(eq_args) < 2:
       session.msg("How would you like to describe that object?")
    else:
-      results = functions_db.local_and_global_search(pobject, searchstring)
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
+      target_obj = functions_db.standard_plr_objsearch(session, searchstring)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
+
+      if not pobject.controls_other(target):
+         session.msg(defines_global.NOCONTROL_MSG)
          return
-      else:
-         target_obj = results[0]
-         if not pobject.controls_other(target):
-            session.msg(defines_global.NOCONTROL_MSG)
-            return
-         
-         new_desc = '='.join(eq_args[1:])
-         session.msg("%s - DESCRIPTION set." % (target_obj,))
-         target_obj.set_description(new_desc)
+
+      new_desc = '='.join(eq_args[1:])
+      session.msg("%s - DESCRIPTION set." % (target_obj,))
+      target_obj.set_description(new_desc)
 
 def cmd_newpassword(cdat):
    """
@@ -168,26 +153,24 @@ def cmd_newpassword(cdat):
       session.msg("You must supply a new password.")
       return
 
-   results = functions_db.local_and_global_search(pobject, searchstring)
-   
+   target_obj = functions_db.standard_plr_objsearch(session, searchstring)
+   # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+   if not target_obj:
+      return
 
-   if len(results) > 1:
-      session.msg("More than one match found (please narrow target):")
-      for result in results:
-         session.msg(" %s" % (result.get_name(),))
-   elif len(results) == 0:
-      session.msg("I don't see that here.")
-   elif not pobject.controls_other(results[0]):
-      session.msg("You do not control %s." % (results[0],))
+   if not target_obj.is_player():
+      session.msg("You can only change passwords on players.")
+   elif not pobject.controls_other(target_obj):
+      session.msg("You do not control %s." % (target_obj.get_name(),))
    else:
-      uaccount = results[0].get_user_account()
+      uaccount = target_obj.get_user_account()
       if len(newpass) == 0:
          uaccount.set_password()
       else:
          uaccount.set_password(newpass)
       uaccount.save()
-      session.msg("%s - PASSWORD set." % (results[0],))
-      results[0].emit_to("%s has changed your password." % (pobject,))
+      session.msg("%s - PASSWORD set." % (target_obj.get_name(),))
+      target_obj.emit_to("%s has changed your password." % (pobject.get_name(show_dbref=False),))
 
 def cmd_password(cdat):
    """
@@ -234,21 +217,15 @@ def cmd_name(cdat):
    elif len(eq_args) < 2:
       session.msg("What would you like to name that object?")
    else:
-      results = functions_db.local_and_global_search(pobject, searchstring)
+      target_obj = functions_db.standard_plr_objsearch(session, searchstring)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
+         return
       
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
-         return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
-         return
-      elif len(eq_args[1]) == 0:
+      if len(eq_args[1]) == 0:
          session.msg("What would you like to name that object?")
       else:
          newname = '='.join(eq_args[1:])
-         target_obj = results[0]
          session.msg("You have renamed %s to %s." % (target_obj, ansi.parse_ansi(newname, strip_formatting=True)))
          target_obj.set_name(newname)
 
@@ -348,29 +325,25 @@ def cmd_open(cdat):
    if len(eq_args) > 1:
       # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
       comma_split = eq_args[1].split(',')
-      destination = functions_db.local_and_global_search(pobject, comma_split[0])
-      
-      if len(destination) == 0:
-         session.msg("I can't find the location to link to.")
+      destination = functions_db.standard_plr_objsearch(session, comma_split[0])
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not destination:
          return
-      elif len(destination) > 1:
-         session.msg("Multiple results returned for exit destination!")
-      else:
-         destination = destination[0]
-         if destination.is_exit():
-            session.msg("You can't open an exit to an exit!")
-            return
-         
-         odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
+
+      if destination.is_exit():
+         session.msg("You can't open an exit to an exit!")
+         return
+
+      odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
+      new_object = functions_db.create_object(odat)
+
+      session.msg("You open the an exit - %s to %s" % (new_object.get_name(),destination.get_name()))
+
+      if len(comma_split) > 1:
+         second_exit_name = ','.join(comma_split[1:])
+         odat = {"name": second_exit_name, "type": 4, "location": destination, "owner": pobject, "home": pobject.get_location()}
          new_object = functions_db.create_object(odat)
-         
-         session.msg("You open the an exit - %s to %s" % (new_object.get_name(),destination.get_name()))
-         
-         if len(comma_split) > 1:
-            second_exit_name = ','.join(comma_split[1:])
-            odat = {"name": second_exit_name, "type": 4, "location": destination, "owner": pobject, "home": pobject.get_location()}
-            new_object = functions_db.create_object(odat)
-            session.msg("You open the an exit - %s to %s" % (new_object.get_name(),pobject.get_location().get_name()))
+         session.msg("You open the an exit - %s to %s" % (new_object.get_name(),pobject.get_location().get_name()))
 
    else:
       # Create an un-linked exit.
@@ -404,40 +377,28 @@ def cmd_link(cdat):
       return
       
    if len(eq_args) > 1:
-      target = functions_db.local_and_global_search(pobject, target_name)
-      
-      if len(target) == 0:
-         session.msg("I can't find the object you want to link.")
+      target_obj = functions_db.standard_plr_objsearch(session, target_name)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(target) > 1:
-         session.msg("Multiple results returned for link target.")
-         return
-         
-      # We know we can get the first entry now. 
-      target = target[0]
 
-      if not pobject.controls_other(target):
+      if not pobject.controls_other(target_obj):
          session.msg(defines_global.NOCONTROL_MSG)
          return
       
       # If we do something like "@link blah=", we unlink the object.
       if len(dest_name) == 0:
-         target.set_home(None)
-         session.msg("You have unlinked %s." % (target,))
+         target_obj.set_home(None)
+         session.msg("You have unlinked %s." % (target_obj,))
+         return
+
+      destination = functions_db.standard_plr_objsearch(session, dest_name)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not destination:
          return
       
-      destination = functions_db.local_and_global_search(pobject, dest_name)
-      
-      if len(destination) == 0:
-         session.msg("I can't find the location to link to.")
-         return
-      elif len(destination) > 1:
-         session.msg("Multiple results returned for destination.")
-         return
-         
-      destination = destination[0]
-      target.set_home(destination)
-      session.msg("You link %s to %s." % (target,destination))
+      target_obj.set_home(destination)
+      session.msg("You link %s to %s." % (target_obj,destination))
          
    else:
       # We haven't provided a target.
@@ -456,23 +417,17 @@ def cmd_unlink(cdat):
       session.msg("Unlink what?")
       return
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args))
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
+      target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
+
+      if not pobject.controls_other(target_obj):
+         session.msg(defines_global.NOCONTROL_MSG)
          return
-      else:
-         if not pobject.controls_other(results[0]):
-            session.msg(defines_global.NOCONTROL_MSG)
-            return
-         
-         results[0].set_home(None)
-         session.msg("You have unlinked %s." % (results[0],))
+
+      target_obj.set_home(None)
+      session.msg("You have unlinked %s." % (target_obj.get_name(),))
 
 def cmd_teleport(cdat):
    """
@@ -495,57 +450,47 @@ def cmd_teleport(cdat):
    # a direct teleport, @tel <destination>.
    if len(eq_args) > 1:
       # Equal sign teleport.
-      victim = functions_db.local_and_global_search(pobject, eq_args[0])
-      destination = functions_db.local_and_global_search(pobject, eq_args[1])
+      victim = functions_db.standard_plr_objsearch(session, eq_args[0])
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not victim:
+         return
       
-      if len(victim) == 0:
-         session.msg("I can't find the victim to teleport.")
+      destination = functions_db.standard_plr_objsearch(session, eq_args[1])
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not destination:
          return
-      elif len(destination) == 0:
-         session.msg("I can't find the destination for the victim.")
+
+      if victim == destination:
+         session.msg("You can't teleport an object inside of itself!")
          return
-      elif len(victim) > 1:
-         session.msg("Multiple results returned for victim!")
-         return
-      elif len(destination) > 1:
-         session.msg("Multiple results returned for destination!")
-      else:
-         if victim == destination:
-            session.msg("You can't teleport an object inside of itself!")
-            return
-         session.msg("Teleported.")
-         victim[0].move_to(destination[0])
-         
-         # This is somewhat kludgy right now, we'll have to find a better way
-         # to do it sometime else. If we can find a session in the server's
-         # session list matching the object we're teleporting, force it to
-         # look. This is going to typically be a player.
-         victim_session = session_mgr.session_from_object(victim[0])
-         if victim_session:
-            # We need to form up a new cdat dictionary to pass with the command.
-            # Kinda yucky I guess.
-            cdat2 = {"server": server, "uinput": 'look', "session": victim_session}
-            cmdhandler.handle(cdat2)
+      session.msg("Teleported.")
+      victim.move_to(destination)
+
+      # This is somewhat kludgy right now, we'll have to find a better way
+      # to do it sometime else. If we can find a session in the server's
+      # session list matching the object we're teleporting, force it to
+      # look. This is going to typically be a player.
+      victim_session = session_mgr.session_from_object(victim)
+      if victim_session:
+         # We need to form up a new cdat dictionary to pass with the command.
+         # Kinda yucky I guess.
+         cdat2 = {"server": server, "uinput": 'look', "session": victim_session}
+         cmdhandler.handle(cdat2)
          
    else:
       # Direct teleport (no equal sign)
-      results = functions_db.local_and_global_search(pobject, search_str)
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
+      target_obj = functions_db.standard_plr_objsearch(session, search_str)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      else:
-         if results[0] == pobject:
-            session.msg("You can't teleport inside yourself!")
-            return
-         session.msg("Teleported.")
-         pobject.move_to(results[0])
-         commands_general.cmd_look(cdat)
-         
+
+      if target_obj == pobject:
+         session.msg("You can't teleport inside yourself!")
+         return
+      session.msg("Teleported.")
+      pobject.move_to(target_obj)
+      commands_general.cmd_look(cdat)
+
 def cmd_set(cdat):
    """
    Sets flags or attributes on objects.
@@ -554,34 +499,29 @@ def cmd_set(cdat):
    pobject = session.get_pobject()
    server = cdat['server']
    args = cdat['uinput']['splitted'][1:]
-   
+
    if len(args) == 0:
       session.msg("Set what?")
       return
-   
+
    # There's probably a better way to do this. Break the arguments (minus
    # the root command) up so we have two items in the list, 0 being the victim,
    # 1 being the list of flags or the attribute/value pair.   
    eq_args = ' '.join(args).split('=')
-   
+
    if len(eq_args) < 2:
       session.msg("Set what?")
       return
-      
-   victim = functions_db.local_and_global_search(pobject, eq_args[0])
-   
-   if len(victim) == 0:
-      session.msg("I don't see that here.")
-      return
-   elif len(victim) > 1:
-      session.msg("I don't know which one you mean!")
-      return
-      
-   victim = victim[0]
+
+   victim = functions_db.standard_plr_objsearch(session, eq_args[0])
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not victim:
+         return
+
    if not pobject.controls_other(victim):
       session.msg(defines_global.NOCONTROL_MSG)
       return
-   
+
    attrib_args = eq_args[1].split(':')
 
    if len(attrib_args) > 1:

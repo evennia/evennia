@@ -49,7 +49,7 @@ def log_errmsg(errormsg):
 
    errormsg: (string) The message to be logged.
    """
-   log.error('ERROR: %s' % (errormsg,))
+   log.err('ERROR: %s' % (errormsg,))
 
 def log_infomsg(infomsg):
    """

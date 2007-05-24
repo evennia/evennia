@@ -48,18 +48,10 @@ def cmd_look(cdat):
    if len(args) == 0:   
       target_obj = pobject.get_location()
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args))
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
+      target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
-         return
-      else:
-         target_obj = results[0]
    
    retval = "%s\r\n%s" % (
       target_obj.get_name(),
@@ -106,19 +98,10 @@ def cmd_get(cdat):
       session.msg("Get what?")
       return
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args), search_contents=False)
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
+      target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args), search_contents=False)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
-         return
-      else:
-         # We've got a victim to get now.
-         target_obj = results[0]
 
    if pobject == target_obj:
       session.msg("You can't get yourself.")
@@ -149,19 +132,10 @@ def cmd_drop(cdat):
       session.msg("Drop what?")
       return
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args), search_location=False)
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
+      target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args), search_location=False)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(results) == 0:
-         session.msg("You don't appear to be carrying that.")
-         return
-      else:
-         # We've got a victim to get now.
-         target_obj = results[0]
 
    if not pobject == target_obj.get_location():
       session.msg("You don't appear to be carrying that.")
@@ -198,19 +172,11 @@ def cmd_examine(cdat):
          attr_searchstr = '/'.join(attr_split[1:])
       else:
          searchstr = ' '.join(args)
-      
-      results = functions_db.local_and_global_search(pobject, searchstr)
-      
-      if len(results) > 1:
-         session.msg("More than one match found (please narrow target):")
-         for result in results:
-            session.msg(" %s" % (result.get_name(),))
+
+      target_obj = functions_db.standard_plr_objsearch(session, searchstr)
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
          return
-      elif len(results) == 0:
-         session.msg("I don't see that here.")
-         return
-      else:
-         target_obj = results[0]
          
    if attr_search:
       attr_matches = target_obj.attribute_namesearch(attr_searchstr)
