@@ -13,17 +13,17 @@ class Attribute(models.Model):
    storing them directly. The added benefit is that we can add/remove 
    attributes on the fly as we like.
    """
-   name = models.CharField(maxlength=255)
-   value = models.CharField(maxlength=255)
-   is_hidden = models.BooleanField(default=0)
-   object = models.ForeignKey("Object")
+   attr_name = models.CharField(maxlength=255)
+   attr_value = models.CharField(maxlength=255)
+   attr_hidden = models.BooleanField(default=0)
+   attr_object = models.ForeignKey("Object")
    
    def __str__(self):
-      return "%s(%s)" % (self.name, self.id)
+      return "%s(%s)" % (self.attr_name, self.id)
    
    class Admin:
-      list_display = ('object', 'name', 'value',)
-      search_fields = ['name']
+      list_display = ('attr_object', 'attr_name', 'attr_value',)
+      search_fields = ['attr_name']
       
    """
    BEGIN COMMON METHODS
@@ -32,25 +32,37 @@ class Attribute(models.Model):
       """
       Returns an attribute's name.
       """
-      return self.name
+      return self.attr_name
       
    def get_value(self):
       """
       Returns an attribute's value.
       """
-      return self.value
+      return self.attr_value
    
    def get_object(self):
       """
       Returns the object that the attribute resides on.
       """
-      return self.object
+      return self.attr_object
       
    def is_hidden(self):
       """
       Returns True if the attribute is hidden.
       """
-      return self.is_hidden
+      if self.attr_hidden or self.get_name().upper() in defines_global.HIDDEN_ATTRIBS:
+         return True
+      else:
+         return False
+
+   def is_noset(self):
+      """
+      Returns True if the attribute is unsettable.
+      """
+      if self.get_name().upper() in defines_global.NOSET_ATTRIBS:
+         return True
+      else:
+         return False
       
    def get_attrline(self):
       """
@@ -333,7 +345,7 @@ class Object(models.Model):
       """
       Returns a QuerySet of an object's attributes.
       """
-      return [attr for attr in self.attribute_set.all() if attr.name.upper() not in defines_global.HIDDEN_ATTRIBS]
+      return [attr for attr in self.attribute_set.all() if not attr.is_hidden()]
       
    def clear_all_attributes(self):
       """
@@ -393,15 +405,16 @@ class Object(models.Model):
       """
       if self.has_attribute(attribute):
          # Attribute already exists, update it.
-         attrib_obj = Attribute.objects.filter(object=self).filter(name__iexact=attribute)[0]
-         attrib_obj.value = new_value
+         attrib_obj = Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
+         attrib_obj.attr_value = new_value
          attrib_obj.save()
       else:
          # Attribute object doesn't exist, create it.
          new_attrib = Attribute()
-         new_attrib.name = attribute
-         new_attrib.value = new_value
-         new_attrib.object = self
+         new_attrib.attr_name = attribute
+         new_attrib.attr_value = new_value
+         new_attrib.attr_object = self
+         new_attrib.attr_hidden = False
          new_attrib.save()
          
    def has_attribute(self, attribute):
@@ -410,13 +423,13 @@ class Object(models.Model):
       
       attribute: (str) The attribute's name.
       """
-      attr = Attribute.objects.filter(object=self).filter(name__iexact=attribute)
+      attr = Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)
       if attr.count() == 0:
          return False
       else:
          return True
          
-   def attribute_namesearch(self, searchstr):
+   def attribute_namesearch(self, searchstr, exclude_noset=False):
       """
       Searches the object's attributes for name matches against searchstr
       via regular expressions. Returns a list.
@@ -424,12 +437,15 @@ class Object(models.Model):
       searchstr: (str) A string (maybe with wildcards) to search for.
       """
       # Retrieve the list of attributes for this object.
-      attrs = Attribute.objects.filter(object=self)
+      attrs = Attribute.objects.filter(attr_object=self)
       # Compile a regular expression that is converted from the user's
       # wild-carded search string.
       match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), re.IGNORECASE)
       # If the regular expression search returns a match object, add to results.
-      return [attr for attr in attrs if match_exp.search(attr.name) and attr.name not in defines_global.HIDDEN_ATTRIBS]
+      if exclude_noset:
+         return [attr for attr in attrs if match_exp.search(attr.get_name()) and not attr.is_hidden() and not attr.is_noset()]
+      else:
+         return [attr for attr in attrs if match_exp.search(attr.get_name()) and not attr.is_hidden()]
       
    def has_flag(self, flag):
       """
@@ -551,8 +567,7 @@ class Object(models.Model):
       attrib: (str) The attribute's name.
       """
       if self.has_attribute(attrib):
-         attrib_obj = Attribute.objects.filter(object=self).filter(name=attrib)
-         return attrib_obj
+         return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
       else:
          return False
    

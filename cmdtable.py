@@ -67,6 +67,7 @@ ctable = {
    "@teleport":    (commands_privileged.cmd_teleport, ("genperms.builder")),
    "@unlink":      (commands_privileged.cmd_unlink, ("genperms.builder")),
    "@wall":        (commands_privileged.cmd_wall, ("genperms.announce")),
+   "@wipe":        (commands_privileged.cmd_wipe, None),
 } 
 
 def return_cmdtuple(func_name, unlogged_cmd=False):

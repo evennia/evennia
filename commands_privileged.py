@@ -491,6 +491,57 @@ def cmd_teleport(cdat):
       pobject.move_to(target_obj)
       commands_general.cmd_look(cdat)
 
+def cmd_wipe(cdat):
+   """
+   Wipes an object's attributes, or optionally only those matching a search
+   string.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   attr_search = False
+   
+   if len(args) == 0:   
+      session.msg("Wipe what?")
+      return
+
+   # Look for a slash in the input, indicating an attribute wipe.
+   attr_split = args[0].split("/")
+
+   # If the splitting by the "/" character returns a list with more than 1
+   # entry, it's an attribute match.
+   if len(attr_split) > 1:
+      attr_search = True
+      # Strip the object search string from the input with the
+      # object/attribute pair.
+      searchstr = attr_split[0]
+      # Just in case there's a slash in an attribute name.
+      attr_searchstr = '/'.join(attr_split[1:])
+   else:
+      searchstr = ' '.join(args)
+
+   target_obj = functions_db.standard_plr_objsearch(session, searchstr)
+   # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+   if not target_obj:
+      return
+         
+   if attr_search:
+      # User has passed an attribute wild-card string. Search for name matches
+      # and wipe.
+      attr_matches = target_obj.attribute_namesearch(attr_searchstr, exclude_noset=True)
+      if attr_matches:
+         for attr in attr_matches:
+            target_obj.clear_attribute(attr.get_name())
+         session.msg("%s - %d attributes wiped." % (target_obj.get_name(), len(attr_matches)))
+      else:
+         session.msg("No matching attributes found.")
+   else:
+      # User didn't specify a wild-card string, wipe entire object.
+      attr_matches = target_obj.attribute_namesearch("*", exclude_noset=True)
+      for attr in attr_matches:
+         target_obj.clear_attribute(attr.get_name())
+      session.msg("%s - %d attributes wiped." % (target_obj.get_name(), len(attr_matches)))
+
 def cmd_set(cdat):
    """
    Sets flags or attributes on objects.
@@ -512,7 +563,7 @@ def cmd_set(cdat):
    if len(eq_args) < 2:
       session.msg("Set what?")
       return
-
+   
    victim = functions_db.standard_plr_objsearch(session, eq_args[0])
    # Use standard_plr_objsearch to handle duplicate/nonexistant results.
    if not victim:
