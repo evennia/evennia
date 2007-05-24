@@ -1,3 +1,4 @@
+import re
 from django.db import models
 from django.contrib.auth.models import User, Group
 import defines_global
@@ -24,11 +25,42 @@ class Attribute(models.Model):
       list_display = ('object', 'name', 'value',)
       search_fields = ['name']
       
+   """
+   BEGIN COMMON METHODS
+   """
    def get_name(self):
       """
       Returns an attribute's name.
       """
       return self.name
+      
+   def get_value(self):
+      """
+      Returns an attribute's value.
+      """
+      return self.value
+   
+   def get_object(self):
+      """
+      Returns the object that the attribute resides on.
+      """
+      return self.object
+      
+   def is_hidden(self):
+      """
+      Returns True if the attribute is hidden.
+      """
+      return self.is_hidden
+      
+   def get_attrline(self):
+      """
+      Best described as a __str__ method for in-game. Renders the attribute's
+      name and value as per MUX.
+      """
+      return "%s%s%s: %s" % (ansi.ansi["hilite"], 
+         self.get_name(), 
+         ansi.ansi["normal"], 
+         self.get_value())
 
 class Object(models.Model):
    """
@@ -383,6 +415,21 @@ class Object(models.Model):
          return False
       else:
          return True
+         
+   def attribute_namesearch(self, searchstr):
+      """
+      Searches the object's attributes for name matches against searchstr
+      via regular expressions. Returns a list.
+      
+      searchstr: (str) A string (maybe with wildcards) to search for.
+      """
+      # Retrieve the list of attributes for this object.
+      attrs = Attribute.objects.filter(object=self)
+      # Compile a regular expression that is converted from the user's
+      # wild-carded search string.
+      match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), re.IGNORECASE)
+      # If the regular expression search returns a match object, add to results.
+      return [attr for attr in attrs if match_exp.search(attr.name)]
       
    def has_flag(self, flag):
       """

@@ -178,11 +178,28 @@ def cmd_examine(cdat):
    session = cdat['session']
    pobject = session.get_pobject()
    args = cdat['uinput']['splitted'][1:]
+   attr_search = False
    
    if len(args) == 0:   
+      # If no arguments are provided, examine the invoker's location.
       target_obj = pobject.get_location()
    else:
-      results = functions_db.local_and_global_search(pobject, ' '.join(args))
+      # Look for a slash in the input, indicating an attribute search.
+      attr_split = args[0].split("/")
+      
+      # If the splitting by the "/" character returns a list with more than 1
+      # entry, it's an attribute match.
+      if len(attr_split) > 1:
+         attr_search = True
+         # Strip the object search string from the input with the
+         # object/attribute pair.
+         searchstr = attr_split[0]
+         # Just in case there's a slash in an attribute name.
+         attr_searchstr = '/'.join(attr_split[1:])
+      else:
+         searchstr = ' '.join(args)
+      
+      results = functions_db.local_and_global_search(pobject, searchstr)
       
       if len(results) > 1:
          session.msg("More than one match found (please narrow target):")
@@ -194,48 +211,58 @@ def cmd_examine(cdat):
          return
       else:
          target_obj = results[0]
-   session.msg("%s\r\n%s" % (
-      target_obj.get_name(fullname=True),
-      target_obj.get_description(no_parsing=True),
-   ))
-   session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
-   session.msg("Owner: %s " % (target_obj.get_owner(),))
-   session.msg("Zone: %s" % (target_obj.get_zone(),))
-   
-   for attribute in target_obj.get_all_attributes():
-      session.msg("%s%s%s: %s" % (ansi.ansi["hilite"], attribute.get_name(), ansi.ansi["normal"], attribute.value))
-   
-   con_players = []
-   con_things = []
-   con_exits = []
-   
-   for obj in target_obj.get_contents():
-      if obj.is_player():
-         con_players.append(obj)  
-      elif obj.is_exit():
-         con_exits.append(obj)
-      elif obj.is_thing():
-         con_things.append(obj)
-   
-   if con_players or con_things:
-      session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
-      for player in con_players:
-         session.msg('%s' % (player.get_name(fullname=True),))
-      for thing in con_things:
-         session.msg('%s' % (thing.get_name(fullname=True),))
          
-   if con_exits:
-      session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
-      for exit in con_exits:
-         session.msg('%s' %(exit.get_name(fullname=True),))
-         
-   if not target_obj.is_room():
-      if target_obj.is_exit():
-         session.msg("Destination: %s" % (target_obj.get_home(),))
+   if attr_search:
+      attr_matches = target_obj.attribute_namesearch(attr_searchstr)
+      if attr_matches:
+         for attribute in attr_matches:
+            session.msg(attribute.get_attrline())
       else:
-         session.msg("Home: %s" % (target_obj.get_home(),))
-         
-      session.msg("Location: %s" % (target_obj.get_location(),))
+         session.msg("No matching attributes found.")
+      # End attr_search if()
+   else:
+      session.msg("%s\r\n%s" % (
+         target_obj.get_name(fullname=True),
+         target_obj.get_description(no_parsing=True),
+      ))
+      session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
+      session.msg("Owner: %s " % (target_obj.get_owner(),))
+      session.msg("Zone: %s" % (target_obj.get_zone(),))
+      
+      for attribute in target_obj.get_all_attributes():
+         session.msg(attribute.get_attrline())
+      
+      con_players = []
+      con_things = []
+      con_exits = []
+      
+      for obj in target_obj.get_contents():
+         if obj.is_player():
+            con_players.append(obj)  
+         elif obj.is_exit():
+            con_exits.append(obj)
+         elif obj.is_thing():
+            con_things.append(obj)
+      
+      if con_players or con_things:
+         session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
+         for player in con_players:
+            session.msg('%s' % (player.get_name(fullname=True),))
+         for thing in con_things:
+            session.msg('%s' % (thing.get_name(fullname=True),))
+            
+      if con_exits:
+         session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
+         for exit in con_exits:
+            session.msg('%s' %(exit.get_name(fullname=True),))
+            
+      if not target_obj.is_room():
+         if target_obj.is_exit():
+            session.msg("Destination: %s" % (target_obj.get_home(),))
+         else:
+            session.msg("Home: %s" % (target_obj.get_home(),))
+            
+         session.msg("Location: %s" % (target_obj.get_location(),))
    
 def cmd_page(cdat):
    """
