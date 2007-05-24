@@ -11,6 +11,7 @@ from django.db import connection
 
 from apps.config.models import CommandAlias
 from session import SessionProtocol
+import settings
 import scheduler
 import functions_general
 import session_mgr
@@ -22,6 +23,7 @@ import initial_setup
 class EvenniaService(service.Service):
 
    def __init__(self, filename="blah"):
+      log.startLogging(open(settings.LOGFILE, 'w'))
       self.cmd_alias_list = {}
       self.game_running = True
 

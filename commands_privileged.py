@@ -514,9 +514,9 @@ def cmd_set(cdat):
       return
 
    victim = functions_db.standard_plr_objsearch(session, eq_args[0])
-      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
-      if not victim:
-         return
+   # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+   if not victim:
+      return
 
    if not pobject.controls_other(victim):
       session.msg(defines_global.NOCONTROL_MSG)

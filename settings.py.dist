@@ -79,3 +79,5 @@ INSTALLED_APPS = (
     'apps.helpsys',
     'apps.genperms',
 )
+
+LOGFILE = 'logs/evennia.log'
