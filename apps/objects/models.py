@@ -429,7 +429,7 @@ class Object(models.Model):
       # wild-carded search string.
       match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), re.IGNORECASE)
       # If the regular expression search returns a match object, add to results.
-      return [attr for attr in attrs if match_exp.search(attr.name)]
+      return [attr for attr in attrs if match_exp.search(attr.name) and attr.name not in defines_global.HIDDEN_ATTRIBS]
       
    def has_flag(self, flag):
       """
