@@ -16,6 +16,20 @@ This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
 
+def cmd_stats(cdat):
+   """
+   Shows stats about the database.
+   4012 objects = 144 rooms, 212 exits, 613 things, 1878 players. (1165 garbage)
+   """
+   session = cdat['session']
+   stats_dict = functions_db.object_totals()
+   session.msg("%d objects = %d rooms, %d exits, %d things, %d players. (%d garbage)" % (stats_dict["objects"],
+      stats_dict["rooms"],
+      stats_dict["exits"],
+      stats_dict["things"],
+      stats_dict["players"],
+      stats_dict["garbage"]))
+
 def cmd_reload(cdat):
    """
    Reloads all modules.
@@ -351,11 +365,11 @@ def cmd_open(cdat):
       new_object = functions_db.create_object(odat)
 
       session.msg("You open an unlinked exit - %s" % (new_object,))
-         
+
 def cmd_link(cdat):
    """
    Sets an object's home or an exit's destination.
-   
+
    Forms:
    @link <Object>=<Target>
    """
@@ -363,19 +377,19 @@ def cmd_link(cdat):
    pobject = session.get_pobject()
    server = cdat['server']
    args = cdat['uinput']['splitted'][1:]
-   
+
    if len(args) == 0:
       session.msg("Link what?")
       return
-      
+
    eq_args = args[0].split('=')
    target_name = eq_args[0]
    dest_name = '='.join(eq_args[1:])   
-   
+
    if len(target_name) == 0:
       session.msg("What do you want to link?")
       return
-      
+
    if len(eq_args) > 1:
       target_obj = functions_db.standard_plr_objsearch(session, target_name)
       # Use standard_plr_objsearch to handle duplicate/nonexistant results.
@@ -385,7 +399,7 @@ def cmd_link(cdat):
       if not pobject.controls_other(target_obj):
          session.msg(defines_global.NOCONTROL_MSG)
          return
-      
+
       # If we do something like "@link blah=", we unlink the object.
       if len(dest_name) == 0:
          target_obj.set_home(None)
@@ -396,15 +410,15 @@ def cmd_link(cdat):
       # Use standard_plr_objsearch to handle duplicate/nonexistant results.
       if not destination:
          return
-      
+
       target_obj.set_home(destination)
       session.msg("You link %s to %s." % (target_obj,destination))
-         
+
    else:
       # We haven't provided a target.
       session.msg("You must provide a destination to link to.")
       return
-      
+
 def cmd_unlink(cdat):
    """
    Unlinks an object.
@@ -437,14 +451,14 @@ def cmd_teleport(cdat):
    pobject = session.get_pobject()
    server = cdat['server']
    args = cdat['uinput']['splitted'][1:]
-   
+
    if len(args) == 0:
       session.msg("Teleport where/what?")
       return
-      
+
    eq_args = args[0].split('=')
    search_str = ''.join(args)
-      
+
    # If we have more than one entry in our '=' delimited argument list,
    # then we're doing a @tel <victim>=<location>. If not, we're doing
    # a direct teleport, @tel <destination>.
@@ -454,7 +468,7 @@ def cmd_teleport(cdat):
       # Use standard_plr_objsearch to handle duplicate/nonexistant results.
       if not victim:
          return
-      
+
       destination = functions_db.standard_plr_objsearch(session, eq_args[1])
       # Use standard_plr_objsearch to handle duplicate/nonexistant results.
       if not destination:
@@ -476,7 +490,7 @@ def cmd_teleport(cdat):
          # Kinda yucky I guess.
          cdat2 = {"server": server, "uinput": 'look', "session": victim_session}
          cmdhandler.handle(cdat2)
-         
+
    else:
       # Direct teleport (no equal sign)
       target_obj = functions_db.standard_plr_objsearch(session, search_str)
@@ -500,7 +514,7 @@ def cmd_wipe(cdat):
    pobject = session.get_pobject()
    args = cdat['uinput']['splitted'][1:]
    attr_search = False
-   
+
    if len(args) == 0:   
       session.msg("Wipe what?")
       return
@@ -524,7 +538,7 @@ def cmd_wipe(cdat):
    # Use standard_plr_objsearch to handle duplicate/nonexistant results.
    if not target_obj:
       return
-         
+
    if attr_search:
       # User has passed an attribute wild-card string. Search for name matches
       # and wipe.

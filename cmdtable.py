@@ -64,6 +64,7 @@ ctable = {
    "@reload":      (commands_privileged.cmd_reload, ("genperms.process_control")),
    "@set":         (commands_privileged.cmd_set, None),
    "@shutdown":    (commands_privileged.cmd_shutdown, ("genperms.process_control")),
+   "@stats":       (commands_privileged.cmd_stats, None),
    "@teleport":    (commands_privileged.cmd_teleport, ("genperms.builder")),
    "@unlink":      (commands_privileged.cmd_unlink, ("genperms.builder")),
    "@wall":        (commands_privileged.cmd_wall, ("genperms.announce")),

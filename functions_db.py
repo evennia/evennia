@@ -3,7 +3,7 @@ from django.db import connection
 from django.contrib.auth.models import User
 from apps.objects.models import Object, Attribute
 from apps.config.models import ConfigValue
-import defines_global as global_defines
+import defines_global as defines_global
 import gameconf
 
 """
@@ -19,13 +19,13 @@ def is_unsavable_flag(flagname):
    """
    Returns TRUE if the flag is an unsavable flag.
    """
-   return flagname.upper() in global_defines.NOSAVE_FLAGS
+   return flagname.upper() in defines_global.NOSAVE_FLAGS
 
 def is_modifiable_flag(flagname):
    """
    Check to see if a particular flag is modifiable.
    """
-   if flagname.upper() not in global_defines.NOSET_FLAGS:
+   if flagname.upper() not in defines_global.NOSET_FLAGS:
       return True
    else:
       return False
@@ -36,7 +36,7 @@ def is_modifiable_attrib(attribname):
 
    attribname: (string) An attribute name to check.
    """
-   if attribname.upper() not in global_defines.NOSET_ATTRIBS:
+   if attribname.upper() not in defines_global.NOSET_ATTRIBS:
       return True
    else:
       return False
@@ -50,7 +50,7 @@ def get_nextfree_dbnum():
    """
    # First we'll see if there's an object of type 6 (GARBAGE) that we
    # can recycle.
-   nextfree = Object.objects.filter(type__exact=global_defines.OTYPE_GARBAGE)
+   nextfree = Object.objects.filter(type__exact=defines_global.OTYPE_GARBAGE)
    if nextfree:
       # We've got at least one garbage object to recycle.
       return nextfree[0]
@@ -64,9 +64,9 @@ def global_object_name_search(ostring, exact_match=False):
    Searches through all objects for a name match.
    """
    if exact_match:
-      return Object.objects.filter(name__iexact=ostring).exclude(type=global_defines.OTYPE_GARBAGE)
+      return Object.objects.filter(name__iexact=ostring).exclude(type=defines_global.OTYPE_GARBAGE)
    else:
-      return Object.objects.filter(name__icontains=ostring).exclude(type=global_defines.OTYPE_GARBAGE)
+      return Object.objects.filter(name__icontains=ostring).exclude(type=defines_global.OTYPE_GARBAGE)
    
 def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_types=False, match_type="fuzzy"):
    """
@@ -98,7 +98,7 @@ def player_search(searcher, ostring):
    if len(alias_results) > 0:
       return alias_results
    else:
-      return local_and_global_search(searcher, ostring, limit_types=[global_defines.OTYPE_PLAYER])
+      return local_and_global_search(searcher, ostring, limit_types=[defines_global.OTYPE_PLAYER])
 
 def standard_plr_objsearch(session, ostring, search_contents=True, search_location=True, dbref_only=False, limit_types=False):
    """
@@ -121,6 +121,19 @@ def standard_plr_objsearch(session, ostring, search_contents=True, search_locati
       return False
    else:
       return results[0]
+
+def object_totals():
+   """
+   Returns a dictionary with database object totals.
+   """
+   dbtotals = {}
+   dbtotals["objects"] = Object.objects.count()
+   dbtotals["things"] = Object.objects.filter(type=defines_global.OTYPE_THING).count()
+   dbtotals["exits"] = Object.objects.filter(type=defines_global.OTYPE_EXIT).count()
+   dbtotals["rooms"] = Object.objects.filter(type=defines_global.OTYPE_ROOM).count()
+   dbtotals["garbage"] = Object.objects.filter(type=defines_global.OTYPE_GARBAGE).count()
+   dbtotals["players"] = Object.objects.filter(type=defines_global.OTYPE_PLAYER).count()
+   return dbtotals
 
 def alias_search(searcher, ostring):
    """
