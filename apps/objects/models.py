@@ -720,7 +720,6 @@ class CommChannel(models.Model):
    ansi_name = models.CharField(maxlength=255)
    owner = models.ForeignKey(Object, related_name="chan_owner")
    description = models.CharField(maxlength=80)
-   members = models.ManyToManyField(Object, blank=True, null=True)
    req_grp = models.ManyToManyField(Group, blank=True, null=True)
 
    def __str__(self):
