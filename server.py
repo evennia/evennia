@@ -4,6 +4,7 @@ import sys
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
+from twisted.python import log
 
 from django.db import models
 from django.db import connection

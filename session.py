@@ -24,8 +24,8 @@ class SessionProtocol(StatefulTelnetProtocol):
       session_mgr.add_session(self)
       self.game_connect_screen()
       self.prep_session()
-      print 'Connection:', self
-      print 'Sessions active:', len(session_mgr.get_session_list())
+      functions_general.log_infomsg('Connection: %s' % (self,))
+      functions_general.log_infomsg('Sessions active: %d' % (len(session_mgr.get_session_list()),))
 
    def getClientAddress(self):
       """

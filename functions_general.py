@@ -1,3 +1,5 @@
+from twisted.python import log
+
 import session_mgr
 import commands_privileged
 import commands_general
@@ -47,7 +49,7 @@ def log_errmsg(errormsg):
 
    errormsg: (string) The message to be logged.
    """
-   print 'ERROR: %s' % (errormsg,)
+   log.error('ERROR: %s' % (errormsg,))
 
 def log_infomsg(infomsg):
    """
@@ -55,7 +57,7 @@ def log_infomsg(infomsg):
 
    debugmsg: (string) The message to be logged.
    """
-   print '%s' % (infomsg,)
+   log.msg('%s' % (infomsg,))
    
 def time_format(seconds, style=0):
    """
