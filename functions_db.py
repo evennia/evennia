@@ -145,7 +145,7 @@ def alias_search(searcher, ostring):
    ostring:  (string) The alias string to search for.
    """
    search_query = ''.join(ostring)
-   results = Attribute.objects.select_related().filter(value__iexact=ostring)
+   results = Attribute.objects.select_related().filter(attr_value__iexact=ostring)
    return [prospect.object for prospect in results if prospect.object.is_player()]
       
 def local_and_global_search(searcher, ostring, search_contents=True, search_location=True, dbref_only=False, limit_types=False):
