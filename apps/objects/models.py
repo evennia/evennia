@@ -552,8 +552,8 @@ class Object(models.Model):
       attrib: (str) The attribute's name.
       """
       if self.has_attribute(attrib):
-         attrib = Attribute.objects.filter(object=self).filter(name=attrib)
-         return attrib[0].value
+         attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
+         return attrib[0].attr_value
       else:
          if default:
             return default
