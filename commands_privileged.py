@@ -16,6 +16,12 @@ This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
 
+def cmd_alias(cdat):
+   """
+   Assigns an alias to a player object for ease of paging, etc.
+   """
+   pass
+
 def cmd_stats(cdat):
    """
    Shows stats about the database.
