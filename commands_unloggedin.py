@@ -52,6 +52,11 @@ def cmd_create(cdat):
    
    server = session.server
    quote_split = ' '.join(cdat['uinput']['splitted']).split("\"")
+   
+   if len(quote_split) < 2:
+      session.msg("You must enclose your username in quotation marks.")
+      return
+   
    uname = quote_split[1]
    lastarg_split = quote_split[2].split()
 
