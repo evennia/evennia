@@ -166,7 +166,7 @@ def msg_chan_hist(session, channel_name):
    channel_name: (str) The channel's full name.
    """
    cobj = get_cobj_from_name(channel_name)
-   hist_list = CommChannelMessage.objects.filter(channel=cobj).order_by('date_sent')
+   hist_list = CommChannelMessage.objects.filter(channel=cobj).order_by('date_sent')[0:20]
    for entry in hist_list:
       delta_days = datetime.datetime.now() - entry.date_sent
       days_elapsed = delta_days.days
