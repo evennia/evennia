@@ -1,5 +1,6 @@
 import time
 import gameconf
+import functions_general
 
 """
 Session manager, handles connected players.
@@ -12,7 +13,7 @@ def add_session(session):
    Adds a session to the session list.
    """
    session_list.insert(0, session)
-   print 'Sessions active:', len(get_session_list())
+   functions_general.log_infomsg('Sessions active: %d' % (len(get_session_list(return_unlogged=True),)))
    
 def get_session_list(return_unlogged=False):
    """
@@ -42,7 +43,7 @@ def check_all_sessions():
    if idle_timeout <= 0:
       return
    
-   for sess in get_session_list():
+   for sess in get_session_list(return_unlogged=True):
       if (time.time() - sess.cmd_last) > idle_timeout:
          sess.msg("Idle timeout exceeded, disconnecting.")
          sess.handle_close()
@@ -52,6 +53,7 @@ def remove_session(session):
    Removes a session from the session list.
    """
    session_list.remove(session)
+   print 'Sessions active:', len(get_session_list())
    
 def session_from_object(targobject):
    """

@@ -21,11 +21,10 @@ class SessionProtocol(StatefulTelnetProtocol):
       """
       What to do when we get a connection.
       """
-      session_mgr.add_session(self)
-      self.game_connect_screen()
       self.prep_session()
       functions_general.log_infomsg('Connection: %s' % (self,))
-      functions_general.log_infomsg('Sessions active: %d' % (len(session_mgr.get_session_list()),))
+      session_mgr.add_session(self)
+      self.game_connect_screen()
 
    def getClientAddress(self):
       """
@@ -61,7 +60,7 @@ class SessionProtocol(StatefulTelnetProtocol):
       Execute this when a client abruplty loses their connection.
       """
       functions_general.log_infomsg('Disconnect: %s' % (self,))
-      functions_general.log_infomsg('Sessions active: %d' % (len(session_mgr.get_session_list()),))
+      self.handle_close()
 
    def load_user_channels(self):
       """
@@ -96,7 +95,6 @@ class SessionProtocol(StatefulTelnetProtocol):
       self.disconnectClient()
       self.logged_in = False
       session_mgr.remove_session(self)
-      print 'Sessions active:', len(session_mgr.get_session_list())
       
    def get_pobject(self):
       """
@@ -161,7 +159,7 @@ class SessionProtocol(StatefulTelnetProtocol):
       String representation of the user session class. We use
       this a lot in the server logs and stuff.
       """
-      if self.logged_in:
+      if self.is_loggedin():
          symbol = '#'
       else:
          symbol = '?'
