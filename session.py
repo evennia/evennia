@@ -120,7 +120,16 @@ class SessionProtocol(StatefulTelnetProtocol):
          create \"<username>\" <email> <password>\n\r"""
       buffer += '-'*50
       self.msg(buffer)
-      
+
+   def is_loggedin(self):
+      """
+      Returns a boolean True if the session is logged in.
+      """
+      try:
+         return self.logged_in
+      except:
+         return False
+   
    def login(self, user):
       """
       After the user has authenticated, handle logging him in.

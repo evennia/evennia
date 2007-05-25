@@ -14,11 +14,14 @@ def add_session(session):
    session_list.insert(0, session)
    print 'Sessions active:', len(get_session_list())
    
-def get_session_list():
+def get_session_list(return_unlogged=False):
    """
    Lists the connected session objects.
    """
-   return session_list
+   if return_unlogged:
+      return session_list
+   else:
+      return [sess for sess in session_list if sess.is_loggedin()]
 
 def disconnect_all_sessions():
    """
