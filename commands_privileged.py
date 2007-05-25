@@ -668,7 +668,7 @@ def cmd_wall(cdat):
       return
       
    message = "%s shouts \"%s\"" % (session.get_pobject().get_name(show_dbref=False), wallstring)
-   functions_general.announce_all(message)   
+   functions_general.announce_all(message)
 
 def cmd_shutdown(cdat):
    """

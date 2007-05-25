@@ -119,7 +119,7 @@ def time_format(seconds, style=0):
       retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str,)
       return retval  
 
-def announce_all(message, with_ann_prefix=True, with_nl=True):
+def announce_all(message, with_ann_prefix=True):
    """
    Announces something to all connected players.
    """
@@ -127,14 +127,9 @@ def announce_all(message, with_ann_prefix=True, with_nl=True):
       prefix = 'Announcement:'
    else:
       prefix = ''
-      
-   if with_nl:
-      newline = '\r\n'
-   else:
-      newline = ''
-      
+
    for session in session_mgr.get_session_list():
-      session.msg('%s %s%s' % (prefix, message,newline,))
+      session.msg('%s %s' % (prefix, message))
 
 def word_wrap(text, width=78):
    """

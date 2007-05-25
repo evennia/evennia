@@ -31,6 +31,21 @@ def disconnect_all_sessions():
    for sess in get_session_list():
       sess.handle_close()
 
+def disconnect_duplicate_session(session):
+   """
+   Disconnects any existing session under the same object. This is used in
+   connection recovery to help with record-keeping.
+   """
+   sess_list = get_session_list()
+   new_pobj = session.get_pobject()
+   for sess in sess_list:
+      if new_pobj == sess.get_pobject() and sess != session:
+         sess.msg("Your account has been logged in from elsewhere, disconnecting.")
+         sess.disconnectClient()
+         return True
+   return False
+
+
 def check_all_sessions():
    """
    Check all currently connected sessions and see if any are dead.
@@ -52,8 +67,12 @@ def remove_session(session):
    """
    Removes a session from the session list.
    """
-   session_list.remove(session)
-   print 'Sessions active:', len(get_session_list())
+   try:
+      session_list.remove(session)
+      functions_general.log_infomsg('Sessions active: %d' % (len(get_session_list()),))
+   except:
+      functions_general.log_errmsg("Unable to remove session: %s" % (session,))
+      
    
 def session_from_object(targobject):
    """
