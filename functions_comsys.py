@@ -196,12 +196,7 @@ def get_cwho_list(channel_name, return_muted=False):
    return_muted: (bool)   Return those who have the channel muted if True.
    """
    sess_list = session_mgr.get_session_list()
-   result_list = []
-   for sess in sess_list:
-      if plr_has_channel(sess, channel_name, return_muted):
-         result_list.append(sess)
-
-   return result_list
+   return [sess for sess in sess_list if plr_has_channel(sess, channel_name, return_muted)]
 
 def send_cmessage(channel_name, message):
    """
