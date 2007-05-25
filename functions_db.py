@@ -316,4 +316,4 @@ def create_user(cdat, uname, email, password):
    # Activate the player's session and set them loose.
    session.login(user)
    print 'Registration: %s' % (session,)
-   session.push("Welcome to %s, %s.\n\r" % (gameconf.get_configvalue('site_name'), session.get_pobject().get_name(show_dbref=False),))
+   session.msg("Welcome to %s, %s.\n\r" % (gameconf.get_configvalue('site_name'), session.get_pobject().get_name(show_dbref=False),))

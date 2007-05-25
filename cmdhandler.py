@@ -9,6 +9,7 @@ import commands_unloggedin
 import cmdtable
 import functions_db
 import functions_general
+import functions_comsys
 
 """
 This is the command processing module. It is instanced once in the main
@@ -95,9 +96,28 @@ def handle(cdat):
             parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
             parsed_input['root_cmd'] = 'pose'
          # Channel alias match.
-         elif session.has_user_channel(parsed_input['root_cmd'], alias_search=True, return_muted=False):
-            cname = session.channels_subscribed.get(parsed_input['root_cmd'])[0]
+         elif functions_comsys.plr_has_channel(session, 
+            parsed_input['root_cmd'], 
+            alias_search=True, 
+            return_muted=True):
+            
+            calias = parsed_input['root_cmd']
+            cname = functions_comsys.plr_cname_from_alias(session, calias)
             cmessage = ' '.join(parsed_input['splitted'][1:])
+            
+            if cmessage == "who":
+               functions_comsys.msg_cwho(session, cname)
+               return
+            elif cmessage == "on":
+               functions_comsys.plr_chan_on(session, calias)
+               return
+            elif cmessage == "off":
+               functions_comsys.plr_chan_off(session, calias)
+               return
+            elif cmessage == "last":
+               functions_comsys.msg_chan_hist(session, cname)
+               return
+               
             second_arg = "%s=%s" % (cname, cmessage)
             parsed_input['splitted'] = ["@cemit/sendername", second_arg]
             parsed_input['root_chunk'] = ['@cemit', 'sendername', 'quiet']

@@ -1,13 +1,14 @@
-import settings
+import os
 import time
+
+import settings
 import functions_general
 import functions_db
 import functions_help
 import functions_comsys
-import defines_global as global_defines
+import defines_global
 import session_mgr
 import ansi
-import os
 """
 Comsys command module. Pretty much every comsys command should go here for
 now.
@@ -52,7 +53,7 @@ def cmd_addcom(cdat):
       chan_name_parsed = name_matches[0].get_name()
       session.msg("You join %s, with an alias of %s." % \
          (chan_name_parsed, chan_alias))
-      session.set_user_channel(chan_alias, chan_name_parsed, True)
+      functions_comsys.plr_set_channel(session, chan_alias, chan_name_parsed, True)
 
       # Announce the user's joining.
       join_msg = "[%s] %s has joined the channel." % \
@@ -83,7 +84,7 @@ def cmd_delcom(cdat):
 
    chan_name = session.channels_subscribed[chan_alias][0]
    session.msg("You have left %s." % (chan_name,))
-   session.del_user_channel(chan_alias)
+   functions_comsys.plr_del_channel(session, chan_alias)
 
    # Announce the user's leaving.
    leave_msg = "[%s] %s has left the channel." % \
@@ -160,7 +161,6 @@ def cmd_cdestroy(cdat):
       session.msg("Channel %s destroyed." % (name_matches[0],))
       name_matches.delete()
       
-
 def cmd_cset(cdat):
    """
    @cset
@@ -237,6 +237,9 @@ def cmd_cemit(cdat):
       final_cmessage = cmessage
    else:
       if "sendername" in switches:
+         if not functions_comsys.plr_has_channel(session, cname_parsed, return_muted=False):
+            session.msg("You must be on %s to do that." % (cname_parsed,))
+            return
          final_cmessage = "[%s] %s: %s" % (cname_parsed, pobject.get_name(show_dbref=False), cmessage)
       else:
          if not pobject.user_has_perm("objects.emit_commchannel"):

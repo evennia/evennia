@@ -745,7 +745,7 @@ class CommChannel(models.Model):
       Returns the channel's header text, or what is shown before each channel
       message.
       """
-      return ansi.parse_ansi(self.header)
+      return ansi.parse_ansi(self.ansi_name)
 
    def get_owner(self):
       """
@@ -780,9 +780,8 @@ class CommChannelMessage(models.Model):
    A single logged channel message.
    """
    channel = models.ForeignKey(CommChannel, related_name="msg_channel")
-   sender = models.ForeignKey(Object, related_name="msg_sender", blank=True, null=True)
    message = models.CharField(maxlength=255)
-   date_sent = models.DateField(editable=False, auto_now_add=True)
+   date_sent = models.DateTimeField(editable=False, auto_now_add=True)
 
    def __str__(self):
       return "%s: %s" % (self.sender.name, self.message)
@@ -791,7 +790,7 @@ class CommChannelMessage(models.Model):
       ordering = ['-date_sent']
    
    class Admin:
-      list_display = ('channel', 'sender', 'message')
+      list_display = ('channel', 'message')
 
 import functions_db
 import functions_general
