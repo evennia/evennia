@@ -353,7 +353,7 @@ class Object(models.Model):
       """
       attribs = self.get_all_attributes()
       for attrib in attribs:
-         self.delete()
+         attrib.delete()
    
    def destroy(self):   
       """

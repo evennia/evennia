@@ -339,6 +339,47 @@ def cmd_who(cdat):
    
    session.msg(retval)
 
+def cmd_wipe(cdat):
+   """
+   Wipe all attributes from a given object.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   wildcard = wildcard_to_regexp(cdat['uinput']['root_chunk'][1])
+   has_wildcard = False
+
+   if wildcard:
+      has_wildcard = True
+
+   if len(args) == 0:
+      session.msg("Wipe attributes from what?")
+      return
+   else:
+      target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+
+      # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+      if not target_obj:
+         return
+      if target_obj.is_player() and not pobject.controls_other(target_obj):
+            session.msg("I'm sorry, you do not have permission to wipe attributes from that player.")
+            return
+      if has_wildcard:
+         import re
+         deleted_attribs = []
+         attribs = target_obj.get_all_attributes()
+         for attrib in attribs:
+            pattern = re.compile(wildcard)
+            if pattern.match(attrib.name):
+               deleted_attribs.append(attrib.name)
+               attrib.delete()
+         session.message("Attribute(s) %s deleted." % ', '.join(deleted_attribs))
+         return
+      else:
+         target_obj.clear_all_attributes()
+         session.msg("All non-hidden attributes deleted.")
+         return
+
 def cmd_say(cdat):
    """
    Room-based speech command.
