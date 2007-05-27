@@ -123,4 +123,4 @@ mud_service = EvenniaService('Evennia Server')
 
 # Sheet sheet, fire ze missiles!
 serviceCollection = service.IServiceCollection(application)
-internet.TCPServer(4000, mud_service.getEvenniaServiceFactory()).setServiceParent(serviceCollection)
+internet.TCPServer(settings.GAMEPORT, mud_service.getEvenniaServiceFactory()).setServiceParent(serviceCollection)

@@ -81,3 +81,4 @@ INSTALLED_APPS = (
 )
 
 LOGFILE = 'logs/evennia.log'
+GAMEPORT = 4000
