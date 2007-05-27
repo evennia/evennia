@@ -1,3 +1,8 @@
+The most detailed and up-to-date instructions can always be found at
+http://groups.google.com/group/evennia/web/getting-started?hl=en
+It is recommended that you refer to there. The instructions below
+should be fine, but are terse and may be slightly out of date.
+
 Requirements
 ------------
 * Python 2.5 strongly recommended, although 2.3 or 2.4 may work just fine.
