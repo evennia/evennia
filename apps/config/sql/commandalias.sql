@@ -6,4 +6,4 @@ INSERT INTO "config_commandalias" VALUES(5,'sa','say');
 INSERT INTO "config_commandalias" VALUES(6,'@tel','@teleport');
 INSERT INTO "config_commandalias" VALUES(7,'i','inventory');
 INSERT INTO "config_commandalias" VALUES(8,'inv','inventory');
-INSERT INTO "config_commandalias" VALUES(9,'@desc','@description');
+INSERT INTO "config_commandalias" VALUES(9,'@desc','@describe');

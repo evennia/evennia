@@ -48,7 +48,7 @@ ctable = {
    "@cemit":       (commands_comsys.cmd_cemit, None),
    "@clist":       (commands_comsys.cmd_clist, None),
    "@create":      (commands_privileged.cmd_create, ("genperms.builder")),
-   "@description": (commands_privileged.cmd_description, None),
+   "@describe":    (commands_privileged.cmd_description, None),
    "@destroy":     (commands_privileged.cmd_destroy, ("genperms.builder")),
    "@dig":         (commands_privileged.cmd_dig, ("genperms.builder")),
    "@emit":        (commands_privileged.cmd_emit, ("genperms.announce")),
