@@ -147,7 +147,7 @@ def cmd_description(cdat):
       if not target_obj:
          return
 
-      if not pobject.controls_other(target):
+      if not pobject.controls_other(target_obj):
          session.msg(defines_global.NOCONTROL_MSG)
          return
 
