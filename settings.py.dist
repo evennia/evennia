@@ -1,5 +1,10 @@
-# Django settings for evennia project.
 
+# The port for the game to run on.
+GAMEPORT = 4000
+# The name of the server log file.
+LOGFILE = 'logs/evennia.log'
+
+# Django settings for evennia project.
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -80,5 +85,3 @@ INSTALLED_APPS = (
     'apps.genperms',
 )
 
-LOGFILE = 'logs/evennia.log'
-GAMEPORT = 4000

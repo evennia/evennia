@@ -38,7 +38,7 @@ class EvenniaService(service.Service):
       print '-'*50
       # Load command aliases into memory for easy/quick access.
       self.load_cmd_aliases()
-      self.port = gameconf.get_configvalue('site_port')
+      self.port = settings.GAMEPORT 
 
       if gameconf.get_configvalue('game_firstrun') == '1':
          print ' Game started for the first time, setting defaults.'
