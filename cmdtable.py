@@ -1,7 +1,9 @@
-import commands_unloggedin
-import commands_general
-import commands_privileged
-import commands_comsys
+import commands.general
+import commands.privileged
+import commands.comsys
+import commands.unloggedin
+import commands.info
+import commands.objmanip
 
 """
 Command Table Entries
@@ -15,60 +17,62 @@ privilege checking in the command function), use None in place of the
 permissions tuple.
 """
 
-# Unlogged-in Command Table
+# -- Unlogged-in Command Table --
+# Command Name     Command Function                     Privilege Tuple
 uncon_ctable = {
-   "connect": (commands_unloggedin.cmd_connect, None),
-   "create":  (commands_unloggedin.cmd_create, None),
-   "quit":    (commands_unloggedin.cmd_quit, None),
+   "connect": (commands.unloggedin.cmd_connect,          None),
+   "create":  (commands.unloggedin.cmd_create,           None),
+   "quit":    (commands.unloggedin.cmd_quit,             None),
 }
 
 
-# Command Table
+# -- Command Table --
+# Command Name     Command Function                     Privilege Tuple
 ctable = {
-   "addcom":       (commands_comsys.cmd_addcom, None),
-   "comlist":      (commands_comsys.cmd_comlist, None),
-   "delcom":       (commands_comsys.cmd_delcom, None),
-   "drop":         (commands_general.cmd_drop, None),
-   "examine":      (commands_general.cmd_examine, None),
-   "get":          (commands_general.cmd_get, None),
-   "help":         (commands_general.cmd_help, None),
-   "idle":         (commands_general.cmd_idle, None),
-   "inventory":    (commands_general.cmd_inventory, None),
-   "look":         (commands_general.cmd_look, None),
-   "page":         (commands_general.cmd_page, None),
-   "pose":         (commands_general.cmd_pose, None),
-   "quit":         (commands_general.cmd_quit, None),
-   "say":          (commands_general.cmd_say, None),
-   "time":         (commands_general.cmd_time, None),
-   "uptime":       (commands_general.cmd_uptime, None),
-   "version":      (commands_general.cmd_version, None),
-   "who":          (commands_general.cmd_who, None),
-   "@ccreate":     (commands_comsys.cmd_ccreate, ("objects.add_commchannel")),
-   "@cdestroy":    (commands_comsys.cmd_cdestroy, ("objects.delete_commchannel")),
-   "@cemit":       (commands_comsys.cmd_cemit, None),
-   "@clist":       (commands_comsys.cmd_clist, None),
-   "@create":      (commands_privileged.cmd_create, ("genperms.builder")),
-   "@describe":    (commands_privileged.cmd_description, None),
-   "@destroy":     (commands_privileged.cmd_destroy, ("genperms.builder")),
-   "@dig":         (commands_privileged.cmd_dig, ("genperms.builder")),
-   "@emit":        (commands_privileged.cmd_emit, ("genperms.announce")),
-   "@find":        (commands_privileged.cmd_find, ("genperms.builder")),
-   "@link":        (commands_privileged.cmd_link, ("genperms.builder")),
-   "@list":        (commands_privileged.cmd_list, ("genperms.process_control")),
-   "@name":        (commands_privileged.cmd_name, None),
-   "@nextfree":    (commands_privileged.cmd_nextfree, ("genperms.builder")),
-   "@newpassword": (commands_privileged.cmd_newpassword, ("genperms.manage_players")),
-   "@open":        (commands_privileged.cmd_open, ("genperms.builder")),
-   "@password":    (commands_privileged.cmd_password, None),
-   "@ps":          (commands_privileged.cmd_ps, ("genperms.process_control")),
-   "@reload":      (commands_privileged.cmd_reload, ("genperms.process_control")),
-   "@set":         (commands_privileged.cmd_set, None),
-   "@shutdown":    (commands_privileged.cmd_shutdown, ("genperms.process_control")),
-   "@stats":       (commands_privileged.cmd_stats, None),
-   "@teleport":    (commands_privileged.cmd_teleport, ("genperms.builder")),
-   "@unlink":      (commands_privileged.cmd_unlink, ("genperms.builder")),
-   "@wall":        (commands_privileged.cmd_wall, ("genperms.announce")),
-   "@wipe":        (commands_privileged.cmd_wipe, None),
+   "addcom":       (commands.comsys.cmd_addcom,          None),
+   "comlist":      (commands.comsys.cmd_comlist,         None),
+   "delcom":       (commands.comsys.cmd_delcom,          None),
+   "drop":         (commands.general.cmd_drop,           None),
+   "examine":      (commands.general.cmd_examine,        None),
+   "get":          (commands.general.cmd_get,            None),
+   "help":         (commands.general.cmd_help,           None),
+   "idle":         (commands.general.cmd_idle,           None),
+   "inventory":    (commands.general.cmd_inventory,      None),
+   "look":         (commands.general.cmd_look,           None),
+   "page":         (commands.general.cmd_page,           None),
+   "pose":         (commands.general.cmd_pose,           None),
+   "quit":         (commands.general.cmd_quit,           None),
+   "say":          (commands.general.cmd_say,            None),
+   "time":         (commands.general.cmd_time,           None),
+   "uptime":       (commands.general.cmd_uptime,         None),
+   "version":      (commands.general.cmd_version,        None),
+   "who":          (commands.general.cmd_who,            None),
+   "@ccreate":     (commands.comsys.cmd_ccreate,         ("objects.add_commchannel")),
+   "@cdestroy":    (commands.comsys.cmd_cdestroy,        ("objects.delete_commchannel")),
+   "@cemit":       (commands.comsys.cmd_cemit,           None),
+   "@clist":       (commands.comsys.cmd_clist,           None),
+   "@create":      (commands.objmanip.cmd_create,        ("genperms.builder")),
+   "@describe":    (commands.objmanip.cmd_description,   None),
+   "@destroy":     (commands.objmanip.cmd_destroy,       ("genperms.builder")),
+   "@dig":         (commands.objmanip.cmd_dig,           ("genperms.builder")),
+   "@emit":        (commands.general.cmd_emit,           ("genperms.announce")),
+   "@find":        (commands.objmanip.cmd_find,          ("genperms.builder")),
+   "@link":        (commands.objmanip.cmd_link,          ("genperms.builder")),
+   "@list":        (commands.info.cmd_list,              ("genperms.process_control")),
+   "@name":        (commands.objmanip.cmd_name,          None),
+   "@nextfree":    (commands.objmanip.cmd_nextfree,      ("genperms.builder")),
+   "@newpassword": (commands.privileged.cmd_newpassword, ("genperms.manage_players")),
+   "@open":        (commands.objmanip.cmd_open,          ("genperms.builder")),
+   "@password":    (commands.general.cmd_password,       None),
+   "@ps":          (commands.info.cmd_ps,                ("genperms.process_control")),
+   "@reload":      (commands.privileged.cmd_reload,      ("genperms.process_control")),
+   "@set":         (commands.objmanip.cmd_set,           None),
+   "@shutdown":    (commands.privileged.cmd_shutdown,    ("genperms.process_control")),
+   "@stats":       (commands.info.cmd_stats,             None),
+   "@teleport":    (commands.objmanip.cmd_teleport,      ("genperms.builder")),
+   "@unlink":      (commands.objmanip.cmd_unlink,        ("genperms.builder")),
+   "@wall":        (commands.general.cmd_wall,           ("genperms.announce")),
+   "@wipe":        (commands.objmanip.cmd_wipe,          None),
 } 
 
 def return_cmdtuple(func_name, unlogged_cmd=False):
@@ -80,5 +84,5 @@ def return_cmdtuple(func_name, unlogged_cmd=False):
       cfunc = ctable.get(func_name, False)
    else:
       cfunc = uncon_ctable.get(func_name, False)
-      
+
    return cfunc

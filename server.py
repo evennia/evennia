@@ -1,6 +1,5 @@
 from traceback import format_exc
-import time
-import sys
+import time, sys
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
@@ -96,8 +95,8 @@ class EvenniaService(service.Service):
       For changes to the scheduler, server, or session_mgr modules, a cold
       restart is needed.
       """
-      reload_list = ['ansi', 'cmdhandler', 'commands_comsys', 'commands_general',
-         'commands_privileged', 'commands_unloggedin', 'defines_global',
+      reload_list = ['ansi', 'cmdhandler', 'commands.comsys', 'commands.general',
+         'commands.privileged', 'commands.unloggedin', 'defines_global',
          'events', 'functions_db', 'functions_general', 'functions_comsys',
          'functions_help', 'gameconf', 'session', 'apps.objects.models',
          'apps.helpsys.models', 'apps.config.models']

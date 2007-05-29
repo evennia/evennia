@@ -1,16 +1,74 @@
+import os, time
 import settings
-import time
 import functions_general
 import functions_db
 import functions_help
-import defines_global as global_defines
+import defines_global
 import session_mgr
 import ansi
-import os
 """
 Generic command module. Pretty much every command should go here for
 now.
-"""   
+"""
+def cmd_password(cdat):
+   """
+   Changes your own password.
+   
+   @newpass <Oldpass>=<Newpass>
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   eq_args = ' '.join(args).split('=')
+   oldpass = ''.join(eq_args[0])
+   newpass = ''.join(eq_args[1:])
+   
+   if len(oldpass) == 0:   
+      session.msg("You must provide your old password.")
+   elif len(newpass) == 0:
+      session.msg("You must provide your new password.")
+   else:
+      uaccount = pobject.get_user_account()
+      
+      if not uaccount.check_password(oldpass):
+         session.msg("The specified old password isn't correct.")
+      elif len(newpass) < 3:
+         session.msg("Passwords must be at least three characters long.")
+         return
+      else:
+         uaccount.set_password(newpass)
+         uaccount.save()
+         session.msg("Password changed.")
+
+def cmd_emit(cdat):      
+   """
+   Emits something to your location.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   uinput= cdat['uinput']['splitted']
+   message = ' '.join(uinput[1:])
+   
+   if message == '':
+      session.msg("Emit what?")
+   else:
+      pobject.get_location().emit_to_contents(message)
+
+def cmd_wall(cdat):
+   """
+   Announces a message to all connected players.
+   """
+   session = cdat['session']
+   wallstring = ' '.join(cdat['uinput']['splitted'][1:])
+   pobject = session.get_pobject()
+      
+   if wallstring == '':
+      session.msg("Announce what?")
+      return
+      
+   message = "%s shouts \"%s\"" % (session.get_pobject().get_name(show_dbref=False), wallstring)
+   functions_general.announce_all(message)
+
 def cmd_idle(cdat):
    """
    Returns nothing, this lets the player set an idle timer without spamming
@@ -424,7 +482,7 @@ def cmd_version(cdat):
    """
    session = cdat['session']
    retval = "-"*50 +"\n\r"
-   retval += "Evennia %s\n\r" % (global_defines.EVENNIA_VERSION,)
+   retval += "Evennia %s\n\r" % (defines_global.EVENNIA_VERSION,)
    retval += "-"*50
    session.msg(retval)
 

@@ -1,4 +1,3 @@
-import os
 import time
 
 import settings
@@ -7,7 +6,6 @@ import functions_db
 import functions_help
 import functions_comsys
 import defines_global
-import session_mgr
 import ansi
 """
 Comsys command module. Pretty much every comsys command should go here for

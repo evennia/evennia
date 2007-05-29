@@ -1,9 +1,6 @@
 from twisted.python import log
 
 import session_mgr
-import commands_privileged
-import commands_general
-import commands_unloggedin
 
 """
 General commonly used functions.

@@ -71,7 +71,8 @@ def remove_session(session):
       session_list.remove(session)
       functions_general.log_infomsg('Sessions active: %d' % (len(get_session_list()),))
    except:
-      functions_general.log_errmsg("Unable to remove session: %s" % (session,))
+      #functions_general.log_errmsg("Unable to remove session: %s" % (session,))
+      pass
       
    
 def session_from_object(targobject):

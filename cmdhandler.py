@@ -2,10 +2,6 @@ from traceback import format_exc
 import time
 
 import defines_global
-import commands_privileged
-import commands_general
-import commands_comsys
-import commands_unloggedin
 import cmdtable
 import functions_db
 import functions_general
@@ -163,7 +159,7 @@ def handle(cdat):
             if exit.get_home():
                cdat['uinput'] = parsed_input
                pobject.move_to(exit.get_home())
-               commands_general.cmd_look(cdat)
+               session.execute_cmd("look")
             else:
                session.msg("That exit leads to nowhere.")
             return

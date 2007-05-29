@@ -1,6 +1,5 @@
 import cPickle as pickle
-import time
-import datetime
+import time, datetime
 
 from apps.objects.models import CommChannel, CommChannelMessage
 import session_mgr

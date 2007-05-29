@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User, Group
 from apps.objects.models import Object
-import functions_db
-import functions_general
 import gameconf
 
 def handle_setup():

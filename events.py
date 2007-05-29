@@ -1,5 +1,3 @@
-import time
-from twisted.internet import protocol, reactor, defer
 import session_mgr
 
 """

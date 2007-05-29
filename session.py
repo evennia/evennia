@@ -6,7 +6,6 @@ from twisted.conch.telnet import StatefulTelnetProtocol
 import cmdhandler
 from apps.objects.models import Object
 from django.contrib.auth.models import User
-import commands_general
 import functions_db
 import functions_general
 import session_mgr
@@ -82,6 +81,12 @@ class SessionProtocol(StatefulTelnetProtocol):
       # Stuff anything we need to pass in this dictionary.
       cdat = {"server": self.factory.server, "uinput": uinput, "session": self}
       cmdhandler.handle(cdat)
+
+   def execute_cmd(self, cmdstr):
+     """
+     Executes a command as this session.
+     """
+     self.lineReceived(data=cmdstr)
          
    def handle_close(self):
       """
