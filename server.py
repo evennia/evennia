@@ -25,6 +25,7 @@ class EvenniaService(service.Service):
       log.startLogging(open(settings.LOGFILE, 'w'))
       self.cmd_alias_list = {}
       self.game_running = True
+      sys.path.append('.')
 
       # Database-specific startup optimizations.
       if settings.DATABASE_ENGINE == "sqlite3":

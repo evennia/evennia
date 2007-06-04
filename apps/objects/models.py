@@ -1,6 +1,9 @@
 import re
+
 from django.db import models
 from django.contrib.auth.models import User, Group
+
+import scripthandler
 import defines_global
 import ansi
 
@@ -95,6 +98,7 @@ class Object(models.Model):
    flags = models.TextField(blank=True, null=True)
    nosave_flags = models.TextField(blank=True, null=True)
    date_created = models.DateField(editable=False, auto_now_add=True)
+   scriptlink = None
 
    def __cmp__(self, other):
       """
@@ -544,6 +548,19 @@ class Object(models.Model):
          functions_general.log_errmsg("Object '%s(#%d)' has invalid location: #%s" % (self.name,self.id,self.location_id))
          return False
          
+   def get_scriptlink(self):
+      """
+      Returns an object's script parent.
+      """
+      if not self.scriptlink:
+         self.scriptlink = scripthandler.scriptlink(self, self.get_attribute_value('__parent', 'basicobject'))
+      
+      if self.scriptlink:   
+         # If the scriptlink variable can't be populated, this will fail
+         # silently and let the exception hit in the scripthandler.
+         return self.scriptlink
+      return None
+      
    def get_attribute_value(self, attrib, default=False):
       """
       Returns the value of an attribute on an object. You may need to

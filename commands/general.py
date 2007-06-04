@@ -143,6 +143,9 @@ def cmd_look(cdat):
       for exit in con_exits:
          session.msg('%s' %(exit.get_name(),))
          
+   # SCRIPT: Call the object's script's a_desc() method.
+   target_obj.get_scriptlink().a_desc(pobject)
+         
 def cmd_get(cdat):
    """
    Get an object and put it in a player's inventory.
