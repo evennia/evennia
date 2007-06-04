@@ -1,6 +1,5 @@
 from apps.config.models import ConfigValue
 import os
-import settings
 """
 Handle the setting/retrieving of server config directives.
 """
@@ -9,7 +8,7 @@ def host_os_is(osname):
    """
    Check to see if the host OS matches the query.
    """
-   if settings.OS_TYPE == osname:
+   if os.name == osname:
       return True
    return False
 
