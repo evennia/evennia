@@ -77,12 +77,15 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
+# The name of the currently selected web template. This corresponds to the
+# directory names shown in the webtemplates directory.
+ACTIVE_TEMPLATE = 'prosimii'
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-   "%s/webtemplates" % (BASE_PATH),
-)
+    "%s/webtemplates/%s" % (BASE_PATH, ACTIVE_TEMPLATE),
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -93,5 +96,7 @@ INSTALLED_APPS = (
     'apps.objects',
     'apps.helpsys',
     'apps.genperms',
+    'apps.news',
+    'apps.website',
 )
 

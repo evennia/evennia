@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="author" content="haran" />
+    <meta name="generator" content="haran" />
+
+    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen.css" media="screen, tv, projection" title="Default" />
+    <link rel="stylesheet alternative" type="text/css" href="{{media_url}}css/prosimii-print.css" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-print.css" media="print" />
+
+    <title>{{game_name}}</title>
+  </head>
+
+  <body>
+    <!-- For non-visual user agents: -->
+      <div id="top"><a href="#main-copy" class="doNotDisplay doNotPrint">Skip to main content.</a></div>
+
+    <!-- ##### Header ##### -->
+
+    <div id="header">
+      <div class="superHeader">
+        <span>Related Sites:</span>
+        <a href="http://evennia.com" title="The Python-based MUD server">Evennia</a> |
+        <a href="http://www.oswd.org/userinfo.phtml?user=haran" title="Other designs by haran">haran&rsquo;s Designs</a>
+      </div>
+
+      <div class="midHeader">
+        <h1 class="headerTitle" lang="la">{{game_name}}</h1>
+        <div class="headerSubTitle" title="Slogan">
+          The modern MU* server
+        </div>
+
+        <br class="doNotDisplay doNotPrint" />
+
+        <div class="headerLinks">
+          <span class="doNotDisplay">Tools:</span>
+          <a href="/login">Log In &laquo;</a>
+          <span class="doNotDisplay">|</span>
+          <a href="/register">Register &laquo;</a>
+        </div>
+      </div>
+
+      <div class="subHeader">
+        <span class="doNotDisplay">Navigation:</span>
+        <a href="./index.html">Home</a> |
+        <a href="./index.html">About</a> |
+        <a href="./index.html">Documentation</a> |
+        <a href="./index.html">Staff List</a>
+      </div>
+    </div>
+
+    <!-- ##### Main Copy ##### -->
+
+    <div id="main-copy">
+      <div class="rowOfBoxes">
+        <div class="twoThirds noBorderOnLeft">
+          <h1>Welcome!</h1>
+          <p>Insert body text</p>
+        </div>
+
+        <div class="oneThird">
+          <h1>Latest News</h1>
+          {% for entry in news_entries %}
+          <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.title}}</a>
+          <p class="newsDate">{{entry.date_posted|time}}</p>
+          <p class="newsSummary">{{entry.body|truncatewords:20}}</p>
+          {% endfor %}
+
+          <div class="more"><a href="./index.html">More News &raquo;</a></div>
+
+          <p class="filler"><!-- Filler para to extend left vertical line --></p>
+        </div>
+      </div>
+
+      <div class="rowOfBoxes dividingBorderAbove">
+        <div class="quarter noBorderOnLeft">
+          <h1>Standards</h1>
+          <p><span lang="la">Prosimii</span> is 100% compliant with
+             <acronym title="eXtensible HyperText Markup Language">XHTML</acronym> 1.0 Strict and
+             uses <acronym title="Cascading Style Sheets">CSS</acronym>.
+             <span class="doNotPrint">[Validate
+             <a href="http://validator.w3.org/check/referer">XHTML</a>]</span></p>
+
+          <p>Unlike this design&rsquo;s inspiration, no tables have been used to layout elements
+            and text.</p>
+        </div>
+
+        <div class="quarter">
+          <h1>Stylesheet</h1>
+          <p>An external stylesheet dictates the format and layout of text in this design.</p>
+
+          <p>Thus, website-wide design changes can be achieved by editing only the stylesheet.</p>
+
+          <p class="filler"><!-- Filler para to extend left vertical line --></p>
+        </div>
+
+        <div class="quarter">
+          <h1>Compatibility</h1>
+          <p><span lang="la">Prosimii&rsquo;s</span> stylesheet is more robust and comprehensive than
+             <a href="http://www.oswd.org/userinfo.phtml?user=haran">my previous designs</a>.</p>
+
+          <p>This design has been tested for consistent rendering in Gecko
+             (<a href="http://www.mozilla.org">Mozilla</a> <a href="http://www.getfirefox.com">Firefox</a>
+             0.10.1), <a href="http://www.opera.com">Opera</a> (7.01) and Internet Explorer (6.0).</p>
+        </div>
+
+        <div class="quarter">
+          <h1>Accessibility</h1>
+          <p><span lang="la">Prosimii</span> tentatively conforms to the
+             <a href="http://www.w3.org/TR/WCAG10">
+             <acronym title="Web Content Accessibility Guidelines">WCAG</acronym> double A rating</a>
+             and <a href="http://www.access-board.gov/508.htm">&sect;&nbsp;508</a> guidelines for web
+             content accessibility.</p>
+
+          <p>Additionally, most document metrics (lengths, widths and spacings) are font-size
+             relative.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ##### Footer ##### -->
+
+    <div id="footer">
+      <span class="doNotPrint">
+        Powered by  
+        <a href="http://evennia.com">Evennia</a><br />
+      </span>
+
+      <strong>Queries &raquo;</strong> {{sql_queries|length}}
+    </div>
+  </body>
+</html>

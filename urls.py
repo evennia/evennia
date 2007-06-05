@@ -11,4 +11,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('',
     # Admin interface
     (r'^admin/', include('django.contrib.admin.urls')),
+
+    # Front page
+    (r'^', include('apps.website.urls')),
 )
