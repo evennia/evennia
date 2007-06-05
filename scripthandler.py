@@ -58,9 +58,9 @@ def scriptlink(source_obj, scriptname):
       functions_general.log_infomsg('Invalid module path: %s' % (format_exc()))
       os.chdir(orig_path)
       return
-   finally:
-      # Change back to the original working directory.
-      os.chdir(orig_path)
+
+   # Change back to the original working directory.
+   os.chdir(orig_path)
 
    # The new script module has been cached, return the reference.
    return modreference.class_factory(source_obj)

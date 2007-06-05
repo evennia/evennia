@@ -14,12 +14,21 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'    # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
-DATABASE_NAME = '/home/evennia/evennia/evennia.db3'  # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+# The path that contains this settings.py file.
+BASE_PATH = '/home/evennia/evennia' 
+
+# 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
+DATABASE_ENGINE = 'sqlite3'
+# Database name, or path to DB file if using sqlite3.
+DATABASE_NAME = '%s/evennia.db3' % (BASE_PATH)
+# Unused for sqlite3
+DATABASE_USER = ''
+# Unused for sqlite3
+DATABASE_PASSWORD = ''
+# Empty string defaults to localhost. Not used with sqlite3.
+DATABASE_HOST = ''
+# Empty string defaults to localhost. Not used with sqlite3.
+DATABASE_PORT = ''
 
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/current/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -38,7 +47,7 @@ USE_I18N = False
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/home/evennia/evennia/media'
+MEDIA_ROOT = '%s/media' % (BASE_PATH)
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
@@ -72,6 +81,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+   "%s/webtemplates" % (BASE_PATH),
 )
 
 INSTALLED_APPS = (
