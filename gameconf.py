@@ -1,5 +1,8 @@
-from apps.config.models import ConfigValue
 import os
+from traceback import format_exc
+
+from apps.config.models import ConfigValue
+import functions_general
 """
 Handle the setting/retrieving of server config directives.
 """
@@ -16,7 +19,10 @@ def get_configvalue(configname):
    """
    Retrieve a configuration value.
    """
-   return ConfigValue.objects.get(conf_key=configname).conf_value
+   try:
+      return ConfigValue.objects.get(conf_key=configname).conf_value
+   except:
+      functions_genera.log_errmsg("Unable to get config value for %s:\n%s" % (configname, (format_exc())))
 
 def set_configvalue(configname, newvalue):
    """
