@@ -27,6 +27,7 @@ def page_index(request):
       "players_connected": functions_db.num_connected_players(),
       "players_registered": functions_db.num_total_players(),
       "players_connected_recent": functions_db.num_recently_connected_players(),
+      "players_registered_recent": functions_db.num_recently_created_players(),
    }
 
    context_instance = RequestContext(request)

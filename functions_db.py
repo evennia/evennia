@@ -28,6 +28,16 @@ def num_connected_players():
    """
    return get_connected_players().count()
 
+def num_recently_created_players(days=7):
+   """
+   Returns a QuerySet containing the player User accounts that have been
+   connected within the last <days> days.
+   """
+   end_date = datetime.now()
+   tdelta = timedelta(days)
+   start_date = end_date - tdelta
+   return User.objects.filter(date_joined__range=(start_date, end_date)).count()
+
 def num_recently_connected_players(days=7):
    """
    Returns a QuerySet containing the player User accounts that have been
