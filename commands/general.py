@@ -89,9 +89,9 @@ def cmd_inventory(cdat):
       
    money = int(pobject.get_attribute_value("MONEY", default=0))
    if money == 1:
-      money_name = functions_db.get_server_config("MONEY_NAME_SINGULAR")
+      money_name = gameconf.get_configvalue("MONEY_NAME_SINGULAR")
    else:
-      money_name = functions_db.get_server_config("MONEY_NAME_PLURAL")
+      money_name = gameconf.get_configvalue("MONEY_NAME_PLURAL")
 
    session.msg("You have %d %s." % (money,money_name))
 

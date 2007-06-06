@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.utils import simplejson
 
 from apps.news.models import NewsEntry
+import functions_db
 
 """
 This file contains the generic, assorted views that don't fall under one of
@@ -23,6 +24,9 @@ def page_index(request):
    pagevars = {
       "page_title": "Front Page",
       "news_entries": news_entries,
+      "players_connected": functions_db.num_connected_players(),
+      "players_registered": functions_db.num_total_players(),
+      "players_connected_recent": functions_db.num_recently_connected_players(),
    }
 
    context_instance = RequestContext(request)

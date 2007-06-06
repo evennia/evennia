@@ -1,4 +1,5 @@
 import time, sys
+from datetime import datetime
 import cPickle as pickle
 
 from twisted.conch.telnet import StatefulTelnetProtocol
@@ -147,11 +148,16 @@ class SessionProtocol(StatefulTelnetProtocol):
       session_mgr.disconnect_duplicate_session(self)
       self.msg("You are now logged in as %s." % (self.name,))
       pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(),), exclude=pobject)
-      cdat = {"session": self, "uinput":'look', "server": self.factory.server}
-      cmdhandler.handle(cdat)
+      self.execute_cmd("look")
       functions_general.log_infomsg("Login: %s" % (self,))
+      
+      # Update their account's last login time.
+      user.last_login = datetime.now()
+      user.save
       pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
       pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
+
+      # Load their channel selection from a pickled attribute.
       self.load_user_channels()
       
    def msg(self, message):

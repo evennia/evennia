@@ -22,7 +22,7 @@ def cmd_connect(cdat):
    password = cdat['uinput']['splitted'][2]
 
    # Match an email address to an account.
-   email_matches = functions_db.get_dbref_from_email(uemail)
+   email_matches = functions_db.get_user_from_email(uemail)
    
    autherror = "Specified email does not match any accounts!"
    # No username match
@@ -36,7 +36,6 @@ def cmd_connect(cdat):
    if not user.check_password(password):
       session.msg(autherror)
    else:
-      user = email_matches[0]
       uname = user.username
       session.login(user)
       
@@ -70,7 +69,7 @@ def cmd_create(cdat):
    # Search for a user object with the specified username.
    account = User.objects.filter(username=uname)
    # Match an email address to an account.
-   email_matches = functions_db.get_dbref_from_email(email)
+   email_matches = functions_db.get_user_from_email(email)
    
    if not account.count() == 0:
       session.msg("There is already a player with that name!")
@@ -79,8 +78,8 @@ def cmd_create(cdat):
    elif len(password) < 3:
       session.msg("Your password must be 3 characters or longer.")
    else:
-      functions_db.create_user(cdat, uname, email, password)         
-      
+      functions_db.create_user(cdat, uname, email, password)
+
 def cmd_quit(cdat):
    """
    We're going to maintain a different version of the quit command

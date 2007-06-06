@@ -61,7 +61,7 @@ def handle(cdat):
 
       # This will hold the reference to the command's function.
       cmd = None
-      
+
       if session.logged_in:
          # Store the timestamp of the user's last command.
          session.cmd_last = time.time()
@@ -74,6 +74,10 @@ def handle(cdat):
          session.cmd_total += 1
          # Player-visible idle time, not used in idle timeout calcs.
          session.cmd_last_visible = time.time()
+
+         # Just in case. Prevents some really funky-case crashes.
+         if len(parsed_input['root_cmd']) == 0:
+            raise UnknownCommand
 
          # Shortened say alias.
          if parsed_input['root_cmd'][0] == '"':

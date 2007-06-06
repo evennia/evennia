@@ -1,20 +1,42 @@
 import sets
+from datetime import datetime, timedelta
 
 from django.db import connection
 from django.contrib.auth.models import User
 from apps.objects.models import Object, Attribute
-from apps.config.models import ConfigValue
 import defines_global as defines_global
 import gameconf
 
 """
 Common database functions.
 """
-def get_server_config(configname):
+def num_total_players():
    """
-   Returns a server config value.
+   Returns the total number of registered players.
    """
-   return ConfigValue.objects.get(conf_key__iexact=configname).conf_value
+   return User.objects.count()
+
+def get_connected_players():
+   """
+   Returns the a QuerySet containing the currently connected players.
+   """
+   return Object.objects.filter(nosave_flags__contains="CONNECTED")
+
+def num_connected_players():
+   """
+   Returns the number of connected players.
+   """
+   return get_connected_players().count()
+
+def num_recently_connected_players(days=7):
+   """
+   Returns a QuerySet containing the player User accounts that have been
+   connected within the last <days> days.
+   """
+   end_date = datetime.now()
+   tdelta = timedelta(days)
+   start_date = end_date - tdelta
+   return User.objects.filter(last_login__range=(start_date, end_date)).count()
 
 def is_unsavable_flag(flagname):
    """
@@ -211,9 +233,9 @@ def is_dbref(dbstring):
    else:
       return True
    
-def get_dbref_from_email(uemail):
+def get_user_from_email(uemail):
    """
-   Returns a player's dbref when given an email address.
+   Returns a player's User object when given an email address.
    """
    return User.objects.filter(email__iexact=uemail)
 
