@@ -86,6 +86,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     "%s/webtemplates/%s" % (BASE_PATH, ACTIVE_TEMPLATE),
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
