@@ -97,6 +97,9 @@ class SessionProtocol(StatefulTelnetProtocol):
       if pobject:
          pobject.set_flag("CONNECTED", False)
          pobject.get_location().emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
+         uaccount = pobject.get_user_account()
+         uaccount.last_login = datetime.now()
+         uaccount.save()
          
       self.disconnectClient()
       self.logged_in = False
@@ -153,7 +156,7 @@ class SessionProtocol(StatefulTelnetProtocol):
       
       # Update their account's last login time.
       user.last_login = datetime.now()
-      user.save
+      user.save()
       pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
       pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
 
