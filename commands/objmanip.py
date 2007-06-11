@@ -110,11 +110,12 @@ def cmd_alias(cdat):
    duplicates = Attribute.objects.filter(attr_name="ALIAS").filter(attr_value=eq_args[1])
    
    if duplicates:
-      session.msg("Alias already exists.")
+      session.msg("Alias '%s' already exists." % (eq_args[1],))
       return
    else:
       if pobject.controls_other(target):
          target.set_attribute('ALIAS', eq_args[1])
+         session.msg("Alias %s (%s) added." % (target.get_name(), eq_args[1]))
 
 def cmd_wipe(cdat):
    """
