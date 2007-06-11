@@ -146,9 +146,9 @@ class SessionProtocol(StatefulTelnetProtocol):
       self.logged_in = True
       self.conn_time = time.time()
       pobject = self.get_pobject()
+      session_mgr.disconnect_duplicate_session(self)
       pobject.set_flag("CONNECTED", True)
 
-      session_mgr.disconnect_duplicate_session(self)
       self.msg("You are now logged in as %s." % (self.name,))
       pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(),), exclude=pobject)
       self.execute_cmd("look")
