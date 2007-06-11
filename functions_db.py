@@ -123,7 +123,9 @@ def list_search_object_namestr(searchlist, ostring, dbref_only=False, limit_type
 
 def player_search(searcher, ostring):
    """
-   Combines an aias and local/global search for a player's name.
+   Combines an alias and local/global search for a player's name. If there are
+   no alias matches, do a global search limiting by type PLAYER.
+   
    searcher: (Object) The object doing the searching.
    ostring:  (string) The alias string to search for.
    """
@@ -171,8 +173,7 @@ def object_totals():
 def alias_search(searcher, ostring):
    """
    Search players by alias. Returns a list of objects whose "ALIAS" attribute
-   exactly (not case-sensitive) matches ostring. If there isn't an alias match,
-   perform a local_and_global_search().
+   exactly (not case-sensitive) matches ostring.
    
    searcher: (Object) The object doing the searching.
    ostring:  (string) The alias string to search for.
