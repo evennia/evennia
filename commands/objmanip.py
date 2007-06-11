@@ -1,6 +1,8 @@
 import ansi
 import session_mgr
 import functions_db
+# For aliases
+from apps.objects.models import Attribute
 
 
 def cmd_teleport(cdat):
