@@ -2,6 +2,7 @@ import ansi
 import session_mgr
 import functions_db
 
+
 def cmd_teleport(cdat):
    """
    Teleports an object somewhere.
@@ -83,7 +84,35 @@ def cmd_alias(cdat):
    """
    Assigns an alias to a player object for ease of paging, etc.
    """
-   pass
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+
+   if len(args) == 0:
+      session.msg("Alias whom?")
+      return
+   
+   # Resplit the args on = to check for an almost-required =
+   eq_args = ' '.join(args).split('=')
+   
+   if len(eq_args) < 2:
+      session.msg("Alias missing.")
+      return
+   
+   target = functions_db.standard_plr_objsearch(session, eq_args[0])
+   # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+   if not target:
+      session.msg("Alias whom?")
+      return
+  
+   duplicates = Attributes.objects.filter(attr_name="ALIAS").filter(attr_value=eq_args[1])
+   
+   if duplicates:
+      session.msg("Alias already exists.")
+      return
+   else:
+      if pobject.controls_other(target):
+         target.set_attribute('ALIAS', eq_args[1])
 
 def cmd_wipe(cdat):
    """
