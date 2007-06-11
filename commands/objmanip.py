@@ -105,7 +105,7 @@ def cmd_alias(cdat):
       session.msg("Alias whom?")
       return
   
-   duplicates = Attributes.objects.filter(attr_name="ALIAS").filter(attr_value=eq_args[1])
+   duplicates = Attribute.objects.filter(attr_name="ALIAS").filter(attr_value=eq_args[1])
    
    if duplicates:
       session.msg("Alias already exists.")
