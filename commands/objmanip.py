@@ -1,9 +1,6 @@
 import ansi
 import session_mgr
 import functions_db
-# For aliases
-from apps.objects.models import Attribute
-
 
 def cmd_teleport(cdat):
    """
@@ -108,7 +105,6 @@ def cmd_alias(cdat):
       return
   
    duplicates = functions_db.alias_search(pobject, eq_args[1])
-   # duplicates = Attribute.objects.filter(attr_name="ALIAS").filter(attr_value=eq_args[1])
    
    if duplicates:
       session.msg("Alias '%s' already exists." % (eq_args[1],))
