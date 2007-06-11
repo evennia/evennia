@@ -22,7 +22,7 @@ def get_configvalue(configname):
    try:
       return ConfigValue.objects.get(conf_key=configname).conf_value
    except:
-      functions_genera.log_errmsg("Unable to get config value for %s:\n%s" % (configname, (format_exc())))
+      functions_general.log_errmsg("Unable to get config value for %s:\n%s" % (configname, (format_exc())))
 
 def set_configvalue(configname, newvalue):
    """

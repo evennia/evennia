@@ -1,4 +1,5 @@
 import os, time
+import gameconf
 import settings
 import functions_general
 import functions_db
