@@ -22,13 +22,7 @@ def get_connected_players():
    """
    return Object.objects.filter(nosave_flags__contains="CONNECTED")
 
-def num_connected_players():
-   """
-   Returns the number of connected players.
-   """
-   return get_connected_players().count()
-
-def num_recently_created_players(days=7):
+def get_recently_created_players(days=7):
    """
    Returns a QuerySet containing the player User accounts that have been
    connected within the last <days> days.
@@ -36,9 +30,9 @@ def num_recently_created_players(days=7):
    end_date = datetime.now()
    tdelta = timedelta(days)
    start_date = end_date - tdelta
-   return User.objects.filter(date_joined__range=(start_date, end_date)).count()
+   return User.objects.filter(date_joined__range=(start_date, end_date))
 
-def num_recently_connected_players(days=7):
+def get_recently_connected_players(days=7):
    """
    Returns a QuerySet containing the player User accounts that have been
    connected within the last <days> days.
@@ -46,7 +40,7 @@ def num_recently_connected_players(days=7):
    end_date = datetime.now()
    tdelta = timedelta(days)
    start_date = end_date - tdelta
-   return User.objects.filter(last_login__range=(start_date, end_date)).count()
+   return User.objects.filter(last_login__range=(start_date, end_date)).order_by('-last_login')
 
 def is_unsavable_flag(flagname):
    """

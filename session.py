@@ -150,7 +150,7 @@ class SessionProtocol(StatefulTelnetProtocol):
       pobject.set_flag("CONNECTED", True)
 
       self.msg("You are now logged in as %s." % (self.name,))
-      pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(),), exclude=pobject)
+      pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
       self.execute_cmd("look")
       functions_general.log_infomsg("Login: %s" % (self,))
       

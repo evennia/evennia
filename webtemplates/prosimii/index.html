@@ -30,7 +30,8 @@
       <div class="midHeader">
         <h1 class="headerTitle" lang="la">{{game_name}}</h1>
         <div class="headerSubTitle" title="Slogan">
-          The modern MU* server
+        <!-- Insert a slogan here if you want -->
+			&nbsp;
         </div>
 
         <br class="doNotDisplay doNotPrint" />
@@ -48,7 +49,8 @@
         <a href="./index.html">Home</a> |
         <a href="./index.html">About</a> |
         <a href="./index.html">Documentation</a> |
-        <a href="./index.html">Staff List</a>
+        <a href="./index.html">Staff List</a> |
+        <a href="/admin/">Admin Interface</a>
       </div>
     </div>
 
@@ -58,15 +60,21 @@
       <div class="rowOfBoxes">
         <div class="twoThirds noBorderOnLeft">
           <h1>Welcome!</h1>
-          <p>Insert body text</p>
+          <p>Welcome to your new installation of Evennia, your friendly
+          neighborhood next-generation MUD server. You'll want to customize
+          this file, webtemplates/prosimii/index.html, to have a more
+          valid welcome message. Should you have any questions, concerns,
+          ideas, or bug reports, head over to the 
+          <a href="http://evennia.com">Evennia community</a> and
+			 speak up!</p>
         </div>
 
         <div class="oneThird">
           <h1>Latest News</h1>
           {% for entry in news_entries %}
-          <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.title}}</a>
-          <p class="newsDate">{{entry.date_posted|time}}</p>
-          <p class="newsSummary">{{entry.body|truncatewords:20}}</p>
+	         <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.title}}</a>
+	         <p class="newsDate">{{entry.date_posted|time}}</p>
+	         <p class="newsSummary">{{entry.body|truncatewords:20}}</p>
           {% endfor %}
 
           <div class="more"><a href="./index.html">More News &raquo;</a></div>
@@ -80,40 +88,39 @@
         <div class="quarter noBorderOnLeft">
           <h1>Players</h1>
           <p>
-            There are currently <strong>{{players_connected}}</strong> connected,
-            and a total of <strong>{{players_registered}}</strong> registered. Of these, <strong>{{players_registered_recent}}</strong> were created this week, and <strong>{{players_connected_recent}}</strong> have connected within the last seven days.
+            There are currently <strong>{{num_players_connected}}</strong> connected,
+            and a total of <strong>{{num_players_registered}}</strong> registered. Of these, <strong>{{num_players_registered_recent}}</strong> were created this week, and <strong>{{num_players_connected_recent}}</strong> have connected within the last seven days.
           </p>
         </div>
 
         <div class="quarter">
-          <h1>Stylesheet</h1>
-          <p>An external stylesheet dictates the format and layout of text in this design.</p>
-
-          <p>Thus, website-wide design changes can be achieved by editing only the stylesheet.</p>
-
+          <h1>Recently Connected</h1>
+          <ul>
+          {% for player in players_connected_recent %}
+            <li>{{player.username}} -- <em>{{player.last_login|timesince}} ago</em></li>
+          {% endfor %}
+          </ul>
           <p class="filler"><!-- Filler para to extend left vertical line --></p>
         </div>
 
         <div class="quarter">
-          <h1>Compatibility</h1>
-          <p><span lang="la">Prosimii&rsquo;s</span> stylesheet is more robust and comprehensive than
-             <a href="http://www.oswd.org/userinfo.phtml?user=haran">my previous designs</a>.</p>
-
-          <p>This design has been tested for consistent rendering in Gecko
-             (<a href="http://www.mozilla.org">Mozilla</a> <a href="http://www.getfirefox.com">Firefox</a>
-             0.10.1), <a href="http://www.opera.com">Opera</a> (7.01) and Internet Explorer (6.0).</p>
+          <h1>Database Stats</h1>
+          <ul>
+          <li>{{num_players}} players</li>
+          <li>{{num_rooms}} rooms</li>
+          <li>{{num_things}} things</li>
+          <li>{{num_exits}} exits</li>
+          </ul>
         </div>
 
         <div class="quarter">
-          <h1>Accessibility</h1>
-          <p><span lang="la">Prosimii</span> tentatively conforms to the
-             <a href="http://www.w3.org/TR/WCAG10">
-             <acronym title="Web Content Accessibility Guidelines">WCAG</acronym> double A rating</a>
-             and <a href="http://www.access-board.gov/508.htm">&sect;&nbsp;508</a> guidelines for web
-             content accessibility.</p>
-
-          <p>Additionally, most document metrics (lengths, widths and spacings) are font-size
-             relative.</p>
+          <h1>Evennia</h1>
+          <p><a href="http://evennia.com">Evennia</a> is MUD server built in 
+          <a href="http://python.org">Python</a>, on top of the 
+          <a href="http://twistedmatrix.com">Twisted</a> and 
+          <a href="http://djangoproject.com">Django</a> frameworks. This
+          combination of technology allows for the quick and easy creation
+          of games, as simple as complex as one desires.</p>
         </div>
       </div>
     </div>
@@ -125,8 +132,6 @@
         Powered by  
         <a href="http://evennia.com">Evennia</a><br />
       </span>
-
-      <strong>Queries &raquo;</strong> {{sql_queries|length}}
     </div>
   </body>
 </html>
