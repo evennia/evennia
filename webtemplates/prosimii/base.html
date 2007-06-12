@@ -7,21 +7,11 @@
     <meta name="author" content="haran" />
     <meta name="generator" content="haran" />
 
-    <!-- Navigational metadata for large websites (an accessibility feature): -->
-    <link rel="top"      href="./index.html" title="Homepage" />
-    <link rel="up"       href="./index.html" title="Up" />
-    <link rel="first"    href="./index.html" title="First page" />
-    <link rel="previous" href="./index.html" title="Previous page" />
-    <link rel="next"     href="./index2.html" title="Next page" />
-    <link rel="last"     href="./index2.html" title="Last page" />
-    <link rel="toc"      href="./index.html" title="Table of contents" />
-    <link rel="index"    href="./index.html" title="Site map" />
+    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen-alt.css" media="screen" title="Prosimii (alternative)" />
+    <link rel="stylesheet alternative" type="text/css" href="{{media_url}}css/prosimii-print.css" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-print.css" media="print" />
 
-    <link rel="stylesheet" type="text/css" href="./prosimii-screen-alt.css" media="screen" title="Prosimii (alternative)" />
-    <link rel="stylesheet alternative" type="text/css" href="./prosimii-print.css" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="./prosimii-print.css" media="print" />
-
-    <title>Prosimii Page Two</title>
+    <title>{{game_name}}</title>
   </head>
 
   <body>
@@ -33,31 +23,34 @@
     <div id="header">
       <div class="superHeader">
         <span>Related Sites:</span>
-        <a href="http://www.oswd.org" title="The host of this design">OSWD</a> |
+        <a href="http://evennia.com" title="The Python-based MUD server">Evennia</a> |
         <a href="http://www.oswd.org/userinfo.phtml?user=haran" title="Other designs by haran">haran&rsquo;s Designs</a>
       </div>
 
       <div class="midHeader">
-        <h1 class="headerTitle" lang="la">Prosimii</h1>
-        <div class="headerSubTitle">No more monkey business&hellip;</div>
+        <h1 class="headerTitle" lang="la">{{game_name}}</h1>
+        <div class="headerSubTitle" title="Slogan">
+        <!-- Insert a slogan here if you want -->
+			&nbsp;
+        </div>
 
         <br class="doNotDisplay doNotPrint" />
 
         <div class="headerLinks">
           <span class="doNotDisplay">Tools:</span>
-          <a href="./index.html">view the previous layout &laquo;</a>
+          <a href="/login">Log In &laquo;</a>
           <span class="doNotDisplay">|</span>
-          <a style="cursor: help;" title="Thanks to CSS, this page is already printer friendly!" href="#stylesheets">printer-friendly version &laquo;</a>
+          <a href="/register">Register &laquo;</a>
         </div>
       </div>
 
       <div class="subHeader">
         <span class="doNotDisplay">Navigation:</span>
         <a href="./index.html">Home</a> |
-        <a href="./index2.html">Products</a> |
-        <a href="./index2.html">Services</a> |
-        <a href="./index2.html">Contact Us</a> |
-        <a href="./index2.html">About Us</a>
+        <a href="./index.html">About</a> |
+        <a href="./index.html">Documentation</a> |
+        <a href="./index.html">Staff List</a> |
+        <a href="/admin/">Admin Interface</a>
       </div>
     </div>
 
@@ -129,12 +122,9 @@
 
     <div id="footer">
       <span class="doNotPrint">
-        For comments or questions about this website, please
-        <a href="mailto:email.address@is.invalid" title="NB: Invalid email address">email the Webmaster</a><br />
+        Powered by  
+        <a href="http://evennia.com">Evennia</a><br />
       </span>
-
-      <strong>URI &raquo;</strong> http://domain.is.invalid/prosimii/index2.html
-      &bull; <strong>Updated &raquo;</strong> 2004-Oct-24 10:32 +1000
     </div>
   </body>
 </html>

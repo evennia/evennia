@@ -15,6 +15,9 @@ urlpatterns = patterns('',
 
    # Front page
    (r'^', include('apps.website.urls')),
+   
+   # News stuff
+   (r'^news/', include('apps.news.urls')),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),
