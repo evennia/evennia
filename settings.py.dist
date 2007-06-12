@@ -45,6 +45,13 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = False
 
+# If you'd like to serve media files via Django (strongly not recommended!),
+# set SERVE_MEDIA to True. This is appropriate on a developing site, or if 
+# you're running Django's built-in test server. Normally you want a webserver 
+# that is optimized for serving static content to handle media files (apache, 
+# lighttpd).
+SERVE_MEDIA = False
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = '%s/media' % (BASE_PATH)
