@@ -12,14 +12,34 @@ class BasicObject:
       """
       self.source_obj = source_obj
       
-   def a_desc(self, looker):
+   def a_desc(self, actor):
       """
       Perform this action when someone uses the LOOK command on the object.
       
-      looker: (Object) Reference to the looker
+      actor: (Object) Reference to the looker
       """
       # Un-comment the line below for an example
       #print "SCRIPT TEST: %s looked at %s." % (looker, self.source_obj)
+      pass
+
+   def a_get(self, actor):
+      """
+      Perform this action when someone uses the GET command on the object.
+      
+      actor: (Object) Reference to the person who got the object
+      """
+      # Un-comment the line below for an example
+      #print "SCRIPT TEST: %s got %s." % (looker, self.source_obj)
+      pass
+
+   def a_drop(self, actor):
+      """
+      Perform this action when someone uses the GET command on the object.
+      
+      actor: (Object) Reference to the person who dropped the object
+      """
+      # Un-comment the line below for an example
+      #print "SCRIPT TEST: %s got %s." % (looker, self.source_obj)
       pass
       
 def class_factory(source_obj):

@@ -180,6 +180,9 @@ def cmd_get(cdat):
    target_obj.move_to(pobject, quiet=True)
    session.msg("You pick up %s." % (target_obj.get_name(),))
    pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
+   
+   # SCRIPT: Call the object's script's a_get() method.
+   target_obj.get_scriptlink().a_get(pobject)
          
 def cmd_drop(cdat):
    """
@@ -206,6 +209,9 @@ def cmd_drop(cdat):
    target_obj.move_to(pobject.get_location(), quiet=True)
    session.msg("You drop %s." % (target_obj.get_name(),))
    pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
+
+   # SCRIPT: Call the object's script's a_drop() method.
+   target_obj.get_scriptlink().a_drop(pobject)
          
 def cmd_examine(cdat):
    """
