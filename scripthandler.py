@@ -31,6 +31,10 @@ def scriptlink(source_obj, scriptname):
    retval = cached_scripts.get(scriptname, False)
    if retval:
       return retval.class_factory(source_obj)
+
+   ##
+   ## NOTE: Only go past here when the script isn't already cached.
+   ##
    
    # Split the script name up by periods to give us the directory we need
    # to change to. I really wish we didn't have to do this, but there's some
