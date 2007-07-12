@@ -1,6 +1,7 @@
 import os
 from traceback import format_exc
 
+import settings
 import functions_general
 """
 This module is responsible for managing scripts and their connection to the
@@ -31,9 +32,6 @@ def scriptlink(source_obj, scriptname):
    if retval:
       return retval.class_factory(source_obj)
    
-   # Store the original working directory so we can revert.
-   orig_path = os.getcwd()
-   
    # Split the script name up by periods to give us the directory we need
    # to change to. I really wish we didn't have to do this, but there's some
    # strange issue with __import__ and more than two directories worth of
@@ -45,22 +43,22 @@ def scriptlink(source_obj, scriptname):
 
    try:
       # Change the working directory to the location of the script and import.
-      os.chdir('scripts/%s/' % (newpath_str))
+      os.chdir('%s/%s/' % (settings.SCRIPT_ROOT, newpath_str))
       functions_general.log_infomsg("SCRIPT: Caching and importing %s." % (modname))
       modreference = __import__(modname)
       # Store the module reference for later fast retrieval.
       cached_scripts[scriptname] = modreference
    except ImportError:
       functions_general.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
-      os.chdir(orig_path)
+      os.chdir(settings.BASE_PATH)
       return
    except OSError:
       functions_general.log_infomsg('Invalid module path: %s' % (format_exc()))
-      os.chdir(orig_path)
+      os.chdir(settings.BASE_PATH)
       return
 
    # Change back to the original working directory.
-   os.chdir(orig_path)
+   os.chdir(settings.BASE_PATH)
 
    # The new script module has been cached, return the reference.
    return modreference.class_factory(source_obj)

@@ -14,7 +14,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# The path that contains this settings.py file.
+# The path that contains this settings.py file (no trailing slash).
 BASE_PATH = '/home/evennia/evennia' 
 
 # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
@@ -52,9 +52,13 @@ USE_I18N = False
 # lighttpd).
 SERVE_MEDIA = False
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
+# Absolute path to the directory that holds media (no trailing slash).
+# Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = '%s/media' % (BASE_PATH)
+
+# Absolute path to the directory that has the script tree in it. (no trailing slash)
+# Example: "/home/evennia/scripts"
+SCRIPT_ROOT = '%s/scripts' % (BASE_PATH)
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"

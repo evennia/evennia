@@ -41,6 +41,39 @@ class BasicObject:
       # Un-comment the line below for an example
       #print "SCRIPT TEST: %s got %s." % (actor, self.source_obj)
       pass
+
+   def default_lock(self, actor):
+      """
+      This method returns a True or False boolean value to determine whether
+      the actor passes the lock. This is generally used for picking up
+      objects or traversing exits.
+      
+      actor: (Object) Reference to the person attempting an action
+      """
+      # Assume everyone passes the default lock by default.
+      return True
+
+   def use_lock(self, actor):
+      """
+      This method returns a True or False boolean value to determine whether
+      the actor passes the lock. This is generally used for seeing whether
+      a player can use an object or any of its commands.
+      
+      actor: (Object) Reference to the person attempting an action
+      """
+      # Assume everyone passes the use lock by default.
+      return True
+
+   def enter_lock(self, actor):
+      """
+      This method returns a True or False boolean value to determine whether
+      the actor passes the lock. This is generally used for seeing whether
+      a player can enter another object.
+      
+      actor: (Object) Reference to the person attempting an action
+      """
+      # Assume everyone passes the enter lock by default.
+      return True
       
 def class_factory(source_obj):
    """

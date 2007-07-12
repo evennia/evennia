@@ -159,11 +159,16 @@ def handle(cdat):
          pobject = session.get_pobject()
          exit_matches = match_exits(pobject, ' '.join(parsed_input['splitted']))
          if exit_matches:
-            exit = exit_matches[0]
-            if exit.get_home():
+            targ_exit = exit_matches[0]
+            if targ_exit.get_home():
                cdat['uinput'] = parsed_input
-               pobject.move_to(exit.get_home())
-               session.execute_cmd("look")
+               
+               # SCRIPT: See if the player can traverse the exit
+               if not targ_exit.get_scriptlink().default_lock(pobject):
+                  session.msg("You can't traverse that exit.")
+               else:
+                  pobject.move_to(targ_exit.get_home())
+                  session.execute_cmd("look")
             else:
                session.msg("That exit leads to nowhere.")
             return
