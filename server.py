@@ -61,7 +61,6 @@ class EvenniaService(service.Service):
       print '-'*50
       # Load command aliases into memory for easy/quick access.
       self.load_cmd_aliases()
-      self.port = settings.GAMEPORT 
 
       if gameconf.get_configvalue('game_firstrun') == '1':
          print ' Game started for the first time, setting defaults.'
@@ -69,7 +68,9 @@ class EvenniaService(service.Service):
 
       self.start_time = time.time()
 
-      print ' %s started on port %s.' % (gameconf.get_configvalue('site_name'), self.port,)
+      print ' %s started on port(s):' % (gameconf.get_configvalue('site_name'),)
+      for port in settings.GAMEPORTS:
+         print '  * %s' % (port)
       print '-'*50
       scheduler.start_events()
 
@@ -146,4 +147,5 @@ mud_service = EvenniaService('Evennia Server')
 
 # Sheet sheet, fire ze missiles!
 serviceCollection = service.IServiceCollection(application)
-internet.TCPServer(settings.GAMEPORT, mud_service.getEvenniaServiceFactory()).setServiceParent(serviceCollection)
+for port in settings.GAMEPORTS:
+   internet.TCPServer(port, mud_service.getEvenniaServiceFactory()).setServiceParent(serviceCollection)

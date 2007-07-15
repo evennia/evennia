@@ -1,6 +1,6 @@
+# A list of ports to listen on.
+GAMEPORTS = [4000]
 
-# The port for the game to run on.
-GAMEPORT = 4000
 # The name of the server log file.
 LOGFILE = 'logs/evennia.log'
 
