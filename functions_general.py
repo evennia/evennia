@@ -47,7 +47,7 @@ def log_errmsg(errormsg):
    errormsg: (string) The message to be logged.
    """
    log.err('ERROR: %s' % (errormsg,))
-   functions_comsys.send_cmessage("Errors", errormsg)
+   functions_comsys.send_cmessage("Errors", "[Errors] "+ errormsg)
 
 def log_infomsg(infomsg):
    """
@@ -56,7 +56,7 @@ def log_infomsg(infomsg):
    debugmsg: (string) The message to be logged.
    """
    log.msg('%s' % (infomsg,))
-   functions_comsys.send_cmessage("Info", infomsg)
+   functions_comsys.send_cmessage("Info", "[Info] "+ infomsg)
    
 def time_format(seconds, style=0):
    """
