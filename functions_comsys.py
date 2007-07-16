@@ -207,15 +207,14 @@ def send_cmessage(channel_name, message):
    for user in get_cwho_list(channel_name, return_muted=False):
       user.msg(message)
 
-   chan_message = CommChannelMessage()
-
    try:
+      chan_message = CommChannelMessage()
       chan_message.channel = get_cobj_from_name(channel_name)
+      chan_message.message = message
+      chan_message.save()
    except:
       print "send_cmessage(): Can't find channel: %s" % (channel_name,)
 
-   chan_message.message = message
-   chan_message.save()
 
 def get_all_channels():
    """
