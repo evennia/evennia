@@ -212,7 +212,7 @@ def send_cmessage(channel_name, message):
    try:
       chan_message.channel = get_cobj_from_name(channel_name)
    except:
-      functions_general.log_errmsg("send_cmessage(): Can't find channel: %s" %(channel_name,))      
+      print "send_cmessage(): Can't find channel: %s" % (channel_name,)
       
    chan_message.message = message
    chan_message.save()
@@ -254,5 +254,3 @@ def cname_search(search_text, exact=False):
       return CommChannel.objects.filter(name__iexact=search_text)
    else:
       return CommChannel.objects.filter(name__istartswith=search_text)
-
-import functions_general
