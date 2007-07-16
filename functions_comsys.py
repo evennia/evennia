@@ -254,3 +254,5 @@ def cname_search(search_text, exact=False):
       return CommChannel.objects.filter(name__iexact=search_text)
    else:
       return CommChannel.objects.filter(name__istartswith=search_text)
+
+import functions_general
