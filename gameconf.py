@@ -20,7 +20,7 @@ def get_configvalue(configname):
    Retrieve a configuration value.
    """
    try:
-      return ConfigValue.objects.get(conf_key=configname).conf_value
+      return ConfigValue.objects.get(conf_key__iexact=configname).conf_value
    except:
       functions_general.log_errmsg("Unable to get config value for %s:\n%s" % (configname, (format_exc())))
 
