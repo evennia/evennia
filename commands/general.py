@@ -119,7 +119,9 @@ def cmd_look(cdat):
    }))
          
    # SCRIPT: Call the object's script's a_desc() method.
-   target_obj.get_scriptlink().a_desc(pobject)
+   target_obj.get_scriptlink().a_desc({
+      "target_obj": pobject
+   })
          
 def cmd_get(cdat):
    """
@@ -156,7 +158,9 @@ def cmd_get(cdat):
    pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
    
    # SCRIPT: Call the object's script's a_get() method.
-   target_obj.get_scriptlink().a_get(pobject)
+   target_obj.get_scriptlink().a_get({
+      "pobject": pobject
+   })
          
 def cmd_drop(cdat):
    """
@@ -185,7 +189,9 @@ def cmd_drop(cdat):
    pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
 
    # SCRIPT: Call the object's script's a_drop() method.
-   target_obj.get_scriptlink().a_drop(pobject)
+   target_obj.get_scriptlink().a_drop({
+      "pobject": pobject
+   })
          
 def cmd_examine(cdat):
    """

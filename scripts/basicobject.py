@@ -14,18 +14,25 @@ class BasicObject:
       """
       self.source_obj = source_obj
       
-   def a_desc(self, actor):
+   def a_desc(self, values):
       """
       Perform this action when someone uses the LOOK command on the object.
       
-      actor: (Object) Reference to the looker
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
       """
       # Un-comment the line below for an example
-      #print "SCRIPT TEST: %s looked at %s." % (actor, self.source_obj)
+      #print "SCRIPT TEST: %s looked at %s." % (values["pobject"], self.source_obj)
       pass
 
    def return_appearance(self, values):
-      target_obj = values["target_obj"]
+      """
+      Returns a string representation of an object's appearance when LOOKed at.
+      
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
+      """
+      target_obj = self.source_obj
       pobject = values["pobject"]
       retval = "\r\n%s\r\n%s" % (
          target_obj.get_name(),
@@ -60,55 +67,60 @@ class BasicObject:
 
       return retval
 
-   def a_get(self, actor):
+   def a_get(self, values):
       """
       Perform this action when someone uses the GET command on the object.
       
-      actor: (Object) Reference to the person who got the object
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
       """
       # Un-comment the line below for an example
-      #print "SCRIPT TEST: %s got %s." % (actor, self.source_obj)
+      #print "SCRIPT TEST: %s got %s." % (values["pobject"], self.source_obj)
       pass
 
-   def a_drop(self, actor):
+   def a_drop(self, values):
       """
       Perform this action when someone uses the GET command on the object.
       
-      actor: (Object) Reference to the person who dropped the object
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
       """
       # Un-comment the line below for an example
-      #print "SCRIPT TEST: %s got %s." % (actor, self.source_obj)
+      #print "SCRIPT TEST: %s dropped %s." % (values["pobject"], self.source_obj)
       pass
 
-   def default_lock(self, actor):
+   def default_lock(self, values):
       """
       This method returns a True or False boolean value to determine whether
       the actor passes the lock. This is generally used for picking up
       objects or traversing exits.
       
-      actor: (Object) Reference to the person attempting an action
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
       """
       # Assume everyone passes the default lock by default.
       return True
 
-   def use_lock(self, actor):
+   def use_lock(self, values):
       """
       This method returns a True or False boolean value to determine whether
       the actor passes the lock. This is generally used for seeing whether
       a player can use an object or any of its commands.
       
-      actor: (Object) Reference to the person attempting an action
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
       """
       # Assume everyone passes the use lock by default.
       return True
 
-   def enter_lock(self, actor):
+   def enter_lock(self, values):
       """
       This method returns a True or False boolean value to determine whether
       the actor passes the lock. This is generally used for seeing whether
       a player can enter another object.
       
-      actor: (Object) Reference to the person attempting an action
+      values: (Dict) Script arguments with keys:
+         * pobject: The object requesting the action.
       """
       # Assume everyone passes the enter lock by default.
       return True

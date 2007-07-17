@@ -164,7 +164,9 @@ def handle(cdat):
                cdat['uinput'] = parsed_input
                
                # SCRIPT: See if the player can traverse the exit
-               if not targ_exit.get_scriptlink().default_lock(pobject):
+               if not targ_exit.get_scriptlink().default_lock({
+                  "pobject": pobject
+               }):
                   session.msg("You can't traverse that exit.")
                else:
                   pobject.move_to(targ_exit.get_home())
