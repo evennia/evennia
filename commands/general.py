@@ -112,37 +112,11 @@ def cmd_look(cdat):
       if not target_obj:
          return
    
-   retval = "%s\r\n%s" % (
-      target_obj.get_name(),
-      target_obj.get_description(),
-   )
-   session.msg(retval)
-   
-   con_players = []
-   con_things = []
-   con_exits = []
-   
-   for obj in target_obj.get_contents():
-      if obj.is_player():
-         if obj != pobject and obj.is_connected_plr():
-            con_players.append(obj)
-      elif obj.is_exit():
-         con_exits.append(obj)
-      else:
-         con_things.append(obj)
-   
-   if con_players:
-      session.msg("%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
-      for player in con_players:
-         session.msg('%s' %(player.get_name(),))
-   if con_things:
-      session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
-      for thing in con_things:
-         session.msg('%s' %(thing.get_name(),))
-   if con_exits:
-      session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
-      for exit in con_exits:
-         session.msg('%s' %(exit.get_name(),))
+   # SCRIPT: Get the item's appearance from the scriptlink.
+   session.msg(target_obj.get_scriptlink().return_appearance({
+      "target_obj": target_obj,
+      "pobject": pobject
+   }))
          
    # SCRIPT: Call the object's script's a_desc() method.
    target_obj.get_scriptlink().a_desc(pobject)

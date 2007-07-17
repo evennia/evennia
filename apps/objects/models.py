@@ -93,6 +93,7 @@ class Object(models.Model):
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
    type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
+   # TODO: Move description to an attribute.s
    description = models.TextField(blank=True, null=True)
    location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
    flags = models.TextField(blank=True, null=True)
@@ -301,22 +302,24 @@ class Object(models.Model):
       self.description = new_desc
       self.save()
 
-   def get_description(self, no_parsing=False, wrap_width=False):
+   def get_description(self, no_parsing=False, wrap_text=True):
       """
       Returns an object's ANSI'd description.
       """
       try:
+         # Evaluate ANSI and stuff?
          if no_parsing:
             retval = self.description
          else:
             retval = ansi.parse_ansi(self.description)      
-            
-         if wrap_width:
-            # TODO: Broken for some reason? Returning None.
-            return functions_general.word_wrap(retval, width=wrap_width)
+
+         # Default to a 78 character wrap.
+         if wrap_text:
+            return functions_general.word_wrap(retval)
          else:
             return retval
       except:
+         # No description attribute present, return empty string.
          return ""
    
    def get_flags(self):

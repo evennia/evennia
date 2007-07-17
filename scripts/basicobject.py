@@ -3,6 +3,8 @@ This will be the base object type/interface that all scripts are derived from by
 default. It will have the necessary outline for developers to sub-class and override.
 """
 
+import ansi
+
 class BasicObject:
    def __init__(self, source_obj):
       """
@@ -21,6 +23,42 @@ class BasicObject:
       # Un-comment the line below for an example
       #print "SCRIPT TEST: %s looked at %s." % (actor, self.source_obj)
       pass
+
+   def return_appearance(self, values):
+      target_obj = values["target_obj"]
+      pobject = values["pobject"]
+      retval = "\r\n%s\r\n%s" % (
+         target_obj.get_name(),
+         target_obj.get_description(),
+      )
+
+      con_players = []
+      con_things = []
+      con_exits = []
+      
+      for obj in target_obj.get_contents():
+         if obj.is_player():
+            if obj != pobject and obj.is_connected_plr():
+               con_players.append(obj)
+         elif obj.is_exit():
+            con_exits.append(obj)
+         else:
+            con_things.append(obj)
+      
+      if con_players:
+         retval += "\n\r%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
+         for player in con_players:
+            retval +='\n\r%s' %(player.get_name(),)
+      if con_things:
+         retval += "\n\r%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
+         for thing in con_things:
+            retval += '\n\r%s' %(thing.get_name(),)
+      if con_exits:
+         retval += "\n\r%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
+         for exit in con_exits:
+            retval += '\n\r%s' %(exit.get_name(),)
+
+      return retval
 
    def a_get(self, actor):
       """
