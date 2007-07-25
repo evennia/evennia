@@ -2,7 +2,6 @@ import textwrap
 from twisted.python import log
 
 import session_mgr
-import functions_comsys
 """
 General commonly used functions.
 """
@@ -48,7 +47,7 @@ def log_errmsg(errormsg):
    errormsg: (string) The message to be logged.
    """
    log.err('ERROR: %s' % (errormsg,))
-   functions_comsys.send_cmessage("Errors", "[Errors] "+ errormsg)
+   #functions_comsys.send_cmessage("Errors", "[Errors] "+ errormsg)
 
 def log_infomsg(infomsg):
    """
@@ -57,7 +56,7 @@ def log_infomsg(infomsg):
    debugmsg: (string) The message to be logged.
    """
    log.msg('%s' % (infomsg,))
-   functions_comsys.send_cmessage("Info", "[Info] "+ infomsg)
+   #functions_comsys.send_cmessage("Info", "[Info] "+ infomsg)
    
 def time_format(seconds, style=0):
    """
