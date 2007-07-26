@@ -1,137 +1,77 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% extends "base.html" %}
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
-  <head>
-    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-    <meta name="author" content="haran" />
-    <meta name="generator" content="haran" />
+{% block sidebar %}
+{% endblock %}
 
-    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen.css" media="screen, tv, projection" title="Default" />
-    <link rel="stylesheet alternative" type="text/css" href="{{media_url}}css/prosimii-print.css" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-print.css" media="print" />
+{% block header_ext %}
+{% endblock %}
 
-    <title>{{game_name}}</title>
-  </head>
+{% block content %}
+<div class="rowOfBoxes">
+   <div class="twoThirds noBorderOnLeft">
+      <h1>Welcome!</h1>
+      <p>Welcome to your new installation of Evennia, your friendly
+      neighborhood next-generation MUD server. You'll want to customize
+      this file, webtemplates/prosimii/index.html, to have a more
+      valid welcome message. Should you have any questions, concerns,
+      ideas, or bug reports, head over to the
+      <a href="http://evennia.com">Evennia community</a> and
+         speak up!</p>
+   </div>
 
-  <body>
-    <!-- For non-visual user agents: -->
-      <div id="top"><a href="#main-copy" class="doNotDisplay doNotPrint">Skip to main content.</a></div>
+   <div class="oneThird">
+      <h1>Latest News</h1>
+      {% for entry in news_entries %}
+         <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.title}}</a>
+         <p class="newsDate">{{entry.date_posted|time}}</p>
+         <p class="newsSummary">{{entry.body|truncatewords:20}}</p>
+      {% endfor %}
 
-    <!-- ##### Header ##### -->
+      <div class="more"><a href="./index.html">More News &raquo;</a></div>
 
-    <div id="header">
-      <div class="superHeader">
-        <span>Related Sites:</span>
-        <a href="http://evennia.com" title="The Python-based MUD server">Evennia</a> |
-        <a href="http://www.oswd.org/userinfo.phtml?user=haran" title="Other designs by haran">haran&rsquo;s Designs</a>
-      </div>
+      <p class="filler"><!-- Filler para to extend left vertical line --></p>
+   </div>
+</div>
 
-      <div class="midHeader">
-        <h1 class="headerTitle" lang="la">{{game_name}}</h1>
-        <div class="headerSubTitle" title="Slogan">
-        <!-- Insert a slogan here if you want -->
-			&nbsp;
-        </div>
+<div class="rowOfBoxes dividingBorderAbove">
 
-        <br class="doNotDisplay doNotPrint" />
+   <div class="quarter noBorderOnLeft">
+      <h1>Players</h1>
+      <p>
+      There are currently <strong>{{num_players_connected}}</strong> connected,
+      and a total of <strong>{{num_players_registered}}</strong> registered. Of these, <strong>{{num_players_registered_recent}}</strong> were created this week, and <strong>{{num_players_connected_recent}}</strong> have connected within the last seven days.
+      </p>
+   </div>
 
-        <div class="headerLinks">
-          <span class="doNotDisplay">Tools:</span>
-          <a href="/login">Log In &laquo;</a>
-          <span class="doNotDisplay">|</span>
-          <a href="/register">Register &laquo;</a>
-        </div>
-      </div>
+   <div class="quarter">
+      <h1>Recently Connected</h1>
+      <ul>
+      {% for player in players_connected_recent %}
+      <li>{{player.username}} -- <em>{{player.last_login|timesince}} ago</em></li>
+      {% endfor %}
+      </ul>
+      <p class="filler"><!-- Filler para to extend left vertical line --></p>
+   </div>
 
-      <div class="subHeader">
-        <span class="doNotDisplay">Navigation:</span>
-        <a href="./index.html">Home</a> |
-        <a href="./index.html">About</a> |
-        <a href="./index.html">Documentation</a> |
-        <a href="./index.html">Staff List</a> |
-        <a href="/admin/">Admin Interface</a>
-      </div>
-    </div>
+   <div class="quarter">
+      <h1>Database Stats</h1>
+      <ul>
+      <li>{{num_players}} players</li>
+      <li>{{num_rooms}} rooms</li>
+      <li>{{num_things}} things</li>
+      <li>{{num_exits}} exits</li>
+      </ul>
+   </div>
 
-    <!-- ##### Main Copy ##### -->
+   <div class="quarter">
+      <h1>Evennia</h1>
+      <p><a href="http://evennia.com">Evennia</a> is MUD server built in
+      <a href="http://python.org">Python</a>, on top of the
+      <a href="http://twistedmatrix.com">Twisted</a> and
+      <a href="http://djangoproject.com">Django</a> frameworks. This
+      combination of technology allows for the quick and easy creation
+      of games, as simple as complex as one desires.</p>
+   </div>
 
-    <div id="main-copy">
-      <div class="rowOfBoxes">
-        <div class="twoThirds noBorderOnLeft">
-          <h1>Welcome!</h1>
-          <p>Welcome to your new installation of Evennia, your friendly
-          neighborhood next-generation MUD server. You'll want to customize
-          this file, webtemplates/prosimii/index.html, to have a more
-          valid welcome message. Should you have any questions, concerns,
-          ideas, or bug reports, head over to the 
-          <a href="http://evennia.com">Evennia community</a> and
-			 speak up!</p>
-        </div>
-
-        <div class="oneThird">
-          <h1>Latest News</h1>
-          {% for entry in news_entries %}
-	         <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.title}}</a>
-	         <p class="newsDate">{{entry.date_posted|time}}</p>
-	         <p class="newsSummary">{{entry.body|truncatewords:20}}</p>
-          {% endfor %}
-
-          <div class="more"><a href="./index.html">More News &raquo;</a></div>
-
-          <p class="filler"><!-- Filler para to extend left vertical line --></p>
-        </div>
-      </div>
-
-      <div class="rowOfBoxes dividingBorderAbove">
-      
-        <div class="quarter noBorderOnLeft">
-          <h1>Players</h1>
-          <p>
-            There are currently <strong>{{num_players_connected}}</strong> connected,
-            and a total of <strong>{{num_players_registered}}</strong> registered. Of these, <strong>{{num_players_registered_recent}}</strong> were created this week, and <strong>{{num_players_connected_recent}}</strong> have connected within the last seven days.
-          </p>
-        </div>
-
-        <div class="quarter">
-          <h1>Recently Connected</h1>
-          <ul>
-          {% for player in players_connected_recent %}
-            <li>{{player.username}} -- <em>{{player.last_login|timesince}} ago</em></li>
-          {% endfor %}
-          </ul>
-          <p class="filler"><!-- Filler para to extend left vertical line --></p>
-        </div>
-
-        <div class="quarter">
-          <h1>Database Stats</h1>
-          <ul>
-          <li>{{num_players}} players</li>
-          <li>{{num_rooms}} rooms</li>
-          <li>{{num_things}} things</li>
-          <li>{{num_exits}} exits</li>
-          </ul>
-        </div>
-
-        <div class="quarter">
-          <h1>Evennia</h1>
-          <p><a href="http://evennia.com">Evennia</a> is MUD server built in 
-          <a href="http://python.org">Python</a>, on top of the 
-          <a href="http://twistedmatrix.com">Twisted</a> and 
-          <a href="http://djangoproject.com">Django</a> frameworks. This
-          combination of technology allows for the quick and easy creation
-          of games, as simple as complex as one desires.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ##### Footer ##### -->
-
-    <div id="footer">
-      <span class="doNotPrint">
-        Powered by  
-        <a href="http://evennia.com">Evennia</a><br />
-      </span>
-    </div>
-  </body>
-</html>
+</div>
+{% endblock %}

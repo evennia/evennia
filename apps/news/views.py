@@ -15,8 +15,8 @@ def show_news(request, entry_id):
    #news_entries = NewsEntry.objects.all().order_by('-date_posted')[:10]
 
    pagevars = {
-      "page_title": "Front Page",
+      "page_title": "News Entry",
    }
 
    context_instance = RequestContext(request)
-   return render_to_response('base.html', pagevars, context_instance)
+   return render_to_response('news/show_entry.html', pagevars, context_instance)
