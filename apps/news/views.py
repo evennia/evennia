@@ -12,10 +12,11 @@ def show_news(request, entry_id):
    """
    Show an individual news entry.
    """
-   #news_entries = NewsEntry.objects.all().order_by('-date_posted')[:10]
+   news_entry = get_object_or_404(NewsEntry, id=entry_id)
 
    pagevars = {
       "page_title": "News Entry",
+      "news_entry": news_entry
    }
 
    context_instance = RequestContext(request)

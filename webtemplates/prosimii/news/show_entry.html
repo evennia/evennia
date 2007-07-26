@@ -14,53 +14,7 @@
 {% endblock %}
 
 {% block content %}
-<h1 id="alt-layout">Alternative Layout</h1>
-<p>This is an alternative layout of <span lang="la">Prosimii</span>. Notice the presence of a
-   side menu on the left of page. If you are viewing this page in a <span class="titleTip"
-   title="eg: a Gecko family member or Opera">fully standards-compliant browser</span>, the side
-   menu will scroll with the page. If you are viewing in Internet Explorer, however, the menu
-   will appear stationary.</p>
-
-<p>The following text is essentially the same as the previous page except elaborated.</p>
-
-<h1 id="compatibility">Improved Cross-browser Compatibility</h1>
-<p>Before <span lang="la">Prosimii</span>, I did not test my designs in Opera prior to submitting
-   them to OSWD. As a result, these templates don&rsquo;t render properly in that browser. In
-   contrast, <span lang="la">Prosimii</span> has been fully tested in
-   <a href="http://www.opera.com">Opera</a> (7.01), Gecko
-   (<a href="http://www.mozilla.org">Mozilla</a> <a href="http://www.getfirefox.com">Firefox</a> 0.10.1)
-   and Internet Explorer (6.0) for consistent rendering.</p>
-
-<p>This means that people using <span class="titleTip" title="eg: Mozilla 1+, Opera 7+, Netscape 6+, Internet Explorer 6+">standards-compliant browsers</span>
-   will see the same format and layout of your page.</p>
-
-<h1 id="stylesheets">Comprehensive Stylesheets</h1>
-<dl>
-   <dt>More robust screen stylesheet</dt>
-   <dd>The improved cross-browser consistency is a result of
-      <span lang="la">Prosimii&rsquo;s</span> more comprehensive screen stylesheet. Major style
-      parameters are explicitly defined in the stylesheet, resulting in less dependence on
-      browser-determined defaults and thus fewer rendering idiosyncrasies.</dd>
-   <dt>Addition of a print media stylesheet</dt>
-   <dd><span lang="la">Prosimii</span> has a print media stylesheet that styles the page in a
-      format appropriate for black and white printing. To see the effect of this stylesheet,
-      select <span class="smallCaps">print preview</span> from the
-      <span class="smallCaps">file</span> menu, or direct this page to a printer (NB: print only
-      this frame if you are viewing this template in a multi-frame document). Alternatively,
-      if you're using <a href="http://www.getfirefox.com">Firefox</a>, use the stylesheet switcher
-      in the bottom right-hand corner of the browser window.</dd>
-</dl>
-
-<h1 id="accessibility">Accessibility Features</h1>
-<p><span lang="la">Prosimii</span> incorporates accessibility features for people with impaired
-   vision. The template tentatively conforms to the <a href="http://www.w3.org/TR/WCAG10">
-   <acronym title="Web Content Accessibility Guidelines">WCAG</acronym> double A rating</a> and
-   <a href="http://www.access-board.gov/508.htm">&sect;&nbsp;508</a> guidelines for web content
-   accessibility. The relative simplicity of the template&rsquo;s underlying markup ensures that
-   your page can be easily transformed for rendering in aural, tactile (braille) and other
-   non-visual user agents.</p>
-
-<p>Additionally, the majority of document metrics (widths, lengths and spacings) are font-size
-   relative. This means that a user can increase the default font size of your page (using their
-   browser) without compromising it&rsquo;s layout.</p>
+<h1 id="alt-layout">{{news_entry.topic.name}}: {{news_entry.title}}</h1>
+    <p class="newsDate">By {{news_entry.author.username}} on {{news_entry.date_posted|time}}</p>
+    <p class="newsSummary">{{news_entry.body}}</p>
 {% endblock %}
