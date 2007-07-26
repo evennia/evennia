@@ -302,7 +302,7 @@ class Object(models.Model):
       self.description = new_desc
       self.save()
 
-   def get_description(self, no_parsing=False, wrap_text=True):
+   def get_description(self, no_parsing=False, wrap_text=False):
       """
       Returns an object's ANSI'd description.
       """
