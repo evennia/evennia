@@ -18,6 +18,9 @@ urlpatterns = patterns('',
    
    # News stuff
    (r'^news/', include('apps.news.urls')),
+
+   # Page place-holder for things that aren't implemented yet.
+   (r'^tbi/', 'apps.website.views.to_be_implemented'),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),
