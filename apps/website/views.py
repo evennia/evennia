@@ -15,6 +15,7 @@ def page_index(request):
    Main root page.
    """
    # Some misc. configurable stuff.
+   # TODO: Move this to either SQL or settings.py based configuration.
    fpage_player_limit = 4   
    fpage_news_entries = 2
    

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header_ext %}
+{% endblock %}
+
+{% block sidebar %}
+{{sidebar}}
+{% endblock %}
+
+{% block content %}
+<h1 id="alt-layout">Search News</h1>
+    <p>Enter a search term or phrase to search by. Matches will be made against
+    news titles and their contents.</p>
+    <form method="GET">
+    {{search_form.as_p}}
+    <button type="Submit">Submit</button>
+    </form>
+    {{debug}}
+{% endblock %}

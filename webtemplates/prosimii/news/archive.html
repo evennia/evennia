@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block header_ext %}
+{% endblock %}
+
+{% block sidebar %}
+{{sidebar}}
+{% endblock %}
+
+{% block content %}
+<h1 id="alt-layout">News Archive</h1>
+
+<strong>Navigation:</strong> <a href="/news/archive/?page=1">First</a> |
+{% if has_previous %}
+   <a href="/news/archive/?page={{previous}}">Prev</a>
+{% else %}
+   Prev
+{% endif %}
+
+| <em>{{page}}</em> of <em>{{pages}}</em> pages | 
+
+{% if has_next %}
+   <a href="/news/archive/?page={{next}}">Next</a>
+{% else %}
+   Next
+{% endif %}
+| <a href="/news/archive/?page={{pages}}">Last</a>
+
+{% for entry in object_list %}
+   <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.topic.name}}: {{entry.title}}</a>
+   <p class="newsDate">By {{entry.author.username}} on {{entry.date_posted|time}}</p>
+   <p class="newsSummary">{{entry.body|truncatewords:80}}</p>
+{% endfor %}
+
+<strong>Navigation:</strong> <a href="/news/archive/?page=1">First</a> |
+{% if has_previous %}
+   <a href="/news/archive/?page={{previous}}">Prev</a>
+{% else %}
+   Prev
+{% endif %}
+
+| <em>{{page}}</em> of <em>{{pages}}</em> pages | 
+
+{% if has_next %}
+   <a href="/news/archive/?page={{next}}">Next</a>
+{% else %}
+   Next
+{% endif %}
+| <a href="/news/archive/?page={{pages}}&{{searchtext|urlencode}}">Last</a>
+
+{% endblock %}
