@@ -7,6 +7,7 @@ import django.views.generic.list_detail as gv_list_detail
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django import newforms as forms
+from django.db.models import Q
 
 from apps.news.models import NewsTopic, NewsEntry
 
@@ -93,7 +94,7 @@ def search_results(request):
    valid_search = search_form.is_valid()
    cleaned_get = search_form.cleaned_data
 
-   news_entries = NewsEntry.objects.filter(title__contains=cleaned_get['search_terms'])
+   news_entries = NewsEntry.objects.filter(Q(title__contains=cleaned_get['search_terms']) | Q(body__contains=cleaned_get['search_terms']))
 
    pagevars = {
       "page_title": "Search Results",
