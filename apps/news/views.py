@@ -16,7 +16,7 @@ sidebar = """
    <p class='doNotDisplay doNotPrint'>This page&rsquo;s menu:</p>
    <ul id='side-bar'>
      <li><a href='/news/archive'>News Archive</a></li>
-     <li><a href='/tbi'>Search News</a></li>
+     <li><a href='/news/search'>Search News</a></li>
    </ul>
 """
 
@@ -51,6 +51,7 @@ def news_archive(request):
 
    pagevars = {
       "page_title": "News Archive",
+      "browse_url": "/news/archive",
       "sidebar": sidebar
    }
    
@@ -96,7 +97,8 @@ def search_results(request):
 
    pagevars = {
       "page_title": "Search Results",
-      "searchtext": "search_terms="+ cleaned_get['search_terms'],
+      "searchtext": cleaned_get['search_terms'],
+      "browse_url": "/news/search/results",
       "sidebar": sidebar
    }
    
