@@ -28,7 +28,6 @@ def page_index(request):
    
    pagevars = {
       "page_title": "Front Page",
-      "no_sidebar": True,
       "news_entries": news_entries,
       "players_connected_recent": recent_players,
       "num_players_connected": functions_db.get_connected_players().count(),

@@ -85,6 +85,10 @@ USE_I18N = False
 # lighttpd).
 SERVE_MEDIA = False
 
+# The master urlconf file that contains all of the sub-branches to the
+# applications.
+ROOT_URLCONF = 'urls'
+
 # Where users are redirected after logging in via contribu.auth.login.
 LOGIN_REDIRECT_URL = '/'
 
@@ -123,11 +127,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
-
-# The master urlconf file that contains all of the sub-branches to the
-# applications.
-ROOT_URLCONF = 'urls'
 
 # Context processors define context variables, generally for the template
 # system to use.
@@ -154,9 +155,11 @@ TEMPLATE_DIRS = (
 # refer to app models and perform DB syncs.
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.sites,
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
+    'django.contrib.flatpages',
     'apps.config',
     'apps.objects',
     'apps.helpsys',

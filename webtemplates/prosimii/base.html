@@ -7,10 +7,10 @@
     <meta name="author" content="haran" />
     <meta name="generator" content="haran" />
 
-    {% if no_sidebar %}
-    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen.css" media="screen" title="Prosimii" />
-    {% else %}
+    {% if sidebar %}
     <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen-alt.css" media="screen" title="Prosimii (Sidebar)" />
+    {% else %}
+    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen.css" media="screen" title="Prosimii" />
     {% endif %}
     <link rel="stylesheet alternative" type="text/css" href="{{media_url}}css/prosimii-print.css" media="screen" title="Print Preview" />
     <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-print.css" media="print" />
@@ -18,7 +18,7 @@
     {% block header_ext %}
     {% endblock %}
 
-    <title>{{game_name}} - {{page_title}}</title>
+    <title>{{game_name}} - {% if flatpage %}{{flatpage.title}}{% else %}{{page_title}}{% endif %}</title>
   </head>
 
   <body>
@@ -54,7 +54,7 @@
       <div class="subHeader">
         <span class="doNotDisplay">Navigation:</span>
         <a href="/">Home</a> |
-        <a href="/tbi">About</a> |
+        <a href="/about/">About</a> |
         <a href="/tbi">Documentation</a> |
         <a href="/tbi">Staff List</a> |
         <a href="/admin/">Admin Interface</a>
