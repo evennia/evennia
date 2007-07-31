@@ -1,13 +1,14 @@
-# A list of ports to listen on.
+# A list of ports to listen on. Can be one or many.
 GAMEPORTS = [4000]
 
-# The name of the server log file.
-LOGFILE = 'logs/evennia.log'
-
-# Django settings for evennia project.
+# While DEBUG is False, show a regular server error page on the web stuff,
+# email the traceback to the people in the ADMINS tuple below. By default (True),
+# show a detailed traceback for the web browser to display.
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+# Emails are sent to these people if the above DEBUG value is False. If you'd
+# rather nobody recieve emails, leave this commented out or empty.
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -15,7 +16,18 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # The path that contains this settings.py file (no trailing slash).
-BASE_PATH = '/home/evennia/evennia' 
+BASE_PATH = '/home/evennia/evennia'
+
+# The name of the server log file.
+LOGFILE = '%s/logs/evennia.log' % (BASE_PATH)
+
+# Absolute path to the directory that holds media (no trailing slash).
+# Example: "/home/media/media.lawrence.com"
+MEDIA_ROOT = '%s/media' % (BASE_PATH)
+
+# Absolute path to the directory that has the script tree in it. (no trailing slash)
+# Example: "/home/evennia/scripts"
+SCRIPT_ROOT = '%s/scripts' % (BASE_PATH)
 
 # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
 DATABASE_ENGINE = 'sqlite3'
@@ -39,6 +51,8 @@ TIME_ZONE = 'America/New_York'
 # http://blogs.law.harvard.edu/tech/stories/storyReader$15
 LANGUAGE_CODE = 'en-us'
 
+# It's safe to dis-regard this, as it's a Django feature we only half use as a
+# dependency, not actually what it's primarily meant for.
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -52,14 +66,6 @@ USE_I18N = False
 # lighttpd).
 SERVE_MEDIA = False
 
-# Absolute path to the directory that holds media (no trailing slash).
-# Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = '%s/media' % (BASE_PATH)
-
-# Absolute path to the directory that has the script tree in it. (no trailing slash)
-# Example: "/home/evennia/scripts"
-SCRIPT_ROOT = '%s/scripts' % (BASE_PATH)
-
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'
@@ -70,6 +76,8 @@ MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/amedia/'
 
 # Make this unique, and don't share it with anybody.
+# NOTE: If you change this after creating any accounts, your users won't be
+# able to login, as the SECRET_KEY is used to salt passwords.
 SECRET_KEY = 'fsd&lkj^LKJ8398200(@)(38919#23892(*$*#(981'
 
 # List of callables that know how to import templates from various sources.
@@ -79,6 +87,9 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
+# MiddleWare are semi-transparent extensions to Django's functionality.
+# see http://www.djangoproject.com/documentation/middleware/ for a more detailed
+# explanation.
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -86,8 +97,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.doc.XViewMiddleware',
 )
 
+# The master urlconf file that contains all of the sub-branches to the
+# applications.
 ROOT_URLCONF = 'urls'
 
+# Context processors define context variables, generally for the template
+# system to use.
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.debug',
@@ -107,6 +122,8 @@ TEMPLATE_DIRS = (
     "%s/webtemplates/%s" % (BASE_PATH, ACTIVE_TEMPLATE),
 )
 
+# Global and Evennia-specific apps. This ties everything together so we can
+# refer to app models and perform DB syncs.
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
