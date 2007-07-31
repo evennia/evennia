@@ -5,6 +5,8 @@ GAMEPORTS = [4000]
 # email the traceback to the people in the ADMINS tuple below. By default (True),
 # show a detailed traceback for the web browser to display.
 DEBUG = True
+
+# While true, show "pretty" error messages for template syntax errors.
 TEMPLATE_DEBUG = DEBUG
 
 # Emails are sent to these people if the above DEBUG value is False. If you'd
@@ -13,6 +15,7 @@ ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 
+# These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
 
 # The path that contains this settings.py file (no trailing slash).
@@ -55,6 +58,22 @@ LANGUAGE_CODE = 'en-us'
 # dependency, not actually what it's primarily meant for.
 SITE_ID = 1
 
+# The age for sessions.
+# Default: 1209600 (2 weeks, in seconds)
+SESSION_COOKIE_AGE = 1209600
+
+# Session cookie domain
+# Default: None
+# SESSION_COOKIE_DOMAIN = None
+
+# The name of the cookie to use for sessions.
+# Default: 'sessionid'
+SESSION_COOKIE_NAME = 'sessionid'
+
+# Should the session expire when the browser closes?
+# Default: False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
@@ -65,6 +84,15 @@ USE_I18N = False
 # that is optimized for serving static content to handle media files (apache, 
 # lighttpd).
 SERVE_MEDIA = False
+
+# Where users are redirected after logging in via contribu.auth.login.
+LOGIN_REDIRECT_URL = '/'
+
+# Where to redirect users when using the @login_required decorator.
+LOGIN_URL = '/accounts/login'
+
+# Where to redirect users who wish to logout.
+LOGOUT_URL = '/accounts/login'
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
