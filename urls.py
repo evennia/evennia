@@ -10,12 +10,16 @@ from django.conf.urls.defaults import *
 import settings
 
 urlpatterns = patterns('',
+   # User Authentication
+   (r'^accounts/login',  'django.contrib.auth.views.login'),
+   (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+
    # Admin interface
    (r'^admin/', include('django.contrib.admin.urls')),
 
    # Front page
    (r'^', include('apps.website.urls')),
-   
+
    # News stuff
    (r'^news/', include('apps.news.urls')),
 
