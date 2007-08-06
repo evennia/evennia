@@ -155,7 +155,7 @@ TEMPLATE_DIRS = (
 # refer to app models and perform DB syncs.
 INSTALLED_APPS = (
     'django.contrib.auth',
-    'django.contrib.sites,
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
