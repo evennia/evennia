@@ -1,7 +1,8 @@
 #!/bin/bash
 export DJANGO_SETTINGS_MODULE="settings"
 
-mv -f logs/evennia.log logs/evennia.logs.old
+BASE_PATH=`python -c "import settings; print settings.BASE_PATH"`
+mv -f $BASE_PATH/logs/evennia.log $BASE_PATH/logs/evennia.logs.old
 
 ## There are several different ways you can run the server, read the
 ## description for each and uncomment the desired mode.
