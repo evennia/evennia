@@ -400,8 +400,60 @@ class Object(models.Model):
       # Set the object to type GARBAGE.
       self.type = 6
       self.save()
+
+      # Clear any players out of the object
+      self.clear_players()
+      # Destroy any exits to and from this room
+      self.clear_exits()
+      # Clear any things out of the object
+      self.clear_things()
+      # Clear all attributes
       self.clear_all_attributes()
+
+   def clear_players(self, relocate_to=None):
+      """
+      Relocates all players from object to referenced object.
+      If no location is given, location 2 is assumed.
+      """
+      players = self.get_contents(filter_type=1)
+      for player in players:
+         if not relocate_to:
+            try:
+               relocate_to = Object.objects.get(id=2)
+               player.move_to(relocate_to)
+            except:
+               functions_general.log_errmsg("Could not find Limbo - player '%s(#%d)' moved to null location." % (player.name,player.id))
+               player.move_to(None)
+         else:
+            player.move_to(relocate_to)
+         player.save()
       
+   def clear_exits(self):
+      """
+      Destroys all of the exits and any exits pointing to this
+      object as a destination.
+      """
+      exits = self.get_contents(filter_type=4)
+      exits += self.obj_home.all().filter(type__exact=4)
+
+      for exit in exits:
+         exit.destroy()
+
+   def clear_things(self):
+      """
+      Moves all things currently in a GOING -> GONE location
+      to limbo (if it can be found).
+      """
+      things = self.get_contents(filter_type=3)
+
+      for thing in things:
+         try:
+            relocate_to = Object.objects.get(id=2)
+            thing.move_to(relocate_to, True)
+         except:
+            functions_general.log_errmsg("Could not find Limbo - object '%s(#%d)' moved to null location." % (thing.name, thing.id))
+            thing.move_to(None)
+
    def set_attribute(self, attribute, new_value):
       """
       Sets an attribute on an object. Creates the attribute if need
