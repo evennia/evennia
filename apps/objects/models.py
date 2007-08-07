@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, Group
 
 import scripthandler
 import defines_global
+import gameconf
 import ansi
 
 class Attribute(models.Model):
@@ -427,6 +428,11 @@ class Object(models.Model):
       # Gather up everything, other than exits and going/garbage, that is under
       # the belief this is its location.
       objs = self.obj_location.filter(type__in=[1,2,3])
+      default_home_id = gameconf.get_configvalue('default_home')
+      try:
+         default_home = Object.objects.get(id=default_home_id)
+      except:
+         functions_general.log_errmsg("Could not find default home '(#%d)'." % (default_home_id))
 
       for obj in objs:
          home = obj.get_home()
@@ -437,13 +443,13 @@ class Object(models.Model):
 
          # Obviously, we can't send it back to here.
          if home is self:
-            home = None
+            obj.home = default_home
+            obj.save()
+            home = default_home
 
+         # If for some reason it's still None...
          if not home:
-            try:
-               home = Object.objects.get(id=defines_global.DEFAULT_HOME)
-            except:
-               functions_general.log_errmsg("Could not find default home '(#%d)' for %s '%s(#%d)'." % (defines_global.DEFAULT_HOME, text, obj.name, obj.id))
+            functions_general.log_errmsg("Missing default home, %s '%s(#%d)' now has a null location." % (text, obj.name, obj.id))
                
          if obj.is_player():
             if obj.is_connected():
