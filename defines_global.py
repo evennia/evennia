@@ -37,7 +37,8 @@ HIDDEN_ATTRIBS = ["CHANLIST"]
 
 # Server version number.
 EVENNIA_REVISION = '$Rev$'
-EVENNIA_VERSION = 'Alpha'
+# Clip out the SVN keyword information
+EVENNIA_VERSION = 'Alpha-' + EVENNIA_REVISION[6:-2]
 
 # The message to show when the user lacks permissions for something.
 NOPERMS_MSG = "You do not have the necessary permissions to do that."
