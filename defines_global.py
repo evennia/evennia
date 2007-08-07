@@ -36,7 +36,8 @@ NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "CHANLIST", "LAST", "LASTSITE"]
 HIDDEN_ATTRIBS = ["CHANLIST"]
 
 # Server version number.
-EVENNIA_VERSION = 'Alpha-$Rev$'
+EVENNIA_REVISION = '$Rev'
+EVENNIA_VERSION = 'Alpha'
 
 # The message to show when the user lacks permissions for something.
 NOPERMS_MSG = "You do not have the necessary permissions to do that."
