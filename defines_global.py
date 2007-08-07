@@ -36,9 +36,10 @@ NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "CHANLIST", "LAST", "LASTSITE"]
 HIDDEN_ATTRIBS = ["CHANLIST"]
 
 # Server version number.
-EVENNIA_REVISION = '$Rev$'
+REVISION = '$Rev$'
+
 # Clip out the SVN keyword information
-EVENNIA_VERSION = 'Alpha-' + EVENNIA_REVISION[6:-2]
+EVENNIA_VERSION = 'Alpha ' + REVISION[6:-2]
 
 # The message to show when the user lacks permissions for something.
 NOPERMS_MSG = "You do not have the necessary permissions to do that."
