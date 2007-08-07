@@ -452,7 +452,7 @@ class Object(models.Model):
             functions_general.log_errmsg("Missing default home, %s '%s(#%d)' now has a null location." % (text, obj.name, obj.id))
                
          if obj.is_player():
-            if obj.is_connected():
+            if obj.is_connected_plr():
                if home:
                   obj.emit_to("Your current location has ceased to exist, moving you to your home %s(#%d)." % (home.name, home.id))
                else:
