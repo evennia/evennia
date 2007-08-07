@@ -38,6 +38,9 @@ HIDDEN_ATTRIBS = ["CHANLIST"]
 # Server version number.
 EVENNIA_VERSION = 'Alpha'
 
+# Default home definition.
+from settings import DEFAULT_HOME
+
 # The message to show when the user lacks permissions for something.
 NOPERMS_MSG = "You do not have the necessary permissions to do that."
 

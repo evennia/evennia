@@ -1,6 +1,11 @@
 # A list of ports to listen on. Can be one or many.
 GAMEPORTS = [4000]
 
+# The integer dbref of a home for objects that become homeless.  This is the room
+# where new players start.  NOTE:  This is based on the default data.  If you delete
+# #2, you will want to change this.
+DEFAULT_HOME = 2
+
 # While DEBUG is False, show a regular server error page on the web stuff,
 # email the traceback to the people in the ADMINS tuple below. By default (True),
 # show a detailed traceback for the web browser to display.

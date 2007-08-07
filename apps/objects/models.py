@@ -401,33 +401,13 @@ class Object(models.Model):
       self.type = 6
       self.save()
 
-      # Clear any players out of the object
-      self.clear_players()
-      # Destroy any exits to and from this room
+      # Destroy any exits to and from this room, do this first
       self.clear_exits()
-      # Clear any things out of the object
-      self.clear_things()
+      # Clear out any objects located within the object
+      self.clear_objects()
       # Clear all attributes
       self.clear_all_attributes()
 
-   def clear_players(self, relocate_to=None):
-      """
-      Relocates all players from object to referenced object.
-      If no location is given, location 2 is assumed.
-      """
-      players = self.get_contents(filter_type=1)
-      for player in players:
-         if not relocate_to:
-            try:
-               relocate_to = Object.objects.get(id=2)
-               player.move_to(relocate_to)
-            except:
-               functions_general.log_errmsg("Could not find Limbo - player '%s(#%d)' moved to null location." % (player.name,player.id))
-               player.move_to(None)
-         else:
-            player.move_to(relocate_to)
-         player.save()
-      
    def clear_exits(self):
       """
       Destroys all of the exits and any exits pointing to this
@@ -439,20 +419,43 @@ class Object(models.Model):
       for exit in exits:
          exit.destroy()
 
-   def clear_things(self):
+   def clear_objects(self):
       """
-      Moves all things currently in a GOING -> GONE location
-      to limbo (if it can be found).
+      Moves all objects (players/things) currently in a GOING -> GARBAGE location
+      to their home or default home (if it can be found).
       """
-      things = self.get_contents(filter_type=3)
+      # Gather up everything, other than exits and going/garbage, that is under
+      # the belief this is its location.
+      objs = self.obj_location.filter(type__in=[1,2,3])
 
-      for thing in things:
-         try:
-            relocate_to = Object.objects.get(id=2)
-            thing.move_to(relocate_to, True)
-         except:
-            functions_general.log_errmsg("Could not find Limbo - object '%s(#%d)' moved to null location." % (thing.name, thing.id))
-            thing.move_to(None)
+      for obj in objs:
+         home = obj.get_home()
+         text = "object"
+
+         if obj.is_player():
+            text = "player"
+
+         # Obviously, we can't send it back to here.
+         if home is self:
+            home = None
+
+         if not home:
+            try:
+               home = Object.objects.get(id=defines_global.DEFAULT_HOME)
+            except:
+               functions_general.log_errmsg("Could not find default home '(#%d)' for %s '%s(#%d)'." % (defines_global.DEFAULT_HOME, text, obj.name, obj.id))
+               
+         if obj.is_player():
+            if obj.is_connected():
+               if home:
+                  obj.emit_to("Your current location has ceased to exist, moving you to your home %s(#%d)." % (home.name, home.id))
+               else:
+                  # Famous last words: The player should never see this.
+                  obj.emit_to("You seem to have found a place that does not exist.")
+               
+         # If home is still None, it goes to a null location.
+         obj.move_to(home, True)
+         obj.save()
 
    def set_attribute(self, attribute, new_value):
       """
