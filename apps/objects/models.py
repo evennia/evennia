@@ -442,7 +442,7 @@ class Object(models.Model):
             text = "player"
 
          # Obviously, we can't send it back to here.
-         if home is self:
+         if home.id == self.id:
             obj.home = default_home
             obj.save()
             home = default_home
