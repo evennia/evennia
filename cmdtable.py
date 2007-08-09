@@ -48,7 +48,7 @@ ctable = {
    "version":      (commands.general.cmd_version,        None),
    "who":          (commands.general.cmd_who,            None),
    "@alias":       (commands.objmanip.cmd_alias,         None),
-   "@boot":        (commands.objmanip.cmd_boot,          ("genperms.manage_players")),
+   "@boot":        (commands.privileged.cmd_boot,        ("genperms.manage_players")),
    "@ccreate":     (commands.comsys.cmd_ccreate,         ("objects.add_commchannel")),
    "@cdestroy":    (commands.comsys.cmd_cdestroy,        ("objects.delete_commchannel")),
    "@cemit":       (commands.comsys.cmd_cemit,           None),

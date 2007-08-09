@@ -15,6 +15,71 @@ def cmd_reload(cdat):
    session = cdat['session']
    server = session.server.reload(session)
 
+def cmd_boot(cdat):
+   """
+   Boot a player object from the server.
+   """
+   session = cdat['session']
+   pobject = session.get_pobject()
+   args = cdat['uinput']['splitted'][1:]
+   eq_args = ' '.join(args).split('=')
+   searchstring = ''.join(eq_args[0])
+   switches = cdat['uinput']['root_chunk'][1:]
+   switch_quiet = False
+   switch_port = False
+
+   if not pobject.is_staff():
+      session.msg("You do not have permission to do that.")
+      return
+
+   if "quiet" in switches:
+      switch_quiet = True
+
+   if "port" in switches:
+      switch_port = True
+
+   if len(args) == 0:
+      session.msg("Who would you like to boot?")
+      return
+   else:
+      boot_list = []
+      if switch_port:
+         sessions = session_mgr.get_session_list(True)
+         for sess in sessions:
+            if sess.getClientAddress()[1] == int(searchstring):
+               boot_list.append(sess)
+               # We're done here
+               break
+      else:
+         # Grab the objects that match
+         objs = functions_db.global_object_name_search(searchstring)
+         
+         if len(objs) < 1:
+            session.msg("Who would you like to boot?")
+            return
+
+         if not objs[0].is_player():
+            session.msg("You can only boot players.")
+            return
+
+         if not pobject.controls_other(objs[0]):
+            if objs[0].is_superuser():
+               session.msg("You cannot boot a Wizard.")
+               return
+            else:
+               session.msg("You do not have permission to boot that player.")
+               return
+
+         if objs[0].is_connected_plr():
+            boot_list.append(session_mgr.session_from_object(objs[0]))
+
+      for boot in boot_list:
+         if not switch_quiet:
+            boot.msg("You have been disconnected by %s." % (pobject.name))
+         boot.disconnectClient()
+         session_mgr.remove_session(boot)
+         return
+
 def cmd_newpassword(cdat):
    """
    Set a player's password.
