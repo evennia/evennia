@@ -1,6 +1,6 @@
 
 class ReloadMixin():
-    def cache(self, callback, do_save=True):
+    def cache(self, reloader, do_save=True):
         cache_dict = {}
         if do_save:
             if self.save and callable(self.save):
@@ -12,7 +12,7 @@ class ReloadMixin():
             if not callable(value):
                 cache_dict[key] = value
 
-        callback(cache_dict)
+        reloader(self, cache_dict)
 
     def reload(self, cache):
         for key, value in cache.iteritems():
