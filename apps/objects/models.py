@@ -387,6 +387,10 @@ class Object(models.Model):
             
       # Set the object type to GOING
       self.type = 5
+      # Destroy any exits to and from this room, do this first
+      self.clear_exits()
+      # Clear out any objects located within the object
+      self.clear_objects()
       self.save()
            
    def delete(self):
@@ -402,10 +406,6 @@ class Object(models.Model):
       self.type = 6
       self.save()
 
-      # Destroy any exits to and from this room, do this first
-      self.clear_exits()
-      # Clear out any objects located within the object
-      self.clear_objects()
       # Clear all attributes
       self.clear_all_attributes()
 
