@@ -80,7 +80,7 @@ def get_nextfree_dbnum():
    nextfree = Object.objects.filter(type__exact=defines_global.OTYPE_GARBAGE)
    if nextfree:
       # We've got at least one garbage object to recycle.
-      return nextfree[0]
+      return nextfree.id
    else:
       # No garbage to recycle, find the highest dbnum and increment it
       # for our next free.
@@ -263,12 +263,9 @@ def create_object(odat):
       location key for home.
    """
    next_dbref = get_nextfree_dbnum()
-   if not str(next_dbref).isdigit():
-      # Recycle a garbage object.
-      new_object = next_dbref
-   else:
-      new_object = Object()
-      
+   new_object = Object()
+
+   new_object.id = next_dbref
    new_object.type = odat["type"]
    new_object.set_name(odat["name"])
 

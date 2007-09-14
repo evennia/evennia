@@ -292,12 +292,7 @@ def cmd_nextfree(cdat):
    session = cdat['session']
    
    nextfree = functions_db.get_nextfree_dbnum()
-   if str(nextfree).isdigit():
-      retval = "Next free object number: #%s" % (nextfree,)
-   else:
-      retval = "Next free object number: #%s (GARBAGE)" % (nextfree.id,)
-   
-   session.msg(retval)
+   session.msg("Next free object number: #%s" % (nextfree,))
    
 def cmd_open(cdat):
    """
