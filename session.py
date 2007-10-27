@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 import functions_db
 import functions_general
 import session_mgr
+import ansi
+import gameconf
 
 class SessionProtocol(StatefulTelnetProtocol):
    """
@@ -117,15 +119,9 @@ class SessionProtocol(StatefulTelnetProtocol):
       
    def game_connect_screen(self):
       """
-      Show the banner screen.
+      Show the banner screen. Grab from the 'connect_screen' config directive.
       """
-      buffer =  '-'*50
-      buffer += ' \n\rWelcome to Evennia!\n\r'
-      buffer += '-'*50 + '\n\r'
-      buffer += """Please type one of the following to begin:\n\r 
-         connect <email> <password>\n\r
-         create \"<username>\" <email> <password>\n\r"""
-      buffer += '-'*50
+      buffer = ansi.parse_ansi(gameconf.get_configvalue('connect_screen'))
       self.msg(buffer)
 
    def is_loggedin(self):

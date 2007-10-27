@@ -20,7 +20,7 @@ class ConfigValue(models.Model):
    Experimental new config model.
    """
    conf_key = models.CharField(maxlength=100)
-   conf_value = models.CharField(maxlength=255  )
+   conf_value = models.TextField()
    
    class Admin:
       list_display = ('conf_key', 'conf_value',)
