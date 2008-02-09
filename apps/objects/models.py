@@ -17,8 +17,8 @@ class Attribute(models.Model):
    storing them directly. The added benefit is that we can add/remove 
    attributes on the fly as we like.
    """
-   attr_name = models.CharField(maxlength=255)
-   attr_value = models.CharField(maxlength=255)
+   attr_name = models.CharField(max_length=255)
+   attr_value = models.CharField(max_length=255)
    attr_hidden = models.BooleanField(default=0)
    attr_object = models.ForeignKey("Object")
    
@@ -88,8 +88,8 @@ class Object(models.Model):
    We eventually want to find some way to implement object parents via loadable 
    modules or sub-classing.
    """
-   name = models.CharField(maxlength=255)
-   ansi_name = models.CharField(maxlength=255)
+   name = models.CharField(max_length=255)
+   ansi_name = models.CharField(max_length=255)
    owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
@@ -797,10 +797,10 @@ class CommChannel(models.Model):
    """
    The CommChannel class represents a comsys channel in the vein of MUX/MUSH.
    """
-   name = models.CharField(maxlength=255)
-   ansi_name = models.CharField(maxlength=255)
+   name = models.CharField(max_length=255)
+   ansi_name = models.CharField(max_length=255)
    owner = models.ForeignKey(Object, related_name="chan_owner")
-   description = models.CharField(maxlength=80)
+   description = models.CharField(max_length=80)
    req_grp = models.ManyToManyField(Group, blank=True, null=True)
 
    def __str__(self):
@@ -861,7 +861,7 @@ class CommChannelMessage(models.Model):
    A single logged channel message.
    """
    channel = models.ForeignKey(CommChannel, related_name="msg_channel")
-   message = models.CharField(maxlength=255)
+   message = models.CharField(max_length=255)
    date_sent = models.DateTimeField(editable=False, auto_now_add=True)
 
    def __str__(self):
