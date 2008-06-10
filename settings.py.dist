@@ -21,9 +21,6 @@ MANAGERS = ADMINS
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = '/home/evennia/evennia'
 
-# The name of the server log file.
-LOGFILE = '%s/logs/evennia.log' % (BASE_PATH)
-
 # Absolute path to the directory that holds media (no trailing slash).
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = '%s/media' % (BASE_PATH)

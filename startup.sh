@@ -11,6 +11,6 @@ mv -f $BASE_PATH/logs/evennia.log $BASE_PATH/logs/evennia.logs.old
 ## mode instead of having to uncomment crap.
 
 ## Interactive mode. Good for development and debugging.
-#twistd -noy twistd -ny server.py
+#twistd --logfile=- --python=server.py
 ## Stand-alone mode. Good for running games.
-twistd -y server.py
+twistd --logfile=logs/evennia.log --python=server.py
