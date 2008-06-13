@@ -1,13 +1,13 @@
 # Do not mess with the default types (0-5). This is passed to the Object
 # model's 'choices' argument.
 OBJECT_TYPES = (
-   (0, 'NOTHING'),
-   (1, 'PLAYER'),
-   (2, 'ROOM'),
-   (3, 'THING'),
-   (4, 'EXIT'),
-   (5, 'GOING'),
-   (6, 'GARBAGE'),
+    (0, 'NOTHING'),
+    (1, 'PLAYER'),
+    (2, 'ROOM'),
+    (3, 'THING'),
+    (4, 'EXIT'),
+    (5, 'GOING'),
+    (6, 'GARBAGE'),
 )
 
 # Hate to duplicate the above, but it's the easiest way.

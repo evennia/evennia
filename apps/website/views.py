@@ -11,47 +11,47 @@ the other applications.
 """
 
 def page_index(request):
-   """
-   Main root page.
-   """
-   # Some misc. configurable stuff.
-   # TODO: Move this to either SQL or settings.py based configuration.
-   fpage_player_limit = 4   
-   fpage_news_entries = 2
-   
-   # A QuerySet of recent news entries.
-   news_entries = NewsEntry.objects.all().order_by('-date_posted')[:fpage_news_entries]
-   # Dictionary containing database statistics.
-   objstats = functions_db.object_totals()
-   # A QuerySet of the most recently connected players.
-   recent_players = functions_db.get_recently_connected_players()[:fpage_player_limit]
-   
-   pagevars = {
-      "page_title": "Front Page",
-      "news_entries": news_entries,
-      "players_connected_recent": recent_players,
-      "num_players_connected": functions_db.get_connected_players().count(),
-      "num_players_registered": functions_db.num_total_players(),
-      "num_players_connected_recent": functions_db.get_recently_connected_players().count(),
-      "num_players_registered_recent": functions_db.get_recently_created_players().count(),
-      "num_players": objstats["players"],
-      "num_rooms": objstats["rooms"],
-      "num_things": objstats["things"],
-      "num_exits": objstats["exits"],
-   }
+    """
+    Main root page.
+    """
+    # Some misc. configurable stuff.
+    # TODO: Move this to either SQL or settings.py based configuration.
+    fpage_player_limit = 4    
+    fpage_news_entries = 2
+    
+    # A QuerySet of recent news entries.
+    news_entries = NewsEntry.objects.all().order_by('-date_posted')[:fpage_news_entries]
+    # Dictionary containing database statistics.
+    objstats = functions_db.object_totals()
+    # A QuerySet of the most recently connected players.
+    recent_players = functions_db.get_recently_connected_players()[:fpage_player_limit]
+    
+    pagevars = {
+        "page_title": "Front Page",
+        "news_entries": news_entries,
+        "players_connected_recent": recent_players,
+        "num_players_connected": functions_db.get_connected_players().count(),
+        "num_players_registered": functions_db.num_total_players(),
+        "num_players_connected_recent": functions_db.get_recently_connected_players().count(),
+        "num_players_registered_recent": functions_db.get_recently_created_players().count(),
+        "num_players": objstats["players"],
+        "num_rooms": objstats["rooms"],
+        "num_things": objstats["things"],
+        "num_exits": objstats["exits"],
+    }
 
-   context_instance = RequestContext(request)
-   return render_to_response('index.html', pagevars, context_instance)
+    context_instance = RequestContext(request)
+    return render_to_response('index.html', pagevars, context_instance)
 
 def to_be_implemented(request):
-   """
-   A notice letting the user know that this particular feature hasn't been
-   implemented yet.
-   """
+    """
+    A notice letting the user know that this particular feature hasn't been
+    implemented yet.
+    """
 
-   pagevars = {
-      "page_title": "To Be Implemented...",
-   }
+    pagevars = {
+        "page_title": "To Be Implemented...",
+    }
 
-   context_instance = RequestContext(request)
-   return render_to_response('tbi.html', pagevars, context_instance)
+    context_instance = RequestContext(request)
+    return render_to_response('tbi.html', pagevars, context_instance)

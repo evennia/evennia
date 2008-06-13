@@ -10,21 +10,21 @@ from django.conf.urls.defaults import *
 import settings
 
 urlpatterns = patterns('',
-   # User Authentication
-   (r'^accounts/login',  'django.contrib.auth.views.login'),
-   (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    # User Authentication
+    (r'^accounts/login',  'django.contrib.auth.views.login'),
+    (r'^accounts/logout', 'django.contrib.auth.views.logout'),
 
-   # Admin interface
-   (r'^admin/', include('django.contrib.admin.urls')),
+    # Admin interface
+    (r'^admin/', include('django.contrib.admin.urls')),
 
-   # Front page
-   (r'^', include('apps.website.urls')),
+    # Front page
+    (r'^', include('apps.website.urls')),
 
-   # News stuff
-   (r'^news/', include('apps.news.urls')),
+    # News stuff
+    (r'^news/', include('apps.news.urls')),
 
-   # Page place-holder for things that aren't implemented yet.
-   (r'^tbi/', 'apps.website.views.to_be_implemented'),
+    # Page place-holder for things that aren't implemented yet.
+    (r'^tbi/', 'apps.website.views.to_be_implemented'),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),
@@ -33,6 +33,6 @@ urlpatterns = patterns('',
 # test server. Normally you want a webserver that is optimized for serving
 # static content to handle media files (apache, lighttpd).
 if settings.SERVE_MEDIA:
-   urlpatterns += patterns('',
-      (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-   )
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    )
