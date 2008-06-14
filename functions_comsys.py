@@ -1,3 +1,6 @@
+"""
+Comsys functions.
+"""
 import time, datetime
 
 from django.utils import simplejson
@@ -5,9 +8,6 @@ from django.utils import simplejson
 from apps.objects.models import CommChannel, CommChannelMessage
 import session_mgr
 import ansi
-"""
-Comsys functions.
-"""
 
 def plr_get_cdict(session):
     """
@@ -147,7 +147,7 @@ def plr_jsondump_channels(session):
     
     session: (SessionProtocol) A reference to the player session.
     """
-    session.get_pobject().set_attribute("CHANLIST", simplejson.dumps(plr_get_cdict(session)))
+    session.get_pobject().set_attribute("__CHANLIST", simplejson.dumps(plr_get_cdict(session)))
 
 def plr_del_channel(session, alias):
     """

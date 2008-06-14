@@ -70,7 +70,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         Parse JSON dict of a user's channel list from their CHANLIST attribute.
         """
-        chan_list = self.get_pobject().get_attribute_value("CHANLIST")
+        chan_list = self.get_pobject().get_attribute_value("__CHANLIST")
         if chan_list:
             self.channels_subscribed = simplejson.loads(chan_list)
         

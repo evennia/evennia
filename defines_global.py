@@ -30,10 +30,11 @@ NOSAVE_FLAGS = ["CONNECTED"]
 NOSET_FLAGS = ["CONNECTED"]
 
 # These attribute names can't be modified by players.
-NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "CHANLIST", "LAST", "LASTSITE"]
+NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "__CHANLIST", "LAST", 
+                 "__PARENT", "LASTSITE"]
 
 # These attributes don't show up on objects when examined.
-HIDDEN_ATTRIBS = ["CHANLIST"]
+HIDDEN_ATTRIBS = ["__CHANLIST", "__PARENT"]
 
 # Server version number.
 REVISION = '$Rev$'
