@@ -4,9 +4,11 @@ import cPickle as pickle
 
 from twisted.conch.telnet import StatefulTelnetProtocol
 
-import cmdhandler
-from apps.objects.models import Object
 from django.contrib.auth.models import User
+
+from apps.objects.models import Object
+from apps.config.models import ConnectScreen
+import cmdhandler
 import functions_db
 import functions_general
 import session_mgr
@@ -121,7 +123,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         Show the banner screen. Grab from the 'connect_screen' config directive.
         """
-        buffer = ansi.parse_ansi(gameconf.get_configvalue('connect_screen'))
+        screen = ConnectScreen.objects.get_random_connect_screen()
+        buffer = ansi.parse_ansi(screen.connect_screen_text)
         self.msg(buffer)
 
     def is_loggedin(self):

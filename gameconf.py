@@ -1,7 +1,7 @@
 import os
 from traceback import format_exc
 
-from apps.config.models import ConfigValue
+from apps.config.models import ConfigValue, ConnectScreen
 import functions_general
 """
 Handle the setting/retrieving of server config directives.
@@ -31,3 +31,4 @@ def set_configvalue(configname, newvalue):
     conf = ConfigValue.objects.get(conf_key=configname)
     conf.conf_value = newvalue
     conf.save()
+    
