@@ -415,9 +415,9 @@ def cmd_who(cdat):
     # Only those with the see_session_data or superuser status can see
     # session details.
     if show_session_data:
-        retval = "Player Name              On For Idle    Room     Cmds    Host\n\r"
+        retval = "Player Name               On For Idle   Room    Cmds   Host\n\r"
     else:
-        retval = "Player Name              On For Idle\n\r"
+        retval = "Player Name               On For Idle\n\r"
         
     for player in session_list:
         if not player.logged_in:

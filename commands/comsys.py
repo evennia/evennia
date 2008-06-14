@@ -95,7 +95,7 @@ def cmd_comlist(cdat):
     """
     session = cdat['session']
 
-    session.msg("Alias      Channel                 Status")
+    session.msg("Alias     Channel             Status")
     for chan in session.channels_subscribed:
         if session.channels_subscribed[chan][1]:
             chan_on = "On"
@@ -131,9 +131,9 @@ def cmd_clist(cdat):
     Lists all available channels on the game.
     """
     session = cdat['session']
-    session.msg("** Channel         Owner              Description")
+    session.msg("** Channel       Owner         Description")
     for chan in functions_comsys.get_all_channels():
-        session.msg("%s%s %-13.13s %-15.15s %-45.45s" %
+        session.msg("%s%s %-13.13s %-15.15s   %-45.45s" %
             ('-', '-', chan.get_name(), chan.get_owner().get_name(), 'No Description'))
     session.msg("-- End of Channel List --")
 

@@ -1,6 +1,6 @@
 import time, sys
 from datetime import datetime
-import cPickle as pickle
+from django.utils import simplejson
 
 from twisted.conch.telnet import StatefulTelnetProtocol
 
@@ -68,11 +68,11 @@ class SessionProtocol(StatefulTelnetProtocol):
 
     def load_user_channels(self):
         """
-        Un-pickle a user's channel list from their CHANLIST attribute.
+        Parse JSON dict of a user's channel list from their CHANLIST attribute.
         """
         chan_list = self.get_pobject().get_attribute_value("CHANLIST")
         if chan_list:
-            self.channels_subscribed = pickle.loads(chan_list)
+            self.channels_subscribed = simplejson.loads(chan_list)
         
     def lineReceived(self, data):
         """
@@ -159,7 +159,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
         pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
 
-        # Load their channel selection from a pickled attribute.
+        # Load their channel selection from a JSON-encoded string attribute.
         self.load_user_channels()
         
     def msg(self, message):

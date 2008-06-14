@@ -1,7 +1,7 @@
 import os
 from traceback import format_exc
 
-from apps.config.models import ConfigValue, ConnectScreen
+from apps.config.models import ConfigValue
 import functions_general
 """
 Handle the setting/retrieving of server config directives.

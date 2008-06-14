@@ -1,5 +1,6 @@
-import cPickle as pickle
 import time, datetime
+
+from django.utils import simplejson
 
 from apps.objects.models import CommChannel, CommChannelMessage
 import session_mgr
@@ -125,7 +126,7 @@ def plr_set_channel_listening(session, alias, listening):
     listening: (bool) A True or False value to determine listening status.
     """
     plr_get_cdict(session).get(alias)[1] = listening
-    plr_pickle_channels(session)
+    plr_jsondump_channels(session)
     
 def plr_set_channel(session, alias, cname, listening):
     """
@@ -138,15 +139,15 @@ def plr_set_channel(session, alias, cname, listening):
     listening: (bool) A True or False value to determine listening status.
     """
     plr_get_cdict(session)[alias] = [cname, listening]
-    plr_pickle_channels(session)
+    plr_jsondump_channels(session)
 
-def plr_pickle_channels(session):
+def plr_jsondump_channels(session):
     """
     Save the player's channel list to the CHANLIST attribute.
     
     session: (SessionProtocol) A reference to the player session.
     """
-    session.get_pobject().set_attribute("CHANLIST", pickle.dumps(plr_get_cdict(session)))
+    session.get_pobject().set_attribute("CHANLIST", simplejson.dumps(plr_get_cdict(session)))
 
 def plr_del_channel(session, alias):
     """
