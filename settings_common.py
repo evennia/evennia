@@ -44,6 +44,6 @@ INSTALLED_APPS = (
     'apps.objects',
     'apps.helpsys',
     'apps.genperms',
-    'apps.news',
-    'apps.website',
+    'webapps.news',
+    'webapps.website',
 )

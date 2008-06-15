@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
-from apps.news.models import NewsEntry
+from webapps.news.models import NewsEntry
 import functions_db
 
 """
