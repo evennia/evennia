@@ -11,7 +11,7 @@ import defines_global
 import cmdtable
 import functions_general
 import functions_log
-import functions_comsys
+from src import comsys
 
 class UnknownCommand(Exception):
      """
@@ -171,26 +171,26 @@ def handle(cdat):
                      parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
                      parsed_input['root_cmd'] = 'pose'
                 # Channel alias match.
-                elif functions_comsys.plr_has_channel(session, 
+                elif comsys.plr_has_channel(session, 
                      parsed_input['root_cmd'], 
                      alias_search=True, 
                      return_muted=True):
                      
                      calias = parsed_input['root_cmd']
-                     cname = functions_comsys.plr_cname_from_alias(session, calias)
+                     cname = comsys.plr_cname_from_alias(session, calias)
                      cmessage = ' '.join(parsed_input['splitted'][1:])
                      
                      if cmessage == "who":
-                          functions_comsys.msg_cwho(session, cname)
+                          comsys.msg_cwho(session, cname)
                           return
                      elif cmessage == "on":
-                          functions_comsys.plr_chan_on(session, calias)
+                          comsys.plr_chan_on(session, calias)
                           return
                      elif cmessage == "off":
-                          functions_comsys.plr_chan_off(session, calias)
+                          comsys.plr_chan_off(session, calias)
                           return
                      elif cmessage == "last":
-                          functions_comsys.msg_chan_hist(session, cname)
+                          comsys.msg_chan_hist(session, cname)
                           return
                           
                      second_arg = "%s=%s" % (cname, cmessage)

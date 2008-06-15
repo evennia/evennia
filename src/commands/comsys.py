@@ -7,7 +7,7 @@ import time
 from django.conf import settings
 
 import functions_general
-import functions_comsys
+import src.comsys
 import defines_global
 from src import ansi
 
@@ -44,18 +44,18 @@ def cmd_addcom(cdat):
         session.msg("You are already on that channel.")
         return
 
-    name_matches = functions_comsys.cname_search(chan_name, exact=True)
+    name_matches = src.comsys.cname_search(chan_name, exact=True)
 
     if name_matches:
         chan_name_parsed = name_matches[0].get_name()
         session.msg("You join %s, with an alias of %s." % \
             (chan_name_parsed, chan_alias))
-        functions_comsys.plr_set_channel(session, chan_alias, chan_name_parsed, True)
+        src.comsys.plr_set_channel(session, chan_alias, chan_name_parsed, True)
 
         # Announce the user's joining.
         join_msg = "[%s] %s has joined the channel." % \
             (chan_name_parsed, pobject.get_name(show_dbref=False))
-        functions_comsys.send_cmessage(chan_name_parsed, join_msg)
+        src.comsys.send_cmessage(chan_name_parsed, join_msg)
     else:
         session.msg("Could not find channel %s." % (chan_name,))
 
@@ -81,12 +81,12 @@ def cmd_delcom(cdat):
 
     chan_name = session.channels_subscribed[chan_alias][0]
     session.msg("You have left %s." % (chan_name,))
-    functions_comsys.plr_del_channel(session, chan_alias)
+    src.comsys.plr_del_channel(session, chan_alias)
 
     # Announce the user's leaving.
     leave_msg = "[%s] %s has left the channel." % \
         (chan_name, pobject.get_name(show_dbref=False))
-    functions_comsys.send_cmessage(chan_name, leave_msg)
+    src.comsys.send_cmessage(chan_name, leave_msg)
 
 def cmd_comlist(cdat):
     """
@@ -131,7 +131,7 @@ def cmd_clist(cdat):
     """
     session = cdat['session']
     session.msg("** Channel       Owner         Description")
-    for chan in functions_comsys.get_all_channels():
+    for chan in src.comsys.get_all_channels():
         session.msg("%s%s %-13.13s %-15.15s   %-45.45s" %
             ('-', '-', chan.get_name(), chan.get_owner().get_name(), 'No Description'))
     session.msg("-- End of Channel List --")
@@ -150,7 +150,7 @@ def cmd_cdestroy(cdat):
         session.msg("You must supply a name!")
         return
 
-    name_matches = functions_comsys.cname_search(cname, exact=True)
+    name_matches = src.comsys.cname_search(cname, exact=True)
 
     if not name_matches:
         session.msg("Could not find channel %s." % (cname,))
@@ -218,7 +218,7 @@ def cmd_cemit(cdat):
         session.msg("You must provide a message to emit.")
         return
 
-    name_matches = functions_comsys.cname_search(cname, exact=True)
+    name_matches = src.comsys.cname_search(cname, exact=True)
 
     try:
         # Safety first, kids!
@@ -234,7 +234,7 @@ def cmd_cemit(cdat):
         final_cmessage = cmessage
     else:
         if "sendername" in switches:
-            if not functions_comsys.plr_has_channel(session, cname_parsed, return_muted=False):
+            if not src.comsys.plr_has_channel(session, cname_parsed, return_muted=False):
                 session.msg("You must be on %s to do that." % (cname_parsed,))
                 return
             final_cmessage = "[%s] %s: %s" % (cname_parsed, pobject.get_name(show_dbref=False), cmessage)
@@ -246,7 +246,7 @@ def cmd_cemit(cdat):
 
     if not "quiet" in switches:
         session.msg("Sent - %s" % (name_matches[0],))
-    functions_comsys.send_cmessage(cname_parsed, final_cmessage)
+    src.comsys.send_cmessage(cname_parsed, final_cmessage)
 
 def cmd_cwho(cdat):
     """
@@ -273,14 +273,14 @@ def cmd_ccreate(cdat):
         session.msg("You must supply a name!")
         return
 
-    name_matches = functions_comsys.cname_search(cname, exact=True)
+    name_matches = src.comsys.cname_search(cname, exact=True)
 
     if name_matches:
         session.msg("A channel with that name already exists.")
     else:
         # Create and set the object up.
         cdat = {"name": cname, "owner": pobject}
-        new_chan = functions_comsys.create_channel(cdat)
+        new_chan = src.comsys.create_channel(cdat)
         session.msg("Channel %s created." % (new_chan.get_name(),))
 
 def cmd_cchown(cdat):
