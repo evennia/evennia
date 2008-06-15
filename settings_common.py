@@ -17,7 +17,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
-    'apps.website.webcontext.general_context',
+    'webapps.website.webcontext.general_context',
 )
 
 # MiddleWare are semi-transparent extensions to Django's functionality.
