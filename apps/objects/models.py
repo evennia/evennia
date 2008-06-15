@@ -7,6 +7,8 @@ import scripthandler
 import defines_global
 import gameconf
 import ansi
+from apps.objects.managers.commchannel import CommChannelManager
+from apps.objects.managers.object import ObjectManager
 
 class Attribute(models.Model):
     """
@@ -101,6 +103,8 @@ class Object(models.Model):
     nosave_flags = models.TextField(blank=True, null=True)
     date_created = models.DateField(editable=False, auto_now_add=True)
     scriptlink = None
+    
+    objects = ObjectManager()
 
     def __cmp__(self, other):
         """
@@ -809,6 +813,8 @@ class CommChannel(models.Model):
     owner = models.ForeignKey(Object, related_name="chan_owner")
     description = models.CharField(max_length=80)
     req_grp = models.ManyToManyField(Group, blank=True, null=True)
+    
+    objects = CommChannelManager()
 
     def __str__(self):
         return "%s" % (self.name,)
@@ -870,6 +876,8 @@ class CommChannelMessage(models.Model):
     channel = models.ForeignKey(CommChannel, related_name="msg_channel")
     message = models.CharField(max_length=255)
     date_sent = models.DateTimeField(editable=False, auto_now_add=True)
+    
+    objects = CommChannelManager()
 
     def __str__(self):
         return "%s: %s" % (self.sender.name, self.message)

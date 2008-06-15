@@ -1,5 +1,6 @@
-from django.db import models
 import ansi
+from django.db import models
+from apps.helpsys.managers.helpentry import HelpEntryManager
 
 class HelpEntry(models.Model):
     """
@@ -8,6 +9,8 @@ class HelpEntry(models.Model):
     topicname = models.CharField(max_length=255)
     entrytext = models.TextField(blank=True, null=True)
     staff_only = models.BooleanField(default=0)
+    
+    objects = HelpEntryManager()
 
     class Admin:
         list_display = ('id', 'topicname', 'staff_only')

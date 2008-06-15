@@ -1,4 +1,7 @@
 from django.db import models
+from apps.config.managers.commandalias import CommandAliasManager
+from apps.config.managers.configvalue import ConfigValueManager
+from apps.config.managers.connectscreen import ConnectScreenManager
 
 class CommandAlias(models.Model):
     """
@@ -7,6 +10,8 @@ class CommandAlias(models.Model):
     """
     user_input = models.CharField(max_length=50)
     equiv_command = models.CharField(max_length=50)
+    
+    objects = CommandAliasManager()
     
     class Admin:
         list_display = ('user_input', 'equiv_command',)
@@ -22,21 +27,10 @@ class ConfigValue(models.Model):
     conf_key = models.CharField(max_length=100)
     conf_value = models.TextField()
     
+    objects = ConfigValueManager()
+    
     class Admin:
         list_display = ('conf_key', 'conf_value',)
-        
-class ConnectScreenManager(models.Manager):
-    def get_random_connect_screen(self):
-        """
-        Returns a random active connect screen.
-        """
-        try:
-            return self.filter(is_active=True).order_by('?')[0]
-        except IndexError:
-            new_screen = ConnectScreen(name='Default', 
-                connect_screen_text='This is a placeholder connect screen. Remind your admin to edit it through the Admin interface.')
-            new_screen.save()
-            return new_screen
         
 class ConnectScreen(models.Model):
     """
@@ -47,7 +41,6 @@ class ConnectScreen(models.Model):
     connect_screen_text = models.TextField(help_text="The text for the connect screen. Color codes and substitutions are evaluated.")
     is_active = models.BooleanField(default=1, help_text="Only active connect screens are placed in the rotation")
     
-    # Custom manager
     objects = ConnectScreenManager()
     
     class Admin:
