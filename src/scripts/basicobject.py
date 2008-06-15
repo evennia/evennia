@@ -4,7 +4,7 @@ default. It will have the necessary outline for developers to sub-class and over
 """
 from src import ansi
 
-class BasicObject:
+class BasicObject(object):
     def __init__(self, source_obj):
         """
         Get our ducks in a row.

@@ -8,7 +8,6 @@ from datetime import datetime
 
 from twisted.conch.telnet import StatefulTelnetProtocol
 
-from django.utils import simplejson
 from django.contrib.auth.models import User
 
 from apps.objects.models import Object
@@ -69,14 +68,6 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         logger.log_infomsg('Disconnect: %s' % (self,))
         self.handle_close()
-
-    def load_user_channels(self):
-        """
-        Parse JSON dict of a user's channel list from their CHANLIST attribute.
-        """
-        chan_list = self.get_pobject().get_attribute_value("__CHANLIST")
-        if chan_list:
-            self.channels_subscribed = simplejson.loads(chan_list)
         
     def lineReceived(self, data):
         """
@@ -121,7 +112,7 @@ class SessionProtocol(StatefulTelnetProtocol):
             result = Object.objects.get(id=self.uid)
             return result
         except:
-            return False
+            return None
         
     def game_connect_screen(self):
         """
@@ -150,21 +141,15 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.conn_time = time.time()
         pobject = self.get_pobject()
         session_mgr.disconnect_duplicate_session(self)
-        pobject.set_flag("CONNECTED", True)
-
-        self.msg("You are now logged in as %s." % (self.name,))
-        pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
-        self.execute_cmd("look")
+        
+        pobject.get_scriptlink().at_pre_login()
+        pobject.get_scriptlink().at_post_login()
+        
         logger.log_infomsg("Login: %s" % (self,))
         
         # Update their account's last login time.
         user.last_login = datetime.now()
         user.save()
-        pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
-        pobject.set_attribute("Lastsite", "%s" % (self.address[0],))
-
-        # Load their channel selection from a JSON-encoded string attribute.
-        self.load_user_channels()
         
     def msg(self, message):
         """

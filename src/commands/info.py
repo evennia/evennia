@@ -33,7 +33,7 @@ def cmd_time(cdat):
     Server local time.
     """
     session = cdat['session']
-    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
+    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime(),)))
 
 def cmd_uptime(cdat):
     """

@@ -198,6 +198,15 @@ def get_cwho_list(channel_name, return_muted=False):
     """
     sess_list = session_mgr.get_session_list()
     return [sess for sess in sess_list if plr_has_channel(sess, channel_name, return_muted)]
+    
+def load_object_channels(pobject):
+    """
+    Parse JSON dict of a user's channel list from their CHANLIST attribute.
+    """
+    chan_list = pobject.get_attribute_value("__CHANLIST")
+    if chan_list:
+        session = session_mgr.session_from_object(pobject)
+        session.channels_subscribed = simplejson.loads(chan_list)
 
 def send_cmessage(channel_name, message):
     """

@@ -135,6 +135,15 @@ class Object(models.Model):
     """
     BEGIN COMMON METHODS
     """
+    def get_session(self):
+        """
+        Returns the session object for a player, or None if none exists.
+        """
+        if self.is_player():
+            return session_mgr.session_from_object(self)
+        else:
+            return None
+        
     def emit_to(self, message):
         """
         Emits something to any sessions attached to the object.
@@ -636,7 +645,11 @@ class Object(models.Model):
         Returns an object's script parent.
         """
         if not self.scriptlink:
-            self.scriptlink = scripthandler.scriptlink(self, self.get_attribute_value('__parent', 'basicobject'))
+            if self.is_player():
+                script_to_load = 'player/basicplayer'
+            else:
+                script_to_load = 'basicobject'
+            self.scriptlink = scripthandler.scriptlink(self, self.get_attribute_value('__parent', script_to_load))
         
         if self.scriptlink:    
             # If the scriptlink variable can't be populated, this will fail
