@@ -1,14 +1,14 @@
-import os
-from traceback import format_exc
-
-import settings
-import functions_general
 """
 This module is responsible for managing scripts and their connection to the
 Object class model. It is important to keep this as independent from the
 codebase as possible in order to allow for drop-in replacements. All
 interaction with actual script methods should happen via calls to Objects.
 """
+import os
+from traceback import format_exc
+
+import settings
+import functions_log
 
 # A dictionary with keys equivalent to the script's name and values that
 # contain references to the associated module for each key.
@@ -48,16 +48,16 @@ def scriptlink(source_obj, scriptname):
     try:
         # Change the working directory to the location of the script and import.
         os.chdir('%s/%s/' % (settings.SCRIPT_ROOT, newpath_str))
-        functions_general.log_infomsg("SCRIPT: Caching and importing %s." % (modname))
+        functions_log.log_infomsg("SCRIPT: Caching and importing %s." % (modname))
         modreference = __import__(modname)
         # Store the module reference for later fast retrieval.
         cached_scripts[scriptname] = modreference
     except ImportError:
-        functions_general.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
+        functions_log.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
         os.chdir(settings.BASE_PATH)
         return
     except OSError:
-        functions_general.log_infomsg('Invalid module path: %s' % (format_exc()))
+        functions_log.log_infomsg('Invalid module path: %s' % (format_exc()))
         os.chdir(settings.BASE_PATH)
         return
 

@@ -32,6 +32,9 @@ class ConfigValue(models.Model):
     class Admin:
         list_display = ('conf_key', 'conf_value',)
         
+    def __str__(self):
+        return "%s" % self.conf_key
+        
 class ConnectScreen(models.Model):
     """
     Stores connect screens. The admins may have only one or multiple, which

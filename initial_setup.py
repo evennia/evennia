@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from apps.objects.models import Object
-import gameconf
+from apps.config.models import ConfigValue
 
 def handle_setup():
     # Set the initial user's username on the #1 object.
@@ -15,4 +15,4 @@ def handle_setup():
         newgroup.save()
 
     # We don't want to do initial setup tasks every startup, only the first.
-    gameconf.set_configvalue('game_firstrun', '0')
+    ConfigValue.objects.set_configvalue('game_firstrun', '0')

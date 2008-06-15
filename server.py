@@ -7,15 +7,14 @@ from twisted.python import log
 
 from django.db import models
 from django.db import connection
+from django.conf import settings
 
-from apps.config.models import CommandAlias
+from apps.config.models import CommandAlias, ConfigValue
 from session import SessionProtocol
 import settings
 import scheduler
 import functions_general
 import session_mgr
-import gameconf
-import settings
 import cmdtable
 import initial_setup
 
@@ -38,13 +37,13 @@ class EvenniaService(service.Service):
         # Load command aliases into memory for easy/quick access.
         self.load_cmd_aliases()
 
-        if gameconf.get_configvalue('game_firstrun') == '1':
+        if ConfigValue.objects.get_configvalue('game_firstrun') == '1':
             print ' Game started for the first time, setting defaults.'
             initial_setup.handle_setup()
 
         self.start_time = time.time()
 
-        print ' %s started on port(s):' % (gameconf.get_configvalue('site_name'),)
+        print ' %s started on port(s):' % (ConfigValue.objects.get_configvalue('site_name'),)
         for port in settings.GAMEPORTS:
             print '  * %s' % (port)
         print '-'*50
@@ -96,11 +95,7 @@ class EvenniaService(service.Service):
         For changes to the scheduler, server, or session_mgr modules, a cold
         restart is needed.
         """
-        reload_list = ['ansi', 'cmdhandler', 'commands.comsys', 'commands.general',
-            'commands.privileged', 'commands.unloggedin', 'defines_global',
-            'events', 'functions_db', 'functions_general', 'functions_comsys',
-            'functions_help', 'gameconf', 'session', 'apps.objects.models',
-            'apps.helpsys.models', 'apps.config.models']
+        reload_list = []
 
         for mod in reload_list:
             reload(sys.modules[mod])

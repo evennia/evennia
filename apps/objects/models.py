@@ -5,8 +5,8 @@ from django.contrib.auth.models import User, Group
 
 import scripthandler
 import defines_global
-import gameconf
 import ansi
+from apps.config.models import ConfigValue
 from apps.objects.managers.commchannel import CommChannelManager
 from apps.objects.managers.object import ObjectManager
 
@@ -439,7 +439,7 @@ class Object(models.Model):
         # Gather up everything, other than exits and going/garbage, that is under
         # the belief this is its location.
         objs = self.obj_location.filter(type__in=[1,2,3])
-        default_home_id = gameconf.get_configvalue('default_home')
+        default_home_id = ConfigValue.objects.get_configvalue('default_home')
         try:
             default_home = Object.objects.get(id=default_home_id)
         except:

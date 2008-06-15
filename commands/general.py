@@ -1,6 +1,8 @@
-import os, time
-import gameconf
-import settings
+import time
+
+from django.conf import settings
+
+from apps.config.models import ConfigValue
 import functions_general
 import functions_db
 import functions_help
@@ -90,9 +92,9 @@ def cmd_inventory(cdat):
         
     money = int(pobject.get_attribute_value("MONEY", default=0))
     if money == 1:
-        money_name = gameconf.get_configvalue("MONEY_NAME_SINGULAR")
+        money_name = ConfigValue.objects.get_configvalue("MONEY_NAME_SINGULAR")
     else:
-        money_name = gameconf.get_configvalue("MONEY_NAME_PLURAL")
+        money_name = ConfigValue.objects.get_configvalue("MONEY_NAME_PLURAL")
 
     session.msg("You have %d %s." % (money,money_name))
 
@@ -532,33 +534,3 @@ def cmd_help(cdat):
         topic = topics[0]
         session.msg("\r\n%s%s%s" % (ansi.ansi["hilite"], topic.get_topicname(), ansi.ansi["normal"]))
         session.msg(topic.get_entrytext_ingame())
-    
-def cmd_version(cdat):
-    """
-    Version info command.
-    """
-    session = cdat['session']
-    retval = "-"*50 +"\n\r"
-    retval += "Evennia %s\n\r" % (defines_global.EVENNIA_VERSION,)
-    retval += "-"*50
-    session.msg(retval)
-
-def cmd_time(cdat):
-    """
-    Server local time.
-    """
-    session = cdat['session']
-    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
-    
-def cmd_uptime(cdat):
-    """
-    Server uptime and stats.
-    """
-    session = cdat['session']
-    server = cdat['server']
-    start_delta = time.time() - server.start_time
-    loadavg = os.getloadavg()
-    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
-    session.msg('Server start time    : %s' % (time.strftime('%a %b %d %H:%M %Y', time.localtime(server.start_time),)))
-    session.msg('Server uptime         : %s' % functions_general.time_format(start_delta, style=2))
-    session.msg('Server load (1 min) : %.2f' % loadavg[0])

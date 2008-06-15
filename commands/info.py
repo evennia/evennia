@@ -1,11 +1,49 @@
-import gameconf
-if not gameconf.host_os_is('nt'):
+"""
+Commands that are generally staff-oriented that show information regarding
+the server instance.
+"""
+import os
+import time
+
+import functions_general
+
+if not functions_general.host_os_is('nt'):
     # Don't import the resource module if the host OS is Windows.
     import resource
-import os
 
 import functions_db
 import scheduler
+import defines_global
+
+def cmd_version(cdat):
+    """
+    Version info command.
+    """
+    session = cdat['session']
+    retval = "-"*50 +"\n\r"
+    retval += "Evennia %s\n\r" % (defines_global.EVENNIA_VERSION,)
+    retval += "-"*50
+    session.msg(retval)
+
+def cmd_time(cdat):
+    """
+    Server local time.
+    """
+    session = cdat['session']
+    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
+
+def cmd_uptime(cdat):
+    """
+    Server uptime and stats.
+    """
+    session = cdat['session']
+    server = cdat['server']
+    start_delta = time.time() - server.start_time
+    loadavg = os.getloadavg()
+    session.msg('Current server time : %s' % (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
+    session.msg('Server start time   : %s' % (time.strftime('%a %b %d %H:%M %Y', time.localtime(server.start_time),)))
+    session.msg('Server uptime       : %s' % functions_general.time_format(start_delta, style=2))
+    session.msg('Server load (1 min) : %.2f' % loadavg[0])
 
 def cmd_list(cdat):
     """
@@ -23,7 +61,7 @@ def cmd_list(cdat):
     elif argstr == "commands":
         session.msg('Commands: '+ ' '.join(session.server.command_list()))
     elif argstr == "process":
-        if not gameconf.host_os_is('nt'):
+        if not functions_general.host_os_is('nt'):
             loadvg = os.getloadavg()
             psize = resource.getpagesize()
             rusage = resource.getrusage(resource.RUSAGE_SELF)

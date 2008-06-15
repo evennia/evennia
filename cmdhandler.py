@@ -1,3 +1,8 @@
+"""
+This is the command processing module. It is instanced once in the main
+server module and the handle() function is hit every time a player sends
+something.
+"""
 from traceback import format_exc
 import time
 
@@ -5,13 +10,8 @@ import defines_global
 import cmdtable
 import functions_db
 import functions_general
+import functions_log
 import functions_comsys
-
-"""
-This is the command processing module. It is instanced once in the main
-server module and the handle() function is hit every time a player sends
-something.
-"""
 
 class UnknownCommand(Exception):
      """
@@ -225,7 +225,7 @@ def handle(cdat):
                      cmd(cdat)
                 except:
                      session.msg("Untrapped error, please file a bug report:\n%s" % (format_exc(),))
-                     functions_general.log_errmsg("Untrapped error, evoker %s: %s" %
+                     functions_log.log_errmsg("Untrapped error, evoker %s: %s" %
                           (session, format_exc()))
                 return
 

@@ -1,10 +1,9 @@
+"""
+General functions that don't fit neatly under any given category.
+"""
+import os
 import textwrap
-from twisted.python import log
-
 import session_mgr
-"""
-General commonly used functions.
-"""
 
 def wildcard_to_regexp(instring):
     """
@@ -39,24 +38,6 @@ def cmd_check_num_args(session, arg_list, min_args, errortext="Missing arguments
         session.msg(errortext)
         return False
     return True
-
-def log_errmsg(errormsg):
-    """
-    Prints/logs an error message to the server log.
-
-    errormsg: (string) The message to be logged.
-    """
-    log.err('ERROR: %s' % (errormsg,))
-    #functions_comsys.send_cmessage("Errors", "[Errors] "+ errormsg)
-
-def log_infomsg(infomsg):
-    """
-    Prints any generic debugging/informative info that should appear in the log.
-
-    debugmsg: (string) The message to be logged.
-    """
-    log.msg('%s' % (infomsg,))
-    #functions_comsys.send_cmessage("Info", "[Info] "+ infomsg)
     
 def time_format(seconds, style=0):
     """
@@ -138,3 +119,11 @@ def word_wrap(text, width=78):
     width: (int) The number of characters to wrap to.
     """
     return '\r\n'.join(textwrap.wrap(text, width))
+    
+def host_os_is(osname):
+    """
+    Check to see if the host OS matches the query.
+    """
+    if os.name == osname:
+        return True
+    return False

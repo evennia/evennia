@@ -1,10 +1,12 @@
-import time
-import gameconf
-import functions_general
-
 """
 Session manager, handles connected players.
 """
+import time
+
+from apps.config.models import ConfigValue
+import functions_general
+import functions_log
+
 # Our list of connected sessions.
 session_list = []
 
@@ -13,7 +15,7 @@ def add_session(session):
     Adds a session to the session list.
     """
     session_list.insert(0, session)
-    functions_general.log_infomsg('Sessions active: %d' % (len(get_session_list(return_unlogged=True),)))
+    functions_log.log_infomsg('Sessions active: %d' % (len(get_session_list(return_unlogged=True),)))
     
 def get_session_list(return_unlogged=False):
     """
@@ -50,7 +52,7 @@ def check_all_sessions():
     """
     Check all currently connected sessions and see if any are dead.
     """
-    idle_timeout = int(gameconf.get_configvalue('idle_timeout'))
+    idle_timeout = int(ConfigValue.objects.get_configvalue('idle_timeout'))
 
     if len(session_list) <= 0:
         return
@@ -69,9 +71,9 @@ def remove_session(session):
     """
     try:
         session_list.remove(session)
-        functions_general.log_infomsg('Sessions active: %d' % (len(get_session_list()),))
-    except:
-        #functions_general.log_errmsg("Unable to remove session: %s" % (session,))
+        functions_log.log_infomsg('Sessions active: %d' % (len(get_session_list()),))
+    except ValueError:
+        #functions_log.log_errmsg("Unable to remove session: %s" % (session,))
         pass
         
     

@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 
 from django.db import connection
 from django.contrib.auth.models import User
-from apps.objects.models import Object, Attribute
-import defines_global
-import gameconf
 from django.db.models import Q
+
+from apps.objects.models import Object, Attribute
+from apps.config.models import ConfigValue
+import defines_global
 
 """
 Common database functions.
@@ -336,7 +337,7 @@ def create_user(cdat, uname, email, password):
     """
     session = cdat['session']
     server = cdat['server']
-    start_room = int(gameconf.get_configvalue('player_dbnum_start'))
+    start_room = int(ConfigValue.objects.get_configvalue('player_dbnum_start'))
     start_room_obj = get_object_from_dbref(start_room)
 
     # The user's entry in the User table must match up to an object
@@ -372,4 +373,6 @@ def create_user(cdat, uname, email, password):
     # Activate the player's session and set them loose.
     session.login(user)
     print 'Registration: %s' % (session,)
-    session.msg("Welcome to %s, %s.\n\r" % (gameconf.get_configvalue('site_name'), session.get_pobject().get_name(show_dbref=False),))
+    session.msg("Welcome to %s, %s.\n\r" % (
+        ConfigValue.objects.get_configvalue('site_name'), 
+        session.get_pobject().get_name(show_dbref=False)))
