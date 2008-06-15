@@ -154,7 +154,7 @@ class Object(models.Model):
         if not self.is_player():
             return False
             
-        session = session_mgr.session_from_object(self)
+        session = self.get_session()
         if session:
             session.msg(ansi.parse_ansi(message))
         else:
@@ -398,7 +398,7 @@ class Object(models.Model):
         """
         
         # See if we need to kick the player off.
-        session = session_mgr.session_from_object(self)
+        session = self.get_session()
         if session:
             session.msg("You have been destroyed, goodbye.")
             session.handle_close()
@@ -604,7 +604,7 @@ class Object(models.Model):
         Is this object a connected player?
         """
         if self.is_player():
-            if session_mgr.session_from_object(self):
+            if self.get_session():
                 return True
             else:
                 return False
