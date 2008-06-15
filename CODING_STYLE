@@ -1,0 +1,25 @@
+Evennia Code Style
+------------------
+All code submitted or committed to the Evennia project needs to follow the
+guidelines outlined in Python PEP 8, which may be found at:
+
+    http://www.python.org/dev/peps/pep-0008/
+    
+A quick list of other stuff
+---------------------------
+ * 4-space indention, NO TABS!
+ * Unix line endings
+ * CamelCase is only used for classes, nothing else.
+ * All variables and functions are to be lowercase, and words separated by
+   underscores.
+ * Imports are to be done in this order:
+   - Python modules (Global, outside of Evennia)
+   - Django
+   - Project modules
+ 
+Ask Questions!
+--------------
+If any of this outlined in PEP 8 or the list above doesn't make sense, please
+don't hesitate to ask on the Evennia mailing list at http://evennia.com.
+Keeping our code style uniform makes this project much easier for a wider group
+of people to participate in.
