@@ -8,8 +8,8 @@ from django.conf import settings
 
 from apps.config.models import ConfigValue
 from apps.helpsys.models import HelpEntry
+from apps.objects.models import Object
 import functions_general
-import functions_db
 import defines_global
 import session_mgr
 import ansi
@@ -110,7 +110,7 @@ def cmd_look(cdat):
     if len(args) == 0:    
         target_obj = pobject.get_location()
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args))
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -139,7 +139,7 @@ def cmd_get(cdat):
         session.msg("Get what?")
         return
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args), search_contents=False)
+        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args), search_contents=False)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -178,7 +178,7 @@ def cmd_drop(cdat):
         session.msg("Drop what?")
         return
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args), search_location=False)
+        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args), search_location=False)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -224,7 +224,7 @@ def cmd_examine(cdat):
         else:
             searchstr = ' '.join(args)
 
-        target_obj = functions_db.standard_plr_objsearch(session, searchstr)
+        target_obj = Object.objects.standard_plr_objsearch(session, searchstr)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -302,9 +302,9 @@ def cmd_page(cdat):
             last_paged_dbref_list = [
                     x.strip() for x in last_paged_dbrefs.split(',')]
             for dbref in last_paged_dbref_list:
-                if not functions_db.is_dbref(dbref):
+                if not Object.objects.is_dbref(dbref):
                     raise ValueError
-                last_paged_object = functions_db.dbref_search(dbref)
+                last_paged_object = Object.objects.dbref_search(dbref)
                 if last_paged_object is not None:
                     last_paged_objects.append(last_paged_object)
         except ValueError:
@@ -332,7 +332,7 @@ def cmd_page(cdat):
             targets = dict([(target, 1) for target in last_paged_objects])
     else:
         # First try to match the entire target string against a single player
-        full_target_match = functions_db.player_name_search(
+        full_target_match = Object.objects.player_name_search(
                 parsed_command['original_targets'])
         if full_target_match is not None:
             targets[full_target_match] = 1
@@ -341,9 +341,9 @@ def cmd_page(cdat):
             # it to the targets list
             for target in parsed_command['targets']:
                 # If the target is a dbref, behave appropriately
-                if functions_db.is_dbref(target):
+                if Object.objects.is_dbref(target):
                     session.msg("Is dbref.")
-                    matched_object = functions_db.dbref_search(target,
+                    matched_object = Object.objects.dbref_search(target,
                             limit_types=[defines_global.OTYPE_PLAYER])
                     if matched_object is not None:
                         targets[matched_object] = 1
@@ -353,7 +353,7 @@ def cmd_page(cdat):
                                 target))
                 else:
                     # Not a dbref, so must be a username, treat it as such
-                    matched_object = functions_db.player_name_search(
+                    matched_object = Object.objects.player_name_search(
                             target)
                     if matched_object is not None:
                         targets[matched_object] = 1

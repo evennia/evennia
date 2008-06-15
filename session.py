@@ -1,15 +1,19 @@
-import time, sys
+"""
+This module contains classes related to Sessions. session_mgr has the things
+needed to manage them.
+"""
+import time
+import sys
 from datetime import datetime
-from django.utils import simplejson
 
 from twisted.conch.telnet import StatefulTelnetProtocol
 
+from django.utils import simplejson
 from django.contrib.auth.models import User
 
 from apps.objects.models import Object
 from apps.config.models import ConnectScreen, ConfigValue
 import cmdhandler
-import functions_db
 import functions_general
 import functions_log
 import session_mgr

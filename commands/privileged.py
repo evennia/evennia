@@ -1,6 +1,6 @@
+from apps.objects.models import Object
 import defines_global
 import functions_general
-import functions_db
 import ansi
 
 """
@@ -52,7 +52,7 @@ def cmd_boot(cdat):
                     break
         else:
             # Grab the objects that match
-            objs = functions_db.global_object_name_search(searchstring)
+            objs = Objects.object.global_object_name_search(searchstring)
             
             if len(objs) < 1:
                 session.msg("Who would you like to boot?")
@@ -98,7 +98,7 @@ def cmd_newpassword(cdat):
         session.msg("You must supply a new password.")
         return
 
-    target_obj = functions_db.standard_plr_objsearch(session, searchstring)
+    target_obj = Objects.object.standard_plr_objsearch(session, searchstring)
     # Use standard_plr_objsearch to handle duplicate/nonexistant results.
     if not target_obj:
         return

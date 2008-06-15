@@ -6,9 +6,9 @@ something.
 from traceback import format_exc
 import time
 
+from apps.objects.models import Object
 import defines_global
 import cmdtable
-import functions_db
 import functions_general
 import functions_log
 import functions_comsys
@@ -23,7 +23,7 @@ def match_exits(pobject, searchstr):
      See if we can find an input match to exits.
      """
      exits = pobject.get_location().get_contents(filter_type=4)
-     return functions_db.list_search_object_namestr(exits, searchstr, match_type="exact")
+     return Object.objects.list_search_object_namestr(exits, searchstr, match_type="exact")
 
 def parse_command(command_string):
      """

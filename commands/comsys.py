@@ -1,16 +1,15 @@
+"""
+Comsys command module. Pretty much every comsys command should go here for
+now.
+"""
 import time
 
 from django.conf import settings
 
 import functions_general
-import functions_db
 import functions_comsys
 import defines_global
 import ansi
-"""
-Comsys command module. Pretty much every comsys command should go here for
-now.
-"""
 
 def cmd_addcom(cdat):
     """

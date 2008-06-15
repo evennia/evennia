@@ -6,9 +6,12 @@ from django.contrib.auth.models import User, Group
 import scripthandler
 import defines_global
 import ansi
+import src.flags
 from apps.config.models import ConfigValue
+from apps.objects.util import object as util_object
 from apps.objects.managers.commchannel import CommChannelManager
 from apps.objects.managers.object import ObjectManager
+from apps.objects.managers.attribute import AttributeManager
 
 class Attribute(models.Model):
     """
@@ -23,6 +26,8 @@ class Attribute(models.Model):
     attr_value = models.CharField(max_length=255)
     attr_hidden = models.BooleanField(default=0)
     attr_object = models.ForeignKey("Object")
+    
+    objects = AttributeManager()
     
     def __str__(self):
         return "%s(%s)" % (self.attr_name, self.id)
@@ -550,7 +555,7 @@ class Object(models.Model):
         
         if value == False and has_flag:
             # Clear the flag.
-            if functions_db.is_unsavable_flag(flag):
+            if src.flags.is_unsavable_flag(flag):
                 # Not a savable flag (CONNECTED, etc)
                 flags = self.nosave_flags.split()
                 flags.remove(flag)
@@ -570,7 +575,7 @@ class Object(models.Model):
             pass
         else:
             # Setting a flag.
-            if functions_db.is_unsavable_flag(flag):
+            if src.flags.is_unsavable_flag(flag):
                 # Not a savable flag (CONNECTED, etc)
                 flags = str(self.nosave_flags).split()
                 flags.append(flag)
@@ -707,7 +712,7 @@ class Object(models.Model):
         
         oname: (str) Name to match against.
         """
-        if not functions_db.is_dbref(oname):
+        if not util_object.is_dbref(oname):
             return False
             
         try:
@@ -888,6 +893,5 @@ class CommChannelMessage(models.Model):
     class Admin:
         list_display = ('channel', 'message')
 
-import functions_db
 import functions_general
 import session_mgr

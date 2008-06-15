@@ -11,7 +11,7 @@ if not functions_general.host_os_is('nt'):
     # Don't import the resource module if the host OS is Windows.
     import resource
 
-import functions_db
+from apps.objects.models import Object
 import scheduler
 import defines_global
 
@@ -99,7 +99,7 @@ def cmd_stats(cdat):
     4012 objects = 144 rooms, 212 exits, 613 things, 1878 players. (1165 garbage)
     """
     session = cdat['session']
-    stats_dict = functions_db.object_totals()
+    stats_dict = Object.objects.object_totals()
     session.msg("%d objects = %d rooms, %d exits, %d things, %d players. (%d garbage)" % (stats_dict["objects"],
         stats_dict["rooms"],
         stats_dict["exits"],

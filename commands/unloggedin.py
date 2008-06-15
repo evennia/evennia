@@ -1,12 +1,11 @@
-from django.contrib.auth.models import User
-from apps.objects.models import Attribute, Object
-import functions_db
-import functions_general
-import defines_global
-
 """
 Commands that are available from the connect screen.
 """
+from django.contrib.auth.models import User
+
+from apps.objects.models import Attribute, Object
+import functions_general
+import defines_global
 
 def cmd_connect(cdat):
     """
@@ -24,7 +23,7 @@ def cmd_connect(cdat):
     password = cdat['uinput']['splitted'][2]
 
     # Match an email address to an account.
-    email_matches = functions_db.get_user_from_email(uemail)
+    email_matches = Object.objects.get_user_from_email(uemail)
     
     autherror = "Specified email does not match any accounts!"
     # No username match
@@ -71,7 +70,7 @@ def cmd_create(cdat):
     # Search for a user object with the specified username.
     account = User.objects.filter(username=uname)
     # Match an email address to an account.
-    email_matches = functions_db.get_user_from_email(email)
+    email_matches = Object.objects.get_user_from_email(email)
     # Look for any objects with an 'Alias' attribute that matches
     # the requested username
     alias_matches = Object.objects.filter(attribute__attr_name__exact="ALIAS", 
@@ -85,7 +84,7 @@ def cmd_create(cdat):
     elif len(password) < 3:
         session.msg("Your password must be 3 characters or longer.")
     else:
-        functions_db.create_user(cdat, uname, email, password)
+        Object.objects.create_user(cdat, uname, email, password)
 
 def cmd_quit(cdat):
     """

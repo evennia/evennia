@@ -1,6 +1,10 @@
+"""
+These commands typically are to do with building or modifying Objects.
+"""
+from apps.objects.models import Object
+import src.flags
 import ansi
 import session_mgr
-import functions_db
 
 def cmd_teleport(cdat):
     """
@@ -23,12 +27,12 @@ def cmd_teleport(cdat):
     # a direct teleport, @tel <destination>.
     if len(eq_args) > 1:
         # Equal sign teleport.
-        victim = functions_db.standard_plr_objsearch(session, eq_args[0])
+        victim = Object.objects.standard_plr_objsearch(session, eq_args[0])
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not victim:
             return
 
-        destination = functions_db.standard_plr_objsearch(session, eq_args[1])
+        destination = Object.objects.standard_plr_objsearch(session, eq_args[1])
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not destination:
             return
@@ -53,7 +57,7 @@ def cmd_teleport(cdat):
 
     else:
         # Direct teleport (no equal sign)
-        target_obj = functions_db.standard_plr_objsearch(session, search_str)
+        target_obj = Object.objects.standard_plr_objsearch(session, search_str)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -71,7 +75,7 @@ def cmd_stats(cdat):
     4012 objects = 144 rooms, 212 exits, 613 things, 1878 players. (1165 garbage)
     """
     session = cdat['session']
-    stats_dict = functions_db.object_totals()
+    stats_dict = Object.objects.object_totals()
     session.msg("%d objects = %d rooms, %d exits, %d things, %d players. (%d garbage)" % (stats_dict["objects"],
         stats_dict["rooms"],
         stats_dict["exits"],
@@ -98,13 +102,13 @@ def cmd_alias(cdat):
         session.msg("Alias missing.")
         return
     
-    target = functions_db.standard_plr_objsearch(session, eq_args[0])
+    target = Object.objects.standard_plr_objsearch(session, eq_args[0])
     # Use standard_plr_objsearch to handle duplicate/nonexistant results.
     if not target:
         session.msg("Alias whom?")
         return
   
-    duplicates = functions_db.alias_search(pobject, eq_args[1])
+    duplicates = Object.objects.player_alias_search(pobject, eq_args[1])
     
     if duplicates:
         session.msg("Alias '%s' already exists." % (eq_args[1],))
@@ -145,7 +149,7 @@ def cmd_wipe(cdat):
     else:
         searchstr = ' '.join(args)
 
-    target_obj = functions_db.standard_plr_objsearch(session, searchstr)
+    target_obj = Object.objects.standard_plr_objsearch(session, searchstr)
     # Use standard_plr_objsearch to handle duplicate/nonexistant results.
     if not target_obj:
         return
@@ -189,7 +193,7 @@ def cmd_set(cdat):
         session.msg("Set what?")
         return
     
-    victim = functions_db.standard_plr_objsearch(session, eq_args[0])
+    victim = Object.objects.standard_plr_objsearch(session, eq_args[0])
     # Use standard_plr_objsearch to handle duplicate/nonexistant results.
     if not victim:
         return
@@ -207,7 +211,7 @@ def cmd_set(cdat):
         attrib_value = eq_args[1][splicenum:]
         
         # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
-        if not functions_db.is_modifiable_attrib(attrib_name) and not pobject.is_superuser():
+        if not src.flags.is_modifiable_attrib(attrib_name) and not pobject.is_superuser():
             session.msg("You can't modify that attribute.")
             return
         
@@ -229,14 +233,14 @@ def cmd_set(cdat):
             if flag[0] == '!':
                 # We're un-setting the flag.
                 flag = flag[1:]
-                if not functions_db.is_modifiable_flag(flag):
+                if not src.flags.is_modifiable_flag(flag):
                     session.msg("You can't set/unset the flag - %s." % (flag,))
                 else:
                     session.msg('%s - %s cleared.' % (victim.get_name(), flag.upper(),))
                     victim.set_flag(flag, False)
             else:
                 # We're setting the flag.
-                if not functions_db.is_modifiable_flag(flag):
+                if not src.flags.is_modifiable_flag(flag):
                     session.msg("You can't set/unset the flag - %s." % (flag,))
                 else:
                     session.msg('%s - %s set.' % (victim.get_name(), flag.upper(),))
@@ -256,7 +260,7 @@ def cmd_find(cdat):
         session.msg("No search pattern given.")
         return
     
-    results = functions_db.global_object_name_search(searchstring)
+    results = Object.objects.global_object_name_search(searchstring)
 
     if len(results) > 0:
         session.msg("Name matches for: %s" % (searchstring,))
@@ -281,7 +285,7 @@ def cmd_create(cdat):
     else:
         # Create and set the object up.
         odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
-        new_object = functions_db.create_object(odat)
+        new_object = Object.objects.create_object(odat)
         
         session.msg("You create a new thing: %s" % (new_object,))
     
@@ -291,7 +295,7 @@ def cmd_nextfree(cdat):
     """
     session = cdat['session']
     
-    nextfree = functions_db.get_nextfree_dbnum()
+    nextfree = Object.objects.get_nextfree_dbnum()
     session.msg("Next free object number: #%s" % (nextfree,))
     
 def cmd_open(cdat):
@@ -325,7 +329,7 @@ def cmd_open(cdat):
     if len(eq_args) > 1:
         # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
         comma_split = eq_args[1].split(',')
-        destination = functions_db.standard_plr_objsearch(session, comma_split[0])
+        destination = Object.objects.standard_plr_objsearch(session, comma_split[0])
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not destination:
             return
@@ -335,20 +339,20 @@ def cmd_open(cdat):
             return
 
         odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
-        new_object = functions_db.create_object(odat)
+        new_object = Object.objects.create_object(odat)
 
         session.msg("You open the an exit - %s to %s" % (new_object.get_name(),destination.get_name()))
 
         if len(comma_split) > 1:
             second_exit_name = ','.join(comma_split[1:])
             odat = {"name": second_exit_name, "type": 4, "location": destination, "owner": pobject, "home": pobject.get_location()}
-            new_object = functions_db.create_object(odat)
+            new_object = Object.objects.create_object(odat)
             session.msg("You open the an exit - %s to %s" % (new_object.get_name(),pobject.get_location().get_name()))
 
     else:
         # Create an un-linked exit.
         odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":None}
-        new_object = functions_db.create_object(odat)
+        new_object = Object.objects.create_object(odat)
 
         session.msg("You open an unlinked exit - %s" % (new_object,))
 
@@ -377,7 +381,7 @@ def cmd_link(cdat):
         return
 
     if len(eq_args) > 1:
-        target_obj = functions_db.standard_plr_objsearch(session, target_name)
+        target_obj = Object.objects.standard_plr_objsearch(session, target_name)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -392,7 +396,7 @@ def cmd_link(cdat):
             session.msg("You have unlinked %s." % (target_obj,))
             return
 
-        destination = functions_db.standard_plr_objsearch(session, dest_name)
+        destination = Object.objects.standard_plr_objsearch(session, dest_name)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not destination:
             return
@@ -417,7 +421,7 @@ def cmd_unlink(cdat):
         session.msg("Unlink what?")
         return
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args))
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -443,7 +447,7 @@ def cmd_dig(cdat):
     else:
         # Create and set the object up.
         odat = {"name": roomname, "type": 2, "location": None, "owner": pobject}
-        new_object = functions_db.create_object(odat)
+        new_object = Object.objects.create_object(odat)
         
         session.msg("You create a new room: %s" % (new_object,))
 
@@ -462,7 +466,7 @@ def cmd_name(cdat):
     elif len(eq_args) < 2:
         session.msg("What would you like to name that object?")
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, searchstring)
+        target_obj = Object.objects.standard_plr_objsearch(session, searchstring)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -489,7 +493,7 @@ def cmd_description(cdat):
     elif len(eq_args) < 2:
         session.msg("How would you like to describe that object?")
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, searchstring)
+        target_obj = Object.objects.standard_plr_objsearch(session, searchstring)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -519,7 +523,7 @@ def cmd_destroy(cdat):
         session.msg("Destroy what?")
         return
     else:
-        target_obj = functions_db.standard_plr_objsearch(session, ' '.join(args))
+        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args))
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
