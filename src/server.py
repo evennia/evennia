@@ -1,5 +1,6 @@
 from traceback import format_exc
-import time, sys
+import time
+import sys
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
