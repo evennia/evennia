@@ -11,8 +11,10 @@ from apps.objects.managers.attribute import AttributeManager
 from src import scripthandler
 from src import defines_global
 from src import ansi
+from src import session_mgr
 # Import as the absolute path to avoid local variable clashes.
 import src.flags
+from src.util import functions_general
 
 class Attribute(models.Model):
     """
@@ -893,6 +895,3 @@ class CommChannelMessage(models.Model):
     
     class Admin:
         list_display = ('channel', 'message')
-
-from src.util import functions_general
-from src import session_mgr
