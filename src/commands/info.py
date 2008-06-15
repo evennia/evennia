@@ -11,8 +11,10 @@ if not functions_general.host_os_is('nt'):
     # Don't import the resource module if the host OS is Windows.
     import resource
 
+import django
+
 from apps.objects.models import Object
-import scheduler
+from src import scheduler
 import defines_global
 
 def cmd_version(cdat):
@@ -21,7 +23,8 @@ def cmd_version(cdat):
     """
     session = cdat['session']
     retval = "-"*50 +"\n\r"
-    retval += "Evennia %s\n\r" % (defines_global.EVENNIA_VERSION,)
+    retval += " Evennia %s\n\r" % (defines_global.EVENNIA_VERSION,)
+    retval += " Django %s\n\r" % (django.get_version())
     retval += "-"*50
     session.msg(retval)
 

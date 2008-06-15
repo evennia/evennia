@@ -10,13 +10,12 @@ from django.db import connection
 from django.conf import settings
 
 from apps.config.models import CommandAlias, ConfigValue
-from session import SessionProtocol
-import settings
-import scheduler
+from src.session import SessionProtocol
+from src import scheduler
 import functions_general
-import session_mgr
-import cmdtable
-import initial_setup
+from src import session_mgr
+from src import cmdtable
+from src import initial_setup
 
 class EvenniaService(service.Service):
 

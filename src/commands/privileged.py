@@ -1,7 +1,7 @@
 from apps.objects.models import Object
 import defines_global
 import functions_general
-import ansi
+from src import ansi
 
 """
 This file contains commands that require special permissions to use. These

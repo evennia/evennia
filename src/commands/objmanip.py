@@ -2,9 +2,10 @@
 These commands typically are to do with building or modifying Objects.
 """
 from apps.objects.models import Object
+# We'll import this as the full path to avoid local variable clashes.
 import src.flags
-import ansi
-import session_mgr
+from src import ansi
+from src import session_mgr
 
 def cmd_teleport(cdat):
     """

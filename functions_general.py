@@ -3,7 +3,7 @@ General functions that don't fit neatly under any given category.
 """
 import os
 import textwrap
-import session_mgr
+from src import session_mgr
 
 def wildcard_to_regexp(instring):
     """

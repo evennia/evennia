@@ -1,5 +1,9 @@
-import ansi
+"""
+Models for the help system.
+"""
 from django.db import models
+
+from src import ansi
 from apps.helpsys.managers.helpentry import HelpEntryManager
 
 class HelpEntry(models.Model):

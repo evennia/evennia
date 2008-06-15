@@ -28,8 +28,8 @@ BASE_PATH = '/home/evennia/evennia'
 MEDIA_ROOT = '%s/media' % (BASE_PATH)
 
 # Absolute path to the directory that has the script tree in it. (no trailing slash)
-# Example: "/home/evennia/scripts"
-SCRIPT_ROOT = '%s/scripts' % (BASE_PATH)
+# Example: "/home/evennia/src/scripts"
+SCRIPT_ROOT = '%s/src/scripts' % (BASE_PATH)
 
 # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
 DATABASE_ENGINE = 'sqlite3'

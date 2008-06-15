@@ -1,6 +1,6 @@
 import time
 from twisted.internet import task
-import events
+from src import events
 """
 This file contains the event scheduler system.
 

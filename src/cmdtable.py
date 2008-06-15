@@ -1,10 +1,3 @@
-import commands.general
-import commands.privileged
-import commands.comsys
-import commands.unloggedin
-import commands.info
-import commands.objmanip
-
 """
 Command Table Entries
 ---------------------
@@ -16,6 +9,12 @@ stuff. If the command is open to all (or you want to implement your own
 privilege checking in the command function), use None in place of the
 permissions tuple.
 """
+import commands.general
+import commands.privileged
+import commands.comsys
+import commands.unloggedin
+import commands.info
+import commands.objmanip
 
 # -- Unlogged-in Command Table --
 # Command Name        Command Function                      Privilege Tuple

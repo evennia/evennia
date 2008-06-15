@@ -9,7 +9,7 @@ from django.conf import settings
 import functions_general
 import functions_comsys
 import defines_global
-import ansi
+from src import ansi
 
 def cmd_addcom(cdat):
     """

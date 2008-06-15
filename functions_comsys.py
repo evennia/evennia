@@ -1,13 +1,14 @@
 """
 Comsys functions.
 """
-import time, datetime
+import time
+import datetime
 
 from django.utils import simplejson
 
 from apps.objects.models import CommChannel, CommChannelMessage
-import session_mgr
-import ansi
+from src import session_mgr
+from src import ansi
 
 def plr_get_cdict(session):
     """

@@ -2,8 +2,7 @@
 This will be the base object type/interface that all scripts are derived from by
 default. It will have the necessary outline for developers to sub-class and override.
 """
-
-import ansi
+from src import ansi
 
 class BasicObject:
     def __init__(self, source_obj):

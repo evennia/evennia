@@ -11,8 +11,8 @@ from apps.helpsys.models import HelpEntry
 from apps.objects.models import Object
 import functions_general
 import defines_global
-import session_mgr
-import ansi
+from src import session_mgr
+from src import ansi
 
 def cmd_password(cdat):
     """
