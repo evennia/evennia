@@ -10,7 +10,7 @@ from apps.objects.models import Object
 import defines_global
 import cmdtable
 import functions_general
-import functions_log
+from src import logger
 from src import comsys
 
 class UnknownCommand(Exception):
@@ -225,7 +225,7 @@ def handle(cdat):
                      cmd(cdat)
                 except:
                      session.msg("Untrapped error, please file a bug report:\n%s" % (format_exc(),))
-                     functions_log.log_errmsg("Untrapped error, evoker %s: %s" %
+                     logger.log_errmsg("Untrapped error, evoker %s: %s" %
                           (session, format_exc()))
                 return
 

@@ -3,7 +3,7 @@ Custom manager for ConfigValue objects.
 """
 from traceback import format_exc
 from django.db import models
-import functions_log
+from src import logger
 
 class ConfigValueManager(models.Manager):
     def get_configvalue(self, configname):
@@ -13,7 +13,7 @@ class ConfigValueManager(models.Manager):
         try:
             return self.get(conf_key__iexact=configname).conf_value
         except self.model.DoesNotExist:
-            functions_log.log_errmsg("Unable to get config value for %s (does not exist):\n%s" % (
+            logger.log_errmsg("Unable to get config value for %s (does not exist):\n%s" % (
                 configname, (format_exc())))
             
     def set_configvalue(self, configname, newvalue):
@@ -28,5 +28,5 @@ class ConfigValueManager(models.Manager):
             # We'll do this instead of conf.conf_value, might save a DB query.
             return newvalue
         except self.model.DoesNotExist:
-            functions_log.log_errmsg("Unable to set config value for %s (does not exist):\n%s" % (
+            logger.log_errmsg("Unable to set config value for %s (does not exist):\n%s" % (
                 configname, (format_exc())))

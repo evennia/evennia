@@ -5,7 +5,7 @@ import time
 
 from apps.config.models import ConfigValue
 import functions_general
-import functions_log
+from src import logger
 
 # Our list of connected sessions.
 session_list = []
@@ -15,7 +15,7 @@ def add_session(session):
     Adds a session to the session list.
     """
     session_list.insert(0, session)
-    functions_log.log_infomsg('Sessions active: %d' % (len(get_session_list(return_unlogged=True),)))
+    logger.log_infomsg('Sessions active: %d' % (len(get_session_list(return_unlogged=True),)))
     
 def get_session_list(return_unlogged=False):
     """
@@ -71,9 +71,9 @@ def remove_session(session):
     """
     try:
         session_list.remove(session)
-        functions_log.log_infomsg('Sessions active: %d' % (len(get_session_list()),))
+        logger.log_infomsg('Sessions active: %d' % (len(get_session_list()),))
     except ValueError:
-        #functions_log.log_errmsg("Unable to remove session: %s" % (session,))
+        #logger.log_errmsg("Unable to remove session: %s" % (session,))
         pass
         
     

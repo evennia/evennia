@@ -15,7 +15,7 @@ from apps.objects.models import Object
 from apps.config.models import ConnectScreen, ConfigValue
 import cmdhandler
 import functions_general
-import functions_log
+import logger
 import session_mgr
 import ansi
 
@@ -30,7 +30,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         What to do when we get a connection.
         """
         self.prep_session()
-        functions_log.log_infomsg('Connection: %s' % (self,))
+        logger.log_infomsg('Connection: %s' % (self,))
         session_mgr.add_session(self)
         self.game_connect_screen()
 
@@ -67,7 +67,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         Execute this when a client abruplty loses their connection.
         """
-        functions_log.log_infomsg('Disconnect: %s' % (self,))
+        logger.log_infomsg('Disconnect: %s' % (self,))
         self.handle_close()
 
     def load_user_channels(self):
@@ -155,7 +155,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.msg("You are now logged in as %s." % (self.name,))
         pobject.get_location().emit_to_contents("%s has connected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
         self.execute_cmd("look")
-        functions_log.log_infomsg("Login: %s" % (self,))
+        logger.log_infomsg("Login: %s" % (self,))
         
         # Update their account's last login time.
         user.last_login = datetime.now()

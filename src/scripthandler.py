@@ -8,7 +8,7 @@ import os
 from traceback import format_exc
 
 import settings
-import functions_log
+from src import logger
 
 # A dictionary with keys equivalent to the script's name and values that
 # contain references to the associated module for each key.
@@ -48,16 +48,16 @@ def scriptlink(source_obj, scriptname):
     try:
         # Change the working directory to the location of the script and import.
         os.chdir('%s/%s/' % (settings.SCRIPT_ROOT, newpath_str))
-        functions_log.log_infomsg("SCRIPT: Caching and importing %s." % (modname))
+        logger.log_infomsg("SCRIPT: Caching and importing %s." % (modname))
         modreference = __import__(modname)
         # Store the module reference for later fast retrieval.
         cached_scripts[scriptname] = modreference
     except ImportError:
-        functions_log.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
+        logger.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
         os.chdir(settings.BASE_PATH)
         return
     except OSError:
-        functions_log.log_infomsg('Invalid module path: %s' % (format_exc()))
+        logger.log_infomsg('Invalid module path: %s' % (format_exc()))
         os.chdir(settings.BASE_PATH)
         return
 
