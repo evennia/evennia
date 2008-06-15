@@ -9,7 +9,7 @@ from apps.objects.managers.commchannel import CommChannelManager
 from apps.objects.managers.object import ObjectManager
 from apps.objects.managers.attribute import AttributeManager
 from src import scripthandler
-import defines_global
+from src import defines_global
 from src import ansi
 # Import as the absolute path to avoid local variable clashes.
 import src.flags

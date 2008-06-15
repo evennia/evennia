@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from apps.objects.models import Attribute, Object
 import functions_general
-import defines_global
+from src import defines_global
 
 def cmd_connect(cdat):
     """

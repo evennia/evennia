@@ -15,7 +15,7 @@ import django
 
 from apps.objects.models import Object
 from src import scheduler
-import defines_global
+from src import defines_global
 
 def cmd_version(cdat):
     """

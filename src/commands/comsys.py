@@ -8,7 +8,7 @@ from django.conf import settings
 
 import functions_general
 import src.comsys
-import defines_global
+from src import defines_global
 from src import ansi
 
 def cmd_addcom(cdat):

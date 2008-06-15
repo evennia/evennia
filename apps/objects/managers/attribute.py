@@ -3,7 +3,7 @@ Custom manager for Attribute objects.
 """
 from django.db import models
 
-import defines_global
+from src import defines_global
 
 class AttributeManager(models.Manager):
     def is_modifiable_attrib(self, attribname):

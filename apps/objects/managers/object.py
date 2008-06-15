@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from apps.config.models import ConfigValue
 from apps.objects.exceptions import ObjectNotExist
 from apps.objects.util import object as util_object
-import defines_global
+from src import defines_global
 
 class ObjectManager(models.Manager):
     def num_total_players(self):

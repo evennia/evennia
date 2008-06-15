@@ -10,7 +10,7 @@ from apps.config.models import ConfigValue
 from apps.helpsys.models import HelpEntry
 from apps.objects.models import Object
 import functions_general
-import defines_global
+from src import defines_global
 from src import session_mgr
 from src import ansi
 
