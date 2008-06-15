@@ -894,5 +894,5 @@ class CommChannelMessage(models.Model):
     class Admin:
         list_display = ('channel', 'message')
 
-import functions_general
+from src.util import functions_general
 from src import session_mgr
