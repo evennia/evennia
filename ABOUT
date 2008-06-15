@@ -32,13 +32,12 @@ containing the SQL information.
 How it all Works
 ----------------
 Python (Including the SQL driver of your choice)
-  |-asynchat (included with Python2)
+  |-Twisted (http://twistedmatrix.com)
   |-SQL (MySQL, SQLite, Postgresql)
   |-Django (http://djangoproject.com)
 
-Evennia is built on top of asynchat, an asynchronous TCP conversation/chat
-library. This makes the actual socket/connection handling an absolute
-no-brainer.
+Evennia is built on top of Twisted, a networking engine that handles a lot
+of the guts and lower-level socket stuff for us.
 
 Serving as our storage medium, SQL is one of the more important and unique
 features of the codebase. It allows for very simple code in many cases, and
