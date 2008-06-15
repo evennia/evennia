@@ -4,8 +4,8 @@ are generally @-prefixed commands, but there are exceptions.
 """
 from apps.objects.models import Object
 from src import defines_global
-import functions_general
 from src import ansi
+from src.util import functions_general
 
 def cmd_reload(cdat):
     """

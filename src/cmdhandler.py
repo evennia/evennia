@@ -9,9 +9,9 @@ import time
 from apps.objects.models import Object
 import defines_global
 import cmdtable
-import functions_general
-from src import logger
-from src import comsys
+import logger
+import comsys
+from util import functions_general
 
 class UnknownCommand(Exception):
      """

@@ -14,10 +14,10 @@ from django.contrib.auth.models import User
 from apps.objects.models import Object
 from apps.config.models import ConnectScreen, ConfigValue
 import cmdhandler
-import functions_general
 import logger
 import session_mgr
 import ansi
+from util import functions_general
 
 class SessionProtocol(StatefulTelnetProtocol):
     """

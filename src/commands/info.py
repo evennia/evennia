@@ -5,7 +5,7 @@ the server instance.
 import os
 import time
 
-import functions_general
+from src.util import functions_general
 
 if not functions_general.host_os_is('nt'):
     # Don't import the resource module if the host OS is Windows.

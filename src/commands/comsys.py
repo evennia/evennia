@@ -6,10 +6,10 @@ import time
 
 from django.conf import settings
 
-import functions_general
 import src.comsys
 from src import defines_global
 from src import ansi
+from src.util import functions_general
 
 def cmd_addcom(cdat):
     """

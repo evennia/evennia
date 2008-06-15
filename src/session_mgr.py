@@ -4,8 +4,8 @@ Session manager, handles connected players.
 import time
 
 from apps.config.models import ConfigValue
-import functions_general
 from src import logger
+from src.util import functions_general
 
 # Our list of connected sessions.
 session_list = []
@@ -102,3 +102,15 @@ def session_from_dbref(dbstring):
             return results[0]
     else:
         return False
+        
+def announce_all(message, with_ann_prefix=True):
+    """
+    Announces something to all connected players.
+    """
+    if with_ann_prefix:
+        prefix = 'Announcement:'
+    else:
+        prefix = ''
+
+    for session in get_session_list():
+        session.msg('%s %s' % (prefix, message))

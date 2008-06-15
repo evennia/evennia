@@ -4,8 +4,8 @@ Commands that are available from the connect screen.
 from django.contrib.auth.models import User
 
 from apps.objects.models import Attribute, Object
-import functions_general
 from src import defines_global
+from src.util import functions_general
 
 def cmd_connect(cdat):
     """

@@ -4,7 +4,6 @@ import sys
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
-from twisted.python import log
 
 from django.db import models
 from django.db import connection
@@ -13,10 +12,11 @@ from django.conf import settings
 from apps.config.models import CommandAlias, ConfigValue
 from src.session import SessionProtocol
 from src import scheduler
-import functions_general
+from src import logger
 from src import session_mgr
 from src import cmdtable
 from src import initial_setup
+from src.util import functions_general
 
 class EvenniaService(service.Service):
 
@@ -77,7 +77,7 @@ class EvenniaService(service.Service):
     BEGIN GENERAL METHODS
     """
     def shutdown(self, message='The server has been shutdown. Please check back soon.'):
-        functions_general.announce_all(message)
+        session_mgr.announce_all(message)
         session_mgr.disconnect_all_sessions()
         reactor.callLater(0, reactor.stop)
 
@@ -101,7 +101,7 @@ class EvenniaService(service.Service):
             reload(sys.modules[mod])
 
         session.msg("Modules reloaded.")
-        functions_general.log_infomsg("Modules reloaded by %s." % (session,))
+        logger.log_infomsg("Modules reloaded by %s." % (session,))
 
     def getEvenniaServiceFactory(self):
         f = protocol.ServerFactory()

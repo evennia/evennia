@@ -9,10 +9,10 @@ from django.conf import settings
 from apps.config.models import ConfigValue
 from apps.helpsys.models import HelpEntry
 from apps.objects.models import Object
-import functions_general
 from src import defines_global
 from src import session_mgr
 from src import ansi
+from src.util import functions_general
 
 def cmd_password(cdat):
     """
@@ -71,7 +71,7 @@ def cmd_wall(cdat):
         return
         
     message = "%s shouts \"%s\"" % (session.get_pobject().get_name(show_dbref=False), wallstring)
-    functions_general.announce_all(message)
+    session_mgr.announce_all(message)
 
 def cmd_idle(cdat):
     """

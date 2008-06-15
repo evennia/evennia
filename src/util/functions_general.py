@@ -3,7 +3,6 @@ General functions that don't fit neatly under any given category.
 """
 import os
 import textwrap
-from src import session_mgr
 
 def wildcard_to_regexp(instring):
     """
@@ -98,18 +97,6 @@ def time_format(seconds, style=0):
         
         retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str,)
         return retval  
-
-def announce_all(message, with_ann_prefix=True):
-    """
-    Announces something to all connected players.
-    """
-    if with_ann_prefix:
-        prefix = 'Announcement:'
-    else:
-        prefix = ''
-
-    for session in session_mgr.get_session_list():
-        session.msg('%s %s' % (prefix, message))
 
 def word_wrap(text, width=78):
     """
