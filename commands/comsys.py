@@ -1,9 +1,9 @@
 import time
 
-import settings
+from django.conf import settings
+
 import functions_general
 import functions_db
-import functions_help
 import functions_comsys
 import defines_global
 import ansi

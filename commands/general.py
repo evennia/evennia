@@ -1,18 +1,19 @@
+"""
+Generic command module. Pretty much every command should go here for
+now.
+"""
 import time
 
 from django.conf import settings
 
 from apps.config.models import ConfigValue
+from apps.helpsys.models import HelpEntry
 import functions_general
 import functions_db
-import functions_help
 import defines_global
 import session_mgr
 import ansi
-"""
-Generic command module. Pretty much every command should go here for
-now.
-"""
+
 def cmd_password(cdat):
     """
     Changes your own password.
@@ -515,11 +516,11 @@ def cmd_help(cdat):
         session.msg("Your search query is too short. It must be at least three letters long.")
         return
         
-    topics = functions_help.find_topicmatch(pobject, topicstr)        
+    topics = HelpEntry.objects.find_topicmatch(pobject, topicstr)        
         
     if len(topics) == 0:
         session.msg("No matching topics found, please refine your search.")
-        suggestions = functions_help.find_topicsuggestions(pobject, topicstr)
+        suggestions = HelpEntry.objects.find_topicsuggestions(pobject, topicstr)
         if len(suggestions) > 0:
             session.msg("Matching similarly named topics:")
             for result in suggestions:
