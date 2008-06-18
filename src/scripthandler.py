@@ -40,19 +40,13 @@ def scriptlink(source_obj, scriptname):
     # to change to. I really wish we didn't have to do this, but there's some
     # strange issue with __import__ and more than two directories worth of
     # nesting.
-    #path_split = scriptname.split('.')
-    #newpath_str = '/'.join(path_split[:-1])
-    # Lop the module name off the end.
-    #modname = path_split[-1]
-    path_split = scriptname.split('/')
-    script_name = path_split[-1]
-    script_path = '/'.join(path_split[:-1])
+    full_script = "src.scripts.%s" % (scriptname,)
+    script_name = full_script.split('.')[-1]
 
     try:
         # Change the working directory to the location of the script and import.
-        os.chdir('%s/%s/' % (settings.SCRIPT_ROOT, script_path))
-        logger.log_infomsg("SCRIPT: Caching and importing %s." % (script_name))
-        modreference = __import__(script_name)
+        logger.log_infomsg("SCRIPT: Caching and importing %s." % (scriptname))
+        modreference = __import__(full_script, fromlist=[script_name])
         # Store the module reference for later fast retrieval.
         cached_scripts[scriptname] = modreference
     except ImportError:
@@ -63,9 +57,6 @@ def scriptlink(source_obj, scriptname):
         logger.log_infomsg('Invalid module path: %s' % (format_exc()))
         os.chdir(settings.BASE_PATH)
         return
-
-    # Change back to the original working directory.
-    os.chdir(settings.BASE_PATH)
 
     # The new script module has been cached, return the reference.
     return modreference.class_factory(source_obj)

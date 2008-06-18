@@ -646,7 +646,7 @@ class Object(models.Model):
         """
         if not self.scriptlink:
             if self.is_player():
-                script_to_load = 'player/basicplayer'
+                script_to_load = 'player.basicplayer'
             else:
                 script_to_load = 'basicobject'
             self.scriptlink = scripthandler.scriptlink(self, self.get_attribute_value('__parent', script_to_load))
