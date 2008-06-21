@@ -116,13 +116,13 @@ def cmd_look(cdat):
             return
     
     # SCRIPT: Get the item's appearance from the scriptlink.
-    session.msg(target_obj.get_scriptlink().return_appearance({
+    session.msg(target_obj.scriptlink.return_appearance({
         "target_obj": target_obj,
         "pobject": pobject
     }))
             
     # SCRIPT: Call the object's script's a_desc() method.
-    target_obj.get_scriptlink().a_desc({
+    target_obj.scriptlink.a_desc({
         "target_obj": pobject
     })
             
@@ -161,7 +161,7 @@ def cmd_get(cdat):
     pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
     
     # SCRIPT: Call the object's script's a_get() method.
-    target_obj.get_scriptlink().a_get({
+    target_obj.scriptlink.a_get({
         "pobject": pobject
     })
             
@@ -192,7 +192,7 @@ def cmd_drop(cdat):
     pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
 
     # SCRIPT: Call the object's script's a_drop() method.
-    target_obj.get_scriptlink().a_drop({
+    target_obj.scriptlink.a_drop({
         "pobject": pobject
     })
             

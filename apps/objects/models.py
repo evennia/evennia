@@ -104,13 +104,15 @@ class Object(models.Model):
     zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
     home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
     type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
-    # TODO: Move description to an attribute.s
+    # TODO: Move description to an attribute.
     description = models.TextField(blank=True, null=True)
     location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
     flags = models.TextField(blank=True, null=True)
     nosave_flags = models.TextField(blank=True, null=True)
     date_created = models.DateField(editable=False, auto_now_add=True)
-    scriptlink = None
+    # 'scriptlink' is a 'get' property for retrieving a reference to the correct
+    # script object. Defined down by get_scriptlink()
+    scriptlink_cached = None
     
     objects = ObjectManager()
 
@@ -644,18 +646,19 @@ class Object(models.Model):
         """
         Returns an object's script parent.
         """
-        if not self.scriptlink:
+        if not self.scriptlink_cached:
             if self.is_player():
                 script_to_load = 'player.basicplayer'
             else:
                 script_to_load = 'basicobject'
-            self.scriptlink = scripthandler.scriptlink(self, self.get_attribute_value('__parent', script_to_load))
+            self.scriptlink_cached = scripthandler.scriptlink(self, self.get_attribute_value('__parent', script_to_load))
         
-        if self.scriptlink:    
+        if self.scriptlink_cached:    
             # If the scriptlink variable can't be populated, this will fail
             # silently and let the exception hit in the scripthandler.
-            return self.scriptlink
+            return self.scriptlink_cached
         return None
+    scriptlink = property(fget=get_scriptlink)
         
     def get_attribute_value(self, attrib, default=False):
         """

@@ -142,8 +142,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         pobject = self.get_pobject()
         session_mgr.disconnect_duplicate_session(self)
         
-        pobject.get_scriptlink().at_pre_login()
-        pobject.get_scriptlink().at_post_login()
+        pobject.scriptlink.at_pre_login()
+        pobject.scriptlink.at_post_login()
         
         logger.log_infomsg("Login: %s" % (self,))
         
