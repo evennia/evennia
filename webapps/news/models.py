@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from django.contrib.auth.models import User
 
 class NewsTopic(models.Model):
@@ -20,6 +21,7 @@ class NewsTopic(models.Model):
 
     class Admin:
         list_display = ('name', 'icon')
+admin.site.register(NewsTopic)
 
 class NewsEntry(models.Model):
     """
@@ -42,3 +44,4 @@ class NewsEntry(models.Model):
         list_display = ('title', 'author', 'topic', 'date_posted')
         list_filter = ('topic',)
         search_fields = ['title']
+admin.site.register(NewsEntry)

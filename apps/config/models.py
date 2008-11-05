@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from apps.config.managers.commandalias import CommandAliasManager
 from apps.config.managers.configvalue import ConfigValueManager
 from apps.config.managers.connectscreen import ConnectScreenManager
@@ -19,6 +20,7 @@ class CommandAlias(models.Model):
     class Meta:
         verbose_name_plural = "Command aliases"
         ordering = ['user_input']
+admin.site.register(CommandAlias)
 
 class ConfigValue(models.Model):
     """
@@ -34,6 +36,7 @@ class ConfigValue(models.Model):
         
     def __str__(self):
         return "%s" % self.conf_key
+admin.site.register(ConfigValue)
         
 class ConnectScreen(models.Model):
     """
@@ -48,3 +51,4 @@ class ConnectScreen(models.Model):
     
     class Admin:
         list_display = ('id', 'name', 'is_active')
+admin.site.register(ConnectScreen)

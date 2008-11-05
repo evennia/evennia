@@ -10,7 +10,7 @@ from django.template import RequestContext
 import django.views.generic.list_detail as gv_list_detail
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django import newforms as forms
+from django import forms
 from django.db.models import Q
 
 from webapps.news.models import NewsTopic, NewsEntry

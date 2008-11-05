@@ -7,24 +7,26 @@
 #
 
 from django.conf.urls.defaults import *
-import settings
+from django.conf import settings
+from django.contrib import admin
 
 urlpatterns = patterns('',
     # User Authentication
-    (r'^accounts/login',  'django.contrib.auth.views.login'),
-    (r'^accounts/logout', 'django.contrib.auth.views.logout'),
-
-    # Admin interface
-    (r'^admin/', include('django.contrib.admin.urls')),
+    url(r'^accounts/login',  'django.contrib.auth.views.login'),
+    url(r'^accounts/logout', 'django.contrib.auth.views.logout'),
 
     # Front page
-    (r'^', include('webapps.website.urls')),
+    url(r'^', include('webapps.website.urls')),
 
     # News stuff
-    (r'^news/', include('webapps.news.urls')),
+    url(r'^news/', include('webapps.news.urls')),
 
     # Page place-holder for things that aren't implemented yet.
-    (r'^tbi/', 'webapps.website.views.to_be_implemented'),
+    url(r'^tbi/', 'webapps.website.views.to_be_implemented'),
+    
+    # Admin interface
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/(.*)', admin.site.root, name='admin'),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),

@@ -1,8 +1,7 @@
 import re
-
 from django.db import models
 from django.contrib.auth.models import User, Group
-
+from django.contrib import admin
 from apps.config.models import ConfigValue
 from apps.objects.util import object as util_object
 from apps.objects.managers.commchannel import CommChannelManager
@@ -87,6 +86,7 @@ class Attribute(models.Model):
             self.get_name(), 
             ansi.ansi["normal"], 
             self.get_value())
+admin.site.register(Attribute)
 
 class Object(models.Model):
     """
@@ -827,6 +827,7 @@ class Object(models.Model):
         # about tuple index types. Bleh.
         otype = int(self.type)
         return defines_global.OBJECT_TYPES[otype][1][0]
+admin.site.register(Object)
 
 class CommChannel(models.Model):
     """
@@ -892,6 +893,7 @@ class CommChannel(models.Model):
         """
         self.owner = new_owner
         self.save()
+admin.site.register(CommChannel)
 
 class CommChannelMessage(models.Model):
     """
@@ -911,3 +913,4 @@ class CommChannelMessage(models.Model):
     
     class Admin:
         list_display = ('channel', 'message')
+admin.site.register(CommChannelMessage)
