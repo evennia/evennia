@@ -8,12 +8,12 @@
     <meta name="generator" content="haran" />
 
     {% if sidebar %}
-    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen-alt.css" media="screen" title="Prosimii (Sidebar)" />
+    <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/prosimii-screen-alt.css" media="screen" title="Prosimii (Sidebar)" />
     {% else %}
-    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-screen.css" media="screen" title="Prosimii" />
+    <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/prosimii-screen.css" media="screen" title="Prosimii" />
     {% endif %}
-    <link rel="stylesheet alternative" type="text/css" href="{{media_url}}css/prosimii-print.css" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="{{media_url}}css/prosimii-print.css" media="print" />
+    <link rel="stylesheet alternative" type="text/css" href="{{MEDIA_URL}}css/prosimii-print.css" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/prosimii-print.css" media="print" />
 
     {% block header_ext %}
     {% endblock %}

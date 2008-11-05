@@ -18,13 +18,13 @@ urlpatterns = patterns('',
     (r'^admin/', include('django.contrib.admin.urls')),
 
     # Front page
-    (r'^', include('apps.website.urls')),
+    (r'^', include('webapps.website.urls')),
 
     # News stuff
-    (r'^news/', include('apps.news.urls')),
+    (r'^news/', include('webapps.news.urls')),
 
     # Page place-holder for things that aren't implemented yet.
-    (r'^tbi/', 'apps.website.views.to_be_implemented'),
+    (r'^tbi/', 'webapps.website.views.to_be_implemented'),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),

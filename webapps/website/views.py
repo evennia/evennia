@@ -2,8 +2,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
+from apps.objects.models import Object
 from webapps.news.models import NewsEntry
-import functions_db
 
 """
 This file contains the generic, assorted views that don't fall under one of
@@ -22,18 +22,18 @@ def page_index(request):
     # A QuerySet of recent news entries.
     news_entries = NewsEntry.objects.all().order_by('-date_posted')[:fpage_news_entries]
     # Dictionary containing database statistics.
-    objstats = functions_db.object_totals()
+    objstats = Object.objects.object_totals()
     # A QuerySet of the most recently connected players.
-    recent_players = functions_db.get_recently_connected_players()[:fpage_player_limit]
+    recent_players = Object.objects.get_recently_connected_users()[:fpage_player_limit]
     
     pagevars = {
         "page_title": "Front Page",
         "news_entries": news_entries,
         "players_connected_recent": recent_players,
-        "num_players_connected": functions_db.get_connected_players().count(),
-        "num_players_registered": functions_db.num_total_players(),
-        "num_players_connected_recent": functions_db.get_recently_connected_players().count(),
-        "num_players_registered_recent": functions_db.get_recently_created_players().count(),
+        "num_players_connected": Object.objects.get_connected_players().count(),
+        "num_players_registered": Object.objects.num_total_players(),
+        "num_players_connected_recent": Object.objects.get_recently_connected_users().count(),
+        "num_players_registered_recent": Object.objects.get_recently_created_users().count(),
         "num_players": objstats["players"],
         "num_rooms": objstats["rooms"],
         "num_things": objstats["things"],
