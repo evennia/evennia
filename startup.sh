@@ -1,16 +1,61 @@
 #!/bin/bash
-export DJANGO_SETTINGS_MODULE="settings"
+#############################################################################
+# SERVER STARTUP SCRIPT
+# Sets the appropriate environmental variables and launches the server
+# process. Run without flags for daemon mode.
+#
+# FLAGS
+# -i    Interactive mode
+# -d    Daemon mode
+# -h	Show help display
+#############################################################################
 
-BASE_PATH=`python -c "import settings; print settings.BASE_PATH"`
-mv -f $BASE_PATH/logs/evennia.log $BASE_PATH/logs/evennia.logs.old
+init () {
+	## Sets environmental variables and preps the logs.
+	export DJANGO_SETTINGS_MODULE="settings"
+	BASE_PATH=`python -c "import settings; print settings.BASE_PATH"`
+	mv -f $BASE_PATH/logs/evennia.log $BASE_PATH/logs/evennia.logs.old
+}
 
-## There are several different ways you can run the server, read the
-## description for each and uncomment the desired mode.
+startup_interactive() {
+	## Starts the server in interactive mode.
+	init
+	echo "Starting in interactive mode..."
+	twistd -n --logfile=logs/evennia.log --python=src/server.py
+}
 
-## TODO: Make this accept a command line argument to use interactive
-## mode instead of having to uncomment crap.
+startup_daemon() {
+	## Starts the server in daemon mode.
+	init
+	twistd --logfile=logs/evennia.log --python=src/server.py
+}
 
-## Interactive mode. Good for development and debugging.
-twistd -n --logfile=logs/evennia.log --python=src/server.py
-## Stand-alone mode. Good for running games.
-#twistd --logfile=logs/evennia.log --python=src/server.py
+help_display() {
+	echo "SERVER STARTUP SCRIPT"
+	echo "Sets the appropriate environmental variables and launches the server"
+	echo "process. Run without flags for daemon mode."
+	echo ""
+	echo "FLAGS"
+	echo " -i    Interactive mode"
+	echo " -d    Daemon mode"
+	echo " -h    Show help display"
+
+}
+
+case "$1" in 
+	'-i') 
+		startup_interactive
+	;;
+	'-d')
+		startup_daemon
+	;;
+	'--help')
+		help_display
+	;;
+	'-h')
+		help_display
+	;;
+	*)
+		# If no argument is provided, start in daemon mode.
+		startup_daemon
+esac
