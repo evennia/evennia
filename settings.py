@@ -1,5 +1,13 @@
+"""
+Master configuration file for Evennia.
+
+NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE! All settings changes should
+be done by copy-pasting the variable and its value to a new file (if it doesn't
+already exist) called local_settings.py and changed there. Anything in the
+local_settings.py file will override what is seen in settings.py by the
+import at the end of this file.
+"""
 import os
-import settings_common
 
 # A list of ports to listen on. Can be one or many.
 GAMEPORTS = [4000]
@@ -82,7 +90,7 @@ USE_I18N = False
 # you're running Django's built-in test server. Normally you want a webserver 
 # that is optimized for serving static content to handle media files (apache, 
 # lighttpd).
-SERVE_MEDIA = False
+SERVE_MEDIA = True
 
 # The master urlconf file that contains all of the sub-branches to the
 # applications.
@@ -122,7 +130,57 @@ TEMPLATE_DIRS = (
     "%s/webtemplates/%s" % (BASE_PATH, ACTIVE_TEMPLATE),
 )
 
-TEMPLATE_LOADERS = settings_common.TEMPLATE_LOADERS
-MIDDLEWARE_CLASSES = settings_common.MIDDLEWARE_CLASSES
-TEMPLATE_CONTEXT_PROCESSORS = settings_common.TEMPLATE_CONTEXT_PROCESSORS
-INSTALLED_APPS = settings_common.INSTALLED_APPS
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
+)
+
+# MiddleWare are semi-transparent extensions to Django's functionality.
+# see http://www.djangoproject.com/documentation/middleware/ for a more detailed
+# explanation.
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.doc.XViewMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+)
+
+# Context processors define context variables, generally for the template
+# system to use.
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.request',
+    'django.core.context_processors.auth',
+    'django.core.context_processors.media',
+    'django.core.context_processors.debug',
+    'webapps.website.webcontext.general_context',
+)
+
+# Global and Evennia-specific apps. This ties everything together so we can
+# refer to app models and perform DB syncs.
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.sites',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.admin',
+    'django.contrib.flatpages',
+    'apps.config',
+    'apps.objects',
+    'apps.helpsys',
+    'apps.genperms',
+    'webapps.news',
+    'webapps.website',
+)
+
+"""
+Importing everything from local_settings.py overrides the settings in this
+file with the settings specified in local_settings.py. Any configuration
+changes should happen in local_settings.py rather than this file. 
+"""
+try:
+     from local_settings import *
+except ImportError:
+     pass
