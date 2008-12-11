@@ -23,8 +23,11 @@ in development, we'll make sure to update this. But for the really determined
 * Get a copy of the Evennia source.
 * Optional: Set up your apache2.conf to point mod-python to the settings.py 
   file if you want the web features.
-* Copy settings.py.dist to settings.py.
-* Edit settings.py with your database info.
+* Create a local_settings.py file, copy any values you'd like to change in
+  settings.py to local_settings.py, where they will override the default
+  values.
+* If you want to use anything other than the default SQLite setup, copy and
+  modify the DATABASE_* variables from settings.py.
 * Run 'python manage.py syncdb' 
 * Run startup.sh. This will start the MU* server on port 4000 by default. You
   may change this via the web interface or by editing the config table in SQL.
