@@ -3,10 +3,12 @@
 # SERVER STARTUP SCRIPT
 # Sets the appropriate environmental variables and launches the server
 # process. Run without flags for daemon mode.
+# It can be used for stoping the server.
 #
 # FLAGS
 # -i    Interactive mode
 # -d    Daemon mode
+# -s    Stop the running server
 # -h	Show help display
 #############################################################################
 
@@ -30,6 +32,11 @@ startup_daemon() {
 	twistd --logfile=logs/evennia.log --python=src/server.py
 }
 
+stop_server() {
+	## Stops the running server
+	kill `cat twistd.pid`
+}
+
 help_display() {
 	echo "SERVER STARTUP SCRIPT"
 	echo "Sets the appropriate environmental variables and launches the server"
@@ -38,6 +45,7 @@ help_display() {
 	echo "FLAGS"
 	echo " -i    Interactive mode"
 	echo " -d    Daemon mode"
+	echo " -s    Stop the running server"
 	echo " -h    Show help display"
 
 }
@@ -48,6 +56,9 @@ case "$1" in
 	;;
 	'-d')
 		startup_daemon
+	;;
+	'-s')
+		stop_server
 	;;
 	'--help')
 		help_display
