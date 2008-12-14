@@ -35,15 +35,16 @@ def parse_command(command_string):
         look
         look <target>
 
-    I'm not married to either of these terms, but I couldn't think of anything better.  If you can, lets change it :)
+    I'm not married to either of these terms, but I couldn't think of anything 
+    better. If you can, lets change it :)
 
     The only cases that I haven't handled is if someone enters something like:
         @pemit <target> <target>/<switch>=<data>
-            - Ends up considering both targets as one with a space between them, and the switch as a switch.
+            - Ends up considering both targets as one with a space between them, 
+              and the switch as a switch.
         @pemit <target>/<switch> <target>=<data>
-            - Ends up considering the first target a target, and the second target as part of the switch.
-
-
+            - Ends up considering the first target a target, and the second 
+              target as part of the switch.
     """
     # Each of the bits of data starts off as None, except for the raw, original
     # command
@@ -199,7 +200,7 @@ def handle(cdat):
                 parsed_input['root_cmd'] = '@cemit'
 
             # Get the command's function reference (Or False)
-            cmdtuple = cmdtable.return_cmdtuple(parsed_input['root_cmd'])
+            cmdtuple = cmdtable.GLOBAL_CMD_TABLE.get_command_tuple(parsed_input['root_cmd'])
             if cmdtuple:
                 # If there is a permissions element to the entry, check perms.
                 if cmdtuple[1]:
@@ -211,7 +212,7 @@ def handle(cdat):
                     
         else:
             # Not logged in, look through the unlogged-in command table.
-            cmdtuple = cmdtable.return_cmdtuple(parsed_input['root_cmd'], unlogged_cmd=True)
+            cmdtuple = cmdtable.GLOBAL_UNCON_CMD_TABLE.get_command_tuple(parsed_input['root_cmd'])
             if cmdtuple:
                 cmd = cmdtuple[0]
 

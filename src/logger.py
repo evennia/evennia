@@ -15,6 +15,14 @@ def log_errmsg(errormsg):
     """
     log.err('ERROR: %s' % (errormsg,))
 
+def log_warnmsg(warnmsg):
+    """
+    Prints/logs any warnings that aren't critical but should be noted.
+    
+    warnmsg: (string) The message to be logged.
+    """
+    log.msg('WARNING: %s' % (warnmsg,))
+
 def log_infomsg(infomsg):
     """
     Prints any generic debugging/informative info that should appear in the log.
