@@ -14,18 +14,22 @@ from src import session_mgr
 from src import ansi
 from src.util import functions_general
 
-def cmd_password(cdat):
+def cmd_password(command):
     """
     Changes your own password.
     
-    @newpass <Oldpass>=<Newpass>
+    @password <Oldpass>=<Newpass>
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
-    eq_args = ' '.join(args).split('=')
-    oldpass = ''.join(eq_args[0])
-    newpass = ''.join(eq_args[1:])
+    eq_args = command.command_argument.split('=', 1)
+    
+    if len(eq_args) != 2:
+        session.msg("Incorrect number of arguments.")
+        return
+    
+    oldpass = eq_args[0]
+    newpass = eq_args[1]
     
     if len(oldpass) == 0:    
         session.msg("You must provide your old password.")
@@ -44,47 +48,52 @@ def cmd_password(cdat):
             uaccount.save()
             session.msg("Password changed.")
 
-def cmd_emit(cdat):        
+def cmd_pemit(command):        
+    """
+    Emits something to a player.
+    """
+    # TODO: Implement cmd_pemit
+
+def cmd_emit(command):        
     """
     Emits something to your location.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    uinput= cdat['uinput']['splitted']
-    message = ' '.join(uinput[1:])
+    message = command.command_argument
     
-    if message == '':
-        session.msg("Emit what?")
-    else:
+    if message:
         pobject.get_location().emit_to_contents(message)
+    else:
+        session.msg("Emit what?")
 
-def cmd_wall(cdat):
+def cmd_wall(command):
     """
     Announces a message to all connected players.
     """
-    session = cdat['session']
-    wallstring = ' '.join(cdat['uinput']['splitted'][1:])
+    session = command.session
+    wallstring = command.command_argument
     pobject = session.get_pobject()
         
-    if wallstring == '':
+    if not wallstring:
         session.msg("Announce what?")
         return
         
     message = "%s shouts \"%s\"" % (session.get_pobject().get_name(show_dbref=False), wallstring)
     session_mgr.announce_all(message)
 
-def cmd_idle(cdat):
+def cmd_idle(command):
     """
     Returns nothing, this lets the player set an idle timer without spamming
     his screen.
     """
     pass
     
-def cmd_inventory(cdat):
+def cmd_inventory(command):
     """
     Shows a player's inventory.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
     session.msg("You are carrying:")
     
@@ -99,21 +108,23 @@ def cmd_inventory(cdat):
 
     session.msg("You have %d %s." % (money,money_name))
 
-def cmd_look(cdat):
+def cmd_look(command):
     """
     Handle looking at objects.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
-
-    if len(args) == 0:    
-        target_obj = pobject.get_location()
-    else:
-        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args))
+    
+    # If an argument is provided with the command, search for the object.
+    # else look at the current room. 
+    if command.command_argument:    
+        target_obj = Object.objects.standard_plr_objsearch(session, 
+                                                    command.command_argument)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
+    else:
+        target_obj = pobject.get_location()
     
     # SCRIPT: Get the item's appearance from the scriptlink.
     session.msg(target_obj.scriptlink.return_appearance({
@@ -126,20 +137,21 @@ def cmd_look(cdat):
         "target_obj": pobject
     })
             
-def cmd_get(cdat):
+def cmd_get(command):
     """
     Get an object and put it in a player's inventory.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
     plr_is_staff = pobject.is_staff()
 
-    if len(args) == 0:    
+    if not command.command_argument:    
         session.msg("Get what?")
         return
     else:
-        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args), search_contents=False)
+        target_obj = Object.objects.standard_plr_objsearch(session, 
+                                                command.command_argument, 
+                                                search_contents=False)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -158,27 +170,31 @@ def cmd_get(cdat):
         
     target_obj.move_to(pobject, quiet=True)
     session.msg("You pick up %s." % (target_obj.get_name(),))
-    pobject.get_location().emit_to_contents("%s picks up %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
+    pobject.get_location().emit_to_contents("%s picks up %s." % 
+                                    (pobject.get_name(), 
+                                     target_obj.get_name()), 
+                                     exclude=pobject)
     
     # SCRIPT: Call the object's script's a_get() method.
     target_obj.scriptlink.a_get({
         "pobject": pobject
     })
             
-def cmd_drop(cdat):
+def cmd_drop(command):
     """
     Drop an object from a player's inventory into their current location.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
     plr_is_staff = pobject.is_staff()
 
-    if len(args) == 0:    
+    if not command.command_argument:    
         session.msg("Drop what?")
         return
     else:
-        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args), search_location=False)
+        target_obj = Object.objects.standard_plr_objsearch(session, 
+                                                command.command_argument, 
+                                                search_location=False)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -189,28 +205,30 @@ def cmd_drop(cdat):
         
     target_obj.move_to(pobject.get_location(), quiet=True)
     session.msg("You drop %s." % (target_obj.get_name(),))
-    pobject.get_location().emit_to_contents("%s drops %s." % (pobject.get_name(), target_obj.get_name()), exclude=pobject)
+    pobject.get_location().emit_to_contents("%s drops %s." % 
+                                            (pobject.get_name(), 
+                                             target_obj.get_name()), 
+                                             exclude=pobject)
 
     # SCRIPT: Call the object's script's a_drop() method.
     target_obj.scriptlink.a_drop({
         "pobject": pobject
     })
             
-def cmd_examine(cdat):
+def cmd_examine(command):
     """
     Detailed object examine command
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
     attr_search = False
     
-    if len(args) == 0:    
+    if not command.command_argument:    
         # If no arguments are provided, examine the invoker's location.
         target_obj = pobject.get_location()
     else:
         # Look for a slash in the input, indicating an attribute search.
-        attr_split = args[0].split("/")
+        attr_split = command.command_argument.split("/", 1)
         
         # If the splitting by the "/" character returns a list with more than 1
         # entry, it's an attribute match.
@@ -218,41 +236,59 @@ def cmd_examine(cdat):
             attr_search = True
             # Strip the object search string from the input with the
             # object/attribute pair.
-            searchstr = attr_split[0]
-            # Just in case there's a slash in an attribute name.
-            attr_searchstr = '/'.join(attr_split[1:])
+            obj_searchstr = attr_split[0]
+            attr_searchstr = attr_split[1].strip()
+            
+            # Protect against stuff like: ex me/
+            if attr_searchstr == '':
+                session.msg('No attribute name provided.')
+                return
         else:
-            searchstr = ' '.join(args)
+            # No slash in argument, just examine an object.
+            obj_searchstr = command.command_argument
 
-        target_obj = Object.objects.standard_plr_objsearch(session, searchstr)
+        # Resolve the target object.
+        target_obj = Object.objects.standard_plr_objsearch(session, 
+                                                           obj_searchstr)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
             
     if attr_search:
+        """
+        Player did something like: examine me/* or examine me/TE*. Return
+        each matching attribute with its value.
+        """
         attr_matches = target_obj.attribute_namesearch(attr_searchstr)
         if attr_matches:
             for attribute in attr_matches:
                 session.msg(attribute.get_attrline())
         else:
             session.msg("No matching attributes found.")
-        # End attr_search if()
     else:
+        """
+        Player is examining an object. Return a full readout of attributes,
+        along with detailed information about said object.
+        """
+        # Format the examine header area with general flag/type info.
         session.msg("%s\r\n%s" % (
             target_obj.get_name(fullname=True),
             target_obj.get_description(no_parsing=True),
         ))
-        session.msg("Type: %s Flags: %s" % (target_obj.get_type(), target_obj.get_flags()))
+        session.msg("Type: %s Flags: %s" % (target_obj.get_type(), 
+                                            target_obj.get_flags()))
         session.msg("Owner: %s " % (target_obj.get_owner(),))
         session.msg("Zone: %s" % (target_obj.get_zone(),))
         
         for attribute in target_obj.get_all_attributes():
             session.msg(attribute.get_attrline())
         
+        # Contents container lists for sorting by type.
         con_players = []
         con_things = []
         con_exits = []
         
+        # Break each object out into their own list.
         for obj in target_obj.get_contents():
             if obj.is_player():
                 con_players.append(obj)  
@@ -261,157 +297,47 @@ def cmd_examine(cdat):
             elif obj.is_thing():
                 con_things.append(obj)
         
+        # Render Contents display.
         if con_players or con_things:
-            session.msg("%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
+            session.msg("%sContents:%s" % (ansi.ansi["hilite"], 
+                                           ansi.ansi["normal"],))
             for player in con_players:
                 session.msg('%s' % (player.get_name(fullname=True),))
             for thing in con_things:
                 session.msg('%s' % (thing.get_name(fullname=True),))
                 
+        # Render Exists display.
         if con_exits:
-            session.msg("%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],))
+            session.msg("%sExits:%s" % (ansi.ansi["hilite"], 
+                                        ansi.ansi["normal"],))
             for exit in con_exits:
                 session.msg('%s' %(exit.get_name(fullname=True),))
-                
+        
+        # Render the object's home or destination (for exits).
         if not target_obj.is_room():
             if target_obj.is_exit():
+                # The Home attribute on an exit is really its destination.
                 session.msg("Destination: %s" % (target_obj.get_home(),))
             else:
+                # For everything else, home is home.
                 session.msg("Home: %s" % (target_obj.get_home(),))
-                
+            # This obviously isn't valid for rooms.    
             session.msg("Location: %s" % (target_obj.get_location(),))
     
-def cmd_page(cdat):
-    """
-    Send a message to target user (if online).
-    """
-    session = cdat['session']
-    pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
-    parsed_command = cdat['uinput']['parsed_command']
-    # We use a dict to ensure that the list of targets is unique
-    targets = dict()
-    # Get the last paged person
-    last_paged_dbrefs = pobject.get_attribute_value("LASTPAGED")
-    # If they have paged someone before, go ahead and grab the object of
-    # that person.
-    if last_paged_dbrefs is not False:
-        last_paged_objects = list()
-        try:
-            last_paged_dbref_list = [
-                    x.strip() for x in last_paged_dbrefs.split(',')]
-            for dbref in last_paged_dbref_list:
-                if not Object.objects.is_dbref(dbref):
-                    raise ValueError
-                last_paged_object = Object.objects.dbref_search(dbref)
-                if last_paged_object is not None:
-                    last_paged_objects.append(last_paged_object)
-        except ValueError:
-            # LASTPAGED Attribute is not a list of dbrefs
-            last_paged_dbrefs = False
-            # Remove the invalid LASTPAGED attribute
-            pobject.clear_attribute("LASTPAGED")
-
-    # If they don't give a target, or any data to send to the target
-    # then tell them who they last paged if they paged someone, if not
-    # tell them they haven't paged anyone.
-    if parsed_command['targets'] is None and parsed_command['data'] is None:
-        if last_paged_dbrefs is not False and not last_paged_objects == list():
-            session.msg("You last paged: %s." % (
-                ', '.join([x.name for x in last_paged_objects])))
-            return
-        session.msg("You have not paged anyone.")
-        return
-
-    # Build a list of targets
-    # If there are no targets, then set the targets to the last person they
-    # paged.
-    if parsed_command['targets'] is None:
-        if not last_paged_objects == list():
-            targets = dict([(target, 1) for target in last_paged_objects])
-    else:
-        # First try to match the entire target string against a single player
-        full_target_match = Object.objects.player_name_search(
-                parsed_command['original_targets'])
-        if full_target_match is not None:
-            targets[full_target_match] = 1
-        else:
-            # For each of the targets listed, grab their objects and append
-            # it to the targets list
-            for target in parsed_command['targets']:
-                # If the target is a dbref, behave appropriately
-                if Object.objects.is_dbref(target):
-                    session.msg("Is dbref.")
-                    matched_object = Object.objects.dbref_search(target,
-                            limit_types=[defines_global.OTYPE_PLAYER])
-                    if matched_object is not None:
-                        targets[matched_object] = 1
-                    else:
-                        # search returned None
-                        session.msg("Player '%s' does not exist." % (
-                                target))
-                else:
-                    # Not a dbref, so must be a username, treat it as such
-                    matched_object = Object.objects.player_name_search(
-                            target)
-                    if matched_object is not None:
-                        targets[matched_object] = 1
-                    else:
-                        # search returned None
-                        session.msg("Player '%s' does not exist." % (
-                                target))
-    data = parsed_command['data']
-    sender_name = pobject.get_name(show_dbref=False)
-    # Build our messages
-    target_message = "%s pages: %s"
-    sender_message = "You paged %s with '%s'."
-    # Handle paged emotes
-    if data.startswith(':'):
-        data = data[1:]
-        target_message = "From afar, %s %s"
-        sender_message = "Long distance to %s: %s %s"
-    # Handle paged emotes without spaces
-    if data.startswith(';'):
-        data = data[1:]
-        target_message = "From afar, %s%s"
-        sender_message = "Long distance to %s: %s%s"
-
-    # We build a list of target_names for the sender_message later
-    target_names = []
-    for target in targets.keys():
-        # Check to make sure they're connected, or a player
-        if target.is_connected_plr():
-            target.emit_to(target_message % (sender_name, data))
-            target_names.append(target.get_name(show_dbref=False))
-        else:
-            session.msg("Player %s does not exist or is not online." % (
-                    target.get_name(show_dbref=False)))
-
-    if len(target_names) > 0:
-        target_names_string = ', '.join(target_names)
-        try:
-            session.msg(sender_message % (target_names_string, sender_name, data))
-        except TypeError:
-            session.msg(sender_message % (target_names_string, data))
-        # Now set the LASTPAGED attribute
-        pobject.set_attribute("LASTPAGED", ','.join(
-                ["#%d" % (x.id) for x in targets.keys()]))
-
-def cmd_quit(cdat):
+def cmd_quit(command):
     """
     Gracefully disconnect the user as per his own request.
     """
-    session = cdat['session']
+    session = command.session
     session.msg("Quitting!")
     session.handle_close()
     
-def cmd_who(cdat):
+def cmd_who(command):
     """
     Generic WHO command.
     """
     session_list = session_mgr.get_session_list()
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
     show_session_data = pobject.user_has_perm("genperms.see_session_data")
 
@@ -457,18 +383,19 @@ def cmd_who(cdat):
     
     session.msg(retval)
 
-def cmd_say(cdat):
+def cmd_say(command):
     """
     Room-based speech command.
     """
-    session = cdat['session']
+    session = command.session
 
-    if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Say what?"):
+    if not command.command_argument:
+        session.msg("Say what?")
         return
     
     session_list = session_mgr.get_session_list()
     pobject = session.get_pobject()
-    speech = ' '.join(cdat['uinput']['splitted'][1:])
+    speech = command.command_argument
     
     players_present = [player for player in session_list if player.get_pobject().get_location() == session.get_pobject().get_location() and player != session]
     
@@ -478,23 +405,25 @@ def cmd_say(cdat):
     
     session.msg(retval)
 
-def cmd_pose(cdat):
+def cmd_pose(command):
     """
     Pose/emote command.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    switches = cdat['uinput']['root_chunk'][1:]
 
-    if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 1, errortext="Do what?"):
+    if not command.command_argument: 
+        session.msg("Do what?")
         return
     
     session_list = session_mgr.get_session_list()
-    speech = ' '.join(cdat['uinput']['splitted'][1:])
+    speech = command.command_argument
     
-    if "nospace" in switches:
+    if "nospace" in command.command_switches:
+        # Output without a space between the player name and the emote.
         sent_msg = "%s%s" % (pobject.get_name(show_dbref=False), speech)
     else:
+        # No switches, default.
         sent_msg = "%s %s" % (pobject.get_name(show_dbref=False), speech)
     
     players_present = [player for player in session_list if player.get_pobject().get_location() == session.get_pobject().get_location()]
@@ -502,15 +431,15 @@ def cmd_pose(cdat):
     for player in players_present:
         player.msg(sent_msg)
     
-def cmd_help(cdat):
+def cmd_help(command):
     """
     Help system commands.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    topicstr = ' '.join(cdat['uinput']['splitted'][1:])
+    topicstr = command.command_argument
     
-    if len(topicstr) == 0:
+    if not command.command_argument:
         topicstr = "Help Index"    
     elif len(topicstr) < 2 and not topicstr.isdigit():
         session.msg("Your search query is too short. It must be at least three letters long.")

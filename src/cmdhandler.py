@@ -17,89 +17,104 @@ class UnknownCommand(Exception):
     """
     Throw this when a user enters an an invalid command.
     """
+    pass
+    
+class Command(object):
+    # Reference to the master server object.
+    server = None
+    # The player session that the command originated from.
+    session = None
+    # The entire raw, un-parsed command.
+    raw_input = None
+    # Just the root command. IE: if input is "look dog", this is just "look".
+    command_string = None
+    # A list of switches in the form of strings.
+    command_switches = []
+    # The un-parsed argument provided. IE: if input is "look dog", this is "dog".
+    command_argument = None
+    
+    def parse_command_switches(self):
+        """
+        Splits any switches out of a command_string into the command_switches
+        list, and yanks the switches out of the original command_string.
+        """
+        splitted_command = self.command_string.split('/')
+        self.command_switches = splitted_command[1:]
+        self.command_string = splitted_command[0]
+    
+    def parse_command(self):
+        """
+        Breaks the command up into the main command string, a list of switches,
+        and a string containing the argument provided with the command. More
+        specific processing is left up to the individual command functions.
+        """
+        try:
+            """
+            Break the command in half into command and argument. If the
+            command string can't be parsed, it has no argument and is
+            handled by the except ValueError block below.
+            """
+            (self.command_string, self.command_argument) = self.raw_input.split(' ', 1)
+            self.command_argument = self.command_argument.strip()
+            if self.command_argument == '':
+                self.command_argument = None 
+        except ValueError:
+            """
+            No arguments. IE: look, who.
+            """
+            self.command_string = self.raw_input
+        finally:
+            # Parse command_string for switches, regardless of what happens.
+            self.parse_command_switches()
+    
+    def __init__(self, raw_input, server=None, session=None):
+        self.server = server
+        self.raw_input = raw_input
+        self.session = session
+        self.parse_command()
+        
+    def arg_has_target(self):
+        """
+        Returns true if the argument looks to be target-style. IE:
+        page blah=hi
+        kick ball=north
+        """
+        return "=" in self.command_argument
+    
+    def get_arg_targets(self, delim=','):
+        """
+        Returns a list of targets from the argument. These happen before
+        the '=' sign and may be separated by a delimiter.
+        """
+        # Make sure we even have a target (= sign).
+        if not self.arg_has_target():
+            return None
+        
+        target = self.command_argument.split('=', 1)[0]
+        return [targ.strip() for targ in target.split(delim)]
+    
+    def get_arg_target_value(self):
+        """
+        In a case of something like: page bob=Hello there, the target is "bob",
+        while the value is "Hello there". This function returns the portion
+        of the command that takes place after the first equal sign.
+        """
+        # Make sure we even have a target (= sign).
+        if not self.arg_has_target():
+            return None
+        
+        return self.command_argument.split('=', 1)[1]
 
 def match_exits(pobject, searchstr):
     """
     See if we can find an input match to exits.
     """
-    exits = pobject.get_location().get_contents(filter_type=4)
-    return Object.objects.list_search_object_namestr(exits, searchstr, match_type="exact")
+    exits = pobject.get_location().get_contents(filter_type=defines_global.OTYPE_EXIT)
+    return Object.objects.list_search_object_namestr(exits, 
+                                                     searchstr, 
+                                                     match_type="exact")
 
-def parse_command(command_string):
-    """
-    Tries to handle the most common command strings and returns a dictionary with various data.
-    Common command types:
-    - Complex:
-        @pemit[/option] <target>[/option]=<data>
-    - Simple:
-        look
-        look <target>
-
-    I'm not married to either of these terms, but I couldn't think of anything 
-    better. If you can, lets change it :)
-
-    The only cases that I haven't handled is if someone enters something like:
-        @pemit <target> <target>/<switch>=<data>
-            - Ends up considering both targets as one with a space between them, 
-              and the switch as a switch.
-        @pemit <target>/<switch> <target>=<data>
-            - Ends up considering the first target a target, and the second 
-              target as part of the switch.
-    """
-    # Each of the bits of data starts off as None, except for the raw, original
-    # command
-    parsed_command = dict(
-            raw_command=command_string,
-            data=None,
-            original_command=None,
-            original_targets=None,
-            base_command=None,
-            command_switches=None,
-            targets=None,
-            target_switches=None
-            )
-    try:
-        # If we make it past this next statement, then this is what we 
-        # consider a complex command
-        (command_parts, data) = command_string.split('=', 1)
-        parsed_command['data'] = data
-        # First we deal with the command part of the command and break it
-        # down into the base command, along with switches
-        # If we make it past the next statement, then they must have
-        # entered a command like:
-        #      p =<data>
-        # So we should probably just let it get caught by the ValueError
-        # again and consider it a simple command
-        (total_command, total_targets) = command_parts.split(' ', 1)
-        parsed_command['original_command'] = total_command
-        parsed_command['original_targets'] = total_targets
-        split_command = total_command.split('/')
-        parsed_command['base_command'] = split_command[0]
-        parsed_command['command_switches'] = split_command[1:]
-        # Now we move onto the target data
-        try:
-            # Look for switches- if they give target switches, then we don't
-            # accept multiple targets
-            (target, switch_string) = total_targets.split('/', 1)
-            parsed_command['targets'] = [target]
-            parsed_command['target_switches'] = switch_string.split('/')
-        except ValueError:
-            # Alright, no switches, so lets consider multiple targets
-            parsed_command['targets'] = total_targets.split()
-    except ValueError:
-        # Ok, couldn't find an =, so not a complex command
-        try:
-            (command, data) = command_string.split(' ', 1)
-            parsed_command['base_command'] = command
-            parsed_command['data'] = data
-        except ValueError:
-            # No arguments
-            # ie:
-            #    - look
-            parsed_command['base_command'] = command_string
-    return parsed_command
-
-def handle(cdat):
+def handle(command):
     """
     Use the spliced (list) uinput variable to retrieve the correct
     command, or return an invalid command error.
@@ -108,32 +123,22 @@ def handle(cdat):
     their input on to 'cmd_' and looking it up in the GenCommands
     class.
     """
-    session = cdat['session']
-    server = cdat['server']
+    session = command.session
+    server = command.server
     
     try:
         # TODO: Protect against non-standard characters.
-        if cdat['uinput'] == '':
+        if command.raw_input == '':
+            # Nothing sent in of value, ignore it.
             return
 
-        parsed_input = {}
-        parsed_input['parsed_command'] = parse_command(cdat['uinput'])
-
-        # First we split the input up by spaces.
-        parsed_input['splitted'] = cdat['uinput'].split()
-        # Now we find the root command chunk (with switches attached).
-        parsed_input['root_chunk'] = parsed_input['splitted'][0].split('/')
-        # And now for the actual root command. It's the first entry in root_chunk.
-        parsed_input['root_cmd'] = parsed_input['root_chunk'][0].lower()
-        # Keep around the full, raw input in case a command needs it
-        cdat['raw_input'] = cdat['uinput']
-
         # Now we'll see if the user is using an alias. We do a dictionary lookup,
-        # if the key (the player's root command) doesn't exist on the dict, we
-        # don't replace the existing root_cmd. If the key exists, its value
-        # replaces the previously splitted root_cmd. For example, sa -> say.
-        alias_list = server.cmd_alias_list
-        parsed_input['root_cmd'] = alias_list.get(parsed_input['root_cmd'],parsed_input['root_cmd'])
+        # if the key (the player's command_string) doesn't exist on the dict, 
+        # just keep the command_string the same. If the key exists, its value
+        # replaces the command_string. For example, sa -> say.
+        command.command_string = server.cmd_alias_list.get(
+                                                command.command_string,
+                                                command.command_string)
 
         # This will hold the reference to the command's function.
         cmd = None
@@ -143,7 +148,7 @@ def handle(cdat):
             session.cmd_last = time.time()
 
             # Lets the users get around badly configured NAT timeouts.
-            if parsed_input['root_cmd'] == 'idle':
+            if command.command_string == 'idle':
                 return
 
             # Increment our user's command counter.
@@ -152,55 +157,34 @@ def handle(cdat):
             session.cmd_last_visible = time.time()
 
             # Just in case. Prevents some really funky-case crashes.
-            if len(parsed_input['root_cmd']) == 0:
+            if len(command.command_string) == 0:
                 raise UnknownCommand
 
-            # Shortened say alias.
-            if parsed_input['root_cmd'][0] == '"':
-                parsed_input['splitted'].insert(0, "say")
-                parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
-                parsed_input['root_cmd'] = 'say'
-            # Shortened pose alias.
-            elif parsed_input['root_cmd'][0] == ':':
-                parsed_input['splitted'].insert(0, "pose")
-                parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
-                parsed_input['root_cmd'] = 'pose'
-            # Pose without space alias.
-            elif parsed_input['root_cmd'][0] == ';':
-                parsed_input['splitted'].insert(0, "pose/nospace")
-                parsed_input['root_chunk'] = ['pose', 'nospace']
-                parsed_input['splitted'][1] = parsed_input['splitted'][1][1:]
-                parsed_input['root_cmd'] = 'pose'
-            # Channel alias match.
-            elif comsys.plr_has_channel(session, 
-                parsed_input['root_cmd'], 
-                alias_search=True, 
-                return_muted=True):
+            if comsys.plr_has_channel(session, command.command_string, 
+                alias_search=True, return_muted=True):
                 
-                calias = parsed_input['root_cmd']
+                calias = command.command_string
                 cname = comsys.plr_cname_from_alias(session, calias)
-                cmessage = ' '.join(parsed_input['splitted'][1:])
                 
-                if cmessage == "who":
+                if command.command_argument == "who":
                     comsys.msg_cwho(session, cname)
                     return
-                elif cmessage == "on":
+                elif command.command_argument == "on":
                     comsys.plr_chan_on(session, calias)
                     return
-                elif cmessage == "off":
+                elif command.command_argument == "off":
                     comsys.plr_chan_off(session, calias)
                     return
-                elif cmessage == "last":
+                elif command.command_argument == "last":
                     comsys.msg_chan_hist(session, cname)
                     return
                     
-                second_arg = "%s=%s" % (cname, cmessage)
-                parsed_input['splitted'] = ["@cemit/sendername", second_arg]
-                parsed_input['root_chunk'] = ['@cemit', 'sendername', 'quiet']
-                parsed_input['root_cmd'] = '@cemit'
+                second_arg = "%s=%s" % (cname, command.command_argument)
+                command.command_string = "@cemit"
+                command.command_switches = ["sendername", "quiet"]
 
             # Get the command's function reference (Or False)
-            cmdtuple = cmdtable.GLOBAL_CMD_TABLE.get_command_tuple(parsed_input['root_cmd'])
+            cmdtuple = cmdtable.GLOBAL_CMD_TABLE.get_command_tuple(command.command_string)
             if cmdtuple:
                 # If there is a permissions element to the entry, check perms.
                 if cmdtuple[1]:
@@ -212,7 +196,7 @@ def handle(cdat):
                     
         else:
             # Not logged in, look through the unlogged-in command table.
-            cmdtuple = cmdtable.GLOBAL_UNCON_CMD_TABLE.get_command_tuple(parsed_input['root_cmd'])
+            cmdtuple = cmdtable.GLOBAL_UNCON_CMD_TABLE.get_command_tuple(command.command_string)
             if cmdtuple:
                 cmd = cmdtuple[0]
 
@@ -221,9 +205,8 @@ def handle(cdat):
         #session.msg("SPLIT: %s" % (parsed_input['splitted'],))
         
         if callable(cmd):
-            cdat['uinput'] = parsed_input
             try:
-                cmd(cdat)
+                cmd(command)
             except:
                 session.msg("Untrapped error, please file a bug report:\n%s" % (format_exc(),))
                 logger.log_errmsg("Untrapped error, evoker %s: %s" %
@@ -233,12 +216,10 @@ def handle(cdat):
         if session.logged_in:
             # If we're not logged in, don't check exits.
             pobject = session.get_pobject()
-            exit_matches = match_exits(pobject, ' '.join(parsed_input['splitted']))
+            exit_matches = match_exits(pobject, command.command_string)
             if exit_matches:
                 targ_exit = exit_matches[0]
-                if targ_exit.get_home():
-                    cdat['uinput'] = parsed_input
-                    
+                if targ_exit.get_home():                   
                     # SCRIPT: See if the player can traverse the exit
                     if not targ_exit.scriptlink.default_lock({
                         "pobject": pobject

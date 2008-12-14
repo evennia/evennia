@@ -413,7 +413,8 @@ class Object(models.Model):
                 uobj.is_active = False
                 uobj.save()
             except:
-                functions_general.log_errmsg('Destroying object %s but no matching player.' % (self,))
+                functions_general.log_errmsg('Destroying object %s but no matching player.' 
+                                                                % (self,))
                 
         # Set the object type to GOING
         self.type = 5
@@ -490,7 +491,7 @@ class Object(models.Model):
                         obj.emit_to("You seem to have found a place that does not exist.")
                     
             # If home is still None, it goes to a null location.
-            obj.move_to(home, True)
+            obj.move_to(home)
             obj.save()
 
     def set_attribute(self, attribute, new_value):
@@ -538,7 +539,8 @@ class Object(models.Model):
         attrs = Attribute.objects.filter(attr_object=self)
         # Compile a regular expression that is converted from the user's
         # wild-carded search string.
-        match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), re.IGNORECASE)
+        match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), 
+                               re.IGNORECASE)
         # If the regular expression search returns a match object, add to results.
         if exclude_noset:
             return [attr for attr in attrs if match_exp.search(attr.get_name()) and not attr.is_hidden() and not attr.is_noset()]
@@ -707,22 +709,34 @@ class Object(models.Model):
         except:
             return None
     
-    def move_to(self, target, quiet=False):
+    def move_to(self, target, quiet=False, force_look=True):
         """
         Moves the object to a new location.
         
         target: (Object) Reference to the object to move to.
         quiet:  (bool)    If true, don't emit left/arrived messages.
+        force_look: (bool) If true and target is a player, make them 'look'.
         """
         if not quiet:
-            if self.get_location():
-                self.get_location().emit_to_contents("%s has left." % (self.get_name(),), exclude=self)
+            location = self.get_location()
+            if location:
+                location.emit_to_contents("%s has left." % 
+                                            (self.get_name(),), exclude=self)
+                if location.is_player():
+                    location.emit_to("%s has left your inventory." % 
+                                            (self.get_name()))
             
         self.location = target
         self.save()
         
         if not quiet:
-            self.get_location().emit_to_contents("%s has arrived." % (self.get_name(),), exclude=self)
+            arrival_message = "%s has arrived." % (self.get_name())
+            self.get_location().emit_to_contents(arrival_message, exclude=self)
+            if self.location.is_player():
+                self.location.emit_to("%s is now in your inventory." % (self.get_name()))
+            
+        if force_look and self.is_player():
+            self.get_session().execute_cmd('look')
         
     def dbref_match(self, oname):
         """
@@ -750,7 +764,7 @@ class Object(models.Model):
         NOTE: A 'name' can be a dbref or the actual name of the object. See
         dbref_match for an exclusively name-based match.
         """
-        if oname[0] == '#':
+        if util_object.is_dbref(oname):
             # First character is a pound sign, looks to be a dbref.
             return self.dbref_match(oname)
         elif match_type == "exact":

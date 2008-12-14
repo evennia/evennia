@@ -239,17 +239,16 @@ def get_cobj_from_name(cname):
     """
     return CommChannel.objects.get(name=cname)
 
-def create_channel(cdat):
+def create_channel(name, owner):
     """
-    Create a new channel. cdat is a dictionary that contains the following keys.
-    REQUIRED KEYS:
-     * name: The name of the new channel.
-     * owner: The creator of the channel.
+    Create a new channel. 
+    name: (string) Name of the new channel
+    owner: (Object) Objec that owns the channel
     """
     new_chan = CommChannel()
-    new_chan.name = ansi.parse_ansi(cdat["name"], strip_ansi=True)
-    new_chan.ansi_name = "[%s]" % (ansi.parse_ansi(cdat["name"]),)
-    new_chan.set_owner(cdat["owner"])
+    new_chan.name = ansi.parse_ansi(name, strip_ansi=True)
+    new_chan.ansi_name = "[%s]" % (ansi.parse_ansi(name),)
+    new_chan.set_owner(owner)
     new_chan.save()
     return new_chan
 

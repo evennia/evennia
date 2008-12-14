@@ -74,13 +74,20 @@ class SessionProtocol(StatefulTelnetProtocol):
         Any line return indicates a command for the purpose of a MUD. So we take
         the user input and pass it to our command handler.
         """
+        # Clean up the input.
         line = (''.join(data))
         line = line.strip('\r')
         uinput = line
         
-        # Stuff anything we need to pass in this dictionary.
-        cdat = {"server": self.factory.server, "uinput": uinput, "session": self}
-        cmdhandler.handle(cdat)
+        # The Command object has all of the methods for parsing and preparing
+        # for searching and execution.
+        command = cmdhandler.Command(uinput, 
+                                     server=self.factory.server, 
+                                     session=self)
+        
+        # Send the command object to the command handler for parsing
+        # and eventual execution.
+        cmdhandler.handle(command)
 
     def execute_cmd(self, cmdstr):
       """

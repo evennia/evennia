@@ -10,6 +10,8 @@ def is_dbref(dbstring):
         number = int(dbstring[1:])
     except ValueError:
         return False
+    except TypeError:
+        return False
         
     if not dbstring.startswith("#"):
         return False

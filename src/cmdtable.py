@@ -10,6 +10,7 @@ privilege checking in the command function), use None in place of the
 permissions tuple.
 """
 import commands.general
+import commands.paging
 import commands.privileged
 import commands.comsys
 import commands.unloggedin
@@ -54,7 +55,7 @@ GLOBAL_CMD_TABLE.add_command("help", commands.general.cmd_help),
 GLOBAL_CMD_TABLE.add_command("idle", commands.general.cmd_idle),
 GLOBAL_CMD_TABLE.add_command("inventory", commands.general.cmd_inventory),
 GLOBAL_CMD_TABLE.add_command("look", commands.general.cmd_look),
-GLOBAL_CMD_TABLE.add_command("page", commands.general.cmd_page),
+GLOBAL_CMD_TABLE.add_command("page", commands.paging.cmd_page),
 GLOBAL_CMD_TABLE.add_command("pose", commands.general.cmd_pose),
 GLOBAL_CMD_TABLE.add_command("quit", commands.general.cmd_quit),
 GLOBAL_CMD_TABLE.add_command("say", commands.general.cmd_say),
@@ -80,7 +81,7 @@ GLOBAL_CMD_TABLE.add_command("@dig", commands.objmanip.cmd_dig,
                              priv_tuple=("genperms.builder")),
 GLOBAL_CMD_TABLE.add_command("@emit", commands.general.cmd_emit,
                              priv_tuple=("genperms.announce")),
-#GLOBAL_CMD_TABLE.add_command("@pemit",        commands.general.cmd_pemit,          None),
+#GLOBAL_CMD_TABLE.add_command("@pemit", commands.general.cmd_pemit),
 GLOBAL_CMD_TABLE.add_command("@find", commands.objmanip.cmd_find,
                              priv_tuple=("genperms.builder")),
 GLOBAL_CMD_TABLE.add_command("@link", commands.objmanip.cmd_link,

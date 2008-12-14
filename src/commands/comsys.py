@@ -11,32 +11,26 @@ from src import defines_global
 from src import ansi
 from src.util import functions_general
 
-def cmd_addcom(cdat):
+def cmd_addcom(command):
     """
     addcom
 
     Adds an alias for a channel.
     addcom foo=Bar
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
+    server = command.server
+    eq_args = command.command_argument.split('=', 1)
     
-    if len(args) == 0:
+    if not command.command_argument:
         session.msg("You need to specify a channel alias and name.")
         return
-        
-    eq_args = args[0].split('=')
-
-    if len(eq_args) < 2:
-        session.msg("You need to specify a channel name.")
-        return
-    
+           
     chan_alias = eq_args[0]
     chan_name = eq_args[1]
-
-    if len(chan_name) == 0:
+    
+    if len(eq_args) < 2 or len(chan_name) == 0:
         session.msg("You need to specify a channel name.")
         return
 
@@ -59,40 +53,38 @@ def cmd_addcom(cdat):
     else:
         session.msg("Could not find channel %s." % (chan_name,))
 
-def cmd_delcom(cdat):
+def cmd_delcom(command):
     """
     delcom
 
     Removes the specified alias to a channel. If this is the last alias,
     the user is effectively removed from the channel.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    uinput= cdat['uinput']['splitted']
-    chan_alias = ' '.join(uinput[1:])
 
-    if len(chan_alias) == 0:
+    if len(command.command_argument) == 0:
         session.msg("You must specify a channel alias.")
         return
 
-    if chan_alias not in session.channels_subscribed:
+    if command.command_argument not in session.channels_subscribed:
         session.msg("You are not on that channel.")
         return
 
-    chan_name = session.channels_subscribed[chan_alias][0]
+    chan_name = session.channels_subscribed[command.command_argument][0]
     session.msg("You have left %s." % (chan_name,))
-    src.comsys.plr_del_channel(session, chan_alias)
+    src.comsys.plr_del_channel(session, command.command_argument)
 
     # Announce the user's leaving.
     leave_msg = "[%s] %s has left the channel." % \
         (chan_name, pobject.get_name(show_dbref=False))
     src.comsys.send_cmessage(chan_name, leave_msg)
 
-def cmd_comlist(cdat):
+def cmd_comlist(command):
     """
     Lists the channels a user is subscribed to.
     """
-    session = cdat['session']
+    session = command.session
 
     session.msg("Alias     Channel             Status")
     for chan in session.channels_subscribed:
@@ -105,46 +97,48 @@ def cmd_comlist(cdat):
             (chan, session.channels_subscribed[chan][0], chan_on))
     session.msg("-- End of comlist --")
     
-def cmd_allcom(cdat):
+def cmd_allcom(command):
     """
     allcom
 
     Allows the user to universally turn off or on all channels they are on,
     as well as perform a "who" for all channels they are on.
     """
+    # TODO: Implement cmd_allcom
     pass
 
-def cmd_clearcom(cdat):
+def cmd_clearcom(command):
     """
     clearcom
 
     Effectively runs delcom on all channels the user is on.  It will remove their aliases,
     remove them from the channel, and clear any titles they have set.
     """
+    # TODO: Implement cmd_clearcom
     pass
 
-def cmd_clist(cdat):
+def cmd_clist(command):
     """
     @clist
 
     Lists all available channels on the game.
     """
-    session = cdat['session']
+    session = command.session
     session.msg("** Channel       Owner         Description")
     for chan in src.comsys.get_all_channels():
         session.msg("%s%s %-13.13s %-15.15s   %-45.45s" %
-            ('-', '-', chan.get_name(), chan.get_owner().get_name(), 'No Description'))
+            ('-', '-', chan.get_name(), chan.get_owner().get_name(), 
+             'No Description'))
     session.msg("-- End of Channel List --")
 
-def cmd_cdestroy(cdat):
+def cmd_cdestroy(command):
     """
     @cdestroy
 
     Destroys a channel.
     """
-    session = cdat['session']
-    uinput= cdat['uinput']['splitted']
-    cname = ' '.join(uinput[1:])
+    session = command.session
+    cname = command.command_argument
 
     if cname == '':
         session.msg("You must supply a name!")
@@ -158,56 +152,56 @@ def cmd_cdestroy(cdat):
         session.msg("Channel %s destroyed." % (name_matches[0],))
         name_matches.delete()
         
-def cmd_cset(cdat):
+def cmd_cset(command):
     """
     @cset
 
     Sets various flags on a channel.
     """
+    # TODO: Implement cmd_cset
     pass
 
 
-def cmd_ccharge(cdat):
+def cmd_ccharge(command):
     """
     @ccharge
 
     Sets the cost to transmit over a channel.  Default is free.
     """
+    # TODO: Implement cmd_ccharge
     pass
 
-def cmd_cboot(cdat):
+def cmd_cboot(command):
     """
     @cboot
 
     Kicks a player or object from the channel.
     """
+    # TODO: Implement cmd_cboot
     pass
 
-def cmd_cemit(cdat):
+def cmd_cemit(command):
     """
-    @cemit
-    @cemit/noheader <message>
-    @cemit/sendername <message>
+    @cemit <channel>=<message>
+    @cemit/noheader <channel>=<message>
+    @cemit/sendername <channel>=<message>
 
     Allows the user to send a message over a channel as long as
     they own or control it. It does not show the user's name unless they
     provide the /sendername switch.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
-    switches = cdat['uinput']['root_chunk'][1:]
+    server = command.server
 
-    if len(args) == 0:
+    if command.command_argument == 0:
         session.msg("Channel emit what?")
         return
 
-    # Combine the arguments into one string, split it by equal signs into
-    # channel (entry 0 in the list), and message (entry 1 and above).
-    eq_args = ' '.join(args).split('=')
+    eq_args = command.command_argument.split('=', 1)
     cname = eq_args[0]
-    cmessage = ' '.join(eq_args[1:])
+    cmessage = eq_args[1]
+    
     if len(eq_args) != 2:
         session.msg("You must provide a channel name and a message to emit.")
         return
@@ -219,36 +213,37 @@ def cmd_cemit(cdat):
         return
 
     name_matches = src.comsys.cname_search(cname, exact=True)
-
-    try:
-        # Safety first, kids!
+    if name_matches:
         cname_parsed = name_matches[0].get_name()
-    except:
+    else:
         session.msg("Could not find channel %s." % (cname,))
         return
 
-    if "noheader" in switches:
+    if "noheader" in command.command_switches:
         if not pobject.user_has_perm("objects.emit_commchannel"):
             session.msg(defines_global.NOPERMS_MSG)
             return
         final_cmessage = cmessage
     else:
-        if "sendername" in switches:
-            if not src.comsys.plr_has_channel(session, cname_parsed, return_muted=False):
+        if "sendername" in command.command_switches:
+            if not src.comsys.plr_has_channel(session, cname_parsed, 
+                                              return_muted=False):
                 session.msg("You must be on %s to do that." % (cname_parsed,))
                 return
-            final_cmessage = "[%s] %s: %s" % (cname_parsed, pobject.get_name(show_dbref=False), cmessage)
+            final_cmessage = "[%s] %s: %s" % (cname_parsed, 
+                                              pobject.get_name(show_dbref=False), 
+                                              cmessage)
         else:
             if not pobject.user_has_perm("objects.emit_commchannel"):
                 session.msg(defines_global.NOPERMS_MSG)
                 return
             final_cmessage = "[%s] %s" % (cname_parsed, cmessage)
 
-    if not "quiet" in switches:
+    if not "quiet" in command.command_switches:
         session.msg("Sent - %s" % (name_matches[0],))
     src.comsys.send_cmessage(cname_parsed, final_cmessage)
 
-def cmd_cwho(cdat):
+def cmd_cwho(command):
     """
     @cwho
 
@@ -256,22 +251,24 @@ def cmd_cwho(cdat):
     Adding /all after the channel name will list disconnected players
     as well.
     """
+    # TODO: Implement cmd_cwho
     pass
 
-def cmd_ccreate(cdat):
+def cmd_ccreate(command):
     """
     @ccreate
 
     Creates a new channel with the invoker being the default owner.
     """
-    session = cdat['session']
+    # TODO: Implement cmd_ccreate
+    session = command.session
     pobject = session.get_pobject()
-    uinput= cdat['uinput']['splitted']
-    cname = ' '.join(uinput[1:])
 
-    if cname == '':
+    if not command.command_argument:
         session.msg("You must supply a name!")
         return
+    
+    cname = command.command_argument
 
     name_matches = src.comsys.cname_search(cname, exact=True)
 
@@ -279,14 +276,14 @@ def cmd_ccreate(cdat):
         session.msg("A channel with that name already exists.")
     else:
         # Create and set the object up.
-        cdat = {"name": cname, "owner": pobject}
-        new_chan = src.comsys.create_channel(cdat)
+        new_chan = src.comsys.create_channel(cname, pobject)
         session.msg("Channel %s created." % (new_chan.get_name(),))
 
-def cmd_cchown(cdat):
+def cmd_cchown(command):
     """
     @cchown
 
     Changes the owner of a channel.
     """
+    # TODO: Implement cmd_cchown.
     pass

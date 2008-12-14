@@ -75,9 +75,11 @@ class ObjectManager(models.Manager):
         else:
             o_query = self.filter(name__icontains=ostring)
             
-        return o_query.exclude(type=defines_global.OTYPE_GARBAGE)
+        return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
+                                         defines_global.OTYPE_GOING])
         
-    def list_search_object_namestr(self, searchlist, ostring, dbref_only=False, limit_types=False, match_type="fuzzy"):
+    def list_search_object_namestr(self, searchlist, ostring, dbref_only=False, 
+                                   limit_types=False, match_type="fuzzy"):
         """
         Iterates through a list of objects and returns a list of
         name matches.
@@ -98,7 +100,9 @@ class ObjectManager(models.Manager):
                 return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
 
 
-    def standard_plr_objsearch(self, session, ostring, search_contents=True, search_location=True, dbref_only=False, limit_types=False):
+    def standard_plr_objsearch(self, session, ostring, search_contents=True, 
+                               search_location=True, dbref_only=False, 
+                               limit_types=False):
         """
         Perform a standard object search via a player session, handling multiple
         results and lack thereof gracefully.
@@ -107,7 +111,11 @@ class ObjectManager(models.Manager):
         ostring: (str) The string to match object names against.
         """
         pobject = session.get_pobject()
-        results = self.local_and_global_search(pobject, ostring, search_contents=search_contents, search_location=search_location, dbref_only=dbref_only, limit_types=limit_types)
+        results = self.local_and_global_search(pobject, ostring, 
+                                search_contents=search_contents, 
+                                search_location=search_location, 
+                                dbref_only=dbref_only, 
+                                limit_types=limit_types)
 
         if len(results) > 1:
             session.msg("More than one match found (please narrow target):")
@@ -136,14 +144,14 @@ class ObjectManager(models.Manager):
 
     def player_alias_search(self, searcher, ostring):
         """
-        Search players by alias. Returns a list of objects whose "ALIAS" attribute
-        exactly (not case-sensitive) matches ostring.
+        Search players by alias. Returns a list of objects whose "ALIAS" 
+        attribute exactly (not case-sensitive) matches ostring.
         
         searcher: (Object) The object doing the searching.
         ostring:  (string) The alias string to search for.
         """
-        search_query = ''.join(ostring)
-        Attribute = ContentType.objects.get(app_label="objects", model="attribute").get_model()
+        Attribute = ContentType.objects.get(app_label="objects", 
+                                            model="attribute").model_class()
         results = Attribute.objects.select_related().filter(attr_name__exact="ALIAS").filter(attr_value__iexact=ostring)
         return [prospect.get_object() for prospect in results if prospect.get_object().is_player()]
 
@@ -171,11 +179,17 @@ class ObjectManager(models.Manager):
         except IndexError:
             return None
 
+    def is_dbref(self, dbstring):
+        """
+        Is the input a well-formed dbref number?
+        """
+        util_object.is_dbref(dbstring)
+
     def dbref_search(self, dbref_string, limit_types=False):
         """
         Searches for a given dbref.
 
-        dbref_number: (string) The dbref to search for
+        dbref_number: (string) The dbref to search for. With # sign.
         limit_types: (list of int) A list of Object type numbers to filter by.
         """
         if not util_object.is_dbref(dbref_string):
@@ -192,7 +206,9 @@ class ObjectManager(models.Manager):
         except IndexError:
             return None
 
-    def local_and_global_search(self, searcher, ostring, search_contents=True, search_location=True, dbref_only=False, limit_types=False):
+    def local_and_global_search(self, searcher, ostring, search_contents=True, 
+                                search_location=True, dbref_only=False, 
+                                limit_types=False):
         """
         Searches an object's location then globally for a dbref or name match.
         
@@ -203,14 +219,13 @@ class ObjectManager(models.Manager):
         dbref_only: (bool) Only compare dbrefs.
         limit_types: (list of int) A list of Object type numbers to filter by.
         """
-        search_query = ''.join(ostring)
+        search_query = ostring
 
         # This is a global dbref search. Not applicable if we're only searching
         # searcher's contents/locations, dbref comparisons for location/contents
         # searches are handled by list_search_object_namestr() below.
         if util_object.is_dbref(ostring):
-            search_num = search_query[1:]
-            dbref_match = dbref_search(search_num, limit_types)
+            dbref_match = self.dbref_search(search_query, limit_types)
             if dbref_match is not None:
                 return [dbref_match]
 
@@ -224,7 +239,7 @@ class ObjectManager(models.Manager):
         if search_query[0] == "*":
             # Player search- gotta search by name or alias
             search_target = search_query[1:]
-            player_match = player_name_search(search_target)
+            player_match = self.player_name_search(search_target)
             if player_match is not None:
                 return [player_match]
 
@@ -232,9 +247,11 @@ class ObjectManager(models.Manager):
         # Handle our location/contents searches. list_search_object_namestr() does
         # name and dbref comparisons against search_query.
         if search_contents: 
-            local_matches += list_search_object_namestr(searcher.get_contents(), search_query, limit_types)
+            local_matches += self.list_search_object_namestr(searcher.get_contents(), 
+                                        search_query, limit_types)
         if search_location:
-            local_matches += list_search_object_namestr(searcher.get_location().get_contents(), search_query, limit_types=limit_types)
+            local_matches += self.list_search_object_namestr(searcher.get_location().get_contents(), 
+                                        search_query, limit_types=limit_types)
         return local_matches
         
     def get_user_from_email(self, uemail):
@@ -264,7 +281,9 @@ class ObjectManager(models.Manager):
          * home: Reference to another object to home to. If not specified, use 
             location key for home.
         """
-        next_dbref = get_nextfree_dbnum()
+        next_dbref = self.get_nextfree_dbnum()
+        Object = ContentType.objects.get(app_label="objects", 
+                                            model="object").model_class()
         new_object = Object()
 
         new_object.id = next_dbref
@@ -301,27 +320,25 @@ class ObjectManager(models.Manager):
         
         return new_object
 
-    def create_user(self, cdat, uname, email, password):
+    def create_user(self, command, uname, email, password):
         """
         Handles the creation of new users.
         """
-        session = cdat['session']
-        server = cdat['server']
+        session = command.session
+        server = command.server
         start_room = int(ConfigValue.objects.get_configvalue('player_dbnum_start'))
-        start_room_obj = get_object_from_dbref(start_room)
+        start_room_obj = self.get_object_from_dbref(start_room)
 
         # The user's entry in the User table must match up to an object
         # on the object table. The id's are the same, we need to figure out
         # the next free unique ID to use and make sure the two entries are
         # the same number.
-        uid = get_nextfree_dbnum()
-        print 'UID', uid
+        uid = self.get_nextfree_dbnum()
 
         # If this is an object, we know to recycle it since it's garbage. We'll
         # pluck the user ID from it.
         if not str(uid).isdigit():
             uid = uid.id
-        print 'UID2', uid
 
         user = User.objects.create_user(uname, email, password)
         # It stinks to have to do this but it's the only trivial way now.
@@ -337,8 +354,12 @@ class ObjectManager(models.Manager):
         user = User.objects.get(id=uid)
 
         # Create a player object of the same ID in the Objects table.
-        odat = {"id": uid, "name": uname, "type": 1, "location": start_room_obj, "owner": None}
-        user_object = create_object(odat)
+        odat = {"id": uid, 
+                "name": uname, 
+                "type": 1, 
+                "location": start_room_obj, 
+                "owner": None}
+        user_object = self.create_object(odat)
 
         # Activate the player's session and set them loose.
         session.login(user)

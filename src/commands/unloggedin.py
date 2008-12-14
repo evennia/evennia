@@ -7,51 +7,52 @@ from apps.objects.models import Attribute, Object
 from src import defines_global
 from src.util import functions_general
 
-def cmd_connect(cdat):
+def cmd_connect(command):
     """
     This is the connect command at the connection screen. Fairly simple,
     uses the Django database API and User model to make it extremely simple.
     """
 
-    session = cdat['session']
+    session = command.session
 
     # Argument check.
-    if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 2):
+    arg_list = command.command_argument.split()
+    if not functions_general.cmd_check_num_args(session, arg_list, 2):
         return
     
-    uemail = cdat['uinput']['splitted'][1]
-    password = cdat['uinput']['splitted'][2]
+    uemail = arg_list[0]
+    password = arg_list[1]
 
     # Match an email address to an account.
     email_matches = Object.objects.get_user_from_email(uemail)
     
-    autherror = "Specified email does not match any accounts!"
     # No username match
     if email_matches.count() == 0:
-        session.msg(autherror)
+        session.msg("Specified email does not match any accounts!")
         return
     
     # We have at least one result, so we can check the password.
     user = email_matches[0]
         
     if not user.check_password(password):
-        session.msg(autherror)
+        session.msg("Incorrect password.")
     else:
         uname = user.username
         session.login(user)
         
-def cmd_create(cdat):
+def cmd_create(command):
     """
     Handle the creation of new accounts.
     """
-    session = cdat['session']
+    session = command.session
 
     # Argument check.
-    if not functions_general.cmd_check_num_args(session, cdat['uinput']['splitted'], 2):
+    arg_list = command.command_argument.split()
+    if not functions_general.cmd_check_num_args(session, arg_list, 2):
         return
     
     server = session.server
-    quote_split = ' '.join(cdat['uinput']['splitted']).split("\"")
+    quote_split = command.command_argument.split("\"")
     
     if len(quote_split) < 2:
         session.msg("You must enclose your username in quotation marks.")
@@ -84,14 +85,14 @@ def cmd_create(cdat):
     elif len(password) < 3:
         session.msg("Your password must be 3 characters or longer.")
     else:
-        Object.objects.create_user(cdat, uname, email, password)
+        Object.objects.create_user(command, uname, email, password)
 
-def cmd_quit(cdat):
+def cmd_quit(command):
     """
     We're going to maintain a different version of the quit command
     here for unconnected users for the sake of simplicity. The logged in
     version will be a bit more complicated.
     """
-    session = cdat['session']
+    session = command.session
     session.msg("Disconnecting...")
     session.handle_close()

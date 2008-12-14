@@ -1,27 +1,31 @@
 """
 These commands typically are to do with building or modifying Objects.
 """
-from apps.objects.models import Object
+from apps.objects.models import Object, Attribute
 # We'll import this as the full path to avoid local variable clashes.
 import src.flags
 from src import ansi
 from src import session_mgr
 
-def cmd_teleport(cdat):
+def cmd_teleport(command):
     """
     Teleports an object somewhere.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
+    server = command.server
 
-    if len(args) == 0:
+    if not command.command_argument:
         session.msg("Teleport where/what?")
         return
 
-    eq_args = args[0].split('=')
-    search_str = ''.join(args)
+    eq_args = command.command_argument.split('=', 1)
+    
+    # The quiet switch suppresses leaving and arrival messages.
+    if "quiet" in command.command_switches:
+        tel_quietly = True
+    else:
+        tel_quietly = False
 
     # If we have more than one entry in our '=' delimited argument list,
     # then we're doing a @tel <victim>=<location>. If not, we're doing
@@ -46,19 +50,11 @@ def cmd_teleport(cdat):
             session.msg("You can't teleport an object inside of itself!")
             return
         session.msg("Teleported.")
-        victim.move_to(destination)
-
-        # This is somewhat kludgy right now, we'll have to find a better way
-        # to do it sometime else. If we can find a session in the server's
-        # session list matching the object we're teleporting, force it to
-        # look. This is going to typically be a player.
-        victim_session = session_mgr.session_from_object(victim)
-        if victim_session:
-            victim_session.execute_cmd("look")
-
+        victim.move_to(destination, quiet=tel_quietly)
     else:
         # Direct teleport (no equal sign)
-        target_obj = Object.objects.standard_plr_objsearch(session, search_str)
+        target_obj = Object.objects.standard_plr_objsearch(session, 
+                                                    command.command_argument)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -67,76 +63,82 @@ def cmd_teleport(cdat):
             session.msg("You can't teleport inside yourself!")
             return
         session.msg("Teleported.")
-        pobject.move_to(target_obj)
-        session.execute_cmd("look")
+            
+        pobject.move_to(target_obj, quiet=tel_quietly)
 
-def cmd_stats(cdat):
+def cmd_stats(command):
     """
     Shows stats about the database.
     4012 objects = 144 rooms, 212 exits, 613 things, 1878 players. (1165 garbage)
     """
-    session = cdat['session']
+    session = command.session
     stats_dict = Object.objects.object_totals()
-    session.msg("%d objects = %d rooms, %d exits, %d things, %d players. (%d garbage)" % (stats_dict["objects"],
+    session.msg("%d objects = %d rooms, %d exits, %d things, %d players. (%d garbage)" % 
+       (stats_dict["objects"],
         stats_dict["rooms"],
         stats_dict["exits"],
         stats_dict["things"],
         stats_dict["players"],
         stats_dict["garbage"]))
 
-def cmd_alias(cdat):
+def cmd_alias(command):
     """
     Assigns an alias to a player object for ease of paging, etc.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
 
-    if len(args) == 0:
+    if not command.command_argument:
         session.msg("Alias whom?")
         return
     
-    # Resplit the args on = to check for an almost-required =
-    eq_args = ' '.join(args).split('=')
+    eq_args = command.command_argument.split('=', 1)
     
     if len(eq_args) < 2:
         session.msg("Alias missing.")
         return
     
-    target = Object.objects.standard_plr_objsearch(session, eq_args[0])
+    target_string = eq_args[0]
+    new_alias = eq_args[1]
+    
+    # An Object instance for the victim.
+    target = Object.objects.standard_plr_objsearch(session, target_string)
     # Use standard_plr_objsearch to handle duplicate/nonexistant results.
     if not target:
-        session.msg("Alias whom?")
+        session.msg("I can't find that player.")
         return
   
-    duplicates = Object.objects.player_alias_search(pobject, eq_args[1])
-    
-    if duplicates:
-        session.msg("Alias '%s' already exists." % (eq_args[1],))
-        return
-    else:
+    old_alias = target.get_attribute_value('ALIAS')
+    duplicates = Object.objects.player_alias_search(pobject, new_alias)
+    if not duplicates or old_alias.lower() == new_alias.lower():
+        # Either no duplicates or just changing the case of existing alias.
         if pobject.controls_other(target):
-            target.set_attribute('ALIAS', eq_args[1])
-            session.msg("Alias '%s' set for %s." % (eq_args[1], target.get_name()))
+            target.set_attribute('ALIAS', new_alias)
+            session.msg("Alias '%s' set for %s." % (new_alias, 
+                                                    target.get_name()))
         else:
-            session.msg("You do not have access to set an alias for %s." % (target.get_name(),))
+            session.msg("You do not have access to set an alias for %s." % 
+                                                   (target.get_name(),))
+    else:
+        # Duplicates were found.
+        session.msg("Alias '%s' is already in use." % (new_alias,))
+        return
 
-def cmd_wipe(cdat):
+def cmd_wipe(command):
     """
     Wipes an object's attributes, or optionally only those matching a search
     string.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
     attr_search = False
 
-    if len(args) == 0:    
+    if not command.command_argument:    
         session.msg("Wipe what?")
         return
 
     # Look for a slash in the input, indicating an attribute wipe.
-    attr_split = args[0].split("/")
+    attr_split = command.command_argument.split("/", 1)
 
     # If the splitting by the "/" character returns a list with more than 1
     # entry, it's an attribute match.
@@ -144,13 +146,11 @@ def cmd_wipe(cdat):
         attr_search = True
         # Strip the object search string from the input with the
         # object/attribute pair.
-        searchstr = attr_split[0]
-        # Just in case there's a slash in an attribute name.
-        attr_searchstr = '/'.join(attr_split[1:])
+        searchstr = attr_split[1]
     else:
-        searchstr = ' '.join(args)
+        searchstr = command.command_argument
 
-    target_obj = Object.objects.standard_plr_objsearch(session, searchstr)
+    target_obj = Object.objects.standard_plr_objsearch(session, attr_split[0])
     # Use standard_plr_objsearch to handle duplicate/nonexistant results.
     if not target_obj:
         return
@@ -158,11 +158,13 @@ def cmd_wipe(cdat):
     if attr_search:
         # User has passed an attribute wild-card string. Search for name matches
         # and wipe.
-        attr_matches = target_obj.attribute_namesearch(attr_searchstr, exclude_noset=True)
+        attr_matches = target_obj.attribute_namesearch(searchstr, 
+                                                       exclude_noset=True)
         if attr_matches:
             for attr in attr_matches:
                 target_obj.clear_attribute(attr.get_name())
-            session.msg("%s - %d attributes wiped." % (target_obj.get_name(), len(attr_matches)))
+            session.msg("%s - %d attributes wiped." % (target_obj.get_name(), 
+                                                       len(attr_matches)))
         else:
             session.msg("No matching attributes found.")
     else:
@@ -170,27 +172,25 @@ def cmd_wipe(cdat):
         attr_matches = target_obj.attribute_namesearch("*", exclude_noset=True)
         for attr in attr_matches:
             target_obj.clear_attribute(attr.get_name())
-        session.msg("%s - %d attributes wiped." % (target_obj.get_name(), len(attr_matches)))
+        session.msg("%s - %d attributes wiped." % (target_obj.get_name(), 
+                                                   len(attr_matches)))
 
-def cmd_set(cdat):
+def cmd_set(command):
     """
     Sets flags or attributes on objects.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
+    server = command.server
 
-    if len(args) == 0:
+    if not command.command_argument:
         session.msg("Set what?")
         return
-
-    # There's probably a better way to do this. Break the arguments (minus
-    # the root command) up so we have two items in the list, 0 being the victim,
-    # 1 being the list of flags or the attribute/value pair.    
-    eq_args = ' '.join(args).split('=')
-
+  
+    # Break into target and value by the equal sign.
+    eq_args = command.command_argument.split('=', 1)
     if len(eq_args) < 2:
+        # Equal signs are not optional for @set.
         session.msg("Set what?")
         return
     
@@ -203,8 +203,7 @@ def cmd_set(cdat):
         session.msg(defines_global.NOCONTROL_MSG)
         return
 
-    attrib_args = eq_args[1].split(':')
-
+    attrib_args = eq_args[1].split(':', 1)
     if len(attrib_args) > 1:
         # We're dealing with an attribute/value pair.
         attrib_name = attrib_args[0].upper()
@@ -212,7 +211,7 @@ def cmd_set(cdat):
         attrib_value = eq_args[1][splicenum:]
         
         # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
-        if not src.flags.is_modifiable_attrib(attrib_name) and not pobject.is_superuser():
+        if not Attribute.objects.is_modifiable_attrib(attrib_name) and not pobject.is_superuser():
             session.msg("You can't modify that attribute.")
             return
         
@@ -237,30 +236,32 @@ def cmd_set(cdat):
                 if not src.flags.is_modifiable_flag(flag):
                     session.msg("You can't set/unset the flag - %s." % (flag,))
                 else:
-                    session.msg('%s - %s cleared.' % (victim.get_name(), flag.upper(),))
+                    session.msg('%s - %s cleared.' % (victim.get_name(), 
+                                                      flag.upper(),))
                     victim.set_flag(flag, False)
             else:
                 # We're setting the flag.
                 if not src.flags.is_modifiable_flag(flag):
                     session.msg("You can't set/unset the flag - %s." % (flag,))
                 else:
-                    session.msg('%s - %s set.' % (victim.get_name(), flag.upper(),))
+                    session.msg('%s - %s set.' % (victim.get_name(), 
+                                                  flag.upper(),))
                     victim.set_flag(flag, True)
 
-def cmd_find(cdat):
+def cmd_find(command):
     """
     Searches for an object of a particular name.
     """
-    session = cdat['session']
-    server = cdat['server']
-    searchstring = ' '.join(cdat['uinput']['splitted'][1:])
+    session = command.session
+    server = command.server
     pobject = session.get_pobject()
     can_find = pobject.user_has_perm("genperms.builder")
 
-    if searchstring == '':
+    if not command.command_argument:
         session.msg("No search pattern given.")
         return
     
+    searchstring = command.command_argument
     results = Object.objects.global_object_name_search(searchstring)
 
     if len(results) > 0:
@@ -271,35 +272,37 @@ def cmd_find(cdat):
     else:
         session.msg("No name matches found for: %s" % (searchstring,))
 
-def cmd_create(cdat):
+def cmd_create(command):
     """
     Creates a new object of type 'THING'.
     """
-    session = cdat['session']
+    session = command.session
     server = session.server
     pobject = session.get_pobject()
-    uinput= cdat['uinput']['splitted']
-    thingname = ' '.join(uinput[1:])
     
-    if thingname == '':
+    if not command.command_argument:
         session.msg("You must supply a name!")
     else:
         # Create and set the object up.
-        odat = {"name": thingname, "type": 3, "location": pobject, "owner": pobject}
+        # TODO: This dictionary stuff is silly. Feex.
+        odat = {"name": command.command_argument, 
+                "type": 3, 
+                "location": pobject, 
+                "owner": pobject}
         new_object = Object.objects.create_object(odat)
         
         session.msg("You create a new thing: %s" % (new_object,))
     
-def cmd_nextfree(cdat):
+def cmd_nextfree(command):
     """
     Returns the next free object number.
     """
-    session = cdat['session']
+    session = command.session
     
     nextfree = Object.objects.get_nextfree_dbnum()
     session.msg("Next free object number: #%s" % (nextfree,))
     
-def cmd_open(cdat):
+def cmd_open(command):
     """
     Handle the opening of exits.
     
@@ -308,16 +311,15 @@ def cmd_open(cdat):
     @open <Name>=<Dbref>
     @open <Name>=<Dbref>,<Name>
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
+    server = command.server
     
-    if len(args) == 0:
+    if not command.command_argument:
         session.msg("Open an exit to where?")
         return
         
-    eq_args = ' '.join(args).split('=')
+    eq_args = command.command_argument.split('=', 1)
     exit_name = eq_args[0]
     
     if len(exit_name) == 0:
@@ -329,8 +331,9 @@ def cmd_open(cdat):
     # an un-linked exit, @open <Name>.
     if len(eq_args) > 1:
         # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
-        comma_split = eq_args[1].split(',')
-        destination = Object.objects.standard_plr_objsearch(session, comma_split[0])
+        comma_split = eq_args[1].split(',', 1)
+        destination = Object.objects.standard_plr_objsearch(session, 
+                                                            comma_split[0])
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not destination:
             return
@@ -339,43 +342,56 @@ def cmd_open(cdat):
             session.msg("You can't open an exit to an exit!")
             return
 
-        odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":destination}
+        odat = {"name": exit_name, 
+                "type": 4, 
+                "location": pobject.get_location(), 
+                "owner": pobject, 
+                "home":destination}
         new_object = Object.objects.create_object(odat)
 
-        session.msg("You open the an exit - %s to %s" % (new_object.get_name(),destination.get_name()))
-
+        session.msg("You open the an exit - %s to %s" % (new_object.get_name(),
+                                                         destination.get_name()))
         if len(comma_split) > 1:
             second_exit_name = ','.join(comma_split[1:])
-            odat = {"name": second_exit_name, "type": 4, "location": destination, "owner": pobject, "home": pobject.get_location()}
+            odat = {"name": second_exit_name, 
+                    "type": 4, 
+                    "location": destination, 
+                    "owner": pobject, 
+                    "home": pobject.get_location()}
             new_object = Object.objects.create_object(odat)
-            session.msg("You open the an exit - %s to %s" % (new_object.get_name(),pobject.get_location().get_name()))
+            session.msg("You open the an exit - %s to %s" % (
+                                            new_object.get_name(),
+                                            pobject.get_location().get_name()))
 
     else:
         # Create an un-linked exit.
-        odat = {"name": exit_name, "type": 4, "location": pobject.get_location(), "owner": pobject, "home":None}
+        odat = {"name": exit_name, 
+                "type": 4, 
+                "location": pobject.get_location(), 
+                "owner": pobject, 
+                "home":None}
         new_object = Object.objects.create_object(odat)
 
         session.msg("You open an unlinked exit - %s" % (new_object,))
 
-def cmd_link(cdat):
+def cmd_link(command):
     """
     Sets an object's home or an exit's destination.
 
     Forms:
     @link <Object>=<Target>
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    server = cdat['server']
-    args = cdat['uinput']['splitted'][1:]
+    server = command.server
 
-    if len(args) == 0:
+    if not command.command_argument:
         session.msg("Link what?")
         return
 
-    eq_args = args[0].split('=')
+    eq_args = command.command_argument.split('=', 1)
     target_name = eq_args[0]
-    dest_name = '='.join(eq_args[1:])    
+    dest_name = eq_args[1]    
 
     if len(target_name) == 0:
         session.msg("What do you want to link?")
@@ -410,19 +426,21 @@ def cmd_link(cdat):
         session.msg("You must provide a destination to link to.")
         return
 
-def cmd_unlink(cdat):
+def cmd_unlink(command):
     """
     Unlinks an object.
-    """
-    session = cdat['session']
-    pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
     
-    if len(args) == 0:    
+    @unlink <Object>
+    """
+    session = command.session
+    pobject = session.get_pobject()
+    
+    if not command.command_argument:    
         session.msg("Unlink what?")
         return
     else:
-        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args))
+        target_obj = Object.objects.standard_plr_objsearch(session,
+                                                      command.command_argument)
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -434,67 +452,75 @@ def cmd_unlink(cdat):
         target_obj.set_home(None)
         session.msg("You have unlinked %s." % (target_obj.get_name(),))
 
-def cmd_dig(cdat):
+def cmd_dig(command):
     """
     Creates a new object of type 'ROOM'.
-    """
-    session = cdat['session']
-    pobject = session.get_pobject()
-    uinput= cdat['uinput']['splitted']
-    roomname = ' '.join(uinput[1:])
     
-    if roomname == '':
+    @dig <Name>
+    """
+    session = command.session
+    pobject = session.get_pobject()
+    roomname = command.command_argument
+    
+    if not roomname:
         session.msg("You must supply a name!")
     else:
         # Create and set the object up.
-        odat = {"name": roomname, "type": 2, "location": None, "owner": pobject}
+        odat = {"name": roomname, 
+                "type": 2, 
+                "location": None, 
+                "owner": pobject}
         new_object = Object.objects.create_object(odat)
         
         session.msg("You create a new room: %s" % (new_object,))
 
-def cmd_name(cdat):
+def cmd_name(command):
     """
     Handle naming an object.
-    """
-    session = cdat['session']
-    pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
-    eq_args = ' '.join(args).split('=')
-    searchstring = ''.join(eq_args[0])
     
-    if len(args) == 0:    
+    @name <Object>=<Value>
+    """
+    session = command.session
+    pobject = session.get_pobject()
+    
+    if not command.command_string:    
         session.msg("What do you want to name?")
-    elif len(eq_args) < 2:
+        return
+    
+    eq_args = command.command_argument.split('=', 1)
+    # Only strip spaces from right side in case they want to be silly and
+    # have a left-padded object name.
+    new_name = eq_args[1].rstrip()
+    
+    if len(eq_args) < 2 or eq_args[1] == '':
         session.msg("What would you like to name that object?")
     else:
-        target_obj = Object.objects.standard_plr_objsearch(session, searchstring)
+        target_obj = Object.objects.standard_plr_objsearch(session, eq_args[0])
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
         
-        if len(eq_args[1]) == 0:
-            session.msg("What would you like to name that object?")
-        else:
-            newname = '='.join(eq_args[1:])
-            session.msg("You have renamed %s to %s." % (target_obj, ansi.parse_ansi(newname, strip_formatting=True)))
-            target_obj.set_name(newname)
+        ansi_name = ansi.parse_ansi(new_name, strip_formatting=True)
+        session.msg("You have renamed %s to %s." % (target_obj, ansi_name))
+        target_obj.set_name(new_name)
 
-def cmd_description(cdat):
+def cmd_description(command):
     """
     Set an object's description.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
-    eq_args = ' '.join(args).split('=')
-    searchstring = ''.join(eq_args[0])
     
-    if len(args) == 0:    
+    if not command.command_argument:    
         session.msg("What do you want to describe?")
-    elif len(eq_args) < 2:
+        return
+    
+    eq_args = command.command_argument.split('=', 1)
+    
+    if len(eq_args) < 2 or eq_args[1] == '':
         session.msg("How would you like to describe that object?")
     else:
-        target_obj = Object.objects.standard_plr_objsearch(session, searchstring)
+        target_obj = Object.objects.standard_plr_objsearch(session, eq_args[0])
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -503,45 +529,45 @@ def cmd_description(cdat):
             session.msg(defines_global.NOCONTROL_MSG)
             return
 
-        new_desc = '='.join(eq_args[1:])
+        new_desc = eq_args[1]
         session.msg("%s - DESCRIPTION set." % (target_obj,))
         target_obj.set_description(new_desc)
 
-def cmd_destroy(cdat):
+def cmd_destroy(command):
     """
     Destroy an object.
     """
-    session = cdat['session']
+    session = command.session
     pobject = session.get_pobject()
-    args = cdat['uinput']['splitted'][1:]
-    switches = cdat['uinput']['root_chunk'][1:]
     switch_override = False
-    
-    if "override" in switches:
-        switch_override = True
-    
-    if len(args) == 0:    
+       
+    if not command.command_argument:    
         session.msg("Destroy what?")
         return
-    else:
-        target_obj = Object.objects.standard_plr_objsearch(session, ' '.join(args))
-        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
-        if not target_obj:
-            return
+    
+    # Safety feature. Switch required to delete players and SAFE objects.
+    if "override" in command.command_switches:
+        switch_override = True
         
-        if target_obj.is_player():
-            if pobject.id == target_obj.id:
-                session.msg("You can't destroy yourself.")
-                return
-            if not switch_override:
-                session.msg("You must use @destroy/override on players.")
-                return
-            if target_obj.is_superuser():
-                session.msg("You can't destroy a superuser.")
-                return
-        elif target_obj.is_going() or target_obj.is_garbage():
-            session.msg("That object is already destroyed.")
+    target_obj = Object.objects.standard_plr_objsearch(session,
+                                                       command.command_argument)
+    # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+    if not target_obj:
+        return
+    
+    if target_obj.is_player():
+        if pobject.id == target_obj.id:
+            session.msg("You can't destroy yourself.")
             return
+        if not switch_override:
+            session.msg("You must use @destroy/override on players.")
+            return
+        if target_obj.is_superuser():
+            session.msg("You can't destroy a superuser.")
+            return
+    elif target_obj.is_going() or target_obj.is_garbage():
+        session.msg("That object is already destroyed.")
+        return
     
     session.msg("You destroy %s." % (target_obj.get_name(),))
     target_obj.destroy()

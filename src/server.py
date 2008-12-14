@@ -85,7 +85,7 @@ class EvenniaService(service.Service):
         """
         Return a string representing the server's command list.
         """
-        clist = cmdtable.ctable.keys()
+        clist = cmdtable.GLOBAL_CMD_TABLE.ctable.keys()
         clist.sort()
         return clist
 
