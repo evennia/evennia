@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################################################
-# SERVER STARTUP SCRIPT
+# LINUX/UNIX SERVER STARTUP SCRIPT
 # Sets the appropriate environmental variables and launches the server
 # process. Run without flags for daemon mode.
 # It can be used for stoping the server.
