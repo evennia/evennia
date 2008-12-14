@@ -175,6 +175,14 @@ INSTALLED_APPS = (
     'webapps.website',
 )
 
+# If django_extensions is present, import it and install it. Otherwise fail
+# silently.
+try:
+    import django_extensions
+    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
+except ImportError:
+    pass
+
 """
 Importing everything from local_settings.py overrides the settings in this
 file with the settings specified in local_settings.py. Any configuration
