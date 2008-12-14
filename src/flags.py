@@ -5,7 +5,8 @@ import defines_global
 
 # This is a list of flags that the server actually uses. Anything not in this
 # list is a custom flag.
-SERVER_FLAGS = ["CONNECTED", "DARK", "FLOATING", "GAGGED", "HAVEN", "OPAQUE", "SAFE", "SLAVE", "SUSPECT", "TRANSPARENT"]
+SERVER_FLAGS = ["CONNECTED", "DARK", "FLOATING", "GAGGED", "HAVEN", "OPAQUE", 
+                "SAFE", "SLAVE", "SUSPECT", "TRANSPARENT"]
 
 # These flags are not saved.
 NOSAVE_FLAGS = ["CONNECTED"]

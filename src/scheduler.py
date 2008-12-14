@@ -13,7 +13,11 @@ ADDING AN EVENT:
 # Dictionary of events with a list in the form of:
 #  [<function>, <interval>, <lastrantime>, <taskobject>, <description>]
 schedule = {
-    'evt_check_sessions': [events.evt_check_sessions, 60, time.time(), None, "Session consistency checks."]
+    'evt_check_sessions': [events.evt_check_sessions, # Function 
+                           60, # Interval (seconds)
+                           time.time(), # Last time executed (now)
+                           None, # Task object
+                           "Session consistency checks."] # Description
 }
 
 def start_events():
