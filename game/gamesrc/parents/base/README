@@ -1,0 +1,6 @@
+Do not modify files in this directory! They are base classes from which other
+things may be sub-classed. Modifying these classes may cause conflicts the
+next time you upgrade manually or through subversion.
+
+Instead, sub-class the classes contained here and point the default parent
+imports in settings.py to your new classes.
