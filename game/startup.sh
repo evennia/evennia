@@ -14,22 +14,23 @@
 
 init () {
 	## Sets environmental variables and preps the logs.
-	export DJANGO_SETTINGS_MODULE="settings"
-	BASE_PATH=`python -c "import settings; print settings.BASE_PATH"`
-	mv -f $BASE_PATH/logs/evennia.log $BASE_PATH/logs/evennia.logs.old
+	export PYTHON_PATH=".."
+	export DJANGO_SETTINGS_MODULE="game.settings"
+	GAME_DIR=`python -c "import settings; print settings.GAME_DIR"`
+	mv -f $GAME_DIR/logs/evennia.log $GAME_DIR/logs/evennia.logs.old
 }
 
 startup_interactive() {
 	## Starts the server in interactive mode.
 	init
 	echo "Starting in interactive mode..."
-	twistd -n --logfile=logs/evennia.log --python=src/server.py
+	twistd -n --logfile=logs/evennia.log --python=../src/server.py
 }
 
 startup_daemon() {
 	## Starts the server in daemon mode.
 	init
-	twistd --logfile=logs/evennia.log --python=src/server.py
+	twistd --logfile=logs/evennia.log --python=../src/server.py
 }
 
 stop_server() {

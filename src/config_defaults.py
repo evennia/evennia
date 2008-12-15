@@ -2,10 +2,8 @@
 Master configuration file for Evennia.
 
 NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE! All settings changes should
-be done by copy-pasting the variable and its value to a new file (if it doesn't
-already exist) called local_settings.py and changed there. Anything in the
-local_settings.py file will override what is seen in settings.py by the
-import at the end of this file.
+be done by copy-pasting the variable and its value to your game directory's
+settings.py file.
 """
 import os
 
@@ -30,7 +28,10 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # The path that contains this settings.py file (no trailing slash).
-BASE_PATH = os.path.abspath(os.path.split(__file__)[0])
+BASE_PATH = os.path.join(os.path.abspath(os.path.split(__file__)[0]), '..')
+
+# Path to the game directory (containing the database file if using sqlite).
+GAME_DIR = os.path.join(BASE_PATH, 'game')
 
 # Absolute path to the directory that holds media (no trailing slash).
 # Example: "/home/media/media.lawrence.com"
@@ -43,7 +44,7 @@ SCRIPT_ROOT = '%s/src/scripts' % (BASE_PATH)
 # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
 DATABASE_ENGINE = 'sqlite3'
 # Database name, or path to DB file if using sqlite3.
-DATABASE_NAME = '%s/evennia.db3' % (BASE_PATH)
+DATABASE_NAME = os.path.join(GAME_DIR, 'evennia.db3')
 # Unused for sqlite3
 DATABASE_USER = ''
 # Unused for sqlite3
@@ -182,13 +183,3 @@ try:
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
     pass
-
-"""
-Importing everything from local_settings.py overrides the settings in this
-file with the settings specified in local_settings.py. Any configuration
-changes should happen in local_settings.py rather than this file. 
-"""
-try:
-     from local_settings import *
-except ImportError:
-     pass

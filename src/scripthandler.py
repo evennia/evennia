@@ -7,7 +7,7 @@ interaction with actual script methods should happen via calls to Objects.
 import os
 from traceback import format_exc
 
-import settings
+from django.conf import settings
 from src import logger
 
 # A dictionary with keys equivalent to the script's name and values that
