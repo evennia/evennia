@@ -6,7 +6,7 @@ import datetime
 
 from django.utils import simplejson
 
-from apps.objects.models import CommChannel, CommChannelMessage
+from src.objects.models import CommChannel, CommChannelMessage
 from src import session_mgr
 from src import ansi
 

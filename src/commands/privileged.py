@@ -2,7 +2,7 @@
 This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
-from apps.objects.models import Object
+from src.objects.models import Object
 from src import defines_global
 from src import ansi
 from src import session_mgr

@@ -9,7 +9,7 @@ from django.db import models
 from django.db import connection
 from django.conf import settings
 
-from apps.config.models import CommandAlias, ConfigValue
+from src.config.models import CommandAlias, ConfigValue
 from src.session import SessionProtocol
 from src import scheduler
 from src import logger

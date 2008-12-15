@@ -3,7 +3,7 @@ Session manager, handles connected players.
 """
 import time
 
-from apps.config.models import ConfigValue
+from src.config.models import ConfigValue
 from src import logger
 from src.util import functions_general
 

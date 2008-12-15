@@ -6,9 +6,9 @@ import time
 
 from django.conf import settings
 
-from apps.config.models import ConfigValue
-from apps.helpsys.models import HelpEntry
-from apps.objects.models import Object
+from src.config.models import ConfigValue
+from src.helpsys.models import HelpEntry
+from src.objects.models import Object
 from src import defines_global
 from src import session_mgr
 from src import ansi

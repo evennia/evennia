@@ -13,7 +13,7 @@ if not functions_general.host_os_is('nt'):
 
 import django
 
-from apps.objects.models import Object
+from src.objects.models import Object
 from src import scheduler
 from src import defines_global
 from src import flags

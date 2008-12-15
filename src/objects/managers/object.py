@@ -10,9 +10,9 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
-from apps.config.models import ConfigValue
-from apps.objects.exceptions import ObjectNotExist
-from apps.objects.util import object as util_object
+from src.config.models import ConfigValue
+from src.objects.exceptions import ObjectNotExist
+from src.objects.util import object as util_object
 from src import defines_global
 
 class ObjectManager(models.Manager):

@@ -6,7 +6,7 @@ something.
 from traceback import format_exc
 import time
 
-from apps.objects.models import Object
+from src.objects.models import Object
 import defines_global
 import cmdtable
 import logger

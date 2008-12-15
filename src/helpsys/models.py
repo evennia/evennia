@@ -4,7 +4,7 @@ Models for the help system.
 from django.db import models
 from django.contrib import admin
 from src import ansi
-from apps.helpsys.managers.helpentry import HelpEntryManager
+from src.helpsys.managers.helpentry import HelpEntryManager
 
 class HelpEntry(models.Model):
     """

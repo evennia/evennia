@@ -10,8 +10,8 @@ from twisted.conch.telnet import StatefulTelnetProtocol
 
 from django.contrib.auth.models import User
 
-from apps.objects.models import Object
-from apps.config.models import ConnectScreen, ConfigValue
+from src.objects.models import Object
+from src.config.models import ConnectScreen, ConfigValue
 import cmdhandler
 import logger
 import session_mgr

@@ -28,7 +28,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # The path that contains this settings.py file (no trailing slash).
-BASE_PATH = os.path.join(os.path.abspath(os.path.split(__file__)[0]), '..')
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Path to the game directory (containing the database file if using sqlite).
 GAME_DIR = os.path.join(BASE_PATH, 'game')
@@ -95,7 +95,7 @@ SERVE_MEDIA = True
 
 # The master urlconf file that contains all of the sub-branches to the
 # applications.
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'game.web.urls'
 
 # Where users are redirected after logging in via contribu.auth.login.
 LOGIN_REDIRECT_URL = '/'
@@ -156,7 +156,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.media',
     'django.core.context_processors.debug',
-    'webapps.website.webcontext.general_context',
+    'game.web.apps.website.webcontext.general_context',
 )
 
 # Global and Evennia-specific apps. This ties everything together so we can
@@ -168,12 +168,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.flatpages',
-    'apps.config',
-    'apps.objects',
-    'apps.helpsys',
-    'apps.genperms',
-    'webapps.news',
-    'webapps.website',
+    'src.config',
+    'src.objects',
+    'src.helpsys',
+    'src.genperms',
+    #'webapps.news',
+    #'webapps.website',
 )
 
 # If django_extensions is present, import it and install it. Otherwise fail

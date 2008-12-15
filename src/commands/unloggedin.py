@@ -3,7 +3,7 @@ Commands that are available from the connect screen.
 """
 from django.contrib.auth.models import User
 
-from apps.objects.models import Attribute, Object
+from src.objects.models import Attribute, Object
 from src import defines_global
 from src.util import functions_general
 

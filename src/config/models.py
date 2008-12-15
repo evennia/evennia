@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib import admin
-from apps.config.managers.commandalias import CommandAliasManager
-from apps.config.managers.configvalue import ConfigValueManager
-from apps.config.managers.connectscreen import ConnectScreenManager
+from src.config.managers.commandalias import CommandAliasManager
+from src.config.managers.configvalue import ConfigValueManager
+from src.config.managers.connectscreen import ConnectScreenManager
 
 class CommandAlias(models.Model):
     """

@@ -2,11 +2,11 @@ import re
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
-from apps.config.models import ConfigValue
-from apps.objects.util import object as util_object
-from apps.objects.managers.commchannel import CommChannelManager
-from apps.objects.managers.object import ObjectManager
-from apps.objects.managers.attribute import AttributeManager
+from src.config.models import ConfigValue
+from src.objects.util import object as util_object
+from src.objects.managers.commchannel import CommChannelManager
+from src.objects.managers.object import ObjectManager
+from src.objects.managers.attribute import AttributeManager
 from src import scripthandler
 from src import defines_global
 from src import ansi

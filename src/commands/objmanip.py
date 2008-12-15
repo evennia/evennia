@@ -1,7 +1,7 @@
 """
 These commands typically are to do with building or modifying Objects.
 """
-from apps.objects.models import Object, Attribute
+from src.objects.models import Object, Attribute
 # We'll import this as the full path to avoid local variable clashes.
 import src.flags
 from src import ansi

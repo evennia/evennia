@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
-from apps.objects.models import Object
-from apps.config.models import ConfigValue
+from src.objects.models import Object
+from src.config.models import ConfigValue
 
 def handle_setup():
     # Set the initial user's username on the #1 object.
