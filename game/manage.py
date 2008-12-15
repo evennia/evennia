@@ -13,7 +13,7 @@ basic stuff.
 if not os.path.exists('settings.py'):
     print "Can't find a settings.py file, creating one for you."
     f = open('settings.py', 'w')
-    f.write('"""\rMaster server configuration file. You may override any of the values in the\rsrc/config_defaults.py here. Copy-paste the variables here, and make changes to\rthis file rather than editing config_defaults.py directly.\r"""\r')
+    f.write('"""\nMaster server configuration file. You may override any of the values in the\nsrc/config_defaults.py here. Copy-paste the variables here, and make changes to\nthis file rather than editing config_defaults.py directly.\n"""\n')
     f.write('from src.config_defaults import *')
 
 try:

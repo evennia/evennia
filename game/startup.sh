@@ -14,10 +14,9 @@
 
 init () {
 	## Sets environmental variables and preps the logs.
-	export PYTHON_PATH=".."
+	export PYTHONPATH="..":$PYTHONPATH
 	export DJANGO_SETTINGS_MODULE="game.settings"
-	GAME_DIR=`python -c "import settings; print settings.GAME_DIR"`
-	mv -f $GAME_DIR/logs/evennia.log $GAME_DIR/logs/evennia.logs.old
+	mv -f logs/evennia.log logs/evennia.logs.old
 }
 
 startup_interactive() {
