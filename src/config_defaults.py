@@ -37,9 +37,14 @@ GAME_DIR = os.path.join(BASE_PATH, 'game')
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, 'web', 'media')
 
-# Absolute path to the directory that has the script tree in it. (no trailing slash)
-# Example: "/home/evennia/src/scripts"
-SCRIPT_ROOT = os.path.join(BASE_PATH, 'src', 'scripts')
+# Import style path to the script parent module. Must be in the import path.
+SCRIPT_IMPORT_PATH = 'game.gamesrc.parents'
+# Default parent associated with non-player objects. This starts from where
+# the SCRIPT_IMPORT_PATH left off.
+SCRIPT_DEFAULT_OBJECT = 'base.basicobject'
+# Default parent associated with player objects. This starts from where
+# the SCRIPT_IMPORT_PATH left off.
+SCRIPT_DEFAULT_PLAYER = 'base.basicplayer'
 
 # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
 DATABASE_ENGINE = 'sqlite3'

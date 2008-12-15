@@ -1,7 +1,11 @@
+"""
+This is where all of the crucial, core object models reside. 
+"""
 import re
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
+from django.conf import settings
 from src.config.models import ConfigValue
 from src.objects.util import object as util_object
 from src.objects.managers.commchannel import CommChannelManager
@@ -650,16 +654,18 @@ class Object(models.Model):
         """
         if not self.scriptlink_cached:
             if self.is_player():
-                script_to_load = 'player.basicplayer'
+                script_to_load = settings.SCRIPT_DEFAULT_PLAYER
             else:
-                script_to_load = 'basicobject'
-            self.scriptlink_cached = scripthandler.scriptlink(self, self.get_attribute_value('__parent', script_to_load))
+                script_to_load = settings.SCRIPT_DEFAULT_OBJECT
+            self.scriptlink_cached = scripthandler.scriptlink(self, 
+                        self.get_attribute_value('__parent', script_to_load))
         
         if self.scriptlink_cached:    
             # If the scriptlink variable can't be populated, this will fail
             # silently and let the exception hit in the scripthandler.
             return self.scriptlink_cached
         return None
+    # Set a property to make accessing the scriptlink more transparent.
     scriptlink = property(fget=get_scriptlink)
         
     def get_attribute_value(self, attrib, default=False):

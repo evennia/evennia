@@ -1,12 +1,14 @@
 """
-The basic Player object script parent.
+This is the basic Evennia-standard player parent. 
+
+NOTE: This file should NOT be directly modified. Sub-class the BasicPlayer
+class in game/gamesrc/parents/base/basicplayer.py and change the 
+SCRIPT_DEFAULT_PLAYER variable in settings.py to point to the new class. 
 """
 import time
-
 from src import comsys
-from src.scripts.basicobject import BasicObject
 
-class BasicPlayer(BasicObject):
+class EvenniaBasicPlayer(object):
     def at_pre_login(self):
         """
         Everything done here takes place before the player is actually
@@ -34,6 +36,3 @@ class BasicPlayer(BasicObject):
         pobject.get_location().emit_to_contents("%s has connected." % 
             (pobject.get_name(show_dbref=False),), exclude=pobject)
         session.execute_cmd("look")
-        
-def class_factory(source_obj):
-    return BasicPlayer(source_obj)  

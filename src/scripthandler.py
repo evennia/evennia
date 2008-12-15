@@ -6,7 +6,6 @@ interaction with actual script methods should happen via calls to Objects.
 """
 import os
 from traceback import format_exc
-
 from django.conf import settings
 from src import logger
 
@@ -32,15 +31,15 @@ def scriptlink(source_obj, scriptname):
     if retval:
         return retval.class_factory(source_obj)
 
-    ##
-    ## NOTE: Only go past here when the script isn't already cached.
-    ##
+    """
+    NOTE: Only go past here when the script isn't already cached.
+    """
     
     # Split the script name up by periods to give us the directory we need
     # to change to. I really wish we didn't have to do this, but there's some
     # strange issue with __import__ and more than two directories worth of
     # nesting.
-    full_script = "src.scripts.%s" % (scriptname,)
+    full_script = "%s.%s" % (settings.SCRIPT_IMPORT_PATH, scriptname)
     script_name = full_script.split('.')[-1]
 
     try:
