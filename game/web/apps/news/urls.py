@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('webapps.news.views',
+urlpatterns = patterns('game.web.apps.news.views',
      (r'^show/(?P<entry_id>\d+)/$', 'show_news'),
      (r'^archive/$', 'news_archive'),
      (r'^search/$', 'search_form'),

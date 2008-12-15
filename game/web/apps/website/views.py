@@ -2,8 +2,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
-from apps.objects.models import Object
-from webapps.news.models import NewsEntry
+from src.objects.models import Object
+from game.web.apps.news.models import NewsEntry
 
 """
 This file contains the generic, assorted views that don't fall under one of

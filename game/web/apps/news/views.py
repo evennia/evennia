@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
 
-from webapps.news.models import NewsTopic, NewsEntry
+from game.web.apps.news.models import NewsTopic, NewsEntry
 
 # The sidebar text to be included as a variable on each page. There's got to
 # be a better, cleaner way to include this on every page.

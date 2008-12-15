@@ -16,13 +16,13 @@ urlpatterns = patterns('',
     url(r'^accounts/logout', 'django.contrib.auth.views.logout'),
 
     # Front page
-    url(r'^', include('webapps.website.urls')),
+    url(r'^', include('game.web.apps.website.urls')),
 
     # News stuff
-    url(r'^news/', include('webapps.news.urls')),
+    url(r'^news/', include('game.web.apps.news.urls')),
 
     # Page place-holder for things that aren't implemented yet.
-    url(r'^tbi/', 'webapps.website.views.to_be_implemented'),
+    url(r'^tbi/', 'game.web.apps.website.views.to_be_implemented'),
     
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

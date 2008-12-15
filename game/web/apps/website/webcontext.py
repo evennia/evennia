@@ -1,4 +1,4 @@
-from apps.config.models import ConfigValue
+from src.config.models import ConfigValue
 
 def general_context(request):
     """

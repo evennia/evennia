@@ -8,7 +8,9 @@ class NewsTopic(models.Model):
     """
     name = models.CharField(max_length=75, unique=True)
     description = models.TextField(blank=True)
-    icon = models.ImageField(upload_to='newstopic_icons', default='newstopic_icons/default.png', blank=True, help_text="Image for the news topic.")
+    icon = models.ImageField(upload_to='newstopic_icons', 
+                             default='newstopic_icons/default.png', 
+                             blank=True, help_text="Image for the news topic.")
 
     def __str__(self):
         try:
