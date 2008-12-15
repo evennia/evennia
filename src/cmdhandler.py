@@ -11,11 +11,15 @@ import defines_global
 import cmdtable
 import logger
 import comsys
-from util import functions_general
 
 class UnknownCommand(Exception):
     """
     Throw this when a user enters an an invalid command.
+    """
+    pass
+class ExitCommandHandler(Exception):
+    """
+    Thrown when something happens and it's time to exit the command handler.
     """
     pass
     
@@ -32,6 +36,8 @@ class Command(object):
     command_switches = []
     # The un-parsed argument provided. IE: if input is "look dog", this is "dog".
     command_argument = None
+    # A reference to the command function looked up in a command table.
+    command_function = None
     
     def parse_command_switches(self):
         """
@@ -56,6 +62,14 @@ class Command(object):
             """
             (self.command_string, self.command_argument) = self.raw_input.split(' ', 1)
             self.command_argument = self.command_argument.strip()
+            self.command_string = self.command_string.strip()
+            """
+            This is a really important behavior to note. If the user enters
+            anything other than a string with some character in it, the value
+            of the argument is None, not an empty string.
+            """
+            if self.command_string == '':
+                self.command_string = None
             if self.command_argument == '':
                 self.command_argument = None 
         except ValueError:
@@ -68,9 +82,13 @@ class Command(object):
             self.parse_command_switches()
     
     def __init__(self, raw_input, server=None, session=None):
+        """
+        Instantiates the Command object and does some preliminary parsing.
+        """
         self.server = server
         self.raw_input = raw_input
         self.session = session
+        # The work starts here.
         self.parse_command()
         
     def arg_has_target(self):
@@ -105,14 +123,111 @@ class Command(object):
         
         return self.command_argument.split('=', 1)[1]
 
-def match_exits(pobject, searchstr):
+def match_idle(command):
+    """
+    Matches against the 'idle' command. It doesn't actually do anything, but it
+    lets the users get around badly configured NAT timeouts that would cause
+    them to drop if they don't send or receive something from the connection
+    for a while.
+    """
+    if not command.command_string == 'idle':
+        # Anything other than an 'idle' command updates the public-facing idle
+        # time for the session.
+        command.session.count_command(silently=False)
+    else:
+        # User is hitting IDLE command. Don't update their publicly
+        # facing idle time, drop out of command handler immediately.
+        command.session.count_command(silently=True)
+        raise ExitCommandHandler
+
+def match_exits(command):
     """
     See if we can find an input match to exits.
     """
+    # If we're not logged in, don't check exits.
+    pobject = command.session.get_pobject()
     exits = pobject.get_location().get_contents(filter_type=defines_global.OTYPE_EXIT)
-    return Object.objects.list_search_object_namestr(exits, 
-                                                     searchstr, 
+    exit_matches = Object.objects.list_search_object_namestr(exits, 
+                                                     command.command_string, 
                                                      match_type="exact")
+    if exit_matches:
+        # Only interested in the first match.
+        targ_exit = exit_matches[0]
+        # An exit's home is its destination. If the exit has a None home value,
+        # it's not traversible.
+        if targ_exit.get_home():                   
+            # SCRIPT: See if the player can traverse the exit
+            if not targ_exit.scriptlink.default_lock({
+                "pobject": pobject
+            }):
+                command.session.msg("You can't traverse that exit.")
+            else:
+                pobject.move_to(targ_exit.get_home())
+                # Force the player to 'look' to see the description.
+                command.session.execute_cmd("look")
+        else:
+            command.session.msg("That exit leads to nowhere.")
+        # We found a match, kill the command handler.
+        raise ExitCommandHandler
+
+def match_alias(command):
+    """
+    Checks to see if the entered command matches an alias. If so, replaces
+    the command_string with the correct command.
+
+    We do a dictionary lookup. If the key (the player's command_string) doesn't 
+    exist on the dict, just keep the command_string the same. If the key exists, 
+    its value replaces the command_string. For example, sa -> say.
+    """
+    command.command_string = command.server.cmd_alias_list.get(
+                                            command.command_string,
+                                            command.command_string)
+    
+def match_channel(command):
+    """
+    Match against a comsys channel or comsys command. If the player is talking
+    over a channel, replace command_string with @cemit. If they're entering
+    a channel manipulation command, perform the operation and kill the things
+    immediately with a True value sent back to the command handler.
+    """
+    if comsys.plr_has_channel(command.session, command.command_string, 
+        alias_search=True, return_muted=True):
+        
+        calias = command.command_string
+        cname = comsys.plr_cname_from_alias(command.session, calias)
+        
+        if command.command_argument == "who":
+            comsys.msg_cwho(command.session, cname)
+            raise ExitCommandHandler
+        elif command.command_argument == "on":
+            comsys.plr_chan_on(command.session, calias)
+            raise ExitCommandHandler
+        elif command.command_argument == "off":
+            comsys.plr_chan_off(command.session, calias)
+            raise ExitCommandHandler
+        elif command.command_argument == "last":
+            comsys.msg_chan_hist(command.session, cname)
+            ExitCommandHandler
+            
+        second_arg = "%s=%s" % (cname, command.command_argument)
+        command.command_string = "@cemit"
+        command.command_switches = ["sendername", "quiet"]
+        
+def command_table_lookup(command, command_table, eval_perms=True):
+    """
+    Performs a command table lookup on the specified command table. Also
+    evaluates the permissions tuple.
+    """
+    # Get the command's function reference (Or False)
+    cmdtuple = command_table.get_command_tuple(command.command_string)
+    if cmdtuple:
+        # If there is a permissions element to the entry, check perms.
+        if eval_perms and cmdtuple[1]:
+            if not command.session.get_pobject().user_has_perm_list(cmdtuple[1]):
+                command.session.msg(defines_global.NOPERMS_MSG)
+                raise ExitCommandHandler
+        # If flow reaches this point, user has perms and command is ready.
+        command.command_function = cmdtuple[0]
 
 def handle(command):
     """
@@ -128,113 +243,58 @@ def handle(command):
     
     try:
         # TODO: Protect against non-standard characters.
-        if command.raw_input == '':
+        if not command.command_string:
             # Nothing sent in of value, ignore it.
-            return
-
-        # Now we'll see if the user is using an alias. We do a dictionary lookup,
-        # if the key (the player's command_string) doesn't exist on the dict, 
-        # just keep the command_string the same. If the key exists, its value
-        # replaces the command_string. For example, sa -> say.
-        command.command_string = server.cmd_alias_list.get(
-                                                command.command_string,
-                                                command.command_string)
-
-        # This will hold the reference to the command's function.
-        cmd = None
+            raise ExitCommandHandler
 
         if session.logged_in:
-            # Store the timestamp of the user's last command.
-            session.cmd_last = time.time()
-
-            # Lets the users get around badly configured NAT timeouts.
-            if command.command_string == 'idle':
-                return
-
-            # Increment our user's command counter.
-            session.cmd_total += 1
-            # Player-visible idle time, not used in idle timeout calcs.
-            session.cmd_last_visible = time.time()
-
-            # Just in case. Prevents some really funky-case crashes.
-            if len(command.command_string) == 0:
-                raise UnknownCommand
-
-            if comsys.plr_has_channel(session, command.command_string, 
-                alias_search=True, return_muted=True):
-                
-                calias = command.command_string
-                cname = comsys.plr_cname_from_alias(session, calias)
-                
-                if command.command_argument == "who":
-                    comsys.msg_cwho(session, cname)
-                    return
-                elif command.command_argument == "on":
-                    comsys.plr_chan_on(session, calias)
-                    return
-                elif command.command_argument == "off":
-                    comsys.plr_chan_off(session, calias)
-                    return
-                elif command.command_argument == "last":
-                    comsys.msg_chan_hist(session, cname)
-                    return
-                    
-                second_arg = "%s=%s" % (cname, command.command_argument)
-                command.command_string = "@cemit"
-                command.command_switches = ["sendername", "quiet"]
-
-            # Get the command's function reference (Or False)
-            cmdtuple = cmdtable.GLOBAL_CMD_TABLE.get_command_tuple(command.command_string)
-            if cmdtuple:
-                # If there is a permissions element to the entry, check perms.
-                if cmdtuple[1]:
-                    if not session.get_pobject().user_has_perm_list(cmdtuple[1]):
-                        session.msg(defines_global.NOPERMS_MSG)
-                        return
-                # If flow reaches this point, user has perms and command is ready.
-                cmd = cmdtuple[0]
-                    
+            # Match against the 'idle' command.
+            match_idle(command)
+            # See if this is an aliased command.
+            match_alias(command)
+            # Check if the user is using a channel command.
+            match_channel(command)
+            # See if the user is trying to traverse an exit.
+            match_exits(command)
+            # Retrieve the appropriate (if any) command function.
+            command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
         else:
             # Not logged in, look through the unlogged-in command table.
-            cmdtuple = cmdtable.GLOBAL_UNCON_CMD_TABLE.get_command_tuple(command.command_string)
-            if cmdtuple:
-                cmd = cmdtuple[0]
-
-        # Debugging stuff.
-        #session.msg("ROOT : %s" % (parsed_input['root_cmd'],))
-        #session.msg("SPLIT: %s" % (parsed_input['splitted'],))
+            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE, 
+                                 eval_perms=False)
         
-        if callable(cmd):
+        """
+        By this point, we assume that the user has entered a command and not
+        something like a channel or exit. Make sure that the command's
+        function reference is value and try to run it.
+        """
+        if callable(command.command_function):
             try:
-                cmd(command)
+                # Move to the command function, passing the command object.
+                command.command_function(command)
             except:
-                session.msg("Untrapped error, please file a bug report:\n%s" % (format_exc(),))
+                """
+                This is a crude way of trapping command-related exceptions
+                and showing them to the user and server log. Once the
+                codebase stabilizes, we will probably want something more
+                useful or give them the option to hide exception values.
+                """
+                session.msg("Untrapped error, please file a bug report:\n%s" % 
+                    (format_exc(),))
                 logger.log_errmsg("Untrapped error, evoker %s: %s" %
                     (session, format_exc()))
-            return
-
-        if session.logged_in:
-            # If we're not logged in, don't check exits.
-            pobject = session.get_pobject()
-            exit_matches = match_exits(pobject, command.command_string)
-            if exit_matches:
-                targ_exit = exit_matches[0]
-                if targ_exit.get_home():                   
-                    # SCRIPT: See if the player can traverse the exit
-                    if not targ_exit.scriptlink.default_lock({
-                        "pobject": pobject
-                    }):
-                        session.msg("You can't traverse that exit.")
-                    else:
-                        pobject.move_to(targ_exit.get_home())
-                        session.execute_cmd("look")
-                else:
-                    session.msg("That exit leads to nowhere.")
-                return
+            finally:
+                # Prevent things from falling through to UnknownCommand.
+                raise ExitCommandHandler
 
         # If we reach this point, we haven't matched anything.     
         raise UnknownCommand
 
+    except ExitCommandHandler:
+        # When this is thrown, just get out and do nothing. It doesn't mean
+        # something bad has happened.
+        pass
     except UnknownCommand:
+        # Default fall-through. No valid command match.
         session.msg("Huh?  (Type \"help\" for help.)")
 

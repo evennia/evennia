@@ -90,10 +90,24 @@ class SessionProtocol(StatefulTelnetProtocol):
         cmdhandler.handle(command)
 
     def execute_cmd(self, cmdstr):
-      """
-      Executes a command as this session.
-      """
-      self.lineReceived(data=cmdstr)
+        """
+        Executes a command as this session.
+        """
+        self.lineReceived(data=cmdstr)
+      
+    def count_command(self, silently=False):
+        """
+        Hit this when the user enters a command in order to update idle timers
+        and command counters. If silently is True, the public-facing idle time
+        is not updated.
+        """
+        # Store the timestamp of the user's last command.
+        self.cmd_last = time.time()
+        # Increment the user's command counter.
+        self.cmd_total += 1
+        if not silently:
+            # Player-visible idle time, not used in idle timeout calcs.
+            self.cmd_last_visible = time.time()
             
     def handle_close(self):
         """
