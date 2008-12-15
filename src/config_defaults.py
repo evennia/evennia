@@ -35,11 +35,11 @@ GAME_DIR = os.path.join(BASE_PATH, 'game')
 
 # Absolute path to the directory that holds media (no trailing slash).
 # Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = '%s/media' % (BASE_PATH)
+MEDIA_ROOT = os.path.join(GAME_DIR, 'web', 'media')
 
 # Absolute path to the directory that has the script tree in it. (no trailing slash)
 # Example: "/home/evennia/src/scripts"
-SCRIPT_ROOT = '%s/src/scripts' % (BASE_PATH)
+SCRIPT_ROOT = os.path.join(BASE_PATH, 'src', 'scripts')
 
 # 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
 DATABASE_ENGINE = 'sqlite3'
@@ -128,7 +128,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "%s/webtemplates/%s" % (BASE_PATH, ACTIVE_TEMPLATE),
+    os.path.join(GAME_DIR, "web", "html", ACTIVE_TEMPLATE),
 )
 
 # List of callables that know how to import templates from various sources.
@@ -172,8 +172,8 @@ INSTALLED_APPS = (
     'src.objects',
     'src.helpsys',
     'src.genperms',
-    #'webapps.news',
-    #'webapps.website',
+    'game.web.apps.news',
+    'game.web.apps.website',
 )
 
 # If django_extensions is present, import it and install it. Otherwise fail
