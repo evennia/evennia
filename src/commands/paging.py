@@ -34,7 +34,6 @@ def cmd_page(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
     args = command.command_argument.split()
     targets = []
 

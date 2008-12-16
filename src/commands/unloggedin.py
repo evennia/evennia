@@ -51,7 +51,6 @@ def cmd_create(command):
     if not functions_general.cmd_check_num_args(session, arg_list, 2):
         return
     
-    server = session.server
     quote_split = command.command_argument.split("\"")
     
     if len(quote_split) < 2:

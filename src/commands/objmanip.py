@@ -13,7 +13,6 @@ def cmd_teleport(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
 
     if not command.command_argument:
         session.msg("Teleport where/what?")
@@ -181,7 +180,6 @@ def cmd_set(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
 
     if not command.command_argument:
         session.msg("Set what?")
@@ -253,7 +251,6 @@ def cmd_find(command):
     Searches for an object of a particular name.
     """
     session = command.session
-    server = command.server
     pobject = session.get_pobject()
     can_find = pobject.user_has_perm("genperms.builder")
 
@@ -277,7 +274,6 @@ def cmd_create(command):
     Creates a new object of type 'THING'.
     """
     session = command.session
-    server = session.server
     pobject = session.get_pobject()
     
     if not command.command_argument:
@@ -313,7 +309,6 @@ def cmd_open(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
     
     if not command.command_argument:
         session.msg("Open an exit to where?")
@@ -383,7 +378,6 @@ def cmd_link(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
 
     if not command.command_argument:
         session.msg("Link what?")

@@ -20,7 +20,6 @@ def cmd_addcom(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
     eq_args = command.command_argument.split('=', 1)
     
     if not command.command_argument:
@@ -192,7 +191,6 @@ def cmd_cemit(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    server = command.server
 
     if command.command_argument == 0:
         session.msg("Channel emit what?")
