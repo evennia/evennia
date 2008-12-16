@@ -28,7 +28,7 @@ def show_cached_scripts(command):
     for script in cache_dict.keys():
         retval += "\n " + script
     retval += "\n" + "-" * 78 + "\n"
-    retval += "%d cached parents." % len(cache_dict)
+    retval += "%d cached parents" % len(cache_dict)
     session.msg(retval)
     
 def cmd_parent(command):
@@ -43,3 +43,5 @@ def cmd_parent(command):
     if "clearcache" in command.command_switches:
         clear_cached_scripts(command)
         return
+    
+    

@@ -271,14 +271,16 @@ def cmd_examine(command):
         along with detailed information about said object.
         """
         # Format the examine header area with general flag/type info.
-        session.msg("%s\r\n%s" % (
-            target_obj.get_name(fullname=True),
-            target_obj.get_description(no_parsing=True),
-        ))
+        session.msg(target_obj.get_name(fullname=True))
         session.msg("Type: %s Flags: %s" % (target_obj.get_type(), 
                                             target_obj.get_flags()))
+        session.msg("Desc: %s" % target_obj.get_description(no_parsing=True))
         session.msg("Owner: %s " % (target_obj.get_owner(),))
         session.msg("Zone: %s" % (target_obj.get_zone(),))
+        
+        parent_str = target_obj.script_parent
+        if parent_str and parent_str != '':
+            session.msg("Parent: %s " % (parent_str,))
         
         for attribute in target_obj.get_all_attributes():
             session.msg(attribute.get_attrline())

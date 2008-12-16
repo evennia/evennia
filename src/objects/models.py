@@ -106,6 +106,7 @@ class Object(models.Model):
     ansi_name = models.CharField(max_length=255)
     owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
     zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
+    script_parent = models.CharField(max_length=255, blank=True, null=True)
     home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
     type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
     # TODO: Move description to an attribute.
@@ -653,12 +654,19 @@ class Object(models.Model):
         Returns an object's script parent.
         """
         if not self.scriptlink_cached:
-            if self.is_player():
-                script_to_load = settings.SCRIPT_DEFAULT_PLAYER
+            script_to_load = None
+            if not self.script_parent or self.script_parent.strip() == '':
+                # No parent value, assume the defaults based on type.
+                if self.is_player():
+                    script_to_load = settings.SCRIPT_DEFAULT_PLAYER
+                else:
+                    script_to_load = settings.SCRIPT_DEFAULT_OBJECT
             else:
-                script_to_load = settings.SCRIPT_DEFAULT_OBJECT
+                # A parent has been set, load it from the field's value.
+                script_to_load = self.script_parent
+            # Load the script reference into the object's attribute.
             self.scriptlink_cached = scripthandler.scriptlink(self, 
-                        self.get_attribute_value('__parent', script_to_load))
+                                                            script_to_load)
         
         if self.scriptlink_cached:    
             # If the scriptlink variable can't be populated, this will fail

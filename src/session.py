@@ -133,6 +133,7 @@ class SessionProtocol(StatefulTelnetProtocol):
             result = Object.objects.get(id=self.uid)
             return result
         except:
+            logger.log_errmsg("No session match for object: #%s" % self.uid)
             return None
         
     def game_connect_screen(self):
