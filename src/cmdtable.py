@@ -11,6 +11,7 @@ permissions tuple.
 """
 import commands.general
 import commands.paging
+import commands.parents
 import commands.privileged
 import commands.comsys
 import commands.unloggedin
@@ -96,6 +97,8 @@ GLOBAL_CMD_TABLE.add_command("@newpassword", commands.privileged.cmd_newpassword
 GLOBAL_CMD_TABLE.add_command("@open", commands.objmanip.cmd_open,
                              priv_tuple=("genperms.builder")),
 GLOBAL_CMD_TABLE.add_command("@password", commands.general.cmd_password),
+GLOBAL_CMD_TABLE.add_command("@parent", commands.parents.cmd_parent,
+                             priv_tuple=("genperms.builder")),
 GLOBAL_CMD_TABLE.add_command("@ps", commands.info.cmd_ps,
                              priv_tuple=("genperms.process_control")),
 GLOBAL_CMD_TABLE.add_command("@reload", commands.privileged.cmd_reload,

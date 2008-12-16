@@ -11,14 +11,14 @@ from src import logger
 
 # A dictionary with keys equivalent to the script's name and values that
 # contain references to the associated module for each key.
-cached_scripts = {}
+CACHED_SCRIPTS = {}
 
 def scriptlink(source_obj, scriptname):
     """
     Each Object will refer to this function when trying to execute a function
     contained within a scripted module. For the sake of ease of management,
     modules are cached and compiled as they are requested and stored in
-    the cached_scripts dictionary.
+    the CACHED_SCRIPTS dictionary.
     
     Returns a reference to an instance of the script's class as per it's
     class_factory() method.
@@ -27,7 +27,7 @@ def scriptlink(source_obj, scriptname):
     scriptname: (str) Name of the module to load (minus 'scripts').
     """
     # The module is already cached, just return it rather than re-load.
-    retval = cached_scripts.get(scriptname, False)
+    retval = CACHED_SCRIPTS.get(scriptname, False)
     if retval:
         return retval.class_factory(source_obj)
 
@@ -47,7 +47,7 @@ def scriptlink(source_obj, scriptname):
         logger.log_infomsg("SCRIPT: Caching and importing %s." % (scriptname))
         modreference = __import__(full_script, fromlist=[script_name])
         # Store the module reference for later fast retrieval.
-        cached_scripts[scriptname] = modreference
+        CACHED_SCRIPTS[scriptname] = modreference
     except ImportError:
         logger.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
         os.chdir(settings.BASE_PATH)
