@@ -15,11 +15,6 @@ def cmd_connect(command):
 
     session = command.session
 
-    # Check whether command is being issued in-game.
-    if str(session.get_pobject()) != 'None':
-        session.msg("Connect command unavailable in-game")
-        return
-
     # Argument check.
     # Fail gracefully if no argument is provided
     if not command.command_argument:
@@ -55,11 +50,6 @@ def cmd_create(command):
     Handle the creation of new accounts.
     """
     session = command.session
-
-    # Check whether command is being issued ingame.
-    if str(session.get_pobject()) != 'None':
-        session.msg("Create command unavailable in-game")
-        return
     
     # Argument check.
     # Fail gracefully if no argument is provided

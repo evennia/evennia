@@ -23,7 +23,11 @@ class CommandTable(object):
     """
     Stores command tables and performs lookups.
     """
-    ctable = {}
+    ctable = None
+    
+    def __init__(self):
+        # This ensures there are no leftovers when the class is instantiated.
+        self.ctable = {}
     
     def add_command(self, command_string, function, priv_tuple=None):
         """
