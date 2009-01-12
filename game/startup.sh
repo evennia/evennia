@@ -23,7 +23,7 @@ startup_interactive() {
 	## Starts the server in interactive mode.
 	init
 	echo "Starting in interactive mode..."
-	twistd -n --logfile=logs/evennia.log --python=../src/server.py
+	twistd -n --python=../src/server.py
 }
 
 startup_daemon() {
