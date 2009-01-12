@@ -15,7 +15,7 @@ def cmd_connect(command):
 
     session = command.session
 
-    # Check whether command is being issued in-game
+    # Check whether command is being issued in-game.
     if str(session.get_pobject()) != 'None':
         session.msg("Connect command unavailable in-game")
         return
@@ -56,7 +56,7 @@ def cmd_create(command):
     """
     session = command.session
 
-    #If this command is issued in game,
+    # Check whether command is being issued ingame.
     if str(session.get_pobject()) != 'None':
         session.msg("Create command unavailable in-game")
         return
