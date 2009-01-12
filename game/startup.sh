@@ -34,6 +34,7 @@ startup_daemon() {
 
 stop_server() {
 	## Stops the running server
+        echo "Stopping the server..."
 	kill `cat twistd.pid`
 }
 
