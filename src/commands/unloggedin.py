@@ -16,6 +16,11 @@ def cmd_connect(command):
     session = command.session
 
     # Argument check.
+    # Fail gracefully if no argument is provided
+    if not command.command_argument:
+        session.msg("No arguments provided\n Usage (without <>): connect <email> <password>")
+        return
+    
     arg_list = command.command_argument.split()
     if not functions_general.cmd_check_num_args(session, arg_list, 2):
         return
