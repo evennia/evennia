@@ -33,6 +33,13 @@ BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the game directory (containing the database file if using sqlite).
 GAME_DIR = os.path.join(BASE_PATH, 'game')
 
+# Logging paths
+LOG_DIR = os.path.join(GAME_DIR, 'logs')
+DEFAULT_LOG_FILE = os.path.join(LOG_DIR, 'evennia.log')
+
+# Path to the src directory containing the bulk of the codebase's code.
+SRC_DIR = os.path.join(BASE_PATH, 'src')
+
 # Absolute path to the directory that holds media (no trailing slash).
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, 'web', 'media')
