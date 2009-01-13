@@ -283,7 +283,6 @@ def handle(command):
                     (format_exc(),))
                 logger.log_errmsg("Untrapped error, evoker %s: %s" %
                     (session, format_exc()))
-            finally:
                 # Prevent things from falling through to UnknownCommand.
                 raise ExitCommandHandler
 
