@@ -77,9 +77,9 @@ class Command(object):
             No arguments. IE: look, who.
             """
             self.command_string = self.raw_input
-        finally:
-            # Parse command_string for switches, regardless of what happens.
-            self.parse_command_switches()
+
+        # Parse command_string for switches, regardless of what happens.
+        self.parse_command_switches()
     
     def __init__(self, raw_input, server=None, session=None):
         """
