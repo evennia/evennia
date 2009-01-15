@@ -6,10 +6,10 @@ Sets the appropriate environmental variables and launches the server
 process. Run the script with the -h flag to see usage information.
 """
 from optparse import OptionParser
-import os # for OS related fonctions 
-import sys # for getting command line arguments
-import signal
 from subprocess import Popen, call
+import os  
+import sys
+import signal
 
 # Set the Python path up so we can get to settings.py from here.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
