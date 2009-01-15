@@ -748,8 +748,9 @@ class Object(models.Model):
             self.get_location().emit_to_contents(arrival_message, exclude=self)
             if self.location.is_player():
                 self.location.emit_to("%s is now in your inventory." % (self.get_name()))
-            
-        if force_look and self.is_player():
+        
+        session = self.get_session()
+        if force_look and self.is_player() and session:
             self.get_session().execute_cmd('look')
         
     def dbref_match(self, oname):

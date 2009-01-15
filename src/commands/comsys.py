@@ -20,11 +20,12 @@ def cmd_addcom(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    eq_args = command.command_argument.split('=', 1)
-    
+
     if not command.command_argument:
         session.msg("You need to specify a channel alias and name.")
         return
+    
+    eq_args = command.command_argument.split('=', 1)
            
     chan_alias = eq_args[0]
     chan_name = eq_args[1]
@@ -62,7 +63,7 @@ def cmd_delcom(command):
     session = command.session
     pobject = session.get_pobject()
 
-    if len(command.command_argument) == 0:
+    if not command.command_argument:
         session.msg("You must specify a channel alias.")
         return
 
