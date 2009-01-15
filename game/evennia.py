@@ -61,9 +61,12 @@ def start_interactive(parser, options, args):
     all logging output is directed to stdout.
     """
     print 'Starting in interactive mode...'
-    call([TWISTED_BINARY, 
-          '-n', 
-          '--python=%s' % SERVER_PY_FILE])
+    try:
+        call([TWISTED_BINARY, 
+              '-n', 
+              '--python=%s' % SERVER_PY_FILE])
+    except KeyboardInterrupt:
+        pass
 
 def stop_server(parser, options, args):
     """
