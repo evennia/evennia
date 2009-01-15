@@ -45,10 +45,12 @@ def cmd_page(command):
             session.msg("You last paged: %s." % (
                 ', '.join([x.name for x in last_paged_objects])))
             return
-        session.msg("You have not paged anyone.")
-        return
+        else:
+            # No valid LASTPAGE values
+            session.msg("You have not paged anyone.")
+            return
     
-    args = command.command_argument.split()
+    # Stores a list of targets
     targets = []
 
     # Build a list of targets
@@ -64,25 +66,29 @@ def cmd_page(command):
             return
     else:
         # For each of the targets listed, grab their objects and append
-        # it to the targets list
+        # it to the targets list if valid.
         for target in cmd_targets:
             matched_object = Object.objects.local_and_global_search(pobject,
                     target,
                     limit_types=[defines_global.OTYPE_PLAYER])
+            
             if matched_object:
+                # Found a good object, store it
                 targets.append(matched_object[0])
             else:
-                # search returned None
+                # Search returned None
                 session.msg("Player '%s' can not be found." % (
                         target))
 
     # Depending on the argument provided, either send the entire thing as
     # a message or break off the point after the equal sign.
     if command.arg_has_target():
+        # User specified targets, get the stuff after the equal sign.
         message = command.get_arg_target_value()
     else:
-        session.msg("Page them what?")
-        return
+        # No targets specified with equal sign, use lastpaged and the user's
+        # arguments as the message to send.
+        message = command.command_argument
         
     sender_name = pobject.get_name(show_dbref=False)
     # Build our messages
