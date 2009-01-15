@@ -285,9 +285,9 @@ def handle(command):
                     (session, format_exc()))
                 # Prevent things from falling through to UnknownCommand.
                 raise ExitCommandHandler
-
-        # If we reach this point, we haven't matched anything.     
-        raise UnknownCommand
+        else:
+            # If we reach this point, we haven't matched anything.     
+            raise UnknownCommand
 
     except ExitCommandHandler:
         # When this is thrown, just get out and do nothing. It doesn't mean
