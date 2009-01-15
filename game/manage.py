@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import os
-from django.core.management import execute_manager
 
 # Tack on the root evennia directory to the python path.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,6 +14,7 @@ if not os.path.exists('settings.py'):
     f = open('settings.py', 'w')
     f.write('"""\nMaster server configuration file. You may override any of the values in the\nsrc/config_defaults.py here. Copy-paste the variables here, and make changes to\nthis file rather than editing config_defaults.py directly.\n"""\n')
     f.write('from src.config_defaults import *')
+    f.close()
 
 try:
     from game import settings
@@ -24,4 +24,5 @@ except ImportError:
      sys.exit(1)
 
 if __name__ == "__main__":
+     from django.core.management import execute_manager
      execute_manager(settings)
