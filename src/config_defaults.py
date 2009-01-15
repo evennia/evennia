@@ -179,6 +179,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.flatpages',
     'src.config',
     'src.objects',
