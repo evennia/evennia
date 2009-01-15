@@ -163,8 +163,6 @@ def match_exits(command):
                 command.session.msg("You can't traverse that exit.")
             else:
                 pobject.move_to(targ_exit.get_home())
-                # Force the player to 'look' to see the description.
-                command.session.execute_cmd("look")
         else:
             command.session.msg("That exit leads to nowhere.")
         # We found a match, kill the command handler.
