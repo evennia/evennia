@@ -6,16 +6,20 @@ def is_dbref(dbstring):
     """
     Is the input a well-formed dbref number?
     """
+    # Strip the leading # sign if it's there.
+    if dbstring.startswith("#"):
+        dbstring = dbstring[1:]
+
     try:
-        number = int(dbstring[1:])
+        # If this fails, it's probably not valid.
+        number = int(dbstring)
     except ValueError:
         return False
     except TypeError:
         return False
-        
-    if not dbstring.startswith("#"):
-        return False
-    elif number < 1:
+          
+    # Numbers less than 1 are not valid dbrefs. 
+    if number < 1:
         return False
     else:
         return True

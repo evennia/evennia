@@ -183,7 +183,7 @@ class ObjectManager(models.Manager):
         """
         Is the input a well-formed dbref number?
         """
-        util_object.is_dbref(dbstring)
+        return util_object.is_dbref(dbstring)
 
     def dbref_search(self, dbref_string, limit_types=False):
         """

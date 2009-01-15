@@ -34,12 +34,9 @@ def cmd_page(command):
     """
     session = command.session
     pobject = session.get_pobject()
-    args = command.command_argument.split()
-    targets = []
-
     # Get the last paged person(s)
     last_paged_objects = get_last_paged_objects(pobject)
-
+    
     # If they don't give a target, or any data to send to the target
     # then tell them who they last paged if they paged someone, if not
     # tell them they haven't paged anyone.
@@ -50,6 +47,9 @@ def cmd_page(command):
             return
         session.msg("You have not paged anyone.")
         return
+    
+    args = command.command_argument.split()
+    targets = []
 
     # Build a list of targets
     # If there are no targets, then set the targets to the last person they
@@ -66,7 +66,6 @@ def cmd_page(command):
                     limit_types=[defines_global.OTYPE_PLAYER])
             if matched_object:
                 targets.append(matched_object[0])
-                print "MATCH:", matched_object[0]
             else:
                 # search returned None
                 session.msg("Player '%s' can not be found." % (
@@ -77,7 +76,8 @@ def cmd_page(command):
     if command.arg_has_target():
         message = command.get_arg_target_value()
     else:
-        message = command.command_argument
+        session.msg("Page them what?")
+        return
         
     sender_name = pobject.get_name(show_dbref=False)
     # Build our messages
