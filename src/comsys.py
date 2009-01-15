@@ -184,9 +184,10 @@ def msg_cwho(session, channel_name):
     session: (SessionProtocol) A reference to the player session.
     channel_name: (str) The channel's full name.
     """
+    pobject = session.get_pobject()
     session.msg("--- Users Listening to %s ---" % (channel_name,))
     for plr_sess in get_cwho_list(channel_name):
-        session.msg(plr_sess.get_pobject().get_name(show_dbref=False))
+        session.msg(plr_sess.get_pobject().get_name(show_dbref=pobject.sees_dbrefs()))
     session.msg("--- End Channel Listeners ---")
     
 def get_cwho_list(channel_name, return_muted=False):

@@ -38,15 +38,18 @@ class EvenniaBasicObject(object):
         """
         target_obj = self.source_obj
         pobject = values["pobject"]
+        
+        show_dbrefs = pobject.sees_dbrefs()
+            
         description = target_obj.get_description()
         if description is not None:
             retval = "%s\r\n%s" % (
-                target_obj.get_name(),
+                target_obj.get_name(show_dbref=show_dbrefs),
                 target_obj.get_description(),
             )
         else:
             retval = "%s" % (
-                target_obj.get_name(),
+                target_obj.get_name(show_dbref=show_dbrefs),
             )
 
         con_players = []
@@ -65,15 +68,15 @@ class EvenniaBasicObject(object):
         if not con_players == []:
             retval += "\n\r%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
             for player in con_players:
-                retval +='\n\r%s' %(player.get_name(),)
+                retval +='\n\r%s' %(player.get_name(show_dbref=show_dbrefs),)
         if not con_things == []:
             retval += "\n\r%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
             for thing in con_things:
-                retval += '\n\r%s' %(thing.get_name(),)
+                retval += '\n\r%s' %(thing.get_name(show_dbref=show_dbrefs),)
         if not con_exits == []:
             retval += "\n\r%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
             for exit in con_exits:
-                retval += '\n\r%s' %(exit.get_name(),)
+                retval += '\n\r%s' %(exit.get_name(show_dbref=show_dbrefs),)
 
         return retval
 

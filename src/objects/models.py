@@ -183,34 +183,51 @@ class Object(models.Model):
             
         for obj in contents:
             obj.emit_to(message)
+            
+    def get_user_account(self):
+        """
+        Returns the player object's account object (User object).
+        """
+        return User.objects.get(id=self.id)
     
     def is_staff(self):
         """
-        Returns TRUE if the object is a staff player.
+        Returns True if the object is a staff player.
         """
         if not self.is_player():
             return False
         
-        profile = User.objects.filter(id=self.id)
-        
-        if len(profile) == 0:
+        try:
+            profile = self.get_user_account()
+            return profile.is_staff
+        except User.DoesNotExist:
             return False
-        else:
-            return profile[0].is_staff
 
     def is_superuser(self):
         """
-        Returns TRUE if the object is a super user player.
+        Returns True if the object is a super user player.
         """
         if not self.is_player():
             return False
         
-        profile = User.objects.filter(id=self.id)
-        
-        if len(profile) == 0:
+        try:
+            profile = self.get_user_account()
+            return profile.is_superuser
+        except User.DoesNotExist:
             return False
+        
+    def sees_dbrefs(self):
+        """
+        Returns True if the object sees dbrefs in messages. This is here
+        instead of session.py due to potential future expansion in the
+        direction of MUX-style puppets.
+        """
+        looker_user = self.get_user_account()
+        if looker_user:
+            # Builders see dbrefs
+            return looker_user.has_perm('genperms.builder')
         else:
-            return profile[0].is_superuser
+            return False
 
     def user_has_perm(self, perm):
         """
@@ -301,16 +318,9 @@ class Object(models.Model):
             pobject = self.get_user_account()
             pobject.username = new_name
             pobject.save()
-            
-    def get_user_account(self):
-        """
-        Returns the player object's account object (User object).
-        """
-        if not self.is_player():
-            return False
-        return User.objects.get(id=self.id)
 
-    def get_name(self, fullname=False, show_dbref=True, no_ansi=False):
+    def get_name(self, fullname=False, show_dbref=True, show_flags=True, 
+                                                        no_ansi=False):
         """
         Returns an object's name.
         """
@@ -320,14 +330,22 @@ class Object(models.Model):
             name_string = self.name
             
         if show_dbref:
-            dbref_string = "(#%s%s)" % (self.id, self.flag_string())
+            # Allow hiding of the flags but show the dbref.
+            if show_flags:
+                flag_string = self.flag_string()
+            else:
+                flag_string = ""
+
+            dbref_string = "(#%s%s)" % (self.id, flag_string)
         else:
             dbref_string = ""
         
         if fullname:
-            return "%s%s" % (ansi.parse_ansi(name_string, strip_ansi=no_ansi), dbref_string)
+            return "%s%s" % (ansi.parse_ansi(name_string, strip_ansi=no_ansi), 
+                             dbref_string)
         else:
-            return "%s%s" % (ansi.parse_ansi(name_string.split(';')[0], strip_ansi=no_ansi), dbref_string)
+            return "%s%s" % (ansi.parse_ansi(name_string.split(';')[0], 
+                                             strip_ansi=no_ansi), dbref_string)
 
     def set_description(self, new_desc):
         """

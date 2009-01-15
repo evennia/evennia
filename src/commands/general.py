@@ -359,7 +359,7 @@ def cmd_who(command):
 
         if show_session_data:
             retval += '%-31s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-                (plr_pobject.get_name(show_dbref=False)[:25], \
+                (plr_pobject.get_name(show_dbref=True, show_flags=False)[:25], \
                 # On-time
                 functions_general.time_format(delta_conn,0), \
                 # Idle time
