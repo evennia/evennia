@@ -13,9 +13,16 @@ from subprocess import Popen, call
 
 # Set the Python path up so we can get to settings.py from here.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 from django.conf import settings
 SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server.py')
+
+# Determine what the twistd binary name is. Eventually may want to have a
+# setting in settings.py to specify the path to the containing directory.
+if os.name == 'nt':
+    TWISTED_BINARY = 'twistd.bat'
+else:
+    TWISTED_BINARY = 'twistd' 
 
 # Add this to the environmental variable for the 'twistd' command.
 os.environ['PYTHONPATH'] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -44,7 +51,7 @@ def start_daemon(parser, options, args):
     cycle_logfile()
 
     # Start it up
-    Popen(['twistd', 
+    Popen([TWISTED_BINARY, 
            '--logfile=%s' % settings.DEFAULT_LOG_FILE, 
            '--python=%s' % SERVER_PY_FILE])
 
@@ -54,7 +61,7 @@ def start_interactive(parser, options, args):
     all logging output is directed to stdout.
     """
     print 'Starting in interactive mode...'
-    call(['twistd', 
+    call([TWISTED_BINARY, 
           '-n', 
           '--python=%s' % SERVER_PY_FILE])
 
