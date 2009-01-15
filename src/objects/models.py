@@ -174,7 +174,12 @@ class Object(models.Model):
         contents = self.get_contents()
 
         if exclude:
-            contents.remove(exclude)
+            try:
+                contents.remove(exclude)
+            except ValueError:
+                # Sometimes very weird things happen with locations, fail
+                # silently.
+                pass
             
         for obj in contents:
             obj.emit_to(message)
