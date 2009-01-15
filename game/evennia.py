@@ -5,10 +5,10 @@ EVENNIA SERVER STARTUP SCRIPT
 Sets the appropriate environmental variables and launches the server
 process. Run the script with the -h flag to see usage information.
 """
-import getopt # for parsing command line arguments
 from optparse import OptionParser
 import os # for OS related fonctions 
 import sys # for getting command line arguments
+import signal
 from subprocess import Popen, call
 
 # Set the Python path up so we can get to settings.py from here.
@@ -74,10 +74,11 @@ def stop_server(parser, options, args):
     """
     if os.name == 'posix': 
         if os.path.exists('twistd.pid'):
-            print 'Stoping The Server'
+            print 'Stoping the server...'
             f = open('twistd.pid', 'r')
             pid = f.read()
-            Popen(['kill', pid])
+            os.kill(int(pid), signal.SIGINT)
+            print 'Server stopped.'
         else:
             print "No twistd.pid file exists, the server doesn't appear to be running."
     elif os.name == 'nt':
