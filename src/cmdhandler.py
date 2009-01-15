@@ -212,6 +212,7 @@ def match_channel(command):
         second_arg = "%s=%s" % (cname, command.command_argument)
         command.command_string = "@cemit"
         command.command_switches = ["sendername", "quiet"]
+        command.command_argument = second_arg
         
 def command_table_lookup(command, command_table, eval_perms=True):
     """
@@ -251,7 +252,9 @@ def handle(command):
             # Match against the 'idle' command.
             match_idle(command)
             # See if this is an aliased command.
+            print "CMD", command.command_string, command.command_argument
             match_alias(command)
+            print "CMD", command.command_string, command.command_argument
             # Check if the user is using a channel command.
             match_channel(command)
             # See if the user is trying to traverse an exit.

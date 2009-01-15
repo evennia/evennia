@@ -197,12 +197,14 @@ def cmd_cemit(command):
         return
 
     eq_args = command.command_argument.split('=', 1)
-    cname = eq_args[0]
-    cmessage = eq_args[1]
     
     if len(eq_args) != 2:
         session.msg("You must provide a channel name and a message to emit.")
         return
+    
+    cname = eq_args[0]
+    cmessage = eq_args[1]
+    
     if len(cname) == 0:
         session.msg("You must provide a channel name to emit to.")
         return
