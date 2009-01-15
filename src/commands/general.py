@@ -358,8 +358,8 @@ def cmd_who(command):
         plr_pobject = player.get_pobject()
 
         if show_session_data:
-            retval += '%-16s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-                (plr_pobject.get_name(show_dbref=False)[:25].ljust(27), \
+            retval += '%-31s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
+                (plr_pobject.get_name(show_dbref=False)[:25], \
                 # On-time
                 functions_general.time_format(delta_conn,0), \
                 # Idle time
@@ -373,8 +373,8 @@ def cmd_who(command):
                 '', \
                 player.address[0])
         else:
-            retval += '%-16s%9s %4s%-3s\r\n' % \
-                (plr_pobject.get_name(show_dbref=False)[:25].ljust(27), \
+            retval += '%-31s%9s %4s%-3s\r\n' % \
+                (plr_pobject.get_name(show_dbref=False)[:25], \
                 # On-time
                 functions_general.time_format(delta_conn,0), \
                 # Idle time
