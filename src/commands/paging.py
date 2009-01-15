@@ -68,13 +68,11 @@ def cmd_page(command):
         # For each of the targets listed, grab their objects and append
         # it to the targets list if valid.
         for target in cmd_targets:
-            matched_object = Object.objects.local_and_global_search(pobject,
-                    target,
-                    limit_types=[defines_global.OTYPE_PLAYER])
+            matched_object = Object.objects.player_name_search(target)
             
             if matched_object:
                 # Found a good object, store it
-                targets.append(matched_object[0])
+                targets.append(matched_object)
             else:
                 # Search returned None
                 session.msg("Player '%s' can not be found." % (
