@@ -477,7 +477,7 @@ def cmd_name(command):
     session = command.session
     pobject = session.get_pobject()
     
-    if not command.command_string:    
+    if not command.command_argument:    
         session.msg("What do you want to name?")
         return
     
