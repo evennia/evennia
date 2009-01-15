@@ -57,6 +57,11 @@ def cmd_page(command):
     cmd_targets = command.get_arg_targets()
     if cmd_targets is None:
         targets = last_paged_objects
+        
+        # No valid last paged players found, error out.
+        if not targets:
+            session.msg("Page who?")
+            return
     else:
         # For each of the targets listed, grab their objects and append
         # it to the targets list
@@ -88,8 +93,8 @@ def cmd_page(command):
         message = message[1:]
         target_message = "From afar, %s %s"
         sender_message = "Long distance to %s: %s %s"
-    # Handle paged emotes without spaces
-    if message.startswith(';'):
+        # Handle paged emotes without spaces
+    elif message.startswith(';'):
         message = message[1:]
         target_message = "From afar, %s%s"
         sender_message = "Long distance to %s: %s%s"
