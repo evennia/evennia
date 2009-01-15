@@ -192,7 +192,7 @@ def cmd_cemit(command):
     session = command.session
     pobject = session.get_pobject()
 
-    if command.command_argument == 0:
+    if not command.command_argument:
         session.msg("Channel emit what?")
         return
 
