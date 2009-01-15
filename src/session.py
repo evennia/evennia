@@ -173,6 +173,11 @@ class SessionProtocol(StatefulTelnetProtocol):
         user.last_login = datetime.now()
         user.save()
         
+        # In case the account and the object get out of sync, fix it.
+        if pobject.name != user.username:
+            pobject.set_name(user.username)
+            pobject.save()
+        
     def msg(self, message):
         """
         Sends a message to the session.
