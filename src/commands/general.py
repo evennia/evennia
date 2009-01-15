@@ -169,10 +169,10 @@ def cmd_get(command):
         return
         
     target_obj.move_to(pobject, quiet=True)
-    session.msg("You pick up %s." % (target_obj.get_name(),))
+    session.msg("You pick up %s." % (target_obj.get_name(show_dbref=False),))
     pobject.get_location().emit_to_contents("%s picks up %s." % 
-                                    (pobject.get_name(), 
-                                     target_obj.get_name()), 
+                                    (pobject.get_name(show_dbref=False), 
+                                     target_obj.get_name(show_dbref=False)), 
                                      exclude=pobject)
     
     # SCRIPT: Call the object's script's a_get() method.
@@ -204,10 +204,10 @@ def cmd_drop(command):
         return
         
     target_obj.move_to(pobject.get_location(), quiet=True)
-    session.msg("You drop %s." % (target_obj.get_name(),))
+    session.msg("You drop %s." % (target_obj.get_name(show_dbref=False),))
     pobject.get_location().emit_to_contents("%s drops %s." % 
-                                            (pobject.get_name(), 
-                                             target_obj.get_name()), 
+                                            (pobject.get_name(show_dbref=False), 
+                                             target_obj.get_name(show_dbref=False)), 
                                              exclude=pobject)
 
     # SCRIPT: Call the object's script's a_drop() method.
