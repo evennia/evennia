@@ -12,7 +12,9 @@ def cmd_reload(command):
     """
     Reloads all modules.
     """
-    session = command.session.server.reload(session)
+    session = command.session
+    session.msg("To be implemented...")
+    #session.server.reload(session)
 
 def cmd_boot(command):
     """

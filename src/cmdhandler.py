@@ -207,7 +207,7 @@ def match_channel(command):
             raise ExitCommandHandler
         elif command.command_argument == "last":
             comsys.msg_chan_hist(command.session, cname)
-            ExitCommandHandler
+            raise ExitCommandHandler
             
         second_arg = "%s=%s" % (cname, command.command_argument)
         command.command_string = "@cemit"
@@ -252,9 +252,7 @@ def handle(command):
             # Match against the 'idle' command.
             match_idle(command)
             # See if this is an aliased command.
-            print "CMD", command.command_string, command.command_argument
             match_alias(command)
-            print "CMD", command.command_string, command.command_argument
             # Check if the user is using a channel command.
             match_channel(command)
             # See if the user is trying to traverse an exit.
