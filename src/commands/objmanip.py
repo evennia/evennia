@@ -421,6 +421,58 @@ def cmd_chown(command):
         # We haven't provided a target.
         session.msg("Who should be the new owner of the object?")
         return
+    
+def cmd_chzone(command):
+    """
+    Changes an object's zone. The specified zone may be of any object type, but
+    will typically be a THING.
+
+    Forms:
+    @chzone <Object>=<NewZone>
+    """
+    session = command.session
+    pobject = session.get_pobject()
+
+    if not command.command_argument:
+        session.msg("Change the zone of what?")
+        return
+
+    eq_args = command.command_argument.split('=', 1)
+    target_name = eq_args[0]
+    zone_name = eq_args[1]    
+
+    if len(target_name) == 0:
+        session.msg("Change the zone of what?")
+        return
+
+    if len(eq_args) > 1:
+        target_obj = Object.objects.standard_plr_objsearch(session, target_name)
+        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+        if not target_obj:
+            return
+
+        if not pobject.controls_other(target_obj):
+            session.msg(defines_global.NOCONTROL_MSG)
+            return
+
+        # Allow the clearing of a zone
+        if zone_name.lower() == "none":
+            target_obj.set_zone(None)
+            session.msg("%s is no longer zoned." % (target_obj))
+            return
+        
+        zone_obj = Object.objects.standard_plr_objsearch(session, zone_name)
+        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+        if not zone_obj:
+            return
+
+        target_obj.set_zone(zone_obj)
+        session.msg("%s is now in zone %s." % (target_obj, zone_obj))
+
+    else:
+        # We haven't provided a target zone.
+        session.msg("What should the object's zone be set to?")
+        return
 
 def cmd_link(command):
     """

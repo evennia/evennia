@@ -752,6 +752,13 @@ class Object(models.Model):
             return self.zone
         except:
             return None
+
+    def set_zone(self, new_zone):
+        """
+        Sets an object's zone.
+        """
+        self.zone = new_zone
+        self.save()
     
     def move_to(self, target, quiet=False, force_look=True):
         """
