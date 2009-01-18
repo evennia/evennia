@@ -30,7 +30,7 @@ class Attribute(models.Model):
     """
     attr_name = models.CharField(max_length=255)
     attr_value = models.CharField(max_length=255)
-    attr_hidden = models.BooleanField(default=0)
+    attr_hidden = models.BooleanField(default=False)
     attr_object = models.ForeignKey("Object")
     
     objects = AttributeManager()
@@ -903,6 +903,7 @@ class CommChannel(models.Model):
     ansi_name = models.CharField(max_length=255)
     owner = models.ForeignKey(Object, related_name="chan_owner")
     description = models.CharField(max_length=80)
+    is_joined_by_default = models.BooleanField(default=False)
     req_grp = models.ManyToManyField(Group, blank=True, null=True)
     
     objects = CommChannelManager()

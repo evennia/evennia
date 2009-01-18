@@ -240,16 +240,17 @@ def get_cobj_from_name(cname):
     """
     return CommChannel.objects.get(name=cname)
 
-def create_channel(name, owner):
+def create_channel(name, owner, description=None):
     """
     Create a new channel. 
     name: (string) Name of the new channel
-    owner: (Object) Objec that owns the channel
+    owner: (Object) Object that owns the channel
     """
     new_chan = CommChannel()
     new_chan.name = ansi.parse_ansi(name, strip_ansi=True)
     new_chan.ansi_name = "[%s]" % (ansi.parse_ansi(name),)
     new_chan.set_owner(owner)
+    new_chan.description = description
     new_chan.save()
     return new_chan
 

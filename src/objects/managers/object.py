@@ -356,7 +356,7 @@ class ObjectManager(models.Manager):
         # Create a player object of the same ID in the Objects table.
         odat = {"id": uid, 
                 "name": uname, 
-                "type": 1, 
+                "type": defines_global.OTYPE_PLAYER, 
                 "location": start_room_obj, 
                 "owner": None}
         user_object = self.create_object(odat)
