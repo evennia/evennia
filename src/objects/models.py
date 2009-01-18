@@ -304,6 +304,13 @@ class Object(models.Model):
         """
         self.home = new_home
         self.save()
+        
+    def set_owner(self, new_owner):
+        """
+        Sets an object's owner.
+        """
+        self.owner = new_owner
+        self.save()
 
     def set_name(self, new_name):
         """

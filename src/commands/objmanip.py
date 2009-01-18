@@ -368,6 +368,59 @@ def cmd_open(command):
         new_object = Object.objects.create_object(odat)
 
         session.msg("You open an unlinked exit - %s" % (new_object,))
+        
+def cmd_chown(command):
+    """
+    Changes the ownership of an object. The new owner specified must be a
+    player object.
+
+    Forms:
+    @chown <Object>=<NewOwner>
+    """
+    session = command.session
+    pobject = session.get_pobject()
+
+    if not command.command_argument:
+        session.msg("Change the ownership of what?")
+        return
+
+    eq_args = command.command_argument.split('=', 1)
+    target_name = eq_args[0]
+    owner_name = eq_args[1]    
+
+    if len(target_name) == 0:
+        session.msg("Change the ownership of what?")
+        return
+
+    if len(eq_args) > 1:
+        target_obj = Object.objects.standard_plr_objsearch(session, target_name)
+        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+        if not target_obj:
+            return
+
+        if not pobject.controls_other(target_obj):
+            session.msg(defines_global.NOCONTROL_MSG)
+            return
+
+        owner_obj = Object.objects.standard_plr_objsearch(session, owner_name)
+        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+        if not owner_obj:
+            return
+        
+        if not owner_obj.is_player():
+            session.msg("Only players may own objects.")
+            return
+        if target_obj.is_player():
+            session.msg("You may not change the ownership of player objects.")
+            return
+
+        target_obj.set_owner(owner_obj)
+        session.msg("%s now owns %s." % (owner_obj, target_obj))
+
+    else:
+        # We haven't provided a target.
+        session.msg("Who should be the new owner of the object?")
+        return
 
 def cmd_link(command):
     """
