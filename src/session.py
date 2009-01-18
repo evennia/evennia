@@ -141,7 +141,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         Show the banner screen. Grab from the 'connect_screen' config directive.
         """
         screen = ConnectScreen.objects.get_random_connect_screen()
-        buffer = ansi.parse_ansi(screen.connect_screen_text)
+        buffer = ansi.parse_ansi(screen.text)
         self.msg(buffer)
 
     def is_loggedin(self):

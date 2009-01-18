@@ -12,6 +12,7 @@ class ConnectScreenManager(models.Manager):
             return self.filter(is_active=True).order_by('?')[0]
         except IndexError:
             new_screen = ConnectScreen(name='Default', 
-                connect_screen_text='This is a placeholder connect screen. Remind your admin to edit it through the Admin interface.')
+                text='This is a placeholder connect screen. Remind your admin to edit it through the Admin interface.',
+                is_active=True)
             new_screen.save()
             return new_screen

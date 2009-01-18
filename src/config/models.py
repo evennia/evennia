@@ -44,7 +44,7 @@ class ConnectScreen(models.Model):
     will cycle randomly.
     """
     name = models.CharField(max_length=255, help_text="An optional name for this screen (for organizational purposes).", blank=True)
-    connect_screen_text = models.TextField(help_text="The text for the connect screen. Color codes and substitutions are evaluated.")
+    text = models.TextField(help_text="The text for the connect screen. Color codes and substitutions are evaluated.")
     is_active = models.BooleanField(default=1, help_text="Only active connect screens are placed in the rotation")
     
     objects = ConnectScreenManager()

@@ -1,14 +1,9 @@
-from traceback import format_exc
 import time
 import sys
-
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
-
-from django.db import models
 from django.db import connection
 from django.conf import settings
-
 from src.config.models import CommandAlias, ConfigValue
 from src.session import SessionProtocol
 from src import scheduler
@@ -19,8 +14,8 @@ from src import initial_setup
 from src.util import functions_general
 
 class EvenniaService(service.Service):
-
-    def __init__(self, filename="blah"):
+    def __init__(self):
+        # This holds a dictionary of command aliases for cmdhandler.py
         self.cmd_alias_list = {}
         self.game_running = True
         sys.path.append('.')
@@ -33,14 +28,18 @@ class EvenniaService(service.Service):
         cursor = connection.cursor()
         cursor.execute("UPDATE objects_object SET nosave_flags=''")
 
+        # Begin startup debug output.
         print '-'*50
-        # Load command aliases into memory for easy/quick access.
-        self.load_cmd_aliases()
 
-        if ConfigValue.objects.get_configvalue('game_firstrun') == '1':
+        try:
+            # If this fails, this is an empty DB that needs populating.
+            ConfigValue.objects.get_configvalue('game_firstrun')
+        except ConfigValue.DoesNotExist:
             print ' Game started for the first time, setting defaults.'
             initial_setup.handle_setup()
 
+        # Load command aliases into memory for easy/quick access.
+        self.load_cmd_aliases()
         self.start_time = time.time()
 
         print ' %s started on port(s):' % (ConfigValue.objects.get_configvalue('site_name'),)
@@ -114,7 +113,7 @@ class EvenniaService(service.Service):
     """
 
 application = service.Application('Evennia')
-mud_service = EvenniaService('Evennia Server')
+mud_service = EvenniaService()
 
 # Sheet sheet, fire ze missiles!
 serviceCollection = service.IServiceCollection(application)
