@@ -6,11 +6,11 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
 from django.conf import settings
-from src.config.models import ConfigValue
 from src.objects.util import object as util_object
 from src.objects.managers.commchannel import CommChannelManager
 from src.objects.managers.object import ObjectManager
 from src.objects.managers.attribute import AttributeManager
+from src.config.models import ConfigValue
 from src import scripthandler
 from src import defines_global
 from src import ansi
@@ -37,11 +37,7 @@ class Attribute(models.Model):
     
     def __str__(self):
         return "%s(%s)" % (self.attr_name, self.id)
-    
-    class Admin:
-        list_display = ('attr_object', 'attr_name', 'attr_value',)
-        search_fields = ['attr_name']
-        
+            
     """
     BEGIN COMMON METHODS
     """
@@ -90,7 +86,11 @@ class Attribute(models.Model):
             self.get_name(), 
             ansi.ansi["normal"], 
             self.get_value())
-admin.site.register(Attribute)
+
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('attr_object', 'attr_name', 'attr_value',)
+    search_fields = ['attr_name']
+admin.site.register(Attribute, AttributeAdmin)
 
 class Object(models.Model):
     """
@@ -132,13 +132,7 @@ class Object(models.Model):
     
     class Meta:
         ordering = ['-date_created', 'id']
-    
-    class Admin:
-        list_display = ('id', 'name', 'type', 'date_created')
-        list_filter = ('type',)
-        search_fields = ['name']
-        save_on_top = True
-    
+        
     """
     BEGIN COMMON METHODS
     """
@@ -893,7 +887,13 @@ class Object(models.Model):
         # about tuple index types. Bleh.
         otype = int(self.type)
         return defines_global.OBJECT_TYPES[otype][1][0]
-admin.site.register(Object)
+    
+class ObjectAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'type', 'date_created')
+    list_filter = ('type',)
+    search_fields = ['name']
+    save_on_top = True
+admin.site.register(Object, ObjectAdmin)
 
 class CommChannel(models.Model):
     """
@@ -917,9 +917,6 @@ class CommChannel(models.Model):
             ("emit_commchannel", "May @cemit over channels."),
         )
     
-    class Admin:
-        list_display = ('name', 'owner')
-
     def get_name(self):
         """
         Returns a channel's name.
@@ -960,7 +957,10 @@ class CommChannel(models.Model):
         """
         self.owner = new_owner
         self.save()
-admin.site.register(CommChannel)
+
+class CommChannelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'owner')
+admin.site.register(CommChannel, CommChannelAdmin)
 
 class CommChannelMessage(models.Model):
     """
@@ -978,6 +978,6 @@ class CommChannelMessage(models.Model):
     class Meta:
         ordering = ['-date_sent']
     
-    class Admin:
-        list_display = ('channel', 'message')
-admin.site.register(CommChannelMessage)
+class CommChannelMessageAdmin(admin.ModelAdmin):
+    list_display = ('channel', 'message')
+admin.site.register(CommChannelMessage, CommChannelMessageAdmin)

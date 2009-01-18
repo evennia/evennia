@@ -15,11 +15,6 @@ class HelpEntry(models.Model):
     staff_only = models.BooleanField(default=0)
     
     objects = HelpEntryManager()
-
-    class Admin:
-        list_display = ('id', 'topicname', 'staff_only')
-        list_filter = ('staff_only',)
-        search_fields = ['entrytext']
         
     class Meta:
         verbose_name_plural = "Help entries"
@@ -45,4 +40,10 @@ class HelpEntry(models.Model):
             return ansi.parse_ansi(self.entrytext)
         except:
             return None
-admin.site.register(HelpEntry)
+
+class HelpEntryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'topicname', 'staff_only')
+    list_display_links = ('id', 'topicname')
+    list_filter = ('staff_only',)
+    search_fields = ['entrytext']
+admin.site.register(HelpEntry, HelpEntryAdmin)

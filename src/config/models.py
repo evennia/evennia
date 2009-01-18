@@ -13,13 +13,16 @@ class CommandAlias(models.Model):
     equiv_command = models.CharField(max_length=50)
     
     objects = CommandAliasManager()
-    
-    class Admin:
-        list_display = ('user_input', 'equiv_command',)
-        
+           
     class Meta:
         verbose_name_plural = "Command aliases"
         ordering = ['user_input']
+        
+class CommandAliasAdmin(admin.ModelAdmin):
+    list_display = ('user_input', 'equiv_command')
+    pass
+# This is causing an error for some reason
+#admin.site.register(CommandAlias, CommandAliasAdmin)
 admin.site.register(CommandAlias)
 
 class ConfigValue(models.Model):
@@ -30,13 +33,13 @@ class ConfigValue(models.Model):
     conf_value = models.TextField()
     
     objects = ConfigValueManager()
-    
-    class Admin:
-        list_display = ('conf_key', 'conf_value',)
         
-    def __str__(self):
+    def __unicode__(self):
         return "%s" % self.conf_key
-admin.site.register(ConfigValue)
+
+class ConfigValueAdmin(admin.ModelAdmin):
+    list_display = ('conf_key', 'conf_value')
+admin.site.register(ConfigValue, ConfigValueAdmin)
         
 class ConnectScreen(models.Model):
     """
@@ -49,6 +52,7 @@ class ConnectScreen(models.Model):
     
     objects = ConnectScreenManager()
     
-    class Admin:
-        list_display = ('id', 'name', 'is_active')
-admin.site.register(ConnectScreen)
+class ConnectScreenAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'is_active')
+    list_display_links = ('id', 'name')
+admin.site.register(ConnectScreen, ConnectScreenAdmin)
