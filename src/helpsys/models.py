@@ -27,19 +27,13 @@ class HelpEntry(models.Model):
         """
         Returns the topic's name.
         """
-        try:
-            return self.topicname
-        except:
-            return None
+        return self.topicname
     
     def get_entrytext_ingame(self):
         """
         Gets the entry text for in-game viewing.
         """
-        try:
-            return ansi.parse_ansi(self.entrytext)
-        except:
-            return None
+        return ansi.parse_ansi(self.entrytext)
 
 class HelpEntryAdmin(admin.ModelAdmin):
     list_display = ('id', 'topicname', 'staff_only')
