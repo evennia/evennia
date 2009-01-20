@@ -101,6 +101,7 @@ def create_aliases():
     CommandAlias(user_input="ex", equiv_command="examine").save()
     CommandAlias(user_input="sa", equiv_command="say").save()
     CommandAlias(user_input="emote", equiv_command="pose").save()
+    CommandAlias(user_input="p", equiv_command="page").save()
     
 def import_help_files():
     """

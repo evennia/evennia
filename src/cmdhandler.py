@@ -181,6 +181,22 @@ def match_alias(command):
                                             command.command_string,
                                             command.command_string)
     
+    # Match against the single-character aliases of MUX/MUSH-dom.
+    first_char = command.command_string[0]
+    # Shortened say alias.
+    if first_char == '"':
+        command.command_argument = command.command_string[1:]
+        command.command_string = "say"
+    # Shortened pose alias.
+    elif first_char == ':':
+        command.command_argument = command.command_string[1:]
+        command.command_string = "pose"
+    # Pose without space alias.
+    elif first_char == ';':
+        command.command_argument = command.command_string[1:]
+        command.command_string = "pose"
+        command.command_switches.insert(0, "nospace")
+    
 def match_channel(command):
     """
     Match against a comsys channel or comsys command. If the player is talking
