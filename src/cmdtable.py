@@ -17,6 +17,7 @@ import commands.comsys
 import commands.unloggedin
 import commands.info
 import commands.objmanip
+import commands.search
 import logger
 
 class CommandTable(object):
@@ -113,6 +114,8 @@ GLOBAL_CMD_TABLE.add_command("@set", commands.objmanip.cmd_set),
 GLOBAL_CMD_TABLE.add_command("@shutdown", commands.privileged.cmd_shutdown,
                              priv_tuple=("genperms.process_control")),
 GLOBAL_CMD_TABLE.add_command("@stats", commands.info.cmd_stats),
+GLOBAL_CMD_TABLE.add_command("@search", commands.search.cmd_search,
+                             priv_tuple=("genperms.builder")),
 GLOBAL_CMD_TABLE.add_command("@teleport", commands.objmanip.cmd_teleport,
                              priv_tuple=("genperms.builder")),
 GLOBAL_CMD_TABLE.add_command("@unlink", commands.objmanip.cmd_unlink,

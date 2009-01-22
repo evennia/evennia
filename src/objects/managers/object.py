@@ -150,6 +150,9 @@ class ObjectManager(models.Manager):
         searcher: (Object) The object doing the searching.
         ostring:  (string) The alias string to search for.
         """
+        if ostring.lower().strip() == "me":
+            return searcher
+        
         Attribute = ContentType.objects.get(app_label="objects", 
                                             model="attribute").model_class()
         results = Attribute.objects.select_related().filter(attr_name__exact="ALIAS").filter(attr_value__iexact=ostring)
