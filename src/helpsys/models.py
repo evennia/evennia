@@ -10,7 +10,7 @@ class HelpEntry(models.Model):
     """
     A generic help entry.
     """
-    topicname = models.CharField(max_length=255)
+    topicname = models.CharField(max_length=255, unique=True)
     entrytext = models.TextField(blank=True, null=True)
     staff_only = models.BooleanField(default=0)
     

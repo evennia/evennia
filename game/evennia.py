@@ -91,7 +91,7 @@ def main():
     Beginning of the program logic.
     """
     parser = OptionParser(usage="%prog [options] <start|stop>",
-                          description="")
+                          description="This command starts or stops the Evennia game server.")
     parser.add_option('-i', '--interactive', action='store_true', 
                       dest='interactive', default=False,
                       help='Start in interactive mode')
