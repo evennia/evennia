@@ -270,10 +270,11 @@ class Object(models.Model):
         """
         return self.id == other_obj.get_owner().id
 
-    def controls_other(self, other_obj):
+    def controls_other(self, other_obj, builder_override=False):
         """
         See if the envoked object controls another object.
         other_obj: (Object) Reference for object to check dominance of.
+        builder_override: (bool) True if builder perm allows controllership.
         """
         if self == other_obj:
             return True
@@ -287,6 +288,11 @@ class Object(models.Model):
         
         if self.owns_other(other_obj):
             # If said object owns the target, then give it the green.
+            return True
+        
+        # When builder_override is enabled, a builder permission means
+        # the object controls the other.
+        if builder_override and not other_obj.is_player() and self.user_has_perm('genperms.builder'):
             return True
 
         # They've failed to meet any of the above conditions.

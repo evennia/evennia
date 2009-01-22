@@ -253,6 +253,12 @@ def cmd_examine(command):
         # Use standard_plr_objsearch to handle duplicate/nonexistant results.
         if not target_obj:
             return
+        
+    # If the user doesn't control the object, just look at it instead.
+    if not pobject.controls_other(target_obj, builder_override=True):
+        command.command_string = 'look'
+        cmd_look(command)
+        return
             
     if attr_search:
         """
