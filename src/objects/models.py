@@ -914,7 +914,8 @@ class CommChannel(models.Model):
     class Meta:
         ordering = ['-name']
         permissions = (
-            ("emit_commchannel", "May @cemit over channels."),
+            ('emit_commchannel', 'May @cemit over channels.'),
+            ('channel_admin', 'May administer comm channels.')
         )
     
     def get_name(self):
@@ -957,6 +958,24 @@ class CommChannel(models.Model):
         """
         self.owner = new_owner
         self.save()
+        
+    def controlled_by(self, pobject):
+        """
+        Use this to see if another object controls the channel. This is means
+        that the specified object either owns the channel or has special
+        permissions to control it.
+        
+        pobject: (Object) Player object to check for control.
+        """
+        if pobject.is_superuser():
+            return True
+        
+        if self.owner and self.owner.id == pobject.id: 
+            # If said object owns the target, then give it the green.
+            return True
+
+        # They've failed to meet any of the above conditions.
+        return False
 
 class CommChannelAdmin(admin.ModelAdmin):
     list_display = ('name', 'owner')

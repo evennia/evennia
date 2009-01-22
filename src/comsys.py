@@ -107,7 +107,7 @@ def plr_has_channel(session, cname, alias_search=False, return_muted=False):
         chan_list = plr_get_cdict(session).values()
         for chan in chan_list:
             # Check for a name match
-            if cname == chan[0]:
+            if cname.lower() == chan[0].lower():
                 has_channel = True
 
                 # If channel status is taken into consideration, see if the user

@@ -149,8 +149,13 @@ def cmd_cdestroy(command):
     if not name_matches:
         session.msg("Could not find channel %s." % (cname,))
     else:
-        session.msg("Channel %s destroyed." % (name_matches[0],))
-        name_matches.delete()
+        is_controlled_by_plr = name_matches[0].controlled_by(pobject)
+        if is_controlled_by_plr: 
+            session.msg("Channel %s destroyed." % (name_matches[0],))
+            name_matches.delete()
+        else:
+            session.msg("Permission denied.")
+            return
         
 def cmd_cset(command):
     """
@@ -252,8 +257,34 @@ def cmd_cwho(command):
     Adding /all after the channel name will list disconnected players
     as well.
     """
-    # TODO: Implement cmd_cwho
-    pass
+    session = command.session
+    pobject = session.get_pobject()
+
+    if not command.command_argument:
+        session.msg("You must specify a channel name.")
+        return
+    
+    channel_name = command.command_argument
+    
+    if channel_name.strip() == '':
+        session.msg("You must specify a channel name.")
+        return
+
+    name_matches = src.comsys.cname_search(channel_name, exact=True)
+
+    if name_matches:
+        # Check to make sure the user has permission to use @cwho.
+        is_channel_admin = pobject.user_has_perm("objects.channel_admin")
+        is_controlled_by_plr = name_matches[0].controlled_by(pobject)
+        
+        if is_controlled_by_plr or is_channel_admin:
+            src.comsys.msg_cwho(session, channel_name)
+        else:
+            session.msg("Permission denied.")
+            return
+    else:
+        session.msg("No channel with that name was found.")
+        return
 
 def cmd_ccreate(command):
     """
@@ -267,6 +298,10 @@ def cmd_ccreate(command):
 
     if not command.command_argument:
         session.msg("You must supply a name!")
+        return
+    
+    if not pobject.user_has_perm("objects.channel_admin"):
+        session.msg("Permission denied.")
         return
     
     cname = command.command_argument
