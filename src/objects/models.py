@@ -392,14 +392,21 @@ class Object(models.Model):
         """
         Returns an object's flag list.
         """
-        flags = self.flags
-        nosave_flags = self.nosave_flags
-        if not flags:
-            flags = ""
-        if not nosave_flags:
-            nosave_flags = ""
+        # Holds the list of flags to display
+        all_flags = []
+        if self.flags is not None:
+            # Add saved flags to the display list
+            all_flags = all_flags + self.flags.split()
+        if self.nosave_flags is not None:
+            # Add non-saved flags to the display list
+            all_flags = all_flags + self.nosave_flags.split()
             
-        return '%s %s' % (flags, nosave_flags)
+        if not all_flags:
+            # Guard against returning 'None'
+            return ""
+        else:
+            # Format the Python list to a space separated string of flags
+            return " ".join(all_flags)
         
     def clear_attribute(self, attribute):
         """
@@ -633,7 +640,12 @@ class Object(models.Model):
                 self.nosave_flags = ' '.join(flags)
             else:
                 # Is a savable flag.
-                flags = str(self.flags).split()
+                if self.flags is not None:
+                    flags = str(self.flags).split()
+                else:
+                    # This prevents conversion of None to strings
+                    flags = []
+
                 flags.append(flag)
                 self.flags = ' '.join(flags)
             self.save()
