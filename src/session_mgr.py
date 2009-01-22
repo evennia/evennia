@@ -38,15 +38,15 @@ def disconnect_duplicate_session(session):
     Disconnects any existing session under the same object. This is used in
     connection recovery to help with record-keeping.
     """
-    sess_list = get_session_list()
-    new_pobj = session.get_pobject()
-    for sess in sess_list:
-        if new_pobj == sess.get_pobject() and sess != session:
-            sess.msg("Your account has been logged in from elsewhere, disconnecting.")
-            sess.disconnectClient()
+    session_list = get_session_list()
+    session_pobj = session.get_pobject()
+    for other_session in session_list:
+        other_pobject = other_session.get_pobject()
+        if session_pobj == other_pobject and other_session != session:
+            other_session.msg("Your account has been logged in from elsewhere, disconnecting.")
+            other_session.disconnectClient()
             return True
     return False
-
 
 def check_all_sessions():
     """
