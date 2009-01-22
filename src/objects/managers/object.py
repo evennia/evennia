@@ -343,6 +343,8 @@ class ObjectManager(models.Manager):
         user = User.objects.create_user(uname, email, password)
         # It stinks to have to do this but it's the only trivial way now.
         user.save()
+        # Update the session to use the newly created User object's ID.
+        session.uid = user.id
         
         # We can't use the user model to change the id because of the way keys
         # are handled, so we actually need to fall back to raw SQL. Boo hiss.
@@ -367,3 +369,4 @@ class ObjectManager(models.Manager):
         session.msg("Welcome to %s, %s.\n\r" % (
             ConfigValue.objects.get_configvalue('site_name'), 
             session.get_pobject().get_name(show_dbref=False)))
+        session.add_default_channels()

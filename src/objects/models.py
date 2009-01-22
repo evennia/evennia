@@ -976,6 +976,12 @@ class CommChannel(models.Model):
 
         # They've failed to meet any of the above conditions.
         return False
+    
+    def get_default_chan_alias(self):
+        """
+        Returns a default channel alias for the channel if none is provided.
+        """
+        return self.name[:3].lower()
 
 class CommChannelAdmin(admin.ModelAdmin):
     list_display = ('name', 'owner')

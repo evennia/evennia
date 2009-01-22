@@ -10,13 +10,14 @@ from twisted.conch.telnet import StatefulTelnetProtocol
 
 from django.contrib.auth.models import User
 
-from src.objects.models import Object
+from src.objects.models import Object, CommChannel
 from src.config.models import ConnectScreen, ConfigValue
+from util import functions_general
+import src.comsys
 import cmdhandler
 import logger
 import session_mgr
 import ansi
-from util import functions_general
 
 class SessionProtocol(StatefulTelnetProtocol):
     """
@@ -133,7 +134,7 @@ class SessionProtocol(StatefulTelnetProtocol):
             result = Object.objects.get(id=self.uid)
             return result
         except:
-            logger.log_errmsg("No session match for object: #%s" % self.uid)
+            logger.log_errmsg("No pobject match for session uid: %s" % self.uid)
             return None
         
     def game_connect_screen(self):
@@ -185,6 +186,15 @@ class SessionProtocol(StatefulTelnetProtocol):
         if isinstance(message, unicode):
              message = message.encode("utf-8")
         self.sendLine("%s" % (message,))
+        
+    def add_default_channels(self):
+        """
+        Adds the player to the default channels.
+        """        
+        # Add the default channels.
+        for chan in CommChannel.objects.filter(is_joined_by_default=True):
+            chan_alias = chan.get_default_chan_alias()
+            src.comsys.plr_set_channel(self, chan_alias, chan.name, True)
         
     def __str__(self):
         """
