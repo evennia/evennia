@@ -1,6 +1,7 @@
 """
 Implementation of the @search command that resembles MUX2.
 """
+from django.db.models import Q
 from src.objects.models import Object
 from src import defines_global
 
@@ -35,6 +36,7 @@ def display_results(session, search_query):
     thing_list = []
     room_list = []
     exit_list = []
+    player_list = []
     
     for obj in search_query:
         if obj.is_thing():
@@ -43,6 +45,8 @@ def display_results(session, search_query):
             room_list.append(obj)
         elif obj.is_exit():
             exit_list.append(obj)
+        elif obj.is_player():
+            player_list.append(obj)
 
     # Render each section for different object types
     if thing_list:
@@ -60,11 +64,17 @@ def display_results(session, search_query):
         for room in room_list:
             session.msg(room.get_name(show_dbref=True, show_flags=True))
             
+    if player_list:
+        session.msg("\n\rPLAYER:")
+        for player in player_list:
+            session.msg(player.get_name(show_dbref=True, show_flags=True))
+            
     # Show the total counts by type
-    session.msg("\n\rFound:  Rooms...%d  Exits...%d  Things...%d" % (
+    session.msg("\n\rFound:  Rooms...%d  Exits...%d  Things...%d  Players...%d" % (
                                 len(room_list),
                                 len(exit_list),
-                                len(thing_list)))
+                                len(thing_list),
+                                len(player_list)))
     
 def build_query(session, search_query, search_player, search_type, 
                 search_restriction, search_low_dbnum, search_high_dbnum):
@@ -99,8 +109,10 @@ def build_query(session, search_query, search_player, search_type,
     elif search_type == "object":
         search_query = search_query.filter(name__icontains=search_restriction)
     elif search_type == "flags":
-        session.msg("To be implemented...")
-        return None
+        flag_list = search_restriction.split()
+        #session.msg("restriction: %s" % flag_list)
+        for flag in flag_list:
+            search_query = search_query.filter(Q(flags__icontains=flag) | Q(nosave_flags__icontains=flag))
     
     if search_low_dbnum:
         search_query = search_query.filter(id__gte=search_low_dbnum)
