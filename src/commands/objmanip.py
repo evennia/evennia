@@ -289,6 +289,88 @@ def cmd_create(command):
         
         session.msg("You create a new thing: %s" % (new_object,))
     
+def cmd_cpattr(command):
+    """
+    Copies a given attribute to another object.
+
+    @cpattr <source object>/<attribute> = <target1>/[<attrname>] <target n>/[<attrname n>]
+    """
+
+    session = command.session
+    pobject = session.get_pobject()
+
+    if not command.command_argument:
+        session.msg("What do you want to copy?")
+        return
+
+    # Split up source and target[s] via the equals sign.
+    eq_args = command.command_argument.split('=', 1)
+
+    if len(eq_args) < 2:
+        # There must be both a source and a target pair for cpattr
+        session.msg("You have not supplied both a source and a target[s]")
+        return
+
+    # Check that the source object and attribute exists, by splitting the eq_args 'source' entry with '/'
+    source = eq_args[0].split('/', 1)
+    source_string = source[0].strip()
+    source_attr_string = source[1].strip().upper()
+
+    # Check whether src_obj exists
+    src_obj = Object.objects.standard_plr_objsearch(session, source_string)
+    
+    if not src_obj:
+        session.msg("Source object does not exist")
+        return
+        
+    # Check whether src_obj has src_attr
+    src_attr = src_obj.attribute_namesearch(source_attr_string)
+    
+    if not src_attr:
+        session.msg("Source object does not have attribute " + source[1].strip())
+	return
+    
+    # For each target object, check it exists
+    # Remove leading '' from the targets list.
+    targets = eq_args[1].split(' ')[1:]
+
+    for target in targets:
+        tar = target.split('/', 1)
+	tar_string = tar[0].strip()
+	tar_attr_string = tar[1].strip().upper()
+
+	tar_obj = Object.objects.standard_plr_objsearch(session, tar_string)
+
+        # Does target exist?
+	if not tar_obj:
+            session.msg("Target object does not exist: " + tar_string)
+            return
+
+        # If target attribute is not given, use source_attr_string for name
+	if tar_attr_string == '':
+#	    session.msg("Testing")
+            src_attr_contents = src_obj.get_attribute_value(source_attr_string)
+            tar_obj.set_attribute(source_attr_string, src_attr_contents)
+            return
+	
+	# If however, the target attribute is given, check it exists and update accordingly
+
+        # Does target attribute exist?
+
+	tar_attr = tar_obj.attribute_namesearch(tar_attr_string)
+
+        # If the target object does not have the given attribute, make a new attr
+	if not tar_attr:
+	    src_attr_contents = src_obj.get_attribute_value(source_attr_string)
+	    tar_obj.set_attribute(tar_attr_string, src_attr_contents)
+            return
+    
+        # If target has attribute, update its contents
+        src_attr_contents = src_obj.get_attribute_value(source_attr_string)
+        tar_obj.set_attribute(tar_attr_string, src_attr_contents)
+	session.msg(tar_obj.get_attribute_value(source_attr_string))
+
+
 def cmd_nextfree(command):
     """
     Returns the next free object number.
