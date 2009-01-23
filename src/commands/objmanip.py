@@ -344,15 +344,13 @@ def cmd_cpattr(command):
         # Does target exist?
 	if not tar_obj:
             session.msg("Target object does not exist: " + tar_string)
-            return
 
         # If target attribute is not given, use source_attr_string for name
 	if tar_attr_string == '':
-#	    session.msg("Testing")
             src_attr_contents = src_obj.get_attribute_value(source_attr_string)
             tar_obj.set_attribute(source_attr_string, src_attr_contents)
-            return
-	
+	    continue
+
 	# If however, the target attribute is given, check it exists and update accordingly
 
         # Does target attribute exist?
@@ -363,13 +361,12 @@ def cmd_cpattr(command):
 	if not tar_attr:
 	    src_attr_contents = src_obj.get_attribute_value(source_attr_string)
 	    tar_obj.set_attribute(tar_attr_string, src_attr_contents)
-            return
-    
+            continue
+
         # If target has attribute, update its contents
         src_attr_contents = src_obj.get_attribute_value(source_attr_string)
         tar_obj.set_attribute(tar_attr_string, src_attr_contents)
-	session.msg(tar_obj.get_attribute_value(source_attr_string))
-
+	continue
 
 def cmd_nextfree(command):
     """
