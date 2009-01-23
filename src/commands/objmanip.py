@@ -344,6 +344,8 @@ def cmd_cpattr(command):
         # Does target exist?
 	if not tar_obj:
             session.msg("Target object does not exist: " + tar_string)
+	    # Continue if target does not exist, but give error on this item
+	    continue
 
         # If target attribute is not given, use source_attr_string for name
 	if tar_attr_string == '':
