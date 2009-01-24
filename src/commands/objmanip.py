@@ -353,7 +353,8 @@ def cmd_cpattr(command):
             tar_obj.set_attribute(source_attr_string, src_attr_contents)
             continue
 
-        # If however, the target attribute is given, check it exists and update accordingly
+        # If however, the target attribute is given, check it exists and update 
+        # accordingly.
 
         # Does target attribute exist?
 
