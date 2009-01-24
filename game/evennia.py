@@ -21,6 +21,16 @@ SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server.py')
 # setting in settings.py to specify the path to the containing directory.
 if os.name == 'nt':
     TWISTED_BINARY = 'twistd.bat'
+    try:
+        import win32api
+    except ImportError:
+        print "=" * 78
+        print """ERROR: Unable to import win32api, which Twisted requires to run. You may 
+       download it from:
+         
+       http://starship.python.net/crew/mhammond/win32/Downloads.html"""
+        print "=" * 78
+        sys.exit()
 else:
     TWISTED_BINARY = 'twistd' 
 
