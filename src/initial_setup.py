@@ -107,7 +107,7 @@ def import_help_files():
     """
     Imports the help files.
     """
-    management.call_command('loaddata', '../docs/help_files.json', verbosity=0)
+    management.call_command('loaddata', 'docs/help_files.json', verbosity=0)
 
 def handle_setup():
     """

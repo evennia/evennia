@@ -13,7 +13,11 @@ class HelpEntryManager(models.Manager):
         if topicstr.isdigit():
             t_query = self.filter(id=topicstr)
         else:
-            t_query = self.filter(topicname__istartswith=topicstr)
+            exact_match = self.filter(topicname__iexact=topicstr)
+            if exact_match:
+                t_query = exact_match
+            else:
+                t_query = self.filter(topicname__istartswith=topicstr)
         
         if not is_staff:
             return t_query.exclude(staff_only=1)

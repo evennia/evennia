@@ -470,5 +470,4 @@ def cmd_help(command):
         session.msg("You may type 'help <#>' to see any of these topics.")
     else:    
         topic = topics[0]
-        session.msg("\r\n%s%s%s" % (ansi.ansi["hilite"], topic.get_topicname(), ansi.ansi["normal"]))
-        session.msg(topic.get_entrytext_ingame())
+        session.msg("\n\r"+ topic.get_entrytext_ingame())
