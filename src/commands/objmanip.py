@@ -272,7 +272,10 @@ def cmd_cpattr(command):
     """
     Copies a given attribute to another object.
 
-    @cpattr <source object>/<attribute> = <target1>/[<attrname>] <target n>/[<attrname n>]
+    @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+    @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+    @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+    @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]
     """
     source_object = command.source_object
 
@@ -285,7 +288,7 @@ def cmd_cpattr(command):
 
     if len(eq_args) < 2:
         # There must be both a source and a target pair for cpattr
-        source_object.emit_to("You have not supplied both a source and a target[s]")
+        source_object.emit_to("You have not supplied both a source and a target(s).")
         return
 
     # Check that the source object and attribute exists, by splitting the eq_args 'source' entry with '/'
@@ -297,26 +300,26 @@ def cmd_cpattr(command):
     src_obj = Object.objects.standard_objsearch(source_object, source_string)
     
     if not src_obj:
-        source_object.emit_to("Source object does not exist")
+        source_object.emit_to("Source object does not exist.")
         return
         
     # Check whether src_obj has src_attr
     src_attr = src_obj.attribute_namesearch(source_attr_string)
     
     if not src_attr:
-        source_object.emit_to("Source object does not have attribute " + source[1].strip())
+        source_object.emit_to("Source object does not have attribute: %s" + source_attr_string)
         return
     
     # For each target object, check it exists
     # Remove leading '' from the targets list.
-    targets = eq_args[1].split(' ')[1:]
+    targets = eq_args[1].strip().split(',')
 
     for target in targets:
         tar = target.split('/', 1)
         tar_string = tar[0].strip()
         tar_attr_string = tar[1].strip().upper()
 
-        tar_obj = Object.objects.standard_plr_objsearch(session, tar_string)
+        tar_obj = Object.objects.standard_objsearch(source_object, tar_string)
 
         # Does target exist?
         if not tar_obj:
@@ -326,26 +329,13 @@ def cmd_cpattr(command):
 
         # If target attribute is not given, use source_attr_string for name
         if tar_attr_string == '':
-            src_attr_contents = src_obj.get_attribute_value(source_attr_string)
-            tar_obj.set_attribute(source_attr_string, src_attr_contents)
-            continue
+            tar_attr_string = source_attr_string
 
-        # If however, the target attribute is given, check it exists and update
-        # accordingly.
-        
-        # Does target attribute exist?
-        tar_attr = tar_obj.attribute_namesearch(tar_attr_string)
-
-        # If the target object does not have the given attribute, make a new attr
-        if not tar_attr:
-            src_attr_contents = src_obj.get_attribute_value(source_attr_string)
-            tar_obj.set_attribute(tar_attr_string, src_attr_contents)
-            continue
-
-        # If target has attribute, update its contents
+        # Set or update the new attribute on the target object
         src_attr_contents = src_obj.get_attribute_value(source_attr_string)
         tar_obj.set_attribute(tar_attr_string, src_attr_contents)
-        continue
+        source_object.emit_to("%s - %s set." % (tar_obj.get_name(), 
+                                                tar_attr_string))
 
 def cmd_nextfree(command):
     """
