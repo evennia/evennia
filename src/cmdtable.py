@@ -30,15 +30,17 @@ class CommandTable(object):
         # This ensures there are no leftovers when the class is instantiated.
         self.ctable = {}
     
-    def add_command(self, command_string, function, priv_tuple=None):
+    def add_command(self, command_string, function, priv_tuple=None,
+                    extra_vals=None):
         """
         Adds a command to the command table.
         
         command_string: (string) Command string (IE: WHO, QUIT, look).
         function: (reference) The command's function.
         priv_tuple: (tuple) String tuple of permissions required for command.
+        extra_vals: (dict) Dictionary to add to the Command object.
         """
-        self.ctable[command_string] = (function, priv_tuple)
+        self.ctable[command_string] = (function, priv_tuple, extra_vals)
         
     def get_command_tuple(self, func_name):
         """
@@ -54,6 +56,8 @@ GLOBAL_CMD_TABLE = CommandTable()
 GLOBAL_CMD_TABLE.add_command("addcom", commands.comsys.cmd_addcom),
 GLOBAL_CMD_TABLE.add_command("comlist", commands.comsys.cmd_comlist),
 GLOBAL_CMD_TABLE.add_command("delcom", commands.comsys.cmd_delcom),
+GLOBAL_CMD_TABLE.add_command("doing", commands.general.cmd_who, 
+                             extra_vals={"show_session_data": False}),
 GLOBAL_CMD_TABLE.add_command("drop", commands.general.cmd_drop),
 GLOBAL_CMD_TABLE.add_command("examine", commands.general.cmd_examine),
 GLOBAL_CMD_TABLE.add_command("get", commands.general.cmd_get),

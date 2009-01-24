@@ -38,6 +38,8 @@ class Command(object):
     command_argument = None
     # A reference to the command function looked up in a command table.
     command_function = None
+    # An optional dictionary that is passed through the command table as extra_vars.
+    extra_vars = None
     
     def parse_command_switches(self):
         """
@@ -243,6 +245,7 @@ def command_table_lookup(command, command_table, eval_perms=True):
                 raise ExitCommandHandler
         # If flow reaches this point, user has perms and command is ready.
         command.command_function = cmdtuple[0]
+        command.extra_vars = cmdtuple[2]
 
 def handle(command):
     """

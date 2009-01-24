@@ -347,7 +347,12 @@ def cmd_who(command):
     session_list = session_mgr.get_session_list()
     session = command.session
     pobject = session.get_pobject()
-    show_session_data = pobject.user_has_perm("genperms.see_session_data")
+    
+    # In the case of the DOING command, don't show session data regardless.
+    if command.extra_vars and command.extra_vars.get("show_session_data", None) == False:
+        show_session_data = False
+    else:
+        show_session_data = pobject.user_has_perm("genperms.see_session_data")
 
     # Only those with the see_session_data or superuser status can see
     # session details.
