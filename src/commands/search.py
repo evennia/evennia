@@ -104,10 +104,33 @@ def build_query(session, search_query, search_player, search_type,
         elif search_restriction == "player":
             search_query = search_query.filter(type=defines_global.OTYPE_PLAYER)
         else:
-            session.msg("Invalid class. Must be one of: room, thing, exit, player")
+            session.msg("Invalid class. See 'help SEARCH CLASSES'.")
             return None
-    elif search_type == "object":
-        search_query = search_query.filter(name__icontains=search_restriction)
+    elif search_type == "parent":
+        search_query = search_query.filter(script_parent__iexact=search_restriction)
+    elif search_type == "object" or search_type == "thing":
+        search_query = search_query.filter(name__icontains=search_restriction,
+                                           type=defines_global.OTYPE_THING)
+    elif search_type == "rooms":
+        search_query = search_query.filter(name__icontains=search_restriction,
+                                           type=defines_global.OTYPE_ROOM)
+    elif search_type == "exits":
+        search_query = search_query.filter(name__icontains=search_restriction,
+                                           type=defines_global.OTYPE_EXIT)
+    elif search_type == "players":
+        search_query = search_query.filter(name__icontains=search_restriction,
+                                           type=defines_global.OTYPE_PLAYER)
+    elif search_type == "zone":
+        zone_obj = Object.objects.standard_plr_objsearch(session, 
+                                                    search_restriction)
+        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+        if not zone_obj:
+            return None
+        search_query = search_query.filter(zone=zone_obj)
+    elif search_type == "power":
+        # TODO: Need this once we have powers implemented.
+        session.msg("To be implemented...")
+        return None
     elif search_type == "flags":
         flag_list = search_restriction.split()
         #session.msg("restriction: %s" % flag_list)
