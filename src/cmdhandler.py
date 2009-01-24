@@ -193,23 +193,32 @@ def match_alias(command):
     exist on the dict, just keep the command_string the same. If the key exists, 
     its value replaces the command_string. For example, sa -> say.
     """
+    # See if there's an entry in the global alias table.
     command.command_string = alias_mgr.CMD_ALIAS_LIST.get(
                                             command.command_string,
                                             command.command_string)
     
+    def get_aliased_message():
+        """
+        Convenience sub-function to combine the lopped off command string
+        and arguments for posing, saying, and nospace posing aliases.
+        """
+        return "%s %s" % (command.command_string[1:], 
+                                 command.command_argument)
+        
     # Match against the single-character aliases of MUX/MUSH-dom.
     first_char = command.command_string[0]
     # Shortened say alias.
     if first_char == '"':
-        command.command_argument = command.command_string[1:]
+        command.command_argument = get_aliased_message()
         command.command_string = "say"
     # Shortened pose alias.
     elif first_char == ':':
-        command.command_argument = command.command_string[1:]
+        command.command_argument = get_aliased_message()
         command.command_string = "pose"
     # Pose without space alias.
     elif first_char == ';':
-        command.command_argument = command.command_string[1:]
+        command.command_argument = get_aliased_message()
         command.command_string = "pose"
         command.command_switches.insert(0, "nospace")
     
