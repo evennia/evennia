@@ -4,19 +4,18 @@ from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from django.db import connection
 from django.conf import settings
-from src.config.models import CommandAlias, ConfigValue
+from src.config.models import ConfigValue
 from src.session import SessionProtocol
 from src import scheduler
 from src import logger
 from src import session_mgr
+from src import alias_mgr
 from src import cmdtable
 from src import initial_setup
 from src.util import functions_general
 
 class EvenniaService(service.Service):
     def __init__(self):
-        # This holds a dictionary of command aliases for cmdhandler.py
-        self.cmd_alias_list = {}
         self.game_running = True
         sys.path.append('.')
 
@@ -38,29 +37,21 @@ class EvenniaService(service.Service):
             print ' Game started for the first time, setting defaults.'
             initial_setup.handle_setup()
 
-        # Load command aliases into memory for easy/quick access.
-        self.load_cmd_aliases()
         self.start_time = time.time()
 
         print ' %s started on port(s):' % (ConfigValue.objects.get_configvalue('site_name'),)
         for port in settings.GAMEPORTS:
             print '  * %s' % (port)
+        
+        # Cache the aliases from the database for quick access.
+        alias_mgr.load_cmd_aliases()
+        
         print '-'*50
         scheduler.start_events()
 
     """
     BEGIN SERVER STARTUP METHODS
     """
-    def load_cmd_aliases(self):
-        """
-        Load up our command aliases.
-        """
-        alias_list = CommandAlias.objects.all()
-        for alias in alias_list:
-            self.cmd_alias_list[alias.user_input] = alias.equiv_command
-        print ' Command Aliases Loaded: %i' % (len(self.cmd_alias_list),)
-        pass
-
     def sqlite3_prep(self):
         """
         Optimize some SQLite stuff at startup since we can't save it to the

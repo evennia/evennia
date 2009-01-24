@@ -159,11 +159,11 @@ def plr_del_channel(session, alias):
     """
     del plr_get_cdict(session)[alias]
 
-def msg_chan_hist(session, channel_name):
+def msg_chan_hist(target_obj, channel_name):
     """
     Sends a listing of subscribers to a channel given a channel name.
     
-    session: (SessionProtocol) A reference to the player session.
+    target_obj: (Object) The object to send the history listing to.
     channel_name: (str) The channel's full name.
     """
     cobj = get_cobj_from_name(channel_name)
@@ -175,20 +175,19 @@ def msg_chan_hist(session, channel_name):
             time_str = entry.date_sent.strftime("%m.%d / %H:%M")
         else:
             time_str = entry.date_sent.strftime("%H:%M")
-        session.msg("[%s] %s" % (time_str, entry.message))
+        target_obj.emit_to("[%s] %s" % (time_str, entry.message))
     
-def msg_cwho(session, channel_name):
+def msg_cwho(target_obj, channel_name):
     """
     Sends a listing of subscribers to a channel given a channel name.
     
-    session: (SessionProtocol) A reference to the player session.
+    target_obj: (Object) Send the cwho listing to this object.
     channel_name: (str) The channel's full name.
     """
-    pobject = session.get_pobject()
-    session.msg("--- Users Listening to %s ---" % (channel_name,))
+    target_obj.emit_to("--- Users Listening to %s ---" % (channel_name,))
     for plr_sess in get_cwho_list(channel_name):
-        session.msg(plr_sess.get_pobject().get_name(show_dbref=pobject.sees_dbrefs()))
-    session.msg("--- End Channel Listeners ---")
+        target_obj.emit_to(plr_sess.get_pobject().get_name(show_dbref=target_obj.sees_dbrefs()))
+    target_obj.emit_to("--- End Channel Listeners ---")
     
 def get_cwho_list(channel_name, return_muted=False):
     """
@@ -206,8 +205,9 @@ def load_object_channels(pobject):
     """
     chan_list = pobject.get_attribute_value("__CHANLIST")
     if chan_list:
-        session = session_mgr.session_from_object(pobject)
-        session.channels_subscribed = simplejson.loads(chan_list)
+        sessions = session_mgr.sessions_from_object(pobject)
+        for session in sessions:
+            session.channels_subscribed = simplejson.loads(chan_list)
 
 def send_cmessage(channel_name, message):
     """

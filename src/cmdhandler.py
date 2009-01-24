@@ -3,14 +3,14 @@ This is the command processing module. It is instanced once in the main
 server module and the handle() function is hit every time a player sends
 something.
 """
-from traceback import format_exc
 import time
-
-from src.objects.models import Object
+from traceback import format_exc
+from django.contrib.contenttypes.models import ContentType
 import defines_global
 import cmdtable
 import logger
 import comsys
+import alias_mgr
 
 class UnknownCommand(Exception):
     """
@@ -24,9 +24,9 @@ class ExitCommandHandler(Exception):
     pass
     
 class Command(object):
-    # Reference to the master server object.
-    server = None
-    # The player session that the command originated from.
+    # The source object that the command originated from.
+    source_object = None
+    # The session that the command originated from (optional)
     session = None
     # The entire raw, un-parsed command.
     raw_input = None
@@ -62,7 +62,11 @@ class Command(object):
             command string can't be parsed, it has no argument and is
             handled by the except ValueError block below.
             """
+            # Lop off the return at the end.
+            self.raw_input = self.raw_input.strip('\r')
+            # Break the command up into the root command and its arguments.
             (self.command_string, self.command_argument) = self.raw_input.split(' ', 1)
+            # Yank off trailing and leading spaces.
             self.command_argument = self.command_argument.strip()
             self.command_string = self.command_string.strip()
             """
@@ -73,7 +77,14 @@ class Command(object):
             if self.command_string == '':
                 self.command_string = None
             if self.command_argument == '':
-                self.command_argument = None 
+                self.command_argument = None
+                
+            if self.command_string == None:
+                """
+                This prevents any bad stuff from happening as a result of
+                trying to further parse a None object.
+                """
+                return 
         except ValueError:
             """
             No arguments. IE: look, who.
@@ -83,12 +94,12 @@ class Command(object):
         # Parse command_string for switches, regardless of what happens.
         self.parse_command_switches()
     
-    def __init__(self, raw_input, server=None, session=None):
+    def __init__(self, source_object, raw_input, session=None):
         """
         Instantiates the Command object and does some preliminary parsing.
         """
-        self.server = server
         self.raw_input = raw_input
+        self.source_object = source_object
         self.session = session
         # The work starts here.
         self.parse_command()
@@ -132,11 +143,12 @@ def match_idle(command):
     them to drop if they don't send or receive something from the connection
     for a while.
     """
-    if not command.command_string == 'idle':
-        # Anything other than an 'idle' command updates the public-facing idle
-        # time for the session.
+    if command.session and command.command_string != 'idle' \
+                       and command.command_string != None:
+        # Anything other than an 'idle' command or a blank return
+        # updates the public-facing idle time for the session.
         command.session.count_command(silently=False)
-    else:
+    elif command.session:
         # User is hitting IDLE command. Don't update their publicly
         # facing idle time, drop out of command handler immediately.
         command.session.count_command(silently=True)
@@ -147,8 +159,10 @@ def match_exits(command):
     See if we can find an input match to exits.
     """
     # If we're not logged in, don't check exits.
-    pobject = command.session.get_pobject()
-    exits = pobject.get_location().get_contents(filter_type=defines_global.OTYPE_EXIT)
+    source_object = command.source_object
+    exits = source_object.get_location().get_contents(filter_type=defines_global.OTYPE_EXIT)
+    Object = ContentType.objects.get(app_label="objects", 
+                                     model="object").model_class()
     exit_matches = Object.objects.list_search_object_namestr(exits, 
                                                      command.command_string, 
                                                      match_type="exact")
@@ -160,13 +174,13 @@ def match_exits(command):
         if targ_exit.get_home():                   
             # SCRIPT: See if the player can traverse the exit
             if not targ_exit.scriptlink.default_lock({
-                "pobject": pobject
+                "pobject": source_object
             }):
-                command.session.msg("You can't traverse that exit.")
+                source_object.emit_to("You can't traverse that exit.")
             else:
-                pobject.move_to(targ_exit.get_home())
+                source_object.move_to(targ_exit.get_home())
         else:
-            command.session.msg("That exit leads to nowhere.")
+            source_object.emit_to("That exit leads to nowhere.")
         # We found a match, kill the command handler.
         raise ExitCommandHandler
 
@@ -179,7 +193,7 @@ def match_alias(command):
     exist on the dict, just keep the command_string the same. If the key exists, 
     its value replaces the command_string. For example, sa -> say.
     """
-    command.command_string = command.server.cmd_alias_list.get(
+    command.command_string = alias_mgr.CMD_ALIAS_LIST.get(
                                             command.command_string,
                                             command.command_string)
     
@@ -205,15 +219,17 @@ def match_channel(command):
     over a channel, replace command_string with @cemit. If they're entering
     a channel manipulation command, perform the operation and kill the things
     immediately with a True value sent back to the command handler.
+    
+    This only works with PLAYER objects at this point in time.
     """
-    if comsys.plr_has_channel(command.session, command.command_string, 
-        alias_search=True, return_muted=True):
+    if command.session and comsys.plr_has_channel(command.session, 
+        command.command_string, alias_search=True, return_muted=True):
         
         calias = command.command_string
         cname = comsys.plr_cname_from_alias(command.session, calias)
         
         if command.command_argument == "who":
-            comsys.msg_cwho(command.session, cname)
+            comsys.msg_cwho(command.source_object, cname)
             raise ExitCommandHandler
         elif command.command_argument == "on":
             comsys.plr_chan_on(command.session, calias)
@@ -222,7 +238,7 @@ def match_channel(command):
             comsys.plr_chan_off(command.session, calias)
             raise ExitCommandHandler
         elif command.command_argument == "last":
-            comsys.msg_chan_hist(command.session, cname)
+            comsys.msg_chan_hist(command.source_object, cname)
             raise ExitCommandHandler
             
         second_arg = "%s=%s" % (cname, command.command_argument)
@@ -240,8 +256,8 @@ def command_table_lookup(command, command_table, eval_perms=True):
     if cmdtuple:
         # If there is a permissions element to the entry, check perms.
         if eval_perms and cmdtuple[1]:
-            if not command.session.get_pobject().user_has_perm_list(cmdtuple[1]):
-                command.session.msg(defines_global.NOPERMS_MSG)
+            if not command.source_object.has_perm_list(cmdtuple[1]):
+                command.source_object.emit_to(defines_global.NOPERMS_MSG)
                 raise ExitCommandHandler
         # If flow reaches this point, user has perms and command is ready.
         command.command_function = cmdtuple[0]
@@ -256,16 +272,17 @@ def handle(command):
     their input on to 'cmd_' and looking it up in the GenCommands
     class.
     """
-    session = command.session
-    server = command.server
-    
     try:
         # TODO: Protect against non-standard characters.
         if not command.command_string:
             # Nothing sent in of value, ignore it.
             raise ExitCommandHandler
 
-        if session.logged_in:
+        if command.session and not command.session.logged_in:
+            # Not logged in, look through the unlogged-in command table.
+            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE, 
+                                 eval_perms=False)
+        else:
             # Match against the 'idle' command.
             match_idle(command)
             # See if this is an aliased command.
@@ -276,10 +293,6 @@ def handle(command):
             match_exits(command)
             # Retrieve the appropriate (if any) command function.
             command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
-        else:
-            # Not logged in, look through the unlogged-in command table.
-            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE, 
-                                 eval_perms=False)
         
         """
         By this point, we assume that the user has entered a command and not
@@ -297,10 +310,11 @@ def handle(command):
                 codebase stabilizes, we will probably want something more
                 useful or give them the option to hide exception values.
                 """
-                session.msg("Untrapped error, please file a bug report:\n%s" % 
-                    (format_exc(),))
-                logger.log_errmsg("Untrapped error, evoker %s: %s" %
-                    (session, format_exc()))
+                if command.source_object:
+                    command.source_object.emit_to("Untrapped error, please file a bug report:\n%s" % 
+                        (format_exc(),))
+                    logger.log_errmsg("Untrapped error, evoker %s: %s" %
+                        (command.source_object, format_exc()))
                 # Prevent things from falling through to UnknownCommand.
                 raise ExitCommandHandler
         else:
@@ -313,5 +327,4 @@ def handle(command):
         pass
     except UnknownCommand:
         # Default fall-through. No valid command match.
-        session.msg("Huh?  (Type \"help\" for help.)")
-
+        command.source_object.emit_to("Huh?  (Type \"help\" for help.)")

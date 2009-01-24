@@ -77,31 +77,13 @@ def remove_session(session):
         pass
         
     
-def session_from_object(targobject):
+def sessions_from_object(targ_object):
     """
-    Return the session object given a object (if there is one open).
+    Returns a list of matching session objects, or None if there are no matches.
     
-    session_list: (list) The server's session_list attribute.
     targobject: (Object) The object to match.
     """
-    results = [prospect for prospect in session_list if prospect.get_pobject() == targobject]
-    if results:
-        return results[0]
-    else:
-        return False
-
-def session_from_dbref(dbstring):
-    """
-    Return the session object given a dbref (if there is one open).
-    
-    dbstring: (int) The dbref number to match against.
-    """
-    if is_dbref(dbstring):
-        results = [prospect for prospect in session_list if prospect.get_pobject().dbref_match(dbstring)]
-        if results:
-            return results[0]
-    else:
-        return False
+    return [prospect for prospect in session_list if prospect.get_pobject() == targ_object]
         
 def announce_all(message, with_ann_prefix=True):
     """

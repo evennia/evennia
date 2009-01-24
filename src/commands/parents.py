@@ -7,12 +7,11 @@ def clear_cached_scripts(command):
     """
     Show the currently cached scripts.
     """
-    session = command.session
     cache_dict = scripthandler.CACHED_SCRIPTS
     cache_size = len(cache_dict)
     cache_dict.clear()
-    session.msg("Script parent cached cleared (%d previously in cache)." % 
-                                                                cache_size)
+    command.source_object.emit_to(
+        "Script parent cached cleared (%d previously in cache)." % cache_size)
     
 def show_cached_scripts(command):
     """
@@ -20,7 +19,6 @@ def show_cached_scripts(command):
     dictionary. The next time an object needs the previously loaded scripts,
     they are loaded again.
     """
-    session = command.session
     cache_dict = scripthandler.CACHED_SCRIPTS
     
     retval = "Currently Cached Script Parents\n"
@@ -29,7 +27,7 @@ def show_cached_scripts(command):
         retval += "\n " + script
     retval += "\n" + "-" * 78 + "\n"
     retval += "%d cached parents" % len(cache_dict)
-    session.msg(retval)
+    command.source_object.emit_to(retval)
     
 def cmd_parent(command):
     """
@@ -44,4 +42,4 @@ def cmd_parent(command):
         clear_cached_scripts(command)
         return
     
-    
+    command.source_object.emit_to("Must be specified with one of the following switches: showcache, clearcache")   

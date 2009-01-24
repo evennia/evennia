@@ -5,8 +5,8 @@ from django.db.models import Q
 from src.objects.models import Object
 from src import defines_global
 
-def _parse_restriction_split(session, restriction_split, search_low_dbnum,
-                                                         search_high_dbnum):
+def _parse_restriction_split(source_object, restriction_split, search_low_dbnum,
+                                                               search_high_dbnum):
     """
     Parses a split restriction string and sets some needed variables.
     
@@ -17,18 +17,18 @@ def _parse_restriction_split(session, restriction_split, search_low_dbnum,
         try:
             search_low_dbnum = int(restriction_split[1].strip())
         except ValueError:
-            session.msg("Invalid value for low dbref limit.")
+            source_object.emit_to("Invalid value for low dbref limit.")
             return False
     if restriction_size >= 3:
         try:
             search_high_dbnum = int(restriction_split[2].strip())
         except ValueError:
-            session.msg("Invalid value for high dbref limit.")
+            source_object.emit_to("Invalid value for high dbref limit.")
             return False
         
     return search_low_dbnum, search_high_dbnum
 
-def display_results(session, search_query):
+def display_results(source_object, search_query):
     """
     Display the results to the searcher.
     """
@@ -50,33 +50,33 @@ def display_results(session, search_query):
 
     # Render each section for different object types
     if thing_list:
-        session.msg("\n\rTHINGS:")
+        source_object.emit_to("\n\rTHINGS:")
         for thing in thing_list:
-            session.msg(thing.get_name(show_dbref=True, show_flags=True))
+            source_object.emit_to(thing.get_name(show_dbref=True, show_flags=True))
             
     if exit_list:
-        session.msg("\n\rEXITS:")
+        source_object.emit_to("\n\rEXITS:")
         for exit in exit_list:
-            session.msg(exit.get_name(show_dbref=True, show_flags=True))
+            source_object.emit_to(exit.get_name(show_dbref=True, show_flags=True))
             
     if room_list:
-        session.msg("\n\rROOMS:")
+        source_object.emit_to("\n\rROOMS:")
         for room in room_list:
-            session.msg(room.get_name(show_dbref=True, show_flags=True))
+            source_object.emit_to(room.get_name(show_dbref=True, show_flags=True))
             
     if player_list:
-        session.msg("\n\rPLAYER:")
+        source_object.emit_to("\n\rPLAYER:")
         for player in player_list:
-            session.msg(player.get_name(show_dbref=True, show_flags=True))
+            source_object.emit_to(player.get_name(show_dbref=True, show_flags=True))
             
     # Show the total counts by type
-    session.msg("\n\rFound:  Rooms...%d  Exits...%d  Things...%d  Players...%d" % (
+    source_object.emit_to("\n\rFound:  Rooms...%d  Exits...%d  Things...%d  Players...%d" % (
                                 len(room_list),
                                 len(exit_list),
                                 len(thing_list),
                                 len(player_list)))
     
-def build_query(session, search_query, search_player, search_type, 
+def build_query(source_object, search_query, search_player, search_type, 
                 search_restriction, search_low_dbnum, search_high_dbnum):
     """
     Builds and returns a QuerySet object, or None if an error occurs.
@@ -84,9 +84,9 @@ def build_query(session, search_query, search_player, search_type,
     # Look up an Object matching the player search query
     if search_player:
         # Replace the string variable with an Object reference
-        search_player = Object.objects.standard_plr_objsearch(session, 
+        search_player = Object.objects.standard_objsearch(source_object, 
                                                               search_player)
-        # Use standard_plr_objsearch to handle duplicate/nonexistant results
+        # Use standard_objsearch to handle duplicate/nonexistant results
         if not search_player:
             return None
         
@@ -104,7 +104,7 @@ def build_query(session, search_query, search_player, search_type,
         elif search_restriction == "player":
             search_query = search_query.filter(type=defines_global.OTYPE_PLAYER)
         else:
-            session.msg("Invalid class. See 'help SEARCH CLASSES'.")
+            source_object.emit_to("Invalid class. See 'help SEARCH CLASSES'.")
             return None
     elif search_type == "parent":
         search_query = search_query.filter(script_parent__iexact=search_restriction)
@@ -121,19 +121,19 @@ def build_query(session, search_query, search_player, search_type,
         search_query = search_query.filter(name__icontains=search_restriction,
                                            type=defines_global.OTYPE_PLAYER)
     elif search_type == "zone":
-        zone_obj = Object.objects.standard_plr_objsearch(session, 
+        zone_obj = Object.objects.standard_objsearch(source_object, 
                                                     search_restriction)
-        # Use standard_plr_objsearch to handle duplicate/nonexistant results.
+        # Use standard_objsearch to handle duplicate/nonexistant results.
         if not zone_obj:
             return None
         search_query = search_query.filter(zone=zone_obj)
     elif search_type == "power":
         # TODO: Need this once we have powers implemented.
-        session.msg("To be implemented...")
+        source_object.emit_to("To be implemented...")
         return None
     elif search_type == "flags":
         flag_list = search_restriction.split()
-        #session.msg("restriction: %s" % flag_list)
+        #source_object.emit_to("restriction: %s" % flag_list)
         for flag in flag_list:
             search_query = search_query.filter(Q(flags__icontains=flag) | Q(nosave_flags__icontains=flag))
     
@@ -149,8 +149,7 @@ def cmd_search(command):
     """
     Searches for owned objects as per MUX2.
     """
-    session = command.session
-    pobject = session.get_pobject()
+    source_object = command.source_object
     
     search_player = None
     search_type = None
@@ -159,7 +158,7 @@ def cmd_search(command):
     search_high_dbnum = None
 
     if not command.command_argument:
-        search_player = "#" + str(pobject.id)
+        search_player = "#" + str(source_object.id)
     else:
         first_check_split = command.command_argument.split(' ', 1)
         if '=' in first_check_split[0]:
@@ -168,12 +167,12 @@ def cmd_search(command):
             search_type = eq_split[0]
             restriction_split = eq_split[1].split(',')
             search_restriction = restriction_split[0].strip()
-            #session.msg("@search class=restriction")
-            #session.msg("eq_split: %s" % eq_split)
-            #session.msg("restriction_split: %s" % restriction_split)
+            #source_object.emit_to("@search class=restriction")
+            #source_object.emit_to("eq_split: %s" % eq_split)
+            #source_object.emit_to("restriction_split: %s" % restriction_split)
             
             try:
-                search_low_dbnum, search_high_dbnum = _parse_restriction_split(session,
+                search_low_dbnum, search_high_dbnum = _parse_restriction_split(source_object,
                                                      restriction_split,
                                                      search_low_dbnum,
                                                      search_high_dbnum)
@@ -183,22 +182,22 @@ def cmd_search(command):
         else:
             # @search player
             if len(first_check_split) == 1:
-                #session.msg("@search player")
-                #session.msg(first_check_split)
+                #source_object.emit_to("@search player")
+                #source_object.emit_to(first_check_split)
                 search_player = first_check_split[0]
             else:
-                #session.msg("@search player class=restriction")
-                #session.msg(first_check_split)
+                #source_object.emit_to("@search player class=restriction")
+                #source_object.emit_to(first_check_split)
                 search_player = first_check_split[0]
                 eq_split = first_check_split[1].split('=', 1)
                 search_type = eq_split[0]
-                #session.msg("eq_split: %s" % eq_split)
+                #source_object.emit_to("eq_split: %s" % eq_split)
                 restriction_split = eq_split[1].split(',')
                 search_restriction = restriction_split[0]
-                #session.msg("restriction_split: %s" % restriction_split)
+                #source_object.emit_to("restriction_split: %s" % restriction_split)
                 
                 try:
-                    search_low_dbnum, search_high_dbnum = _parse_restriction_split(session,
+                    search_low_dbnum, search_high_dbnum = _parse_restriction_split(source_object,
                                                          restriction_split,
                                                          search_low_dbnum,
                                                          search_high_dbnum)
@@ -207,11 +206,11 @@ def cmd_search(command):
     
     search_query = Object.objects.all()
         
-    #session.msg("search_player: %s" % search_player)
-    #session.msg("search_type: %s" % search_type)
-    #session.msg("search_restriction: %s" % search_restriction)
-    #session.msg("search_lowdb: %s" % search_low_dbnum)
-    #session.msg("search_highdb: %s" % search_high_dbnum)
+    #source_object.emit_to("search_player: %s" % search_player)
+    #source_object.emit_to("search_type: %s" % search_type)
+    #source_object.emit_to("search_restriction: %s" % search_restriction)
+    #source_object.emit_to("search_lowdb: %s" % search_low_dbnum)
+    #source_object.emit_to("search_highdb: %s" % search_high_dbnum)
     
     # Clean up these variables for comparisons.
     try:
@@ -224,7 +223,7 @@ def cmd_search(command):
         pass
     
     # Build the search query.
-    search_query = build_query(session, search_query, search_player, search_type, 
+    search_query = build_query(source_object, search_query, search_player, search_type, 
                                search_restriction, search_low_dbnum, 
                                search_high_dbnum)
     
@@ -232,4 +231,4 @@ def cmd_search(command):
     if search_query is None:
         return
                 
-    display_results(session, search_query)
+    display_results(source_object, search_query)

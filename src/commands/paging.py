@@ -4,12 +4,12 @@ Paging command and support functions.
 from src.objects.models import Object
 from src import defines_global
 
-def get_last_paged_objects(pobject):
+def get_last_paged_objects(source_object):
     """
     Returns a list of objects of the user's last paged list, or None if invalid
     or non-existant.
     """
-    last_paged_dbrefs = pobject.get_attribute_value("LASTPAGED")
+    last_paged_dbrefs = source_object.get_attribute_value("LASTPAGED")
     if last_paged_dbrefs is not False:
         last_paged_objects = list()
         try:
@@ -25,29 +25,28 @@ def get_last_paged_objects(pobject):
             return last_paged_objects
         except ValueError:
             # Remove the invalid LASTPAGED attribute
-            pobject.clear_attribute("LASTPAGED")
+            source_object.clear_attribute("LASTPAGED")
             return None   
 
 def cmd_page(command):
     """
     Send a message to target user (if online).
     """
-    session = command.session
-    pobject = session.get_pobject()
+    source_object = command.source_object
     # Get the last paged person(s)
-    last_paged_objects = get_last_paged_objects(pobject)
+    last_paged_objects = get_last_paged_objects(source_object)
     
     # If they don't give a target, or any data to send to the target
     # then tell them who they last paged if they paged someone, if not
     # tell them they haven't paged anyone.
     if not command.command_argument:
         if last_paged_objects:
-            session.msg("You last paged: %s." % (
+            source_object.emit_to("You last paged: %s." % (
                 ', '.join([x.name for x in last_paged_objects])))
             return
         else:
             # No valid LASTPAGE values
-            session.msg("You have not paged anyone.")
+            source_object.emit_to("You have not paged anyone.")
             return
     
     # Stores a list of targets
@@ -62,7 +61,7 @@ def cmd_page(command):
         
         # No valid last paged players found, error out.
         if not targets:
-            session.msg("Page who?")
+            source_object.emit_to("Page who?")
             return
     else:
         # For each of the targets listed, grab their objects and append
@@ -75,7 +74,7 @@ def cmd_page(command):
                 targets.append(matched_object)
             else:
                 # Search returned None
-                session.msg("Player '%s' can not be found." % (
+                source_object.emit_to("Player '%s' can not be found." % (
                         target))
 
     # Depending on the argument provided, either send the entire thing as
@@ -88,7 +87,7 @@ def cmd_page(command):
         # arguments as the message to send.
         message = command.command_argument
         
-    sender_name = pobject.get_name(show_dbref=False)
+    sender_name = source_object.get_name(show_dbref=False)
     # Build our messages
     target_message = "%s pages: %s"
     sender_message = "You paged %s with '%s'."
@@ -111,17 +110,19 @@ def cmd_page(command):
             target.emit_to(target_message % (sender_name, message))
             target_names.append(target.get_name(show_dbref=False))
         else:
-            session.msg("Player %s does not exist or is not online." % (
+            source_object.emit_to("Player %s does not exist or is not online." % (
                     target.get_name(show_dbref=False)))
 
     # Now send a confirmation to the person doing the paging.
     if len(target_names) > 0:
         target_names_string = ', '.join(target_names)
         try:
-            session.msg(sender_message % (target_names_string, sender_name, message))
+            source_object.emit_to(sender_message % (target_names_string, 
+                                                    sender_name, message))
         except TypeError:
-            session.msg(sender_message % (target_names_string, message))
+            source_object.emit_to(sender_message % (target_names_string, 
+                                                    message))
         
         # Now set the LASTPAGED attribute
-        pobject.set_attribute("LASTPAGED", ','.join(
+        source_object.set_attribute("LASTPAGED", ','.join(
                 ["#%d" % (x.id) for x in targets]))

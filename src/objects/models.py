@@ -136,14 +136,14 @@ class Object(models.Model):
     """
     BEGIN COMMON METHODS
     """
-    def get_session(self):
+    def get_sessions(self):
         """
-        Returns the session object for a player, or None if none exists.
+        Returns a list of sessions matching this object.
         """
         if self.is_player():
-            return session_mgr.session_from_object(self)
+            return session_mgr.sessions_from_object(self)
         else:
-            return None
+            return []
         
     def emit_to(self, message):
         """
@@ -155,11 +155,17 @@ class Object(models.Model):
         if not self.is_player():
             return False
             
-        session = self.get_session()
-        if session:
+        sessions = self.get_sessions()
+        for session in sessions:
             session.msg(ansi.parse_ansi(message))
-        else:
-            return False
+            
+    def execute_cmd(self, command_str, session=None):
+        """
+        Do something as this object.
+        """      
+        # The Command object has all of the methods for parsing and preparing
+        # for searching and execution. Send it to the handler once populated.
+        cmdhandler.handle(cmdhandler.Command(self, command_str, session=session))
             
     def emit_to_contents(self, message, exclude=None):
         """
@@ -223,7 +229,7 @@ class Object(models.Model):
         else:
             return False
 
-    def user_has_perm(self, perm):
+    def has_perm(self, perm):
         """
         Checks to see whether a user has the specified permission or is a super
         user.
@@ -241,7 +247,7 @@ class Object(models.Model):
         else:
             return False
 
-    def user_has_perm_list(self, perm_list):
+    def has_perm_list(self, perm_list):
         """
         Checks to see whether a user has the specified permission or is a super
         user. This form accepts an iterable of strings representing permissions,
@@ -292,7 +298,7 @@ class Object(models.Model):
         
         # When builder_override is enabled, a builder permission means
         # the object controls the other.
-        if builder_override and not other_obj.is_player() and self.user_has_perm('genperms.builder'):
+        if builder_override and not other_obj.is_player() and self.has_perm('genperms.builder'):
             return True
 
         # They've failed to meet any of the above conditions.
@@ -442,8 +448,8 @@ class Object(models.Model):
         """
         
         # See if we need to kick the player off.
-        session = self.get_session()
-        if session:
+        sessions = self.get_sessions()
+        for session in sessions:
             session.msg("You have been destroyed, goodbye.")
             session.handle_close()
             
@@ -655,12 +661,11 @@ class Object(models.Model):
         Is this object a connected player?
         """
         if self.is_player():
-            if self.get_session():
+            if self.get_sessions():
                 return True
-            else:
-                return False
-        else:
-            return False
+
+        # No matches or not a player
+        return False
         
     def get_owner(self):
         """
@@ -798,9 +803,7 @@ class Object(models.Model):
             if self.location.is_player():
                 self.location.emit_to("%s is now in your inventory." % (self.get_name()))
         
-        session = self.get_session()
-        if force_look and self.is_player() and session:
-            self.get_session().execute_cmd('look')
+        self.execute_cmd('look')
         
     def dbref_match(self, oname):
         """
@@ -920,7 +923,7 @@ class CommChannel(models.Model):
     name = models.CharField(max_length=255)
     ansi_name = models.CharField(max_length=255)
     owner = models.ForeignKey(Object, related_name="chan_owner")
-    description = models.CharField(max_length=80)
+    description = models.CharField(max_length=80, blank=True, null=True)
     is_joined_by_default = models.BooleanField(default=False)
     req_grp = models.ManyToManyField(Group, blank=True, null=True)
     
@@ -1024,3 +1027,6 @@ class CommChannelMessage(models.Model):
 class CommChannelMessageAdmin(admin.ModelAdmin):
     list_display = ('channel', 'message')
 admin.site.register(CommChannelMessage, CommChannelMessageAdmin)
+
+# Deferred imports are poopy. This will require some thought to fix.
+from src import cmdhandler

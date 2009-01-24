@@ -5,11 +5,8 @@ needed to manage them.
 import time
 import sys
 from datetime import datetime
-
 from twisted.conch.telnet import StatefulTelnetProtocol
-
 from django.contrib.auth.models import User
-
 from src.objects.models import Object, CommChannel
 from src.config.models import ConnectScreen, ConfigValue
 from util import functions_general
@@ -46,6 +43,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.address = self.getClientAddress()
         self.name = None
         self.uid = None
+        self.pobject = None
         self.logged_in = False
         # The time the user last issued a command.
         self.cmd_last = time.time()
@@ -73,28 +71,20 @@ class SessionProtocol(StatefulTelnetProtocol):
     def lineReceived(self, data):
         """
         Any line return indicates a command for the purpose of a MUD. So we take
-        the user input and pass it to our command handler.
+        the user input and pass it to this session's pobject.
         """
-        # Clean up the input.
-        line = (''.join(data))
-        line = line.strip('\r')
-        uinput = line
-        
-        # The Command object has all of the methods for parsing and preparing
-        # for searching and execution.
-        command = cmdhandler.Command(uinput, 
-                                     server=self.factory.server, 
-                                     session=self)
-        
-        # Send the command object to the command handler for parsing
-        # and eventual execution.
-        cmdhandler.handle(command)
+        if self.pobject:
+            # Session is logged in, run through the normal object execution.
+            self.pobject.execute_cmd(data, session=self)
+        else:
+            # Not logged in, manually execute the command.
+            cmdhandler.handle(cmdhandler.Command(None, data, session=self))
 
-    def execute_cmd(self, cmdstr):
+    def execute_cmd(self, command_str):
         """
-        Executes a command as this session.
+        Sends a command to this session's object for processing.
         """
-        self.lineReceived(data=cmdstr)
+        self.pobject.execute_cmd(command_str, session=self)
       
     def count_command(self, silently=False):
         """
@@ -104,9 +94,9 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         # Store the timestamp of the user's last command.
         self.cmd_last = time.time()
-        # Increment the user's command counter.
-        self.cmd_total += 1
         if not silently:
+            # Increment the user's command counter.
+            self.cmd_total += 1
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = time.time()
             
@@ -130,8 +120,14 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         Returns the object associated with a session.
         """
+        # If the pobject is already cached, return it and skip the lookup.
+        if self.pobject:
+            return self.pobject
+        
         try:
+            # Cache the result in the session object for quick retrieval.
             result = Object.objects.get(id=self.uid)
+            self.pobject = result
             return result
         except:
             logger.log_errmsg("No pobject match for session uid: %s" % self.uid)
@@ -162,11 +158,12 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.name = user.username
         self.logged_in = True
         self.conn_time = time.time()
-        pobject = self.get_pobject()
-        session_mgr.disconnect_duplicate_session(self)
+        # This will cache with the first call of this function.
+        self.get_pobject()
+        #session_mgr.disconnect_duplicate_session(self)
         
-        pobject.scriptlink.at_pre_login()
-        pobject.scriptlink.at_post_login()
+        self.pobject.scriptlink.at_pre_login(self)
+        self.pobject.scriptlink.at_post_login(self)
         
         logger.log_infomsg("Login: %s" % (self,))
         
@@ -175,9 +172,9 @@ class SessionProtocol(StatefulTelnetProtocol):
         user.save()
         
         # In case the account and the object get out of sync, fix it.
-        if pobject.name != user.username:
-            pobject.set_name(user.username)
-            pobject.save()
+        if self.pobject.name != user.username:
+            self.pobject.set_name(user.username)
+            self.pobject.save()
         
     def msg(self, message):
         """

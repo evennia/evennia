@@ -45,6 +45,12 @@ def parse_ansi(string, strip_ansi=False, strip_formatting=False):
     """
     Parses a string, subbing color codes as needed.
     """
+    if string == None or string == '':
+        return ''
+    
+    # Convert to string to prevent problems with lists, ints, and other types.
+    string = str(string)
+    
     if strip_formatting:
         char_return = ""
         char_tab = ""

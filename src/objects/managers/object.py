@@ -100,30 +100,29 @@ class ObjectManager(models.Manager):
                 return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
 
 
-    def standard_plr_objsearch(self, session, ostring, search_contents=True, 
+    def standard_objsearch(self, source_object, ostring, search_contents=True, 
                                search_location=True, dbref_only=False, 
                                limit_types=False):
         """
-        Perform a standard object search via a player session, handling multiple
+        Perform a standard object search, handling multiple
         results and lack thereof gracefully.
 
-        session: (SessionProtocol) Reference to the player's session.
+        source_object: (Object) The Object doing the searching
         ostring: (str) The string to match object names against.
         """
-        pobject = session.get_pobject()
-        results = self.local_and_global_search(pobject, ostring, 
+        results = self.local_and_global_search(source_object, ostring, 
                                 search_contents=search_contents, 
                                 search_location=search_location, 
                                 dbref_only=dbref_only, 
                                 limit_types=limit_types)
 
         if len(results) > 1:
-            session.msg("More than one match found (please narrow target):")
+            source_object.emit_to("More than one match found (please narrow target):")
             for result in results:
-                session.msg(" %s" % (result.get_name(),))
+                source_object.emit_to(" %s" % (result.get_name(),))
             return False
         elif len(results) == 0:
-            session.msg("I don't see that here.")
+            source_object.emit_to("I don't see that here.")
             return False
         else:
             return results[0]
@@ -182,11 +181,11 @@ class ObjectManager(models.Manager):
         except IndexError:
             return None
 
-    def is_dbref(self, dbstring):
+    def is_dbref(self, dbstring, require_pound=True):
         """
         Is the input a well-formed dbref number?
         """
-        return util_object.is_dbref(dbstring)
+        return util_object.is_dbref(dbstring, require_pound=require_pound)
 
     def dbref_search(self, dbref_string, limit_types=False):
         """
