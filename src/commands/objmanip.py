@@ -328,7 +328,7 @@ def cmd_cpattr(command):
     
     if not src_attr:
         session.msg("Source object does not have attribute " + source[1].strip())
-	return
+        return
     
     # For each target object, check it exists
     # Remove leading '' from the targets list.
@@ -336,39 +336,39 @@ def cmd_cpattr(command):
 
     for target in targets:
         tar = target.split('/', 1)
-	tar_string = tar[0].strip()
-	tar_attr_string = tar[1].strip().upper()
+        tar_string = tar[0].strip()
+        tar_attr_string = tar[1].strip().upper()
 
-	tar_obj = Object.objects.standard_plr_objsearch(session, tar_string)
+        tar_obj = Object.objects.standard_plr_objsearch(session, tar_string)
 
         # Does target exist?
-	if not tar_obj:
+        if not tar_obj:
             session.msg("Target object does not exist: " + tar_string)
-	    # Continue if target does not exist, but give error on this item
-	    continue
+            # Continue if target does not exist, but give error on this item
+            continue
 
         # If target attribute is not given, use source_attr_string for name
-	if tar_attr_string == '':
+        if tar_attr_string == '':
             src_attr_contents = src_obj.get_attribute_value(source_attr_string)
             tar_obj.set_attribute(source_attr_string, src_attr_contents)
-	    continue
+            continue
 
-	# If however, the target attribute is given, check it exists and update accordingly
+        # If however, the target attribute is given, check it exists and update accordingly
 
         # Does target attribute exist?
 
-	tar_attr = tar_obj.attribute_namesearch(tar_attr_string)
+        tar_attr = tar_obj.attribute_namesearch(tar_attr_string)
 
         # If the target object does not have the given attribute, make a new attr
-	if not tar_attr:
-	    src_attr_contents = src_obj.get_attribute_value(source_attr_string)
-	    tar_obj.set_attribute(tar_attr_string, src_attr_contents)
+        if not tar_attr:
+            src_attr_contents = src_obj.get_attribute_value(source_attr_string)
+            tar_obj.set_attribute(tar_attr_string, src_attr_contents)
             continue
 
         # If target has attribute, update its contents
         src_attr_contents = src_obj.get_attribute_value(source_attr_string)
         tar_obj.set_attribute(tar_attr_string, src_attr_contents)
-	continue
+        continue
 
 def cmd_nextfree(command):
     """
