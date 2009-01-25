@@ -193,7 +193,7 @@ def cmd_set(command):
         attrib_value = eq_args[1][splicenum:]
         
         # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
-        if not Attribute.objects.is_modifiable_attrib(attrib_name) and not source_object.is_superuser():
+        if not Attribute.objects.is_modifiable_attrib(attrib_name):
             source_object.emit_to("You can't modify that attribute.")
             return
         
