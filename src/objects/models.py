@@ -136,6 +136,43 @@ class Object(models.Model):
     """
     BEGIN COMMON METHODS
     """
+    def search_for_object(self, ostring, emit_to_obj=None, search_contents=True, 
+                                search_location=True, dbref_only=False, 
+                                limit_types=False, search_aliases=False):
+        """
+        Perform a standard object search, handling multiple
+        results and lack thereof gracefully.
+
+        source_object: (Object) The Object doing the searching
+        ostring: (str) The string to match object names against.
+        """
+        # This is the object that gets the duplicate/no match emits.
+        if not emit_to_obj:
+            emit_to_obj = self
+            
+        if search_aliases:
+            # If an alias match is found, get out of here and skip the rest.
+            alias_results = Object.objects.player_alias_search(self, ostring)
+            if alias_results:
+                return alias_results[0]
+            
+        results = Object.objects.local_and_global_search(self, ostring, 
+                                search_contents=search_contents, 
+                                search_location=search_location, 
+                                dbref_only=dbref_only, 
+                                limit_types=limit_types)
+
+        if len(results) > 1:
+            emit_to_obj.emit_to("More than one match found (please narrow target):")
+            for result in results:
+                emit_to_obj.emit_to(" %s" % (result.get_name(),))
+            return False
+        elif len(results) == 0:
+            emit_to_obj.emit_to("I don't see that here.")
+            return False
+        else:
+            return results[0]
+        
     def get_sessions(self):
         """
         Returns a list of sessions matching this object.

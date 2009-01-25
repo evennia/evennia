@@ -101,8 +101,8 @@ def cmd_newpassword(command):
         source_object.emit_to("You must supply a new password.")
         return
 
-    target_obj = Object.objects.standard_objsearch(source_object, searchstring)
-    # Use standard_objsearch to handle duplicate/nonexistant results.
+    target_obj = source_object.search_for_object(searchstring)
+    # Use search_for_object to handle duplicate/nonexistant results.
     if not target_obj:
         return
 

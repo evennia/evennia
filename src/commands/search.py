@@ -84,8 +84,7 @@ def build_query(source_object, search_query, search_player, search_type,
     # Look up an Object matching the player search query
     if search_player:
         # Replace the string variable with an Object reference
-        search_player = Object.objects.standard_objsearch(source_object, 
-                                                              search_player)
+        search_player = source_object.search_for_object(search_player)
         # Use standard_objsearch to handle duplicate/nonexistant results
         if not search_player:
             return None
@@ -121,9 +120,8 @@ def build_query(source_object, search_query, search_player, search_type,
         search_query = search_query.filter(name__icontains=search_restriction,
                                            type=defines_global.OTYPE_PLAYER)
     elif search_type == "zone":
-        zone_obj = Object.objects.standard_objsearch(source_object, 
-                                                    search_restriction)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        zone_obj = source_object.search_for_object(search_restriction)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not zone_obj:
             return None
         search_query = search_query.filter(zone=zone_obj)

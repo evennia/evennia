@@ -29,13 +29,13 @@ def cmd_teleport(command):
     # a direct teleport, @tel <destination>.
     if len(eq_args) > 1:
         # Equal sign teleport.
-        victim = Object.objects.standard_objsearch(source_object, eq_args[0])
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        victim = source_object.search_for_object(eq_args[0])
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not victim:
             return
 
-        destination = Object.objects.standard_objsearch(source_object, eq_args[1])
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        destination = source_object.search_for_object(eq_args[1])
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not destination:
             return
 
@@ -50,9 +50,8 @@ def cmd_teleport(command):
         victim.move_to(destination, quiet=tel_quietly)
     else:
         # Direct teleport (no equal sign)
-        target_obj = Object.objects.standard_objsearch(source_object, 
-                                                    command.command_argument)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(command.command_argument)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -83,10 +82,14 @@ def cmd_alias(command):
     new_alias = eq_args[1]
     
     # An Object instance for the victim.
-    target = Object.objects.standard_objsearch(source_object, target_string)
-    # Use standard_objsearch to handle duplicate/nonexistant results.
+    target = source_object.search_for_object(target_string)
+    # Use search_for_object to handle duplicate/nonexistant results.
     if not target:
         source_object.emit_to("I can't find that player.")
+        return
+    
+    if not new_alias.isalnum():
+        source_object.emit_to("Aliases must be alphanumeric.")
         return
   
     old_alias = target.get_attribute_value('ALIAS')
@@ -130,8 +133,8 @@ def cmd_wipe(command):
     else:
         searchstr = command.command_argument
 
-    target_obj = Object.objects.standard_objsearch(source_object, attr_split[0])
-    # Use standard_objsearch to handle duplicate/nonexistant results.
+    target_obj = source_object.search_for_object(attr_split[0])
+    # Use search_for_object to handle duplicate/nonexistant results.
     if not target_obj:
         return
 
@@ -173,8 +176,8 @@ def cmd_set(command):
         source_object.emit_to("Set what?")
         return
     
-    victim = Object.objects.standard_objsearch(source_object, eq_args[0])
-    # Use standard_objsearch to handle duplicate/nonexistant results.
+    victim = source_object.search_for_object(eq_args[0])
+    # Use search_for_object to handle duplicate/nonexistant results.
     if not victim:
         return
 
@@ -297,7 +300,7 @@ def cmd_cpattr(command):
     source_attr_string = source[1].strip().upper()
 
     # Check whether src_obj exists
-    src_obj = Object.objects.standard_objsearch(source_object, source_string)
+    src_obj = source_object.search_for_object(source_string)
     
     if not src_obj:
         source_object.emit_to("Source object does not exist.")
@@ -319,7 +322,7 @@ def cmd_cpattr(command):
         tar_string = tar[0].strip()
         tar_attr_string = tar[1].strip().upper()
 
-        tar_obj = Object.objects.standard_objsearch(source_object, tar_string)
+        tar_obj = source_object.search_for_object(tar_string)
 
         # Does target exist?
         if not tar_obj:
@@ -372,9 +375,8 @@ def cmd_open(command):
     if len(eq_args) > 1:
         # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
         comma_split = eq_args[1].split(',', 1)
-        destination = Object.objects.standard_objsearch(source_object, 
-                                                            comma_split[0])
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        destination = source_object.search_for_object(comma_split[0])
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not destination:
             return
 
@@ -438,8 +440,8 @@ def cmd_chown(command):
         return
 
     if len(eq_args) > 1:
-        target_obj = Object.objects.standard_objsearch(source_object, target_name)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(target_name)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -447,8 +449,8 @@ def cmd_chown(command):
             source_object.emit_to(defines_global.NOCONTROL_MSG)
             return
 
-        owner_obj = Object.objects.standard_objsearch(source_object, owner_name)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        owner_obj = source_object.search_for_object(owner_name)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not owner_obj:
             return
         if not owner_obj.is_player():
@@ -488,8 +490,8 @@ def cmd_chzone(command):
         return
 
     if len(eq_args) > 1:
-        target_obj = Object.objects.standard_objsearch(source_object, target_name)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(target_name)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -503,8 +505,8 @@ def cmd_chzone(command):
             source_object.emit_to("%s is no longer zoned." % (target_obj))
             return
         
-        zone_obj = Object.objects.standard_objsearch(source_object, zone_name)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        zone_obj = source_object.search_for_object(zone_name)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not zone_obj:
             return
 
@@ -538,8 +540,8 @@ def cmd_link(command):
         return
 
     if len(eq_args) > 1:
-        target_obj = Object.objects.standard_objsearch(source_object, target_name)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(target_name)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -553,8 +555,8 @@ def cmd_link(command):
             source_object.emit_to("You have unlinked %s." % (target_obj,))
             return
 
-        destination = Object.objects.standard_objsearch(source_object, dest_name)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        destination = source_object.search_for_object(dest_name)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not destination:
             return
 
@@ -578,9 +580,8 @@ def cmd_unlink(command):
         source_object.emit_to("Unlink what?")
         return
     else:
-        target_obj = Object.objects.standard_objsearch(source_object,
-                                                      command.command_argument)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(command.command_argument)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -637,8 +638,8 @@ def cmd_name(command):
     if len(eq_args) < 2 or eq_args[1] == '':
         source_object.emit_to("What would you like to name that object?")
     else:
-        target_obj = Object.objects.standard_objsearch(source_object, eq_args[0])
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(eq_args[0])
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
         
@@ -663,8 +664,8 @@ def cmd_description(command):
         source_object.emit_to("How would you like to describe that object?")
         return
 
-    target_obj = Object.objects.standard_objsearch(source_object, eq_args[0])
-    # Use standard_objsearch to handle duplicate/nonexistant results.
+    target_obj = source_object.search_for_object(eq_args[0])
+    # Use search_for_object to handle duplicate/nonexistant results.
     if not target_obj:
         return
 
@@ -695,9 +696,8 @@ def cmd_destroy(command):
     if "override" in command.command_switches:
         switch_override = True
         
-    target_obj = Object.objects.standard_objsearch(source_object,
-                                                   command.command_argument)
-    # Use standard_objsearch to handle duplicate/nonexistant results.
+    target_obj = source_object.search_for_object(command.command_argument)
+    # Use search_for_object to handle duplicate/nonexistant results.
     if not target_obj:
         return
     

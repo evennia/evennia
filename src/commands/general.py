@@ -121,9 +121,8 @@ def cmd_look(command):
     # If an argument is provided with the command, search for the object.
     # else look at the current room. 
     if command.command_argument:    
-        target_obj = Object.objects.standard_objsearch(source_object, 
-                                                    command.command_argument)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(command.command_argument)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
     else:
@@ -151,10 +150,9 @@ def cmd_get(command):
         source_object.emit_to("Get what?")
         return
     else:
-        target_obj = Object.objects.standard_objsearch(source_object, 
-                                                command.command_argument, 
-                                                search_contents=False)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(command.command_argument, 
+                                                     search_contents=False)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -193,10 +191,9 @@ def cmd_drop(command):
         source_object.emit_to("Drop what?")
         return
     else:
-        target_obj = Object.objects.standard_objsearch(source_object, 
-                                                command.command_argument, 
-                                                search_location=False)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(command.command_argument, 
+                                                     search_location=False)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
 
@@ -248,9 +245,8 @@ def cmd_examine(command):
             obj_searchstr = command.command_argument
 
         # Resolve the target object.
-        target_obj = Object.objects.standard_objsearch(source_object, 
-                                                           obj_searchstr)
-        # Use standard_objsearch to handle duplicate/nonexistant results.
+        target_obj = source_object.search_for_object(obj_searchstr)
+        # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
         

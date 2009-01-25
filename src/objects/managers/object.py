@@ -99,34 +99,6 @@ class ObjectManager(models.Manager):
             else:
                 return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
 
-
-    def standard_objsearch(self, source_object, ostring, search_contents=True, 
-                               search_location=True, dbref_only=False, 
-                               limit_types=False):
-        """
-        Perform a standard object search, handling multiple
-        results and lack thereof gracefully.
-
-        source_object: (Object) The Object doing the searching
-        ostring: (str) The string to match object names against.
-        """
-        results = self.local_and_global_search(source_object, ostring, 
-                                search_contents=search_contents, 
-                                search_location=search_location, 
-                                dbref_only=dbref_only, 
-                                limit_types=limit_types)
-
-        if len(results) > 1:
-            source_object.emit_to("More than one match found (please narrow target):")
-            for result in results:
-                source_object.emit_to(" %s" % (result.get_name(),))
-            return False
-        elif len(results) == 0:
-            source_object.emit_to("I don't see that here.")
-            return False
-        else:
-            return results[0]
-
     def object_totals(self):
         """
         Returns a dictionary with database object totals.
