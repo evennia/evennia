@@ -203,8 +203,11 @@ def match_alias(command):
         Convenience sub-function to combine the lopped off command string
         and arguments for posing, saying, and nospace posing aliases.
         """
-        return "%s %s" % (command.command_string[1:], 
-                                 command.command_argument)
+        if not command.command_argument:
+            return command.command_string[1:]
+        else:
+            return "%s %s" % (command.command_string[1:], 
+                              command.command_argument)
         
     # Match against the single-character aliases of MUX/MUSH-dom.
     first_char = command.command_string[0]
