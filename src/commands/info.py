@@ -68,7 +68,9 @@ def cmd_list(command):
     if not command.command_argument:    
         source_object.emit_to(msg_invalid)
     elif command.command_argument == "commands":
-        source_object.emit_to('Commands: '+ ' '.join(server.command_list()))
+        clist = GLOBAL_CMD_TABLE.ctable.keys()
+        clist.sort()
+        source_object.emit_to('Commands: '+ ' '.join(clist))
     elif command.command_argument == "process":
         if not functions_general.host_os_is('nt'):
             loadvg = os.getloadavg()

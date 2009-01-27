@@ -13,8 +13,12 @@ def cmd_reload(command):
     """
     Reloads all modules.
     """
-    command.source_object.emit_to("To be implemented...")
+    command.source_object.emit_to("Reloading command modules...")
+    command.session.server.reload(command.source_object)
+    command.source_object.emit_to("Modules reloaded.")
 GLOBAL_CMD_TABLE.add_command("@reload", cmd_reload,
+                             priv_tuple=("genperms.process_control")),
+GLOBAL_CMD_TABLE.add_command("@restart", cmd_reload,
                              priv_tuple=("genperms.process_control")),
 
 def cmd_boot(command):
