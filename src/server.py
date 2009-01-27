@@ -43,6 +43,8 @@ class EvenniaService(service.Service):
         for port in settings.GAMEPORTS:
             print '  * %s' % (port)
         
+        # Populate the command table.
+        self.load_command_table()
         # Cache the aliases from the database for quick access.
         alias_mgr.load_cmd_aliases()
         
@@ -62,6 +64,24 @@ class EvenniaService(service.Service):
         cursor.execute("PRAGMA synchronous=OFF")
         cursor.execute("PRAGMA count_changes=OFF")
         cursor.execute("PRAGMA temp_store=2")
+        
+    def load_command_table(self):
+        """
+        Imports command modules and loads them into the command tables.
+        """
+        # Combine the tuples of command modules to load.
+        cmd_modules = settings.COMMAND_MODULES +\
+                      settings.CUSTOM_COMMAND_MODULES +\
+                      settings.UNLOGGED_COMMAND_MODULES +\
+                      settings.CUSTOM_UNLOGGED_COMMAND_MODULES
+
+        # Import the command modules, which populates the command tables.
+        for cmd_mod in cmd_modules:
+            try:
+                __import__(cmd_mod)
+            except ImportError:
+                logger.log_errmsg("ERROR: Unable to load command module: %s" % cmd_mod)
+                continue
 
     """
     BEGIN GENERAL METHODS

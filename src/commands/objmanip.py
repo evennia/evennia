@@ -5,6 +5,7 @@ from src.objects.models import Object, Attribute
 # We'll import this as the full path to avoid local variable clashes.
 import src.flags
 from src import ansi
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_teleport(command):
     """
@@ -61,6 +62,8 @@ def cmd_teleport(command):
         source_object.emit_to("Teleported.")
             
         source_object.move_to(target_obj, quiet=tel_quietly)
+GLOBAL_CMD_TABLE.add_command("@teleport", cmd_teleport,
+                             priv_tuple=("genperms.builder"))
 
 def cmd_alias(command):
     """
@@ -107,6 +110,7 @@ def cmd_alias(command):
         # Duplicates were found.
         source_object.emit_to("Alias '%s' is already in use." % (new_alias,))
         return
+GLOBAL_CMD_TABLE.add_command("@alias", cmd_alias)
 
 def cmd_wipe(command):
     """
@@ -158,6 +162,7 @@ def cmd_wipe(command):
             target_obj.clear_attribute(attr.get_name())
         source_object.emit_to("%s - %d attributes wiped." % (target_obj.get_name(), 
                                                    len(attr_matches)))
+GLOBAL_CMD_TABLE.add_command("@wipe", cmd_wipe)
 
 def cmd_set(command):
     """
@@ -224,11 +229,12 @@ def cmd_set(command):
             else:
                 # We're setting the flag.
                 if not src.flags.is_modifiable_flag(flag):
-                    source_object.emit_to("You can't set/unset the flag - %s." % (flag,))
+                    source_object.emit_to("You can't set/unset the flag - %s." % flag)
                 else:
                     source_object.emit_to('%s - %s set.' % (victim.get_name(), 
                                                             flag.upper(),))
                     victim.set_flag(flag, True)
+GLOBAL_CMD_TABLE.add_command("@set", cmd_set)
 
 def cmd_find(command):
     """
@@ -251,6 +257,8 @@ def cmd_find(command):
         source_object.emit_to("%d matches returned." % (len(results),))
     else:
         source_object.emit_to("No name matches found for: %s" % (searchstring,))
+GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
+                             priv_tuple=("genperms.builder"))
 
 def cmd_create(command):
     """
@@ -270,6 +278,8 @@ def cmd_create(command):
         new_object = Object.objects.create_object(odat)
         
         source_object.emit_to("You create a new thing: %s" % (new_object,))
+GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
+                             priv_tuple=("genperms.builder"))
     
 def cmd_cpattr(command):
     """
@@ -339,13 +349,17 @@ def cmd_cpattr(command):
         tar_obj.set_attribute(tar_attr_string, src_attr_contents)
         source_object.emit_to("%s - %s set." % (tar_obj.get_name(), 
                                                 tar_attr_string))
+GLOBAL_CMD_TABLE.add_command("@cpattr", cmd_cpattr,
+                             priv_tuple=("genperms.builder"))
 
 def cmd_nextfree(command):
     """
     Returns the next free object number.
     """   
     nextfree = Object.objects.get_nextfree_dbnum()
-    command.source_object.emit_to("Next free object number: #%s" % (nextfree,))
+    command.source_object.emit_to("Next free object number: #%s" % nextfree)
+GLOBAL_CMD_TABLE.add_command("@nextfree", cmd_nextfree,
+                             priv_tuple=("genperms.builder"))
     
 def cmd_open(command):
     """
@@ -415,7 +429,9 @@ def cmd_open(command):
                 "home": None}
         new_object = Object.objects.create_object(odat)
 
-        source_object.emit_to("You open an unlinked exit - %s" % (new_object,))
+        source_object.emit_to("You open an unlinked exit - %s" % new_object)
+GLOBAL_CMD_TABLE.add_command("@open", cmd_open,
+                             priv_tuple=("genperms.builder"))
         
 def cmd_chown(command):
     """
@@ -466,6 +482,7 @@ def cmd_chown(command):
         # We haven't provided a target.
         source_object.emit_to("Who should be the new owner of the object?")
         return
+GLOBAL_CMD_TABLE.add_command("@chown", cmd_chown)
     
 def cmd_chzone(command):
     """
@@ -517,6 +534,7 @@ def cmd_chzone(command):
         # We haven't provided a target zone.
         source_object.emit_to("What should the object's zone be set to?")
         return
+GLOBAL_CMD_TABLE.add_command("@chzone", cmd_chzone)
 
 def cmd_link(command):
     """
@@ -567,6 +585,8 @@ def cmd_link(command):
         # We haven't provided a target.
         source_object.emit_to("You must provide a destination to link to.")
         return
+GLOBAL_CMD_TABLE.add_command("@link", cmd_link,
+                             priv_tuple=("genperms.builder"))
 
 def cmd_unlink(command):
     """
@@ -590,7 +610,9 @@ def cmd_unlink(command):
             return
 
         target_obj.set_home(None)
-        source_object.emit_to("You have unlinked %s." % (target_obj.get_name(),))
+        source_object.emit_to("You have unlinked %s." % target_obj.get_name())
+GLOBAL_CMD_TABLE.add_command("@unlink", cmd_unlink,
+                             priv_tuple=("genperms.builder"))
 
 def cmd_dig(command):
     """
@@ -612,6 +634,8 @@ def cmd_dig(command):
         new_object = Object.objects.create_object(odat)
         
         source_object.emit_to("You create a new room: %s" % (new_object,))
+GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
+                             priv_tuple=("genperms.builder"))
 
 def cmd_name(command):
     """
@@ -647,6 +671,7 @@ def cmd_name(command):
         source_object.emit_to("You have renamed %s to %s." % (target_obj, 
                                                               ansi_name))
         target_obj.set_name(new_name)
+GLOBAL_CMD_TABLE.add_command("@name", cmd_name)
 
 def cmd_description(command):
     """
@@ -680,6 +705,7 @@ def cmd_description(command):
     else:
         source_object.emit_to("%s - DESCRIPTION set." % target_obj)
         target_obj.set_description(new_desc)
+GLOBAL_CMD_TABLE.add_command("@describe", cmd_description)
 
 def cmd_destroy(command):
     """
@@ -717,3 +743,5 @@ def cmd_destroy(command):
     
     source_object.emit_to("You destroy %s." % target_obj.get_name())
     target_obj.destroy()
+GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
+                             priv_tuple=("genperms.builder"))

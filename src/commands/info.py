@@ -4,17 +4,16 @@ the server instance.
 """
 import os
 import time
-
 from src.util import functions_general
 if not functions_general.host_os_is('nt'):
     # Don't import the resource module if the host OS is Windows.
     import resource
-    
 import django
 from src.objects.models import Object
 from src import scheduler
 from src import defines_global
 from src import flags
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_version(command):
     """
@@ -25,6 +24,7 @@ def cmd_version(command):
     retval += " Django %s\n\r" % (django.get_version())
     retval += "-"*50
     command.source_object.emit_to(retval)
+GLOBAL_CMD_TABLE.add_command("version", cmd_version),
 
 def cmd_time(command):
     """
@@ -32,6 +32,7 @@ def cmd_time(command):
     """
     command.source_object.emit_to('Current server time : %s' % 
                 (time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime(),)))
+GLOBAL_CMD_TABLE.add_command("time", cmd_time),
 
 def cmd_uptime(command):
     """
@@ -53,6 +54,7 @@ def cmd_uptime(command):
         loadavg = os.getloadavg()
         source_object.emit_to('Server load (1 min) : %.2f' % 
                     loadavg[0])
+GLOBAL_CMD_TABLE.add_command("uptime", cmd_uptime),
 
 def cmd_list(command):
     """
@@ -95,6 +97,7 @@ def cmd_list(command):
         source_object.emit_to("Flags: "+" ".join(flags.SERVER_FLAGS))
     else:
         source_object.emit_to(msg_invalid)
+GLOBAL_CMD_TABLE.add_command("@list", cmd_list),
 
 def cmd_ps(command):
     """
@@ -109,6 +112,8 @@ def cmd_ps(command):
                                             scheduler.get_event_interval(event),
                                             scheduler.get_event_description(event)))
     source_object.emit_to("Totals: %d interval events" % (len(scheduler.schedule),))
+GLOBAL_CMD_TABLE.add_command("@ps", cmd_ps,
+                             priv_tuple=("genperms.process_control")),
 
 def cmd_stats(command):
     """
@@ -124,3 +129,4 @@ def cmd_stats(command):
         stats_dict["things"],
         stats_dict["players"],
         stats_dict["garbage"]))
+GLOBAL_CMD_TABLE.add_command("@stats", cmd_stats),

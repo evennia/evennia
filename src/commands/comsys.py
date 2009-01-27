@@ -7,6 +7,7 @@ import src.comsys
 from src import defines_global
 from src import ansi
 from src.util import functions_general
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_addcom(command):
     """
@@ -49,6 +50,7 @@ def cmd_addcom(command):
         src.comsys.send_cmessage(chan_name_parsed, join_msg)
     else:
         source_object.emit_to("Could not find channel %s." % (chan_name,))
+GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom),
 
 def cmd_delcom(command):
     """
@@ -75,6 +77,7 @@ def cmd_delcom(command):
     leave_msg = "[%s] %s has left the channel." % \
         (chan_name, source_object.get_name(show_dbref=False))
     src.comsys.send_cmessage(chan_name, leave_msg)
+GLOBAL_CMD_TABLE.add_command("delcom", cmd_delcom),
 
 def cmd_comlist(command):
     """
@@ -93,6 +96,7 @@ def cmd_comlist(command):
         source_object.emit_to("%-9.9s %-19.19s %s" %
             (chan, session.channels_subscribed[chan][0], chan_on))
     source_object.emit_to("-- End of comlist --")
+GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist),
     
 def cmd_allcom(command):
     """
@@ -129,6 +133,7 @@ def cmd_clist(command):
             ('-', '-', chan.get_name(), chan.get_owner().get_name(), 
              'No Description'))
     source_object.emit_to("-- End of Channel List --")
+GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist),
 
 def cmd_cdestroy(command):
     """
@@ -155,6 +160,8 @@ def cmd_cdestroy(command):
         else:
             source_object.emit_to("Permission denied.")
             return
+GLOBAL_CMD_TABLE.add_command("@cdestroy", cmd_cdestroy,
+                             priv_tuple=("objects.delete_commchannel")),
         
 def cmd_cset(command):
     """
@@ -246,6 +253,7 @@ def cmd_cemit(command):
     if not "quiet" in command.command_switches:
         source_object.emit_to("Sent - %s" % (name_matches[0],))
     src.comsys.send_cmessage(cname_parsed, final_cmessage)
+GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit),
 
 def cmd_cwho(command):
     """
@@ -283,6 +291,7 @@ def cmd_cwho(command):
     else:
         source_object.emit_to("No channel with that name was found.")
         return
+GLOBAL_CMD_TABLE.add_command("@cwho", cmd_cwho),
 
 def cmd_ccreate(command):
     """
@@ -310,6 +319,8 @@ def cmd_ccreate(command):
         # Create and set the object up.
         new_chan = src.comsys.create_channel(cname, source_object)
         source_object.emit_to("Channel %s created." % (new_chan.get_name(),))
+GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate,
+                             priv_tuple=("objects.add_commchannel")),
 
 def cmd_cchown(command):
     """

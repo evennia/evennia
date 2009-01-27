@@ -189,6 +189,46 @@ INSTALLED_APPS = (
     'game.web.apps.website',
 )
 
+"""
+A tuple of strings representing all of the Evennia (IE: non-custom) commnad
+modules that are used at the login screen in the UNLOGGED command table. Do
+not modify this directly, add your custom command modules to
+CUSTOM_UNLOGGED_COMMAND_MODULES.
+"""
+UNLOGGED_COMMAND_MODULES = (
+    'src.commands.unloggedin',
+)
+
+"""
+Add your custom command modules under game/gamesrc/commands and to this list.
+These will be loaded after the Evennia codebase modules, meaning that any
+duplicate command names will be overridden by your version.
+"""
+CUSTOM_UNLOGGED_COMMAND_MODULES = ()
+
+"""
+A tuple of strings representing all of the Evennia (IE: non-custom)
+command modules. Do not modify this directly, add your custom command
+modules to CUSTOM_COMMAND_MODULES.
+"""
+COMMAND_MODULES = (
+    'src.commands.comsys',
+    'src.commands.general',
+    'src.commands.info',
+    'src.commands.objmanip',
+    'src.commands.paging',
+    'src.commands.parents',
+    'src.commands.privileged',
+    'src.commands.search',
+)
+
+"""
+Add your custom command modules under game/gamesrc/commands and to this list.
+These will be loaded after the Evennia codebase modules, meaning that any
+duplicate command names will be overridden by your version.
+"""
+CUSTOM_COMMAND_MODULES = ()
+
 # If django_extensions is present, import it and install it. Otherwise fail
 # silently.
 try:

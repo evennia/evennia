@@ -2,6 +2,7 @@
 Contains commands for managing script parents.
 """
 from src import scripthandler
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def clear_cached_scripts(command):
     """
@@ -42,4 +43,6 @@ def cmd_parent(command):
         clear_cached_scripts(command)
         return
     
-    command.source_object.emit_to("Must be specified with one of the following switches: showcache, clearcache")   
+    command.source_object.emit_to("Must be specified with one of the following switches: showcache, clearcache")
+GLOBAL_CMD_TABLE.add_command("@parent", cmd_parent,
+                             priv_tuple=("genperms.builder")),   

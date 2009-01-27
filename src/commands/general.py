@@ -3,9 +3,7 @@ Generic command module. Pretty much every command should go here for
 now.
 """
 import time
-
 from django.conf import settings
-
 from src.config.models import ConfigValue
 from src.helpsys.models import HelpEntry
 from src.objects.models import Object
@@ -13,6 +11,7 @@ from src import defines_global
 from src import session_mgr
 from src import ansi
 from src.util import functions_general
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_password(command):
     """
@@ -55,12 +54,14 @@ def cmd_password(command):
             uaccount.set_password(newpass)
             uaccount.save()
             source_object.emit_to("Password changed.")
+GLOBAL_CMD_TABLE.add_command("@password", cmd_password)
 
 def cmd_pemit(command):        
     """
     Emits something to a player.
     """
     # TODO: Implement cmd_pemit
+#GLOBAL_CMD_TABLE.add_command("@pemit", cmd_pemit)
 
 def cmd_emit(command):        
     """
@@ -72,6 +73,8 @@ def cmd_emit(command):
         command.source_object.get_location().emit_to_contents(message)
     else:
         command.source_object.emit_to("Emit what?")
+GLOBAL_CMD_TABLE.add_command("@emit", cmd_emit,
+                             priv_tuple=("genperms.announce")),
 
 def cmd_wall(command):
     """
@@ -86,6 +89,8 @@ def cmd_wall(command):
     message = "%s shouts \"%s\"" % (
             command.source_object.get_name(show_dbref=False), wallstring)
     session_mgr.announce_all(message)
+GLOBAL_CMD_TABLE.add_command("@wall", cmd_wall,
+                             priv_tuple=("genperms.announce"))
 
 def cmd_idle(command):
     """
@@ -93,6 +98,7 @@ def cmd_idle(command):
     his screen.
     """
     pass
+GLOBAL_CMD_TABLE.add_command("idle", cmd_idle)
     
 def cmd_inventory(command):
     """
@@ -111,6 +117,7 @@ def cmd_inventory(command):
         money_name = ConfigValue.objects.get_configvalue("MONEY_NAME_PLURAL")
 
     source_object.emit_to("You have %d %s." % (money, money_name))
+GLOBAL_CMD_TABLE.add_command("inventory", cmd_inventory)
 
 def cmd_look(command):
     """
@@ -138,6 +145,7 @@ def cmd_look(command):
     target_obj.scriptlink.a_desc({
         "target_obj": source_object
     })
+GLOBAL_CMD_TABLE.add_command("look", cmd_look)
             
 def cmd_get(command):
     """
@@ -179,6 +187,7 @@ def cmd_get(command):
     target_obj.scriptlink.a_get({
         "pobject": source_object
     })
+GLOBAL_CMD_TABLE.add_command("get", cmd_get)    
             
 def cmd_drop(command):
     """
@@ -212,6 +221,7 @@ def cmd_drop(command):
     target_obj.scriptlink.a_drop({
         "pobject": source_object
     })
+GLOBAL_CMD_TABLE.add_command("drop", cmd_drop),
             
 def cmd_examine(command):
     """
@@ -327,6 +337,7 @@ def cmd_examine(command):
                 source_object.emit_to("Home: %s" % (target_obj.get_home(),))
             # This obviously isn't valid for rooms.    
             source_object.emit_to("Location: %s" % (target_obj.get_location(),))
+GLOBAL_CMD_TABLE.add_command("examine", cmd_examine)
     
 def cmd_quit(command):
     """
@@ -336,6 +347,7 @@ def cmd_quit(command):
         session = command.session
         session.msg("Quitting!")
         session.handle_close()
+GLOBAL_CMD_TABLE.add_command("quit", cmd_quit)
     
 def cmd_who(command):
     """
@@ -391,6 +403,9 @@ def cmd_who(command):
     retval += '%d Players logged in.' % (len(session_list),)
     
     source_object.emit_to(retval)
+GLOBAL_CMD_TABLE.add_command("doing", cmd_who, 
+                             extra_vals={"show_session_data": False})
+GLOBAL_CMD_TABLE.add_command("who", cmd_who)
 
 def cmd_say(command):
     """
@@ -413,6 +428,7 @@ def cmd_say(command):
     
     source_object.get_location().emit_to_contents(emit_string, 
                                                   exclude=source_object)
+GLOBAL_CMD_TABLE.add_command("say", cmd_say)
 
 def cmd_pose(command):
     """
@@ -436,6 +452,7 @@ def cmd_pose(command):
                               pose_string)
     
     source_object.get_location().emit_to_contents(sent_msg)
+GLOBAL_CMD_TABLE.add_command("pose", cmd_pose)
     
 def cmd_help(command):
     """
@@ -469,3 +486,4 @@ def cmd_help(command):
     else:    
         topic = topics[0]
         source_object.emit_to("\n\r"+ topic.get_entrytext_ingame())
+GLOBAL_CMD_TABLE.add_command("help", cmd_help)

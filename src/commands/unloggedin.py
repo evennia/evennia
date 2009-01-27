@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from src.objects.models import Attribute, Object
 from src import defines_global
 from src.util import functions_general
+from src.cmdtable import GLOBAL_UNCON_CMD_TABLE
 
 def cmd_connect(command):
     """
@@ -44,6 +45,7 @@ def cmd_connect(command):
     else:
         uname = user.username
         session.login(user)
+GLOBAL_UNCON_CMD_TABLE.add_command("connect", cmd_connect)
         
 def cmd_create(command):
     """
@@ -95,6 +97,7 @@ def cmd_create(command):
         session.msg("Your password must be 3 characters or longer.")
     else:
         Object.objects.create_user(command, uname, email, password)
+GLOBAL_UNCON_CMD_TABLE.add_command("create", cmd_create)
 
 def cmd_quit(command):
     """
@@ -105,3 +108,4 @@ def cmd_quit(command):
     session = command.session
     session.msg("Disconnecting...")
     session.handle_close()
+GLOBAL_UNCON_CMD_TABLE.add_command("quit", cmd_quit)

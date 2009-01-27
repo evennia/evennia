@@ -4,6 +4,7 @@ Implementation of the @search command that resembles MUX2.
 from django.db.models import Q
 from src.objects.models import Object
 from src import defines_global
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def _parse_restriction_split(source_object, restriction_split, search_low_dbnum,
                                                                search_high_dbnum):
@@ -230,3 +231,5 @@ def cmd_search(command):
         return
                 
     display_results(source_object, search_query)
+GLOBAL_CMD_TABLE.add_command("@search", cmd_search,
+                             priv_tuple=("genperms.builder")),

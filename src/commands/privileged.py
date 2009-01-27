@@ -7,12 +7,15 @@ from src import defines_global
 from src import ansi
 from src import session_mgr
 from src.util import functions_general
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_reload(command):
     """
     Reloads all modules.
     """
     command.source_object.emit_to("To be implemented...")
+GLOBAL_CMD_TABLE.add_command("@reload", cmd_reload,
+                             priv_tuple=("genperms.process_control")),
 
 def cmd_boot(command):
     """
@@ -84,6 +87,8 @@ def cmd_boot(command):
             boot.disconnectClient()
             session_mgr.remove_session(boot)
             return
+GLOBAL_CMD_TABLE.add_command("@boot", cmd_boot,        
+                             priv_tuple=("genperms.manage_players"))
 
 def cmd_newpassword(command):
     """
@@ -120,6 +125,8 @@ def cmd_newpassword(command):
         source_object.emit_to("%s - PASSWORD set." % (target_obj.get_name(),))
         target_obj.emit_to("%s has changed your password." % 
                            (source_object.get_name(show_dbref=False),))
+GLOBAL_CMD_TABLE.add_command("@newpassword", cmd_newpassword, 
+                             priv_tuple=("genperms.manage_players"))
 
 def cmd_shutdown(command):
     """
@@ -128,3 +135,5 @@ def cmd_shutdown(command):
     command.source_object.emit_to('Shutting down...')
     print 'Server shutdown by %s' % (command.source_object.get_name(show_dbref=False),)
     command.session.server.shutdown()
+GLOBAL_CMD_TABLE.add_command("@shutdown", cmd_shutdown,
+                             priv_tuple=("genperms.process_control"))

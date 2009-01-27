@@ -3,6 +3,7 @@ Paging command and support functions.
 """
 from src.objects.models import Object
 from src import defines_global
+from src.cmdtable import GLOBAL_CMD_TABLE
 
 def get_last_paged_objects(source_object):
     """
@@ -126,3 +127,4 @@ def cmd_page(command):
         # Now set the LASTPAGED attribute
         source_object.set_attribute("LASTPAGED", ','.join(
                 ["#%d" % (x.id) for x in targets]))
+GLOBAL_CMD_TABLE.add_command("page", cmd_page),
