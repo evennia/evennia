@@ -289,10 +289,7 @@ def cmd_examine(command):
         source_object.emit_to("Desc: %s" % target_obj.get_description(no_parsing=True))
         source_object.emit_to("Owner: %s " % (target_obj.get_owner(),))
         source_object.emit_to("Zone: %s" % (target_obj.get_zone(),))
-        
-        parent_str = target_obj.script_parent
-        if parent_str and parent_str != '':
-            source_object.emit_to("Parent: %s " % (parent_str,))
+        source_object.emit_to("Parent: %s " % target_obj.get_script_parent())
         
         for attribute in target_obj.get_all_attributes():
             source_object.emit_to(attribute.get_attrline())

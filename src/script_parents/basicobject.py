@@ -10,7 +10,7 @@ SCRIPT_DEFAULT_OBJECT variable in settings.py to point to the new class.
 from src import ansi
 
 class EvenniaBasicObject(object):
-    def __init__(self, source_obj):
+    def __init__(self, source_obj, *args, **kwargs):
         """
         Get our ducks in a row.
         

@@ -738,16 +738,8 @@ class Object(models.Model):
         Returns an object's script parent.
         """
         if not self.scriptlink_cached:
-            script_to_load = None
-            if not self.script_parent or self.script_parent.strip() == '':
-                # No parent value, assume the defaults based on type.
-                if self.is_player():
-                    script_to_load = settings.SCRIPT_DEFAULT_PLAYER
-                else:
-                    script_to_load = settings.SCRIPT_DEFAULT_OBJECT
-            else:
-                # A parent has been set, load it from the field's value.
-                script_to_load = self.script_parent
+            script_to_load = self.get_script_parent()
+            
             # Load the script reference into the object's attribute.
             self.scriptlink_cached = scripthandler.scriptlink(self, 
                                                             script_to_load)
@@ -759,6 +751,36 @@ class Object(models.Model):
         return None
     # Set a property to make accessing the scriptlink more transparent.
     scriptlink = property(fget=get_scriptlink)
+    
+    def get_script_parent(self):
+        """
+        Returns a string representing the object's script parent.
+        """
+        if not self.script_parent or self.script_parent.strip() == '':
+            # No parent value, assume the defaults based on type.
+            if self.is_player():
+                return settings.SCRIPT_DEFAULT_PLAYER
+            else:
+                return settings.SCRIPT_DEFAULT_OBJECT
+        else:
+            # A parent has been set, load it from the field's value.
+            return self.script_parent
+    
+    def set_script_parent(self, parent_str):
+        """
+        Sets the object's script_parent attribute and does any logistics.
+        
+        parent_str: (string) String pythonic import path of the script parent
+                             assuming the python path is game/gamesrc/parents. 
+        """
+        if parent_str == None:
+            if self.is_player():
+                self.script_parent = settings.SCRIPT_DEFAULT_PLAYER
+            else:
+                self.script_parent = settings.SCRIPT_DEFAULT_OBJECT
+        elif parent_str:
+            self.script_parent = parent_str.strip()
+        self.save()
         
     def get_attribute_value(self, attrib, default=False):
         """
