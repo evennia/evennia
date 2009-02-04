@@ -290,7 +290,7 @@ class ObjectManager(models.Manager):
 
         # Rooms have a NULL location.
         if not new_object.is_room():
-            new_object.move_to(odat['location'])
+            new_object.move_to(odat['location'], force_look=False)
         
         return new_object
 
@@ -298,8 +298,6 @@ class ObjectManager(models.Manager):
         """
         Handles the creation of new users.
         """
-        session = command.session
-        server = command.server
         start_room = int(ConfigValue.objects.get_configvalue('player_dbnum_start'))
         start_room_obj = self.get_object_from_dbref(start_room)
 
@@ -318,7 +316,7 @@ class ObjectManager(models.Manager):
         # It stinks to have to do this but it's the only trivial way now.
         user.save()
         # Update the session to use the newly created User object's ID.
-        session.uid = user.id
+        command.session.uid = user.id
         
         # We can't use the user model to change the id because of the way keys
         # are handled, so we actually need to fall back to raw SQL. Boo hiss.
@@ -338,9 +336,9 @@ class ObjectManager(models.Manager):
         user_object = self.create_object(odat)
 
         # Activate the player's session and set them loose.
-        session.login(user)
-        print 'Registration: %s' % (session,)
-        session.msg("Welcome to %s, %s.\n\r" % (
+        command.session.login(user)
+        print 'Registration: %s' % (command.session, user_object.get_name())
+        user_object.emit_to("Welcome to %s, %s.\n\r" % (
             ConfigValue.objects.get_configvalue('site_name'), 
-            session.get_pobject().get_name(show_dbref=False)))
-        session.add_default_channels()
+            user_object.get_name(show_dbref=False)))
+        command.session.add_default_channels()
