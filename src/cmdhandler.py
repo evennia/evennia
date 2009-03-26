@@ -160,7 +160,14 @@ def match_exits(command):
     """
     # If we're not logged in, don't check exits.
     source_object = command.source_object
-    exits = source_object.get_location().get_contents(filter_type=defines_global.OTYPE_EXIT)
+    location = source_object.get_location()
+    
+    if location == None:
+        logger.log_errmsg("cmdhandler.match_exits(): Object '%s' no location." % 
+                          source_object)
+        return
+    
+    exits = location.get_contents(filter_type=defines_global.OTYPE_EXIT)
     Object = ContentType.objects.get(app_label="objects", 
                                      model="object").model_class()
     exit_matches = Object.objects.list_search_object_namestr(exits, 

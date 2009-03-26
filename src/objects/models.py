@@ -15,6 +15,7 @@ from src import scripthandler
 from src import defines_global
 from src import ansi
 from src import session_mgr
+from src import logger
 # Import as the absolute path to avoid local variable clashes.
 import src.flags
 from src.util import functions_general
@@ -225,7 +226,11 @@ class Object(models.Model):
         """
         Returns the player object's account object (User object).
         """
-        return User.objects.get(id=self.id)
+        try:
+            return User.objects.get(id=self.id)
+        except User.DoesNotExist:
+            logger.log_errmsg("No account match for object id: %s" % self.id)
+            return None
     
     def is_staff(self):
         """

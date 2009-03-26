@@ -107,7 +107,11 @@ class SessionProtocol(StatefulTelnetProtocol):
         pobject = self.get_pobject()
         if pobject:
             pobject.set_flag("CONNECTED", False)
-            pobject.get_location().emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
+            
+            location = pobject.get_location()
+            if location != None:
+                location.emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
+
             uaccount = pobject.get_user_account()
             uaccount.last_login = datetime.now()
             uaccount.save()
