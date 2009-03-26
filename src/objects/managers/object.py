@@ -14,6 +14,7 @@ from src.config.models import ConfigValue
 from src.objects.exceptions import ObjectNotExist
 from src.objects.util import object as util_object
 from src import defines_global
+from src import logger
 
 class ObjectManager(models.Manager):
     def num_total_players(self):
@@ -311,17 +312,21 @@ class ObjectManager(models.Manager):
         # pluck the user ID from it.
         if not str(uid).isdigit():
             uid = uid.id
+            logger.log_infomsg('Next usable object ID is %d. (recycled)' % uid)
+        else:
+            logger.log_infomsg('Next usable object ID is %d. (new)' % uid)
 
         user = User.objects.create_user(uname, email, password)
         # It stinks to have to do this but it's the only trivial way now.
         user.save()
-        # Update the session to use the newly created User object's ID.
-        command.session.uid = user.id
-        
         # We can't use the user model to change the id because of the way keys
         # are handled, so we actually need to fall back to raw SQL. Boo hiss.
         cursor = connection.cursor()
         cursor.execute("UPDATE auth_user SET id=%d WHERE id=%d" % (uid, user.id))
+        
+        # Update the session to use the newly created User object's ID.
+        command.session.uid = uid
+        logger.log_infomsg('User created with id %d.' % command.session.uid)
         
         # Grab the user object again since we've changed it and the old reference
         # is no longer valid.
