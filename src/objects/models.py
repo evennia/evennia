@@ -595,16 +595,22 @@ class Object(models.Model):
         if self.has_attribute(attribute):
             # Attribute already exists, update it.
             attrib_obj = Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
-            attrib_obj.attr_value = new_value
-            attrib_obj.save()
+            if new_value.strip() == '':
+                # If you do something like @set me=SOMEATTR:, destroy the attrib.
+                attrib_obj.delete()
+            else:
+                # Otherwise, save over the existing attribute's value.
+                attrib_obj.attr_value = new_value
+                attrib_obj.save()
         else:
-            # Attribute object doesn't exist, create it.
-            new_attrib = Attribute()
-            new_attrib.attr_name = attribute
-            new_attrib.attr_value = new_value
-            new_attrib.attr_object = self
-            new_attrib.attr_hidden = False
-            new_attrib.save()
+            if new_value.strip() != '':
+                # Attribute object doesn't exist, create it.
+                new_attrib = Attribute()
+                new_attrib.attr_name = attribute
+                new_attrib.attr_value = new_value
+                new_attrib.attr_object = self
+                new_attrib.attr_hidden = False
+                new_attrib.save()
             
     def has_attribute(self, attribute):
         """
