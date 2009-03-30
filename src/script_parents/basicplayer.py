@@ -9,6 +9,14 @@ import time
 from src import comsys
 
 class EvenniaBasicPlayer(object):
+    def at_player_creation(self):
+        """
+        This is triggered after a new User and accompanying Object is created.
+        By the time this is triggered, the player is ready to go but not
+        logged in.
+        """
+        pass
+    
     def at_pre_login(self, session):
         """
         Everything done here takes place before the player is actually

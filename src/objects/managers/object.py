@@ -340,6 +340,10 @@ class ObjectManager(models.Manager):
                 "owner": None}
         user_object = self.create_object(odat)
 
+        # The User and player Object are ready, do anything needed by the
+        # game to further prepare things.
+        user_object.scriptlink.at_player_creation()
+
         # Activate the player's session and set them loose.
         command.session.login(user)
         print 'Registration: %s' % (command.session, user_object.get_name())

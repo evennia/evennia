@@ -180,9 +180,7 @@ def match_exits(command):
         # it's not traversible.
         if targ_exit.get_home():                   
             # SCRIPT: See if the player can traverse the exit
-            if not targ_exit.scriptlink.default_lock({
-                "pobject": source_object
-            }):
+            if not targ_exit.scriptlink.default_lock(source_object):
                 source_object.emit_to("You can't traverse that exit.")
             else:
                 source_object.move_to(targ_exit.get_home())

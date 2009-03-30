@@ -18,27 +18,27 @@ class EvenniaBasicObject(object):
         """
         self.source_obj = source_obj
         
-    def a_desc(self, values):
+    def a_desc(self, pobject):
         """
         Perform this action when someone uses the LOOK command on the object.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values:
+            * pobject: (Object) The object requesting the action.
         """
         # Un-comment the line below for an example
-        #print "SCRIPT TEST: %s looked at %s." % (values["pobject"], self.source_obj)
+        #print "SCRIPT TEST: %s looked at %s." % (pobject, self.source_obj)
         pass
 
-    def return_appearance(self, values):
+    def return_appearance(self, pobject):
         """
         Returns a string representation of an object's appearance when LOOKed at.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values: 
+            * pobject: (Object) The object requesting the action.
         """
+        # This is the object being looked at.
         target_obj = self.source_obj
-        pobject = values["pobject"]
-        
+        # See if the envoker sees dbref numbers.        
         show_dbrefs = pobject.sees_dbrefs()
             
         description = target_obj.get_description()
@@ -80,60 +80,60 @@ class EvenniaBasicObject(object):
 
         return retval
 
-    def a_get(self, values):
+    def a_get(self, pobject):
         """
         Perform this action when someone uses the GET command on the object.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values: 
+            * pobject: (Object) The object requesting the action.
         """
         # Un-comment the line below for an example
-        #print "SCRIPT TEST: %s got %s." % (values["pobject"], self.source_obj)
+        #print "SCRIPT TEST: %s got %s." % (pobject, self.source_obj)
         pass
 
-    def a_drop(self, values):
+    def a_drop(self, pobject):
         """
         Perform this action when someone uses the GET command on the object.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values:
+            * pobject: (Object) The object requesting the action.
         """
         # Un-comment the line below for an example
-        #print "SCRIPT TEST: %s dropped %s." % (values["pobject"], self.source_obj)
+        #print "SCRIPT TEST: %s dropped %s." % (pobject, self.source_obj)
         pass
 
-    def default_lock(self, values):
+    def default_lock(self, pobject):
         """
         This method returns a True or False boolean value to determine whether
         the actor passes the lock. This is generally used for picking up
         objects or traversing exits.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values:
+            * pobject: (Object) The object requesting the action.
         """
         # Assume everyone passes the default lock by default.
         return True
 
-    def use_lock(self, values):
+    def use_lock(self, pobject):
         """
         This method returns a True or False boolean value to determine whether
         the actor passes the lock. This is generally used for seeing whether
         a player can use an object or any of its commands.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values:
+            * pobject: (Object) The object requesting the action.
         """
         # Assume everyone passes the use lock by default.
         return True
 
-    def enter_lock(self, values):
+    def enter_lock(self, pobject):
         """
         This method returns a True or False boolean value to determine whether
         the actor passes the lock. This is generally used for seeing whether
         a player can enter another object.
         
-        values: (Dict) Script arguments with keys:
-            * pobject: The object requesting the action.
+        values:
+            * pobject: (Object) The object requesting the action.
         """
         # Assume everyone passes the enter lock by default.
         return True   
