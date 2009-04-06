@@ -793,7 +793,7 @@ class Object(models.Model):
             self.script_parent = parent_str.strip()
         self.save()
         
-    def get_attribute_value(self, attrib, default=False):
+    def get_attribute_value(self, attrib, default=None):
         """
         Returns the value of an attribute on an object. You may need to
         type cast the returned value from this function!
@@ -804,10 +804,7 @@ class Object(models.Model):
             attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
             return attrib[0].attr_value
         else:
-            if default:
-                return default
-            else:
-                return False
+            return default
             
     def get_attribute_obj(self, attrib):
         """

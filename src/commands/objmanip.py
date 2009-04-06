@@ -6,6 +6,7 @@ from src.objects.models import Object, Attribute
 import src.flags
 from src import ansi
 from src.cmdtable import GLOBAL_CMD_TABLE
+from src import defines_global
 
 def cmd_teleport(command):
     """
@@ -95,7 +96,8 @@ def cmd_alias(command):
         source_object.emit_to("Aliases must be alphanumeric.")
         return
   
-    old_alias = target.get_attribute_value('ALIAS')
+    old_alias = target.get_attribute_value('ALIAS', default='')
+    print "ALIAS", old_alias
     duplicates = Object.objects.player_alias_search(source_object, new_alias)
     if not duplicates or old_alias.lower() == new_alias.lower():
         # Either no duplicates or just changing the case of existing alias.
@@ -668,6 +670,12 @@ def cmd_name(command):
             return
         
         ansi_name = ansi.parse_ansi(new_name, strip_formatting=True)
+        
+        if Object.objects.filter(name__iexact=new_name, 
+                                 type=defines_global.OTYPE_PLAYER):
+            source_object.emit_to("There is already a player with that name.")
+            return
+        
         source_object.emit_to("You have renamed %s to %s." % (target_obj, 
                                                               ansi_name))
         target_obj.set_name(new_name)
