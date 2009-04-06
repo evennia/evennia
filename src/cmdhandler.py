@@ -344,4 +344,13 @@ def handle(command):
         pass
     except UnknownCommand:
         # Default fall-through. No valid command match.
-        command.source_object.emit_to("Huh?  (Type \"help\" for help.)")
+        if command.source_object != None:
+            # A typical logged in or object-based error message.
+            command.source_object.emit_to("Huh?  (Type \"help\" for help.)")
+        elif command.session != None:
+            # This is hit when invalid commands are sent at the login screen
+            # primarily. Also protect against bad things in odd cases.
+            command.session.msg("Huh?  (Type \"help\" for help.)")
+        else:
+            # We should never get to this point, but if we do, don't freak out.
+            pass
