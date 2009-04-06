@@ -13,7 +13,7 @@ def cmd_reload(command):
     """
     Reloads all modules.
     """
-    if "aliases" in command.command_switches:
+    if "aliases" in command.command_switches or "alias" in command.command_switches:
         command.session.server.reload_aliases(source_object=command.source_object)
         command.source_object.emit_to("Aliases reloaded.")
         return
