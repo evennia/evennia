@@ -2,8 +2,10 @@
 This file contains the event scheduler system.
 
 ADDING AN EVENT:
-* Create an event sub-class in events.py. 
-* Add it to the add_global_events() function at the end of the module.
+* Create an event sub-class from the IntervalEvent class in events.py. 
+* Call src.scheduler.add_event() with your IntervalEvent subclass as the arg.
+* Make sure that the module where your add_event() call resides is either
+  imported, or that add_event() is called by a command or some kind of action.
 * Profit.
 """
 
@@ -12,7 +14,8 @@ schedule = []
         
 def add_event(event):
     """
-    Adds an event instance to the scheduled event list.
+    Adds an event instance to the scheduled event list. Call this any time you
+    need to add a custom event to the global scheduler.
     
     Args:
      * event: (IntervalEvent) The event to add to the scheduler.
