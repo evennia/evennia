@@ -138,6 +138,19 @@ def cmd_newpassword(command):
 GLOBAL_CMD_TABLE.add_command("@newpassword", cmd_newpassword, 
                              priv_tuple=("genperms.manage_players"))
 
+def cmd_home(command):
+    """
+    Teleport the player to their home.
+    """
+    pobject = command.source_object
+    if pobject.home == None:
+        pobject.emit_to("You have no home set, @link yourself to somewhere.")
+    else:
+        pobject.emit_to("There's no place like home...")
+        pobject.move_to(pobject.get_home())
+GLOBAL_CMD_TABLE.add_command("home", cmd_home,
+                             priv_tuple=("genperms.tel_anywhere"))
+
 def cmd_shutdown(command):
     """
     Shut the server down gracefully.

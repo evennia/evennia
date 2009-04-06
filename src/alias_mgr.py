@@ -11,7 +11,7 @@ def load_cmd_aliases():
     alias_list = CommandAlias.objects.all()
     
     # Reset the list.
-    CMD_ALIAS_LIST = {}
+    CMD_ALIAS_LIST.clear()
     
     for alias in alias_list:
         CMD_ALIAS_LIST[alias.user_input] = alias.equiv_command
