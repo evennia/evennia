@@ -24,6 +24,14 @@ class IntervalEvent(object):
     # A reference to the task.LoopingCall object.
     looped_task = None
     
+    def __init__(self):
+        """
+        Executed when the class is instantiated.
+        """
+        # This is set to prevent a Nonetype exception on @ps before the
+        # event is fired for the first time.
+        self.time_last_executed = time.time()
+    
     def __unicode__(self):
         """
         String representation of the event.

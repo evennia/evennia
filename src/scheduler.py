@@ -9,13 +9,6 @@ ADDING AN EVENT:
 
 # List of IntervalEvent sub-classed objects.
 schedule = []
-
-def start_events():
-    """
-    Start the event system, which is built on Twisted's framework.
-    """
-    for event in schedule:
-        event.start_event_loop()
         
 def add_event(event):
     """
