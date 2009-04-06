@@ -23,7 +23,7 @@ class EvenniaBasicPlayer(object):
         'logged in', in a sense that they're not ready to send logged in
         commands or receive communication.
         """
-        pobject = self.source_obj
+        pobject = self.scripted_obj
         
         # Load the player's channels from their JSON __CHANLIST attribute.
         comsys.load_object_channels(pobject)
@@ -36,7 +36,7 @@ class EvenniaBasicPlayer(object):
         The user is now logged in. This is what happens right after the moment
         they are 'connected'.
         """
-        pobject = self.source_obj
+        pobject = self.scripted_obj
         
         pobject.emit_to("You are now logged in as %s." % (pobject.name,))
         pobject.get_location().emit_to_contents("%s has connected." % 

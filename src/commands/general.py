@@ -136,10 +136,10 @@ def cmd_look(command):
         target_obj = source_object.get_location()
     
     # SCRIPT: Get the item's appearance from the scriptlink.
-    source_object.emit_to(target_obj.scriptlink.return_appearance(source_object))
+    source_object.emit_to(target_obj.scriptlink.return_appearance(pobject=source_object))
             
     # SCRIPT: Call the object's script's a_desc() method.
-    target_obj.scriptlink.a_desc(source_object)
+    target_obj.scriptlink.at_desc(pobject=source_object)
 GLOBAL_CMD_TABLE.add_command("look", cmd_look)
             
 def cmd_get(command):
@@ -179,7 +179,7 @@ def cmd_get(command):
                                      exclude=source_object)
     
     # SCRIPT: Call the object's script's a_get() method.
-    target_obj.scriptlink.a_get(source_object)
+    target_obj.scriptlink.at_get(source_object)
 GLOBAL_CMD_TABLE.add_command("get", cmd_get)    
             
 def cmd_drop(command):
@@ -211,7 +211,7 @@ def cmd_drop(command):
                                              exclude=source_object)
 
     # SCRIPT: Call the object's script's a_drop() method.
-    target_obj.scriptlink.a_drop(source_object)
+    target_obj.scriptlink.at_drop(source_object)
 GLOBAL_CMD_TABLE.add_command("drop", cmd_drop),
             
 def cmd_examine(command):

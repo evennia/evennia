@@ -10,15 +10,15 @@ SCRIPT_DEFAULT_OBJECT variable in settings.py to point to the new class.
 from src import ansi
 
 class EvenniaBasicObject(object):
-    def __init__(self, source_obj, *args, **kwargs):
+    def __init__(self, scripted_obj, *args, **kwargs):
         """
         Get our ducks in a row.
         
-        source_obj: (Object) A reference to the object being scripted (the child).
+        scripted_obj: (Object) A reference to the object being scripted (the child).
         """
-        self.source_obj = source_obj
+        self.scripted_obj = scripted_obj
         
-    def a_desc(self, pobject):
+    def at_desc(self, pobject=None):
         """
         Perform this action when someone uses the LOOK command on the object.
         
@@ -26,10 +26,43 @@ class EvenniaBasicObject(object):
             * pobject: (Object) The object requesting the action.
         """
         # Un-comment the line below for an example
-        #print "SCRIPT TEST: %s looked at %s." % (pobject, self.source_obj)
+        #print "SCRIPT TEST: %s looked at %s." % (pobject, self.scripted_obj)
+        pass
+    
+    def at_pre_destroy(self, pobject=None):
+        """
+        Performed right before an object is destroyed.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        # Un-comment the line below for an example
+        #print "SCRIPT TEST: %s looked at %s." % (pobject, self.scripted_obj)
         pass
 
-    def return_appearance(self, pobject):
+    def at_get(self, pobject):
+        """
+        Perform this action when someone uses the GET command on the object.
+        
+        values: 
+            * pobject: (Object) The object requesting the action.
+        """
+        # Un-comment the line below for an example
+        #print "SCRIPT TEST: %s got %s." % (pobject, self.scripted_obj)
+        pass
+
+    def at_drop(self, pobject):
+        """
+        Perform this action when someone uses the DROP command on the object.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        # Un-comment the line below for an example
+        #print "SCRIPT TEST: %s dropped %s." % (pobject, self.scripted_obj)
+        pass
+    
+    def return_appearance(self, pobject=None):
         """
         Returns a string representation of an object's appearance when LOOKed at.
         
@@ -37,9 +70,12 @@ class EvenniaBasicObject(object):
             * pobject: (Object) The object requesting the action.
         """
         # This is the object being looked at.
-        target_obj = self.source_obj
-        # See if the envoker sees dbref numbers.        
-        show_dbrefs = pobject.sees_dbrefs()
+        target_obj = self.scripted_obj
+        # See if the envoker sees dbref numbers.
+        if pobject:        
+            show_dbrefs = pobject.sees_dbrefs()
+        else:
+            show_dbrefs = False
             
         description = target_obj.get_description()
         if description is not None:
@@ -52,13 +88,14 @@ class EvenniaBasicObject(object):
                 target_obj.get_name(show_dbref=show_dbrefs),
             )
 
+        # Storage for the different object types.
         con_players = []
         con_things = []
         con_exits = []
         
         for obj in target_obj.get_contents():
             if obj.is_player():
-                if obj != pobject and obj.is_connected_plr():
+                if (obj != pobject and obj.is_connected_plr()) or pobject == None:
                     con_players.append(obj)
             elif obj.is_exit():
                 con_exits.append(obj)
@@ -79,28 +116,6 @@ class EvenniaBasicObject(object):
                 retval += '\n\r%s' %(exit.get_name(show_dbref=show_dbrefs),)
 
         return retval
-
-    def a_get(self, pobject):
-        """
-        Perform this action when someone uses the GET command on the object.
-        
-        values: 
-            * pobject: (Object) The object requesting the action.
-        """
-        # Un-comment the line below for an example
-        #print "SCRIPT TEST: %s got %s." % (pobject, self.source_obj)
-        pass
-
-    def a_drop(self, pobject):
-        """
-        Perform this action when someone uses the GET command on the object.
-        
-        values:
-            * pobject: (Object) The object requesting the action.
-        """
-        # Un-comment the line below for an example
-        #print "SCRIPT TEST: %s dropped %s." % (pobject, self.source_obj)
-        pass
 
     def default_lock(self, pobject):
         """

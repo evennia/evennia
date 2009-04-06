@@ -110,9 +110,9 @@ def cmd_ps(command):
     source_object.emit_to("-- Interval Events --")
     for event in scheduler.schedule:
         source_object.emit_to(" [%d/%d] %s" % (
-                                            scheduler.get_event_nextfire(event),
-                                            scheduler.get_event_interval(event),
-                                            scheduler.get_event_description(event)))
+                                            event.get_nextfire(),
+                                            event.interval,
+                                            event.description))
     source_object.emit_to("Totals: %d interval events" % (len(scheduler.schedule),))
 GLOBAL_CMD_TABLE.add_command("@ps", cmd_ps,
                              priv_tuple=("genperms.process_control")),

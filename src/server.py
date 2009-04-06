@@ -7,7 +7,7 @@ from django.db import connection
 from django.conf import settings
 from src.config.models import ConfigValue
 from src.session import SessionProtocol
-from src import scheduler
+from src import events
 from src import logger
 from src import session_mgr
 from src import alias_mgr
@@ -50,7 +50,8 @@ class EvenniaService(service.Service):
         alias_mgr.load_cmd_aliases()
         
         print '-'*50
-        scheduler.start_events()
+        # Fire up the event scheduler.
+        events.add_global_events()
 
     """
     BEGIN SERVER STARTUP METHODS

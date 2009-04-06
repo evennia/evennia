@@ -741,6 +741,10 @@ def cmd_destroy(command):
         source_object.emit_to("That object is already destroyed.")
         return
     
+    # Run any scripted things that happen before destruction.
+    target_obj.scriptlink.at_pre_destroy(pobject=source_object)
+    
+    # Notify destroyer and do the deed.
     source_object.emit_to("You destroy %s." % target_obj.get_name())
     target_obj.destroy()
 GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
