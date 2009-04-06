@@ -13,8 +13,14 @@ def cmd_reload(command):
     """
     Reloads all modules.
     """
+    if "aliases" in command.command_switches:
+        command.session.server.reload_aliases(source_object=command.source_object)
+        command.source_object.emit_to("Aliases reloaded.")
+        return
+        
+    # By default, just reload command objects.
     command.source_object.emit_to("Reloading command modules...")
-    command.session.server.reload(command.source_object)
+    command.session.server.reload(source_object=command.source_object)
     command.source_object.emit_to("Modules reloaded.")
 GLOBAL_CMD_TABLE.add_command("@reload", cmd_reload,
                              priv_tuple=("genperms.process_control")),

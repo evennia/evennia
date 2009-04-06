@@ -117,6 +117,12 @@ class EvenniaService(service.Service):
                     source_object.emit_to(" Reloading %s" % mod_str)
                 rebuild.rebuild(mod)
         logger.log_infomsg("Modules reloaded by %s." % source_object)
+        
+    def reload_aliases(self, source_object=None):
+        """
+        Reload the aliases from the Alias model into the local table.
+        """
+        alias_mgr.load_cmd_aliases()
 
     def getEvenniaServiceFactory(self):
         f = protocol.ServerFactory()
