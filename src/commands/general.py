@@ -11,6 +11,8 @@ from src import defines_global
 from src import session_mgr
 from src import ansi
 from src.util import functions_general
+import src.helpsys.management.commands.edit_helpfiles as edit_help
+
 from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_password(command):
@@ -138,7 +140,7 @@ def cmd_look(command):
     # SCRIPT: Get the item's appearance from the scriptlink.
     source_object.emit_to(target_obj.scriptlink.return_appearance(pobject=source_object))
             
-    # SCRIPT: Call the object's script's a_desc() method.
+    # SCRIPT: Call the object's script's at_desc() method.
     target_obj.scriptlink.at_desc(pobject=source_object)
 GLOBAL_CMD_TABLE.add_command("look", cmd_look)
             
@@ -273,17 +275,20 @@ def cmd_examine(command):
         Player is examining an object. Return a full readout of attributes,
         along with detailed information about said object.
         """
+        s = ""        
+        newl = "\r\n"
         # Format the examine header area with general flag/type info.
-        source_object.emit_to(target_obj.get_name(fullname=True))
-        source_object.emit_to("Type: %s Flags: %s" % (target_obj.get_type(), 
-                                            target_obj.get_flags()))
-        source_object.emit_to("Desc: %s" % target_obj.get_description(no_parsing=True))
-        source_object.emit_to("Owner: %s " % (target_obj.get_owner(),))
-        source_object.emit_to("Zone: %s" % (target_obj.get_zone(),))
-        source_object.emit_to("Parent: %s " % target_obj.get_script_parent())
         
-        for attribute in target_obj.get_all_attributes():
-            source_object.emit_to(attribute.get_attrline())
+        s += str(target_obj.get_name(fullname=True)) + newl
+        s += str("Type: %s Flags: %s" % (target_obj.get_type(), 
+                                         target_obj.get_flags())) + newl
+        s += str("Desc: %s" % target_obj.get_description(no_parsing=True)) + newl
+        s += str("Owner: %s " % target_obj.get_owner()) + newl
+        s += str("Zone: %s" % target_obj.get_zone()) + newl
+        s += str("Parent: %s " % target_obj.get_script_parent()) + newl
+        
+        for attribute in target_obj.get_all_attributes():            
+            s += str(attribute.get_attrline()) + newl
         
         # Contents container lists for sorting by type.
         con_players = []
@@ -301,30 +306,32 @@ def cmd_examine(command):
         
         # Render Contents display.
         if con_players or con_things:
-            source_object.emit_to("%sContents:%s" % (ansi.ansi["hilite"], 
-                                                  ansi.ansi["normal"],))
+            s += str("%sContents:%s" % (ansi.ansi["hilite"], 
+                                                  ansi.ansi["normal"])) + newl
             for player in con_players:
-                source_object.emit_to('%s' % (player.get_name(fullname=True),))
+                s += str(' %s' % player.get_name(fullname=True)) + newl
             for thing in con_things:
-                source_object.emit_to('%s' % (thing.get_name(fullname=True),))
+                s += str(' %s' % thing.get_name(fullname=True)) + newl
                 
         # Render Exists display.
         if con_exits:
-            source_object.emit_to("%sExits:%s" % (ansi.ansi["hilite"], 
-                                        ansi.ansi["normal"],))
+            s += str("%sExits:%s" % (ansi.ansi["hilite"], 
+                                        ansi.ansi["normal"])) + newl
             for exit in con_exits:
-                source_object.emit_to('%s' %(exit.get_name(fullname=True),))
+                s += str(' %s' % exit.get_name(fullname=True)) + newl
         
         # Render the object's home or destination (for exits).
         if not target_obj.is_room():
             if target_obj.is_exit():
                 # The Home attribute on an exit is really its destination.
-                source_object.emit_to("Destination: %s" % (target_obj.get_home(),))
+                s += str("Destination: %s" % target_obj.get_home()) + newl
             else:
                 # For everything else, home is home.
-                source_object.emit_to("Home: %s" % (target_obj.get_home(),))
+                s += str("Home: %s" % target_obj.get_home()) + newl
             # This obviously isn't valid for rooms.    
-            source_object.emit_to("Location: %s" % (target_obj.get_location(),))
+            s += str("Location: %s" % target_obj.get_location()) + newl
+        source_object.emit_to(s)
+            
 GLOBAL_CMD_TABLE.add_command("examine", cmd_examine)
     
 def cmd_quit(command):
@@ -441,22 +448,151 @@ def cmd_pose(command):
     
     source_object.get_location().emit_to_contents(sent_msg)
 GLOBAL_CMD_TABLE.add_command("pose", cmd_pose)
-    
+
+
 def cmd_help(command):
     """
-    Help system commands.
+    Help command
+    Usage: help <topic>
+
+    Examples: help index
+              help topic              
+              help 2
+              
+    Shows the available help on <topic>. Use without <topic> to
+    get the help index. If more than one topic match your query, you will get a
+    list of topics to choose between. You can also supply a help entry number
+    directly if you know it.
+                                
+    <<TOPIC:STAFF:help_staff>>
+    Help command extra functions for staff: 
+    
+    help index         - the normal index
+    help index_staff   - show only help files unique to staff
+    help index_player  - show only help files visible to all players
+
+    The help command has a range of staff-only switches for manipulating the
+    help data base:
+    
+     help/add <topic>:<text>    - add/replace help topic with text (staff only)
+     help/append <topic>:<text> - add text to the end of a topic (staff only)
+                                  (use the /newline switch to add a new paragraph
+                                   to your help entry.)
+     help/delete <topic>        - delete help topic (staff only)
+     
+    Note: further switches are /force and /staff. /force is used together with /add to
+    always create a help entry, also when they partially match a previous entry. /staff
+    makes the help file visible to staff only. The /append switch can be used to change the
+    /staff setting of an existing help file if required.
+
+    The <text> entry supports markup to automatically divide the help text into 
+    sub-entries. These are started by the markup < <TOPIC:MyTopic> > (with no spaces
+    between the << >>), which will create a new subsectioned entry 'MyTopic' for all
+    text to follow it. All subsections to be added this way are automatically
+    referred to in the footer of each help entry. Normally the subsections inherit the
+    staff_only flag from the main entry (so if this is a staff-only help, all subentries
+    will also be staff-only and vice versa). You can override this behaviour using the
+    alternate forms < <TOPIC:STAFF:MyTopic> > and < <TOPIC:ALL:MyTopic> >. 
+     
     """
+    
     source_object = command.source_object
     topicstr = command.command_argument
+    switches = command.command_switches
     
     if not command.command_argument:
-        topicstr = "Help Index"    
+        #display topic index if just help command is given
+        if not switches:
+            topicstr = "index"
+        else:
+            #avoid applying things to "topic" by mistake
+            source_object.emit_to("You have to supply a topic.")
+            return
+        
     elif len(topicstr) < 2 and not topicstr.isdigit():
-        source_object.emit_to("Your search query is too short. It must be at least three letters long.")
+        #check valid query
+        source_object.emit_to("Your search query must be at least two letters long.")
         return
+
+    #speciel help index names. These entries are dynamically
+    #created upon request. 
+    if topicstr == 'index':
+        #the normal index, affected by permissions
+        edit_help.get_help_index(source_object)
+        return
+    elif topicstr == 'index_staff':
+        #allows staff to view only staff-specific help
+        edit_help.get_help_index(source_object,filter='staff')
+        return
+    elif topicstr == 'index_player':
+        #allows staff to view only the help files a player sees 
+        edit_help.get_help_index(source_object,filter='player')
+        return
+    
+    #handle special switches
+
+    force_create = 'for' in switches or 'force' in switches
+    staff_only = 'sta' in switches or 'staff' in switches
+
+    if 'add' in switches:
+        #try to add/replace help text for a command        
+        if not source_object.is_staff():
+            source_object.emit_to("Only staff can add new help entries.")
+            return         
+        spl = (topicstr.split(':',1))
+        if len(spl) != 2:
+            source_object.emit_to("Format is help/add <topic>:<helptext>")
+            return        
+        topicstr = spl[0]
+        text = spl[1]
+        topics = edit_help.add_help(topicstr,text,staff_only,force_create,source_object)
+        if not topics:
+            source_object.emit_to("No topic(s) added due to errors. Check syntax and that you don't have duplicate subtopics with the same name defined.")
+            return 
+        elif len(topics)>1:
+            source_object.emit_to("Added or replaced multiple help entries.")
+        else:
+            source_object.emit_to("Added or replaced help entry for %s." % topicstr )
+
+    elif 'append' in switches or 'app' in switches:
+        #append text to a help entry
+        if not source_object.is_staff():
+            source_object.emit_to("Only staff can append to help entries.")
+            return         
+        spl = (topicstr.split(':',1))
+        if len(spl) != 2:
+            source_object.emit_to("""Format is help/append <topic>:<text to add>
+                                     Use the /newline switch to make a new paragraph.""")
+            return        
+        topicstr = spl[0]
+        text = spl[1]
+        topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)        
+        if len(topics) == 1:
+            newtext = topics[0].get_entrytext_ingame()
+            if 'newl' in switches or 'newline' in switches:
+                newtext += "\n\r\n\r%s" % text
+            else:
+                newtext += "\n\r%s" % text
+            topics = edit_help.add_help(topicstr,newtext,staff_only,force_create,source_object)
+            if topics:
+                source_object.emit_to("Appended text to help entry for %s." % topicstr)
+                           
+    elif 'del' in switches or 'delete' in switches:
+        #delete a help entry
+        if not source_object.is_staff():
+            source_object.emit_to("Only staff can add delete help entries.")
+            return                
+        topics = edit_help.del_help(source_object,topicstr)
+        if type(topics) != type(list()):
+            source_object.emit_to("Help entry '%s' deleted." % topicstr)
+            return
+
+    else:
+        #no switch; just try to get the help as normal
+        topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)        
         
-    topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)        
-        
+    #display help entry or handle no/multiple matches 
+
     if len(topics) == 0:
         source_object.emit_to("No matching topics found, please refine your search.")
         suggestions = HelpEntry.objects.find_topicsuggestions(source_object, 
@@ -464,14 +600,14 @@ def cmd_help(command):
         if len(suggestions) > 0:
             source_object.emit_to("Matching similarly named topics:")
             for result in suggestions:
-                source_object.emit_to(" %s" % (result,))
-                source_object.emit_to("You may type 'help <#>' to see any of these topics.")
+                source_object.emit_to("  %s" % (result,))
+            source_object.emit_to("You may type 'help <#>' to see any of these topics.")
     elif len(topics) > 1:
         source_object.emit_to("More than one match found:")
         for result in topics:
-            source_object.emit_to("%3d. %s" % (result.id, result.get_topicname()))
+            source_object.emit_to("  %3d. %s" % (result.id, result.get_topicname()))
         source_object.emit_to("You may type 'help <#>' to see any of these topics.")
     else:    
         topic = topics[0]
-        source_object.emit_to("\n\r"+ topic.get_entrytext_ingame())
-GLOBAL_CMD_TABLE.add_command("help", cmd_help)
+        source_object.emit_to("\n\r "+ topic.get_entrytext_ingame())
+GLOBAL_CMD_TABLE.add_command("help", cmd_help, auto_help=True)

@@ -15,6 +15,9 @@ settings.CUSTOM_COMMAND_MODULES. Each module imports cmdtable.py and runs
 add_command on the command table each command belongs to.
 """
 
+from src.helpsys.management.commands.edit_helpfiles import add_help
+from src.ansi import ansi
+
 class CommandTable(object):
     """
     Stores command tables and performs lookups.
@@ -26,7 +29,7 @@ class CommandTable(object):
         self.ctable = {}
     
     def add_command(self, command_string, function, priv_tuple=None,
-                    extra_vals=None):
+                    extra_vals=None, auto_help=False, staff_help=False):
         """
         Adds a command to the command table.
         
@@ -34,9 +37,30 @@ class CommandTable(object):
         function: (reference) The command's function.
         priv_tuple: (tuple) String tuple of permissions required for command.
         extra_vals: (dict) Dictionary to add to the Command object.
+
+        Auto-help system:
+        auto_help (bool): If true, automatically creates/replaces a help topic with the
+                    same name as the command_string, using the functions's __doc__ property
+                    for help text. 
+        staff_help (bool): Only relevant if help_auto is activated; It True, makes the
+                     help topic (and all eventual subtopics) only visible to staff.
+
+        Note: the auto_help system also supports limited markup. If you divide your __doc__
+              with markers of the form <<TOPIC:MyTopic>>, the system will automatically create
+              separate help topics for each topic. Your initial text (if you define no TOPIC)
+              will still default to the name of your command.
+              You can also custon-set the staff_only flag for individual subtopics by
+              using the markup <<TOPIC:STAFF:MyTopic>> and <<TOPIC:NOSTAFF:MyTopic>>. 
         """
         self.ctable[command_string] = (function, priv_tuple, extra_vals)
-        
+
+        if auto_help:            
+            #add automatic help text from the command's doc string            
+            topicstr = command_string
+            entrytext = function.__doc__
+            add_help(topicstr, entrytext, staff_only=staff_help,
+                     force_create=True, auto_help=True)
+                        
     def get_command_tuple(self, func_name):
         """
         Returns a reference to the command's tuple. If there are no matches,
