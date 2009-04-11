@@ -22,3 +22,14 @@ def cmd_imctest(command):
     imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
     source_object.emit_to("Sent")
 GLOBAL_CMD_TABLE.add_command("imctest", cmd_imctest)
+
+def cmd_imckeepalive(command):
+    """
+    Shows a player's inventory.
+    """
+    source_object = command.source_object
+    source_object.emit_to("Sending")
+    packet = IMC2PacketIsAlive()
+    imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
+    source_object.emit_to("Sent")
+GLOBAL_CMD_TABLE.add_command("imckeepalive", cmd_imckeepalive)

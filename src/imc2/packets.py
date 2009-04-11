@@ -19,7 +19,7 @@ class IMC2Packet(object):
     target = None
     destination = None
     # Optional data.
-    optional_data = {}
+    optional_data = []
     # Reference to the IMC2Protocol object doing the sending.
     imc2_protocol = None
     
@@ -29,8 +29,8 @@ class IMC2Packet(object):
         """
         if self.optional_data:
             data_string = ''
-            for key, value in self.optional_data.items():
-                self.data_string += '%s=%s ' % (key, value)
+            for value in self.optional_data:
+                data_string += '%s=%s ' % (value[0], value[1])
             return data_string.strip()
         else:
             return ''
@@ -39,13 +39,18 @@ class IMC2Packet(object):
         """
         Calculates the sender name to be sent with the packet.
         """
-        if self.sender:
+        if self.sender == '*':
+            # Some packets have no sender.
+            return '*'
+        elif self.sender:
+            # Player object.
             name = self.sender.get_name(fullname=False, show_dbref=False, 
                                         show_flags=False,
                                         no_ansi=True)
             # IMC2 does not allow for spaces.
             return name.strip().replace(' ', '_')
         else:
+            # None value. Do something or other.
             return 'Unknown'
     
     def assemble(self):
@@ -80,7 +85,51 @@ class IMC2PacketWhois(IMC2Packet):
         self.packet_type = 'whois'
         self.target = whois_target
         self.destination = '*'
-        self.data = {'level': '5'}
+        self.optional_data = [('level', '5')]
+        
+class IMC2PacketIsAlive(IMC2Packet):
+    """
+    Description:
+    This packet is the reply to a keepalive-request packet. It is responsible 
+    for filling a client's mudlist with the information about other MUDs on the
+    network.
+    
+    Data:
+    versionid=<string> 
+    Where <string> is the text version ID of the client. ("IMC2 4.5 MUD-Net")
+    
+    url=<string>      
+    Where <string> is the proper URL of the client. (http://www.domain.com)
+    
+    host=<string>      
+    Where <string> is the telnet address of the MUD. (telnet://domain.com)
+    
+    port=<int>        
+    Where <int> is the telnet port of the MUD.
+    
+    (These data fields are not sent by the MUD, they are added by the server.)
+    networkname=<string> 
+    Where <string> is the network name that the MUD/server is on. ("MyNetwork")
+    
+    sha256=<int>
+    This is an optional tag that denotes the SHA-256 capabilities of a 
+    MUD or server.
+    
+    Example of a received is-alive:
+    *@SomeMUD 1234567890 SomeMUD!Hub2 is-alive *@YourMUD versionid="IMC2 4.5 MUD-Net" url="http://www.domain.com" networkname="MyNetwork" sha256=1 host=domain.com port=5500
+    
+    Example of a sent is-alive:
+    *@YourMUD 1234567890 YourMUD is-alive *@* versionid="IMC2 4.5 MUD-Net" url="http://www.domain.com" host=domain.com port=5500   
+    """
+    def __init__(self):
+        self.sender = '*'
+        self.packet_type = 'is-alive'
+        self.target = '*'
+        self.destination = '*'
+        self.optional_data = [('versionid', '"Evennia IMC2"'),
+                              ('url', '"http://evennia.com"'),
+                              ('host', 'test.com'),
+                              ('port', '5555')]
 
 class IMC2PacketAuthPlaintext(object):
     """

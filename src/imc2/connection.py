@@ -25,6 +25,7 @@ class IMC2Protocol(StatefulTelnetProtocol):
         IMC2_PROTOCOL_INSTANCE = self
         self.is_authenticated = False
         self.auth_type = None
+        self.server_name = None
         self.network_name = None
         self.sequence = None
            
@@ -61,9 +62,10 @@ class IMC2Protocol(StatefulTelnetProtocol):
             """
             if line[:2] == "PW":
                 line_split = line.split(' ')
+                self.server_name = line_split[1]
                 self.network_name = line_split[4]
                 self.is_authenticated = True
-                self.sequence = time.time()
+                self.sequence = int(time.time())
                 print "IMC2: Successfully authenticated to the '%s' network." % self.network_name
 
     def lineReceived(self, line):

@@ -7,7 +7,6 @@ from django.db import connection
 from django.conf import settings
 from src.config.models import ConfigValue
 from src.session import SessionProtocol
-from src.imc2.connection import IMC2ClientFactory
 from src import events
 from src import logger
 from src import session_mgr
@@ -146,9 +145,12 @@ for port in settings.GAMEPORTS:
 
 
 if settings.IMC2_ENABLED:
+    from src.imc2.connection import IMC2ClientFactory
+    from src.imc2 import events as imc2_events
     imc2_factory = IMC2ClientFactory()
     svc = internet.TCPClient(settings.IMC2_SERVER_ADDRESS, 
                              settings.IMC2_SERVER_PORT, 
                              imc2_factory)
     svc.setName('IMC2')
     svc.setServiceParent(serviceCollection)
+    imc2_events.add_events()
