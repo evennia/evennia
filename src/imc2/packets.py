@@ -10,24 +10,24 @@ class IMC2Packet(object):
     Base IMC2 packet class. This is generally sub-classed, aside from using it
     to parse incoming packets from the IMC2 network server.
     """
-    # The following fields are all according to the basic packet format of:
-    # <sender>@<origin> <sequence> <route> <packet-type> <target>@<destination> <data...> 
-    sender = None
-    origin = settings.IMC2_MUDNAME
-    sequence = None
-    route = settings.IMC2_MUDNAME
-    packet_type = None
-    target = None
-    destination = None
-    # Optional data.
-    optional_data = []
-    # Reference to the IMC2Protocol object doing the sending.
-    imc2_protocol = None
-    
     def __init__(self, packet_str=None):
         """
         Optionally, parse a packet and load it up.
         """
+        # The following fields are all according to the basic packet format of:
+        # <sender>@<origin> <sequence> <route> <packet-type> <target>@<destination> <data...> 
+        self.sender = None
+        self.origin = settings.IMC2_MUDNAME
+        self.sequence = None
+        self.route = settings.IMC2_MUDNAME
+        self.packet_type = None
+        self.target = None
+        self.destination = None
+        # Optional data.
+        self.optional_data = []
+        # Reference to the IMC2Protocol object doing the sending.
+        self.imc2_protocol = None
+        
         if packet_str:
             split_packet = shlex.split(packet_str)
             
@@ -48,10 +48,9 @@ class IMC2Packet(object):
             self.destination = split_sender_origin[1]
             
             # Populate optional data.
-            self.optional_data = []
             data_list = split_packet[5:]
             for pair in data_list:
-                key, value = pair.split('=')
+                key, value = pair.split('=', 1)
                 self.optional_data.append((key, value))
                 
     def __str__(self):
@@ -201,6 +200,7 @@ class IMC2PacketIsAlive(IMC2Packet):
     *@YourMUD 1234567890 YourMUD is-alive *@* versionid="IMC2 4.5 MUD-Net" url="http://www.domain.com" host=domain.com port=5500   
     """
     def __init__(self):
+        super(IMC2PacketIsAlive, self).__init__()
         self.sender = '*'
         self.packet_type = 'is-alive'
         self.target = '*'
@@ -570,6 +570,7 @@ class IMC2PacketWhois(IMC2Packet):
     You@YourMUD 1234567890 YourMUD whois dude@* level=5  
     """
     def __init__(self, pobject, whois_target):
+        super(IMC2PacketWhois, self).__init__()
         self.sender = pobject
         self.packet_type = 'whois'
         self.target = whois_target
