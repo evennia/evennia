@@ -9,6 +9,7 @@ from twisted.internet import reactor, task
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.conf import settings
 from src.imc2.packets import *
+from src import logger
 
 # The active instance of IMC2Protocol. Set at server startup.
 IMC2_PROTOCOL_INSTANCE = None
@@ -76,14 +77,9 @@ class IMC2Protocol(StatefulTelnetProtocol):
         if not self.is_authenticated:
             self._parse_auth_response(line)
         else:
-            split_line = line.split(' ')
-            packet_type = split_line[3]
-            if packet_type == "is-alive":
-                pass
-            elif packet_type == "user-cache":
-                pass
-            else:
-                print "receive:", line
+            logger.log_infomsg("PACKET: %s" % line)
+            logger.log_infomsg(IMC2Packet(packet_str = line))
+            #print "receive:", line
 
 class IMC2ClientFactory(ClientFactory):
     """
@@ -93,7 +89,7 @@ class IMC2ClientFactory(ClientFactory):
     protocol = IMC2Protocol
 
     def clientConnectionFailed(self, connector, reason):
-        print 'connection failed:', reason.getErrorMessage()
+        logger.log_errmsg('connection failed: %s' % reason.getErrorMessage())
 
     def clientConnectionLost(self, connector, reason):
-        print 'connection lost:', reason.getErrorMessage()
+        logger.log_errmsg('connection lost: %s' % reason.getErrorMessage())

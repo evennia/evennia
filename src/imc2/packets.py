@@ -2,12 +2,13 @@
 IMC2 packets. These are pretty well documented at:
 http://www.mudbytes.net/index.php?a=articles&s=imc2_protocol
 """
+import shlex
 from django.conf import settings
 
 class IMC2Packet(object):
     """
-    Base IMC2 packet class. This should never be used directly. Sub-class
-    and profit.
+    Base IMC2 packet class. This is generally sub-classed, aside from using it
+    to parse incoming packets from the IMC2 network server.
     """
     # The following fields are all according to the basic packet format of:
     # <sender>@<origin> <sequence> <route> <packet-type> <target>@<destination> <data...> 
@@ -22,6 +23,57 @@ class IMC2Packet(object):
     optional_data = []
     # Reference to the IMC2Protocol object doing the sending.
     imc2_protocol = None
+    
+    def __init__(self, packet_str=None):
+        """
+        Optionally, parse a packet and load it up.
+        """
+        if packet_str:
+            split_packet = shlex.split(packet_str)
+            
+            # Get values for the sender and origin attributes.
+            sender_origin = split_packet[0]
+            split_sender_origin = sender_origin.split('@')
+            self.sender = split_sender_origin[0].strip()
+            self.origin = split_sender_origin[1]
+            
+            self.sequence = split_packet[1]
+            self.route = split_packet[2]
+            self.packet_type = split_packet[3]
+            
+            # Get values for the target and destination attributes.
+            target_destination = split_packet[4]
+            split_target_destination = target_destination.split('@')
+            self.target = split_target_destination[0]
+            self.destination = split_sender_origin[1]
+            
+            # Populate optional data.
+            self.optional_data = []
+            data_list = split_packet[5:]
+            for pair in data_list:
+                key, value = pair.split('=')
+                self.optional_data.append((key, value))
+                
+    def __str__(self):
+        retval =  """
+        -- Begin Packet Display --
+        Sender: %s
+        Origin: %s
+        Sequence: %s
+        Route: %s
+        Type: %s
+        Target: %s
+        Destination: %s
+        Data: %s
+        - End Packet Display --""" % (self.sender,
+                                      self.origin,
+                                      self.sequence,
+                                      self.route,
+                                      self.packet_type,
+                                      self.target,
+                                      self.destination,
+                                      self.optional_data)
+        return retval
     
     def _get_optional_data_string(self):
         """
