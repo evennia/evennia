@@ -66,6 +66,35 @@ DATABASE_HOST = ''
 # Empty string defaults to localhost. Not used with sqlite3.
 DATABASE_PORT = ''
 
+"""
+IMC Configuration
+
+This is static and important enough to put in the server-side settings file.
+Copy and paste this section to your game/settings.py file and change the
+values to fit your needs.
+
+Evennia's IMC2 client was developed against MudByte's network. You may
+register and join it by going to:
+http://www.mudbytes.net/imc2-intermud-join-network
+
+Choose "Other unsupported IMC2 version" and enter your information there.
+You'll want to change the values below to reflect what you entered.
+"""
+# Make sure this is True in your settings.py.
+IMC2_ENABLED = False
+# The hostname/ip address of your IMC2 server of choice.
+IMC2_SERVER_ADDRESS = None
+# The port to connect to on your IMC2 server.
+IMC2_SERVER_PORT = None
+# This is your game's IMC2 name.
+IMC2_MUDNAME = None
+# Your IMC2 client-side password. Used to authenticate with your network.
+IMC2_CLIENT_PW = None
+# Your IMC2 server-side password. Used to verify your network's identity.
+IMC2_SERVER_PW = None
+# This isn't something you should generally change.
+IMC2_PROTOCOL_VERSION = '2'
+
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'America/New_York'
@@ -220,6 +249,7 @@ COMMAND_MODULES = (
     'src.commands.parents',
     'src.commands.privileged',
     'src.commands.search',
+    'src.commands.imc2',
 )
 
 """
