@@ -19,7 +19,7 @@ class Lexxer(shlex.shlex):
         self.quotes = '"'
         self.commenters = ''
         # This helps denote what constitutes a continuous token.
-        self.wordchars += "=-@*!:'"
+        self.wordchars += "=-@*!:'/."
 
 class IMC2Packet(object):
     """
@@ -77,6 +77,7 @@ class IMC2Packet(object):
                     self.destination = split_target_destination[1]
                 elif counter > 4:
                     # Populate optional data.
+                    print "TOK", token
                     key, value = token.split('=', 1)
                     self.optional_data.append((key, value))
                 # Increment and continue to the next token (if applicable)
@@ -706,4 +707,5 @@ class IMC2PacketCloseNotify(IMC2Packet):
 
 if __name__ == "__main__":
     packstr = "Kayle@MW 1234567 MW!Server02!Server01 ice-msg-b *@* channel=Server01:ichat text=\"*they're going woot\" emote=0 echo=1"
+    packstr = "*@Lythelian 1234567 Lythelian!Server01 is-alive *@* versionid=\"Tim's LPC IMC2 client 30-Jan-05 / Dead Souls integrated\" networkname=Mudbytes url=http://dead-souls.net host=70.32.76.142 port=6666 sha256=0"
     print IMC2Packet(packstr)
