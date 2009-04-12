@@ -3,7 +3,23 @@ IMC2 packets. These are pretty well documented at:
 http://www.mudbytes.net/index.php?a=articles&s=imc2_protocol
 """
 import shlex
-from django.conf import settings
+if __name__ == "__main__":
+    class settings:
+        IMC2_MUDNAME = "BLAH"
+else:
+    from django.conf import settings
+
+class Lexxer(shlex.shlex):
+    """
+    A lexical parser for interpreting IMC2 packets.
+    """
+    def __init__(self, packet_str, posix=True):
+        shlex.shlex.__init__(self, packet_str, posix=True)
+        # Single-quotes are notably not present. This is important!
+        self.quotes = '"'
+        self.commenters = ''
+        # This helps denote what constitutes a continuous token.
+        self.wordchars += "=-@*!:'"
 
 class IMC2Packet(object):
     """
@@ -29,30 +45,43 @@ class IMC2Packet(object):
         self.imc2_protocol = None
         
         if packet_str:
-            split_packet = shlex.split(packet_str)
+            # The lexxer handles the double quotes correctly, unlike just
+            # splitting. Spaces throw things off, so shlex handles it
+            # gracefully, ala POSIX shell-style parsing.
+            lex = Lexxer(packet_str)
             
-            # Get values for the sender and origin attributes.
-            sender_origin = split_packet[0]
-            split_sender_origin = sender_origin.split('@')
-            self.sender = split_sender_origin[0].strip()
-            self.origin = split_sender_origin[1]
-            
-            self.sequence = split_packet[1]
-            self.route = split_packet[2]
-            self.packet_type = split_packet[3]
-            
-            # Get values for the target and destination attributes.
-            target_destination = split_packet[4]
-            split_target_destination = target_destination.split('@')
-            self.target = split_target_destination[0]
-            self.destination = split_sender_origin[1]
-            
-            # Populate optional data.
-            data_list = split_packet[5:]
-            for pair in data_list:
-                key, value = pair.split('=', 1)
-                self.optional_data.append((key, value))
-                
+            # Token counter.
+            counter = 0
+            for token in lex:
+                if counter == 0:
+                    # This is the sender@origin token.
+                    sender_origin = token
+                    print token
+                    split_sender_origin = sender_origin.split('@')
+                    self.sender = split_sender_origin[0].strip()
+                    self.origin = split_sender_origin[1]
+                elif counter == 1:
+                    # Numeric time-based sequence.
+                    self.sequence = token
+                elif counter == 2:
+                    # Packet routing info.
+                    self.route = token
+                elif counter == 3:
+                    # Packet type string.
+                    self.packet_type = token
+                elif counter == 4:
+                    # Get values for the target and destination attributes.
+                    target_destination = token
+                    split_target_destination = target_destination.split('@')
+                    self.target = split_target_destination[0]
+                    self.destination = split_target_destination[1]
+                elif counter > 4:
+                    # Populate optional data.
+                    key, value = token.split('=', 1)
+                    self.optional_data.append((key, value))
+                # Increment and continue to the next token (if applicable)
+                counter += 1
+                                   
     def __str__(self):
         retval =  """
         -- Begin Packet Display --
@@ -674,3 +703,7 @@ class IMC2PacketCloseNotify(IMC2Packet):
     *@Hub2 1234567890 Hub2!Hub1 close-notify *@* host=DisconnMUD       
     """
     pass
+
+if __name__ == "__main__":
+    packstr = "Kayle@MW 1234567 MW!Server02!Server01 ice-msg-b *@* channel=Server01:ichat text=\"*they're going woot\" emote=0 echo=1"
+    print IMC2Packet(packstr)
