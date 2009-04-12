@@ -503,7 +503,7 @@ def cmd_help(command):
     if not command.command_argument:
         #display topic index if just help command is given
         if not switches:
-            topicstr = "index"
+            topicstr = "topic"
         else:
             #avoid applying things to "topic" by mistake
             source_object.emit_to("You have to supply a topic.")
