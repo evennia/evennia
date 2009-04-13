@@ -5,9 +5,8 @@ well as creating auto-docs of commands based on their doc strings.
 The system supports help-markup for multiple help entries as well
 as a dynamically updating help index. 
 """
-
 from src.helpsys.models import HelpEntry
-from src.ansi import ansi
+from src.ansi import ANSITable
 
 #
 # Helper functions
@@ -120,7 +119,7 @@ def _format_footer(top, text, topic_dict, staff_dict):
             other_topics = other_topics = filter(lambda o: o != top and not staff_dict[o],
                                                  topic_dict.keys())           
         if other_topics:
-            footer = ansi['normal'] + "\n\r Related Topics: "            
+            footer = ANSITable.ansi['normal'] + "\n\r Related Topics: "            
             for t in other_topics:
                 footer += t + ', '
             footer = footer[:-2] + '.'

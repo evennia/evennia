@@ -7,7 +7,7 @@ NOTE: This file should NOT be directly modified. Sub-class the BasicObject
 class in game/gamesrc/parents/base/basicobject.py and change the 
 SCRIPT_DEFAULT_OBJECT variable in settings.py to point to the new class. 
 """
-from src import ansi
+from src.ansi import ANSITable
 
 class EvenniaBasicObject(object):
     def __init__(self, scripted_obj, *args, **kwargs):
@@ -103,15 +103,18 @@ class EvenniaBasicObject(object):
                 con_things.append(obj)
         
         if not con_players == []:
-            retval += "\n\r%sPlayers:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
+            retval += "\n\r%sPlayers:%s" % (ANSITable.ansi["hilite"], 
+                                            ANSITable.ansi["normal"])
             for player in con_players:
-                retval +='\n\r%s' %(player.get_name(show_dbref=show_dbrefs),)
+                retval +='\n\r%s' % (player.get_name(show_dbref=show_dbrefs),)
         if not con_things == []:
-            retval += "\n\r%sContents:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
+            retval += "\n\r%sContents:%s" % (ANSITable.ansi["hilite"], 
+                                             ANSITable.ansi["normal"])
             for thing in con_things:
-                retval += '\n\r%s' %(thing.get_name(show_dbref=show_dbrefs),)
+                retval += '\n\r%s' % (thing.get_name(show_dbref=show_dbrefs),)
         if not con_exits == []:
-            retval += "\n\r%sExits:%s" % (ansi.ansi["hilite"], ansi.ansi["normal"],)
+            retval += "\n\r%sExits:%s" % (ANSITable.ansi["hilite"], 
+                                          ANSITable.ansi["normal"])
             for exit in con_exits:
                 retval += '\n\r%s' %(exit.get_name(show_dbref=show_dbrefs),)
 

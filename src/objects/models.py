@@ -11,9 +11,9 @@ from src.objects.managers.commchannel import CommChannelManager
 from src.objects.managers.object import ObjectManager
 from src.objects.managers.attribute import AttributeManager
 from src.config.models import ConfigValue
+from src.ansi import ANSITable, parse_ansi
 from src import scripthandler
 from src import defines_global
-from src import ansi
 from src import session_mgr
 from src import logger
 # Import as the absolute path to avoid local variable clashes.
@@ -83,9 +83,9 @@ class Attribute(models.Model):
         Best described as a __str__ method for in-game. Renders the attribute's
         name and value as per MUX.
         """
-        return "%s%s%s: %s" % (ansi.ansi["hilite"], 
+        return "%s%s%s: %s" % (ANSITable.ansi["hilite"], 
             self.get_name(), 
-            ansi.ansi["normal"], 
+            ANSITable.ansi["normal"], 
             self.get_value())
 
 class AttributeAdmin(admin.ModelAdmin):
@@ -195,7 +195,7 @@ class Object(models.Model):
             
         sessions = self.get_sessions()
         for session in sessions:
-            session.msg(ansi.parse_ansi(message))
+            session.msg(parse_ansi(message))
             
     def execute_cmd(self, command_str, session=None):
         """
@@ -364,8 +364,8 @@ class Object(models.Model):
         """
         Rename an object.
         """
-        self.name = ansi.parse_ansi(new_name, strip_ansi=True)
-        self.ansi_name = ansi.parse_ansi(new_name, strip_formatting=True)
+        self.name = parse_ansi(new_name, strip_ansi=True)
+        self.ansi_name = parse_ansi(new_name, strip_formatting=True)
         self.save()
         
         # If it's a player, we need to update their user object as well.
@@ -396,10 +396,10 @@ class Object(models.Model):
             dbref_string = ""
         
         if fullname:
-            return "%s%s" % (ansi.parse_ansi(name_string, strip_ansi=no_ansi), 
+            return "%s%s" % (parse_ansi(name_string, strip_ansi=no_ansi), 
                              dbref_string)
         else:
-            return "%s%s" % (ansi.parse_ansi(name_string.split(';')[0], 
+            return "%s%s" % (parse_ansi(name_string.split(';')[0], 
                                              strip_ansi=no_ansi), dbref_string)
 
     def set_description(self, new_desc):
@@ -425,7 +425,7 @@ class Object(models.Model):
             if no_parsing:
                 retval = self.description
             else:
-                retval = ansi.parse_ansi(self.description)        
+                retval = parse_ansi(self.description)        
 
             # Default to a 78 character wrap.
             if wrap_text:
@@ -1018,7 +1018,7 @@ class CommChannel(models.Model):
         Returns the channel's header text, or what is shown before each channel
         message.
         """
-        return ansi.parse_ansi(self.ansi_name)
+        return parse_ansi(self.ansi_name)
 
     def get_owner(self):
         """
@@ -1030,15 +1030,15 @@ class CommChannel(models.Model):
         """
         Rename a channel
         """
-        self.name = ansi.parse_ansi(new_name, strip_ansi=True)
-        self.header = "[%s]" % (ansi.parse_ansi(new_name),)
+        self.name = parse_ansi(new_name, strip_ansi=True)
+        self.header = "[%s]" % (parse_ansi(new_name),)
         self.save()
 
     def set_header(self, new_header):
         """
         Sets a channel's header text.
         """
-        self.header = ansi.parse_ansi(new_header)
+        self.header = parse_ansi(new_header)
         self.save()
 
     def set_owner(self, new_owner):

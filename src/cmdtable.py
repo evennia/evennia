@@ -16,7 +16,6 @@ add_command on the command table each command belongs to.
 """
 
 from src.helpsys.management.commands.edit_helpfiles import add_help
-from src.ansi import ansi
 
 class CommandTable(object):
     """

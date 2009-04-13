@@ -7,12 +7,12 @@ from django.conf import settings
 from src.config.models import ConfigValue
 from src.helpsys.models import HelpEntry
 from src.objects.models import Object
+from src.ansi import ANSITable
 from src import defines_global
 from src import session_mgr
 from src import ansi
 from src.util import functions_general
 import src.helpsys.management.commands.edit_helpfiles as edit_help
-
 from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_password(command):
@@ -306,8 +306,8 @@ def cmd_examine(command):
         
         # Render Contents display.
         if con_players or con_things:
-            s += str("%sContents:%s" % (ansi.ansi["hilite"], 
-                                                  ansi.ansi["normal"])) + newl
+            s += str("%sContents:%s" % (ANSITable.ansi["hilite"], 
+                                                  ANSITable.ansi["normal"])) + newl
             for player in con_players:
                 s += str(' %s' % player.get_name(fullname=True)) + newl
             for thing in con_things:
@@ -315,8 +315,8 @@ def cmd_examine(command):
                 
         # Render Exists display.
         if con_exits:
-            s += str("%sExits:%s" % (ansi.ansi["hilite"], 
-                                        ansi.ansi["normal"])) + newl
+            s += str("%sExits:%s" % (ANSITable.ansi["hilite"], 
+                                        ANSITable.ansi["normal"])) + newl
             for exit in con_exits:
                 s += str(' %s' % exit.get_name(fullname=True)) + newl
         
