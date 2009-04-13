@@ -19,7 +19,7 @@ class Lexxer(shlex.shlex):
         self.quotes = '"'
         self.commenters = ''
         # This helps denote what constitutes a continuous token.
-        self.wordchars += "=-@*!:'/."
+        self.wordchars += "~`!@#$%^&*()-_+=[{]}|\\;:',<.>/?"
 
 class IMC2Packet(object):
     """
@@ -77,7 +77,6 @@ class IMC2Packet(object):
                     self.destination = split_target_destination[1]
                 elif counter > 4:
                     # Populate optional data.
-                    print "TOK", token
                     key, value = token.split('=', 1)
                     self.optional_data.append((key, value))
                 # Increment and continue to the next token (if applicable)
