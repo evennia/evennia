@@ -38,7 +38,11 @@ class IMC2MudList(object):
     def remove_mud_from_packet(self, packet):
         # Removes a mud from the Mud list when given a packet.
         mud = IMC2Mud(packet)
-        del self.mud_list[mud.name]
+        try:
+            del self.mud_list[mud.name]
+        except KeyError:
+            # No matching entry, no big deal.
+            pass
 
 # Use this instance to keep track of the other games on the network.
 IMC2_MUDLIST = IMC2MudList()
