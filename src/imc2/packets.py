@@ -74,7 +74,14 @@ class IMC2Packet(object):
                     target_destination = token
                     split_target_destination = target_destination.split('@')
                     self.target = split_target_destination[0]
-                    self.destination = split_target_destination[1]
+                    try:
+                        self.destination = split_target_destination[1]
+                    except IndexError:
+                        # There is only one element to the target@dest segment
+                        # of the packet. Wipe the target and move the captured
+                        # value to the destination attrib.
+                        self.target = '*'
+                        self.destination = split_target_destination[0]
                 elif counter > 4:
                     # Populate optional data.
                     key, value = token.split('=', 1)
