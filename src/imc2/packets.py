@@ -40,7 +40,7 @@ class IMC2Packet(object):
         self.target = None
         self.destination = None
         # Optional data.
-        self.optional_data = []
+        self.optional_data = {}
         # Reference to the IMC2Protocol object doing the sending.
         self.imc2_protocol = None
         
@@ -56,7 +56,6 @@ class IMC2Packet(object):
                 if counter == 0:
                     # This is the sender@origin token.
                     sender_origin = token
-                    print token
                     split_sender_origin = sender_origin.split('@')
                     self.sender = split_sender_origin[0].strip()
                     self.origin = split_sender_origin[1]
@@ -84,8 +83,12 @@ class IMC2Packet(object):
                         self.destination = split_target_destination[0]
                 elif counter > 4:
                     # Populate optional data.
-                    key, value = token.split('=', 1)
-                    self.optional_data.append((key, value))
+                    try:
+                        key, value = token.split('=', 1)
+                        self.optional_data[key] = value
+                    except ValueError:
+                        # Failed to split on equal sign, disregard.
+                        pass
                 # Increment and continue to the next token (if applicable)
                 counter += 1
                                    
@@ -129,6 +132,8 @@ class IMC2Packet(object):
         if self.sender == '*':
             # Some packets have no sender.
             return '*'
+        elif str(self.sender).isdigit():
+            return self.sender
         elif self.sender:
             # Player object.
             name = self.sender.get_name(fullname=False, show_dbref=False, 
@@ -199,7 +204,12 @@ class IMC2PacketKeepAliveRequest(IMC2Packet):
     Example of a sent keepalive-request:
     *@YourMUD 1234567890 YourMUD keepalive-request *@*    
     """
-    pass
+    def __init__(self):
+        super(IMC2PacketKeepAliveRequest, self).__init__()
+        self.sender = '*'
+        self.packet_type = 'keepalive-request'
+        self.target = '*'
+        self.destination = '*'
            
 class IMC2PacketIsAlive(IMC2Packet):
     """
@@ -607,7 +617,8 @@ class IMC2PacketWhois(IMC2Packet):
     """
     def __init__(self, pobject, whois_target):
         super(IMC2PacketWhois, self).__init__()
-        self.sender = pobject
+        # Use the dbref, it's easier to trace back for the whois-reply.
+        self.sender = pobject.id
         self.packet_type = 'whois'
         self.target = whois_target
         self.destination = '*'

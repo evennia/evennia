@@ -14,16 +14,7 @@ class IntervalEvent(object):
     """
     Represents an event that is triggered periodically. Sub-class this and
     fill in the stub function.
-    """
-    # This is what shows up on @ps in-game.
-    name = None
-    # An interval (in seconds) for execution.
-    interval = None
-    # A timestamp (int) for the last time the event was fired.
-    time_last_executed = None
-    # A reference to the task.LoopingCall object.
-    looped_task = None
-    
+    """    
     def __init__(self):
         """
         Executed when the class is instantiated.
@@ -31,6 +22,12 @@ class IntervalEvent(object):
         # This is set to prevent a Nonetype exception on @ps before the
         # event is fired for the first time.
         self.time_last_executed = time.time()
+        # This is what shows up on @ps in-game.
+        self.name = None
+        # An interval (in seconds) for execution.
+        self.interval = None
+        # A reference to the task.LoopingCall object.
+        self.looped_task = None
     
     def __unicode__(self):
         """
@@ -78,9 +75,11 @@ class IEvt_Check_Sessions(IntervalEvent):
     """
     Event: Check all of the connected sessions.
     """
-    name = 'IEvt_Check_Sessions'
-    interval = 60
-    description = "Session consistency checks."
+    def __init__(self):
+        super(IEvt_Check_Sessions, self).__init__()
+        self.name = 'IEvt_Check_Sessions'
+        self.interval = 60
+        self.description = "Session consistency checks."
     
     def event_function(self):
         """
