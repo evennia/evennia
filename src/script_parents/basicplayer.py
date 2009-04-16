@@ -13,7 +13,9 @@ class EvenniaBasicPlayer(object):
         """
         This is triggered after a new User and accompanying Object is created.
         By the time this is triggered, the player is ready to go but not
-        logged in.
+        logged in. Note that this is different from at_object_creation(), which
+        is executed before at_player_creation(). This function is only 
+        triggered when the User account _and_ the Object are ready.
         """
         pass
     

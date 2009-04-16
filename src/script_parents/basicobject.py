@@ -12,11 +12,27 @@ from src.ansi import ANSITable
 class EvenniaBasicObject(object):
     def __init__(self, scripted_obj, *args, **kwargs):
         """
-        Get our ducks in a row.
+        Get our ducks in a row. You should generally never override this. Note
+        that this will not be called on object creation in a manner typical to
+        most Python objects. This is only called when the script parent is
+        cached or recalled on an object. This means that this function is not
+        called until someone does something to warrant calling get_scriptlink().
+        
+        If you're wanting to do something on object/player creation, override
+        at_object_creation() (in basicobject.py) or at_player_creation() 
+        (in basicplayer.py).
         
         scripted_obj: (Object) A reference to the object being scripted (the child).
         """
         self.scripted_obj = scripted_obj
+        
+    def at_object_creation(self):
+        """
+        This is triggered after a new object is created and ready to go. If
+        you'd like to set attributes, flags, or do anything when the object
+        is created, do it here and not in __init__().
+        """
+        pass
         
     def at_desc(self, pobject=None):
         """

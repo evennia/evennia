@@ -280,6 +280,9 @@ def cmd_create(command):
         new_object = Object.objects.create_object(odat)
         
         source_object.emit_to("You create a new thing: %s" % (new_object,))
+        
+        # Trigger stuff to happen after said object is created.
+        new_object.scriptlink.at_object_creation()
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
                              priv_tuple=("genperms.builder"))
     
