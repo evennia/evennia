@@ -132,7 +132,10 @@ def cmd_clist(command):
     source_object.emit_to("** Channel       Owner         Description")
     for chan in src.comsys.get_all_channels():
         source_object.emit_to("%s%s %-14.13s%-22.15s%s" %
-            ('-', '-', chan.get_name(), chan.get_owner().get_name(), 
+            ('-', 
+             '-', 
+             chan.get_name(), 
+             chan.get_owner().get_name(show_dbref=False), 
              'No Description'))
     source_object.emit_to("-- End of Channel List --")
 GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist),
