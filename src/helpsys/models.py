@@ -12,7 +12,7 @@ class HelpEntry(models.Model):
     """
     topicname = models.CharField(max_length=255, unique=True)
     entrytext = models.TextField(blank=True, null=True)
-    staff_only = models.BooleanField(default=0)
+    staff_only = models.BooleanField(default=False)
     
     objects = HelpEntryManager()
         
