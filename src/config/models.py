@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib import admin
 from src.config.managers.commandalias import CommandAliasManager
 from src.config.managers.configvalue import ConfigValueManager
 from src.config.managers.connectscreen import ConnectScreenManager
@@ -17,13 +16,6 @@ class CommandAlias(models.Model):
     class Meta:
         verbose_name_plural = "Command aliases"
         ordering = ['user_input']
-        
-class CommandAliasAdmin(admin.ModelAdmin):
-    list_display = ('user_input', 'equiv_command')
-    pass
-# This is causing an error for some reason
-#admin.site.register(CommandAlias, CommandAliasAdmin)
-admin.site.register(CommandAlias)
 
 class ConfigValue(models.Model):
     """
@@ -36,10 +28,6 @@ class ConfigValue(models.Model):
         
     def __unicode__(self):
         return "%s" % self.conf_key
-
-class ConfigValueAdmin(admin.ModelAdmin):
-    list_display = ('conf_key', 'conf_value')
-admin.site.register(ConfigValue, ConfigValueAdmin)
         
 class ConnectScreen(models.Model):
     """
@@ -51,8 +39,3 @@ class ConnectScreen(models.Model):
     is_active = models.BooleanField(default=1, help_text="Only active connect screens are placed in the rotation")
     
     objects = ConnectScreenManager()
-    
-class ConnectScreenAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'is_active')
-    list_display_links = ('id', 'name')
-admin.site.register(ConnectScreen, ConnectScreenAdmin)

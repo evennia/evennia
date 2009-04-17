@@ -4,10 +4,8 @@ This is where all of the crucial, core object models reside.
 import re
 from django.db import models
 from django.contrib.auth.models import User, Group
-from django.contrib import admin
 from django.conf import settings
 from src.objects.util import object as util_object
-from src.objects.managers.commchannel import CommChannelManager
 from src.objects.managers.object import ObjectManager
 from src.objects.managers.attribute import AttributeManager
 from src.config.models import ConfigValue
@@ -87,11 +85,6 @@ class Attribute(models.Model):
             self.get_name(), 
             ANSITable.ansi["normal"], 
             self.get_value())
-
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('attr_object', 'attr_name', 'attr_value',)
-    search_fields = ['attr_name']
-admin.site.register(Attribute, AttributeAdmin)
 
 class Object(models.Model):
     """
@@ -976,13 +969,6 @@ class Object(models.Model):
         # about tuple index types. Bleh.
         otype = int(self.type)
         return defines_global.OBJECT_TYPES[otype][1][0]
-    
-class ObjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'type', 'date_created')
-    list_filter = ('type',)
-    search_fields = ['name']
-    save_on_top = True
-admin.site.register(Object, ObjectAdmin)
 
 class CommChannel(models.Model):
     """
@@ -994,8 +980,6 @@ class CommChannel(models.Model):
     description = models.CharField(max_length=80, blank=True, null=True)
     is_joined_by_default = models.BooleanField(default=False)
     req_grp = models.ManyToManyField(Group, blank=True, null=True)
-    
-    objects = CommChannelManager()
 
     def __str__(self):
         return "%s" % (self.name,)
@@ -1072,10 +1056,6 @@ class CommChannel(models.Model):
         """
         return self.name[:3].lower()
 
-class CommChannelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner')
-admin.site.register(CommChannel, CommChannelAdmin)
-
 class CommChannelMessage(models.Model):
     """
     A single logged channel message.
@@ -1083,18 +1063,12 @@ class CommChannelMessage(models.Model):
     channel = models.ForeignKey(CommChannel, related_name="msg_channel")
     message = models.CharField(max_length=255)
     date_sent = models.DateTimeField(editable=False, auto_now_add=True)
-    
-    objects = CommChannelManager()
 
     def __str__(self):
         return "%s: %s" % (self.sender.name, self.message)
     
     class Meta:
         ordering = ['-date_sent']
-    
-class CommChannelMessageAdmin(admin.ModelAdmin):
-    list_display = ('channel', 'message')
-admin.site.register(CommChannelMessage, CommChannelMessageAdmin)
 
 # Deferred imports are poopy. This will require some thought to fix.
 from src import cmdhandler

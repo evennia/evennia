@@ -2,9 +2,8 @@
 Models for the help system.
 """
 from django.db import models
-from django.contrib import admin
 from src import ansi
-from src.helpsys.managers.helpentry import HelpEntryManager
+from src.helpsys.managers import HelpEntryManager
 
 class HelpEntry(models.Model):
     """
@@ -34,10 +33,3 @@ class HelpEntry(models.Model):
         Gets the entry text for in-game viewing.
         """
         return ansi.parse_ansi(self.entrytext)
-
-class HelpEntryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'topicname', 'staff_only')
-    list_display_links = ('id', 'topicname')
-    list_filter = ('staff_only',)
-    search_fields = ['topicname', 'entrytext']
-admin.site.register(HelpEntry, HelpEntryAdmin)
