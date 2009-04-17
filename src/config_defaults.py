@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'src.config',
     'src.objects',
+    'src.imc2',
     'src.helpsys',
     'src.genperms',
     'game.web.apps.news',

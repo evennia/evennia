@@ -12,6 +12,8 @@ from src import logger
 from src.imc2.packets import *
 from src.imc2.trackers import *
 from src.imc2 import reply_listener
+from src.imc2.models import IMC2ChannelMapping
+from src import comsys
 
 # The active instance of IMC2Protocol. Set at server startup.
 IMC2_PROTOCOL_INSTANCE = None
@@ -88,6 +90,22 @@ class IMC2Protocol(StatefulTelnetProtocol):
             logger.log_infomsg(packet)
             if packet.packet_type == 'is-alive':
                 IMC2_MUDLIST.update_mud_from_packet(packet)
+            elif packet.packet_type == 'ice-msg-b':
+                # Received a message. Look for an IMC2 channel mapping and
+                # route it accordingly.
+                chan_name = packet.optional_data.get('channel', None)
+                if chan_name:
+                    chan_name = chan_name.split(':', 1)[1]
+                    try:
+                        mapping = IMC2ChannelMapping.objects.get(imc2_channel_name=chan_name)
+                        ingame_chan_name = mapping.channel.name
+                        message = '[%s] %s@%s: %s' % (ingame_chan_name,
+                                                  packet.sender, 
+                                                  packet.origin,
+                                                  packet.optional_data.get('text'))
+                        comsys.send_cmessage(ingame_chan_name, message)
+                    except IMC2ChannelMapping.DoesNotExist:
+                        pass
             elif packet.packet_type == 'whois-reply':
                 reply_listener.handle_whois_reply(packet)
             elif packet.packet_type == 'close-notify':
