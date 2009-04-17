@@ -256,7 +256,7 @@ class IMC2PacketIsAlive(IMC2Packet):
         self.packet_type = 'is-alive'
         self.target = '*'
         self.destination = '*'
-        self.optional_data = {'versionid': '"Evennia IMC2"',
+        self.optional_data = {'versionid': 'Evennia IMC2',
                               'url': '"http://evennia.com"',
                               'host': 'test.com',
                               'port': '5555'}
