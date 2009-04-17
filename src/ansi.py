@@ -113,5 +113,3 @@ def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=ANSI_PAR
     """
     return parser.parse_ansi(string, strip_ansi=strip_ansi, 
                              strip_formatting=strip_formatting)
-    
-print parse_ansi('yay%chyay')
