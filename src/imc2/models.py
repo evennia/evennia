@@ -7,6 +7,7 @@ class IMC2ChannelMapping(models.Model):
     IMC2 messages are routed to.
     """
     channel = models.ForeignKey(CommChannel)
+    imc2_server_name = models.CharField(max_length=78)
     imc2_channel_name = models.CharField(max_length=78)
     is_enabled = models.BooleanField(default=True)
         

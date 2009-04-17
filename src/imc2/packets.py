@@ -119,8 +119,13 @@ class IMC2Packet(object):
         """
         if self.optional_data:
             data_string = ''
-            for value in self.optional_data:
-                data_string += '%s=%s ' % (value[0], value[1])
+            for key, value in self.optional_data.items():
+                # Determine the number of words in this value.
+                words = len(str(value).split(' '))
+                # Anything over 1 word needs double quotes.
+                if words > 1:
+                    value = '"%s"' % (value,)
+                data_string += '%s=%s ' % (key, value)
             return data_string.strip()
         else:
             return ''
@@ -251,10 +256,10 @@ class IMC2PacketIsAlive(IMC2Packet):
         self.packet_type = 'is-alive'
         self.target = '*'
         self.destination = '*'
-        self.optional_data = [('versionid', '"Evennia IMC2"'),
-                              ('url', '"http://evennia.com"'),
-                              ('host', 'test.com'),
-                              ('port', '5555')]
+        self.optional_data = {'versionid': '"Evennia IMC2"',
+                              'url': '"http://evennia.com"',
+                              'host': 'test.com',
+                              'port': '5555'}
         
 class IMC2PacketIceRefresh(IMC2Packet):
     """
@@ -413,7 +418,23 @@ class IMC2PacketIceMsgBroadcasted(IMC2Packet):
     Broadcasted Packet:
     You@YourMUD 1234567890 YourMUD!Hub1 ice-msg-b *@* channel=Hub1:ichat text=Hi! emote=0 echo=1  
     """
-    pass
+    def __init__(self, server, channel, pobject, message):
+        """
+        Args:
+          server: (String) Server name the channel resides on.
+          channel: (String) Name of the IMC2 channel.
+          pobject: (Object) Object sending the message.
+          message: (String) Message to send.
+        """
+        super(IMC2PacketIceMsgBroadcasted, self).__init__()
+        self.sender = pobject
+        self.packet_type = 'ice-msg-b'
+        self.target = '*'
+        self.destination = '*'
+        self.optional_data = {'channel': '%s:%s' % (server, channel),
+                              'text': message,
+                              'emote': 0,
+                              'echo': 1}
 
 class IMC2PacketUserCache(IMC2Packet):
     """
@@ -622,7 +643,7 @@ class IMC2PacketWhois(IMC2Packet):
         self.packet_type = 'whois'
         self.target = whois_target
         self.destination = '*'
-        self.optional_data = [('level', '5')]
+        self.optional_data = {'level': '5'}
 
 class IMC2PacketWhoisReply(IMC2Packet):
     """

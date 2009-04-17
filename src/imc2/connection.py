@@ -54,7 +54,7 @@ class IMC2Protocol(StatefulTelnetProtocol):
             self.sequence += 1
             
         packet.imc2_protocol = self
-        packet_str = packet.assemble()
+        packet_str = str(packet.assemble())
         logger.log_infomsg("IMC2: SENT> %s" % packet_str)
         self.sendLine(packet_str)
         
@@ -76,6 +76,32 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 # Let everyone know we've arrived.
                 #self.send_packet(IMC2PacketKeepAliveRequest())
                 self.send_packet(IMC2PacketIsAlive())
+                
+    def _handle_channel_mappings(self, packet):
+        """
+        Received a message. Look for an IMC2 channel mapping and
+        route it accordingly.
+        """
+        chan_name = packet.optional_data.get('channel', None)
+        # If the packet lacks the 'echo' key, don't bother with it.
+        has_echo = packet.optional_data.get('echo', None)
+        if chan_name and has_echo:
+            # The second half of this is the channel name: Server:Channel
+            chan_name = chan_name.split(':', 1)[1]
+            try:
+                # Look for matching IMC2 channel maps.
+                mapping = IMC2ChannelMapping.objects.get(imc2_channel_name=chan_name)
+                ingame_chan_name = mapping.channel.name
+                # Format the message to cemit to the local channel.
+                message = '[%s] %s@%s: %s' % (ingame_chan_name,
+                                          packet.sender, 
+                                          packet.origin,
+                                          packet.optional_data.get('text'))
+                # Bombs away.
+                comsys.send_cmessage(ingame_chan_name, message)
+            except IMC2ChannelMapping.DoesNotExist:
+                # No channel mapping found for this message, ignore it.
+                pass
 
     def lineReceived(self, line):
         """
@@ -85,27 +111,15 @@ class IMC2Protocol(StatefulTelnetProtocol):
         if not self.is_authenticated:
             self._parse_auth_response(line)
         else:
-            logger.log_infomsg("PACKET: %s" % line)
+            if 'is-alive' not in line:
+                logger.log_infomsg("PACKET: %s" % line)
             packet = IMC2Packet(packet_str = line)
-            logger.log_infomsg(packet)
+            if packet.packet_type not in ['is-alive', 'keepalive-request']:
+                logger.log_infomsg(packet)
             if packet.packet_type == 'is-alive':
                 IMC2_MUDLIST.update_mud_from_packet(packet)
             elif packet.packet_type == 'ice-msg-b':
-                # Received a message. Look for an IMC2 channel mapping and
-                # route it accordingly.
-                chan_name = packet.optional_data.get('channel', None)
-                if chan_name:
-                    chan_name = chan_name.split(':', 1)[1]
-                    try:
-                        mapping = IMC2ChannelMapping.objects.get(imc2_channel_name=chan_name)
-                        ingame_chan_name = mapping.channel.name
-                        message = '[%s] %s@%s: %s' % (ingame_chan_name,
-                                                  packet.sender, 
-                                                  packet.origin,
-                                                  packet.optional_data.get('text'))
-                        comsys.send_cmessage(ingame_chan_name, message)
-                    except IMC2ChannelMapping.DoesNotExist:
-                        pass
+                self._handle_channel_mappings(packet)
             elif packet.packet_type == 'whois-reply':
                 reply_listener.handle_whois_reply(packet)
             elif packet.packet_type == 'close-notify':
