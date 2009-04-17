@@ -753,7 +753,7 @@ def cmd_destroy(command):
         return
     
     # Run any scripted things that happen before destruction.
-    target_obj.scriptlink.at_pre_destroy(pobject=source_object)
+    target_obj.scriptlink.at_object_destruction(pobject=source_object)
     
     # Notify destroyer and do the deed.
     source_object.emit_to("You destroy %s." % target_obj.get_name())

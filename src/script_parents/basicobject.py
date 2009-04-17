@@ -33,10 +33,12 @@ class EvenniaBasicObject(object):
         is created, do it here and not in __init__().
         """
         pass
-        
-    def at_desc(self, pobject=None):
+    
+    def at_object_destruction(self, pobject=None):
         """
-        Perform this action when someone uses the LOOK command on the object.
+        This is triggered when an object is about to be destroyed via
+        @destroy ONLY. If an object is deleted via delete(), it is assumed
+        that this method is to be skipped.
         
         values:
             * pobject: (Object) The object requesting the action.
@@ -44,10 +46,10 @@ class EvenniaBasicObject(object):
         # Un-comment the line below for an example
         #print "SCRIPT TEST: %s looked at %s." % (pobject, self.scripted_obj)
         pass
-    
-    def at_pre_destroy(self, pobject=None):
+        
+    def at_desc(self, pobject=None):
         """
-        Performed right before an object is destroyed.
+        Perform this action when someone uses the LOOK command on the object.
         
         values:
             * pobject: (Object) The object requesting the action.
