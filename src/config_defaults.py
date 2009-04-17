@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'src.config',
     'src.objects',
+    'src.channels',
     'src.imc2',
     'src.helpsys',
     'src.genperms',

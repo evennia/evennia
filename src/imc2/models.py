@@ -1,5 +1,5 @@
 from django.db import models
-from src.objects.models import CommChannel
+from src.channels.models import CommChannel
 
 class IMC2ChannelMapping(models.Model):
     """

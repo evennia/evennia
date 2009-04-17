@@ -7,7 +7,8 @@ import sys
 from datetime import datetime
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.contrib.auth.models import User
-from src.objects.models import Object, CommChannel
+from src.objects.models import Object
+from src.channels.models import CommChannel
 from src.config.models import ConnectScreen, ConfigValue
 from util import functions_general
 import src.comsys

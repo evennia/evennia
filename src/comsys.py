@@ -3,10 +3,8 @@ Comsys functions.
 """
 import time
 import datetime
-
 from django.utils import simplejson
-
-from src.objects.models import CommChannel, CommChannelMessage
+from src.channels.models import CommChannel, CommChannelMessage
 from src import session_mgr
 from src import ansi
 

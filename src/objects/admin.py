@@ -1,4 +1,4 @@
-from src.objects.models import Attribute, Object, CommChannel, CommChannelMessage
+from src.objects.models import Attribute, Object
 from django.contrib import admin
 
 class AttributeAdmin(admin.ModelAdmin):
@@ -12,11 +12,3 @@ class ObjectAdmin(admin.ModelAdmin):
     search_fields = ['name']
     save_on_top = True
 admin.site.register(Object, ObjectAdmin)
-
-class CommChannelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner')
-admin.site.register(CommChannel, CommChannelAdmin)
-
-class CommChannelMessageAdmin(admin.ModelAdmin):
-    list_display = ('channel', 'message')
-admin.site.register(CommChannelMessage, CommChannelMessageAdmin)
