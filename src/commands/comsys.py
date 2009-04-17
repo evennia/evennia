@@ -259,19 +259,20 @@ def cmd_cemit(command):
         source_object.emit_to("Sent - %s" % (name_matches[0],))
     src.comsys.send_cmessage(cname_parsed, final_cmessage)
     
-    # Look for IMC2 channel maps. If one is found, send an ice-msg-b
-    # packet to the network.
-    try:
-        from src.imc2.connection import IMC2_PROTOCOL_INSTANCE
-        map = IMC2ChannelMapping.objects.get(channel__name=cname_parsed)
-        packet = IMC2PacketIceMsgBroadcasted(map.imc2_server_name,
-                                             map.imc2_channel_name, 
-                                             source_object, 
-                                             cmessage)
-        IMC2_PROTOCOL_INSTANCE.send_packet(packet)
-    except IMC2ChannelMapping.DoesNotExist:
-        # No map found, do nothing.
-        pass
+    if settings.IMC2_ENABLED:
+        # Look for IMC2 channel maps. If one is found, send an ice-msg-b
+        # packet to the network.
+        try:
+            from src.imc2.connection import IMC2_PROTOCOL_INSTANCE
+            map = IMC2ChannelMapping.objects.get(channel__name=cname_parsed)
+            packet = IMC2PacketIceMsgBroadcasted(map.imc2_server_name,
+                                                 map.imc2_channel_name, 
+                                                 source_object, 
+                                                 cmessage)
+            IMC2_PROTOCOL_INSTANCE.send_packet(packet)
+        except IMC2ChannelMapping.DoesNotExist:
+            # No map found, do nothing.
+            pass
 GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit),
 
 def cmd_cwho(command):
