@@ -10,8 +10,8 @@ def get_last_paged_objects(source_object):
     Returns a list of objects of the user's last paged list, or None if invalid
     or non-existant.
     """
-    last_paged_dbrefs = source_object.get_attribute_value("LASTPAGED")
-    if last_paged_dbrefs is not False:
+    last_paged_dbrefs = source_object.get_attribute_value("LASTPAGED", None)
+    if last_paged_dbrefs:
         last_paged_objects = list()
         try:
             last_paged_dbref_list = [
