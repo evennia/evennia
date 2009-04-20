@@ -2,13 +2,24 @@
 Session manager, handles connected players.
 """
 import time
-
+from django.contrib.auth.models import User
 from src.config.models import ConfigValue
 from src import logger
 from src.util import functions_general
 
 # Our list of connected sessions.
 session_list = []
+
+def find_sessions_from_username(username):
+    """
+    Given a username, return any matching sessions.
+    """
+    try:
+        uobj = User.objects.get(username=username)
+        uid = uobj.id
+        return [session for session in session_list if session.uid == uid]
+    except User.DoesNotExist:
+        return None
 
 def add_session(session):
     """

@@ -9,6 +9,7 @@ from twisted.internet import reactor, task
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.conf import settings
 from src import logger
+from src import session_mgr
 from src.imc2.packets import *
 from src.imc2.trackers import *
 from src.imc2 import reply_listener
@@ -66,16 +67,23 @@ class IMC2Protocol(StatefulTelnetProtocol):
             """
             SERVER Sends: PW <servername> <serverpw> version=<version#> <networkname> 
             """
-            if line[:2] == "PW":
-                line_split = line.split(' ')
+            line_split = line.split(' ')
+            pw_present = line_split[0] == 'PW'
+            autosetup_present = line_split[0] == 'autosetup'
+            
+            if pw_present:
                 self.server_name = line_split[1]
                 self.network_name = line_split[4]
-                self.is_authenticated = True
-                self.sequence = int(time())
-                logger.log_infomsg("IMC2: Successfully authenticated to the '%s' network." % self.network_name)
-                # Let everyone know we've arrived.
-                #self.send_packet(IMC2PacketKeepAliveRequest())
-                self.send_packet(IMC2PacketIsAlive())
+            elif autosetup_present:
+                logger.log_infomsg("IMC2: Autosetup response found.")
+                self.server_name = line_split[1]
+                self.network_name = line_split[3]                    
+            self.is_authenticated = True
+            self.sequence = int(time())
+            logger.log_infomsg("IMC2: Successfully authenticated to the '%s' network." % self.network_name)
+            # Let everyone know we've arrived.
+            self.send_packet(IMC2PacketIsAlive())
+            #self.send_packet(IMC2PacketKeepAliveRequest())
                 
     def _handle_channel_mappings(self, packet):
         """
@@ -124,6 +132,14 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 reply_listener.handle_whois_reply(packet)
             elif packet.packet_type == 'close-notify':
                 IMC2_MUDLIST.remove_mud_from_packet(packet)
+            elif packet.packet_type == 'tell':
+                sessions = session_mgr.find_sessions_from_username(packet.target)
+                for session in sessions:
+                    session.msg("%s@%s IMC tells: %s" %
+                                (packet.sender,
+                                 packet.origin,
+                                 packet.optional_data.get('text', 
+                                                          'ERROR: No text provided.')))
 
 class IMC2ClientFactory(ClientFactory):
     """
