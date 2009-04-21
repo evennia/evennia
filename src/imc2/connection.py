@@ -81,9 +81,11 @@ class IMC2Protocol(StatefulTelnetProtocol):
             self.is_authenticated = True
             self.sequence = int(time())
             logger.log_infomsg("IMC2: Successfully authenticated to the '%s' network." % self.network_name)
-            # Let everyone know we've arrived.
+            # Ask to see what other MUDs are connected.
+            self.send_packet(IMC2PacketKeepAliveRequest())
+            # IMC2 protocol states that KeepAliveRequests should be followed
+            # up by the requester sending an IsAlive packet.
             self.send_packet(IMC2PacketIsAlive())
-            #self.send_packet(IMC2PacketKeepAliveRequest())
                 
     def _handle_channel_mappings(self, packet):
         """
