@@ -6,12 +6,21 @@ interaction with actual script methods should happen via calls to Objects.
 """
 import os
 from traceback import format_exc
+from twisted.python.rebuild import rebuild
 from django.conf import settings
 from src import logger
 
 # A dictionary with keys equivalent to the script's name and values that
 # contain references to the associated module for each key.
 CACHED_SCRIPTS = {}
+
+def rebuild_cache():
+    """
+    Rebuild all cached scripts.
+    """
+    cache_dict = CACHED_SCRIPTS.items()
+    for key, val in cache_dict:
+        rebuild(val)
 
 def scriptlink(source_obj, scriptname):
     """

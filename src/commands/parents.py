@@ -3,22 +3,10 @@ Contains commands for managing script parents.
 """
 from src import scripthandler
 from src.cmdtable import GLOBAL_CMD_TABLE
-
-def clear_cached_scripts(command):
+      
+def cmd_scriptcache(command):
     """
-    Show the currently cached scripts.
-    """
-    cache_dict = scripthandler.CACHED_SCRIPTS
-    cache_size = len(cache_dict)
-    cache_dict.clear()
-    command.source_object.emit_to(
-        "Script parent cached cleared (%d previously in cache)." % cache_size)
-    
-def show_cached_scripts(command):
-    """
-    Clears the cached scripts by deleting their keys from the script cache
-    dictionary. The next time an object needs the previously loaded scripts,
-    they are loaded again.
+    Shows the contents of the script cache.
     """
     cache_dict = scripthandler.CACHED_SCRIPTS
     
@@ -29,21 +17,6 @@ def show_cached_scripts(command):
     retval += "\n" + "-" * 78 + "\n"
     retval += "%d cached parents" % len(cache_dict)
     command.source_object.emit_to(retval)
-    
-def cmd_scriptcache(command):
-    """
-    Figure out what form of the command the user is using and branch off
-    accordingly.
-    """
-    if "show" in command.command_switches:
-        show_cached_scripts(command)
-        return
-    
-    if "clear" in command.command_switches:
-        clear_cached_scripts(command)
-        return
-    
-    command.source_object.emit_to("Must be specified with one of the following switches: show, clear")
 GLOBAL_CMD_TABLE.add_command("@scriptcache", cmd_scriptcache,
                              priv_tuple=("genperms.builder"))
 

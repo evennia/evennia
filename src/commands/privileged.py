@@ -2,10 +2,12 @@
 This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
+from django.conf import settings
 from src.objects.models import Object
 from src import defines_global
 from src import ansi
 from src import session_mgr
+from src.scripthandler import rebuild_cache
 from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
 
@@ -13,15 +15,33 @@ def cmd_reload(command):
     """
     Reloads all modules.
     """
-    if "aliases" in command.command_switches or "alias" in command.command_switches:
+    if "all" in command.command_switches:
+        reload_all = True
+    else:
+        reload_all = False
+        
+    # Set this to True if a switch match is found.
+    switch_match_found = False
+           
+    if reload_all or "aliases" in command.command_switches or "alias" in command.command_switches:
         command.session.server.reload_aliases(source_object=command.source_object)
         command.source_object.emit_to("Aliases reloaded.")
-        return
+        switch_match_found = True
+    
+    if reload_all or "scripts" in command.command_switches:
+        rebuild_cache()
+        command.source_object.emit_to("Script parents reloaded.")
+        switch_match_found = True
         
-    # By default, just reload command objects.
-    command.source_object.emit_to("Reloading command modules...")
-    command.session.server.reload(source_object=command.source_object)
-    command.source_object.emit_to("Modules reloaded.")
+    if reload_all or "commands" in command.command_switches:
+        # By default, just reload command objects.
+        command.source_object.emit_to("Reloading command modules...")
+        command.session.server.reload(source_object=command.source_object)
+        command.source_object.emit_to("Modules reloaded.")
+        switch_match_found = True
+        
+    if not switch_match_found:
+        command.source_object.emit_to("@reload must be accompanied by one or more of the following switches: aliases, scripts, commands, all")
 GLOBAL_CMD_TABLE.add_command("@reload", cmd_reload,
                              priv_tuple=("genperms.process_control")),
 GLOBAL_CMD_TABLE.add_command("@restart", cmd_reload,
