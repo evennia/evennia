@@ -415,7 +415,8 @@ def cmd_say(command):
     speech = command.command_argument
         
     # Feedback for the object doing the talking.
-    source_object.emit_to("You say, '%s'" % (speech,))
+    source_object.emit_to("You say, '%s%s'" % (speech,
+                                               ANSITable.ansi['normal']))
     
     # Build the string to emit to neighbors.
     emit_string = "%s says, '%s'" % (source_object.get_name(show_dbref=False), 

@@ -106,8 +106,7 @@ class MuxANSIParser(BaseParser):
             (r'%cW', ANSITable.ansi["back_white"]),
         ]
     
-ANSI_PARSER = MuxANSIParser()
-def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=ANSI_PARSER):
+def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=MuxANSIParser()):
     """
     Parses a string, subbing color codes as needed.
     """

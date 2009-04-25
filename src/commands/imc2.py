@@ -9,6 +9,8 @@ from src import defines_global
 from src import ansi
 from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
+from src.ansi import parse_ansi
+from src.imc2.imc_ansi import IMCANSIParser
 from src.imc2 import connection as imc2_conn
 from src.imc2.packets import *
 from src.imc2.trackers import IMC2_MUDLIST
@@ -26,6 +28,19 @@ def cmd_imcwhois(command):
         packet = IMC2PacketWhois(source_object, command.command_argument)
         imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
 GLOBAL_CMD_TABLE.add_command("imcwhois", cmd_imcwhois)
+
+def cmd_imcansi(command):
+    """
+    Test IMC ANSI conversion.
+    """
+    source_object = command.source_object
+    if not command.command_argument:    
+        source_object.emit_to("You must provide a string to convert.")
+        return
+    else:
+        retval = parse_ansi(command.command_argument, parser=IMCANSIParser())
+        source_object.emit_to(retval)
+GLOBAL_CMD_TABLE.add_command("imcansi", cmd_imcansi)
 
 def cmd_imckeepalive(command):
     """
