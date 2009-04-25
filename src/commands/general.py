@@ -303,7 +303,7 @@ def cmd_examine(command):
                 con_exits.append(obj)
             elif obj.is_thing():
                 con_things.append(obj)
-        
+       
         # Render Contents display.
         if con_players or con_things:
             s += str("%sContents:%s" % (ANSITable.ansi["hilite"], 

@@ -18,6 +18,8 @@ from src import logger
 import src.flags
 from src.util import functions_general
 
+from src.logger import log_infomsg
+
 class Attribute(models.Model):
     """
     Attributes are things that are specific to different types of objects. For
@@ -598,8 +600,8 @@ class Object(models.Model):
                 attrib_obj.attr_value = new_value
                 attrib_obj.save()
         else:
-            if not new_value:
-                # Attribute object and we have given a doesn't exist, create it.
+            if new_value:
+                # No object currently exist, so create it.
                 new_attrib = Attribute()
                 new_attrib.attr_name = attribute
                 new_attrib.attr_value = new_value
@@ -800,10 +802,10 @@ class Object(models.Model):
         
         attrib: (str) The attribute's name.
         """
-        if self.has_attribute(attrib):
+        if self.has_attribute(attrib):            
             attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
             return attrib[0].attr_value
-        else:
+        else:            
             return default
             
     def get_attribute_obj(self, attrib):

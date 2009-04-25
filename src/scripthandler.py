@@ -58,7 +58,7 @@ def scriptlink(source_obj, scriptname):
         # Store the module reference for later fast retrieval.
         CACHED_SCRIPTS[scriptname] = modreference
     except ImportError:
-        logger.log_infomsg('Error importing %s: %s' % (modname, format_exc()))
+        logger.log_infomsg('Error importing %s: %s' % (scriptname, format_exc()))
         os.chdir(settings.BASE_PATH)
         return
     except OSError:

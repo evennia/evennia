@@ -32,6 +32,7 @@ def create_objects():
     # Create the matching PLAYER object in the object DB.
     god_user_obj = Object(id=1, type=defines_global.OTYPE_PLAYER)
     god_user_obj.set_name(god_user.username)
+    god_user_obj.scriptlink.at_player_creation()
     god_user_obj.save()
     
     # Limbo is the initial starting room.
@@ -39,6 +40,7 @@ def create_objects():
     limbo_obj.set_owner(god_user_obj)
     limbo_obj.set_name('%ch%ccLimbo%cn')
     limbo_obj.set_description("Welcome to your new Evennia-based game. From here you are ready to begin development. If you should need help or would like to participate in community discussions, visit http://evennia.com.")
+    limbo_obj.scriptlink.at_object_creation()
     limbo_obj.save()
 
     # Now that Limbo exists, set the user up in Limbo.
@@ -71,7 +73,7 @@ def create_config_values():
     Creates the initial config values.
     """
     ConfigValue(conf_key="default_home", conf_value="2").save()
-    ConfigValue(conf_key="idle_timeout", conf_value="1800").save()
+    ConfigValue(conf_key="idle_timeout", conf_value="3600").save()
     ConfigValue(conf_key="money_name_singular", conf_value="Credit").save()
     ConfigValue(conf_key="money_name_plural", conf_value="Credits").save()
     ConfigValue(conf_key="player_dbnum_start", conf_value="2").save()

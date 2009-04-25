@@ -51,17 +51,18 @@ def cmd_parent(command):
         # Clear parent if command was @parent obj= or obj=none
         if not parent_name or parent_name.lower() == "none":
             target_obj.set_script_parent(None)
+            target_obj.scriptlink.at_object_creation()
             new_parent = target_obj.scriptlink()
             source_object.emit_to("%s reverted to its default parent (%s)." %
                                   (target_obj, new_parent))
             return        
 
-        # If we reach this point, attempt to change parent.
-        
+        # If we reach this point, attempt to change parent.        
         former_parent = target_obj.get_scriptlink()
         if target_obj.set_script_parent(parent_name):
             #new script path added; initialize the parent
             target_obj.scriptlink.at_object_creation()
+
             s = "%s's parent is now %s (instead of %s).\n\r"
             s += "Note that the new parent type could have overwritten "
             s += "same-named attributes on the existing object."            

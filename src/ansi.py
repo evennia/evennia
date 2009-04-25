@@ -105,8 +105,40 @@ class MuxANSIParser(BaseParser):
             (r'%cw', ANSITable.ansi["white"]),
             (r'%cW', ANSITable.ansi["back_white"]),
         ]
+
+class ExtendedANSIParser(MuxANSIParser):
+    """
+    Extends the standard mux colour commands with {-style commands
+    (shortcuts for writing light/dark text without background)
+    """
+    def __init__(self):
+        super(ExtendedANSIParser, self).__init__()        
+        hilite = ANSITable.ansi['hilite']
+        normal = ANSITable.ansi['normal']
+        self.ansi_subs.extend( [
+        (r'{r', hilite + ANSITable.ansi['red']),    
+        (r'{R', normal + ANSITable.ansi['red']),    
+        (r'{g', hilite + ANSITable.ansi['green']),
+        (r'{G', normal + ANSITable.ansi['green']),
+        (r'{y', hilite + ANSITable.ansi['yellow']),
+        (r'{Y', normal + ANSITable.ansi['yellow']),
+        (r'{b', hilite + ANSITable.ansi['blue']),
+        (r'{B', normal + ANSITable.ansi['blue']),
+        (r'{m', hilite + ANSITable.ansi['magenta']),
+        (r'{M', normal + ANSITable.ansi['magenta']),
+        (r'{c', hilite + ANSITable.ansi['cyan']),
+        (r'{C', normal + ANSITable.ansi['cyan']),
+        (r'{w', hilite + ANSITable.ansi['white']), #white
+        (r'{W', normal + ANSITable.ansi['white']), #light grey
+        (r'{x', hilite + ANSITable.ansi['black']), #dark grey
+        (r'{X', normal + ANSITable.ansi['black']), #pure black
+        (r'{n', normal)                            #reset
+        ] )
     
-def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=MuxANSIParser()):
+ANSI_PARSER = MuxANSIParser()
+#ANSI_PARSER = ExtendedANSIParser()
+
+def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=ANSI_PARSER):
     """
     Parses a string, subbing color codes as needed.
     """
