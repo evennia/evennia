@@ -136,7 +136,7 @@ def cmd_clist(command):
              '-', 
              chan.get_name(), 
              chan.get_owner().get_name(show_dbref=False), 
-             'No Description'))
+             chan.description))
     source_object.emit_to("-- End of Channel List --")
 GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist),
 
