@@ -56,8 +56,9 @@ def cmd_imclist(command):
     source_object = command.source_object
     
     retval = 'Active MUDs on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
-    for name, mudinfo in IMC2_MUDLIST.mud_list.items():
-        mudline = ' %-20s %s' % (name, mudinfo.versionid)
+    
+    for mudinfo in IMC2_MUDLIST.get_mud_list():
+        mudline = ' %-20s %s' % (mudinfo.name, mudinfo.versionid)
         retval += '%s\n\r' % mudline[:78]
     retval += '%s active MUDs found.' % len(IMC2_MUDLIST.mud_list)
     source_object.emit_to(retval)

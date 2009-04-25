@@ -29,14 +29,26 @@ class IMC2MudList(object):
         # Mud list is stored in a dict, key being the IMC Mud name.
         self.mud_list = {}
         
+    def get_mud_list(self):
+        """
+        Returns a sorted list of connected Muds.
+        """
+        muds = self.mud_list.items()
+        muds.sort()
+        return [value for key, value in muds]
+        
     def update_mud_from_packet(self, packet):
-        # This grabs relevant info from the packet and stuffs it in the
-        # Mud list for later retrieval.
+        """
+        This grabs relevant info from the packet and stuffs it in the
+        Mud list for later retrieval.
+        """
         mud = IMC2Mud(packet)
         self.mud_list[mud.name] = mud
         
     def remove_mud_from_packet(self, packet):
-        # Removes a mud from the Mud list when given a packet.
+        """
+        Removes a mud from the Mud list when given a packet.
+        """
         mud = IMC2Mud(packet)
         try:
             del self.mud_list[mud.name]
