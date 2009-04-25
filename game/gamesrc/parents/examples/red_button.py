@@ -1,25 +1,27 @@
 """
 An example script parent for a 
 """
-from src.cmdtable import CommandTable
 from game.gamesrc.parents.base.basicobject import BasicObject
 
-COMMAND_TABLE = CommandTable()
 def cmd_push_button(command):
     """
     An example command to show how the pluggable command system works.
     """
     # By building one big string and passing it at once, we cut down on a lot
     # of emit_to() calls, which is generally a good idea.
-    retval = "Test"
+    retval = "You have pushed the button on: %s" % (command.scripted_obj.get_name())
     command.source_object.emit_to(retval)
-# Add the command to the object's command table.
-COMMAND_TABLE.add_command("push button", cmd_push_button)
 
 class RedButton(BasicObject):
-    def __init__(self, source_obj, *args, **kwargs):
-        super(RedButton, self).__init__(source_obj, args, kwargs)
-        self.command_table = COMMAND_TABLE
+    def __init__(self, scripted_obj, *args, **kwargs):
+        """
+        
+        """
+        # Calling the super classes __init__ is critical! Never forget to do
+        # this or everything else from here on out will fail.
+        super(RedButton, self).__init__(scripted_obj, args, kwargs)
+        # Add the command to the object's command table.
+        self.command_table.add_command("pushbutton", cmd_push_button)
 
 def class_factory(source_obj):
     """

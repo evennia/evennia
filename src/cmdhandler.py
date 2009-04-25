@@ -262,7 +262,7 @@ def match_channel(command):
         command.command_string = "@cemit"
         command.command_switches = ["sendername", "quiet"]
         command.command_argument = second_arg
-        
+               
 def command_table_lookup(command, command_table, eval_perms=True):
     """
     Performs a command table lookup on the specified command table. Also
@@ -279,6 +279,25 @@ def command_table_lookup(command, command_table, eval_perms=True):
         # If flow reaches this point, user has perms and command is ready.
         command.command_function = cmdtuple[0]
         command.extra_vars = cmdtuple[2]
+        return True
+        
+def match_neighbor_ctables(command):
+    """
+    Looks through the command tables of neighboring objects for command
+    matches.
+    """
+    source_object = command.source_object
+    if source_object.location != None:
+        neighbors = source_object.location.get_contents()
+        for neighbor in neighbors:
+            if command_table_lookup(command,
+                                    neighbor.scriptlink.command_table):
+                # If there was a command match, set the scripted_obj attribute
+                # for the script parent to pick up.
+                command.scripted_obj = neighbor
+                return True
+    # No matches
+    return False
 
 def handle(command):
     """
@@ -308,8 +327,10 @@ def handle(command):
             match_channel(command)
             # See if the user is trying to traverse an exit.
             match_exits(command)
-            # Retrieve the appropriate (if any) command function.
-            command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
+            neighbor_match_found = match_neighbor_ctables(command)
+            if not neighbor_match_found:
+                # Retrieve the appropriate (if any) command function.
+                command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
         
         """
         By this point, we assume that the user has entered a command and not

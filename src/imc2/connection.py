@@ -121,10 +121,10 @@ class IMC2Protocol(StatefulTelnetProtocol):
         if not self.is_authenticated:
             self._parse_auth_response(line)
         else:
-            if 'is-alive' not in line:
+            if settings.IMC2_DEBUG and 'is-alive' not in line:
                 logger.log_infomsg("PACKET: %s" % line)
             packet = IMC2Packet(packet_str = line)
-            if packet.packet_type not in ['is-alive', 'keepalive-request']:
+            if settings.IMC2_DEBUG and packet.packet_type not in ['is-alive', 'keepalive-request']:
                 logger.log_infomsg(packet)
             if packet.packet_type == 'is-alive':
                 IMC2_MUDLIST.update_mud_from_packet(packet)

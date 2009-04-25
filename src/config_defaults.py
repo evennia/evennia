@@ -82,6 +82,8 @@ You'll want to change the values below to reflect what you entered.
 """
 # Make sure this is True in your settings.py.
 IMC2_ENABLED = False
+# While True, emit additional debugging info.
+IMC2_DEBUG = False
 # The hostname/ip address of your IMC2 server of choice.
 IMC2_SERVER_ADDRESS = None
 # The port to connect to on your IMC2 server.

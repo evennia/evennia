@@ -7,6 +7,7 @@ NOTE: This file should NOT be directly modified. Sub-class the BasicObject
 class in game/gamesrc/parents/base/basicobject.py and change the 
 SCRIPT_DEFAULT_OBJECT variable in settings.py to point to the new class. 
 """
+from src.cmdtable import CommandTable
 from src.ansi import ANSITable
 
 class EvenniaBasicObject(object):
@@ -25,6 +26,7 @@ class EvenniaBasicObject(object):
         scripted_obj: (Object) A reference to the object being scripted (the child).
         """
         self.scripted_obj = scripted_obj
+        self.command_table = CommandTable()
         
     def at_object_creation(self):
         """
