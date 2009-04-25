@@ -15,7 +15,9 @@ def cmd_push_button(command):
 class RedButton(BasicObject):
     def __init__(self, scripted_obj, *args, **kwargs):
         """
-        
+        This is called when class_factory() instantiates a temporary instance
+        of the script parent. This is typically not something you want to
+        mess with much.
         """
         # Calling the super classes __init__ is critical! Never forget to do
         # this or everything else from here on out will fail.

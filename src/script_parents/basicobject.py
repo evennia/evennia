@@ -18,6 +18,7 @@ class EvenniaBasicObject(object):
         most Python objects. This is only called when the script parent is
         cached or recalled on an object. This means that this function is not
         called until someone does something to warrant calling get_scriptlink().
+        This happens very often, so nothing too intense should be done here.
         
         If you're wanting to do something on object/player creation, override
         at_object_creation() (in basicobject.py) or at_player_creation() 
