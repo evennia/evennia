@@ -264,27 +264,50 @@ GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
 
 def cmd_create(command):
     """
-    Creates a new object of type 'THING'.
+    @create
+
+    Usage: @create objname [=parent]
+
+    Creates a new object. If parent is given, the object is created as a child of this
+    parent. The parent script is assumed to be located under game/gamesrc/parents
+    and any further directory structure is given in Python notation. So if you
+    have a correct parent object defined in parents/examples/red_button.py, you could
+    load create a new object inheriting from this parent like this:
+       @create button=example.red_button       
     """
     source_object = command.source_object
     
     if not command.command_argument:
         source_object.emit_to("You must supply a name!")
-    else:
-        # Create and set the object up.
-        # TODO: This dictionary stuff is silly. Feex.
-        odat = {"name": command.command_argument, 
-                "type": 3, 
-                "location": source_object, 
-                "owner": source_object}
-        new_object = Object.objects.create_object(odat)
-        
+        return
+    
+    eq_args = command.command_argument.split('=', 1)
+    target_name = eq_args[0]
+    
+    # Create and set the object up.
+    # TODO: This dictionary stuff is silly. Feex.
+    odat = {"name": target_name, 
+            "type": 3, 
+            "location": source_object, 
+            "owner": source_object}
+    new_object = Object.objects.create_object(odat)
+
+    if len(eq_args)>1:
+        parent_str = eq_args[1]
+        if parent_str and new_object.set_script_parent(parent_str):
+            source_object.emit_to("You create %s as a child of %s." %
+                                  (new_object, parent_str))
+        else:                
+            source_object.emit_to("'%s' is not a valid parent. Using default." %
+                                  parent_str)
+    else:        
         source_object.emit_to("You create a new thing: %s" % (new_object,))
-        
-        # Trigger stuff to happen after said object is created.
-        new_object.scriptlink.at_object_creation()
+
+    # Trigger stuff to happen after said object is created.
+    new_object.scriptlink.at_object_creation()
+
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("genperms.builder"),auto_help=True)
     
 def cmd_cpattr(command):
     """
