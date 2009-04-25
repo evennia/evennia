@@ -585,10 +585,12 @@ class Object(models.Model):
         attribute: (str) The attribute's name.
         new_value: (str) The value to set the attribute to.
         """
+        
+        new_value = str(new_value).strip()
         if self.has_attribute(attribute):
             # Attribute already exists, update it.
             attrib_obj = Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
-            if new_value.strip() == '':
+            if not new_value:
                 # If you do something like @set me=SOMEATTR:, destroy the attrib.
                 attrib_obj.delete()
             else:
@@ -596,8 +598,8 @@ class Object(models.Model):
                 attrib_obj.attr_value = new_value
                 attrib_obj.save()
         else:
-            if new_value.strip() != '':
-                # Attribute object doesn't exist, create it.
+            if not new_value:
+                # Attribute object and we have given a doesn't exist, create it.
                 new_attrib = Attribute()
                 new_attrib.attr_name = attribute
                 new_attrib.attr_value = new_value
@@ -782,10 +784,15 @@ class Object(models.Model):
                 self.script_parent = settings.SCRIPT_DEFAULT_PLAYER
             else:
                 self.script_parent = settings.SCRIPT_DEFAULT_OBJECT
-        elif parent_str:
+        elif parent_str:            
+            #check if this is actually a reasonable script parent        
+            #(storing with a non-valid parent path causes havoc!)
+            if not scripthandler.scriptlink(self, parent_str):                 
+                return False
             self.script_parent = parent_str.strip()
         self.save()
-        
+        return True
+
     def get_attribute_value(self, attrib, default=None):
         """
         Returns the value of an attribute on an object. You may need to
