@@ -1,0 +1,14 @@
+
+* Evennia documentation 
+
+  To build the auto-documentation (overview of all the sources, with comments), read the 
+  instructions in ./doxygen. 
+
+The most updated 'manual' is currently the online wiki, at 
+
+   http://code.google.com/p/evennia/wiki/Index?tm=6 
+
+You can ask for help from the evennia community here: 
+
+   http://groups.google.com/group/evennia
+
