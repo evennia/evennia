@@ -45,7 +45,7 @@ class EventBlinkButton(IntervalEvent):
         #stored with the gamesrc/parent/ drawer as a base)
         parent = 'examples.red_button'
         buttons = Object.objects.global_object_script_parent_search(parent)
-        log_infomsg("buttons found: %s" % buttons)
+        #log_infomsg("buttons found: %s" % buttons)
 
         for b in buttons:
             b.scriptlink.blink()
