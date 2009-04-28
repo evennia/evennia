@@ -79,15 +79,31 @@ def cmd_imclist(command):
     source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("imclist", cmd_imclist)
 
-def cmd_imclistupdated(command):
+def cmd_imcstatus(command):
     """
-    Shows the list of cached games from the IMC2 Mud list.
+    Shows some status information for your IMC2 connection.
     """
     source_object = command.source_object
+    # This manages our game's plugged in services.
+    collection = command.session.server.service_collection
+    # Retrieve the IMC2 service.
+    service = collection.getServiceNamed('IMC2')
     
-    retval = 'Active MUDs on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
-    for name, mudinfo in IMC2_MUDLIST.mud_list.items():
-        tdelta = time() - mudinfo.last_updated
-        retval += ' %-20s %s\n\r' % (name, tdelta)
+    if service.running == 1:
+        status_string = 'Running'
+    else:
+        status_string = 'Inactive'
+    
+    # Build the output to emit to the player.
+    retval = '-' * 50
+    retval += '\n\r'
+    retval += 'IMC Status\n\r'
+    retval += ' * MUD Name: %s\n\r' % (settings.IMC2_MUDNAME)
+    retval += ' * Status: %s\n\r' % (status_string)
+    retval += ' * Debugging Mode: %s\n\r' % (settings.IMC2_DEBUG)
+    retval += ' * IMC Network Address: %s\n\r' % (settings.IMC2_SERVER_ADDRESS)
+    retval += ' * IMC Network Port: %s\n\r' % (settings.IMC2_SERVER_PORT)
+    retval += '-' * 50
+    
     source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imclistupdated", cmd_imclistupdated)
+GLOBAL_CMD_TABLE.add_command("imcstatus", cmd_imcstatus)

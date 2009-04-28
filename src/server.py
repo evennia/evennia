@@ -17,6 +17,8 @@ from src.util import functions_general
 
 class EvenniaService(service.Service):
     def __init__(self):
+        # Holds the TCP services.
+        self.service_collection = None
         self.game_running = True
         sys.path.append('.')
 
@@ -130,27 +132,28 @@ class EvenniaService(service.Service):
         f.server = self
         return f
 
-    """
-    END Server CLASS
-    """
+
+    def start_services(self, application):
+        """
+        Starts all of the TCP services.
+        """
+        self.service_collection = service.IServiceCollection(application)
+        for port in settings.GAMEPORTS:
+            evennia_server = internet.TCPServer(port, self.getEvenniaServiceFactory())
+            evennia_server.setName('Evennia%s' %port)
+            evennia_server.setServiceParent(self.service_collection)
+        
+        if settings.IMC2_ENABLED:
+            from src.imc2.connection import IMC2ClientFactory
+            from src.imc2 import events as imc2_events
+            imc2_factory = IMC2ClientFactory()
+            svc = internet.TCPClient(settings.IMC2_SERVER_ADDRESS, 
+                                     settings.IMC2_SERVER_PORT, 
+                                     imc2_factory)
+            svc.setName('IMC2')
+            svc.setServiceParent(self.service_collection)
+            imc2_events.add_events()
 
 application = service.Application('Evennia')
 mud_service = EvenniaService()
-
-# Sheet sheet, fire ze missiles!
-serviceCollection = service.IServiceCollection(application)
-for port in settings.GAMEPORTS:
-    internet.TCPServer(port, 
-                       mud_service.getEvenniaServiceFactory()).setServiceParent(serviceCollection)
-
-
-if settings.IMC2_ENABLED:
-    from src.imc2.connection import IMC2ClientFactory
-    from src.imc2 import events as imc2_events
-    imc2_factory = IMC2ClientFactory()
-    svc = internet.TCPClient(settings.IMC2_SERVER_ADDRESS, 
-                             settings.IMC2_SERVER_PORT, 
-                             imc2_factory)
-    svc.setName('IMC2')
-    svc.setServiceParent(serviceCollection)
-    imc2_events.add_events()
+mud_service.start_services(application)
