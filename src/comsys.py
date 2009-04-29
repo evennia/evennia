@@ -7,6 +7,7 @@ from django.utils import simplejson
 from src.channels.models import CommChannel, CommChannelMessage
 from src import session_mgr
 from src import ansi
+from src import logger
 
 def plr_get_cdict(session):
     """
@@ -165,13 +166,25 @@ def msg_chan_hist(target_obj, channel_name):
     channel_name: (str) The channel's full name.
     """
     cobj = get_cobj_from_name(channel_name)
-    hist_list = CommChannelMessage.objects.filter(channel=cobj).order_by('date_sent')[0:20]
-    for entry in hist_list:
+    hist_list = CommChannelMessage.objects.filter(channel=cobj).order_by('date_sent')
+    
+    # Negative indexing is not currently supported with QuerySet objects.
+    # Figure out what the first CommChannelMessage is to return and grab the
+    # next 20.
+    first_msg = hist_list.count() - 20
+    # Prevent a negative index from being called on.
+    if first_msg < 0:
+        first_msg = 0
+    
+    # Slice and dice, display last 20 messages.
+    for entry in hist_list[first_msg:]:
         delta_days = datetime.datetime.now() - entry.date_sent
         days_elapsed = delta_days.days
         if days_elapsed > 0:
+            # Message happened more than a day ago, show the date.
             time_str = entry.date_sent.strftime("%m.%d / %H:%M")
         else:
+            # Recent message (within last 24 hours), show hour:minute.
             time_str = entry.date_sent.strftime("%H:%M")
         target_obj.emit_to("[%s] %s" % (time_str, entry.message))
     
@@ -207,22 +220,30 @@ def load_object_channels(pobject):
         for session in sessions:
             session.channels_subscribed = simplejson.loads(chan_list)
 
-def send_cmessage(channel_name, message):
+def send_cmessage(channel_name, message, noheader=True):
     """
     Sends a message to all players on the specified channel.
 
     channel_name: (string) The name of the channel.
-    message:        (string) Message to send.
+    message:      (string) Message to send.
+    noheader: (bool) If False, prefix the message with the channel's name.
     """
+    try:
+        channel_obj = get_cobj_from_name(channel_name)
+    except:
+        logger.log_errmsg("send_cmessage(): Can't find channel: %s" % (channel_name,))
+        return
+        
+    if noheader == False:
+        message = "%s %s" % (channel_obj.ansi_name, message)
+        
     for user in get_cwho_list(channel_name, return_muted=False):
         user.msg(message)
-    try:
-        chan_message = CommChannelMessage()
-        chan_message.channel = get_cobj_from_name(channel_name)
-        chan_message.message = message
-        chan_message.save()
-    except:
-        print "send_cmessage(): Can't find channel: %s" % (channel_name,)
+        
+    chan_message = CommChannelMessage()
+    chan_message.channel = channel_obj
+    chan_message.message = message
+    chan_message.save()
 
 def get_all_channels():
     """

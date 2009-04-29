@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.contrib.auth.models import User
+from django.conf import settings
 from src.objects.models import Object
 from src.channels.models import CommChannel
 from src.config.models import ConnectScreen, ConfigValue
@@ -28,7 +29,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         What to do when we get a connection.
         """
         self.prep_session()
-        logger.log_infomsg('Connection: %s' % (self,))
+        logger.log_infomsg('New connection: %s' % self)
+        self.cemit_info('New connection: %s' % self)
         session_mgr.add_session(self)
         self.game_connect_screen()
 
@@ -66,7 +68,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         Execute this when a client abruplty loses their connection.
         """
-        logger.log_infomsg('Disconnect: %s' % (self,))
+        logger.log_infomsg('Disconnected: %s' % self)
+        self.cemit_info('Disconnected: %s.' % self)
         self.handle_close()
         
     def lineReceived(self, data):
@@ -170,7 +173,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.pobject.scriptlink.at_pre_login(self)
         self.pobject.scriptlink.at_post_login(self)
         
-        logger.log_infomsg("Login: %s" % (self,))
+        logger.log_infomsg("Loged in: %s" % self)
+        self.cemit_info('Logged in: %s' % self)
         
         # Update their account's last login time.
         user.last_login = datetime.now()
@@ -208,3 +212,12 @@ class SessionProtocol(StatefulTelnetProtocol):
         else:
             symbol = '?'
         return "<%s> %s@%s" % (symbol, self.name, self.address,)
+    
+    def cemit_info(self, message):
+        """
+        Channel emits info to the appropriate info channel. By default, this
+        is MUDConnections.
+        """
+        src.comsys.send_cmessage(settings.COMMCHAN_MUD_CONNECTIONS, 
+                             'Session: %s' % message,
+                             noheader=False)

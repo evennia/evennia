@@ -6,5 +6,5 @@ class CommChannelAdmin(admin.ModelAdmin):
 admin.site.register(CommChannel, CommChannelAdmin)
 
 class CommChannelMessageAdmin(admin.ModelAdmin):
-    list_display = ('channel', 'message')
+    list_display = ('channel', 'date_sent', 'message')
 admin.site.register(CommChannelMessage, CommChannelMessageAdmin)

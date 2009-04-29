@@ -101,7 +101,7 @@ class CommChannelMessage(models.Model):
     date_sent = models.DateTimeField(editable=False, auto_now_add=True)
 
     def __str__(self):
-        return "%s: %s" % (self.sender.name, self.message)
+        return "%s: %s" % (self.channel.name, self.message)
     
     class Meta:
         ordering = ['-date_sent']

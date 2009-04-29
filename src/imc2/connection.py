@@ -19,15 +19,25 @@ from src import comsys
 # The active instance of IMC2Protocol. Set at server startup.
 IMC2_PROTOCOL_INSTANCE = None
 
+def cemit_info(message):
+    """
+    Channel emits info to the appropriate info channel. By default, this
+    is MUDInfo.
+    """
+    comsys.send_cmessage(settings.COMMCHAN_IMC2_INFO, 'IMC: %s' % message,
+                         noheader=False)
+
 class IMC2Protocol(StatefulTelnetProtocol):
     """
     Provides the abstraction for the IMC2 protocol. Handles connection,
     authentication, and all necessary packets.
     """
     def __init__(self):
-        logger.log_infomsg("IMC2: Client connecting to %s:%s..." % (
+        message = "Client connecting to %s:%s..." % (
                                                     settings.IMC2_SERVER_ADDRESS,
-                                                    settings.IMC2_SERVER_PORT))
+                                                    settings.IMC2_SERVER_PORT)
+        logger.log_infomsg('IMC2: %s' % message)
+        cemit_info(message)
         global IMC2_PROTOCOL_INSTANCE
         IMC2_PROTOCOL_INSTANCE = self
         self.is_authenticated = False
@@ -80,7 +90,12 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 self.network_name = line_split[3]                    
             self.is_authenticated = True
             self.sequence = int(time())
-            logger.log_infomsg("IMC2: Successfully authenticated to the '%s' network." % self.network_name)
+            
+            # Log to stdout and notify over MUDInfo.
+            auth_message = "Successfully authenticated to the '%s' network." % self.network_name
+            logger.log_infomsg('IMC2: %s' % auth_message)
+            cemit_info(auth_message)
+            
             # Ask to see what other MUDs are connected.
             self.send_packet(IMC2PacketKeepAliveRequest())
             # IMC2 protocol states that KeepAliveRequests should be followed
@@ -151,7 +166,11 @@ class IMC2ClientFactory(ClientFactory):
     protocol = IMC2Protocol
 
     def clientConnectionFailed(self, connector, reason):
-        logger.log_errmsg('connection failed: %s' % reason.getErrorMessage())
+        message = 'Connection failed: %s' % reason.getErrorMessage()
+        cemit_info(message)
+        logger.log_errmsg('IMC2: %s' % message)
 
     def clientConnectionLost(self, connector, reason):
-        logger.log_errmsg('connection lost: %s' % reason.getErrorMessage())
+        message = 'Connection lost: %s' % reason.getErrorMessage()
+        cemit_info(message)
+        logger.log_errmsg('IMC2: %s' % message)

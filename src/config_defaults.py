@@ -97,6 +97,13 @@ IMC2_SERVER_PW = None
 # This isn't something you should generally change.
 IMC2_PROTOCOL_VERSION = '2'
 
+"""
+Various comm channels for emitting debug or informative messages.
+"""
+COMMCHAN_IMC2_INFO = 'MUDInfo'
+COMMCHAN_MUD_INFO = 'MUDInfo'
+COMMCHAN_MUD_CONNECTIONS = 'MUDConnections'
+
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'America/New_York'

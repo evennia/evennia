@@ -7,6 +7,7 @@ Everything starts at handle_setup()
 """
 from django.contrib.auth.models import User, Group
 from django.core import management
+from django.conf import settings
 from src.objects.models import Object
 from src.config.models import ConfigValue, CommandAlias, ConnectScreen
 from src import comsys, defines_global
@@ -65,8 +66,10 @@ def create_channels():
     chan_pub = comsys.create_channel("Public", god_user_obj, description="Public Discussion")
     chan_pub.is_joined_by_default = True
     chan_pub.save()
-    comsys.create_channel("Errors", god_user_obj, description="Error log")
-    comsys.create_channel("Info", god_user_obj, description="Informative messages")
+    comsys.create_channel(settings.COMMCHAN_MUD_INFO, god_user_obj, 
+                          description="Informative messages")
+    comsys.create_channel(settings.COMMCHAN_MUD_CONNECTIONS, god_user_obj, 
+                          description="Connection log")
     
 def create_config_values():
     """
