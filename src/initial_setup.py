@@ -63,7 +63,8 @@ def create_channels():
     Creates some sensible default channels.
     """
     god_user_obj = get_god_obj()
-    chan_pub = comsys.create_channel("Public", god_user_obj, description="Public Discussion")
+    chan_pub = comsys.create_channel("Public", god_user_obj, 
+                                     description="Public Discussion")
     chan_pub.is_joined_by_default = True
     chan_pub.save()
     comsys.create_channel(settings.COMMCHAN_MUD_INFO, god_user_obj, 
