@@ -84,8 +84,7 @@ class ObjectManager(models.Manager):
         """
         o_query = self.filter(script_parent__exact=script_parent)      
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
-                                         defines_global.OTYPE_GOING])        
-            
+                                         defines_global.OTYPE_GOING])       
 
     def list_search_object_namestr(self, searchlist, ostring, dbref_only=False, 
                                    limit_types=False, match_type="fuzzy"):

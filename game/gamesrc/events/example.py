@@ -8,6 +8,7 @@ objects inheriting to a particular script parent and calls one of its functions
 at a regular interval.
 """
 
+import sys
 from src.events import IntervalEvent
 from src.scheduler import add_event
 from src.objects.models import Object
@@ -48,7 +49,16 @@ class EventBlinkButton(IntervalEvent):
         #log_infomsg("buttons found: %s" % buttons)
 
         for b in buttons:
-            b.scriptlink.blink()
+            try:
+                b.scriptlink.blink()
+            except AttributeError:
+                #button has no blink() method. Just ignore.
+                pass
+            except:
+                #show other tracebacks to owner of object.
+                #this is important, we must handle this exception
+                #gracefully!                
+                b.get_owner().emit_to(sys.exc_info()[1])
         
 #create and add the event to the global handler
 blink_event = EventBlinkButton()

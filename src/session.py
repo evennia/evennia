@@ -173,7 +173,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.pobject.scriptlink.at_pre_login(self)
         self.pobject.scriptlink.at_post_login(self)
         
-        logger.log_infomsg("Loged in: %s" % self)
+        logger.log_infomsg("Logged in: %s" % self)
         self.cemit_info('Logged in: %s' % self)
         
         # Update their account's last login time.
