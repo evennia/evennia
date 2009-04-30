@@ -47,11 +47,11 @@ def cmd_addcom(command):
                                    chan_name_parsed, True)
 
         # Announce the user's joining.
-        join_msg = "[%s] %s has joined the channel." % \
-            (chan_name_parsed, source_object.get_name(show_dbref=False))
+        join_msg = "%s has joined the channel." % \
+            (source_object.get_name(show_dbref=False),)
         src.comsys.send_cmessage(chan_name_parsed, join_msg)
     else:
-        source_object.emit_to("Could not find channel %s." % (chan_name,))
+        source_object.emit_to("Could not find channel %s." % chan_name)
 GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom),
 
 def cmd_delcom(command):
@@ -72,12 +72,12 @@ def cmd_delcom(command):
         return
 
     chan_name = command.session.channels_subscribed[command.command_argument][0]
-    source_object.emit_to("You have left %s." % (chan_name,))
+    source_object.emit_to("You have left %s." % chan_name)
     src.comsys.plr_del_channel(command.session, command.command_argument)
 
     # Announce the user's leaving.
-    leave_msg = "[%s] %s has left the channel." % \
-        (chan_name, source_object.get_name(show_dbref=False))
+    leave_msg = "%s has left the channel." % \
+        (source_object.get_name(show_dbref=False),)
     src.comsys.send_cmessage(chan_name, leave_msg)
 GLOBAL_CMD_TABLE.add_command("delcom", cmd_delcom),
 
@@ -235,29 +235,33 @@ def cmd_cemit(command):
         source_object.emit_to("Could not find channel %s." % (cname,))
         return
 
+    # If this is False, don't show the channel header before
+    # the message. For example: [Public] Woohoo!
+    show_channel_header = True
     if "noheader" in command.command_switches:
         if not source_object.has_perm("objects.emit_commchannel"):
             source_object.emit_to(defines_global.NOPERMS_MSG)
             return
         final_cmessage = cmessage
+        show_channel_header = False
     else:
         if "sendername" in command.command_switches:
             if not src.comsys.plr_has_channel(command.session, cname_parsed, 
                                               return_muted=False):
                 source_object.emit_to("You must be on %s to do that." % (cname_parsed,))
                 return
-            final_cmessage = "[%s] %s: %s" % (cname_parsed, 
-                                              source_object.get_name(show_dbref=False), 
-                                              cmessage)
+            final_cmessage = "%s: %s" % (source_object.get_name(show_dbref=False), 
+                                         cmessage)
         else:
             if not source_object.has_perm("objects.emit_commchannel"):
                 source_object.emit_to(defines_global.NOPERMS_MSG)
                 return
-            final_cmessage = "[%s] %s" % (cname_parsed, cmessage)
+            final_cmessage = cmessage
 
     if not "quiet" in command.command_switches:
         source_object.emit_to("Sent - %s" % (name_matches[0],))
-    src.comsys.send_cmessage(cname_parsed, final_cmessage)
+    src.comsys.send_cmessage(cname_parsed, final_cmessage,
+                             show_header=show_channel_header)
     
     if settings.IMC2_ENABLED:
         # Look for IMC2 channel maps. If one is found, send an ice-msg-b

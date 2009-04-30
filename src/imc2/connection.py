@@ -24,8 +24,7 @@ def cemit_info(message):
     Channel emits info to the appropriate info channel. By default, this
     is MUDInfo.
     """
-    comsys.send_cmessage(settings.COMMCHAN_IMC2_INFO, 'IMC: %s' % message,
-                         noheader=False)
+    comsys.send_cmessage(settings.COMMCHAN_IMC2_INFO, 'IMC: %s' % message)
 
 class IMC2Protocol(StatefulTelnetProtocol):
     """
@@ -118,10 +117,9 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 mapping = IMC2ChannelMapping.objects.get(imc2_channel_name=chan_name)
                 ingame_chan_name = mapping.channel.name
                 # Format the message to cemit to the local channel.
-                message = '[%s] %s@%s: %s' % (ingame_chan_name,
-                                          packet.sender, 
-                                          packet.origin,
-                                          packet.optional_data.get('text'))
+                message = '%s@%s: %s' % (packet.sender, 
+                                         packet.origin,
+                                         packet.optional_data.get('text'))
                 # Bombs away.
                 comsys.send_cmessage(ingame_chan_name, message)
             except IMC2ChannelMapping.DoesNotExist:

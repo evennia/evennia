@@ -53,8 +53,8 @@ def plr_chan_off(session, calias):
         cobj = get_cobj_from_name(cname)
         plr_set_channel_listening(session, calias, False)
         session.msg("You have left %s." % (cname,))
-        send_cmessage(cname, "%s %s has left the channel." % (cobj.get_header(), 
-            session.get_pobject().get_name(show_dbref=False)))
+        send_cmessage(cname, "%s has left the channel." % ( 
+            session.get_pobject().get_name(show_dbref=False),))
 
 def plr_chan_on(session, calias):
     """
@@ -70,8 +70,8 @@ def plr_chan_on(session, calias):
     else:
         cname = plr_cname_from_alias(session, calias)
         cobj = get_cobj_from_name(cname)
-        send_cmessage(cname, "%s %s has joined the channel." % (cobj.get_header(), 
-            session.get_pobject().get_name(show_dbref=False)))
+        send_cmessage(cname, "%s has joined the channel." % ( 
+            session.get_pobject().get_name(show_dbref=False),))
         plr_set_channel_listening(session, calias, True)
         session.msg("You have joined %s." % (cname,))
     
@@ -220,24 +220,31 @@ def load_object_channels(pobject):
         for session in sessions:
             session.channels_subscribed = simplejson.loads(chan_list)
 
-def send_cmessage(channel_name, message, noheader=True):
+def send_cmessage(channel, message, show_header=True):
     """
     Sends a message to all players on the specified channel.
 
-    channel_name: (string) The name of the channel.
-    message:      (string) Message to send.
-    noheader: (bool) If False, prefix the message with the channel's name.
+    channel: (string or CommChannel) Name of channel or a CommChannel object.
+    message: (string) Message to send.
+    show_header: (bool) If False, don't prefix message with the channel header.
     """
-    try:
-        channel_obj = get_cobj_from_name(channel_name)
-    except:
-        logger.log_errmsg("send_cmessage(): Can't find channel: %s" % (channel_name,))
-        return
+    if isinstance(channel, unicode) or isinstance(channel, str):
+        # If they've passed a string as the channel argument, look up the
+        # correct channel object.
+        try:
+            channel_obj = get_cobj_from_name(channel)
+        except:
+            logger.log_errmsg("send_cmessage(): Can't find channel: %s" % channel)
+            return
+    else:
+        # Else, assume that it's a channel object and skip re-querying for
+        # the channel.
+        channel_obj = channel
         
-    if noheader == False:
+    if show_header == True:
         message = "%s %s" % (channel_obj.ansi_name, message)
         
-    for user in get_cwho_list(channel_name, return_muted=False):
+    for user in get_cwho_list(channel_obj.name, return_muted=False):
         user.msg(message)
         
     chan_message = CommChannelMessage()

@@ -219,5 +219,4 @@ class SessionProtocol(StatefulTelnetProtocol):
         is MUDConnections.
         """
         src.comsys.send_cmessage(settings.COMMCHAN_MUD_CONNECTIONS, 
-                             'Session: %s' % message,
-                             noheader=False)
+                             'Session: %s' % message)
