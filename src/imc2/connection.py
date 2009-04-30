@@ -116,14 +116,15 @@ class IMC2Protocol(StatefulTelnetProtocol):
             chan_name = chan_name.split(':', 1)[1]
             try:
                 # Look for matching IMC2 channel maps.
-                mapping = IMC2ChannelMapping.objects.get(imc2_channel_name=chan_name)
+                mappings = IMC2ChannelMapping.objects.filter(imc2_channel_name=chan_name)
                 # Format the message to cemit to the local channel.
                 message = '%s@%s: %s' % (packet.sender, 
                                          packet.origin,
                                          packet.optional_data.get('text'))
                 # Bombs away.
-                if mapping.channel:
-                    comsys.send_cmessage(mapping.channel, message)
+                for mapping in mappings:
+                    if mapping.channel:
+                        comsys.send_cmessage(mapping.channel, message)
             except IMC2ChannelMapping.DoesNotExist:
                 # No channel mapping found for this message, ignore it.
                 pass
