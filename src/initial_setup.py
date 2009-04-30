@@ -37,7 +37,7 @@ def create_objects():
     god_user_obj.save()
     
     # Limbo is the initial starting room.
-    limbo_obj = Object(type = defines_global.OTYPE_ROOM)
+    limbo_obj = Object(id=2, type=defines_global.OTYPE_ROOM)
     limbo_obj.set_owner(god_user_obj)
     limbo_obj.set_name('%ch%ccLimbo%cn')
     limbo_obj.set_description("Welcome to your new Evennia-based game. From here you are ready to begin development. If you should need help or would like to participate in community discussions, visit http://evennia.com.")
