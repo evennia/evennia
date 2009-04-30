@@ -274,7 +274,12 @@ class IMC2PacketIceRefresh(IMC2Packet):
     Example:
     *@YourMUD 1234567890 YourMUD!Hub1 ice-refresh IMC@$    
     """
-    pass
+    def __init__(self):
+        super(IMC2PacketIceRefresh, self).__init__()
+        self.sender = '*'
+        self.packet_type = 'ice-refresh'
+        self.target = 'IMC'
+        self.destination = '$'
 
 class IMC2PacketIceUpdate(IMC2Packet):
     """

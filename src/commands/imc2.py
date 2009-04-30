@@ -13,7 +13,7 @@ from src.ansi import parse_ansi
 from src.imc2.imc_ansi import IMCANSIParser
 from src.imc2 import connection as imc2_conn
 from src.imc2.packets import *
-from src.imc2.trackers import IMC2_MUDLIST
+from src.imc2.trackers import IMC2_MUDLIST, IMC2_CHANLIST
     
 def cmd_imcwhois(command):
     """
@@ -42,27 +42,33 @@ def cmd_imcansi(command):
         source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("imcansi", cmd_imcansi)
 
-def cmd_imckeepalive(command):
+def cmd_imcicerefresh(command):
     """
-    Sends an is-alive packet to the network.
+    Semds an ice-refresh packet.
     """
     source_object = command.source_object
-    source_object.emit_to("Sending")
-    packet = IMC2PacketIsAlive()
+    packet = IMC2PacketIceRefresh()
     imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
     source_object.emit_to("Sent")
-GLOBAL_CMD_TABLE.add_command("imckeepalive", cmd_imckeepalive)
+GLOBAL_CMD_TABLE.add_command("imcicerefresh", cmd_imcicerefresh)
 
-def cmd_imckeeprequest(command):
+def cmd_imcchanlist(command):
     """
-    Sends a keepalive-request packet to the network.
+    Shows the list of cached channels from the IMC2 Channel list.
     """
     source_object = command.source_object
-    source_object.emit_to("Sending")
-    packet = IMC2PacketKeepAliveRequest()
-    imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
-    source_object.emit_to("Sent")
-GLOBAL_CMD_TABLE.add_command("imckeeprequest", cmd_imckeeprequest)
+    
+    retval = 'Channels on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
+    
+    retval += ' Full Name          Name       Owner           Perm    Policy\n\r'
+    retval += ' ---------          ----       -----           ----    ------\n\r'
+    for channel in IMC2_CHANLIST.get_channel_list():
+        retval += ' %-18s %-10s %-15s %-7s %s\n\r' % (channel.full_name, channel.name,
+                                          channel.owner, channel.level,
+                                          channel.policy)
+    retval += '%s channels found.' % len(IMC2_CHANLIST.chan_list)
+    source_object.emit_to(retval)
+GLOBAL_CMD_TABLE.add_command("imcchanlist", cmd_imcchanlist)
 
 def cmd_imclist(command):
     """

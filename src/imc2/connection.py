@@ -100,6 +100,8 @@ class IMC2Protocol(StatefulTelnetProtocol):
             # IMC2 protocol states that KeepAliveRequests should be followed
             # up by the requester sending an IsAlive packet.
             self.send_packet(IMC2PacketIsAlive())
+            # Get a listing of channels.
+            self.send_packet(IMC2PacketIceRefresh())
                 
     def _handle_channel_mappings(self, packet):
         """
@@ -135,10 +137,23 @@ class IMC2Protocol(StatefulTelnetProtocol):
             self._parse_auth_response(line)
         else:
             if settings.IMC2_DEBUG and 'is-alive' not in line:
+                # if IMC2_DEBUG mode is on, print the contents of the packet
+                # to stdout.
                 logger.log_infomsg("PACKET: %s" % line)
+                
+            # Parse the packet and encapsulate it for easy access
             packet = IMC2Packet(packet_str = line)
+            
             if settings.IMC2_DEBUG and packet.packet_type not in ['is-alive', 'keepalive-request']:
+                # Print the parsed packet's __str__ representation.
+                # is-alive and keepalive-requests happen pretty frequently.
+                # Don't bore us with them in stdout.
                 logger.log_infomsg(packet)
+                
+            """
+            Figure out what kind of packet we're dealing with and hand it
+            off to the correct handler.
+            """
             if packet.packet_type == 'is-alive':
                 IMC2_MUDLIST.update_mud_from_packet(packet)
             elif packet.packet_type == 'keepalive-request':
@@ -151,6 +166,8 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 reply_listener.handle_whois_reply(packet)
             elif packet.packet_type == 'close-notify':
                 IMC2_MUDLIST.remove_mud_from_packet(packet)
+            elif packet.packet_type == 'ice-update':
+                IMC2_CHANLIST.update_channel_from_packet(packet)
             elif packet.packet_type == 'tell':
                 sessions = session_mgr.find_sessions_from_username(packet.target)
                 for session in sessions:

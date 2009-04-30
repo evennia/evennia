@@ -55,6 +55,55 @@ class IMC2MudList(object):
         except KeyError:
             # No matching entry, no big deal.
             pass
+        
+class IMC2Channel(object):
+    """
+    Stores information about channels available on the network.
+    """
+    def __init__(self, packet):
+        self.name = packet.optional_data.get('localname', None)
+        self.full_name = packet.optional_data.get('channel', None)
+        self.level = packet.optional_data.get('level', None)
+        self.owner = packet.optional_data.get('owner', None)
+        self.policy = packet.optional_data.get('policy', None)
+        self.last_updated = time()
+        
+class IMC2ChanList(object):
+    """
+    Keeps track of other MUDs connected to the IMC network.
+    """
+    def __init__(self):
+        # Chan list is stored in a dict, key being the IMC Mud name.
+        self.chan_list = {}
+        
+    def get_channel_list(self):
+        """
+        Returns a sorted list of cached channels.
+        """
+        channels = self.chan_list.items()
+        channels.sort()
+        return [value for key, value in channels]
+        
+    def update_channel_from_packet(self, packet):
+        """
+        This grabs relevant info from the packet and stuffs it in the
+        channel list for later retrieval.
+        """
+        channel = IMC2Channel(packet)
+        self.chan_list[channel.name] = channel
+        
+    def remove_channel_from_packet(self, packet):
+        """
+        Removes a channel from the Channel list when given a packet.
+        """
+        channel = IMC2Channel(packet)
+        try:
+            del self.chan_list[channel.name]
+        except KeyError:
+            # No matching entry, no big deal.
+            pass
 
 # Use this instance to keep track of the other games on the network.
 IMC2_MUDLIST = IMC2MudList()
+# Tracks the list of available channels on the network.
+IMC2_CHANLIST = IMC2ChanList()
