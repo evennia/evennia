@@ -115,13 +115,13 @@ class IMC2Protocol(StatefulTelnetProtocol):
             try:
                 # Look for matching IMC2 channel maps.
                 mapping = IMC2ChannelMapping.objects.get(imc2_channel_name=chan_name)
-                ingame_chan_name = mapping.channel.name
                 # Format the message to cemit to the local channel.
                 message = '%s@%s: %s' % (packet.sender, 
                                          packet.origin,
                                          packet.optional_data.get('text'))
                 # Bombs away.
-                comsys.send_cmessage(ingame_chan_name, message)
+                if mapping.channel:
+                    comsys.send_cmessage(mapping.channel, message)
             except IMC2ChannelMapping.DoesNotExist:
                 # No channel mapping found for this message, ignore it.
                 pass
@@ -141,6 +141,10 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 logger.log_infomsg(packet)
             if packet.packet_type == 'is-alive':
                 IMC2_MUDLIST.update_mud_from_packet(packet)
+            elif packet.packet_type == 'keepalive-request':
+                # Don't need to check the destination, we only receive these
+                # packets when they are intended for us.
+                self.send_packet(IMC2PacketIsAlive())
             elif packet.packet_type == 'ice-msg-b':
                 self._handle_channel_mappings(packet)
             elif packet.packet_type == 'whois-reply':
