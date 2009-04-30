@@ -97,7 +97,7 @@ class CommChannelMessage(models.Model):
     A single logged channel message.
     """
     channel = models.ForeignKey(CommChannel, related_name="msg_channel")
-    message = models.CharField(max_length=255)
+    message = models.TextField()
     date_sent = models.DateTimeField(editable=False, auto_now_add=True)
 
     def __str__(self):

@@ -53,7 +53,7 @@ SCRIPT_DEFAULT_OBJECT = 'base.basicobject'
 # the SCRIPT_IMPORT_PATH left off.
 SCRIPT_DEFAULT_PLAYER = 'base.basicplayer'
 
-# 'postgresql', 'mysql', 'mysql_old', 'sqlite3' or 'ado_mssql'.
+# 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3', and 'oracle'.
 DATABASE_ENGINE = 'sqlite3'
 # Database name, or path to DB file if using sqlite3.
 DATABASE_NAME = os.path.join(GAME_DIR, 'evennia.db3')
