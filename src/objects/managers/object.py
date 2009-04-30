@@ -1,7 +1,6 @@
 """
 Custom manager for Object objects.
 """
-import sets
 from datetime import datetime, timedelta
 
 from django.db import models
