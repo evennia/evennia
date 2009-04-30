@@ -97,6 +97,9 @@ IMC2_SERVER_PW = None
 # This isn't something you should generally change.
 IMC2_PROTOCOL_VERSION = '2'
 
+# MudBytes IMC Information
+#IMC2_SERVER_ADDRESS = 'server02.mudbytes.net'
+#IMC2_SERVER_PORT = 9000
 """
 Various comm channels for emitting debug or informative messages.
 """
