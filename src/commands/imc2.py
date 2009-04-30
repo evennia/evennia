@@ -63,9 +63,11 @@ def cmd_imcchanlist(command):
     retval += ' Full Name          Name       Owner           Perm    Policy\n\r'
     retval += ' ---------          ----       -----           ----    ------\n\r'
     for channel in IMC2_CHANLIST.get_channel_list():
-        retval += ' %-18s %-10s %-15s %-7s %s\n\r' % (channel.full_name, channel.name,
-                                          channel.owner, channel.level,
-                                          channel.policy)
+        retval += ' %-18s %-10s %-15s %-7s %s\n\r' % (channel.name, 
+                                                      channel.localname,
+                                                      channel.owner, 
+                                                      channel.level,
+                                                      channel.policy)
     retval += '%s channels found.' % len(IMC2_CHANLIST.chan_list)
     source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("imcchanlist", cmd_imcchanlist)

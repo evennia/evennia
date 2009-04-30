@@ -61,8 +61,8 @@ class IMC2Channel(object):
     Stores information about channels available on the network.
     """
     def __init__(self, packet):
-        self.name = packet.optional_data.get('localname', None)
-        self.full_name = packet.optional_data.get('channel', None)
+        self.localname = packet.optional_data.get('localname', None)
+        self.name = packet.optional_data.get('channel', None)
         self.level = packet.optional_data.get('level', None)
         self.owner = packet.optional_data.get('owner', None)
         self.policy = packet.optional_data.get('policy', None)

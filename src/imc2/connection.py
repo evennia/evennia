@@ -168,6 +168,8 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 IMC2_MUDLIST.remove_mud_from_packet(packet)
             elif packet.packet_type == 'ice-update':
                 IMC2_CHANLIST.update_channel_from_packet(packet)
+            elif packet.packet_type == 'ice-destroy':
+                IMC2_CHANLIST.remove_channel_from_packet(packet)
             elif packet.packet_type == 'tell':
                 sessions = session_mgr.find_sessions_from_username(packet.target)
                 for session in sessions:
