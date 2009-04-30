@@ -195,9 +195,9 @@ def cmd_set(command):
     attrib_args = eq_args[1].split(':', 1)
     if len(attrib_args) > 1:
         # We're dealing with an attribute/value pair.
-        attrib_name = attrib_args[0].upper()
+        attrib_name = attrib_args[0]
         splicenum = eq_args[1].find(':') + 1
-        attrib_value = eq_args[1][splicenum:]
+        attrib_value = (eq_args[1][splicenum:]).strip()
         
         # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
         if not Attribute.objects.is_modifiable_attrib(attrib_name):
@@ -210,7 +210,10 @@ def cmd_set(command):
             victim.set_attribute(attrib_name, attrib_value)
         else:
             # No value was given, this means we delete the attribute.
-            verb = 'cleared'
+            ok = victim.clear_attribute(attrib_name)
+            if ok: verb = 'attribute cleared'
+            else: verb = 'is not a known attribute. If it is a flag, use !flag to clear it'
+
             victim.clear_attribute(attrib_name)
         source_object.emit_to("%s - %s %s." % (victim.get_name(), attrib_name, verb))
     else:
@@ -266,14 +269,14 @@ def cmd_create(command):
     """
     @create
 
-    Usage: @create objname [=parent]
+    Usage: @create objname [:parent]
 
     Creates a new object. If parent is given, the object is created as a child of this
     parent. The parent script is assumed to be located under game/gamesrc/parents
     and any further directory structure is given in Python notation. So if you
     have a correct parent object defined in parents/examples/red_button.py, you could
     load create a new object inheriting from this parent like this:
-       @create button=example.red_button       
+       @create button:examples.red_button       
     """
     source_object = command.source_object
     
@@ -281,13 +284,13 @@ def cmd_create(command):
         source_object.emit_to("You must supply a name!")
         return
     
-    eq_args = command.command_argument.split('=', 1)
+    eq_args = command.command_argument.split(':', 1)
     target_name = eq_args[0]
     
     # Create and set the object up.
     # TODO: This dictionary stuff is silly. Feex.
     odat = {"name": target_name, 
-            "type": 3, 
+            "type": defines_global.OTYPE_THING, 
             "location": source_object, 
             "owner": source_object}
     new_object = Object.objects.create_object(odat)
@@ -417,8 +420,8 @@ def cmd_open(command):
     if len(eq_args) > 1:
         # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
         comma_split = eq_args[1].split(',', 1)
-        destination = source_object.search_for_object(comma_split[0])
         # Use search_for_object to handle duplicate/nonexistant results.
+        destination = source_object.search_for_object(comma_split[0])
         if not destination:
             return
 
@@ -427,7 +430,7 @@ def cmd_open(command):
             return
 
         odat = {"name": exit_name, 
-                "type": 4, 
+                "type": defines_global.OTYPE_EXIT, 
                 "location": source_object.get_location(), 
                 "owner": source_object, 
                 "home": destination}
@@ -439,7 +442,7 @@ def cmd_open(command):
         if len(comma_split) > 1:
             second_exit_name = ','.join(comma_split[1:])
             odat = {"name": second_exit_name, 
-                    "type": 4, 
+                    "type": defines_global.OTYPE_EXIT, 
                     "location": destination, 
                     "owner": source_object, 
                     "home": source_object.get_location()}
@@ -451,7 +454,7 @@ def cmd_open(command):
     else:
         # Create an un-linked exit.
         odat = {"name": exit_name, 
-                "type": 4, 
+                "type": defines_global.OTYPE_EXIT, 
                 "location": source_object.get_location(), 
                 "owner": source_object, 
                 "home": None}
@@ -644,26 +647,85 @@ GLOBAL_CMD_TABLE.add_command("@unlink", cmd_unlink,
 
 def cmd_dig(command):
     """
-    Creates a new object of type 'ROOM'.
+    Creates a new room object.
     
-    @dig <Name>
+    @dig[/teleport] roomname [:parent] [=exitthere,exithere]
+   
     """
     source_object = command.source_object
-    roomname = command.command_argument
     
+    args = command.command_argument
+    switches = command.command_switches
+
+    parent = ''
+    exits = []
+
+    #handle arguments
+    if ':' in args:
+        roomname, args = args.split(':',1)
+        if '=' in args:
+            parent, args = args.split('=',1)
+            if ',' in args:
+                exits = args.split(',',1)
+            else:
+                exits = args
+        else:
+            parent = args
+    elif '=' in args:
+        roomname, args = args.split('=',1)
+        if ',' in args:
+            exits = args.split(',',1)
+        else:
+            exits = [args]
+    else:
+        roomname = args
+            
     if not roomname:
-        source_object.emit_to("You must supply a name!")
+        source_object.emit_to("You must supply a new room name.")
     else:
         # Create and set the object up.
         odat = {"name": roomname, 
-                "type": 2, 
+                "type": defines_global.OTYPE_ROOM, 
                 "location": None, 
                 "owner": source_object}
-        new_object = Object.objects.create_object(odat)
+        new_room = Object.objects.create_object(odat)
+        source_object.emit_to("Created a new room '%s'." % (new_room,))
         
-        source_object.emit_to("You create a new room: %s" % (new_object,))
+        if parent:
+            #(try to) set the script parent
+            if not new_room.set_script_parent(parent):
+                source_object.emit_to("%s is not a valid parent. Used default room." % parent)
+        if exits:
+            #create exits to (and possibly back from) the new room)
+            destination = new_room #search_for_object(roomname)
+            
+            if destination and not destination.is_exit():
+                location = source_object.get_location()
+
+                #create an exit from here to the new room. 
+                odat = {"name": exits[0].strip(), 
+                        "type": defines_global.OTYPE_EXIT, 
+                        "location": location, 
+                        "owner": source_object, 
+                        "home": destination}
+                new_object = Object.objects.create_object(odat)
+                source_object.emit_to("Created exit from %s to %s named '%s'." % (location,destination,new_object))
+
+                if len(exits)>1:
+                    #create exit back to this room
+                    odat = {"name": exits[1].strip(), 
+                            "type": defines_global.OTYPE_EXIT, 
+                            "location": destination, 
+                            "owner": source_object, 
+                            "home": location}
+                    new_object = Object.objects.create_object(odat)
+                    source_object.emit_to("Created exit back from %s to %s named '%s'" % (destination, location, new_object))
+        if 'teleport' in switches:
+            source_object.move_to(new_room)
+
+                
 GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("genperms.builder"),)
 
 def cmd_name(command):
     """
@@ -741,45 +803,144 @@ def cmd_description(command):
         target_obj.set_description(new_desc)
 GLOBAL_CMD_TABLE.add_command("@describe", cmd_description)
 
+def cmd_recover(command):
+    """
+    @recover 
+
+    Recovers @destroyed non-player objects.
+
+    Usage:
+       @recover [dbref [,dbref2, etc]] 
+
+    switches:
+       ROOM - recover as ROOM type instead of THING
+       EXIT - recover as EXIT type instead of THING
+
+    If no argument is given, a list of all recoverable objects will be given. 
+    
+    Objects scheduled for destruction with the @destroy command is cleaned out
+    by the game at regular intervals. Up until the time of the next cleanup you can
+    recover the object using this command (use @ps to check when the next cleanup is due).
+    Note that exits and objects in @destroyed rooms will not be automatically recovered
+    to its former state, you have to @recover those objects manually.
+
+    The object type is forgotten, so the object is returned as type ITEM if not the
+    switches /ROOM or /EXIT is given. Note that recovering an item as the wrong type will
+    most likely make it nonfunctional. 
+    """
+
+    source_object = command.source_object
+    args = command.command_argument
+    switches = command.command_switches
+    going_objects = Object.objects.filter(type__exact=defines_global.OTYPE_GOING)
+
+    if not args:     
+        s = " Objects scheduled for destruction:"
+        if going_objects:
+            for o in going_objects:
+                s += '\n     %s' % o
+        else:
+            s += "  None."
+        source_object.emit_to(s)
+        return
+
+    if ',' in args:
+        objlist = args.split(',')
+    else:
+        objlist = [args]
+    
+    for objname in objlist:
+        obj = Object.objects.list_search_object_namestr(going_objects, objname)
+        if len(obj) == 1:
+            if 'ROOM' in switches:
+                obj[0].type = defines_global.OTYPE_ROOM
+                source_object.emit_to("%s recovered as type ROOM." % obj[0])
+            elif 'EXIT' in switches:                        
+                obj[0].type = defines_global.OTYPE_EXIT
+                source_object.emit_to("%s recovered as type EXIT." % obj[0])
+            else:
+                obj[0].type = defines_global.OTYPE_THING
+                source_object.emit_to("%s recovered as type THING." % obj[0])
+            obj[0].save()
+        else:
+            source_object.emit_to("No (or multiple) matches for %s." % objname)
+
+
+GLOBAL_CMD_TABLE.add_command("@recover", cmd_recover,
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_only=True)
+
 def cmd_destroy(command):
     """
-    Destroy an object.
+    @destroy
+
+    Destroys one or many objects. 
+
+    Usage: 
+       @destroy[/<switches>] obj [,obj2, obj3, ...]
+
+    switches:
+       override - The @destroy command will usually avoid accidentally destroying
+                  player objects as well as objects with the SAFE flag. This
+                  switch overrides this safety.     
+       instant  - Destroy the object immediately, without delay. 
+
+    The objects are set to GOING and will be permanently destroyed next time the system
+    does cleanup. Until then non-player objects can still be saved  by using the
+    @recover command. The contents of a room will be moved out before it is destroyed,
+    but its exits will also be destroyed. Note that player objects can not be recovered. 
     """
+
     source_object = command.source_object
-    switch_override = False
-       
-    if not command.command_argument:    
+    args = command.command_argument
+    switches = command.command_switches
+
+    if not args:    
         source_object.emit_to("Destroy what?")
-        return
+        return    
+    if ',' in args:
+        targetlist = args.split(',')
+    else:
+        targetlist = [args]
     
     # Safety feature. Switch required to delete players and SAFE objects.
-    if "override" in command.command_switches:
+    switch_override = False
+    if "override" in switches:
         switch_override = True
+
+    for targetname in targetlist:
+        target_obj = source_object.search_for_object(targetname)
+        # Use search_for_object to handle duplicate/nonexistant results.
+        if not target_obj:
+            return
+        if target_obj.is_player() or target_obj.has_flag('SAFE'):
+            if source_object.id == target_obj.id:
+                source_object.emit_to("You can't destroy yourself.")
+                return
+            if not switch_override:
+                source_object.emit_to("You must use @destroy/override on Players and objects with the SAFE flag set.")
+                return
+            if target_obj.is_superuser():
+                source_object.emit_to("You can't destroy a superuser.")
+                return
+        elif target_obj.is_garbage():
+            source_object.emit_to("That object is already destroyed.")
+            return
+        elif target_obj.is_going() and 'instant' not in switches:
+            source_object.emit_to("That object is already scheduled for destruction.") 
+            return
         
-    target_obj = source_object.search_for_object(command.command_argument)
-    # Use search_for_object to handle duplicate/nonexistant results.
-    if not target_obj:
-        return
-    
-    if target_obj.is_player():
-        if source_object.id == target_obj.id:
-            source_object.emit_to("You can't destroy yourself.")
-            return
-        if not switch_override:
-            source_object.emit_to("You must use @destroy/override on players.")
-            return
-        if target_obj.is_superuser():
-            source_object.emit_to("You can't destroy a superuser.")
-            return
-    elif target_obj.is_going() or target_obj.is_garbage():
-        source_object.emit_to("That object is already destroyed.")
-        return
-    
-    # Run any scripted things that happen before destruction.
-    target_obj.scriptlink.at_object_destruction(pobject=source_object)
-    
-    # Notify destroyer and do the deed.
-    source_object.emit_to("You destroy %s." % target_obj.get_name())
-    target_obj.destroy()
+        # Run any scripted things that happen before destruction.
+        target_obj.scriptlink.at_object_destruction(pobject=source_object)
+        
+        #destroy the object (sets it to GOING)
+        target_obj.destroy()
+
+        if 'instant' in switches:
+            #sets to GARBAGE right away (makes dbref available)
+            target_obj.delete()
+            source_object.emit_to("You destroy %s." % target_obj.get_name())
+        else:
+            source_object.emit_to("You schedule %s for destruction." % target_obj.get_name())
+        
 GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_only=True)

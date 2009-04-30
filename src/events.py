@@ -9,6 +9,8 @@ import time
 from twisted.internet import task
 import session_mgr
 from src import scheduler
+from src import defines_global
+from src.objects.models import Object
 
 class IntervalEvent(object):
     """
@@ -71,6 +73,8 @@ class IntervalEvent(object):
         self.set_lastfired()
         self.event_function()
 
+
+
 class IEvt_Check_Sessions(IntervalEvent):
     """
     Event: Check all of the connected sessions.
@@ -87,6 +91,24 @@ class IEvt_Check_Sessions(IntervalEvent):
         """
         session_mgr.check_all_sessions()
 
+class IEvt_Destroy_Objects(IntervalEvent):
+    """
+    Event: Clean out all objects marked for destruction.
+    """
+    def __init__(self):
+        super(IEvt_Destroy_Objects, self).__init__()
+        self.name = 'IEvt_Destroy_Objects'
+        self.interval = 1800
+        self.description = "Destroy objects with the GOING flag set."
+
+    def event_function(self):
+        """
+        This is the function that is fired every self.interval seconds.
+        """
+        going_objects = Object.objects.filter(type__exact=defines_global.OTYPE_GOING)
+        for obj in going_objects:
+            obj.delete()
+    
 def add_global_events():
     """
     When the server is started up, this is triggered to add all of the
@@ -94,3 +116,5 @@ def add_global_events():
     """
     # Create an instance and add it to the scheduler.
     scheduler.add_event(IEvt_Check_Sessions())
+    scheduler.add_event(IEvt_Destroy_Objects())
+

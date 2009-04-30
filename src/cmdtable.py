@@ -28,7 +28,7 @@ class CommandTable(object):
         self.ctable = {}
     
     def add_command(self, command_string, function, priv_tuple=None,
-                    extra_vals=None, auto_help=False, staff_help=False):
+                    extra_vals=None, auto_help=False, staff_only=False):
         """
         Adds a command to the command table.
         
@@ -57,7 +57,7 @@ class CommandTable(object):
             #add automatic help text from the command's doc string            
             topicstr = command_string
             entrytext = function.__doc__
-            add_help(topicstr, entrytext, staff_only=staff_help,
+            add_help(topicstr, entrytext, staff_only=staff_only,
                      force_create=True, auto_help=True)
                         
     def get_command_tuple(self, func_name):

@@ -5,7 +5,7 @@ particular object. See example.py in gamesrc/commands for more info
 on the pluggable command system. 
 
 Assuming this script remains in gamesrc/parents/examples, create an object
-of this type using @create button=examples.red_button
+of this type using @create button:examples.red_button
 
 This file also shows the use of the Event system to make the button
 send a message to the players at regular intervals. Note that if you create a

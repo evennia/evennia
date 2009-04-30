@@ -6,7 +6,7 @@ gamesrc/parents and set SCRIPT_DEFAULT_OBJECT = 'custom_basicobject'
 in game/settings.py. 
 
 Generally, if you want to conveniently set future objects to inherit from this
-script parent (not as a default), this files and others like it need to be
+script parent, this files and others like it need to be
 located under the game/gamesrc/parent directory. 
 """
 from game.gamesrc.parents.base.basicobject import BasicObject

@@ -13,8 +13,8 @@ from src.events import IntervalEvent
 from src.scheduler import add_event
 from src.objects.models import Object
 
-#the logger is useful for debugging since there is no source object to send to
-from src.logger import log_infomsg
+#the logger is useful for debugging
+from src.logger import log_errmsg
 
 #Example of the event system. This example adds an event to the red_button parent
 #in parents/examples. It makes the button blink temptingly at a regular interval.
@@ -46,7 +46,6 @@ class EventBlinkButton(IntervalEvent):
         #stored with the gamesrc/parent/ drawer as a base)
         parent = 'examples.red_button'
         buttons = Object.objects.global_object_script_parent_search(parent)
-        #log_infomsg("buttons found: %s" % buttons)
 
         for b in buttons:
             try:
@@ -55,10 +54,10 @@ class EventBlinkButton(IntervalEvent):
                 #button has no blink() method. Just ignore.
                 pass
             except:
-                #show other tracebacks to owner of object.
-                #this is important, we must handle this exception
-                #gracefully!                
+                #show other tracebacks to log and owner of object.
+                #This is important, we must handle these exceptions gracefully!
                 b.get_owner().emit_to(sys.exc_info()[1])
+                log_errmsg(sys.exc_info()[1])
         
 #create and add the event to the global handler
 blink_event = EventBlinkButton()

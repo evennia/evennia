@@ -502,7 +502,7 @@ class Object(models.Model):
                                                                 % (self,))
                 
         # Set the object type to GOING
-        self.type = 5
+        self.type = defines_global.OTYPE_GOING
         # Destroy any exits to and from this room, do this first
         self.clear_exits()
         # Clear out any objects located within the object
@@ -519,7 +519,7 @@ class Object(models.Model):
             uobj[0].delete()
             
         # Set the object to type GARBAGE.
-        self.type = 6
+        self.type = defines_global.OTYPE_GARBAGE
         self.save()
 
         # Clear all attributes
@@ -530,8 +530,8 @@ class Object(models.Model):
         Destroys all of the exits and any exits pointing to this
         object as a destination.
         """
-        exits = self.get_contents(filter_type=4)
-        exits += self.obj_home.all().filter(type__exact=4)
+        exits = self.get_contents(filter_type=defines_global.OTYPE_EXIT)
+        exits += self.obj_home.all().filter(type__exact=defines_global.OTYPE_EXIT)
 
         for exit in exits:
             exit.destroy()
@@ -781,6 +781,7 @@ class Object(models.Model):
         parent_str: (string) String pythonic import path of the script parent
                              assuming the python path is game/gamesrc/parents. 
         """
+        
         if parent_str == None:
             if self.is_player():
                 self.script_parent = settings.SCRIPT_DEFAULT_PLAYER
@@ -789,9 +790,10 @@ class Object(models.Model):
         elif parent_str:            
             #check if this is actually a reasonable script parent        
             #(storing with a non-valid parent path causes havoc!)
+            parent_str = str(parent_str).strip()
             if not scripthandler.scriptlink(self, parent_str):                 
                 return False
-            self.script_parent = parent_str.strip()
+            self.script_parent = parent_str
         self.save()
         return True
 

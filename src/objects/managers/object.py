@@ -60,7 +60,7 @@ class ObjectManager(models.Manager):
         nextfree = self.filter(type__exact=defines_global.OTYPE_GARBAGE)
         if nextfree:
             # We've got at least one garbage object to recycle.
-            return nextfree.id
+            return nextfree[0]
         else:
             # No garbage to recycle, find the highest dbnum and increment it
             # for our next free.
@@ -74,15 +74,16 @@ class ObjectManager(models.Manager):
             o_query = self.filter(name__iexact=ostring)
         else:
             o_query = self.filter(name__icontains=ostring)
-            
+                            
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])
-        
+
     def global_object_script_parent_search(self, script_parent):
         """
         Searches through all objects returning those which has a certain script parent.
         """
         o_query = self.filter(script_parent__exact=script_parent)      
+
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])       
 
@@ -107,6 +108,7 @@ class ObjectManager(models.Manager):
             else:
                 return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
 
+
     def object_totals(self):
         """
         Returns a dictionary with database object totals.
@@ -120,6 +122,8 @@ class ObjectManager(models.Manager):
             "players": self.filter(type=defines_global.OTYPE_PLAYER).count(),
         }
         return dbtotals
+
+
 
     def player_alias_search(self, searcher, ostring):
         """
@@ -136,7 +140,7 @@ class ObjectManager(models.Manager):
                                             model="attribute").model_class()
         results = Attribute.objects.select_related().filter(attr_name__exact="ALIAS").filter(attr_value__iexact=ostring)
         return [prospect.get_object() for prospect in results if prospect.get_object().is_player()]
-
+    
     def player_name_search(self, search_string):
         """
         Combines an alias and global search for a player's name. If there are
@@ -263,19 +267,26 @@ class ObjectManager(models.Manager):
          * home: Reference to another object to home to. If not specified, use 
             location key for home.
         """
+        #get_nextfree_dbnum() returns either an integer or an object to recycle.
         next_dbref = self.get_nextfree_dbnum()
-        Object = ContentType.objects.get(app_label="objects", 
-                                            model="object").model_class()
-        new_object = Object()
 
-        new_object.id = next_dbref
-        new_object.type = odat["type"]
+        if type(next_dbref) == type(int()):        
+            #create object with new dbref
+            Object = ContentType.objects.get(app_label="objects", 
+                                         model="object").model_class()
+            new_object = Object()
+            new_object.id = next_dbref
+        else:
+            #recycle an old object's dbref
+            new_object = next_dbref
+
+        new_object.type = odat["type"]        
         new_object.set_name(odat["name"])
 
         # If this is a player, we don't want him owned by anyone.
         # The get_owner() function will return that the player owns
         # himself.
-        if odat["type"] == 1:
+        if odat["type"] == defines_global.OTYPE_PLAYER:
             new_object.owner = None
             new_object.zone = None
         else:
