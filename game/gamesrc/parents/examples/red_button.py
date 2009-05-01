@@ -18,8 +18,6 @@ from game.gamesrc.parents.base.basicobject import BasicObject
 # - this is as good a place as any.
 import game.gamesrc.events.example 
 
-#import game.gamesrc.events.eventSystem
-
 #
 #commands on the button object
 #
@@ -100,10 +98,6 @@ class RedButton(BasicObject):
             count += 1            
             obj.set_attribute("count",count)            
             obj.get_location().emit_to_contents(s)
-    
-    def update_tick(self):                
-        self.blink()
-
 
 def class_factory(source_obj):
     """
