@@ -867,7 +867,7 @@ def cmd_recover(command):
 
 
 GLOBAL_CMD_TABLE.add_command("@recover", cmd_recover,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_only=True)
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
 
 def cmd_destroy(command):
     """
@@ -943,4 +943,4 @@ def cmd_destroy(command):
             source_object.emit_to("You schedule %s for destruction." % target_obj.get_name())
         
 GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_only=True)
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)

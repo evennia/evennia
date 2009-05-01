@@ -67,7 +67,7 @@ def _create_help(topicstr, entrytext, staff_only=False, force_create=False,
         new_entry.save()
         return [new_entry]
 
-def _handle_help_markup(topicstr, entrytext, staff_only, identifier="<<TOPIC:"):
+def handle_help_markup(topicstr, entrytext, staff_only, identifier="<<TOPIC:"):
     """
     Handle help markup in order to split help into subsections.
     Handles markup of the form <<TOPIC:STAFF:TopicTitle>> and
@@ -103,7 +103,7 @@ def _handle_help_markup(topicstr, entrytext, staff_only, identifier="<<TOPIC:"):
             staff_dict[topic] = staff_only
     return topic_dict, staff_dict
 
-def _format_footer(top, text, topic_dict, staff_dict):
+def format_footer(top, text, topic_dict, staff_dict):
     """
     Formats the subtopic with a 'Related Topics:' footer. If mixed
     staff-only flags are set, those help entries without the staff-only flag
@@ -147,13 +147,13 @@ def add_help(topicstr, entrytext, staff_only=False, force_create=False,
     identifier = '<<TOPIC:'
     if identifier in entrytext:        
         #There is markup in the entry, so we should split the doc into separate subtopics        
-        topic_dict, staff_dict = _handle_help_markup(topicstr, entrytext,
+        topic_dict, staff_dict = handle_help_markup(topicstr, entrytext,
                                                      staff_only, identifier)
         topics = []
         for topic, text in topic_dict.items():            
 
             #format with nice footer
-            entry = _format_footer(topic, text, topic_dict, staff_dict)
+            entry = format_footer(topic, text, topic_dict, staff_dict)
 
             if entry:                
                 #create the subtopic

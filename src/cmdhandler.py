@@ -8,6 +8,7 @@ from traceback import format_exc
 from django.contrib.contenttypes.models import ContentType
 import defines_global
 import cmdtable
+import statetable
 import logger
 import comsys
 import alias_mgr
@@ -318,19 +319,40 @@ def handle(command):
             # Not logged in, look through the unlogged-in command table.
             command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE, 
                                  eval_perms=False)
-        else:
-            # Match against the 'idle' command.
-            match_idle(command)
-            # See if this is an aliased command.
-            match_alias(command)
-            # Check if the user is using a channel command.
-            match_channel(command)
-            # See if the user is trying to traverse an exit.
-            match_exits(command)
-            neighbor_match_found = match_neighbor_ctables(command)
-            if not neighbor_match_found:
-                # Retrieve the appropriate (if any) command function.
-                command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
+        
+        else:        
+
+            state_name = command.source_object.get_state()
+            state_cmd_table = statetable.GLOBAL_STATE_TABLE.get_cmd_table(state_name)            
+
+            if state_name and state_cmd_table:
+                # we are in a special state.
+
+                # check idle command.  
+                match_idle(command)
+                # check for channel commands
+                prev_command = command.command_string
+                match_channel(command)
+                if prev_command != command.command_string:
+                    # a channel command is handled normally also in the state
+                    command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
+                else: 
+                    command_table_lookup(command, state_cmd_table)                           
+            else:
+                #normal operation
+
+                # Match against the 'idle' command.            
+                match_idle(command)
+                # See if this is an aliased command.
+                match_alias(command)
+                # Check if the user is using a channel command.
+                match_channel(command)
+                # See if the user is trying to traverse an exit.
+                match_exits(command)
+                neighbor_match_found = match_neighbor_ctables(command)
+                if not neighbor_match_found:
+                     # Retrieve the appropriate (if any) command function.
+                     command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
         
         """
         By this point, we assume that the user has entered a command and not

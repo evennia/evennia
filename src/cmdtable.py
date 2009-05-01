@@ -1,6 +1,6 @@
 """
 Command Table Module
----------------------
+
 Each command entry consists of a key and a tuple containing a reference to the
 command's function, and a tuple of the permissions to match against. The user
 only need have one of the permissions in the permissions tuple to gain
@@ -19,7 +19,7 @@ from src.helpsys.management.commands.edit_helpfiles import add_help
 
 class CommandTable(object):
     """
-    Stores command tables and performs lookups.
+    Stores commands and performs lookups.
     """
     ctable = None
     
@@ -28,7 +28,7 @@ class CommandTable(object):
         self.ctable = {}
     
     def add_command(self, command_string, function, priv_tuple=None,
-                    extra_vals=None, auto_help=False, staff_only=False):
+                    extra_vals=None, auto_help=False, staff_help=False, state=None):
         """
         Adds a command to the command table.
         
@@ -41,7 +41,7 @@ class CommandTable(object):
         auto_help (bool): If true, automatically creates/replaces a help topic with the
                     same name as the command_string, using the functions's __doc__ property
                     for help text. 
-        staff_help (bool): Only relevant if help_auto is activated; It True, makes the
+        staff_help (bool): Only relevant if auto_help is activated; If True, makes the
                      help topic (and all eventual subtopics) only visible to staff.
 
         Note: the auto_help system also supports limited markup. If you divide your __doc__
@@ -57,7 +57,7 @@ class CommandTable(object):
             #add automatic help text from the command's doc string            
             topicstr = command_string
             entrytext = function.__doc__
-            add_help(topicstr, entrytext, staff_only=staff_only,
+            add_help(topicstr, entrytext, staff_only=staff_help,
                      force_create=True, auto_help=True)
                         
     def get_command_tuple(self, func_name):
@@ -66,6 +66,7 @@ class CommandTable(object):
         returns false.
         """
         return self.ctable.get(func_name, False)
+
 
 """
 Command tables

@@ -117,6 +117,10 @@ class Object(models.Model):
     
     objects = ObjectManager()
 
+    #state system can set a particular command table to be used.
+    state = None
+
+
     def __cmp__(self, other):
         """
         Used to figure out if one object is the same as another.
@@ -980,6 +984,22 @@ class Object(models.Model):
         # about tuple index types. Bleh.
         otype = int(self.type)
         return defines_global.OBJECT_TYPES[otype][1][0]
+
+
+    def get_state(self):
+        return self.state
+    
+    def set_state(self, cmd_table=None):
+        """
+        Set the state by defining which cmd_table is currently used.
+        """
+        if self.is_player():            
+            self.state = cmd_table
+
+    def clear_state(self):
+        self.state = None
+
+
 
 # Deferred imports are poopy. This will require some thought to fix.
 from src import cmdhandler

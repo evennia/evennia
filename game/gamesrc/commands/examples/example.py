@@ -4,16 +4,16 @@ in action.
 
 You'll need to make sure that this or any new modules you create are added to
 game/settings.py under CUSTOM_COMMAND_MODULES or CUSTOM_UNLOGGED_COMMAND_MODULES,
-which are tuples of module import path strings.
-See src/config_defaults.py for more details.
+which are tuples of module import path strings. See src/config_defaults.py for more details.
 
 E.g. to add this example command for testing, your entry in game/settings.py would
 look like this:
 
-CUSTOM_COMMAND_MODULES = ('game.gamesrc.commands.example',)
+CUSTOM_COMMAND_MODULES = ('game.gamesrc.commands.examples.example',)
 
 (note the extra comma at the end to make this into a Python tuple. It's only
-needed if you have only one entry.)
+needed if you have only one entry.) You need to restart the Evennia server before new
+files are recognized. 
 
 """
 
@@ -70,8 +70,6 @@ def cmd_example(command):
 # automatically be created for us.
 GLOBAL_CMD_TABLE.add_command("example", cmd_example, auto_help=True),
 
-
-
 #another simple example
 
 def cmd_emote_smile(command):
@@ -91,4 +89,8 @@ def cmd_emote_smile(command):
 
 #add to global command table (no auto_help activated)
 GLOBAL_CMD_TABLE.add_command('smile', cmd_emote_smile)
+
+
+
+
 
