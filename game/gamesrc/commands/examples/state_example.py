@@ -48,7 +48,10 @@ def cmd_entermenu(command):
     #get the player object calling the command    
     source_object = command.source_object    
     #this is important: we use the set_state() command
-    #to shift the player into a state named 'menu'.
+    #to shift the player into a state named 'menu'. Other useful
+    #access functions on source_object are get_state()
+    # and clear_state(), the latter returns the player to
+    # the normal mode of gameplay. 
     source_object.set_state(STATENAME)
     #display the menu.
     print_menu(source_object)    
@@ -59,13 +62,15 @@ def cmd_entermenu(command):
 #  can be read as help entries when in the menu. 
 #
 def menu_cmd_option1(command):
-    """option1
+    """
+    option1
     This selects the first option.
     """
     source_object = command.source_object
     print_menu(source_object, 1)
 def menu_cmd_option2(command):
-    """option2
+    """
+    option2
     This selects the second option. Duh.
 
     <<TOPIC:About>>
@@ -74,7 +79,8 @@ def menu_cmd_option2(command):
     source_object = command.source_object
     print_menu(source_object, 2)
 def menu_cmd_clear(command):
-    """clear
+    """
+    clear
     Clears the options.  
     """
     source_object = command.source_object

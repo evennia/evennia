@@ -985,18 +985,21 @@ class Object(models.Model):
         otype = int(self.type)
         return defines_global.OBJECT_TYPES[otype][1][0]
 
+    #state access functions
 
-    def get_state(self):
+    def get_state(self):        
         return self.state
     
-    def set_state(self, cmd_table=None):
+    def set_state(self, state_name=None):
         """
-        Set the state by defining which cmd_table is currently used.
+        Only allow setting a state on a player object, otherwise
+        fail silently.
         """
         if self.is_player():            
-            self.state = cmd_table
+            self.state = state_name      
 
     def clear_state(self):
+        "Set to no state (return to normal operation)"
         self.state = None
 
 
