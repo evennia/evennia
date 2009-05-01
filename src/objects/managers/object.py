@@ -205,7 +205,7 @@ class ObjectManager(models.Manager):
         dbref_only: (bool) Only compare dbrefs.
         limit_types: (list of int) A list of Object type numbers to filter by.
         """
-        search_query = ostring
+        search_query = str(ostring).strip()
 
         # This is a global dbref search. Not applicable if we're only searching
         # searcher's contents/locations, dbref comparisons for location/contents

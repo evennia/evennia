@@ -135,8 +135,8 @@ class ExtendedANSIParser(MuxANSIParser):
         (r'{n', normal)                            #reset
         ] )
     
-ANSI_PARSER = MuxANSIParser()
-#ANSI_PARSER = ExtendedANSIParser()
+#ANSI_PARSER = MuxANSIParser()
+ANSI_PARSER = ExtendedANSIParser()
 
 def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=ANSI_PARSER):
     """

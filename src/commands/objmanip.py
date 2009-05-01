@@ -810,7 +810,7 @@ def cmd_recover(command):
     Recovers @destroyed non-player objects.
 
     Usage:
-       @recover [dbref [,dbref2, etc]] 
+       @recover[/switches] [obj [,obj2, ...]] 
 
     switches:
        ROOM - recover as ROOM type instead of THING
@@ -818,15 +818,15 @@ def cmd_recover(command):
 
     If no argument is given, a list of all recoverable objects will be given. 
     
-    Objects scheduled for destruction with the @destroy command is cleaned out
+    Objects scheduled for destruction with the @destroy command are cleaned out
     by the game at regular intervals. Up until the time of the next cleanup you can
     recover the object using this command (use @ps to check when the next cleanup is due).
-    Note that exits and objects in @destroyed rooms will not be automatically recovered
-    to its former state, you have to @recover those objects manually.
+    Note that exits linked to @destroyed rooms will not be automatically recovered
+    to its former state, you have to @recover those manually.
 
-    The object type is forgotten, so the object is returned as type ITEM if not the
-    switches /ROOM or /EXIT is given. Note that recovering an item as the wrong type will
-    most likely make it nonfunctional. 
+    Objects are returned as type THING if the object type is not explicitly set using the 
+    switches. Note that recovering an item as the wrong type will most likely make it
+    nonfunctional. 
     """
 
     source_object = command.source_object
