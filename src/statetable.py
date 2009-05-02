@@ -146,6 +146,16 @@ class StateHelpIndex(object):
             else:
                 self.help_index[state][command] = (staff_only, text)
 
+    def del_state_help(self, state, topic):
+        """Manually delete an help topic from state help system. Note that this is
+        only going to last until the next @reload unless you also turn off auto_help
+        for the relevant topic."""
+        if self.help_index.has_key(state) and self.help_index[state].has_key(topic):
+            del self.help_index[state][topic]
+            return True
+        else: 
+            return False
+        
     def get_state_help(self,caller, state, command):
         "get help for a particular command within a state"
         if self.help_index.has_key(state) and self.help_index[state].has_key(command):
@@ -204,6 +214,8 @@ def cmd_state_help(command):
     source_object = command.source_object
     state = source_object.get_state()
     args = command.command_argument
+    switches = command.command_switches
+
     help_index = GLOBAL_STATE_TABLE.help_index
 
     if not args:
@@ -219,6 +231,17 @@ def cmd_state_help(command):
         return
     else:
         args = args.strip()
+
+        if 'del' in switches:
+            if not source_object.is_staff():
+                source_object.emit_to("Only staff can delete help topics.")
+                return
+            if help_index.del_state_help(state,args):
+                source_object.emit_to("Topic %s deleted." % args)
+            else:
+                source_object.emit_to("Topic %s not found." % args)
+            return
+        
         help = help_index.get_state_help(source_object, state, args)
         if help:
             source_object.emit_to("%s" % help)

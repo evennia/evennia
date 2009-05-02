@@ -53,8 +53,8 @@ def cmd_entermenu(command):
     # and clear_state(), the latter returns the player to
     # the normal mode of gameplay. 
     source_object.set_state(STATENAME)
-    #display the menu.
-    print_menu(source_object)    
+    #show the menu.
+    source_object.execute_cmd('menu')    
 
 #
 # Commands only available while in the 'menu' state. Note that
@@ -64,23 +64,24 @@ def cmd_entermenu(command):
 def menu_cmd_option1(command):
     """
     option1
-    This selects the first option.
+    This command, obviously,  selects the first option.
     """
     source_object = command.source_object
     print_menu(source_object, 1)
 def menu_cmd_option2(command):
     """
     option2
-    This selects the second option. Duh.
-    <<TOPIC:About>>    
-    This is an extra topic to test the auto_help functionality.
+    This command selects the second option. Duh.
     """
     source_object = command.source_object
     print_menu(source_object, 2)
-def menu_cmd_clear(command):
+def menu_cmd_menu(command):
     """
-    clear
-    Clears the options.  
+    menu
+    Clears the options and redraws the menu.  
+    <<TOPIC:autohelp>>    
+    This is an extra topic to test the auto-help functionality. The state-help
+    system supports nested ('related') topics just like the normal help index does.
     """
     source_object = command.source_object
     print_menu(source_object)
@@ -100,10 +101,8 @@ def print_menu(source_obj,choice=None):
     else:
         ch = "  %soption1\n  option2" % ('%cn%cy')
         
-    s ="%sMenu---------\n%s\n  %shelp - get help" % ('%ch%cr',ch,'%cn%cy')
+    s ="%sMenu: \n%s\n  %shelp" % ('%ch%cr',ch,'%cn%cy')
     source_obj.emit_to(s)
-
-
 
 #Add the 'entry' command to the normal command table
 GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
@@ -114,4 +113,4 @@ GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
 #while in the menu.
 GLOBAL_STATE_TABLE.add_command(STATENAME, "option1", menu_cmd_option1,auto_help=True)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "option2", menu_cmd_option2,auto_help=True)
-GLOBAL_STATE_TABLE.add_command(STATENAME, "clear", menu_cmd_clear,auto_help=True)
+GLOBAL_STATE_TABLE.add_command(STATENAME, "menu", menu_cmd_menu,auto_help=True)
