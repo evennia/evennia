@@ -64,11 +64,6 @@ class RedButton(BasicObject):
         """
         This function is called when object is created. Use this
         preferably over __init__.
-
-        In this case all we do is add the commandtable
-        to the object's own command_table variable; this makes
-        the commands we've added to COMMAND_TABLE available to
-        the user whenever the object is around.
         """
         #get stored object related to this class
         obj = self.scripted_obj

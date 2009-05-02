@@ -19,20 +19,20 @@ def cmd_addcom(command):
     addcom foo=Bar
     """
     source_object = command.source_object
+    command_argument = command.command_argument
 
-    if not command.command_argument:
-        source_object.emit_to("You need to specify a channel alias and name.")
-        return
-    
-    eq_args = command.command_argument.split('=', 1)
-           
-    chan_alias = eq_args[0]
-    chan_name = eq_args[1]
-    
-    if len(eq_args) < 2 or len(chan_name) == 0:
-        source_object.emit_to("You need to specify a channel name.")
-        return
+    if not command_argument:
+        source_object.emit_to("Usage: addcom [alias=]channelname.")
+        return    
+    command_argument
 
+    if '=' in command_argument:        
+        chan_alias, chan_name = command.command_argument.split('=', 1)
+        chan_alias, chan_name = chan_alias.strip(), chan_name.strip()
+    else:
+        chan_name = command_argument.strip()
+        chan_alias = chan_name
+        
     if chan_alias in command.session.channels_subscribed:
         source_object.emit_to("You are already on that channel.")
         return

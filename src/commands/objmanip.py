@@ -257,9 +257,11 @@ def cmd_find(command):
 
     if len(results) > 0:
         source_object.emit_to("Name matches for: %s" % (searchstring,))
+        s = ""
         for result in results:
-            source_object.emit_to(" %s" % (result.get_name(fullname=True),))
-        source_object.emit_to("%d matches returned." % (len(results),))
+            s += " %s\n\r" % (result.get_name(fullname=True),)
+        s += "%d matches returned." % (len(results),)
+        source_object.emit_to(s)
     else:
         source_object.emit_to("No name matches found for: %s" % (searchstring,))
 GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
