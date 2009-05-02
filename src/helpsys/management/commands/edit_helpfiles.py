@@ -78,10 +78,10 @@ def handle_help_markup(topicstr, entrytext, staff_only, identifier="<<TOPIC:"):
     topic_dict = {}
     staff_dict = {}
     for txt in topic_list:
-        txt = txt.strip()
+        txt = txt.rstrip()
         if txt.count('>>'):
             topic, text = txt.split('>>',1)                  
-            text = text.strip()
+            text = text.rstrip()
             topic = topic.lower()
             
             if topic in topic_dict.keys():
@@ -99,7 +99,7 @@ def handle_help_markup(topicstr, entrytext, staff_only, identifier="<<TOPIC:"):
         else:
             #no markup, just add the entry as-is
             topic = topicstr.lower()
-            topic_dict[topic] = '\r\n' + txt
+            topic_dict[topic] = txt
             staff_dict[topic] = staff_only
     return topic_dict, staff_dict
 
@@ -119,14 +119,13 @@ def format_footer(top, text, topic_dict, staff_dict):
             other_topics = other_topics = filter(lambda o: o != top and not staff_dict[o],
                                                  topic_dict.keys())           
         if other_topics:
-            footer = ANSITable.ansi['normal'] + "\n\r Related Topics: "            
+            footer = ANSITable.ansi['normal'] + "\n\r\n\r    Related Topics: "            
             for t in other_topics:
                 footer += t + ', '
             footer = footer[:-2] + '.'
             return text + footer
         else:
-            return text
-            
+            return text            
     else:
         return False
 

@@ -135,6 +135,7 @@ class StateHelpIndex(object):
         Supports <<TOPIC:MyTopic>> and <<TOPIC:STAFF:MyTopic>> markup."""
         if self.help_index.has_key(state):
 
+            text = text.rstrip()
             if self.identifier in text:
                 topic_dict, staff_dict = edit_help.handle_help_markup(command, text, staff_only,
                                                                       identifier=self.identifier)
@@ -210,10 +211,10 @@ def cmd_state_help(command):
         if not index:
             source_object.emit_to("There is no help available here.")
             return        
-        s = "Help topics for %s:\n" % state        
+        s = "Help topics for %s:\n\r" % state        
         for i in index:
-            s += "  %s\n" % i
-        s = s[:-1]
+            s += "    %s\n\r" % i
+        s = s[:-2]
         source_object.emit_to(s)
         return
     else:

@@ -72,8 +72,7 @@ def menu_cmd_option2(command):
     """
     option2
     This selects the second option. Duh.
-
-    <<TOPIC:About>>
+    <<TOPIC:About>>    
     This is an extra topic to test the auto_help functionality.
     """
     source_object = command.source_object
@@ -95,13 +94,13 @@ def print_menu(source_obj,choice=None):
     would happen here in a real menu. 
     """
     if choice==1:
-        ch = "> option1\n  option2"
+        ch = "%s> option1\n  %soption2" % ('%ch%cy','%cn%cy') #ansi colouring; see src.ansi
     elif choice==2:
-        ch = "  option1\n> option2"
+        ch = "  %soption1\n%s> option2" % ('%cn%cy','%ch%cy')
     else:
-        ch = "  option1\n  option2"
+        ch = "  %soption1\n  option2" % ('%cn%cy')
         
-    s ="Menu---------\n%s\n  help - get help" % ch
+    s ="%sMenu---------\n%s\n  %shelp - get help" % ('%ch%cr',ch,'%cn%cy')
     source_obj.emit_to(s)
 
 
