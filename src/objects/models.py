@@ -2,6 +2,10 @@
 This is where all of the crucial, core object models reside. 
 """
 import re
+
+try: import cPickle as pickle
+except ImportError: import pickle
+
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -14,6 +18,7 @@ from src import scripthandler
 from src import defines_global
 from src import session_mgr
 from src import logger
+
 # Import as the absolute path to avoid local variable clashes.
 import src.flags
 from src.util import functions_general
@@ -30,9 +35,10 @@ class Attribute(models.Model):
     attributes on the fly as we like.
     """
     attr_name = models.CharField(max_length=255)
-    attr_value = models.CharField(max_length=255)
+    attr_value = models.TextField(blank=True, null=True)
     attr_hidden = models.BooleanField(default=False)
     attr_object = models.ForeignKey("Object")
+    attr_ispickled = models.BooleanField(default=False)
     
     objects = AttributeManager()
     
@@ -51,8 +57,11 @@ class Attribute(models.Model):
     def get_value(self):
         """
         Returns an attribute's value.
-        """
-        return self.attr_value
+        """        
+        attr_value = str(self.attr_value)        
+        if self.attr_ispickled:
+            attr_value = pickle.loads(attr_value)                        
+        return attr_value
     
     def get_object(self):
         """
@@ -73,8 +82,7 @@ class Attribute(models.Model):
         """
         Returns True if the attribute is unsettable.
         """
-        if self.get_name().upper() in defines_global.NOSET_ATTRIBS:
-            return True
+        if self.get_name().upper() in defines_global.NOSET_ATTRIBS:            return True
         else:
             return False
         
@@ -83,10 +91,10 @@ class Attribute(models.Model):
         Best described as a __str__ method for in-game. Renders the attribute's
         name and value as per MUX.
         """
+        
         return "%s%s%s: %s" % (ANSITable.ansi["hilite"], 
-            self.get_name(), 
-            ANSITable.ansi["normal"], 
-            self.get_value())
+                               self.get_name(),ANSITable.ansi["normal"],
+                               self.get_value())
 
 class Object(models.Model):
     """
@@ -455,33 +463,7 @@ class Object(models.Model):
             # Format the Python list to a space separated string of flags
             return " ".join(all_flags)
         
-    def clear_attribute(self, attribute):
-        """
-        Removes an attribute entirely.
-        
-        attribute: (str) The attribute's name.
-        """
-        if self.has_attribute(attribute):
-            attrib_obj = self.get_attribute_obj(attribute)
-            attrib_obj.delete()
-            return True
-        else:
-            return False
-            
-    def get_all_attributes(self):
-        """
-        Returns a QuerySet of an object's attributes.
-        """
-        return [attr for attr in self.attribute_set.all() if not attr.is_hidden()]
-        
-    def clear_all_attributes(self):
-        """
-        Clears all of an object's attributes.
-        """
-        attribs = self.get_all_attributes()
-        for attrib in attribs:
-            attrib.delete()
-    
+
     def destroy(self):    
         """
         Destroys an object, sets it to GOING. Can still be recovered
@@ -583,36 +565,107 @@ class Object(models.Model):
             obj.move_to(home)
             obj.save()
 
-    def set_attribute(self, attribute, new_value):
+    def set_attribute(self, attribute, new_value=None):
         """
         Sets an attribute on an object. Creates the attribute if need
         be.
         
         attribute: (str) The attribute's name.
-        new_value: (str) The value to set the attribute to.
+        new_value: (python obj) The value to set the attribute to. If this is not
+                                a str, the object will be stored as a pickle.  
         """
-        
-        new_value = str(new_value).strip()
+
+        attrib_obj = None
         if self.has_attribute(attribute):
-            # Attribute already exists, update it.
-            attrib_obj = Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
-            if not new_value:
-                # If you do something like @set me=SOMEATTR:, destroy the attrib.
-                attrib_obj.delete()
+            attrib_obj = \
+              Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
+                    
+        if new_value:
+            #pickle if anything else than str
+            if type(new_value) != type(str()):
+                new_value = pickle.dumps(new_value)#,pickle.HIGHEST_PROTOCOL)
+                ispickled = True
             else:
-                # Otherwise, save over the existing attribute's value.
+                new_value = new_value.strip()               
+                ispickled = False
+
+            if attrib_obj:                
+                # Save over the existing attribute's value.
                 attrib_obj.attr_value = new_value
+                attrib_obj.attr_ispickled = ispickled
                 attrib_obj.save()
-        else:
-            if new_value:
-                # No object currently exist, so create it.
+            else:
+                # Create a new attribute
                 new_attrib = Attribute()
                 new_attrib.attr_name = attribute
                 new_attrib.attr_value = new_value
                 new_attrib.attr_object = self
                 new_attrib.attr_hidden = False
+                new_attrib.attr_ispickled = ispickled
                 new_attrib.save()
+
+        elif attrib_obj:
+            # If you do something like @set me=attrib: , destroy the attrib.            
+            attrib_obj.delete()
+                            
+
+    def get_attribute_value(self, attrib, default=None):
+        """
+        Returns the value of an attribute on an object. You may need to
+        type cast the returned value from this function since the attribute
+        can be of any type.
+        
+        attrib: (str) The attribute's name.
+        """
+        if self.has_attribute(attrib):            
+            attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)[0]
+            return attrib.get_value()
+        else:            
+            return default
             
+
+    def get_attribute_obj(self, attrib):
+        """
+        Returns the attribute object matching the specified name.
+        
+        attrib: (str) The attribute's name.
+        """
+        if self.has_attribute(attrib):
+            return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
+        else:
+            return False
+
+
+    def clear_attribute(self, attribute):
+        """
+        Removes an attribute entirely.
+        
+        attribute: (str) The attribute's name.
+        """
+        if self.has_attribute(attribute):
+            attrib_obj = self.get_attribute_obj(attribute)
+            attrib_obj.delete()
+            return True
+        else:
+            return False
+            
+
+    def get_all_attributes(self):
+        """
+        Returns a QuerySet of an object's attributes.
+        """
+        return [attr for attr in self.attribute_set.all() if not attr.is_hidden()]
+        
+
+    def clear_all_attributes(self):
+        """
+        Clears all of an object's attributes.
+        """
+        attribs = self.get_all_attributes()
+        for attrib in attribs:
+            attrib.delete()
+
+
     def has_attribute(self, attribute):
         """
         See if we have an attribute set on the object.
@@ -625,6 +678,7 @@ class Object(models.Model):
         else:
             return True
             
+
     def attribute_namesearch(self, searchstr, exclude_noset=False):
         """
         Searches the object's attributes for name matches against searchstr
@@ -644,6 +698,7 @@ class Object(models.Model):
         else:
             return [attr for attr in attrs if match_exp.search(attr.get_name()) and not attr.is_hidden()]
         
+
     def has_flag(self, flag):
         """
         Does our object have a certain flag?
@@ -800,30 +855,6 @@ class Object(models.Model):
             self.script_parent = parent_str
         self.save()
         return True
-
-    def get_attribute_value(self, attrib, default=None):
-        """
-        Returns the value of an attribute on an object. You may need to
-        type cast the returned value from this function!
-        
-        attrib: (str) The attribute's name.
-        """
-        if self.has_attribute(attrib):            
-            attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
-            return attrib[0].attr_value
-        else:            
-            return default
-            
-    def get_attribute_obj(self, attrib):
-        """
-        Returns the attribute object matching the specified name.
-        
-        attrib: (str) The attribute's name.
-        """
-        if self.has_attribute(attrib):
-            return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
-        else:
-            return False
     
     def get_contents(self, filter_type=None):
         """

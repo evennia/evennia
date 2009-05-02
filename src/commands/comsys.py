@@ -15,17 +15,20 @@ def cmd_addcom(command):
     """
     addcom
 
-    Adds an alias for a channel.
-    addcom foo=Bar
+    Usage:
+       addcom [alias=] <channel>
+       
+    Joins a channel. Allows adding an alias for it to make it
+    easier and faster to use. Subsequent calls of this command
+    can be used to add multiple aliases. 
     """
     source_object = command.source_object
     command_argument = command.command_argument
 
     if not command_argument:
         source_object.emit_to("Usage: addcom [alias=]channelname.")
-        return    
-    command_argument
-
+        return
+    
     if '=' in command_argument:        
         chan_alias, chan_name = command.command_argument.split('=', 1)
         chan_alias, chan_name = chan_alias.strip(), chan_name.strip()
@@ -35,7 +38,7 @@ def cmd_addcom(command):
         
     if chan_alias in command.session.channels_subscribed:
         source_object.emit_to("You are already on that channel.")
-        return
+        return 
 
     name_matches = src.comsys.cname_search(chan_name, exact=True)
 
@@ -57,6 +60,9 @@ GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom),
 def cmd_delcom(command):
     """
     delcom
+
+    Usage:
+       delcom <alias>
 
     Removes the specified alias to a channel. If this is the last alias,
     the user is effectively removed from the channel.
@@ -282,6 +288,10 @@ GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit),
 def cmd_cwho(command):
     """
     @cwho
+       list 
+    
+    Usage: 
+       @cwho channel[/all]
 
     Displays the name, status and object type for a given channel.
     Adding /all after the channel name will list disconnected players
@@ -291,6 +301,7 @@ def cmd_cwho(command):
     source_object = command.source_object
 
     if not command.command_argument:
+        cmd_clist(command)
         source_object.emit_to("You must specify a channel name.")
         return
     
