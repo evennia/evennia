@@ -286,10 +286,7 @@ def cmd_examine(command):
         s += str("Owner: %s " % target_obj.get_owner()) + newl
         s += str("Zone: %s" % target_obj.get_zone()) + newl
         s += str("Parent: %s " % target_obj.get_script_parent()) + newl
-        
-        for attribute in target_obj.get_all_attributes():            
-            s += str(attribute.get_attrline()) + newl
-        
+               
         # Contents container lists for sorting by type.
         con_players = []
         con_things = []
@@ -303,7 +300,21 @@ def cmd_examine(command):
                 con_exits.append(obj)
             elif obj.is_thing():
                 con_things.append(obj)
-       
+        
+        # Render the object's home or destination (for exits).
+        if not target_obj.is_room():
+            if target_obj.is_exit():
+                # The Home attribute on an exit is really its destination.
+                s += str("Destination: %s" % target_obj.get_home()) + newl
+            else:
+                # For everything else, home is home.
+                s += str("Home: %s" % target_obj.get_home()) + newl
+            # This obviously isn't valid for rooms.    
+            s += str("Location: %s" % target_obj.get_location()) + newl
+
+        for attribute in target_obj.get_all_attributes():            
+            s += str(attribute.get_attrline()) + newl
+
         # Render Contents display.
         if con_players or con_things:
             s += str("%sContents:%s" % (ANSITable.ansi["hilite"], 
@@ -319,17 +330,9 @@ def cmd_examine(command):
                                         ANSITable.ansi["normal"])) + newl
             for exit in con_exits:
                 s += str(' %s' % exit.get_name(fullname=True)) + newl
-        
-        # Render the object's home or destination (for exits).
-        if not target_obj.is_room():
-            if target_obj.is_exit():
-                # The Home attribute on an exit is really its destination.
-                s += str("Destination: %s" % target_obj.get_home()) + newl
-            else:
-                # For everything else, home is home.
-                s += str("Home: %s" % target_obj.get_home()) + newl
-            # This obviously isn't valid for rooms.    
-            s += str("Location: %s" % target_obj.get_location()) + newl
+
+ 
+
         source_object.emit_to(s)
             
 GLOBAL_CMD_TABLE.add_command("examine", cmd_examine)

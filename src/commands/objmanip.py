@@ -649,10 +649,15 @@ GLOBAL_CMD_TABLE.add_command("@unlink", cmd_unlink,
 
 def cmd_dig(command):
     """
-    Creates a new room object.
+    Creates a new room object and optionally connects it to
+    where you are.
     
-    @dig[/teleport] roomname [:parent] [=exitthere,exithere]
-   
+    Usage: 
+       @dig[/switches] roomname [:parent] [=exitthere,exithere]
+
+    switches:
+       teleport - move yourself to the new room
+    
     """
     source_object = command.source_object
     
@@ -661,6 +666,10 @@ def cmd_dig(command):
 
     parent = ''
     exits = []
+
+    if not args:
+        source_object.emit_to("Usage[/teleport]: @dig roomname [:parent] [=exitthere,exithere]")
+        return
 
     #handle arguments
     if ':' in args:
