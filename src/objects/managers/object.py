@@ -255,17 +255,16 @@ class ObjectManager(models.Manager):
         except self.model.DoesNotExist:
             raise ObjectNotExist(dbref)
         
-    def create_object(self, odat):
+    def create_object(self, name, otype, location, owner, home=None):
         """
-        Create a new object. odat is a dictionary that contains the following keys.
-        REQUIRED KEYS:
-         * type: Integer representing the object's type.
-         * name: The name of the new object.
-         * location: Reference to another object for the new object to reside in.
-         * owner: The creator of the object.
-        OPTIONAL KEYS:
-         * home: Reference to another object to home to. If not specified, use 
-            location key for home.
+        Create a new object
+
+         type:     Integer representing the object's type.
+         name:     The name of the new object.
+         location: Reference to another object for the new object to reside in.
+         owner:    The creator of the object.
+         home:     Reference to another object to home to. If not specified,  
+                   set to location.
         """
         #get_nextfree_dbnum() returns either an integer or an object to recycle.
         next_dbref = self.get_nextfree_dbnum()
@@ -280,36 +279,36 @@ class ObjectManager(models.Manager):
             #recycle an old object's dbref
             new_object = next_dbref
 
-        new_object.type = odat["type"]        
-        new_object.set_name(odat["name"])
+        new_object.type = otype
+        new_object.set_name(name)
 
         # If this is a player, we don't want him owned by anyone.
         # The get_owner() function will return that the player owns
         # himself.
-        if odat["type"] == defines_global.OTYPE_PLAYER:
+        if otype == defines_global.OTYPE_PLAYER:
             new_object.owner = None
             new_object.zone = None
         else:
-            new_object.owner = odat["owner"]
+            new_object.owner = owner
             
             if new_object.get_owner().get_zone():
                 new_object.zone = new_object.get_owner().get_zone()
 
         # If we have a 'home' key, use that for our home value. Otherwise use
         # the location key.
-        if odat.has_key("home"):
-            new_object.home = odat["home"]
+        if home:
+            new_object.home = home
         else:
             if new_object.is_exit():
                 new_object.home = None
             else:
-                new_object.home = odat["location"]
+                new_object.home = location
                 
         new_object.save()
 
         # Rooms have a NULL location.
         if not new_object.is_room():
-            new_object.move_to(odat['location'], force_look=False)
+            new_object.move_to(location, force_look=False)
         
         return new_object
 
@@ -351,12 +350,15 @@ class ObjectManager(models.Manager):
         user = User.objects.get(id=uid)
 
         # Create a player object of the same ID in the Objects table.
-        odat = {"id": uid, 
-                "name": uname, 
-                "type": defines_global.OTYPE_PLAYER, 
-                "location": start_room_obj, 
-                "owner": None}
-        user_object = self.create_object(odat)
+        #odat = {"id": uid, 
+        #        "name": uname, 
+        #        "type": defines_global.OTYPE_PLAYER, 
+        #        "location": start_room_obj, 
+        #        "owner": None}
+        user_object = self.create_object(uname,
+                                         defines_global.OTYPE_PLAYER,
+                                         start_room_obj,
+                                         None)
 
         # The User and player Object are ready, do anything needed by the
         # game to further prepare things.

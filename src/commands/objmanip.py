@@ -291,11 +291,14 @@ def cmd_create(command):
     
     # Create and set the object up.
     # TODO: This dictionary stuff is silly. Feex.
-    odat = {"name": target_name, 
-            "type": defines_global.OTYPE_THING, 
-            "location": source_object, 
-            "owner": source_object}
-    new_object = Object.objects.create_object(odat)
+    #odat = {"name": target_name, 
+    #        "type": defines_global.OTYPE_THING, 
+    #        "location": source_object, 
+    #        "owner": source_object}
+    new_object = Object.objects.create_object(target_name,
+                                              defines_global.OTYPE_THING,
+                                              source_object,
+                                              source_object)
     new_object.set_attribute('desc', 'Nothing special.')
     if len(eq_args)>1:
         parent_str = eq_args[1]
@@ -431,37 +434,48 @@ def cmd_open(command):
             source_object.emit_to("You can't open an exit to an exit!")
             return
 
-        odat = {"name": exit_name, 
-                "type": defines_global.OTYPE_EXIT, 
-                "location": source_object.get_location(), 
-                "owner": source_object, 
-                "home": destination}
-        new_object = Object.objects.create_object(odat)
+        #odat = {"name": exit_name, 
+        #        "type": defines_global.OTYPE_EXIT, 
+        #        "location": source_object.get_location(), 
+        #        "owner": source_object, 
+        #        "home": destination}
+        new_object = Object.objects.create_object(exit_name,
+                                                  defines_global.OTYPE_EXIT,
+                                                  source_object.get_location(),
+                                                  source_object,
+                                                  destination)
 
         source_object.emit_to("You open the an exit - %s to %s" % (
                                                         new_object.get_name(),
                                                         destination.get_name()))
         if len(comma_split) > 1:
             second_exit_name = ','.join(comma_split[1:])
-            odat = {"name": second_exit_name, 
-                    "type": defines_global.OTYPE_EXIT, 
-                    "location": destination, 
-                    "owner": source_object, 
-                    "home": source_object.get_location()}
-            new_object = Object.objects.create_object(odat)
+            #odat = {"name": second_exit_name, 
+            #        "type": defines_global.OTYPE_EXIT, 
+            #        "location": destination, 
+            #        "owner": source_object, 
+            #        "home": source_object.get_location()}
+            new_object = Object.objects.create_object(second_exit_name,
+                                                      defines_global.OTYPE_EXIT,
+                                                      destination,
+                                                      source_object,
+                                                      source_object.get_location())
             source_object.emit_to("You open the an exit - %s to %s" % (
                                             new_object.get_name(),
                                             source_object.get_location().get_name()))
 
     else:
         # Create an un-linked exit.
-        odat = {"name": exit_name, 
-                "type": defines_global.OTYPE_EXIT, 
-                "location": source_object.get_location(), 
-                "owner": source_object, 
-                "home": None}
-        new_object = Object.objects.create_object(odat)
-
+        #odat = {"name": exit_name, 
+        #        "type": defines_global.OTYPE_EXIT, 
+        #        "location": source_object.get_location(), 
+        #        "owner": source_object, 
+        #        "home": None}
+        new_object = Object.objects.create_object(exit_name,
+                                                  defines_global.OTYPE_EXIT,
+                                                  source_object.get_location(),
+                                                  source_object,
+                                                  None)
         source_object.emit_to("You open an unlinked exit - %s" % new_object)
 GLOBAL_CMD_TABLE.add_command("@open", cmd_open,
                              priv_tuple=("genperms.builder"))
@@ -695,11 +709,14 @@ def cmd_dig(command):
         source_object.emit_to("You must supply a new room name.")
     else:
         # Create and set the object up.
-        odat = {"name": roomname, 
-                "type": defines_global.OTYPE_ROOM, 
-                "location": None, 
-                "owner": source_object}
-        new_room = Object.objects.create_object(odat)
+        #odat = {"name": roomname, 
+        #        "type": defines_global.OTYPE_ROOM, 
+        #        "location": None, 
+        #        "owner": source_object}
+        new_room = Object.objects.create_object(roomname,
+                                                defines_global.OTYPE_ROOM,
+                                                None,
+                                                source_object)
         source_object.emit_to("Created a new room '%s'." % (new_room,))
         
         if parent:
@@ -714,22 +731,30 @@ def cmd_dig(command):
                 location = source_object.get_location()
 
                 #create an exit from here to the new room. 
-                odat = {"name": exits[0].strip(), 
-                        "type": defines_global.OTYPE_EXIT, 
-                        "location": location, 
-                        "owner": source_object, 
-                        "home": destination}
-                new_object = Object.objects.create_object(odat)
+                #odat = {"name": exits[0].strip(), 
+                #        "type": defines_global.OTYPE_EXIT, 
+                #        "location": location, 
+                #        "owner": source_object, 
+                #        "home": destination}
+                new_object = Object.objects.create_object(exits[0].strip(),
+                                                          defines_global.OTYPE_EXIT,
+                                                          location,
+                                                          source_object,
+                                                          destination)
                 source_object.emit_to("Created exit from %s to %s named '%s'." % (location,destination,new_object))
 
                 if len(exits)>1:
                     #create exit back to this room
-                    odat = {"name": exits[1].strip(), 
-                            "type": defines_global.OTYPE_EXIT, 
-                            "location": destination, 
-                            "owner": source_object, 
-                            "home": location}
-                    new_object = Object.objects.create_object(odat)
+                    #odat = {"name": exits[1].strip(), 
+                    #        "type": defines_global.OTYPE_EXIT, 
+                    #        "location": destination, 
+                    #        "owner": source_object, 
+                    #        "home": location}
+                    new_object = Object.objects.create_object(exits[1].strip(),
+                                                              defines_global.OTYPE_EXIT,
+                                                              destination,
+                                                              source_object,
+                                                              location)
                     source_object.emit_to("Created exit back from %s to %s named '%s'" % (destination, location, new_object))
         if 'teleport' in switches:
             source_object.move_to(new_room)
