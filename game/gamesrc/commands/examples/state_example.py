@@ -35,7 +35,6 @@ from src.statetable import GLOBAL_STATE_TABLE
 #the name of our state, to make sure it's the same everywhere
 STATENAME = 'menu'
 
-
 #
 # 'entry' command
 #    

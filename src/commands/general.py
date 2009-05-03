@@ -282,7 +282,7 @@ def cmd_examine(command):
         s += str(target_obj.get_name(fullname=True)) + newl
         s += str("Type: %s Flags: %s" % (target_obj.get_type(), 
                                          target_obj.get_flags())) + newl
-        s += str("Desc: %s" % target_obj.get_description(no_parsing=True)) + newl
+        #s += str("Desc: %s" % target_obj.get_attribute_value('desc')) + newl
         s += str("Owner: %s " % target_obj.get_owner()) + newl
         s += str("Zone: %s" % target_obj.get_zone()) + newl
         s += str("Parent: %s " % target_obj.get_script_parent()) + newl

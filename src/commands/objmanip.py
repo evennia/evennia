@@ -296,7 +296,7 @@ def cmd_create(command):
             "location": source_object, 
             "owner": source_object}
     new_object = Object.objects.create_object(odat)
-
+    new_object.set_attribute('desc', 'Nothing special.')
     if len(eq_args)>1:
         parent_str = eq_args[1]
         if parent_str and new_object.set_script_parent(parent_str):
@@ -797,12 +797,12 @@ def cmd_description(command):
         return
 
     new_desc = eq_args[1]
-    if new_desc == '':
-        source_object.emit_to("%s - DESCRIPTION cleared." % target_obj)
-        target_obj.set_description(None)
+    if not new_desc:
+        source_object.emit_to("%s - description cleared." % target_obj)
+        target_obj.set_attribute('desc', 'Nothing special.')
     else:
-        source_object.emit_to("%s - DESCRIPTION set." % target_obj)
-        target_obj.set_description(new_desc)
+        source_object.emit_to("%s - description set." % target_obj)
+        target_obj.set_attribute('desc', new_desc)
 GLOBAL_CMD_TABLE.add_command("@describe", cmd_description)
 
 def cmd_recover(command):

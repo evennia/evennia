@@ -98,11 +98,11 @@ class EvenniaBasicObject(object):
         else:
             show_dbrefs = False
             
-        description = target_obj.get_description()
+        description = target_obj.get_attribute_value('desc')
         if description is not None:
             retval = "%s\r\n%s" % (
                 target_obj.get_name(show_dbref=show_dbrefs),
-                target_obj.get_description(),
+                target_obj.get_attribute_value('desc'),
             )
         else:
             retval = "%s" % (

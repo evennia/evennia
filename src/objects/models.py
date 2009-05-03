@@ -113,8 +113,10 @@ class Object(models.Model):
     script_parent = models.CharField(max_length=255, blank=True, null=True)
     home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
     type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
+
     # TODO: Move description to an attribute.
-    description = models.TextField(blank=True, null=True)
+    #description = models.TextField(blank=True, null=True)
+
     location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
     flags = models.TextField(blank=True, null=True)
     nosave_flags = models.TextField(blank=True, null=True)
@@ -127,7 +129,6 @@ class Object(models.Model):
 
     #state system can set a particular command table to be used.
     state = None
-
 
     def __cmp__(self, other):
         """
@@ -409,39 +410,34 @@ class Object(models.Model):
             return "%s%s" % (parse_ansi(name_string.split(';')[0], 
                                              strip_ansi=no_ansi), dbref_string)
 
-    def set_description(self, new_desc):
-        """
-        Set an objects description
-        """
-        if new_desc == '':
-            self.description = None
-        else:
-            self.description = new_desc
-        self.save()
+##     def set_description(self, new_desc=''):
+##         """
+##         Set an objects description
+##         """        
+##         if not new_desc:
+##             self.set_attribute('desc', 'Nothing special')
+##             #self.description = None
+##         else:
+##             self.set_attribute('desc', new_desc)
+##             #self.description = new_desc
+##         self.save()
 
-    def get_description(self, no_parsing=False, wrap_text=False):
-        """
-        Returns an object's ANSI'd description or None if description is not
-        set.
-        """
-        try:
-            # If no description is set, return None
-            if self.description is None:
-                return None
-            # Evaluate ANSI and stuff?
-            if no_parsing:
-                retval = self.description
-            else:
-                retval = parse_ansi(self.description)        
-
-            # Default to a 78 character wrap.
-            if wrap_text:
-                return functions_general.word_wrap(retval)
-            else:
-                return retval
-        except:
-            # No description attribute present, return empty string.
-            return None
+##     def get_description(self, no_parsing=False, wrap_text=False):
+##         """
+##         Returns an object's ANSI'd description or None if description is not
+##         set.
+##         """        
+##         desc = self.get_attribute_value('desc')
+##         if desc:
+##             if not no_parsing:
+##                 desc = parse_ansi(desc)            
+##             if wrap_text:
+##                 return functions_general.word_wrap(desc)
+##             else:
+##                 return desc
+##         else:
+##             # No description attribute present, return empty string.
+##             return ""
     
     def get_flags(self):
         """
@@ -580,13 +576,13 @@ class Object(models.Model):
             attrib_obj = \
               Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
                     
-        if new_value:
+        if new_value != None:
             #pickle if anything else than str
             if type(new_value) != type(str()):
                 new_value = pickle.dumps(new_value)#,pickle.HIGHEST_PROTOCOL)
                 ispickled = True
             else:
-                new_value = new_value.strip()               
+                new_value = new_value
                 ispickled = False
 
             if attrib_obj:                
@@ -605,7 +601,7 @@ class Object(models.Model):
                 new_attrib.save()
 
         elif attrib_obj:
-            # If you do something like @set me=attrib: , destroy the attrib.            
+            # If you do something like @set me=attrib: , destroy the attrib.   
             attrib_obj.delete()
                             
 

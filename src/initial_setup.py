@@ -33,6 +33,7 @@ def create_objects():
     # Create the matching PLAYER object in the object DB.
     god_user_obj = Object(id=1, type=defines_global.OTYPE_PLAYER)
     god_user_obj.set_name(god_user.username)
+    god_user_obj.set_attribute('desc', 'You are Player #1.')
     god_user_obj.scriptlink.at_player_creation()
     god_user_obj.save()
     
@@ -40,7 +41,7 @@ def create_objects():
     limbo_obj = Object(id=2, type=defines_global.OTYPE_ROOM)
     limbo_obj.set_owner(god_user_obj)
     limbo_obj.set_name('%ch%ccLimbo%cn')
-    limbo_obj.set_description("Welcome to your new Evennia-based game. From here you are ready to begin development. If you should need help or would like to participate in community discussions, visit http://evennia.com.")
+    limbo_obj.set_attribute('desc',"Welcome to your new Evennia-based game. From here you are ready to begin development. If you should need help or would like to participate in community discussions, visit http://evennia.com.")
     limbo_obj.scriptlink.at_object_creation()
     limbo_obj.save()
 

@@ -68,7 +68,7 @@ class RedButton(BasicObject):
         #get stored object related to this class
         obj = self.scripted_obj
         
-        obj.set_description("This is your standard big red button.")
+        obj.set_attribute('desc', "This is your standard big red button.")
         obj.set_attribute("breakpoint", 10)
         obj.set_attribute("count", 0)
         
