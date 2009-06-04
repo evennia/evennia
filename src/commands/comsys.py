@@ -3,7 +3,8 @@ Comsys command module.
 """
 import time
 from django.conf import settings
-import src.comsys
+from src import comsys
+from src.channels.models import CommChannelMembership, CommChannel
 from src import defines_global
 from src import ansi
 from src.util import functions_general
@@ -36,24 +37,26 @@ def cmd_addcom(command):
         chan_name = command_argument.strip()
         chan_alias = chan_name
         
-    if chan_alias in command.session.channels_subscribed:
+    if source_object.channel_membership_set.filter(channel__name__iexact=chan_name):
         source_object.emit_to("You are already on that channel.")
         return 
 
-    name_matches = src.comsys.cname_search(chan_name, exact=True)
-
-    if name_matches:
-        chan_name_parsed = name_matches[0].get_name()
+    try:
+        chan = CommChannel.objects.get(name__iexact=chan_name)
+        # This adds a CommChannelMembership object and a matching dict entry
+        # on the session's cdict.
+        comsys.plr_add_channel(source_object, chan_alias, chan)
+        
+        # Let the player know everything went well.
         source_object.emit_to("You join %s, with an alias of %s." % \
-            (chan_name_parsed, chan_alias))
-        src.comsys.plr_set_channel(command.session, chan_alias, 
-                                   chan_name_parsed, True)
+            (chan.get_name(), chan_alias))
 
         # Announce the user's joining.
         join_msg = "%s has joined the channel." % \
             (source_object.get_name(show_dbref=False),)
-        src.comsys.send_cmessage(chan_name_parsed, join_msg)
-    else:
+        comsys.send_cmessage(chan, join_msg)
+    except CommChannel.DoesNotExist:
+        # Failed to match iexact on channel's 'name' attribute.
         source_object.emit_to("Could not find channel %s." % chan_name)
 GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom),
 
@@ -73,18 +76,20 @@ def cmd_delcom(command):
         source_object.emit_to("You must specify a channel alias.")
         return
 
-    if command.command_argument not in command.session.channels_subscribed:
+    try:
+        membership = source_object.channel_membership_set.get(user_alias__iexact=command.command_argument)
+    except CommChannelMembership.DoesNotExist:
         source_object.emit_to("You are not on that channel.")
         return
 
-    chan_name = command.session.channels_subscribed[command.command_argument][0]
+    chan_name = membership.channel.get_name()
     source_object.emit_to("You have left %s." % chan_name)
-    src.comsys.plr_del_channel(command.session, command.command_argument)
+    comsys.plr_del_channel(source_object, command.command_argument)
 
     # Announce the user's leaving.
     leave_msg = "%s has left the channel." % \
         (source_object.get_name(show_dbref=False),)
-    src.comsys.send_cmessage(chan_name, leave_msg)
+    comsys.send_cmessage(chan_name, leave_msg)
 GLOBAL_CMD_TABLE.add_command("delcom", cmd_delcom),
 
 def cmd_comlist(command):
@@ -95,14 +100,16 @@ def cmd_comlist(command):
     session = command.session
 
     source_object.emit_to("Alias     Channel             Status")
-    for chan in session.channels_subscribed:
-        if session.channels_subscribed[chan][1]:
+    for membership in source_object.channel_membership_set.all():
+        chan = membership.channel
+        if membership.is_listening:
             chan_on = "On"
         else:
             chan_on = "Off"
             
-        source_object.emit_to("%-9.9s %-19.19s %s" %
-            (chan, session.channels_subscribed[chan][0], chan_on))
+        source_object.emit_to("%-9.9s %-19.19s %s" % (membership.user_alias, 
+                                                      chan.get_name(), 
+                                                      chan_on))
     source_object.emit_to("-- End of comlist --")
 GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist),
     
@@ -136,7 +143,7 @@ def cmd_clist(command):
     source_object = command.source_object
     
     source_object.emit_to("** Channel        Owner         Description")
-    for chan in src.comsys.get_all_channels():
+    for chan in comsys.get_all_channels():
         source_object.emit_to("%s%s %-15.14s%-22.15s%s" %
             ('-', 
              '-', 
@@ -159,7 +166,7 @@ def cmd_cdestroy(command):
         source_object.emit_to("You must supply a name!")
         return
 
-    name_matches = src.comsys.cname_search(cname, exact=True)
+    name_matches = comsys.cname_search(cname, exact=True)
 
     if not name_matches:
         source_object.emit_to("Could not find channel %s." % (cname,))
@@ -234,7 +241,7 @@ def cmd_cemit(command):
         source_object.emit_to("You must provide a message to emit.")
         return
 
-    name_matches = src.comsys.cname_search(cname, exact=True)
+    name_matches = comsys.cname_search(cname, exact=True)
     if name_matches:
         cname_parsed = name_matches[0].get_name()
     else:
@@ -252,7 +259,7 @@ def cmd_cemit(command):
         show_channel_header = False
     else:
         if "sendername" in command.command_switches:
-            if not src.comsys.plr_has_channel(command.session, cname_parsed, 
+            if not comsys.plr_has_channel(command.session, cname_parsed, 
                                               return_muted=False):
                 source_object.emit_to("You must be on %s to do that." % (cname_parsed,))
                 return
@@ -266,7 +273,7 @@ def cmd_cemit(command):
 
     if not "quiet" in command.command_switches:
         source_object.emit_to("Sent - %s" % (name_matches[0],))
-    src.comsys.send_cmessage(cname_parsed, final_cmessage,
+    comsys.send_cmessage(cname_parsed, final_cmessage,
                              show_header=show_channel_header)
     
     if settings.IMC2_ENABLED:
@@ -311,7 +318,7 @@ def cmd_cwho(command):
         source_object.emit_to("You must specify a channel name.")
         return
 
-    name_matches = src.comsys.cname_search(channel_name, exact=True)
+    name_matches = comsys.cname_search(channel_name, exact=True)
 
     if name_matches:
         # Check to make sure the user has permission to use @cwho.
@@ -319,7 +326,7 @@ def cmd_cwho(command):
         is_controlled_by_plr = name_matches[0].controlled_by(source_object)
         
         if is_controlled_by_plr or is_channel_admin:
-            src.comsys.msg_cwho(source_object, channel_name)
+            comsys.msg_cwho(source_object, channel_name)
         else:
             source_object.emit_to("Permission denied.")
             return
@@ -346,13 +353,13 @@ def cmd_ccreate(command):
         source_object.emit_to("Permission denied.")
         return
 
-    name_matches = src.comsys.cname_search(cname, exact=True)
+    name_matches = comsys.cname_search(cname, exact=True)
 
     if name_matches:
         source_object.emit_to("A channel with that name already exists.")
     else:
         # Create and set the object up.
-        new_chan = src.comsys.create_channel(cname, source_object)
+        new_chan = comsys.create_channel(cname, source_object)
         source_object.emit_to("Channel %s created." % (new_chan.get_name(),))
 GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate,
                              priv_tuple=("objects.add_commchannel")),

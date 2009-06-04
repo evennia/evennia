@@ -36,6 +36,15 @@ def get_session_list(return_unlogged=False):
         return session_list
     else:
         return [sess for sess in session_list if sess.is_loggedin()]
+    
+def get_session_id_list(return_unlogged=False):
+    """
+    Lists the connected session object ids.
+    """
+    if return_unlogged:
+        return session_list
+    else:
+        return [sess.uid for sess in session_list if sess.is_loggedin()]
 
 def disconnect_all_sessions():
     """

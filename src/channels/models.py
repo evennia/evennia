@@ -12,7 +12,7 @@ class CommChannel(models.Model):
     """
     name = models.CharField(max_length=255)
     ansi_name = models.CharField(max_length=255)
-    owner = models.ForeignKey(Object, related_name="chan_owner")
+    owner = models.ForeignKey(Object, related_name="channel_owner_set")
     description = models.CharField(max_length=80, blank=True, null=True)
     is_joined_by_default = models.BooleanField(default=False)
     req_grp = models.ManyToManyField(Group, blank=True, null=True)
@@ -91,6 +91,19 @@ class CommChannel(models.Model):
         Returns a default channel alias for the channel if none is provided.
         """
         return self.name[:3].lower()
+    
+class CommChannelMembership(models.Model):
+    """
+    Used to track which channels an Object is listening to.
+    """
+    channel = models.ForeignKey(CommChannel, related_name="membership_set")
+    listener = models.ForeignKey(Object, related_name="channel_membership_set")
+    user_alias = models.CharField(max_length=10)
+    comtitle = models.CharField(max_length=25, blank=True)
+    is_listening = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return "%s: %s" % (self.channel.name, self.listener.name)
 
 class CommChannelMessage(models.Model):
     """

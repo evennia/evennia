@@ -4,7 +4,7 @@ Comsys functions.
 import time
 import datetime
 from django.utils import simplejson
-from src.channels.models import CommChannel, CommChannelMessage
+from src.channels.models import CommChannel, CommChannelMessage, CommChannelMembership
 from src import session_mgr
 from src import ansi
 from src import logger
@@ -119,44 +119,48 @@ def plr_has_channel(session, cname, alias_search=False, return_muted=False):
 
 def plr_set_channel_listening(session, alias, listening):
     """
-    Add a channel to a session's channel list.
+    Enables or disables listening on a particular channel.
     
     session: (SessionProtocol) A reference to the player session.
     alias: (str) The channel alias.
     listening: (bool) A True or False value to determine listening status.
     """
+    membership = session.pobject.channel_membership_set.get(user_alias=alias)
+    membership.is_listening = listening
+    membership.save()
     plr_get_cdict(session).get(alias)[1] = listening
-    plr_jsondump_channels(session)
     
-def plr_set_channel(session, alias, cname, listening):
+def plr_add_channel(source_object, alias, channel):
     """
-    Set a channels alias, name, and listening status in one go, or add the
-    channel if it doesn't already exist on a user's list.
+    Adds a player to a channel via a CommChannelMembership and sets the cached
+    cdict value.
     
-    session: (SessionProtocol) A reference to the player session.
+    source_object: (Object) Reference to the object that will be listening.
     alias: (str) The channel alias (also the key in the user's cdict)
-    cname: (str) Desired channel name to set.
+    channel: (CommChannel) The channel object to add.
     listening: (bool) A True or False value to determine listening status.
     """
-    plr_get_cdict(session)[alias] = [cname, listening]
-    plr_jsondump_channels(session)
-
-def plr_jsondump_channels(session):
-    """
-    Save the player's channel list to the CHANLIST attribute.
+    membership = CommChannelMembership(channel=channel, listener=source_object,
+                                           user_alias=alias)
+    membership.save()
     
-    session: (SessionProtocol) A reference to the player session.
-    """
-    session.get_pobject().set_attribute("__CHANLIST", simplejson.dumps(plr_get_cdict(session)))
+    sessions = session_mgr.sessions_from_object(source_object)
+    for session in sessions:
+        plr_get_cdict(session)[alias] = [channel.get_name(), True]
 
-def plr_del_channel(session, alias):
+def plr_del_channel(source_object, alias):
     """
     Remove a channel from a session's channel list.
     
-    session: (SessionProtocol) A reference to the player session.
+    source_object: (Object) Reference to the object that will be listening.
     alias: (str) The channel alias (also the key in the user's cdict)
     """
-    del plr_get_cdict(session)[alias]
+    membership = source_object.channel_membership_set.get(user_alias=alias)
+    membership.delete()
+    
+    sessions = session_mgr.sessions_from_object(source_object)
+    for session in sessions:
+        del plr_get_cdict(session)[alias]
 
 def msg_chan_hist(target_obj, channel_name):
     """
@@ -214,11 +218,12 @@ def load_object_channels(pobject):
     """
     Parse JSON dict of a user's channel list from their CHANLIST attribute.
     """
-    chan_list = pobject.get_attribute_value("__CHANLIST")
-    if chan_list:
+    membership_list = pobject.channel_membership_set.all()
+    for membership in membership_list:
         sessions = session_mgr.sessions_from_object(pobject)
         for session in sessions:
-            session.channels_subscribed = simplejson.loads(chan_list)
+            session.channels_subscribed[membership.user_alias] = [membership.channel.name,
+                                                                  membership.is_listening]
 
 def send_cmessage(channel, message, show_header=True):
     """
