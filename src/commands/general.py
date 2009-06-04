@@ -318,21 +318,20 @@ def cmd_examine(command):
         # Render Contents display.
         if con_players or con_things:
             s += str("%sContents:%s" % (ANSITable.ansi["hilite"], 
-                                                  ANSITable.ansi["normal"])) + newl
+                                        ANSITable.ansi["normal"]))
             for player in con_players:
-                s += str(' %s' % player.get_name(fullname=True)) + newl
+                s += str(' %s' % newl + player.get_name(fullname=True))
             for thing in con_things:
-                s += str(' %s' % thing.get_name(fullname=True)) + newl
+                s += str(' %s' % newl + thing.get_name(fullname=True))
                 
         # Render Exists display.
         if con_exits:
-            s += str("%sExits:%s" % (ANSITable.ansi["hilite"], 
-                                        ANSITable.ansi["normal"])) + newl
+            s += str("%sExits:%s" % (newl + ANSITable.ansi["hilite"], 
+                                     ANSITable.ansi["normal"]))
             for exit in con_exits:
-                s += str(' %s' % exit.get_name(fullname=True)) + newl
+                s += str(' %s' % newl + exit.get_name(fullname=True))
 
- 
-
+        # Send it all
         source_object.emit_to(s)
             
 GLOBAL_CMD_TABLE.add_command("examine", cmd_examine)
