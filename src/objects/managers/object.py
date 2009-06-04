@@ -366,8 +366,12 @@ class ObjectManager(models.Manager):
 
         # Activate the player's session and set them loose.
         command.session.login(user)
-        print 'Registration: %s' % (command.session, user_object.get_name())
+        
+        logger.log_infomsg('Registration: %s' % user_object.get_name())
         user_object.emit_to("Welcome to %s, %s.\n\r" % (
             ConfigValue.objects.get_configvalue('site_name'), 
             user_object.get_name(show_dbref=False)))
+        
+        # Add the user to all of the CommChannel objects that are flagged
+        # is_joined_by_default.
         command.session.add_default_channels()

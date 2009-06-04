@@ -8,11 +8,11 @@ from datetime import datetime
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.contrib.auth.models import User
 from django.conf import settings
-from src.objects.models import Object
-from src.channels.models import CommChannel
-from src.config.models import ConnectScreen, ConfigValue
 from util import functions_general
-import src.comsys
+from src.objects.models import Object
+from src.channels.models import CommChannel, CommChannelMembership
+from src.config.models import ConnectScreen, ConfigValue
+from src import comsys
 import cmdhandler
 import logger
 import session_mgr
@@ -177,7 +177,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.cemit_info('Logged in: %s' % self)
         
         # Update their account's last login time.
-        user.last_login = datetime.now()
+        user.last_login = datetime.now()        
         user.save()
         
         # In case the account and the object get out of sync, fix it.
@@ -199,8 +199,14 @@ class SessionProtocol(StatefulTelnetProtocol):
         """        
         # Add the default channels.
         for chan in CommChannel.objects.filter(is_joined_by_default=True):
+            logger.log_infomsg("ADDING BY DEFAULT %s" % chan)
             chan_alias = chan.get_default_chan_alias()
-            src.comsys.plr_set_channel(self, chan_alias, chan.name, True)
+            membership = CommChannelMembership(channel=chan, 
+                                               listener=self.get_pobject(),
+                                               user_alias=chan_alias)
+            membership.save()
+            
+            comsys.plr_set_channel_listening(self, chan_alias, True)
         
     def __str__(self):
         """
@@ -218,5 +224,5 @@ class SessionProtocol(StatefulTelnetProtocol):
         Channel emits info to the appropriate info channel. By default, this
         is MUDConnections.
         """
-        src.comsys.send_cmessage(settings.COMMCHAN_MUD_CONNECTIONS, 
+        comsys.send_cmessage(settings.COMMCHAN_MUD_CONNECTIONS, 
                              'Session: %s' % message)

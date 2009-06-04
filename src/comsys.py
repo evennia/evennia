@@ -119,7 +119,8 @@ def plr_has_channel(session, cname, alias_search=False, return_muted=False):
 
 def plr_set_channel_listening(session, alias, listening):
     """
-    Enables or disables listening on a particular channel.
+    Enables or disables listening on a particular channel based on the
+    user's channel alias.
     
     session: (SessionProtocol) A reference to the player session.
     alias: (str) The channel alias.
