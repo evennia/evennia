@@ -81,18 +81,24 @@ Choose "Other unsupported IMC2 version" and enter your information there.
 You'll want to change the values below to reflect what you entered.
 """
 # Make sure this is True in your settings.py.
+# CHANGE THIS TO True IF YOU WANT IMC!
 IMC2_ENABLED = False
 # While True, emit additional debugging info.
 IMC2_DEBUG = False
 # The hostname/ip address of your IMC2 server of choice.
+# CHANGE THIS!
 IMC2_SERVER_ADDRESS = None
 # The port to connect to on your IMC2 server.
+# CHANGE THIS!
 IMC2_SERVER_PORT = None
-# This is your game's IMC2 name.
+# This is your game's IMC2 name. 
+# CHANGE THIS TO A SHORT ALPHANUMERIC STRING!
 IMC2_MUDNAME = None
 # Your IMC2 client-side password. Used to authenticate with your network.
+# CHANGE THIS TO A SHORT ALPHANUMERIC STRING!
 IMC2_CLIENT_PW = None
 # Your IMC2 server-side password. Used to verify your network's identity.
+# CHANGE THIS TO A SHORT ALPHANUMERIC STRING!
 IMC2_SERVER_PW = None
 # This isn't something you should generally change.
 IMC2_PROTOCOL_VERSION = '2'
