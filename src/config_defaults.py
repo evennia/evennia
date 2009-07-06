@@ -239,7 +239,7 @@ INSTALLED_APPS = (
 )
 
 """
-A tuple of strings representing all of the Evennia (IE: non-custom) commnad
+A tuple of strings representing all of the Evennia (IE: non-custom) command
 modules that are used at the login screen in the UNLOGGED command table. Do
 not modify this directly, add your custom command modules to
 CUSTOM_UNLOGGED_COMMAND_MODULES.

@@ -36,7 +36,7 @@ class StateTable(object):
                     exit_command=True):
         """
         Access function; transparently add commands to a specific command table to
-        reprsent a particular state. This command is similar to the normal
+        represent a particular state. This command is similar to the normal
         command_table.add_command() function. See example in gamesrc/commands/examples.
 
         command_string: (str) command name to run, like look, @list etc
