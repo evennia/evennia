@@ -35,7 +35,11 @@ else:
     TWISTED_BINARY = 'twistd' 
 
 # Add this to the environmental variable for the 'twistd' command.
-os.environ['PYTHONPATH'] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+tmppath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if 'PYTHONPATH' in os.environ:
+    os.environ['PYTHONPATH'] += (":%s" % tmppath)
+else:
+    os.environ['PYTHONPATH'] = tmppath
 
 def cycle_logfile():
     """
