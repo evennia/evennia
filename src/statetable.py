@@ -229,21 +229,21 @@ class StateHelpIndex(object):
     def has_state(self,state_name):
         return self.help_index.has_key(state_name)
 
-    def add_state_help(self, state,command,text,staff_only=False):
+    def add_state_help(self, state,command,text,staff_help=False):
         """Store help for a command under a certain state.
         Supports <<TOPIC:MyTopic>> and <<TOPIC:STAFF:MyTopic>> markup."""
         if self.help_index.has_key(state):
 
             text = text.rstrip()
             if self.identifier in text:
-                topic_dict, staff_dict = edit_help.handle_help_markup(command, text, staff_only,
+                topic_dict, staff_dict = edit_help.handle_help_markup(command, text, staff_help,
                                                                       identifier=self.identifier)
                 for topic, text in topic_dict.items():
                     entry = edit_help.format_footer(topic,text,topic_dict,staff_dict)
                     if entry:                        
-                        self.help_index[state][topic] = (staff_only, entry)
+                        self.help_index[state][topic] = (staff_help, entry)
             else:
-                self.help_index[state][command] = (staff_only, text)
+                self.help_index[state][command] = (staff_help, text)
 
     def del_state_help(self, state, topic):
         """Manually delete a help topic from state help system. Note that this is

@@ -50,9 +50,6 @@ class EventBlinkButton(IntervalEvent):
         for b in buttons:
             try:
                 b.scriptlink.blink()
-            except AttributeError:
-                #button has no blink() method. Just ignore.
-                pass
             except:
                 #show other tracebacks to log and owner of object.
                 #This is important, we must handle these exceptions gracefully!
