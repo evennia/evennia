@@ -4,6 +4,8 @@ Holds the global events scheduled in scheduler.py.
 Events are sub-classed from IntervalEvent (which is not to be used directly).
 Create your sub-class, call src.scheduler.add_event(YourEventClass()) to add
 it to the global scheduler.
+
+Use @ps to view the event list.
 """
 import time
 from twisted.internet import task
@@ -58,7 +60,7 @@ class IntervalEvent(object):
         """
         Returns a value in seconds when the event is going to fire off next.
         """
-        return (self.time_last_executed + self.interval) - time.time()
+        return max(0,(self.time_last_executed + self.interval) - time.time())
     
     def set_lastfired(self):
         """
@@ -72,8 +74,6 @@ class IntervalEvent(object):
         """
         self.set_lastfired()
         self.event_function()
-
-
 
 class IEvt_Check_Sessions(IntervalEvent):
     """
@@ -99,7 +99,7 @@ class IEvt_Destroy_Objects(IntervalEvent):
         super(IEvt_Destroy_Objects, self).__init__()
         self.name = 'IEvt_Destroy_Objects'
         self.interval = 1800
-        self.description = "Destroy objects with the GOING flag set."
+        self.description = "Clean out objects marked for destruction."
 
     def event_function(self):
         """

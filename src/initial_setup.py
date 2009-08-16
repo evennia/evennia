@@ -1,5 +1,5 @@
 """
-This module handles initial database propagation, which is only ran the first
+This module handles initial database propagation, which is only run the first
 time the game starts. It will create some default channels, objects, and
 other things.
 
@@ -30,11 +30,14 @@ def create_objects():
     """
     # Set the initial User's account object's username on the #1 object.
     god_user = get_god_user()
+    god_user.is_superuser = True
+    god_user.is_staff = True    
     # Create the matching PLAYER object in the object DB.
     god_user_obj = Object(id=1, type=defines_global.OTYPE_PLAYER)
     god_user_obj.set_name(god_user.username)
     god_user_obj.set_attribute('desc', 'You are Player #1.')
     god_user_obj.scriptlink.at_player_creation()
+    
     god_user_obj.save()
     
     # Limbo is the initial starting room.
@@ -91,8 +94,9 @@ def create_connect_screens():
     Creates the default connect screen(s).
     """
     ConnectScreen(name="Default",
-                  text="%ch%cb==================================================================%cn\r\n Welcome to Evennia! Please type one of the following to begin:\r\n\r\n If you have an existing account, connect to it by typing:\r\n        %chconnect <email> <password>%cn\r\n If you need to create an account, type (without the <>'s):\r\n        %chcreate \"<username>\" <email> <password>%cn\r\n%ch%cb==================================================================%cn\r\n",
+                  text="%ch%cb==================================================================%cn\r\n Welcome to %chEvennia%cn! Please type one of the following to begin:\r\n\r\n If you have an existing account, connect to it by typing:\r\n        %chconnect <email> <password>%cn\r\n If you need to create an account, type (without the <>'s):\r\n        %chcreate \"<username>\" <email> <password>%cn\r\n%ch%cb==================================================================%cn\r\n",
                   is_active=True).save()
+    
                   
 def create_aliases():
     """
@@ -107,7 +111,7 @@ def create_aliases():
     CommandAlias(user_input="l", equiv_command="look").save()
     CommandAlias(user_input="ex", equiv_command="examine").save()
     CommandAlias(user_input="sa", equiv_command="say").save()
-    CommandAlias(user_input="emote", equiv_command="pose").save()
+    #CommandAlias(user_input="emote", equiv_command="pose").save()
     CommandAlias(user_input="p", equiv_command="page").save()
     
 def import_help_files():

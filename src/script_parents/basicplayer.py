@@ -44,3 +44,32 @@ class EvenniaBasicPlayer(object):
         pobject.get_location().emit_to_contents("%s has connected." % 
             (pobject.get_name(show_dbref=False),), exclude=pobject)
         pobject.execute_cmd("look")
+
+    def at_before_move(self, target_location):
+        """
+        This hook is called just before the object is moved.
+        Input:
+          target_location (obj): The location the player is about to move to.
+        Return value: 
+            If this function returns anything but None (no return value),
+            the move is aborted. This allows for character-based move
+            restrictions (not only exit locks).
+        """
+        pass
+
+    def at_after_move(self):
+        """
+        This hook is called just after the player has been successfully moved.
+        """
+        pass
+
+
+    def at_disconnect(self):
+        """
+        This is called just before the session disconnects, for whatever reason.
+        """
+        pobject = self.scripted_obj
+
+        location = pobject.get_location()
+        if location != None:
+            location.emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)

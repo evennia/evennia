@@ -106,6 +106,9 @@ def print_menu(source_obj,choice=None):
 #Add the 'entry' command to the normal command table
 GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
 
+#create the state.
+GLOBAL_STATE_TABLE.add_state(STATENAME)
+
 #Add the menu commands to the state table by tying them to the 'menu' state. It is
 #important that the name of the state matches what we set the player-object to in
 #the 'entry' command. Since auto_help is on, we will have help entries for all commands
@@ -113,3 +116,107 @@ GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "option1", menu_cmd_option1,auto_help=True)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "option2", menu_cmd_option2,auto_help=True)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "menu", menu_cmd_menu,auto_help=True)
+
+
+
+
+
+#-----------------------testing the depth of the state system
+# This is a test suite that shows off all the features of the state system.
+# It sets up a test command @test_state that takes an argument 1-6 for moving into states
+# with different characteristics. Note that the only difference as to how the
+# various states are created lies in the options given to the add_state() function.
+# Use @exit to leave any state. 
+#
+#  All states includes a small test function named "test". 
+#  1: A very limited state; only contains the "test" command. 
+#  2: All global commands are included (so this should be the same as normal operation,
+#     except you cannot traverse exits and use object-based cmds)
+#  3: Only the global commands "get" and "inventory" are included into the state.
+#  4: All global commands /except/ "get" and "inventory" are available
+#  5: All global commands availabe + ability to traverse exits (not use object-based cmds).
+#  6: Only the "test" command, but ability to both traverse exits and use object-based cmds. 
+#
+# Examples of in-game use: 
+# 1: was used for the menu system above.
+# 2: could be used in order to stop someone from moving despite exits being open (tied up?)
+# 3: someone incapacitated or blinded might get only limited commands available
+# 4: in e.g. a combat state, things like crafting should not be possible
+# 5: Pretty much default operation, maybe limiting the use of magical weapons in a room etc?
+# 6: A state of panic? You can move, but not take in your surroundings?
+#   ... the possibilities are endless. 
+
+#defining the test-state names so they are the same everywhere
+TSTATE1 = 'no_globals'
+TSTATE2 = 'all_globals'
+TSTATE3 = 'include_some_globals'
+TSTATE4 = 'exclude_some_globals'
+TSTATE5 = 'global_allow_exits'
+TSTATE6 = 'noglobal_allow_exits_obj_cmds'
+
+#the test command @test_state
+def cmd_test_state(command):
+    "testing the new state system"
+    source_object = command.source_object
+    args = command.command_argument
+    if not args:
+        source_object.emit_to("Usage: @test_state [1..6]")
+        return    
+    arg = args.strip()
+    if arg=='1':
+        state = TSTATE1
+    elif arg=='2':
+        state = TSTATE2
+    elif arg=='3':
+        state = TSTATE3
+    elif arg=='4':
+        state = TSTATE4
+    elif arg=='5':
+        state = TSTATE5
+    elif arg=='6':
+        state = TSTATE6
+    else:
+        source_object.emit_to("Usage: @test_state [1..6]")
+        return 
+    #set the state
+    source_object.set_state(state)
+    source_object.emit_to("Now in state '%s' ..." % state)
+
+#a simple command to include in all states.
+def cmd_instate_cmd(command):
+    "test command in state"
+    command.source_object.emit_to("This command works!")
+
+#define some global commands to filter for
+cmdfilter = ['get','inventory']
+    
+#1: A simple, basic state
+GLOBAL_STATE_TABLE.add_state(TSTATE1,exit_command=True)
+#2: Include all normal commands in the state
+GLOBAL_STATE_TABLE.add_state(TSTATE2,exit_command=True,global_cmds='all')
+#3: Include only the two global commands in cmdfilter
+GLOBAL_STATE_TABLE.add_state(TSTATE3,exit_command=True,
+                             global_cmds='include',global_filter=cmdfilter)
+#4: Include all global commands except the ones in cmdfilter
+GLOBAL_STATE_TABLE.add_state(TSTATE4,exit_command=True,
+                             global_cmds='exclude',global_filter=cmdfilter)
+#5: Include all global commands + ability to traverse exits
+GLOBAL_STATE_TABLE.add_state(TSTATE5,exit_command=True,
+                             global_cmds='all',
+                             allow_exits=True)
+#6: No global commands, allow exits and commands defined on objects.
+GLOBAL_STATE_TABLE.add_state(TSTATE6,exit_command=True,
+                             allow_exits=True,allow_obj_cmds=True)
+
+#append the "test" function to all states
+GLOBAL_STATE_TABLE.add_command(TSTATE1,'test',cmd_instate_cmd)
+GLOBAL_STATE_TABLE.add_command(TSTATE2,'test',cmd_instate_cmd)
+GLOBAL_STATE_TABLE.add_command(TSTATE3,'test',cmd_instate_cmd)
+GLOBAL_STATE_TABLE.add_command(TSTATE4,'test',cmd_instate_cmd)
+GLOBAL_STATE_TABLE.add_command(TSTATE5,'test',cmd_instate_cmd)
+GLOBAL_STATE_TABLE.add_command(TSTATE6,'test',cmd_instate_cmd)
+
+#create the entry function for testing all states
+GLOBAL_CMD_TABLE.add_command('@test_state',cmd_test_state)
+
+

@@ -127,7 +127,7 @@ class Object(models.Model):
     
     objects = ObjectManager()
 
-    #state system can set a particular command table to be used.
+    #state system can set a particular command table to be used (not persistent).
     state = None
 
     def __cmp__(self, other):
@@ -141,6 +141,12 @@ class Object(models.Model):
     
     class Meta:
         ordering = ['-date_created', 'id']
+
+    def dbref(self):
+        """Returns the object's dbref id on the form #NN, directly
+        usable by Object.objects.dbref_search()
+        """
+        return "#%s" % str(self.id)
         
     """
     BEGIN COMMON METHODS
@@ -245,8 +251,7 @@ class Object(models.Model):
         Returns True if the object is a staff player.
         """
         if not self.is_player():
-            return False
-        
+            return False        
         try:
             profile = self.get_user_account()
             return profile.is_staff
@@ -303,7 +308,7 @@ class Object(models.Model):
         user. This form accepts an iterable of strings representing permissions,
         if the user has any of them return true.
 
-        perm: (iterable) An iterable of strings of permissions.
+        perm_list: (iterable) An iterable of strings of permissions.
         """
         if not self.is_player():
             return False
@@ -705,9 +710,9 @@ class Object(models.Model):
         # in SQLite.
         flags = str(self.flags).split()
         nosave_flags = str(self.nosave_flags).split()
-        return flag in flags or flag in nosave_flags
+        return flag.upper() in flags or flag in nosave_flags
         
-    def set_flag(self, flag, value):
+    def set_flag(self, flag, value=True):
         """
         Add a flag to our object's flag list.
         
@@ -735,7 +740,7 @@ class Object(models.Model):
             # Object doesn't have the flag to begin with.
             pass
         elif value == True and has_flag:
-            # We've already go it.
+            # We've already got it.
             pass
         else:
             # Setting a flag.
@@ -755,6 +760,9 @@ class Object(models.Model):
                 flags.append(flag)
                 self.flags = ' '.join(flags)
             self.save()
+
+    def unset_flag(self, flag):
+        self.set_flag(flag,value=False)
     
     def is_connected_plr(self):
         """
@@ -885,8 +893,13 @@ class Object(models.Model):
         
         target: (Object) Reference to the object to move to.
         quiet:  (bool)    If true, don't emit left/arrived messages.
-        force_look: (bool) If true and target is a player, make them 'look'.
+        force_look: (bool) If true and self is a player, make them 'look'.
         """
+        
+        #before the move, call the appropriate hook
+        if self.scriptlink.at_before_move(target) != None:
+            return 
+
         if not quiet:
             location = self.get_location()
             if location:
@@ -897,17 +910,21 @@ class Object(models.Model):
                                             (self.get_name()))
             
         self.location = target
-        self.save()
+        self.save()        
         
         if not quiet:
             arrival_message = "%s has arrived." % (self.get_name())
             self.get_location().emit_to_contents(arrival_message, exclude=self)
             if self.location.is_player():
                 self.location.emit_to("%s is now in your inventory." % (self.get_name()))
-                
+
+        #execute eventual extra commands on this object after moving it
+        self.scriptlink.at_after_move()
+                                
         if force_look:
             self.execute_cmd('look')
-        
+
+
     def dbref_match(self, oname):
         """
         Check if the input (oname) can be used to identify this particular object

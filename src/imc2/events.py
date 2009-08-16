@@ -27,7 +27,12 @@ class IEvt_IMC2_Send_IsAlive(events.IntervalEvent):
         """
         This is the function that is fired every self.interval seconds.
         """
-        imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(IMC2PacketIsAlive())
+        try:
+            imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(IMC2PacketIsAlive())
+        except AttributeError:
+            #this will happen if we are not online in the first place
+            #(like during development) /Griatch
+            pass
         
 class IEvt_IMC2_Send_Keepalive_Request(events.IntervalEvent):
     """

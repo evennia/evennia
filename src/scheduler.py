@@ -21,8 +21,9 @@ def add_event(event):
      * event: (IntervalEvent) The event to add to the scheduler.
     """
 
-    #don't add multiple instances of the same event
-    if event in schedule:
+    #don't add multiple instances of the same event, instead replace
+    if event in schedule:        
+        schedule[schedule.index(event)] = event
         return
     else:
         schedule.append(event)

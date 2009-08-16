@@ -18,6 +18,16 @@ class UnknownCommand(Exception):
     Throw this when a user enters an an invalid command.
     """
     pass
+
+class CommandNotInState(Exception):
+    """
+    Throw this when a user tries a global command that exists, but
+    don't happen to be defined in the current game state. 
+    err_string: The error string returned to the user.
+    """
+    def __init__(self,err_string):
+        self.err_string = err_string
+
 class ExitCommandHandler(Exception):
     """
     Thrown when something happens and it's time to exit the command handler.
@@ -155,41 +165,7 @@ def match_idle(command):
         command.session.count_command(silently=True)
         raise ExitCommandHandler
 
-def match_exits(command):
-    """
-    See if we can find an input match to exits.
-    """
-    # If we're not logged in, don't check exits.
-    source_object = command.source_object
-    location = source_object.get_location()
-    
-    if location == None:
-        logger.log_errmsg("cmdhandler.match_exits(): Object '%s' no location." % 
-                          source_object)
-        return
-    
-    exits = location.get_contents(filter_type=defines_global.OTYPE_EXIT)
-    Object = ContentType.objects.get(app_label="objects", 
-                                     model="object").model_class()
-    exit_matches = Object.objects.list_search_object_namestr(exits, 
-                                                     command.command_string, 
-                                                     match_type="exact")
-    if exit_matches:
-        # Only interested in the first match.
-        targ_exit = exit_matches[0]
-        # An exit's home is its destination. If the exit has a None home value,
-        # it's not traversible.
-        if targ_exit.get_home():                   
-            # SCRIPT: See if the player can traverse the exit
-            if not targ_exit.scriptlink.default_lock(source_object):
-                source_object.emit_to("You can't traverse that exit.")
-            else:
-                source_object.move_to(targ_exit.get_home())
-        else:
-            source_object.emit_to("That exit leads to nowhere.")
-        # We found a match, kill the command handler.
-        raise ExitCommandHandler
-
+        
 def match_alias(command):
     """
     Checks to see if the entered command matches an alias. If so, replaces
@@ -225,6 +201,7 @@ def match_alias(command):
     elif first_char == ':':
         command.command_argument = get_aliased_message()
         command.command_string = "pose"
+#        command.command_string = "emote"
     # Pose without space alias.
     elif first_char == ';':
         command.command_argument = get_aliased_message()
@@ -263,15 +240,62 @@ def match_channel(command):
         command.command_string = "@cemit"
         command.command_switches = ["sendername", "quiet"]
         command.command_argument = second_arg
+        return True
+
+def match_exits(command,test=False):
+    """
+    See if we can find an input match to exits.
+    command - the command we are testing for.
+              if a match, move obj and exit
+    test    - just return Truee if it is an exit command,
+              do not move the object there.              
+    """
+    # If we're not logged in, don't check exits.
+    source_object = command.source_object
+    location = source_object.get_location()
+    
+    if location == None:
+        logger.log_errmsg("cmdhandler.match_exits(): Object '%s' has no location." % 
+                          source_object)
+        return
+    
+    exits = location.get_contents(filter_type=defines_global.OTYPE_EXIT)
+    Object = ContentType.objects.get(app_label="objects", 
+                                     model="object").model_class()
+    exit_matches = Object.objects.list_search_object_namestr(exits, 
+                                                     command.command_string, 
+                                                     match_type="exact")
+    if exit_matches:
+        if test:
+            return True
+        
+        # Only interested in the first match.
+        targ_exit = exit_matches[0]
+        # An exit's home is its destination. If the exit has a None home value,
+        # it's not traversible.
+        if targ_exit.get_home():                   
+            # SCRIPT: See if the player can traverse the exit
+            if not targ_exit.scriptlink.default_lock(source_object):
+                source_object.emit_to("You can't traverse that exit.")
+            else:
+                source_object.move_to(targ_exit.get_home())
+        else:
+            source_object.emit_to("That exit leads nowhere.")
+        # We found a match, kill the command handler.
+        raise ExitCommandHandler
+    
                
-def command_table_lookup(command, command_table, eval_perms=True):
+def command_table_lookup(command, command_table, eval_perms=True,test=False):
     """
     Performs a command table lookup on the specified command table. Also
     evaluates the permissions tuple.
+    The test flag only checks without manipulating the command
     """
     # Get the command's function reference (Or False)
     cmdtuple = command_table.get_command_tuple(command.command_string)
     if cmdtuple:
+        if test:
+            return True
         # If there is a permissions element to the entry, check perms.
         if eval_perms and cmdtuple[1]:
             if not command.source_object.has_perm_list(cmdtuple[1]):
@@ -281,24 +305,30 @@ def command_table_lookup(command, command_table, eval_perms=True):
         command.command_function = cmdtuple[0]
         command.extra_vars = cmdtuple[2]
         return True
+
         
-def match_neighbor_ctables(command):
+def match_neighbor_ctables(command,test=False):
     """
     Looks through the command tables of neighboring objects for command
     matches.
+    test mode just checks if the command is a match, without manipulating
+      any commands. 
     """
     source_object = command.source_object
     if source_object.location != None:
         neighbors = source_object.location.get_contents()
         for neighbor in neighbors:
             if command_table_lookup(command,
-                                    neighbor.scriptlink.command_table):
+                                    neighbor.scriptlink.command_table, test=test):
                 # If there was a command match, set the scripted_obj attribute
                 # for the script parent to pick up.
+                if test:
+                    return True
                 command.scripted_obj = neighbor
                 return True
-    # No matches
-    return False
+    else:
+        #no matches
+        return False
 
 def handle(command):
     """
@@ -315,44 +345,52 @@ def handle(command):
             # Nothing sent in of value, ignore it.
             raise ExitCommandHandler
 
+        state = None #no state by default
+        
         if command.session and not command.session.logged_in:
             # Not logged in, look through the unlogged-in command table.
-            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE, 
-                                 eval_perms=False)
-        
-        else:        
+            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE,eval_perms=False)
+        else:
+            # User is logged in. 
+            # Match against the 'idle' command.            
+            match_idle(command)
+            # See if this is an aliased command.
+            match_alias(command)
 
-            state_name = command.source_object.get_state()
-            state_cmd_table = statetable.GLOBAL_STATE_TABLE.get_cmd_table(state_name)            
+            state = command.source_object.get_state()
+            state_cmd_table = statetable.GLOBAL_STATE_TABLE.get_cmd_table(state)
 
-            if state_name and state_cmd_table:
-                # we are in a special state.
+            if state and state_cmd_table:            
+                # Caller is in a special state.                
 
-                # check idle command.  
-                match_idle(command)
-                # check for channel commands
-                prev_command = command.command_string
-                match_channel(command)
-                if prev_command != command.command_string:
-                    # a channel command is handled normally also in the state
+                state_allow_exits, state_allow_obj_cmds = \
+                        statetable.GLOBAL_STATE_TABLE.get_state_flags(state)    
+
+                state_lookup = True
+                if match_channel(command):
                     command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
-                else: 
-                    command_table_lookup(command, state_cmd_table)                           
+                    state_lookup = False
+                # See if the user is trying to traverse an exit.                
+                if state_allow_exits:
+                    match_exits(command)                         
+                # check if this is a command defined on a nearby object.
+                if state_allow_obj_cmds and match_neighbor_ctables(command):
+                    state_lookup = False
+                #if nothing has happened to change our mind, search the state table.    
+                if state_lookup:                    
+                    command_table_lookup(command, state_cmd_table)
             else:
-                #normal operation
+                # Not in a state. Normal operation.
+                state = None #make sure, in case the object had a malformed statename.
 
-                # Match against the 'idle' command.            
-                match_idle(command)
-                # See if this is an aliased command.
-                match_alias(command)
-                # Check if the user is using a channel command.
+                # Check if the user is using a channel command.                    
                 match_channel(command)
-                # See if the user is trying to traverse an exit.
+                # See if the user is trying to traverse an exit.                
                 match_exits(command)
-                neighbor_match_found = match_neighbor_ctables(command)
-                if not neighbor_match_found:
-                     # Retrieve the appropriate (if any) command function.
-                     command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
+                # check if this is a command defined on a nearby object 
+                if not match_neighbor_ctables(command):
+                    command_table_lookup(command, cmdtable.GLOBAL_CMD_TABLE)
+                                        
         
         """
         By this point, we assume that the user has entered a command and not
@@ -379,16 +417,37 @@ def handle(command):
                 raise ExitCommandHandler
         else:
             # If we reach this point, we haven't matched anything.     
+
+            if state: 
+                # if we are in a state, it could be that the command exists, but
+                # it is temporarily not available. If so, we want a different error message.
+                if match_exits(command,test=True):
+                    raise CommandNotInState("Movement is not possible right now.")
+                if match_neighbor_ctables(command,test=True):
+                    raise CommandNotInState("You can not do that at the moment.")
+                if command_table_lookup(command,cmdtable.GLOBAL_CMD_TABLE,test=True):
+                    raise CommandNotInState("This command is not available right now.")
             raise UnknownCommand
 
     except ExitCommandHandler:
         # When this is thrown, just get out and do nothing. It doesn't mean
         # something bad has happened.
         pass
+    except CommandNotInState, e:
+        # The command exists, but not in the current state
+        if command.source_object != None:
+            # The logged-in error message
+            command.source_object.emit_to(e.err_string)
+        elif command.session != None:
+            # States are not available before login, so this should never
+            # be reached. But better safe than sorry. 
+            command.session.msg("%s %s" % (e.err_string," (Type \"help\" for help.)"))
+        else:            
+            pass    
     except UnknownCommand:
         # Default fall-through. No valid command match.
         if command.source_object != None:
-            # A typical logged in or object-based error message.
+            # A typical logged in or object-based error message.            
             command.source_object.emit_to("Huh?  (Type \"help\" for help.)")
         elif command.session != None:
             # This is hit when invalid commands are sent at the login screen

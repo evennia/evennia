@@ -72,6 +72,24 @@ class EvenniaBasicObject(object):
         #print "SCRIPT TEST: %s got %s." % (pobject, self.scripted_obj)
         pass
 
+    def at_before_move(self, target_location):
+        """
+        This hook is called just before the object is moved.
+        arg:
+          target_location (obj): the place where this object is to be moved
+        returns:
+          if this function returns anything but None, the move is cancelled. 
+        
+        """
+        pass
+
+    def at_after_move(self):
+        """
+        This hook is called just after the object was successfully moved.
+        No return values.
+        """
+        pass
+
     def at_drop(self, pobject):
         """
         Perform this action when someone uses the DROP command on the object.

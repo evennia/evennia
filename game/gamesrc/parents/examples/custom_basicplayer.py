@@ -56,6 +56,13 @@ class CustomBasicPlayer(BasicPlayer):
         #show us our surroundings                                        
         pobject.execute_cmd("look")
 
+    def at_move(self):
+        """
+        This is triggered whenever the object is moved to a new location
+        (for whatever reason) using the src.objects.models.move_to() function. 
+        """
+        pass
+
                             
 def class_factory(source_obj):
     """

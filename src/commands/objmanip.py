@@ -290,11 +290,6 @@ def cmd_create(command):
     target_name = eq_args[0]
     
     # Create and set the object up.
-    # TODO: This dictionary stuff is silly. Feex.
-    #odat = {"name": target_name, 
-    #        "type": defines_global.OTYPE_THING, 
-    #        "location": source_object, 
-    #        "owner": source_object}
     new_object = Object.objects.create_object(target_name,
                                               defines_global.OTYPE_THING,
                                               source_object,
@@ -434,11 +429,6 @@ def cmd_open(command):
             source_object.emit_to("You can't open an exit to an exit!")
             return
 
-        #odat = {"name": exit_name, 
-        #        "type": defines_global.OTYPE_EXIT, 
-        #        "location": source_object.get_location(), 
-        #        "owner": source_object, 
-        #        "home": destination}
         new_object = Object.objects.create_object(exit_name,
                                                   defines_global.OTYPE_EXIT,
                                                   source_object.get_location(),
@@ -466,11 +456,6 @@ def cmd_open(command):
 
     else:
         # Create an un-linked exit.
-        #odat = {"name": exit_name, 
-        #        "type": defines_global.OTYPE_EXIT, 
-        #        "location": source_object.get_location(), 
-        #        "owner": source_object, 
-        #        "home": None}
         new_object = Object.objects.create_object(exit_name,
                                                   defines_global.OTYPE_EXIT,
                                                   source_object.get_location(),

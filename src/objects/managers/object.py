@@ -8,6 +8,7 @@ from django.db import connection
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 from src.config.models import ConfigValue
 from src.objects.exceptions import ObjectNotExist
@@ -83,7 +84,6 @@ class ObjectManager(models.Manager):
         Searches through all objects returning those which has a certain script parent.
         """
         o_query = self.filter(script_parent__exact=script_parent)      
-
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])       
 
@@ -122,7 +122,6 @@ class ObjectManager(models.Manager):
             "players": self.filter(type=defines_global.OTYPE_PLAYER).count(),
         }
         return dbtotals
-
 
 
     def player_alias_search(self, searcher, ostring):
@@ -288,8 +287,10 @@ class ObjectManager(models.Manager):
         if otype == defines_global.OTYPE_PLAYER:
             new_object.owner = None
             new_object.zone = None
+            new_object.script_parent = settings.SCRIPT_DEFAULT_PLAYER
         else:
             new_object.owner = owner
+            new_object.script_parent = settings.SCRIPT_DEFAULT_OBJECT
             
             if new_object.get_owner().get_zone():
                 new_object.zone = new_object.get_owner().get_zone()
@@ -308,7 +309,7 @@ class ObjectManager(models.Manager):
 
         # Rooms have a NULL location.
         if not new_object.is_room():
-            new_object.move_to(location, force_look=False)
+            new_object.move_to(location, quiet=True, force_look=False)
         
         return new_object
 
@@ -350,11 +351,6 @@ class ObjectManager(models.Manager):
         user = User.objects.get(id=uid)
 
         # Create a player object of the same ID in the Objects table.
-        #odat = {"id": uid, 
-        #        "name": uname, 
-        #        "type": defines_global.OTYPE_PLAYER, 
-        #        "location": start_room_obj, 
-        #        "owner": None}
         user_object = self.create_object(uname,
                                          defines_global.OTYPE_PLAYER,
                                          start_room_obj,
@@ -368,9 +364,12 @@ class ObjectManager(models.Manager):
         command.session.login(user)
         
         logger.log_infomsg('Registration: %s' % user_object.get_name())
-        user_object.emit_to("Welcome to %s, %s.\n\r" % (
-            ConfigValue.objects.get_configvalue('site_name'), 
-            user_object.get_name(show_dbref=False)))
+
+        #Don't show the greeting; it messes with using the login hooks for
+        #making character creation wizards. /Griatch
+        #user_object.emit_to("Welcome to %s, %s.\n\r" % (
+        #    ConfigValue.objects.get_configvalue('site_name'), 
+        #    user_object.get_name(show_dbref=False)))
         
         # Add the user to all of the CommChannel objects that are flagged
         # is_joined_by_default.

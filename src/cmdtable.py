@@ -28,7 +28,7 @@ class CommandTable(object):
         self.ctable = {}
     
     def add_command(self, command_string, function, priv_tuple=None,
-                    extra_vals=None, auto_help=False, staff_help=False, state=None):
+                    extra_vals=None, auto_help=False, staff_help=False):
         """
         Adds a command to the command table.
         

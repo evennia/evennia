@@ -44,6 +44,24 @@ class CustomBasicObject(BasicObject):
         """        
         pass
 
+    def at_before_move(self, target_location):
+        """
+        This hook is called just before the object is moved.
+        Input:
+          target_location (obj): The location the player is about to move to.
+        Return value: 
+            If this function returns anything but None (no return value),
+            the move is aborted. This allows for character-based move
+            restrictions (not only exit locks).
+        """
+        pass
+
+    def at_after_move(self):
+        """
+        This hook is called just after the player has been successfully moved.
+        """
+        pass
+
 
 def class_factory(source_obj):
     """

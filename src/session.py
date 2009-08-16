@@ -20,7 +20,7 @@ import ansi
 
 class SessionProtocol(StatefulTelnetProtocol):
     """
-    This class represents a player's sesssion. From here we branch down into
+    This class represents a player's session. From here we branch down into
     other various classes, please try to keep this one tidy!
     """
 
@@ -110,12 +110,12 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         pobject = self.get_pobject()
         if pobject:
-            pobject.set_flag("CONNECTED", False)
-            
-            location = pobject.get_location()
-            if location != None:
-                location.emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
 
+            #call hook function
+            pobject.scriptlink.at_disconnect()
+
+            pobject.set_flag("CONNECTED", False)
+                        
             uaccount = pobject.get_user_account()
             uaccount.last_login = datetime.now()
             uaccount.save()
@@ -169,9 +169,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         # This will cache with the first call of this function.
         self.get_pobject()
         #session_mgr.disconnect_duplicate_session(self)
-        
+
         self.pobject.scriptlink.at_pre_login(self)
-        self.pobject.scriptlink.at_post_login(self)
         
         logger.log_infomsg("Logged in: %s" % self)
         self.cemit_info('Logged in: %s' % self)
@@ -184,6 +183,9 @@ class SessionProtocol(StatefulTelnetProtocol):
         if self.pobject.name != user.username:
             self.pobject.set_name(user.username)
             self.pobject.save()
+
+        self.pobject.scriptlink.at_post_login(self)
+
         
     def msg(self, message):
         """
@@ -198,6 +200,15 @@ class SessionProtocol(StatefulTelnetProtocol):
         Adds the player to the default channels.
         """        
         # Add the default channels.
+        if self.pobject.is_superuser():
+            "Have the super users join these too."
+            chan = CommChannel.objects(name=settings.COMMCHAN_MUD_INFO)
+            chan_alias = 'info'
+            src.comsys.plr_set_channel(self, chan_alias, chan.name, True)
+            chan = CommChannel.objects(name=settings.COMMCHAN_MUD_CONNECTIONS)
+            chan_alias = 'conns'
+            src.comsys.plr_set_channel(self, chan_alias, chan.name, True)
+
         for chan in CommChannel.objects.filter(is_joined_by_default=True):
             logger.log_infomsg("ADDING BY DEFAULT %s" % chan)
             chan_alias = chan.get_default_chan_alias()
