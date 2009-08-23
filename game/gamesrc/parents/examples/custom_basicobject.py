@@ -58,7 +58,7 @@ class CustomBasicObject(BasicObject):
 
     def at_after_move(self):
         """
-        This hook is called just after the player has been successfully moved.
+        This hook is called just after the object has been successfully moved.
         """
         pass
 

@@ -47,7 +47,7 @@ class EvenniaBasicPlayer(object):
 
     def at_before_move(self, target_location):
         """
-        This hook is called just before the object is moved.
+        This hook is called just before the player is moved.
         Input:
           target_location (obj): The location the player is about to move to.
         Return value: 
