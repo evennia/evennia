@@ -128,7 +128,7 @@ Obs - make sure the IRC network allows bots.
 """
 
 #Activate the IRC bot. 
-IRC_ENABLED = True
+IRC_ENABLED = False
 #Which IRC network (e.g. irc.freenode.net)
 IRC_NETWORK = "irc.freenode.net"
 #Which IRC port to connect to (e.g. 6667)
