@@ -328,13 +328,13 @@ def send_cexternal(cname, cmessage, from_external=None):
                and all mapped external channels will be notified.
     """                  
 
-    if settings.IMC2_ENABLED and not from_external=="IMC":
+    if settings.IMC2_ENABLED and from_external != "IMC2":
         #map an IRC emit to the IMC network
         
         # Look for IMC2 channel maps. If one is found, send an ice-msg-b
         # packet to the network.
         #handle lack of user, IMC-way.
-        
+
         try:
             from src.imc2.connection import IMC2_PROTOCOL_INSTANCE
             map = IMC2ChannelMapping.objects.get(channel__name=cname)
@@ -347,7 +347,7 @@ def send_cexternal(cname, cmessage, from_external=None):
             # No map found, do nothing.
             pass
 
-    if settings.IRC_ENABLED and not from_external=="IRC":
+    if settings.IRC_ENABLED and from_external != "IRC":
         # Map an IMC emit to IRC channels
 
         # Look for IRC channel maps. If found, echo cmessage to the
