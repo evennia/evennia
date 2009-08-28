@@ -122,7 +122,7 @@ GLOBAL_CMD_TABLE.add_command("imcstatus", cmd_imcstatus)
 
 def cmd_IMC2chan(command):
     """
-    @imc2chan IMCchannel channel
+    @imc2chan IMCServer:IMCchannel channel
 
     Links an IMC channel to an existing
     evennia channel. You can link as many existing
@@ -130,7 +130,8 @@ def cmd_IMC2chan(command):
     IMC channel this way. Running the command with an
     existing mapping will re-map the channels.
 
-    Use 'imcchanlist' to get a list of IMC channels. 
+    Use 'imcchanlist' to get a list of IMC channels and servers.
+    Note that both are case sensitive. 
     """
     source_object = command.source_object
     if not settings.IMC2_ENABLED:
@@ -139,16 +140,22 @@ def cmd_IMC2chan(command):
         return
     args = command.command_argument
     if not args or len(args.split()) != 2 :
-        source_object.emit_to("Usage: @imc2chan IMCchannel channel")
+        source_object.emit_to("Usage: @imc2chan IMCServer:IMCchannel channel")
         return
-    imc_channel, channel = args.split()
-    imclist = IMC2_CHANLIST.get_channel_list()    
-    if imc_channel not in [c.localname for c in imclist]:
-        source_object.emit_to("IMC channel '%s' not found." % imc_channel)
+    #identify the server-channel pair
+    imcdata, channel = args.split()
+    if not ":" in imcdata:
+        source_object.emit_to("You need to supply an IMC Server:Channel pair.")
+        return
+    imclist = IMC2_CHANLIST.get_channel_list()
+    imc_channels = filter(lambda c: c.name == imcdata, imclist)    
+    if not imc_channels:
+        source_object.emit_to("IMC server and channel '%s' not found." % imcdata)
         return
     else:
-        imc_channel = filter(lambda c: c.localname==imc_channel,imclist)
-        if imc_channel: imc_channel = imc_channel[0]        
+        imc_server_name, imc_channel_name = imcdata.split(":")
+        
+    #find evennia channel
     try:
         chanobj = comsys.get_cobj_from_name(channel)    
     except CommChannel.DoesNotExist:
@@ -163,11 +170,9 @@ def cmd_IMC2chan(command):
         outstring = "Replacing %s. New " % mapping
     else:
         mapping = IMC2ChannelMapping()
-
-    server,name = imc_channel.name.split(":")
     
-    mapping.imc2_server_name = server.strip() #settings.IMC2_SERVER_ADDRESS
-    mapping.imc2_channel_name = name.strip()  #imc_channel.name    
+    mapping.imc2_server_name = imc_server_name 
+    mapping.imc2_channel_name = imc_channel_name
     mapping.channel = chanobj
     mapping.save()
     outstring += "Mapping set: %s." % mapping    

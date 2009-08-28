@@ -24,7 +24,7 @@ def cemit_info(message):
     Channel emits info to the appropriate info channel. By default, this
     is MUDInfo.
     """
-    comsys.send_cmessage(settings.COMMCHAN_IMC2_INFO, 'IMC: %s' % message)
+    comsys.send_cmessage(settings.COMMCHAN_IMC2_INFO, 'IMC: %s' % message,from_external="IMC2")
 
 class IMC2Protocol(StatefulTelnetProtocol):
     """
