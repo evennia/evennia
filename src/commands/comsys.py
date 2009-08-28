@@ -9,8 +9,10 @@ from src import defines_global
 from src import ansi
 from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
-from src.imc2.models import IMC2ChannelMapping
-from src.imc2.packets import IMC2PacketIceMsgBroadcasted
+#from src.imc2.models import IMC2ChannelMapping
+#from src.imc2.packets import IMC2PacketIceMsgBroadcasted
+#from src.irc.models import IRCChannelMapping
+#from src.irc.connection import IRC_CHANNELS
 
 def cmd_addcom(command):
     """
@@ -233,7 +235,7 @@ def cmd_cemit(command):
     
     cname = eq_args[0]
     cmessage = eq_args[1]
-    
+    final_cmessage = cmessage
     if len(cname) == 0:
         source_object.emit_to("You must provide a channel name to emit to.")
         return
@@ -247,7 +249,7 @@ def cmd_cemit(command):
     else:
         source_object.emit_to("Could not find channel %s." % (cname,))
         return
-
+    
     # If this is False, don't show the channel header before
     # the message. For example: [Public] Woohoo!
     show_channel_header = True
@@ -274,22 +276,11 @@ def cmd_cemit(command):
     if not "quiet" in command.command_switches:
         source_object.emit_to("Sent - %s" % (name_matches[0],))
     comsys.send_cmessage(cname_parsed, final_cmessage,
-                             show_header=show_channel_header)
+                         show_header=show_channel_header)
     
-    if settings.IMC2_ENABLED:
-        # Look for IMC2 channel maps. If one is found, send an ice-msg-b
-        # packet to the network.
-        try:
-            from src.imc2.connection import IMC2_PROTOCOL_INSTANCE
-            map = IMC2ChannelMapping.objects.get(channel__name=cname_parsed)
-            packet = IMC2PacketIceMsgBroadcasted(map.imc2_server_name,
-                                                 map.imc2_channel_name, 
-                                                 source_object, 
-                                                 cmessage)
-            IMC2_PROTOCOL_INSTANCE.send_packet(packet)
-        except IMC2ChannelMapping.DoesNotExist:
-            # No map found, do nothing.
-            pass
+    #pipe to external channels (IRC, IMC) eventually mapped to this channel
+    comsys.send_cexternal(cname_parsed, "[%s] %s" % (cname_parsed,final_cmessage))
+
 GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit),
 
 def cmd_cwho(command):
@@ -362,7 +353,7 @@ def cmd_ccreate(command):
         new_chan = comsys.create_channel(cname, source_object)
         source_object.emit_to("Channel %s created." % (new_chan.get_name(),))
 GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate,
-                             priv_tuple=("objects.add_commchannel")),
+                             priv_tuple=("objects.add_commchannel",))
 
 def cmd_cchown(command):
     """

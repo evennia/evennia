@@ -3,11 +3,16 @@ Comsys functions.
 """
 import time
 import datetime
+from django.conf import settings
 from django.utils import simplejson
 from src.channels.models import CommChannel, CommChannelMessage, CommChannelMembership
 from src import session_mgr
 from src import ansi
 from src import logger
+from src.imc2.packets import IMC2PacketIceMsgBroadcasted
+from src.imc2.models import IMC2ChannelMapping
+from src.irc.models import IRCChannelMapping
+import src.ansi
 
 def plr_get_cdict(session):
     """
@@ -226,13 +231,18 @@ def load_object_channels(pobject):
             session.channels_subscribed[membership.user_alias] = [membership.channel.name,
                                                                   membership.is_listening]
 
-def send_cmessage(channel, message, show_header=True):
+def send_cmessage(channel, message, show_header=True, from_external=None):
     """
     Sends a message to all players on the specified channel.
 
     channel: (string or CommChannel) Name of channel or a CommChannel object.
     message: (string) Message to send.
     show_header: (bool) If False, don't prefix message with the channel header.
+    from_external: (string/None)
+              Can be None, 'IRC' or 'IMC2'. The sending functions of the
+              respective protocol sets this flag, otherwise it should
+              be None; it allows for piping messages between protocols
+              without accidentally also echoing it back to where it came from.
     """
     if isinstance(channel, unicode) or isinstance(channel, str):
         # If they've passed a string as the channel argument, look up the
@@ -258,6 +268,10 @@ def send_cmessage(channel, message, show_header=True):
     chan_message.message = message
     chan_message.save()
 
+    #pipe to external protocols
+    if from_external:
+        send_cexternal(channel_obj.name, message, from_external)
+        
 def get_all_channels():
     """
     Returns all channel objects.
@@ -295,3 +309,63 @@ def cname_search(search_text, exact=False):
         return CommChannel.objects.filter(name__iexact=search_text)
     else:
         return CommChannel.objects.filter(name__istartswith=search_text)
+
+
+
+
+def send_cexternal(cname, cmessage, from_external=None):
+    """
+    This allows external protocols like IRC and IMC to send to a channel
+    while also echoing to each other. This used by channel-emit functions
+    to transparently distribute channel sends to external protocols. 
+
+    cname    - name of evennia channel sent to
+    cmessage - message sent (should be pre-formatted already)
+    from_external - which protocol sent the emit.
+               Currently supports 'IRC' and 'IMC2' or None
+               (this avoids emits echoing back to themselves). If
+               None, it is assumed the message comes from within Evennia
+               and all mapped external channels will be notified.
+    """                  
+
+    if settings.IMC2_ENABLED and not from_external=="IMC":
+        #map an IRC emit to the IMC network
+        
+        # Look for IMC2 channel maps. If one is found, send an ice-msg-b
+        # packet to the network.
+        #handle lack of user, IMC-way.
+        
+        try:
+            from src.imc2.connection import IMC2_PROTOCOL_INSTANCE
+            map = IMC2ChannelMapping.objects.get(channel__name=cname)
+            packet = IMC2PacketIceMsgBroadcasted(map.imc2_server_name,
+                                                 map.imc2_channel_name, 
+                                                 "*", 
+                                                 cmessage)
+            IMC2_PROTOCOL_INSTANCE.send_packet(packet)
+        except IMC2ChannelMapping.DoesNotExist:
+            # No map found, do nothing.
+            pass
+
+    if settings.IRC_ENABLED and not from_external=="IRC":
+        # Map an IMC emit to IRC channels
+
+        # Look for IRC channel maps. If found, echo cmessage to the
+        # IRC channel.        
+
+        try:
+            #this fails with a DoesNotExist if the channel is not mapped.
+            from src.irc.connection import IRC_CHANNELS
+            mapping = IRCChannelMapping.objects.filter(channel__name=cname)  
+            #strip the message of ansi characters. 
+            cmessage = ansi.clean_ansi(cmessage)
+            for mapp in mapping:
+                mapped_irc = filter(lambda c: c.factory.channel==mapp.irc_channel_name,
+                                    IRC_CHANNELS)
+                for chan in mapped_irc:                    
+                    chan.send_msg(cmessage.encode("utf-8"))                    
+        except IRCChannelMapping.DoesNotExist:
+            #no mappings. Ignore
+            pass
+
+

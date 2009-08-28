@@ -124,7 +124,8 @@ class IMC2Protocol(StatefulTelnetProtocol):
                 # Bombs away.
                 for mapping in mappings:
                     if mapping.channel:
-                        comsys.send_cmessage(mapping.channel, message)
+                        comsys.send_cmessage(mapping.channel, message,
+                                             from_external="IMC2")
             except IMC2ChannelMapping.DoesNotExist:
                 # No channel mapping found for this message, ignore it.
                 pass

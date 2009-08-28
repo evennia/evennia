@@ -144,3 +144,9 @@ def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=ANSI_PAR
     """
     return parser.parse_ansi(string, strip_ansi=strip_ansi, 
                              strip_formatting=strip_formatting)
+def clean_ansi(string):
+    """
+    Cleans all ansi symbols from a string
+    """
+    r= re.compile("\033\[[0-9;]+m")
+    return r.sub("", string) #replace all matches with empty strings

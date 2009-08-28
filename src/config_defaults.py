@@ -66,52 +66,79 @@ DATABASE_HOST = ''
 # Empty string defaults to localhost. Not used with sqlite3.
 DATABASE_PORT = ''
 
-"""
-IMC Configuration
 
-This is static and important enough to put in the server-side settings file.
-Copy and paste this section to your game/settings.py file and change the
-values to fit your needs.
+# Communication channels in-game
 
-Evennia's IMC2 client was developed against MudByte's network. You may
-register and join it by going to:
-http://www.mudbytes.net/imc2-intermud-join-network
+"""
+Your names of various default comm channels for emitting
+debug- or informative messages.
+"""
 
-Choose "Other unsupported IMC2 version" and enter your information there.
-You'll want to change the values below to reflect what you entered.
-"""
-# Make sure this is True in your settings.py.
-# CHANGE THIS TO True IF YOU WANT IMC!
-IMC2_ENABLED = False
-# While True, emit additional debugging info.
-IMC2_DEBUG = False
-# The hostname/ip address of your IMC2 server of choice.
-# CHANGE THIS!
-IMC2_SERVER_ADDRESS = None
-# The port to connect to on your IMC2 server.
-# CHANGE THIS!
-IMC2_SERVER_PORT = None
-# This is your game's IMC2 name. 
-# CHANGE THIS TO A SHORT ALPHANUMERIC STRING!
-IMC2_MUDNAME = None
-# Your IMC2 client-side password. Used to authenticate with your network.
-# CHANGE THIS TO A SHORT ALPHANUMERIC STRING!
-IMC2_CLIENT_PW = None
-# Your IMC2 server-side password. Used to verify your network's identity.
-# CHANGE THIS TO A SHORT ALPHANUMERIC STRING!
-IMC2_SERVER_PW = None
-# This isn't something you should generally change.
-IMC2_PROTOCOL_VERSION = '2'
-
-# MudBytes IMC Information
-#IMC2_SERVER_ADDRESS = 'server02.mudbytes.net'
-#IMC2_SERVER_PORT = 9000
-"""
-Various comm channels for emitting debug or informative messages.
-"""
 COMMCHAN_IMC2_INFO = 'MUDInfo'
 COMMCHAN_MUD_INFO = 'MUDInfo'
 COMMCHAN_MUD_CONNECTIONS = 'MUDConnections'
+
+
+"""
+IMC Configuration
+
+IMC (Inter-MUD communication) allows for an evennia chat channel that connects
+to people on other MUDs also using the IMC. Your evennia server do *not* have
+to be open to the public to use IMC; it works as a stand-alone chat client.
+
+Copy and paste this section to your game/settings.py file and change the
+values to fit your needs.
+
+Evennia's IMC2 client was developed against MudByte's network. You must
+register your MUD on the network before you can use it, go to
+http://www.mudbytes.net/imc2-intermud-join-network.
+
+Choose 'Other unsupported IMC2 version' from the choices and
+and enter your information there. You have to enter the same
+'short mud name', 'client password' and 'server password' as you
+define in this file. 
+
+The Evennia discussion channel is on server02.mudbytes.net:9000.
+"""
+
+# Change to True if you want IMC active at all.
+IMC2_ENABLED = False
+# The hostname/ip address of your IMC2 server of choice.
+IMC2_SERVER_ADDRESS = 'server02.mudbytes.net' 
+#IMC2_SERVER_ADDRESS = None
+# The port to connect to on your IMC2 server.
+IMC2_SERVER_PORT = 9000
+#IMC2_SERVER_PORT = None
+# This is your game's IMC2 name on the network (e.g. "MyMUD").
+IMC2_MUDNAME = None 
+# Your IMC2 client-side password. Used to authenticate with your network. 
+IMC2_CLIENT_PW = None 
+# Your IMC2 server-side password. Used to verify your network's identity.
+IMC2_SERVER_PW = None 
+# Emit additional debugging info to log.
+IMC2_DEBUG = False
+# This isn't something you should generally change.
+IMC2_PROTOCOL_VERSION = '2'
+
+"""
+IRC config. This allows your evennia channels to connect to an external IRC
+channel. Evennia will connect under a nickname that then echoes what is
+said on the channel to IRC and vice versa.
+Obs - make sure the IRC network allows bots. 
+"""
+
+#Activate the IRC bot. 
+IRC_ENABLED = True
+#Which IRC network (e.g. irc.freenode.net)
+IRC_NETWORK = "irc.freenode.net"
+#Which IRC port to connect to (e.g. 6667)
+IRC_PORT = 6667
+#Which channel on the network to connect to (including the #)
+IRC_CHANNEL = ""
+#Under what nickname should Evennia connect to the channel
+IRC_NICKNAME = ""
+
+
 
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -232,10 +259,11 @@ INSTALLED_APPS = (
     'src.objects',
     'src.channels',
     'src.imc2',
+    'src.irc',
     'src.helpsys',
     'src.genperms',
     'game.web.apps.news',
-    'game.web.apps.website',
+    'game.web.apps.website',    
 )
 
 """
@@ -270,6 +298,7 @@ COMMAND_MODULES = (
     'src.commands.privileged',
     'src.commands.search',
     'src.commands.imc2',
+    'src.commands.irc',
 )
 
 """

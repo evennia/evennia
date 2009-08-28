@@ -7,14 +7,17 @@ from src.config.models import ConfigValue
 from src.objects.models import Object
 from src import defines_global
 from src import ansi
+from src import comsys
 from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src.ansi import parse_ansi
 from src.imc2.imc_ansi import IMCANSIParser
 from src.imc2 import connection as imc2_conn
 from src.imc2.packets import *
+from src.imc2.models import IMC2ChannelMapping    
 from src.imc2.trackers import IMC2_MUDLIST, IMC2_CHANLIST
-    
+from src.channels.models import CommChannel
+
 def cmd_imcwhois(command):
     """
     Shows a player's inventory.
@@ -115,3 +118,61 @@ def cmd_imcstatus(command):
     
     source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("imcstatus", cmd_imcstatus)
+
+
+def cmd_IMC2chan(command):
+    """
+    @imc2chan IMCchannel channel
+
+    Links an IMC channel to an existing
+    evennia channel. You can link as many existing
+    evennia channels as you like to the
+    IMC channel this way. Running the command with an
+    existing mapping will re-map the channels.
+
+    Use 'imcchanlist' to get a list of IMC channels. 
+    """
+    source_object = command.source_object
+    if not settings.IMC2_ENABLED:
+        s = """IMC is not enabled. You need to activate it in game/settings.py."""
+        source_object.emit_to(s)
+        return
+    args = command.command_argument
+    if not args or len(args.split()) != 2 :
+        source_object.emit_to("Usage: @imc2chan IMCchannel channel")
+        return
+    imc_channel, channel = args.split()
+    imclist = IMC2_CHANLIST.get_channel_list()    
+    if imc_channel not in [c.localname for c in imclist]:
+        source_object.emit_to("IMC channel '%s' not found." % imc_channel)
+        return
+    else:
+        imc_channel = filter(lambda c: c.localname==imc_channel,imclist)
+        if imc_channel: imc_channel = imc_channel[0]        
+    try:
+        chanobj = comsys.get_cobj_from_name(channel)    
+    except CommChannel.DoesNotExist:
+        source_object.emit_to("Local channel '%s' not found (use real name, not alias)." % channel)
+        return
+       
+    #create the mapping.
+    outstring = ""
+    mapping = IMC2ChannelMapping.objects.filter(channel__name=channel)
+    if mapping:
+        mapping = mapping[0]
+        outstring = "Replacing %s. New " % mapping
+    else:
+        mapping = IMC2ChannelMapping()
+
+    server,name = imc_channel.name.split(":")
+    
+    mapping.imc2_server_name = server.strip() #settings.IMC2_SERVER_ADDRESS
+    mapping.imc2_channel_name = name.strip()  #imc_channel.name    
+    mapping.channel = chanobj
+    mapping.save()
+    outstring += "Mapping set: %s." % mapping    
+    source_object.emit_to(outstring)
+
+GLOBAL_CMD_TABLE.add_command("@imc2chan",cmd_IMC2chan,auto_help=True,staff_help=True,
+                             priv_tuple=("objects.add_commchannel",))
+    

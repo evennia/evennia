@@ -154,6 +154,15 @@ class EvenniaService(service.Service):
             svc.setServiceParent(self.service_collection)
             imc2_events.add_events()
 
+        if settings.IRC_ENABLED:
+            #Connect to the IRC network.  
+            from src.irc.connection import connect_to_IRC
+            connect_to_IRC(settings.IRC_NETWORK,
+                           settings.IRC_PORT,
+                           settings.IRC_CHANNEL,
+                           settings.IRC_NICKNAME)
+
+
 application = service.Application('Evennia')
 mud_service = EvenniaService()
 mud_service.start_services(application)
