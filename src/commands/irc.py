@@ -1,5 +1,5 @@
 """
-IRC-related functions
+IRC-related commands
 """
 
 from django.conf import settings
@@ -8,6 +8,7 @@ from src.irc.connection import connect_to_IRC
 from src.irc.models import IRCChannelMapping
 from src import comsys
 from src.cmdtable import GLOBAL_CMD_TABLE
+from src.channels.models import CommChannel
 
 def cmd_IRC2chan(command):
     """
