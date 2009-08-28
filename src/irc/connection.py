@@ -9,7 +9,7 @@ from twisted.internet import protocol
 from twisted.internet import reactor
 from src.irc.models import IRCChannelMapping
 from src import comsys
-from src import logger
+from src import logger 
 
 #store all irc channels
 IRC_CHANNELS = []
