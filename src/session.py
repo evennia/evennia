@@ -200,23 +200,13 @@ class SessionProtocol(StatefulTelnetProtocol):
         Adds the player to the default channels.
         """        
         # Add the default channels.
-        if self.pobject.is_superuser():
-            "Have the super users join these too."
-            chan = CommChannel.objects(name=settings.COMMCHAN_MUD_INFO)
-            chan_alias = 'info'
-            src.comsys.plr_set_channel(self, chan_alias, chan.name, True)
-            chan = CommChannel.objects(name=settings.COMMCHAN_MUD_CONNECTIONS)
-            chan_alias = 'conns'
-            src.comsys.plr_set_channel(self, chan_alias, chan.name, True)
-
         for chan in CommChannel.objects.filter(is_joined_by_default=True):
-            logger.log_infomsg("ADDING BY DEFAULT %s" % chan)
-            chan_alias = chan.get_default_chan_alias()
+            #logger.log_infomsg("ADDING BY DEFAULT %s" % chan)
+            chan_alias = chan.get_default_chan_alias()            
             membership = CommChannelMembership(channel=chan, 
                                                listener=self.get_pobject(),
                                                user_alias=chan_alias)
-            membership.save()
-            
+            membership.save()            
             comsys.plr_set_channel_listening(self, chan_alias, True)
         
     def __str__(self):

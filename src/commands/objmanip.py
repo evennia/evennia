@@ -432,7 +432,7 @@ def cmd_create(command):
     Creates a new object. If parent is given, the object is created as a child of this
     parent. The parent script is assumed to be located under game/gamesrc/parents
     and any further directory structure is given in Python notation. So if you
-    have a correct parent object defined in parents/examples/red_button.py, you could
+    have a correct parent object defined in parents/examples/red_button.py, you would
     load create a new object inheriting from this parent like this:
        @create button:examples.red_button       
     """
@@ -779,11 +779,6 @@ def cmd_dig(command):
     if not roomname:
         source_object.emit_to("You must supply a new room name.")
     else:
-        # Create and set the object up.
-        #odat = {"name": roomname, 
-        #        "type": defines_global.OTYPE_ROOM, 
-        #        "location": None, 
-        #        "owner": source_object}
         new_room = Object.objects.create_object(roomname,
                                                 defines_global.OTYPE_ROOM,
                                                 None,
@@ -801,12 +796,6 @@ def cmd_dig(command):
             if destination and not destination.is_exit():
                 location = source_object.get_location()
 
-                #create an exit from here to the new room. 
-                #odat = {"name": exits[0].strip(), 
-                #        "type": defines_global.OTYPE_EXIT, 
-                #        "location": location, 
-                #        "owner": source_object, 
-                #        "home": destination}
                 new_object = Object.objects.create_object(exits[0].strip(),
                                                           defines_global.OTYPE_EXIT,
                                                           location,
@@ -815,12 +804,6 @@ def cmd_dig(command):
                 source_object.emit_to("Created exit from %s to %s named '%s'." % (location,destination,new_object))
 
                 if len(exits)>1:
-                    #create exit back to this room
-                    #odat = {"name": exits[1].strip(), 
-                    #        "type": defines_global.OTYPE_EXIT, 
-                    #        "location": destination, 
-                    #        "owner": source_object, 
-                    #        "home": location}
                     new_object = Object.objects.create_object(exits[1].strip(),
                                                               defines_global.OTYPE_EXIT,
                                                               destination,

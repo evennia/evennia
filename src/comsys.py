@@ -147,7 +147,7 @@ def plr_add_channel(source_object, alias, channel):
     listening: (bool) A True or False value to determine listening status.
     """
     membership = CommChannelMembership(channel=channel, listener=source_object,
-                                           user_alias=alias)
+                                       user_alias=alias)
     membership.save()
     
     sessions = session_mgr.sessions_from_object(source_object)

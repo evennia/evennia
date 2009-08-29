@@ -101,7 +101,8 @@ def cmd_comlist(command):
     source_object = command.source_object 
     session = command.session
 
-    source_object.emit_to("Alias     Channel             Status")
+    s = "Your subscibed channels (to see all, use @clist)\n"
+    s += "Alias     Channel             Status\n"
     for membership in source_object.channel_membership_set.all():
         chan = membership.channel
         if membership.is_listening:
@@ -109,10 +110,11 @@ def cmd_comlist(command):
         else:
             chan_on = "Off"
             
-        source_object.emit_to("%-9.9s %-19.19s %s" % (membership.user_alias, 
-                                                      chan.get_name(), 
-                                                      chan_on))
-    source_object.emit_to("-- End of comlist --")
+        s += "%-9.9s %-19.19s %s\n" % (membership.user_alias, 
+                                     chan.get_name(), 
+                                     chan_on)
+    s += "-- End of comlist --"
+    source_object.emit_to(s)
 GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist),
     
 def cmd_allcom(command):
@@ -143,16 +145,19 @@ def cmd_clist(command):
     """
     session = command.session
     source_object = command.source_object
+
+    s = "All channels (use comlist to see your subscriptions)\n"
     
-    source_object.emit_to("** Channel        Owner         Description")
+    s += "** Channel        Owner         Description\n"
     for chan in comsys.get_all_channels():
-        source_object.emit_to("%s%s %-15.14s%-22.15s%s" %
+        s += "%s%s %-15.14s%-22.15s%s\n" % \
             ('-', 
              '-', 
              chan.get_name(), 
              chan.get_owner().get_name(show_dbref=False), 
-             chan.description))
-    source_object.emit_to("** End of Channel List **")
+             chan.description)
+    s += "** End of Channel List **"
+    source_object.emit_to(s)
 GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist),
 
 def cmd_cdestroy(command):
@@ -192,7 +197,6 @@ def cmd_cset(command):
     # TODO: Implement cmd_cset
     pass
 
-
 def cmd_ccharge(command):
     """
     @ccharge
@@ -204,12 +208,64 @@ def cmd_ccharge(command):
 
 def cmd_cboot(command):
     """
-    @cboot
+    @cboot[/quiet] <channel>=<object>
 
-    Kicks a player or object from the channel.
+    Kicks a player or object from the channel
     """
-    # TODO: Implement cmd_cboot
-    pass
+    source_object = command.source_object
+    args = command.command_argument
+    switches = command.command_switches
+
+    if not args or not "=" in args:
+        source_object.emit_to("Usage: @cboot[/quiet] <channel>=<object>")
+        return
+    cname, objname = args.split("=",1)
+    cname, objname = cname.strip(), objname.strip()    
+    if not cname or not objname:
+        source_object.emit_to("You must supply both channel and object.")
+        return
+    try:
+        channel = CommChannel.objects.get(name__iexact=cname)
+    except CommChannel.DoesNotExist:
+        source_object.emit_to("Could not find channel %s." % cname)
+        return 
+
+    #do we have power over this channel?
+    if not channel.controlled_by(source_object):
+        source_object.emit_to("You don't have that power in channel '%s'." % cname)
+        return    
+
+    #mux specification requires an * before player objects.
+    player_boot = False
+    if objname[0] == '*':        
+        player_boot = True
+        objname = objname[1:]
+    bootobj = source_object.search_for_object(objname)
+    if not bootobj:
+        source_object.emit_to("Object '%s' not found." % objname)
+        return
+    if bootobj.is_player() and not player_boot:
+        source_object.emit_to("To boot players you need to start their name with an '*'. ")
+        return    
+
+    #check so that this object really is on the channel in the first place
+    membership = bootobj.channel_membership_set.filter(channel__name__iexact=cname)
+    if not membership:
+        source_object.emit_to("'%s' is not on channel '%s'." % (objname,cname)) 
+        return
+
+    #announce to channel
+    if not 'quiet' in switches:
+        comsys.send_cmessage(cname, "%s boots %s from channel." % \
+                             (source_object.get_name(show_dbref=False), objname))
+
+    #all is set, boot the object by removing all its aliases from the channel. 
+    for mship in membership:
+        alias = mship.user_alias
+        comsys.plr_del_channel(bootobj, alias)
+
+GLOBAL_CMD_TABLE.add_command("@cboot", cmd_cboot)
+
 
 def cmd_cemit(command):
     """
@@ -363,3 +419,4 @@ def cmd_cchown(command):
     """
     # TODO: Implement cmd_cchown.
     pass
+
