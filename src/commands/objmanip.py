@@ -251,6 +251,89 @@ def cmd_set(command):
         source_object.emit_to(s[1:])
 GLOBAL_CMD_TABLE.add_command("@set", cmd_set)
 
+def cmd_cpattr(command):
+    """
+    copy an attribute to another object
+    
+    @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+    @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+    @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+    @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]
+    """
+    source_object = command.source_object
+    args = command.command_argument
+    if not args or not '=' in args:
+        s = """Usage:
+        @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+        @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+        @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+        @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]"""
+        source_object.emit_to(s)
+        return
+    arg1, arg2 = args.split("=")
+
+    #parsing arg1 (left of =)
+    if not arg1:
+        source_object.emit_to("You must specify <obj> or <obj>/<attr>.")
+        return
+    if '/' in arg1:
+        from_objname, from_attr = arg1.split('/',1)
+        from_attr = from_attr.strip()
+        from_obj = source_object.search_for_object(from_objname.strip())
+    else:
+        from_attr = arg1.strip()
+        from_obj = source_object
+        from_objname = from_obj.get_name(show_dbref=False)        
+    if not from_obj:
+        source_object.emit_to("Source object not found.")
+        return
+    from_value = from_obj.get_attribute_value(from_attr)
+    if from_value==None:
+        source_object.emit_to("Attribute %s=%s not found." % \
+                              (from_objname,from_attr))
+        return 
+        
+    #parsing arg2 (right of =)
+    if not arg2:
+        source_object.emit_to("You must specify target objects and attributes.")
+        return 
+    pairlist = arg2.split(',')
+    pairdict = {}
+    for pair in pairlist:
+        if '/' in pair:
+            objname, attrname = pair.split("/",1)
+            pairdict[objname.strip()] = attrname.strip()
+        else:
+            pairdict[pair.strip()] = None
+
+    #copy to all targets
+    s = "Copying %s=%s (with value %s) ..." % (from_objname,
+                                               from_attr,from_value)
+    for to_objname, to_attr in pairdict.items():
+        to_obj = source_object.search_for_object(to_objname.strip())
+        if not to_obj:
+            s += "\nCould not find object '%s'" % to_objname
+            continue
+        if not source_object.controls_other(to_obj):
+            s += "\n You cannot modify object '%s'" % to_objname
+            return 
+        if to_attr == None:
+            to_attr = from_attr
+        if not to_attr:            
+            s += "\nCan not copy to %s= (empty attribute name)" % to_objname
+            continue
+        if not Attribute.objects.is_modifiable_attrib(to_attr):
+            s += "\nCan not copy to %s=%s (cannot be modified)" % (to_objname,
+                                                                   to_attr)
+            continue 
+        to_obj.set_attribute(to_attr, from_value)
+        s += "\nCopied %s=%s -> %s=%s" % (from_objname,from_attr,
+                                          to_objname, to_attr)
+    source_object.emit_to(s)
+GLOBAL_CMD_TABLE.add_command("@cpattr", cmd_cpattr,
+                             priv_tuple=("genperms.builder",))
+
+        
 def cmd_mvattr(command):
     """
     @mvattr <object>=<old>,<new>[,<copy1>]...
@@ -265,7 +348,7 @@ def cmd_mvattr(command):
         return
     objname,attrs = arg.split('=')            
     attrs = attrs.split(",")
-    oldattr = attrs[0]
+    oldattr = attrs[0].strip()
     if len(attrs)<2:
         source_object.emit_to("You must give both the old- and new name of the attribute.")
         return
@@ -284,9 +367,10 @@ def cmd_mvattr(command):
         source_object.emit_to(defines_global.NOCONTROL_MSG)
         return            
     #we should now be good to go. Start the copying. 
-    s = "Moving %s (with value %s) ..." % (oldattr,value)
+    s = "Moving %s=%s (with value %s) ..." % (objname,oldattr,value)
     delete_original = True
     for attr in attrs[1:]:
+        attr = attr.strip()
         if not attr:
             s += "\nCan not copy to empty attribute name."
             continue
@@ -308,7 +392,8 @@ def cmd_mvattr(command):
     
     source_object.emit_to(s)
 
-GLOBAL_CMD_TABLE.add_command("@mvattr", cmd_mvattr)
+GLOBAL_CMD_TABLE.add_command("@mvattr", cmd_mvattr,
+                             priv_tuple=("genperms.builder",))
 
 
 
@@ -383,76 +468,6 @@ def cmd_create(command):
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
                              priv_tuple=("genperms.builder"),auto_help=True)
     
-def cmd_cpattr(command):
-    """
-    Copies a given attribute to another object.
-
-    @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-    @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-    @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-    @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]
-    """
-    source_object = command.source_object
-
-    if not command.command_argument:
-        source_object.emit_to("What do you want to copy?")
-        return
-
-    # Split up source and target[s] via the equals sign.
-    eq_args = command.command_argument.split('=', 1)
-
-    if len(eq_args) < 2:
-        # There must be both a source and a target pair for cpattr
-        source_object.emit_to("You have not supplied both a source and a target(s).")
-        return
-
-    # Check that the source object and attribute exists, by splitting the eq_args 'source' entry with '/'
-    source = eq_args[0].split('/', 1)
-    source_string = source[0].strip()
-    source_attr_string = source[1].strip().upper()
-
-    # Check whether src_obj exists
-    src_obj = source_object.search_for_object(source_string)
-    
-    if not src_obj:
-        source_object.emit_to("Source object does not exist.")
-        return
-        
-    # Check whether src_obj has src_attr
-    src_attr = src_obj.attribute_namesearch(source_attr_string)
-    
-    if not src_attr:
-        source_object.emit_to("Source object does not have attribute: %s" + source_attr_string)
-        return
-    
-    # For each target object, check it exists
-    # Remove leading '' from the targets list.
-    targets = eq_args[1].strip().split(',')
-
-    for target in targets:
-        tar = target.split('/', 1)
-        tar_string = tar[0].strip()
-        tar_attr_string = tar[1].strip().upper()
-
-        tar_obj = source_object.search_for_object(tar_string)
-
-        # Does target exist?
-        if not tar_obj:
-            source_object.emit_to("Target object does not exist: " + tar_string)
-            # Continue if target does not exist, but give error on this item
-            continue
-
-        # If target attribute is not given, use source_attr_string for name
-        if tar_attr_string == '':
-            tar_attr_string = source_attr_string
-
-        # Set or update the new attribute on the target object
-        src_attr_contents = src_obj.get_attribute_value(source_attr_string)
-        tar_obj.set_attribute(tar_attr_string, src_attr_contents)
-        source_object.emit_to("%s - %s set." % (tar_obj.get_name(), 
-                                                tar_attr_string))
-GLOBAL_CMD_TABLE.add_command("@cpattr", cmd_cpattr,
-                             priv_tuple=("genperms.builder"))
 
 def cmd_nextfree(command):
     """
