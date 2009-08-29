@@ -71,10 +71,14 @@ def create_channels():
                                      description="Public Discussion")
     chan_pub.is_joined_by_default = True
     chan_pub.save()
-    comsys.create_channel(settings.COMMCHAN_MUD_INFO, god_user_obj, 
-                          description="Informative messages")
-    comsys.create_channel(settings.COMMCHAN_MUD_CONNECTIONS, god_user_obj, 
-                          description="Connection log")
+    chan_info = comsys.create_channel(settings.COMMCHAN_MUD_INFO, god_user_obj, 
+                                      description="Informative messages")
+    chan_conn = comsys.create_channel(settings.COMMCHAN_MUD_CONNECTIONS, god_user_obj, 
+                                      description="Connection log")
+    #add god user to default channels.
+    comsys.plr_add_channel(god_user_obj, "pub", chan_pub)
+    comsys.plr_add_channel(god_user_obj, "info", chan_info)
+    comsys.plr_add_channel(god_user_obj, "conn", chan_conn)
     
 def create_config_values():
     """

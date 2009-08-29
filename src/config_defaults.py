@@ -74,10 +74,10 @@ Your names of various default comm channels for emitting
 debug- or informative messages.
 """
 
-COMMCHAN_IMC2_INFO = 'MUDInfo'
 COMMCHAN_MUD_INFO = 'MUDInfo'
 COMMCHAN_MUD_CONNECTIONS = 'MUDConnections'
-
+COMMCHAN_IMC2_INFO = 'MUDInfo'
+COMMCHAN_IRC_INFO = 'MUDInfo'
 
 """
 IMC Configuration

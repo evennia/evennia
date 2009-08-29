@@ -90,8 +90,8 @@ class EvenniaService(service.Service):
         for cmd_mod in cmd_modules:
             try:
                 __import__(cmd_mod)
-            except ImportError:
-                logger.log_errmsg("ERROR: Unable to load command module: %s" % cmd_mod)
+            except ImportError, e:
+                logger.log_errmsg("ERROR: Unable to load command module: %s (%s)" % (cmd_mod, e))
                 continue
 
     """

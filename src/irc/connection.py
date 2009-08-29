@@ -7,12 +7,19 @@ more Evennia channels.
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 from twisted.internet import reactor
+from django.conf import settings
 from src.irc.models import IRCChannelMapping
 from src import comsys
 from src import logger 
 
 #store all irc channels
 IRC_CHANNELS = []
+
+def cemit_info(message):
+    """
+    Send info to default info channel
+    """
+    comsys.send_cmessage(settings.COMMCHAN_IRC_INFO, 'IRC: %s' % message,from_external="IRC")
 
 class IRC_Bot(irc.IRCClient):
     
@@ -28,17 +35,17 @@ class IRC_Bot(irc.IRCClient):
         # This is the first point the protocol is instantiated.
         # add this protocol instance to the global list so we
         # can access it later to send data. 
-        IRC_CHANNELS.append(self)
-
-        logger.log_infomsg("IRC: Client connecting to %s.'" % (self.factory.channel))
+        IRC_CHANNELS.append(self)        
+        cemit_info("Client connecting to %s.'" % (self.factory.channel))
                  
     def joined(self, channel):
-        logger.log_infomsg("Joined %s/%s as '%s'." % (self.factory.network,channel,self.factory.nickname))
+        msg = "Joined %s/%s as '%s'." % (self.factory.network,channel,self.factory.nickname)
+        cemit_info(msg)
+        logger.log_infomsg(msg)
 
     def privmsg(self, user, irc_channel, msg):
         "Someone has written something in channel. Echo it to the evennia channel"
 
-        print "got msg: %s" % msg
         try:
             #find irc->evennia channel mappings
             mappings = IRCChannelMapping.objects.filter(irc_channel_name=irc_channel)
@@ -49,12 +56,12 @@ class IRC_Bot(irc.IRCClient):
             if user:
                 user.strip()
             msg = "%s@%s: %s" % (user,irc_channel,msg)
-
-            logger.log_infomsg("<IRC: " + msg)
-
+            #logger.log_infomsg("<IRC: " + msg)            
+            
             for mapping in mappings:
                 if mapping.channel:
                     comsys.send_cmessage(mapping.channel, msg, from_external="IRC")
+
         except IRCChannelMapping.DoesNotExist:
             #no mappings found. Ignore.
             pass
@@ -62,7 +69,7 @@ class IRC_Bot(irc.IRCClient):
     def send_msg(self,msg):
         "Called by evennia when sending something to mapped IRC channel"
         self.msg(self.factory.channel, msg)
-        logger.log_infomsg(">IRC: " + msg)
+        #logger.log_infomsg(">IRC: " + msg)
 
 class IRC_BotFactory(protocol.ClientFactory):
     protocol = IRC_Bot
@@ -71,11 +78,13 @@ class IRC_BotFactory(protocol.ClientFactory):
         self.channel = channel
         self.nickname = nickname                
     def clientConnectionLost(self, connector, reason):
-        logger.log_errmsg("IRC: Lost connection (%s), reconnecting." % reason)
+        cemit_info("Lost connection (%s), reconnecting." % reason)
         connector.connect()
     def clientConnectionFailed(self, connector, reason):
-        logger.log_errmsg("IRC: Could not connect: %s" % reason)
-            
+        msg = "Could not connect: %s" % reason
+        cemit_info(msg)
+        logger.log_errmsg(msg)        
+        
 def connect_to_IRC(irc_network,irc_port,irc_channel,irc_bot_nick ):   
     "Create the bot instance and connect to the IRC network and channel."        
     connect = reactor.connectTCP(irc_network, irc_port,
