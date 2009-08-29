@@ -12,9 +12,10 @@ class ConfigValueManager(models.Manager):
         try:
             return self.get(conf_key__iexact=configname).conf_value
         except self.model.DoesNotExist:
-            logger.log_errmsg("Unable to get config value for %s (does not exist).\n" % (
+            if configname not in ["game_firstrun"]:
+                logger.log_errmsg("Unable to get config value for %s (does not exist).\n" % (
                 configname))
-            raise
+            raise 
             
     def set_configvalue(self, configname, newvalue):
         """

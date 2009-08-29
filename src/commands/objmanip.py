@@ -170,76 +170,147 @@ def cmd_set(command):
     """
     Sets flags or attributes on objects.
     """
-    source_object = command.source_object
-
-    if not command.command_argument:
-        source_object.emit_to("Set what?")
+    source_object = command.source_object    
+    args = command.command_argument
+    if not args:        
+        source_object.emit_to("Usage: @set obj=attr:value or @set obj=flag. Use empty value or !flag to clear.")
         return
-  
+    
     # Break into target and value by the equal sign.
-    eq_args = command.command_argument.split('=', 1)
-    if len(eq_args) < 2:
+    eq_args = args.split('=')
+    if len(eq_args) < 2 or not eq_args[1]:
         # Equal signs are not optional for @set.
         source_object.emit_to("Set what?")
         return
-    
-    victim = source_object.search_for_object(eq_args[0])
+    target_name = eq_args[0]
+    target = source_object.search_for_object(eq_args[0])
     # Use search_for_object to handle duplicate/nonexistant results.
-    if not victim:
+    if not target:
         return
 
-    if not source_object.controls_other(victim):
+    #check permission.
+    if not source_object.controls_other(target):
         source_object.emit_to(defines_global.NOCONTROL_MSG)
         return
-
+    
     attrib_args = eq_args[1].split(':', 1)
     if len(attrib_args) > 1:
         # We're dealing with an attribute/value pair.
         attrib_name = attrib_args[0]
         splicenum = eq_args[1].find(':') + 1
         attrib_value = (eq_args[1][splicenum:]).strip()
-        
-        # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
+    
+        if not attrib_name:
+            source_object.emit_to("Cannot set an empty attribute name.")
+            return                
         if not Attribute.objects.is_modifiable_attrib(attrib_name):
+            # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
             source_object.emit_to("You can't modify that attribute.")
             return
-        
         if attrib_value:
             # An attribute value was specified, create or set the attribute.
-            verb = 'set'
-            victim.set_attribute(attrib_name, attrib_value)
+            target.set_attribute(attrib_name, attrib_value)
+            s = "Attribute %s=%s set to %s." % (target_name, attrib_name, attrib_value)
         else:
             # No value was given, this means we delete the attribute.
-            ok = victim.clear_attribute(attrib_name)
-            if ok: verb = 'attribute cleared'
-            else: verb = 'is not a known attribute. If it is a flag, use !flag to clear it'
-
-            victim.clear_attribute(attrib_name)
-        source_object.emit_to("%s - %s %s." % (victim.get_name(), attrib_name, verb))
+            ok = target.clear_attribute(attrib_name)
+            if ok:
+                s = 'Attribute %s=%s deleted.' % (target_name,attrib_name)
+            else:
+                s = "Attribute %s=%s not found, so not cleared. \nIf it is a flag, use '@set %s:!%s' to clear it." % \
+                (target_name, attrib_name, target_name, attrib_name)
+        source_object.emit_to(s)
     else:
         # Flag manipulation form.
         flag_list = eq_args[1].split()
-        
+        s = ""
         for flag in flag_list:
             flag = flag.upper()
             if flag[0] == '!':
                 # We're un-setting the flag.
                 flag = flag[1:]
                 if not src.flags.is_modifiable_flag(flag):
-                    source_object.emit_to("You can't set/unset the flag - %s." % (flag,))
-                else:
-                    source_object.emit_to('%s - %s cleared.' % (victim.get_name(), 
-                                                                flag.upper(),))
-                    victim.set_flag(flag, False)
+                    s += "\nYou can't set/unset the flag %s." % flag
+                    continue
+                if not target.has_flag(flag):
+                    s += "\nFlag %s=%s already cleared." % (target_name,flag)
+                    continue
+                s += "\nFlag %s=%s cleared." % (target_name, flag.upper())
+                target.unset_flag(flag)
             else:
                 # We're setting the flag.
                 if not src.flags.is_modifiable_flag(flag):
-                    source_object.emit_to("You can't set/unset the flag - %s." % flag)
+                    s += "\nYou can't set/unset the flag %s." % flag
+                    continue
+                if target.has_flag(flag):
+                    s += "\nFlag %s=%s already set." % (target_name, flag)
+                    continue
                 else:
-                    source_object.emit_to('%s - %s set.' % (victim.get_name(), 
-                                                            flag.upper(),))
-                    victim.set_flag(flag, True)
+                    s += '\nFlag %s=%s set.' % (target_name, flag.upper())
+                target.set_flag(flag, True)
+        source_object.emit_to(s[1:])
 GLOBAL_CMD_TABLE.add_command("@set", cmd_set)
+
+def cmd_mvattr(command):
+    """
+    @mvattr <object>=<old>,<new>[,<copy1>]...
+
+    Move attributes around on an object
+    """
+    source_object = command.source_object
+    arg = command.command_argument
+    #split arguments
+    if not arg or not '=' in arg:
+        source_object.emit_to("Usage: @mvattr <object>=<old>,<new>[,<copy1>]...")
+        return
+    objname,attrs = arg.split('=')            
+    attrs = attrs.split(",")
+    oldattr = attrs[0]
+    if len(attrs)<2:
+        source_object.emit_to("You must give both the old- and new name of the attribute.")
+        return
+    #find target object
+    target_obj = source_object.search_for_object(objname)
+    if not target_obj:
+        source_object.emit_to("Object '%s' not found." % objname)
+        return
+    #check so old attribute exists.
+    value = target_obj.get_attribute_value(oldattr)
+    if value == None:
+        source_object.emit_to("Attribute '%s' does not exist." % oldattr)
+        return 
+    #check permission to modify object
+    if not source_object.controls_other(target_obj):
+        source_object.emit_to(defines_global.NOCONTROL_MSG)
+        return            
+    #we should now be good to go. Start the copying. 
+    s = "Moving %s (with value %s) ..." % (oldattr,value)
+    delete_original = True
+    for attr in attrs[1:]:
+        if not attr:
+            s += "\nCan not copy to empty attribute name."
+            continue
+        if not Attribute.objects.is_modifiable_attrib(attr):
+            s += "\nDid not copy to '%s' (cannot be modified)" % attr
+            continue 
+        if attr == oldattr:
+            s += "\nKept '%s' (moved into itself)" % attr
+            delete_original = False
+            continue
+        target_obj.set_attribute(attr, value)
+        s += "\nCopied %s -> %s" % (oldattr,attr)
+    #if we can, delete the old attribute
+    if not Attribute.objects.is_modifiable_attrib(oldattr):
+        s += "\nCould not remove old attribute '%s' (cannot be modified)" % oldattr
+    elif delete_original:
+        target_obj.clear_attribute(oldattr)
+        s += "\nRemoved '%s'." % (oldattr)
+    
+    source_object.emit_to(s)
+
+GLOBAL_CMD_TABLE.add_command("@mvattr", cmd_mvattr)
+
+
 
 def cmd_find(command):
     """

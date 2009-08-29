@@ -36,10 +36,10 @@ class EvenniaService(service.Service):
         try:
             # If this fails, this is an empty DB that needs populating.
             ConfigValue.objects.get_configvalue('game_firstrun')
-        except ConfigValue.DoesNotExist:
+        except ConfigValue.DoesNotExist:            
             print ' Game started for the first time, setting defaults.'
             initial_setup.handle_setup()
-
+            
         self.start_time = time.time()
 
         print ' %s started on port(s):' % (ConfigValue.objects.get_configvalue('site_name'),)
