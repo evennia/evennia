@@ -16,6 +16,13 @@ from src.objects.util import object as util_object
 from src import defines_global
 from src import logger
 
+class UniqueMatch(Exception):
+    """
+    This allows a fuzzy match to give precedence to a perfect match.
+    """
+    def __init__(self,matchobj):
+        self.matchobj = matchobj
+    
 class ObjectManager(models.Manager):
     def num_total_players(self):
         """
@@ -96,6 +103,12 @@ class ObjectManager(models.Manager):
         ostring:     (string) The string to match against.
         dbref_only:  (bool) Only compare dbrefs.
         limit_types: (list of int) A list of Object type numbers to filter by.
+
+        Note that the fuzzy matching gives precedence to exact matches; so if your
+        search query matches an object in the list exactly, it will be the only result.
+        This means that if the list contains [box,box11,box12], the search string 'box'
+        will only match the first entry since it is exact. The search 'box1' will however
+        match both box11 and box12 since neither is an exact match.
         """
         if dbref_only:
             if limit_types:
@@ -103,10 +116,13 @@ class ObjectManager(models.Manager):
             else:
                 return [prospect for prospect in searchlist if prospect.dbref_match(ostring)]
         else:
-            if limit_types:
-                return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type) and prospect.type in limit_types]
-            else:
-                return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
+            try:            
+                if limit_types:
+                    return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type) and prospect.type in limit_types]                 
+                else:
+                    return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
+            except UniqueMatch, e:
+                return [e.matchobj]
 
 
     def object_totals(self):
@@ -233,10 +249,11 @@ class ObjectManager(models.Manager):
         # name and dbref comparisons against search_query.
         if search_contents: 
             local_matches += self.list_search_object_namestr(searcher.get_contents(), 
-                                        search_query, limit_types)
+                                                             search_query, limit_types)
         if search_location:
-            local_matches += self.list_search_object_namestr(searcher.get_location().get_contents(), 
-                                        search_query, limit_types=limit_types)
+            local_matches += \
+                   self.list_search_object_namestr(searcher.get_location().get_contents(), 
+                                                   search_query, limit_types=limit_types)
         return local_matches
         
     def get_user_from_email(self, uemail):

@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from src.objects.util import object as util_object
 from src.objects.managers.object import ObjectManager
+from src.objects.managers.object import UniqueMatch
 from src.objects.managers.attribute import AttributeManager
 from src.config.models import ConfigValue
 from src.ansi import ANSITable, parse_ansi
@@ -160,6 +161,8 @@ class Object(models.Model):
 
         source_object: (Object) The Object doing the searching
         ostring: (str) The string to match object names against.
+                       Obs - To find a player
+                       append * to the start of ostring. 
         """
         # This is the object that gets the duplicate/no match emits.
         if not emit_to_obj:
@@ -950,20 +953,30 @@ class Object(models.Model):
         
         NOTE: A 'name' can be a dbref or the actual name of the object. See
         dbref_match for an exclusively name-based match.
+
+        The fuzzy match gives precedence to exact matches by raising the
+        UniqueMatch Exception. 
         """
+        
         if util_object.is_dbref(oname):
             # First character is a pound sign, looks to be a dbref.
             return self.dbref_match(oname)
-        elif match_type == "exact":
-            # Exact matching
-            name_chunks = self.name.lower().split(';')
-            for chunk in name_chunks:
-                if oname.lower() == chunk:
-                    return True
-            return False
         else:
-            # Fuzzy matching.
-            return oname.lower() in self.name.lower()
+            # Check if this is an exact match
+            oname = oname.lower()
+            name_chunks = self.name.lower().split(';')
+            # True=1, False=0, so if any hit, sum(result)>0.
+            exact_match = sum(map(lambda o: oname == o, name_chunks)) > 0
+            if match_type == "exact":
+                #return result outright
+                return exact_match
+            if match_type == "fuzzy":
+                if exact_match:
+                    #even if a fuzzy match, an exact match is worth more
+                    raise UniqueMatch(self)
+                else:
+                    #not an exact match; use fuzzy matching
+                    return oname in self.name.lower()
             
     def filter_contents_from_str(self, oname):
         """

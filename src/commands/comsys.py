@@ -8,6 +8,7 @@ from src.channels.models import CommChannelMembership, CommChannel
 from src import defines_global
 from src import ansi
 from src.util import functions_general
+from src.objects.models import Object
 from src.cmdtable import GLOBAL_CMD_TABLE
 #from src.imc2.models import IMC2ChannelMapping
 #from src.imc2.packets import IMC2PacketIceMsgBroadcasted
@@ -324,7 +325,7 @@ def cmd_cboot(command):
     if objname[0] == '*':        
         player_boot = True
         objname = objname[1:]
-    bootobj = source_object.search_for_object(objname)
+    bootobj = Object.objects.player_name_search(objname)
     if not bootobj:
         source_object.emit_to("Object '%s' not found." % objname)
         return
@@ -517,7 +518,7 @@ def cmd_cchown(command):
         source_object.emit_to("You don't control this channel.")
         return
     #find the new owner
-    new_owner = source_object.search_for_object(pname)
+    new_owner = Object.objects.player_name_search(pname)
     if not new_owner:
         source_object.emit_to("New owner '%s' not found." % pname)
         return

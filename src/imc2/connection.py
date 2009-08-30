@@ -65,7 +65,7 @@ class IMC2Protocol(StatefulTelnetProtocol):
             
         packet.imc2_protocol = self
         packet_str = str(packet.assemble())
-        logger.log_infomsg("IMC2: SENT> %s" % packet_str)
+        #logger.log_infomsg("IMC2: SENT> %s" % packet_str)
         self.sendLine(packet_str)
         
     def _parse_auth_response(self, line):
