@@ -310,8 +310,10 @@ def cname_search(search_text, exact=False):
     else:
         return CommChannel.objects.filter(name__istartswith=search_text)
 
-
-
+def cemit_mudinfo(message):
+    "Send to mud info channel This is "
+    send_cmessage(settings.COMMCHAN_MUD_INFO,
+                  'Info: %s' % message)
 
 def send_cexternal(cname, cmessage, from_external=None):
     """

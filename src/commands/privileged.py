@@ -7,6 +7,7 @@ from src.objects.models import Object
 from src import defines_global
 from src import ansi
 from src import session_mgr
+from src import comsys
 from src.scripthandler import rebuild_cache
 from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
@@ -15,33 +16,30 @@ def cmd_reload(command):
     """
     Reloads all modules.
     """
-    if "all" in command.command_switches:
-        reload_all = True
-    else:
-        reload_all = False
-        
-    # Set this to True if a switch match is found.
-    switch_match_found = False
-           
-    if reload_all or "aliases" in command.command_switches or "alias" in command.command_switches:
-        command.session.server.reload_aliases(source_object=command.source_object)
-        command.source_object.emit_to("Aliases reloaded.")
-        switch_match_found = True
+    source_object = command.source_object
+    switches = command.command_switches    
+    if not switches or switches[0] not in ['all','aliases','alias',
+                                           'commands','command',
+                                           'scripts','parents']:
+        source_object.emit_to("Usage: @reload/<aliases|scripts|commands|all>")
+        return
+    switch = switches[0]
+    sname = source_object.get_name(show_dbref=False)
     
-    if reload_all or "scripts" in command.command_switches:
+    if switch in ["all","aliases","alias"]:
+        #reload Aliases
+        command.session.server.reload_aliases(source_object=source_object)
+        comsys.cemit_mudinfo("%s reloaded Aliases." % sname)    
+    if switch in ["all","scripts","parents"]:
+        #reload Script parents
         rebuild_cache()
-        command.source_object.emit_to("Script parents reloaded.")
-        switch_match_found = True
-        
-    if reload_all or "commands" in command.command_switches:
-        # By default, just reload command objects.
-        command.source_object.emit_to("Reloading command modules...")
+        comsys.cemit_mudinfo("%s reloaded Script parents." % sname)        
+    if switch in ["all","commands","command"]:
+        #reload command objects.
+        comsys.cemit_mudinfo("%s is reloading Command modules ..." % sname)
         command.session.server.reload(source_object=command.source_object)
-        command.source_object.emit_to("Modules reloaded.")
-        switch_match_found = True
-        
-    if not switch_match_found:
-        command.source_object.emit_to("@reload must be accompanied by one or more of the following switches: aliases, scripts, commands, all")
+        comsys.cemit_mudinfo("... all Command modules were reloaded.")
+
 GLOBAL_CMD_TABLE.add_command("@reload", cmd_reload,
                              priv_tuple=("genperms.process_control")),
 GLOBAL_CMD_TABLE.add_command("@restart", cmd_reload,
@@ -176,63 +174,70 @@ def cmd_service(command):
     Service management system. Allows for the listing, starting, and stopping
     of services.
     """
-    pobject = command.source_object
-    if "list" in command.command_switches:
-        """
-        Just display the list of installed services and their status and die.
-        """
-        pobject.emit_to('-' * 40)
-        pobject.emit_to('Service Listing')
+    source_object = command.source_object
+    switches = command.command_switches
+    if not switches or switches[0] not in ["list","start","stop"]:
+        source_object.emit_to("Usage @servive/<start|stop|list> [service]")
+        return 
+    switch = switches[0].strip()
+    sname = source_object.get_name(show_dbref=False)
+
+    if switch == "list":        
+        #Just display the list of installed services and their status, then exit.
+        s = "-" * 40
+        s += "\nService Listing"        
         for service in command.session.server.service_collection.services:
             # running is either 1 or 0, 1 meaning the service is running.
             if service.running == 1:
                 status = 'Running'
             else:
                 status = 'Inactive'
-            pobject.emit_to(' * %s (%s)' % (service.name, status))
-        pobject.emit_to('-' * 40)
+            s += '\n * %s (%s)' % (service.name, status)
+        s += "\n" + "-" * 40
+        source_object.emit_to(s)
         return
     
-    # This stuff is common to both start and stop switches.
-    if "stop" in command.command_switches or "start" in command.command_switches:
+    if switch in ["stop", "start"]:
+        # This stuff is common to both start and stop switches.
+
         collection = command.session.server.service_collection
         try:
             service = collection.getServiceNamed(command.command_argument)
         except:
-            pobject.emit_to('Invalid service name. This command is case-sensitive. See @service/list.')
+            source_object.emit_to('Invalid service name. This command is case-sensitive. See @service/list.')
             return
         
-    if "stop" in command.command_switches:
+    if switch == "stop":
         """
         Stopping a service gracefully closes it and disconnects any connections
         (if applicable).
         """
         if service.running == 0:
-            pobject.emit_to('That service is not currently running.')
+            source_object.emit_to('That service is not currently running.')
             return
-        # We don't want them killing main Evennia TCPServer services here. If
-        # they'd like to nix a listening port, they need to do it through
+        # We don't want killing main Evennia TCPServer services here. If
+        # wanting to kill a listening port, one needs to do it through
         # settings.py and a restart.
         if service.name[:7] == 'Evennia':
-            pobject.emit_to('You can not Evennia TCPServer services this way.')
-            return
-        pobject.emit_to('Stopping the %s service.' % service.name)
+            s = "You can not stop Evennia TCPServer services this way."
+            s += "\nTo e.g. remove a listening port, change settings file and restart."
+            source_object.emit_to(s)
+            return        
+        comsys.cemit_mudinfo("%s is *Stopping* the service '%s'." % (sname, service.name))
         service.stopService()
         return
     
-    if "start" in command.command_switches:
+    if switch == "start":
         """
         Starts a service.
         """
         if service.running == 1:
-            pobject.emit_to('That service is already running.')
+            source_object.emit_to('That service is already running.')
             return
-        pobject.emit_to('Starting the %s service.' % service.name)
+        comsys.cemit_mudinfo("%s is *Starting* the service '%s'." % (sname,service.name))
         service.startService()
         return
     
-    # If they don't provide any switches, let them know to do so.
-    pobject.emit_to("You must specify a switch with @service. May be one of: list, start, stop")
 GLOBAL_CMD_TABLE.add_command("@service", cmd_service,
                              priv_tuple=("genperms.process_control"))
 

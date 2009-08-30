@@ -9,6 +9,7 @@ from src.config.models import ConfigValue
 from src.session import SessionProtocol
 from src import events
 from src import logger
+from src import comsys
 from src import session_mgr
 from src import alias_mgr
 from src import cmdtable
@@ -111,14 +112,17 @@ class EvenniaService(service.Service):
         For changes to the scheduler, server, or session_mgr modules, a cold
         restart is needed.
         """
-        cmd_modules = self.get_command_modules()
-        
+        cmd_modules = self.get_command_modules()        
+        s = []
         for mod_str, mod in sys.modules.items():
-            if mod_str in cmd_modules:
-                if source_object:
-                    source_object.emit_to(" Reloading %s" % mod_str)
-                rebuild.rebuild(mod)
-        logger.log_infomsg("Modules reloaded by %s." % source_object)
+            if mod_str in cmd_modules:                
+                s.append(mod_str)
+                try:
+                    rebuild.rebuild(mod)
+                except:
+                    comsys.cemit_mudinfo("... Error reloading %s!" % mod_str)
+                    raise                        
+        logger.log_infomsg("%s reloaded %i modules: %s" % (source_object, len(s), s))
         
     def reload_aliases(self, source_object=None):
         """
