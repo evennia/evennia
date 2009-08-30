@@ -38,28 +38,43 @@ def cmd_addcom(command):
     else:
         chan_name = command_argument.strip()
         chan_alias = chan_name
-        
-    if source_object.channel_membership_set.filter(channel__name__iexact=chan_name):
-        source_object.emit_to("You are already on that channel.")
-        return 
 
+    membership = source_object.channel_membership_set.filter(channel__name__iexact=chan_name) 
     try:
         chan = CommChannel.objects.get(name__iexact=chan_name)
-        # This adds a CommChannelMembership object and a matching dict entry
-        # on the session's cdict.
-        comsys.plr_add_channel(source_object, chan_alias, chan)
-        
-        # Let the player know everything went well.
-        source_object.emit_to("You join %s, with an alias of %s." % \
-            (chan.get_name(), chan_alias))
+        s = ""
+        if membership:
+            #we are already members of this channel. Set a different alias.
+            # Note: To this without requiring a the user to logout then login again,
+            # we need to delete, then rejoin the channel. Is this due to the lazy
+            # loading? /Griatch
+            prev_alias = membership[0].user_alias
+            if chan_alias == prev_alias:
+                s += "Alias unchanged."
+            else:
+                comsys.plr_del_channel(source_object, prev_alias)
+                comsys.plr_add_channel(source_object, chan_alias, chan)
+                s += "Channel '%s' alias changed from '%s' to '%s'." % (chan_name,prev_alias,
+                                                               chan_alias)
+        else:
+            # This adds a CommChannelMembership object and a matching dict entry
+            # on the session's cdict.
+            comsys.plr_add_channel(source_object, chan_alias, chan)
 
-        # Announce the user's joining.
-        join_msg = "%s has joined the channel." % \
-            (source_object.get_name(show_dbref=False),)
-        comsys.send_cmessage(chan, join_msg)
+            # Let the player know everything went well.
+            s += "You join %s, with an alias of %s." % \
+                (chan.get_name(), chan_alias)
+
+            # Announce the user's joining.
+            join_msg = "%s has joined the channel." % \
+                       (source_object.get_name(show_dbref=False),)
+            comsys.send_cmessage(chan, join_msg)
+        source_object.emit_to(s)
     except CommChannel.DoesNotExist:
         # Failed to match iexact on channel's 'name' attribute.
         source_object.emit_to("Could not find channel %s." % chan_name)
+
+
 GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom),
 
 def cmd_delcom(command):
@@ -120,10 +135,11 @@ GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist)
     
 def cmd_allcom(command):
     """
-    allcom [on|off|who]
+    allcom [on|off|who|clear]
 
     Allows the user to universally turn off or on all channels they are on,
-    as well as perform a 'who' for all channels they are on.
+    as well as perform a 'who' for all channels they are on. Clear deletes
+    all channels.
 
     Without argument, works like comlist.
     """
@@ -132,10 +148,13 @@ def cmd_allcom(command):
     arg = command.command_argument
     if not arg:
         cmd_comlist(command)
-        source_object.emit_to("(allcom arguments: 'on', 'off' and 'who')")
-        return 
-
+        source_object.emit_to("(allcom arguments: 'on', 'off', 'who' and 'clear'.)")
+        return
     arg = arg.strip()
+    if arg == 'clear':
+        cmd_clearcom(command)
+        return 
+    
     #get names and alias of all subscribed channels
     chandict = comsys.plr_get_cdict(command.session)
     aliaslist = chandict.keys()
@@ -180,10 +199,24 @@ def cmd_clearcom(command):
 
     Effectively runs delcom on all channels the user is on.  It will remove their aliases,
     remove them from the channel, and clear any titles they have set.
-    """
-    # TODO: Implement cmd_clearcom
-    pass
+    """    
+    source_object = command.source_object
+    #get aall subscribed channel memberships
+    memberships = source_object.channel_membership_set.all()
 
+    if not memberships:
+        s = "No channels to delete.  "
+    else:
+        s = "Deleting all channels in your subscriptions ...\n"
+    for membership in memberships:
+        chan_name = membership.channel.get_name()
+        s += "You have left %s.\n" % chan_name
+        comsys.plr_del_channel(source_object, membership.user_alias)
+        comsys.send_cmessage(chan_name, "%s has left the channel." % source_object.get_name(show_dbref=False))
+    s = s[:-1]
+    source_object.emit_to(s)
+GLOBAL_CMD_TABLE.add_command("clearcom", cmd_clearcom)
+        
 def cmd_clist(command):
     """
     @clist
@@ -312,8 +345,7 @@ def cmd_cboot(command):
 
     #all is set, boot the object by removing all its aliases from the channel. 
     for mship in membership:
-        alias = mship.user_alias
-        comsys.plr_del_channel(bootobj, alias)
+        comsys.plr_del_channel(bootobj, mship.user_alias)
 
 GLOBAL_CMD_TABLE.add_command("@cboot", cmd_cboot)
 

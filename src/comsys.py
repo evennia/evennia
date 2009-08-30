@@ -51,7 +51,7 @@ def plr_chan_off(session, calias):
     calias: (str) The channel alias.
     """
     if not plr_listening_channel(session, calias, alias_search=True):
-        session.msg("You're already not listening to that channel." % )
+        session.msg("You're already not listening to that channel.")
         return
     else:
         cname = plr_cname_from_alias(session, calias)

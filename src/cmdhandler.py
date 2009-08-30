@@ -235,7 +235,9 @@ def match_channel(command):
         elif command.command_argument == "last":
             comsys.msg_chan_hist(command.source_object, cname)
             raise ExitCommandHandler
-            
+        if not command.command_argument:
+            command.source_object.emit_to("What do you want to say?")
+            raise ExitCommandHandler        
         second_arg = "%s=%s" % (cname, command.command_argument)
         command.command_string = "@cemit"
         command.command_switches = ["sendername", "quiet"]
