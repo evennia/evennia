@@ -159,13 +159,14 @@ class EvenniaService(service.Service):
             imc2_events.add_events()
 
         if settings.IRC_ENABLED:
-            #Connect to the IRC network.  
-            from src.irc.connection import connect_to_IRC
-            connect_to_IRC(settings.IRC_NETWORK,
-                           settings.IRC_PORT,
-                           settings.IRC_CHANNEL,
-                           settings.IRC_NICKNAME)
-
+            from src.irc.connection import IRC_BotFactory
+            irc = internet.TCPClient(settings.IRC_NETWORK, 
+                                     settings.IRC_PORT, 
+                                     IRC_BotFactory(settings.IRC_CHANNEL,
+                                                    settings.IRC_NETWORK,
+                                                    settings.IRC_NICKNAME))            
+            irc.setName("%s:%s" % ("IRC",settings.IRC_CHANNEL))
+            irc.setServiceParent(self.service_collection)
 
 application = service.Application('Evennia')
 mud_service = EvenniaService()

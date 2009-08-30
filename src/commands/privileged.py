@@ -177,7 +177,7 @@ def cmd_service(command):
     source_object = command.source_object
     switches = command.command_switches
     if not switches or switches[0] not in ["list","start","stop"]:
-        source_object.emit_to("Usage @servive/<start|stop|list> [service]")
+        source_object.emit_to("Usage: @servive/<start|stop|list> [service]")
         return 
     switch = switches[0].strip()
     sname = source_object.get_name(show_dbref=False)

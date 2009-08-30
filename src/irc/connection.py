@@ -77,9 +77,13 @@ class IRC_BotFactory(protocol.ClientFactory):
         self.network = network
         self.channel = channel
         self.nickname = nickname                
-    def clientConnectionLost(self, connector, reason):
-        cemit_info("Lost connection (%s), reconnecting." % reason)
-        connector.connect()
+    def clientConnectionLost(self, connector, reason):        
+        from twisted.internet.error import ConnectionDone
+        if type(reason.type) == type(ConnectionDone):
+            cemit_info("Connection closed.")
+        else:
+            cemit_info("Lost connection (%s), reconnecting." % reason)
+            connector.connect()
     def clientConnectionFailed(self, connector, reason):
         msg = "Could not connect: %s" % reason
         cemit_info(msg)

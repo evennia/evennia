@@ -1,10 +1,9 @@
 """
 IRC-related commands
 """
-
+from twisted.application import internet
 from django.conf import settings
 from src.irc.connection import IRC_CHANNELS
-from src.irc.connection import connect_to_IRC
 from src.irc.models import IRCChannelMapping
 from src import comsys
 from src.cmdtable import GLOBAL_CMD_TABLE
@@ -69,17 +68,37 @@ def cmd_IRCjoin(command):
 
     Observe that channels added using this command does not survive a reboot. 
     """
+
     source_object = command.source_object
     arg = command.command_argument
     if not arg:
-        source_object.emit_to("Usage: @ircjoin irc_channel")
+        source_object.emit_to("Usage: @ircjoin #irc_channel")
         return
     channel = arg.strip()
     if channel[0] != "#": channel = "#%s" % channel
-    
+
+    if not settings.IRC_ENABLED:
+        source_object.emit_to("IRC services are not active. You need to turn them on in preferences.")
+        return 
+
+    #direct creation of bot (do not add to services)
+    from src.irc.connection import connect_to_IRC
     connect_to_IRC(settings.IRC_NETWORK,
                    settings.IRC_PORT,
-                   channel,settings.IRC_NICKNAME)
+                   channel, settings.IRC_NICKNAME)
+
+#    ---below should be checked so as to add subequent IRC bots to Services.
+#       it adds just fine, but the bot does not connect. /Griatch
+#    from src.irc.connection import IRC_BotFactory
+#    from src.server import mud_service
+#    irc = internet.TCPClient(settings.IRC_NETWORK, 
+#                             settings.IRC_PORT, 
+#                             IRC_BotFactory(channel,
+#                                            settings.IRC_NETWORK,
+#                                            settings.IRC_NICKNAME))            
+#    irc.setName("%s:%s" % ("IRC",channel))
+#    irc.setServiceParent(mud_service.service_collection)
+
 GLOBAL_CMD_TABLE.add_command("@ircjoin",cmd_IRCjoin,auto_help=True,
                              staff_help=True,
                              priv_tuple=("objects.add_commchannel",))
