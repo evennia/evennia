@@ -496,10 +496,38 @@ GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate,
 
 def cmd_cchown(command):
     """
-    @cchown
+    @cchown <channel>=<player>
 
     Changes the owner of a channel.
     """
-    # TODO: Implement cmd_cchown.
-    pass
-
+    source_object = command.source_object
+    args = command.command_argument
+    if not args or "=" not in args:
+        source_object.emit_to("Usage: @cchown <channel>=<player>")
+        return
+    cname, pname = args.split("=",1)
+    #locate channel
+    try:
+        channel = CommChannel.objects.get(name__iexact=cname)
+    except CommChannel.DoesNotExist:
+        source_object.emit_to("Channel '%s' not found." % cname)
+        return
+    #check so we have ownership to give away.
+    if not channel.controlled_by(source_object):
+        source_object.emit_to("You don't control this channel.")
+        return
+    #find the new owner
+    new_owner = source_object.search_for_object(pname)
+    if not new_owner:
+        source_object.emit_to("New owner '%s' not found." % pname)
+        return
+    old_owner = channel.get_owner()
+    old_pname = old_owner.get_name(show_dbref=False)
+    if old_owner == new_owner:
+        source_object.emit_to("Owner unchanged.")
+        return
+    #all is set, change owner
+    channel.set_owner(new_owner)
+    source_object.emit_to("Owner of %s changed from %s to %s." % (cname, old_pname, pname))
+    new_owner.emit_to("%s transfered ownership of channel '%s' to you." % (old_pname, cname))
+GLOBAL_CMD_TABLE.add_command("@cchown", cmd_cchown)
