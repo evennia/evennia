@@ -192,7 +192,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         Sends a message to the session.
         """
         if isinstance(message, unicode):
-             message = message.encode("utf-8")
+            message = message.encode("utf-8")
         self.sendLine("%s" % (message,))
         
     def add_default_channels(self):

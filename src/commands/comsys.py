@@ -101,32 +101,79 @@ def cmd_comlist(command):
     source_object = command.source_object 
     session = command.session
 
-    s = "Your subscibed channels (to see all, use @clist)\n"
-    s += "Alias     Channel             Status\n"
-    for membership in source_object.channel_membership_set.all():
+    s = "Your subscibed channels (use @clist for full chan list)\n"
+    s += "** Alias          Channel               Status\n"
+    channels = source_object.channel_membership_set.all()
+    if not channels:
+        s += "  (No subscriptions)  "
+    for membership in channels:
         chan = membership.channel
         if membership.is_listening:
             chan_on = "On"
         else:
             chan_on = "Off"
-            
-        s += "%-9.9s %-19.19s %s\n" % (membership.user_alias, 
-                                     chan.get_name(), 
-                                     chan_on)
-    s += "-- End of comlist --"
+        s += " %s%s %-15.14s%-22.15s%s\n" %  ('-','-',membership.user_alias, 
+                                             chan.get_name(), chan_on)
+    s = s[:-1]
     source_object.emit_to(s)
-GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist),
+GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist)
     
 def cmd_allcom(command):
     """
-    allcom
+    allcom [on|off|who]
 
     Allows the user to universally turn off or on all channels they are on,
-    as well as perform a "who" for all channels they are on.
-    """
-    # TODO: Implement cmd_allcom
-    pass
+    as well as perform a 'who' for all channels they are on.
 
+    Without argument, works like comlist.
+    """
+    
+    source_object = command.source_object
+    arg = command.command_argument
+    if not arg:
+        cmd_comlist(command)
+        source_object.emit_to("(allcom arguments: 'on', 'off' and 'who')")
+        return 
+
+    arg = arg.strip()
+    #get names and alias of all subscribed channels
+    chandict = comsys.plr_get_cdict(command.session)
+    aliaslist = chandict.keys()
+    aliaslist.sort()
+    if arg == "on":
+        for alias in aliaslist:
+            comsys.plr_chan_on(command.session, alias)
+    elif arg == "off":
+        for alias in aliaslist:
+            comsys.plr_chan_off(command.session, alias)
+    elif arg == "who":
+        s = ""
+        if not aliaslist:
+            s += "  (No channels)  "
+        for alias in aliaslist:
+            s += "-- %s (alias: %s)\n" % (chandict[alias][0],alias)
+            sess_list = comsys.get_cwho_list(chandict[alias][0])
+            objlist = [sess.get_pobject() for sess in sess_list]
+            plist = [p.get_name(show_dbref=source_object.sees_dbrefs())
+                      for p in filter(lambda o: o.is_player(), objlist)]
+            olist = [o.get_name(show_dbref=source_object.sees_dbrefs())
+                     for o in filter(lambda o: not o.is_player(), objlist)]
+            plist.sort()
+            olist.sort()
+            if plist:
+                s += "    Players:\n      "
+                for pname in plist: 
+                    s += "%s, " % pname
+                s = s[:-2] + "\n"
+            if olist:
+                s += "   Objects:\n       "
+                for oname in olist:
+                    s += "%s, " % oname
+                s = s[:-2] + "\n"
+        s = s[:-1]
+        source_object.emit_to(s)    
+GLOBAL_CMD_TABLE.add_command("allcom", cmd_allcom)
+            
 def cmd_clearcom(command):
     """
     clearcom
@@ -146,17 +193,21 @@ def cmd_clist(command):
     session = command.session
     source_object = command.source_object
 
-    s = "All channels (use comlist to see your subscriptions)\n"
+    s = "All channels (use comlist or allcom to see your subscriptions)\n"
     
     s += "** Channel        Owner         Description\n"
-    for chan in comsys.get_all_channels():
-        s += "%s%s %-15.14s%-22.15s%s\n" % \
+    channels = comsys.get_all_channels()
+    if not channels:
+        s += "(No channels)  "
+    for chan in channels:
+        s += " %s%s %-15.14s%-22.15s%s\n" % \
             ('-', 
              '-', 
              chan.get_name(), 
              chan.get_owner().get_name(show_dbref=False), 
              chan.description)
-    s += "** End of Channel List **"
+    s = s[:-1]
+    #s += "** End of Channel List **"
     source_object.emit_to(s)
 GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist),
 
