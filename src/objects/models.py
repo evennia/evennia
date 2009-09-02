@@ -180,9 +180,9 @@ class Object(models.Model):
                                 limit_types=limit_types)
 
         if len(results) > 1:
-            emit_to_obj.emit_to("More than one match found (please narrow target):")
-            for result in results:
-                emit_to_obj.emit_to(" %s" % (result.get_name(),))
+            emit_to_obj.emit_to("More than one match for '%s' (please narrow target):" % ostring)
+            for num, result in enumerate(results):
+                emit_to_obj.emit_to(" %i-%s" % (num+1,result.get_name(show_dbref=False)))
             return False
         elif len(results) == 0:
             emit_to_obj.emit_to("I don't see that here.")
@@ -952,9 +952,6 @@ class Object(models.Model):
         
         NOTE: A 'name' can be a dbref or the actual name of the object. See
         dbref_match for an exclusively name-based match.
-
-        The fuzzy match gives precedence to exact matches by raising the
-        UniqueMatch Exception. 
         """
         
         if util_object.is_dbref(oname):

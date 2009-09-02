@@ -18,6 +18,10 @@ from src import logger
     
 class ObjectManager(models.Manager):
 
+    #
+    # ObjectManager Get methods 
+    #
+    
     def num_total_players(self):
         """
         Returns the total number of registered players.
@@ -50,6 +54,35 @@ class ObjectManager(models.Manager):
         start_date = end_date - tdelta
         return User.objects.filter(last_login__range=(start_date, end_date)).order_by('-last_login')
             
+    def get_user_from_email(self, uemail):
+        """
+        Returns a player's User object when given an email address.
+        """
+        return User.objects.filter(email__iexact=uemail)
+
+    def get_object_from_dbref(self, dbref):
+        """
+        Returns an object when given a dbref.
+        """
+        try:
+            return self.get(id=dbref)
+        except self.model.DoesNotExist:
+            raise ObjectNotExist(dbref)        
+
+    def object_totals(self):
+        """
+        Returns a dictionary with database object totals.
+        """
+        dbtotals = {
+            "objects": self.count(),
+            "things": self.filter(type=defines_global.OTYPE_THING).count(),
+            "exits": self.filter(type=defines_global.OTYPE_EXIT).count(),
+            "rooms": self.filter(type=defines_global.OTYPE_ROOM).count(),
+            "garbage": self.filter(type=defines_global.OTYPE_GARBAGE).count(),
+            "players": self.filter(type=defines_global.OTYPE_PLAYER).count(),
+        }
+        return dbtotals
+
     def get_nextfree_dbnum(self):
         """
         Figure out what our next free database reference number is.
@@ -67,6 +100,38 @@ class ObjectManager(models.Manager):
             # No garbage to recycle, find the highest dbnum and increment it
             # for our next free.
             return int(self.order_by('-id')[0].id + 1)
+
+    def is_dbref(self, dbstring, require_pound=True):
+        """
+        Is the input a well-formed dbref number?
+        """
+        return util_object.is_dbref(dbstring, require_pound=require_pound)
+
+
+    #
+    # ObjectManager Search methods
+    #
+
+    def dbref_search(self, dbref_string, limit_types=False):
+        """
+        Searches for a given dbref.
+
+        dbref_number: (string) The dbref to search for. With # sign.
+        limit_types: (list of int) A list of Object type numbers to filter by.
+        """
+        if not util_object.is_dbref(dbref_string):
+            return None
+        dbref_string = dbref_string[1:]
+        dbref_matches = self.filter(id=dbref_string).exclude(
+                type=defines_global.OTYPE_GARBAGE)
+        # Check for limiters
+        if limit_types is not False:
+            for limiter in limit_types:
+                dbref_matches.filter(type=limiter)
+        try:
+            return dbref_matches[0]
+        except IndexError:
+            return None
 
     def global_object_name_search(self, ostring, exact_match=False):
         """
@@ -86,65 +151,97 @@ class ObjectManager(models.Manager):
         """
         o_query = self.filter(script_parent__exact=script_parent)      
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
-                                         defines_global.OTYPE_GOING])       
-
+                                         defines_global.OTYPE_GOING])
+    
     def list_search_object_namestr(self, searchlist, ostring, dbref_only=False, 
                                    limit_types=False, match_type="fuzzy"):
+
         """
         Iterates through a list of objects and returns a list of
         name matches.
+
+        This version handles search criteria of the type keyword-N, this is used
+        to differentiate several objects of the exact same name, e.g. box-1, box-2 etc.
+        
         searchlist:  (List of Objects) The objects to perform name comparisons on.
         ostring:     (string) The string to match against.
         dbref_only:  (bool) Only compare dbrefs.
         limit_types: (list of int) A list of Object type numbers to filter by.
+        match_type: (string) 'exact' or 'fuzzy' matching.
 
         Note that the fuzzy matching gives precedence to exact matches; so if your
         search query matches an object in the list exactly, it will be the only result.
         This means that if the list contains [box,box11,box12], the search string 'box'
         will only match the first entry since it is exact. The search 'box1' will however
         match both box11 and box12 since neither is an exact match.
+
+        Uses two helper functions, _list_search_helper1/2. 
         """
         if dbref_only:
+            #search by dbref - these must always be unique.
             if limit_types:
-                return [prospect for prospect in searchlist if prospect.dbref_match(ostring)
+                return [prospect for prospect in searchlist
+                        if prospect.dbref_match(ostring)
                         and prospect.type in limit_types]
             else:
-                return [prospect for prospect in searchlist if prospect.dbref_match(ostring)]
-        else:        
-            if limit_types:
-                results = [prospect for prospect in searchlist
-                           if prospect.name_match(ostring, match_type=match_type)
-                           and prospect.type in limit_types]               
-            else:
-                results = [prospect for prospect in searchlist
-                           if prospect.name_match(ostring, match_type=match_type)]
-                
-            if match_type == "exact":                        
-                return results
-            else:             
-                #fuzzy matching; run second sweep to catch exact matches
-                exact_results = [prospect for prospect in results
-                                 if prospect.name_match(ostring, match_type="exact")]
-                if exact_results:
-                    return exact_results
-                else:
-                    return results
-            
+                return [prospect for prospect in searchlist
+                        if prospect.dbref_match(ostring)]
 
-    def object_totals(self):
-        """
-        Returns a dictionary with database object totals.
-        """
-        dbtotals = {
-            "objects": self.count(),
-            "things": self.filter(type=defines_global.OTYPE_THING).count(),
-            "exits": self.filter(type=defines_global.OTYPE_EXIT).count(),
-            "rooms": self.filter(type=defines_global.OTYPE_ROOM).count(),
-            "garbage": self.filter(type=defines_global.OTYPE_GARBAGE).count(),
-            "players": self.filter(type=defines_global.OTYPE_PLAYER).count(),
-        }
-        return dbtotals
+        #search by name - this may return multiple matches.
+        results = self._list_search_helper1(searchlist,ostring,dbref_only,
+                                            limit_types, match_type)
+        match_number = None
+        if not results:
+            #if we have no match, check if we are dealing
+            #with a "keyword-N" query - if so, strip it and run again. 
+            match_number, ostring = self._list_search_helper2(ostring)
+            if match_number != None and ostring:
+                results = self._list_search_helper1(searchlist,ostring,dbref_only,
+                                                    limit_types, match_type)                
+        if match_type == "fuzzy":             
+            #fuzzy matching; run second sweep to catch exact matches
+            exact_results = [prospect for prospect in results
+                             if prospect.name_match(ostring, match_type="exact")]
+            if exact_results:
+                results = exact_results
+        if len(results) > 1 and match_number != None:
+            #select a particular match using the "keyword-N" markup.
+            try:
+                results = [results[match_number]]
+            except IndexError:
+                pass                        
+        return results
 
+    def _list_search_helper1(self,searchlist,ostring,dbref_only,
+                             limit_types,match_type):            
+        """
+        Helper function for list_search_object_namestr -
+        does name matching through a list of objects.
+        """
+        if limit_types:
+            return [prospect for prospect in searchlist
+                    if prospect.name_match(ostring, match_type=match_type)
+                    and prospect.type in limit_types]               
+        else:
+            return [prospect for prospect in searchlist
+                    if prospect.name_match(ostring, match_type=match_type)]
+
+    def _list_search_helper2(self, ostring):
+        """
+        Hhelper function for list_search_object_namestr -
+        strips eventual keyword-N endings from a search criterion
+        """
+        if not '-' in ostring:
+            return False, ostring
+        try: 
+            il = ostring.find('-')
+            number = int(ostring[:il])-1
+            return number, ostring[il+1:]
+        except ValueError:
+            #not a number; this is not an identifier.
+            return None, ostring
+        except IndexError:
+            return None, ostring 
 
     def player_alias_search(self, searcher, ostring):
         """
@@ -186,32 +283,6 @@ class ObjectManager(models.Manager):
         except IndexError:
             return None
 
-    def is_dbref(self, dbstring, require_pound=True):
-        """
-        Is the input a well-formed dbref number?
-        """
-        return util_object.is_dbref(dbstring, require_pound=require_pound)
-
-    def dbref_search(self, dbref_string, limit_types=False):
-        """
-        Searches for a given dbref.
-
-        dbref_number: (string) The dbref to search for. With # sign.
-        limit_types: (list of int) A list of Object type numbers to filter by.
-        """
-        if not util_object.is_dbref(dbref_string):
-            return None
-        dbref_string = dbref_string[1:]
-        dbref_matches = self.filter(id=dbref_string).exclude(
-                type=defines_global.OTYPE_GARBAGE)
-        # Check for limiters
-        if limit_types is not False:
-            for limiter in limit_types:
-                dbref_matches.filter(type=limiter)
-        try:
-            return dbref_matches[0]
-        except IndexError:
-            return None
 
     def local_and_global_search(self, searcher, ostring, search_contents=True, 
                                 search_location=True, dbref_only=False, 
@@ -249,34 +320,21 @@ class ObjectManager(models.Manager):
             player_match = self.player_name_search(search_target)
             if player_match is not None:
                 return [player_match]
-
-        local_matches = []
+            
         # Handle our location/contents searches. list_search_object_namestr() does
         # name and dbref comparisons against search_query.
+        local_objs = []
         if search_contents: 
-            local_matches += self.list_search_object_namestr(searcher.get_contents(), 
-                                                             search_query, limit_types)
+            local_objs.extend(searcher.get_contents())
         if search_location:
-            local_matches += \
-                   self.list_search_object_namestr(searcher.get_location().get_contents(), 
-                                                   search_query, limit_types=limit_types)
-        return local_matches
-        
-    def get_user_from_email(self, uemail):
-        """
-        Returns a player's User object when given an email address.
-        """
-        return User.objects.filter(email__iexact=uemail)
+            local_objs.extend(searcher.get_location().get_contents())
+        return self.list_search_object_namestr(local_objs, search_query,
+                                               limit_types=limit_types)        
 
-    def get_object_from_dbref(self, dbref):
-        """
-        Returns an object when given a dbref.
-        """
-        try:
-            return self.get(id=dbref)
-        except self.model.DoesNotExist:
-            raise ObjectNotExist(dbref)
-        
+    #
+    # ObjectManager Create methods
+    #
+
     def create_object(self, name, otype, location, owner, home=None):
         """
         Create a new object
