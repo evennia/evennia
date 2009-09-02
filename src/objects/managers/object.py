@@ -15,15 +15,9 @@ from src.objects.exceptions import ObjectNotExist
 from src.objects.util import object as util_object
 from src import defines_global
 from src import logger
-
-class UniqueMatch(Exception):
-    """
-    This allows a fuzzy match to give precedence to a perfect match.
-    """
-    def __init__(self,matchobj):
-        self.matchobj = matchobj
     
 class ObjectManager(models.Manager):
+
     def num_total_players(self):
         """
         Returns the total number of registered players.
@@ -112,18 +106,30 @@ class ObjectManager(models.Manager):
         """
         if dbref_only:
             if limit_types:
-                return [prospect for prospect in searchlist if prospect.dbref_match(ostring) and prospect.type in limit_types]
+                return [prospect for prospect in searchlist if prospect.dbref_match(ostring)
+                        and prospect.type in limit_types]
             else:
                 return [prospect for prospect in searchlist if prospect.dbref_match(ostring)]
-        else:
-            try:            
-                if limit_types:
-                    return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type) and prospect.type in limit_types]                 
+        else:        
+            if limit_types:
+                results = [prospect for prospect in searchlist
+                           if prospect.name_match(ostring, match_type=match_type)
+                           and prospect.type in limit_types]               
+            else:
+                results = [prospect for prospect in searchlist
+                           if prospect.name_match(ostring, match_type=match_type)]
+                
+            if match_type == "exact":                        
+                return results
+            else:             
+                #fuzzy matching; run second sweep to catch exact matches
+                exact_results = [prospect for prospect in results
+                                 if prospect.name_match(ostring, match_type="exact")]
+                if exact_results:
+                    return exact_results
                 else:
-                    return [prospect for prospect in searchlist if prospect.name_match(ostring, match_type=match_type)]
-            except UniqueMatch, e:
-                return [e.matchobj]
-
+                    return results
+            
 
     def object_totals(self):
         """
