@@ -299,6 +299,7 @@ COMMAND_MODULES = (
     'src.commands.search',
     'src.commands.imc2',
     'src.commands.irc',
+    'src.commands.batchprocess'
 )
 
 """

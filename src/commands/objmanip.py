@@ -210,7 +210,7 @@ def cmd_set(command):
         if attrib_value:
             # An attribute value was specified, create or set the attribute.
             target.set_attribute(attrib_name, attrib_value)
-            s = "Attribute %s=%s set to %s." % (target_name, attrib_name, attrib_value)
+            s = "Attribute %s=%s set to '%s'" % (target_name, attrib_name, attrib_value)
         else:
             # No value was given, this means we delete the attribute.
             ok = target.clear_attribute(attrib_name)

@@ -12,6 +12,9 @@ from src.scripthandler import rebuild_cache
 from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
 
+
+
+
 def cmd_reload(command):
     """
     Reloads all modules.
