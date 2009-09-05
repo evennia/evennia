@@ -154,20 +154,22 @@ class ObjectManager(models.Manager):
                                          defines_global.OTYPE_GOING])
     
     def list_search_object_namestr(self, searchlist, ostring, dbref_only=False, 
-                                   limit_types=False, match_type="fuzzy"):
+                                   limit_types=False, match_type="fuzzy",
+                                   attribute_name=None):
 
         """
         Iterates through a list of objects and returns a list of
         name matches.
 
-        This version handles search criteria of the type keyword-N, this is used
-        to differentiate several objects of the exact same name, e.g. box-1, box-2 etc.
+        This version handles search criteria of the type N-keyword, this is used
+        to differentiate several objects of the exact same name, e.g. 1-box, 2-box etc.
         
         searchlist:  (List of Objects) The objects to perform name comparisons on.
         ostring:     (string) The string to match against.
         dbref_only:  (bool) Only compare dbrefs.
         limit_types: (list of int) A list of Object type numbers to filter by.
         match_type: (string) 'exact' or 'fuzzy' matching.
+        attribute_name: (string) attribute name to search, if None, 'name' is used. 
 
         Note that the fuzzy matching gives precedence to exact matches; so if your
         search query matches an object in the list exactly, it will be the only result.
@@ -189,19 +191,25 @@ class ObjectManager(models.Manager):
 
         #search by name - this may return multiple matches.
         results = self._list_search_helper1(searchlist,ostring,dbref_only,
-                                            limit_types, match_type)
+                                            limit_types, match_type,
+                                            attribute_name=attribute_name)
         match_number = None
         if not results:
             #if we have no match, check if we are dealing
-            #with a "keyword-N" query - if so, strip it and run again. 
+            #with a "N-keyword" query - if so, strip it and run again. 
             match_number, ostring = self._list_search_helper2(ostring)
             if match_number != None and ostring:
                 results = self._list_search_helper1(searchlist,ostring,dbref_only,
-                                                    limit_types, match_type)                
+                                                    limit_types, match_type,
+                                                    attribute_name=attribute_name) 
         if match_type == "fuzzy":             
             #fuzzy matching; run second sweep to catch exact matches
-            exact_results = [prospect for prospect in results
-                             if prospect.name_match(ostring, match_type="exact")]
+            if attribute_name:
+                exact_results = [prospect for prospect in results
+                                 if ostring == prospect.get_attribute_value(attribute_name)]
+            else:
+                exact_results = [prospect for prospect in results
+                                 if prospect.name_match(ostring, match_type="exact")]
             if exact_results:
                 results = exact_results
         if len(results) > 1 and match_number != None:
@@ -212,19 +220,41 @@ class ObjectManager(models.Manager):
                 pass                        
         return results
 
-    def _list_search_helper1(self,searchlist,ostring,dbref_only,
-                             limit_types,match_type):            
+    def _list_search_helper1(self, searchlist, ostring, dbref_only,
+                             limit_types, match_type,
+                             attribute_name=None):            
         """
         Helper function for list_search_object_namestr -
-        does name matching through a list of objects.
+        does name/attribute matching through a list of objects.
         """
-        if limit_types:
-            return [prospect for prospect in searchlist
-                    if prospect.name_match(ostring, match_type=match_type)
-                    and prospect.type in limit_types]               
+        if attribute_name:
+            #search an arbitrary attribute name. 
+            if limit_types:
+                if match_type == "exact":
+                    return [prospect for prospect in searchlist
+                            if prospect.type in limit_types and 
+                            ostring == prospect.get_attribute_value(attribute_name)]
+                else:
+                    return [prospect for prospect in searchlist
+                            if prospect.type in limit_types and 
+                            ostring in str(prospect.get_attribute_value(attribute_name))]
+            else:
+                if match_type == "exact":
+                    return [prospect for prospect in searchlist
+                            if ostring == str(prospect.get_attribute_value(attribute_name))]
+                else:
+                    print [type(p) for p in searchlist] 
+                    return [prospect for prospect in searchlist
+                            if ostring in str(prospect.get_attribute_value(attribute_name))]
         else:
-            return [prospect for prospect in searchlist
-                    if prospect.name_match(ostring, match_type=match_type)]
+            #search the default "name" attribute
+            if limit_types:
+                return [prospect for prospect in searchlist
+                        if prospect.type in limit_types and
+                        prospect.name_match(ostring, match_type=match_type)] 
+            else:
+                return [prospect for prospect in searchlist
+                        if prospect.name_match(ostring, match_type=match_type)]
 
     def _list_search_helper2(self, ostring):
         """
@@ -242,6 +272,7 @@ class ObjectManager(models.Manager):
             return None, ostring
         except IndexError:
             return None, ostring 
+    
 
     def player_alias_search(self, searcher, ostring):
         """
@@ -286,7 +317,7 @@ class ObjectManager(models.Manager):
 
     def local_and_global_search(self, searcher, ostring, search_contents=True, 
                                 search_location=True, dbref_only=False, 
-                                limit_types=False):
+                                limit_types=False, attribute_name=None):
         """
         Searches an object's location then globally for a dbref or name match.
         
@@ -296,6 +327,8 @@ class ObjectManager(models.Manager):
         search_location: (bool) While true, check the searcher's surroundings.
         dbref_only: (bool) Only compare dbrefs.
         limit_types: (list of int) A list of Object type numbers to filter by.
+        attribute_name: (string) Which attribute to search in each object.
+                                 If None, the default 'name' attribute is used.        
         """
         search_query = str(ostring).strip()
 
@@ -329,7 +362,8 @@ class ObjectManager(models.Manager):
         if search_location:
             local_objs.extend(searcher.get_location().get_contents())
         return self.list_search_object_namestr(local_objs, search_query,
-                                               limit_types=limit_types)        
+                                               limit_types=limit_types,
+                                               attribute_name=attribute_name)        
 
     #
     # ObjectManager Create methods

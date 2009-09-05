@@ -153,16 +153,23 @@ class Object(models.Model):
     """
     def search_for_object(self, ostring, emit_to_obj=None, search_contents=True, 
                                 search_location=True, dbref_only=False, 
-                                limit_types=False, search_aliases=False):
+                                limit_types=False, search_aliases=False,
+                                attribute_name=None):
         """
         Perform a standard object search, handling multiple
         results and lack thereof gracefully.
 
-        source_object: (Object) The Object doing the searching
         ostring: (str) The string to match object names against.
-                       Obs - To find a player
-                       append * to the start of ostring. 
+                       Obs - To find a player, append * to the start of ostring. 
+        emit_to_obj: (obj) An object (instead of caller) to receive search feedback
+        search_contents: (bool) Search the caller's inventory
+        search_location: (bool) Search the caller's location
+        dbref_only: (bool) Requires ostring to be a #dbref
+        limit_types: (list) Object identifiers from defines_global.OTYPE:s
+        search_aliases: (bool) Search player aliases first
+        attribute_name: (string) Which attribute to match (if None, uses default 'name')
         """
+
         # This is the object that gets the duplicate/no match emits.
         if not emit_to_obj:
             emit_to_obj = self
@@ -177,12 +184,14 @@ class Object(models.Model):
                                 search_contents=search_contents, 
                                 search_location=search_location, 
                                 dbref_only=dbref_only, 
-                                limit_types=limit_types)
+                                limit_types=limit_types,
+                                attribute_name=attribute_name)
 
         if len(results) > 1:
-            emit_to_obj.emit_to("More than one match for '%s' (please narrow target):" % ostring)
+            s = "More than one match for '%s' (please narrow target):" % ostring
             for num, result in enumerate(results):
-                emit_to_obj.emit_to(" %i-%s" % (num+1,result.get_name(show_dbref=False)))
+                s += "\n %i-%s" % (num+1, result.get_name(show_dbref=False))
+            emit_to_obj.emit_to(s)            
             return False
         elif len(results) == 0:
             emit_to_obj.emit_to("I don't see that here.")
@@ -416,35 +425,6 @@ class Object(models.Model):
         else:
             return "%s%s" % (parse_ansi(name_string.split(';')[0], 
                                              strip_ansi=no_ansi), dbref_string)
-
-##     def set_description(self, new_desc=''):
-##         """
-##         Set an objects description
-##         """        
-##         if not new_desc:
-##             self.set_attribute('desc', 'Nothing special')
-##             #self.description = None
-##         else:
-##             self.set_attribute('desc', new_desc)
-##             #self.description = new_desc
-##         self.save()
-
-##     def get_description(self, no_parsing=False, wrap_text=False):
-##         """
-##         Returns an object's ANSI'd description or None if description is not
-##         set.
-##         """        
-##         desc = self.get_attribute_value('desc')
-##         if desc:
-##             if not no_parsing:
-##                 desc = parse_ansi(desc)            
-##             if wrap_text:
-##                 return functions_general.word_wrap(desc)
-##             else:
-##                 return desc
-##         else:
-##             # No description attribute present, return empty string.
-##             return ""
     
     def get_flags(self):
         """
