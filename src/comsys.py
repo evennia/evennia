@@ -257,20 +257,22 @@ def send_cmessage(channel, message, show_header=True, from_external=None):
         # the channel.
         channel_obj = channel
         
+    final_message = message
     if show_header == True:
-        message = "%s %s" % (channel_obj.ansi_name, message)
+        final_message = "%s %s" % (channel_obj.ansi_name, message)
         
     for user in get_cwho_list(channel_obj.name, return_muted=False):
-        user.msg(message)
+        user.msg(final_message)
         
     chan_message = CommChannelMessage()
     chan_message.channel = channel_obj
-    chan_message.message = message
+    chan_message.message = final_message
     chan_message.save()
 
     #pipe to external protocols
     if from_external:
-        send_cexternal(channel_obj.name, message, from_external)
+        send_cexternal(channel_obj.name, message,
+                       from_external=from_external)
         
 def get_all_channels():
     """
@@ -315,7 +317,7 @@ def cemit_mudinfo(message):
     send_cmessage(settings.COMMCHAN_MUD_INFO,
                   'Info: %s' % message)
 
-def send_cexternal(cname, cmessage, from_external=None):
+def send_cexternal(cname, cmessage,  caller=None, from_external=None):
     """
     This allows external protocols like IRC and IMC to send to a channel
     while also echoing to each other. This used by channel-emit functions
@@ -323,38 +325,60 @@ def send_cexternal(cname, cmessage, from_external=None):
 
     cname    - name of evennia channel sent to
     cmessage - message sent (should be pre-formatted already)
+    caller   - a player object sending the message (not present for IRC<->IMC comms)
     from_external - which protocol sent the emit.
                Currently supports 'IRC' and 'IMC2' or None
                (this avoids emits echoing back to themselves). If
                None, it is assumed the message comes from within Evennia
                and all mapped external channels will be notified.
-    """                  
-
+    """
+    
     if settings.IMC2_ENABLED and from_external != "IMC2":
-        #map an IRC emit to the IMC network
+        #map a non-IMC emit to the IMC network
         
         # Look for IMC2 channel maps. If one is found, send an ice-msg-b
-        # packet to the network.
-        #handle lack of user, IMC-way.
+        # packet to the network.            
+        print "caller found: %s (%s). Msg: %s" % (caller,from_external,cmessage)
+
+        imccaller = caller
+        imccmessage = cmessage
+        if not caller:
+            if from_external in ['IRC']: 
+                #try to guess the caller's name from the message
+                #always on form name@#channel: msg 
+                imccaller, imccmessage = cmessage.split("@",1)
+                #throw away IRC channel name; IMC users need not know it
+                imccmessage = (imccmessage.split(":",1)[1]).strip()            
+                print "caller: %s cmessage: %s" % (imccaller, imccmessage)
+            else:
+                imccaller = "*"
 
         try:
             from src.imc2.connection import IMC2_PROTOCOL_INSTANCE
             map = IMC2ChannelMapping.objects.get(channel__name=cname)
             packet = IMC2PacketIceMsgBroadcasted(map.imc2_server_name,
                                                  map.imc2_channel_name, 
-                                                 "*", 
-                                                 cmessage)
+                                                 imccaller, 
+                                                 imccmessage)
             IMC2_PROTOCOL_INSTANCE.send_packet(packet)
         except IMC2ChannelMapping.DoesNotExist:
             # No map found, do nothing.
             pass
 
     if settings.IRC_ENABLED and from_external != "IRC":
-        # Map an IMC emit to IRC channels
+        # Map a non-IRC emit to IRC channels
 
         # Look for IRC channel maps. If found, echo cmessage to the
-        # IRC channel.        
+        # IRC channel.
 
+        if caller: 
+            #message comes from a local channel 
+            caller = caller.get_name(show_dbref=False)
+            cmessage = "[%s] %s: %s" % (cname, caller, cmessage)
+        else:
+            #message from IMC2; name is part of cmessage
+            cmessage = "[%s] %s" % (cname, cmessage)
+        
         try:
             #this fails with a DoesNotExist if the channel is not mapped.
             from src.irc.connection import IRC_CHANNELS

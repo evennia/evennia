@@ -402,7 +402,7 @@ def cmd_cemit(command):
     else:
         if "sendername" in command.command_switches:
             if not comsys.plr_has_channel(command.session, cname_parsed, 
-                                              return_muted=False):
+                                          return_muted=False):
                 source_object.emit_to("You must be on %s to do that." % (cname_parsed,))
                 return
             final_cmessage = "%s: %s" % (source_object.get_name(show_dbref=False), 
@@ -419,7 +419,7 @@ def cmd_cemit(command):
                          show_header=show_channel_header)
     
     #pipe to external channels (IRC, IMC) eventually mapped to this channel
-    comsys.send_cexternal(cname_parsed, "[%s] %s" % (cname_parsed,final_cmessage))
+    comsys.send_cexternal(cname_parsed, cmessage, caller=source_object)
 
 GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit),
 

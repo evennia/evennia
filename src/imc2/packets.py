@@ -139,7 +139,10 @@ class IMC2Packet(object):
             return '*'
         elif str(self.sender).isdigit():
             return self.sender
-        elif self.sender:
+        elif type(self.sender) in [type(u""),type(str())]:
+            #this is used by e.g. IRC where no user object is present.
+            return self.sender.strip().replace(' ', '_')
+        elif self.sender:            
             # Player object.
             name = self.sender.get_name(fullname=False, show_dbref=False, 
                                         show_flags=False,

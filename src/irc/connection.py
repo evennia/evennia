@@ -19,7 +19,7 @@ def cemit_info(message):
     """
     Send info to default info channel
     """
-    comsys.send_cmessage(settings.COMMCHAN_IRC_INFO, 'IRC: %s' % message,from_external="IRC")
+    comsys.send_cmessage(settings.COMMCHAN_IRC_INFO, 'IRC: %s' % message)
 
 class IRC_Bot(irc.IRCClient):
     
@@ -55,7 +55,10 @@ class IRC_Bot(irc.IRCClient):
             user = user.split("!")[0]
             if user:
                 user.strip()
-            msg = "%s@%s: %s" % (user,irc_channel,msg)
+            else:
+                user = "Unknown"
+                
+            msg = "%s@%s: %s" % (user,irc_channel,msg.strip())
             #logger.log_infomsg("<IRC: " + msg)            
             
             for mapping in mappings:
@@ -70,6 +73,7 @@ class IRC_Bot(irc.IRCClient):
         "Called by evennia when sending something to mapped IRC channel"
         self.msg(self.factory.channel, msg)
         #logger.log_infomsg(">IRC: " + msg)
+
 
 class IRC_BotFactory(protocol.ClientFactory):
     protocol = IRC_Bot
