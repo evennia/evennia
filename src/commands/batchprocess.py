@@ -189,6 +189,7 @@ def cmd_batchprocess(command):
     #parse indata file
     commands = parse_batchbuild_file(filename)
     if not commands:
+        source_object.emit_to("'%s'\ncould not be found. Remember that you have to supply the absolute path to the file." % filename)
         return
     switches = command.command_switches
     if switches and switches[0] in ['inter','interactive']:
