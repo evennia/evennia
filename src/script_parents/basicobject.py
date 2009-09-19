@@ -83,13 +83,35 @@ class EvenniaBasicObject(object):
         """
         pass
 
+    def announce_move_from(self):
+        """
+        Called when announcing to leave a destination. 
+        """
+        obj = self.scripted_obj
+        loc = obj.get_location()
+        if loc:
+            loc.emit_to_contents("%s has left." % (obj.get_name(),), exclude=self)
+            if loc.is_player():
+                loc.emit_to("%s has left your inventory." % (obj.get_name()))
+
+    def announce_move_to(self):
+        """
+        Called when announcing one's arrival at a destination.
+        """
+        obj = self.scripted_obj
+        loc = obj.get_location()
+        if loc: 
+            loc.emit_to_contents("%s has arrived." % obj.get_name())
+            if loc.is_player():
+                loc.emit_to("%s is now in your inventory." % self.get_name())
+
     def at_after_move(self):
         """
         This hook is called just after the object was successfully moved.
         No return values.
         """
         pass
-
+    
     def at_drop(self, pobject):
         """
         Perform this action when someone uses the DROP command on the object.

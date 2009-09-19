@@ -878,27 +878,21 @@ class Object(models.Model):
         force_look: (bool) If true and self is a player, make them 'look'.
         """
         
-        #before the move, call the appropriate hook
+        #before the move, call eventual pre-commands.
         if self.scriptlink.at_before_move(target) != None:
             return 
 
         if not quiet:
-            location = self.get_location()
-            if location:
-                location.emit_to_contents("%s has left." % 
-                                            (self.get_name(),), exclude=self)
-                if location.is_player():
-                    location.emit_to("%s has left your inventory." % 
-                                            (self.get_name()))
+            #tell the old room we are leaving
+            self.scriptlink.announce_move_from()
             
+        #perform move
         self.location = target
         self.save()        
-        
+                
         if not quiet:
-            arrival_message = "%s has arrived." % (self.get_name())
-            self.get_location().emit_to_contents(arrival_message, exclude=self)
-            if self.location.is_player():
-                self.location.emit_to("%s is now in your inventory." % (self.get_name()))
+            #tell the new room we are there. 
+            self.scriptlink.announce_move_to()
 
         #execute eventual extra commands on this object after moving it
         self.scriptlink.at_after_move()

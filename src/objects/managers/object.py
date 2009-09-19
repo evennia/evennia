@@ -410,6 +410,9 @@ class ObjectManager(models.Manager):
             if new_object.get_owner().get_zone():
                 new_object.zone = new_object.get_owner().get_zone()
 
+        # Run the script parent's oncreation function
+
+
         # If we have a 'home' key, use that for our home value. Otherwise use
         # the location key.
         if home:

@@ -783,17 +783,23 @@ def cmd_dig(command):
                                                 defines_global.OTYPE_ROOM,
                                                 None,
                                                 source_object)
+        new_room.set_attribute("desc", "There is nothing special about this place.")
         source_object.emit_to("Created a new room '%s'." % (new_room,))
         
         if parent:
             #(try to) set the script parent
             if not new_room.set_script_parent(parent):
                 source_object.emit_to("%s is not a valid parent. Used default room." % parent)
+
+        # Run custon creation commands on the script parent
+        new_room.scriptlink.at_object_creation()
+                
         if exits:
             #create exits to (and possibly back from) the new room)
             destination = new_room #search_for_object(roomname)
             
             if destination and not destination.is_exit():
+                #create an exit from this room
                 location = source_object.get_location()
 
                 new_object = Object.objects.create_object(exits[0].strip(),
@@ -801,15 +807,24 @@ def cmd_dig(command):
                                                           location,
                                                           source_object,
                                                           destination)
+                new_object.set_attribute("desc", "This is an exit out of here.")
                 source_object.emit_to("Created exit from %s to %s named '%s'." % (location,destination,new_object))
-
+                
+                # Run custon creation commands on the exit
+                new_object.scriptlink.at_object_creation()
+                
                 if len(exits)>1:
                     new_object = Object.objects.create_object(exits[1].strip(),
                                                               defines_global.OTYPE_EXIT,
                                                               destination,
                                                               source_object,
                                                               location)
+                    new_object.set_attribute("desc", "This is an exit out of here.")
                     source_object.emit_to("Created exit back from %s to %s named '%s'" % (destination, location, new_object))
+                    # Run custon creation commands on the exit
+                    new_object.scriptlink.at_object_creation()
+
+
         if 'teleport' in switches:
             source_object.move_to(new_room)
 
@@ -875,7 +890,7 @@ def cmd_description(command):
         source_object.emit_to("How would you like to describe that object?")
         return
 
-    target_obj = source_object.search_for_object(eq_args[0])
+    target_obj = source_object.search_for_object(eq_args[0].strip())
     # Use search_for_object to handle duplicate/nonexistant results.
     if not target_obj:
         return
@@ -884,7 +899,7 @@ def cmd_description(command):
         source_object.emit_to(defines_global.NOCONTROL_MSG)
         return
 
-    new_desc = eq_args[1]
+    new_desc = eq_args[1].strip()
     if not new_desc:
         source_object.emit_to("%s - description cleared." % target_obj)
         target_obj.set_attribute('desc', 'Nothing special.')
