@@ -63,7 +63,7 @@ def cmd_list(command):
     server = command.session.server
     source_object = command.source_object
     
-    msg_invalid = "Unknown option. Use one of: commands, flags, process"
+    msg_invalid = "Usage @list commands|flags|process"
     
     if not command.command_argument:    
         source_object.emit_to(msg_invalid)

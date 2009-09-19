@@ -15,7 +15,7 @@ def cmd_teleport(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Teleport where/what?")
+        source_object.emit_to("Usage: @teleport[/switches] [<obj> =] <target_loc>|home")
         return
 
     eq_args = command.command_argument.split('=', 1)
@@ -73,7 +73,7 @@ def cmd_alias(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Alias whom?")
+        source_object.emit_to("Usage: @alias <player = <alias>")
         return
     
     eq_args = command.command_argument.split('=', 1)
@@ -123,7 +123,7 @@ def cmd_wipe(command):
     attr_search = False
 
     if not command.command_argument:    
-        source_object.emit_to("Wipe what?")
+        source_object.emit_to("Usage: @wipe <object>[/attribute-wildcard]")
         return
 
     # Look for a slash in the input, indicating an attribute wipe.
@@ -336,7 +336,7 @@ GLOBAL_CMD_TABLE.add_command("@cpattr", cmd_cpattr,
         
 def cmd_mvattr(command):
     """
-    @mvattr <object>=<old>,<new>[,<copy1>]...
+    @mvattr <object>=<old>,<new>[,<copy1>[, <copy2 ...]]
 
     Move attributes around on an object
     """
@@ -344,7 +344,7 @@ def cmd_mvattr(command):
     arg = command.command_argument
     #split arguments
     if not arg or not '=' in arg:
-        source_object.emit_to("Usage: @mvattr <object>=<old>,<new>[,<copy1>]...")
+        source_object.emit_to("Usage: @mvattr <object>=<old>,<new>[,<copy1>[, copy2 ...]]")
         return
     objname,attrs = arg.split('=')            
     attrs = attrs.split(",")
@@ -395,8 +395,6 @@ def cmd_mvattr(command):
 GLOBAL_CMD_TABLE.add_command("@mvattr", cmd_mvattr,
                              priv_tuple=("genperms.builder",))
 
-
-
 def cmd_find(command):
     """
     Searches for an object of a particular name.
@@ -405,7 +403,7 @@ def cmd_find(command):
     can_find = source_object.has_perm("genperms.builder")
 
     if not command.command_argument:
-        source_object.emit_to("No search pattern given.")
+        source_object.emit_to("Usage: @find <name>")
         return
     
     searchstring = command.command_argument
@@ -439,7 +437,7 @@ def cmd_create(command):
     source_object = command.source_object
     
     if not command.command_argument:
-        source_object.emit_to("You must supply a name!")
+        source_object.emit_to("Usage: @create <newname> [:path_to_script_parent]")
         return
     
     eq_args = command.command_argument.split(':', 1)
@@ -470,13 +468,15 @@ GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
     
 
 def cmd_nextfree(command):
-    """
+    """Usage:
+       @nextfree 
+
     Returns the next free object number.
     """   
     nextfree = Object.objects.get_nextfree_dbnum()
     command.source_object.emit_to("Next free object number: #%s" % nextfree)
 GLOBAL_CMD_TABLE.add_command("@nextfree", cmd_nextfree,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("genperms.builder"),auto_help=True)
     
 def cmd_open(command):
     """
@@ -490,7 +490,7 @@ def cmd_open(command):
     source_object = command.source_object
     
     if not command.command_argument:
-        source_object.emit_to("Open an exit to where?")
+        source_object.emit_to("Usage: @open <name> [=dbref [,<name>]]")
         return
         
     eq_args = command.command_argument.split('=', 1)
@@ -562,7 +562,7 @@ def cmd_chown(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Change the ownership of what?")
+        source_object.emit_to("Usage: @chown <object> = <newowner>")
         return
 
     eq_args = command.command_argument.split('=', 1)
@@ -613,7 +613,7 @@ def cmd_chzone(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Change the zone of what?")
+        source_object.emit_to("Usage: @chzone <object> = <newzone>")
         return
 
     eq_args = command.command_argument.split('=', 1)
@@ -664,7 +664,7 @@ def cmd_link(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Link what?")
+        source_object.emit_to("Usage: @link <object> = <target>")
         return
 
     eq_args = command.command_argument.split('=', 1)
@@ -715,7 +715,7 @@ def cmd_unlink(command):
     source_object = command.source_object
     
     if not command.command_argument:    
-        source_object.emit_to("Unlink what?")
+        source_object.emit_to("Usage: @unlink <object>")
         return
     else:
         target_obj = source_object.search_for_object(command.command_argument)
@@ -753,7 +753,7 @@ def cmd_dig(command):
     exits = []
 
     if not args:
-        source_object.emit_to("Usage[/teleport]: @dig roomname [:parent] [=exitthere,exithere]")
+        source_object.emit_to("Usage[/teleport]: @dig roomname [:parent] [= exitthere, exithere]")
         return
 
     #handle arguments
@@ -841,7 +841,7 @@ def cmd_name(command):
     source_object = command.source_object
     
     if not command.command_argument:    
-        source_object.emit_to("What do you want to name?")
+        source_object.emit_to("Usage: <object> = <newname>")
         return
     
     eq_args = command.command_argument.split('=', 1)
@@ -879,27 +879,32 @@ def cmd_description(command):
     Set an object's description.
     """
     source_object = command.source_object
-    
-    if not command.command_argument:    
-        source_object.emit_to("What do you want to describe?")
-        return
-    
-    eq_args = command.command_argument.split('=', 1)
-    
-    if len(eq_args) < 2:
-        source_object.emit_to("How would you like to describe that object?")
-        return
+    args = command.command_argument
 
-    target_obj = source_object.search_for_object(eq_args[0].strip())
-    # Use search_for_object to handle duplicate/nonexistant results.
-    if not target_obj:
+    if not args:
+        source_object.emit_to("Usage: @desc [obj=] <descriptive text>")
         return
-
+    
+    if not '=' in args:
+        target_obj = source_object.get_location()
+        if not target_obj:
+            return        
+        new_desc = args.strip() 
+    else:
+        eq_args = command.command_argument.split('=', 1)    
+        target_obj = source_object.search_for_object(eq_args[0].strip())
+        if not target_obj: 
+            source_object.emit_to("'%s' was not found." % eq_args[0])
+            return 
+        if len(eq_args) < 2:
+            source_object.emit_to("You must supply a description too.")
+            return
+        new_desc = eq_args[1].strip()
+        
     if not source_object.controls_other(target_obj):
         source_object.emit_to(defines_global.NOCONTROL_MSG)
         return
-
-    new_desc = eq_args[1].strip()
+    
     if not new_desc:
         source_object.emit_to("%s - description cleared." % target_obj)
         target_obj.set_attribute('desc', 'Nothing special.')
@@ -1000,7 +1005,7 @@ def cmd_destroy(command):
     switches = command.command_switches
 
     if not args:    
-        source_object.emit_to("Destroy what?")
+        source_object.emit_to("Usage: @destroy[/switches] obj [,obj2, obj3, ...]")
         return    
     if ',' in args:
         targetlist = args.split(',')

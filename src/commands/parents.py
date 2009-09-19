@@ -5,7 +5,9 @@ from src import scripthandler
 from src.cmdtable import GLOBAL_CMD_TABLE
       
 def cmd_scriptcache(command):
-    """
+    """Usage
+      @scriptcache
+
     Shows the contents of the script cache.
     """
     cache_dict = scripthandler.CACHED_SCRIPTS
@@ -18,7 +20,8 @@ def cmd_scriptcache(command):
     retval += "%d cached parents" % len(cache_dict)
     command.source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("@scriptcache", cmd_scriptcache,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("genperms.builder"),
+                             auto_help=True,staff_help=True)
 
 def cmd_parent(command):
     """
@@ -27,7 +30,7 @@ def cmd_parent(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Change/check the parent of what?")
+        source_object.emit_to("Usage: @parent <object> [=<parent]")
         return
 
     eq_args = command.command_argument.split('=', 1)

@@ -19,11 +19,12 @@ def cmd_connect(command):
     # Argument check.
     # Fail gracefully if no argument is provided
     if not command.command_argument:
-        session.msg("No arguments provided\n Usage (without <>): connect <email> <password>")
+        session.msg("No arguments provided.\n\r Usage (without <>): connect <email> <password>")
         return
     
     arg_list = command.command_argument.split()
     if not functions_general.cmd_check_num_args(session, arg_list, 2):
+        session.msg("Not enough arguments provided.\n\r Usage (without <>): connect <email> <password>")
         return
     
     uemail = arg_list[0]
@@ -34,7 +35,7 @@ def cmd_connect(command):
     
     # No username match
     if email_matches.count() == 0:
-        session.msg("Specified email does not match any accounts!")
+        session.msg("The email '%s' does not match any accounts.\n\rIf you are new you should create a new account." % uemail)
         return
     
     # We have at least one result, so we can check the password.
@@ -56,11 +57,12 @@ def cmd_create(command):
     # Argument check.
     # Fail gracefully if no argument is provided
     if not command.command_argument:
-        session.msg("No arguments provided\n Usage (without <>): create \"<username>\" <email> <password>")
+        session.msg("No arguments provided\n\r Usage (without <>): create \"<username>\" <email> <password>")
         return
 
     arg_list = command.command_argument.split()
     if not functions_general.cmd_check_num_args(session, arg_list, 2):
+        session.msg("Too few arguments provided\n\r Usage (without <>): create \"<username>\" <email> <password>")
         return
     
     quote_split = command.command_argument.split("\"")
@@ -73,11 +75,17 @@ def cmd_create(command):
     lastarg_split = quote_split[2].split()
 
     if len(lastarg_split) != 2:
-        session.msg("You must specify an email address, followed by a password!")
+        session.msg("You must specify an email address, followed by a password.")
         return
     
-    email = lastarg_split[0]
-    password = lastarg_split[1]
+    email = lastarg_split[0].strip()
+    password = lastarg_split[1].strip()
+
+    #check so the email is at least on the form xxxx@xxx.xxx
+    addr = email.split('@')
+    if len(addr) != 2 or not len(addr[1].split('.')) > 1 or not addr[1].split('.')[-1]:
+        session.msg("'%s' is not a valid e-mail address." % email)
+        return
 
     # Search for a user object with the specified username.
     account = User.objects.filter(username=uname)
@@ -90,11 +98,11 @@ def cmd_create(command):
                     type=defines_global.OTYPE_PLAYER)
     
     if not account.count() == 0 or not alias_matches.count() == 0:
-        session.msg("There is already a player with that name!")
+        session.msg("Sorry, there is already a player with that name.")
     elif not email_matches.count() == 0:
-        session.msg("There is already a player with that email address!")
+        session.msg("Sorry, there is already a player with that email address.")
     elif len(password) < 3:
-        session.msg("Your password must be 3 characters or longer.")
+        session.msg("Your password must be at least 3 characters or longer.\n\rFor best security, make it at least 8 characters long, avoid making it a real word and mix numbers into it.")
     else:
         Object.objects.create_user(command, uname, email, password)
 GLOBAL_UNCON_CMD_TABLE.add_command("create", cmd_create)
@@ -106,6 +114,6 @@ def cmd_quit(command):
     version will be a bit more complicated.
     """
     session = command.session
-    session.msg("Disconnecting...")
+    session.msg("Good bye! Disconnecting ...")
     session.handle_close()
 GLOBAL_UNCON_CMD_TABLE.add_command("quit", cmd_quit)

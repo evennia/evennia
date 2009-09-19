@@ -64,7 +64,7 @@ class EvenniaBasicPlayer(object):
         obj = self.scripted_obj
         loc = obj.get_location()
         if loc:
-            loc.emit_to_contents("%s has left." % (obj.get_name(),), exclude=self)
+            loc.emit_to_contents("%s has left." % obj.get_name(), exclude=obj)
             if loc.is_player():
                 loc.emit_to("%s has left your inventory." % (obj.get_name()))
 
@@ -75,7 +75,7 @@ class EvenniaBasicPlayer(object):
         obj = self.scripted_obj
         loc = obj.get_location()
         if loc: 
-            loc.emit_to_contents("%s has arrived." % obj.get_name())
+            loc.emit_to_contents("%s has arrived." % obj.get_name(),exclude=obj)
             if loc.is_player():
                 loc.emit_to("%s is now in your inventory." % obj.get_name())
 

@@ -24,7 +24,7 @@ def cmd_password(command):
     source_object = command.source_object
     
     if not command.command_argument:
-        source_object.emit_to("This command requires arguments.")
+        source_object.emit_to("Usage: @password <oldpass> = <newpass>")
         return
     
     if not source_object.is_player():
@@ -342,7 +342,7 @@ def cmd_quit(command):
     """
     if command.session:
         session = command.session
-        session.msg("Quitting!")
+        session.msg("Quitting. Hope to see you soon again.")
         session.handle_close()
 GLOBAL_CMD_TABLE.add_command("quit", cmd_quit)
     

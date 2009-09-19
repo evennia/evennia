@@ -91,7 +91,7 @@ def cmd_delcom(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("You must specify a channel alias.")
+        source_object.emit_to("Usage: delcom <alias>")
         return
 
     try:
@@ -255,7 +255,7 @@ def cmd_cdestroy(command):
     cname = command.command_argument
 
     if not cname:
-        source_object.emit_to("You must supply a name!")
+        source_object.emit_to("Usage: @cdestroy <channelname>")
         return
 
     name_matches = comsys.cname_search(cname, exact=True)
@@ -302,7 +302,7 @@ def cmd_cboot(command):
     switches = command.command_switches
 
     if not args or not "=" in args:
-        source_object.emit_to("Usage: @cboot[/quiet] <channel>=<object>")
+        source_object.emit_to("Usage: @cboot[/quiet] <channel> = <object>")
         return
     cname, objname = args.split("=",1)
     cname, objname = cname.strip(), objname.strip()    
@@ -364,7 +364,7 @@ def cmd_cemit(command):
     source_object = command.source_object
 
     if not command.command_argument:
-        source_object.emit_to("Channel emit what?")
+        source_object.emit_to("@cemit[/switches] <channel> = <message>")
         return
 
     eq_args = command.command_argument.split('=', 1)
@@ -373,8 +373,8 @@ def cmd_cemit(command):
         source_object.emit_to("You must provide a channel name and a message to emit.")
         return
     
-    cname = eq_args[0]
-    cmessage = eq_args[1]
+    cname = eq_args[0].strip()
+    cmessage = eq_args[1].strip()
     final_cmessage = cmessage
     if len(cname) == 0:
         source_object.emit_to("You must provide a channel name to emit to.")
@@ -440,7 +440,7 @@ def cmd_cwho(command):
 
     if not command.command_argument:
         cmd_clist(command)
-        source_object.emit_to("You must specify a channel name.")
+        source_object.emit_to("Usage: @cwho <channel>[/all]")
         return
     
     channel_name = command.command_argument
@@ -477,7 +477,7 @@ def cmd_ccreate(command):
     cname = command.command_argument
 
     if not cname:
-        source_object.emit_to("You must supply a name!")
+        source_object.emit_to("Usage @ccreate <channelname>")
         return
     
     if not source_object.has_perm("objects.channel_admin"):
@@ -504,9 +504,10 @@ def cmd_cchown(command):
     source_object = command.source_object
     args = command.command_argument
     if not args or "=" not in args:
-        source_object.emit_to("Usage: @cchown <channel>=<player>")
+        source_object.emit_to("Usage: @cchown <channel> = <player>")
         return
     cname, pname = args.split("=",1)
+    cname, pname = cname.strip(), pname.strip()
     #locate channel
     try:
         channel = CommChannel.objects.get(name__iexact=cname)

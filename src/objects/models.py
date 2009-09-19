@@ -467,11 +467,10 @@ class Object(models.Model):
                 uobj.is_active = False
                 uobj.save()
             except:
-                functions_general.log_errmsg('Destroying object %s but no matching player.' 
-                                                                % (self,))
-                
+                functions_general.log_errmsg('Destroying object %s but no matching player.' % (self,))
+
         # Set the object type to GOING
-        self.type = defines_global.OTYPE_GOING
+        self.type = defines_global.OTYPE_GOING                
         # Destroy any exits to and from this room, do this first
         self.clear_exits()
         # Clear out any objects located within the object
@@ -534,19 +533,23 @@ class Object(models.Model):
 
             # If for some reason it's still None...
             if not home:
-                functions_general.log_errmsg("Missing default home, %s '%s(#%d)' now has a null location." % (text, obj.name, obj.id))
+                functions_general.log_errmsg("Missing default home, %s '%s(#%d)' now has a null location." %
+                                             (text, obj.name, obj.id))
                     
             if obj.is_player():
                 if obj.is_connected_plr():
                     if home:
-                        obj.emit_to("Your current location has ceased to exist, moving you to your home %s(#%d)." % (home.name, home.id))
+                        obj.emit_to("Your current location has ceased to exist, moving you to your home %s(#%d)." %
+                                    (home.name, home.id))
                     else:
                         # Famous last words: The player should never see this.
-                        obj.emit_to("You seem to have found a place that does not exist.")
+                        obj.emit_to("You seem to have found a place that does not exist ...")
                     
-            # If home is still None, it goes to a null location.
+            # If home is still None, it goes to a null location.            
             obj.move_to(home)
             obj.save()
+
+
 
     def set_attribute(self, attribute, new_value=None):
         """
@@ -899,7 +902,7 @@ class Object(models.Model):
                                 
         if force_look:
             self.execute_cmd('look')
-
+        
 
     def dbref_match(self, oname):
         """
