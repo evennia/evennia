@@ -83,9 +83,10 @@ class EvenniaBasicObject(object):
         """
         pass
 
-    def announce_move_from(self):
+    def announce_move_from(self, target_location):
         """
         Called when announcing to leave a destination. 
+        target_location - the place we are going to
         """
         obj = self.scripted_obj
         loc = obj.get_location()
@@ -94,9 +95,10 @@ class EvenniaBasicObject(object):
             if loc.is_player():
                 loc.emit_to("%s has left your inventory." % (obj.get_name()))
 
-    def announce_move_to(self):
+    def announce_move_to(self, source_location):
         """
         Called when announcing one's arrival at a destination.
+        source_location - the place we are coming from
         """
         obj = self.scripted_obj
         loc = obj.get_location()

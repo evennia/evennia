@@ -887,7 +887,8 @@ class Object(models.Model):
 
         if not quiet:
             #tell the old room we are leaving
-            self.scriptlink.announce_move_from()
+            self.scriptlink.announce_move_from(target)
+            source_location = self.location
             
         #perform move
         self.location = target
@@ -895,7 +896,7 @@ class Object(models.Model):
                 
         if not quiet:
             #tell the new room we are there. 
-            self.scriptlink.announce_move_to()
+            self.scriptlink.announce_move_to(source_location)
 
         #execute eventual extra commands on this object after moving it
         self.scriptlink.at_after_move()
