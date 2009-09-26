@@ -41,3 +41,9 @@ NOPERMS_MSG = "You do not have the necessary permissions to do that."
 
 # Message seen when object doesn't control the other object.
 NOCONTROL_MSG = "You don't have authority over that object."
+
+# Default descs when creating new objects
+DESC_PLAYER = "An average person."
+DESC_ROOM = "There is nothing special about this place."
+DESC_THING = "You see nothing special."
+DESC_EXIT = "This is an exit out of here."

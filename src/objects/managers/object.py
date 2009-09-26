@@ -369,7 +369,7 @@ class ObjectManager(models.Manager):
     # ObjectManager Create methods
     #
 
-    def create_object(self, name, otype, location, owner, home=None):
+    def create_object(self, name, otype, location, owner, home=None, script_parent=None):
         """
         Create a new object
 
@@ -379,42 +379,59 @@ class ObjectManager(models.Manager):
          owner:    The creator of the object.
          home:     Reference to another object to home to. If not specified,  
                    set to location.
+         script_parent: The parent of this object (ignored if otype is OTYPE_PLAYER)
         """
-        #get_nextfree_dbnum() returns either an integer or an object to recycle.
+        #get_nextfree_dbnum() returns either an integer or an old object to recycle.
         next_dbref = self.get_nextfree_dbnum()
 
         if type(next_dbref) == type(int()):        
-            #create object with new dbref
+            #create new object with a fresh dbref
             Object = ContentType.objects.get(app_label="objects", 
                                          model="object").model_class()
             new_object = Object()
             new_object.id = next_dbref
         else:
-            #recycle an old object's dbref
+            #recycle an old object instead
             new_object = next_dbref
 
         new_object.type = otype
         new_object.set_name(name)
 
+        # Set the script_parent.
+        # If the script_parent string is not valid, the defaults will be used.
+        # To see if it worked or not from outside this method, easiest is to use the
+        # obj.get_script_parent() function to find out what was actually set.
+        new_object.set_script_parent(script_parent)
+                
         # If this is a player, we don't want him owned by anyone.
         # The get_owner() function will return that the player owns
         # himself.
         if otype == defines_global.OTYPE_PLAYER:
             new_object.owner = None
-            new_object.zone = None
-            new_object.script_parent = settings.SCRIPT_DEFAULT_PLAYER
+            new_object.zone = None            
         else:
             new_object.owner = owner
-            new_object.script_parent = settings.SCRIPT_DEFAULT_OBJECT
-            
             if new_object.get_owner().get_zone():
                 new_object.zone = new_object.get_owner().get_zone()
-
-        # Run the script parent's oncreation function
-
+            
+        # Set default description, depending on type.
+        default_desc = None
+        if otype == defines_global.OTYPE_PLAYER:
+            default_desc = defines_global.DESC_PLAYER
+        elif otype == defines_global.OTYPE_ROOM:
+            default_desc = defines_global.DESC_ROOM
+        elif otype == defines_global.OTYPE_EXIT:
+            default_desc = defines_global.DESC_EXIT
+        else:
+            default_desc = defines_global.DESC_THING
+        new_object.set_attribute("desc", default_desc)
+            
+        # Run the script parent's creation hook function.
+        # This is where all customization happens. 
+        new_object.scriptlink.at_object_creation()
 
         # If we have a 'home' key, use that for our home value. Otherwise use
-        # the location key.
+        # the location key. All objects must have this 
         if home:
             new_object.home = home
         else:
@@ -425,7 +442,7 @@ class ObjectManager(models.Manager):
                 
         new_object.save()
 
-        # Rooms have a NULL location.
+        # Rooms have a NULL location. Move everything else to new location.
         if not new_object.is_room():
             new_object.move_to(location, quiet=True, force_look=False)
         

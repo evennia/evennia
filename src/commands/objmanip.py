@@ -97,7 +97,7 @@ def cmd_alias(command):
         return
   
     old_alias = target.get_attribute_value('ALIAS', default='')
-    print "ALIAS", old_alias
+    #print "ALIAS", old_alias
     duplicates = Object.objects.player_alias_search(source_object, new_alias)
     if not duplicates or old_alias.lower() == new_alias.lower():
         # Either no duplicates or just changing the case of existing alias.
@@ -442,26 +442,27 @@ def cmd_create(command):
     
     eq_args = command.command_argument.split(':', 1)
     target_name = eq_args[0]
-    
+
+    #check if we want to set a custom parent
+    script_parent = None
+    if len(eq_args) > 1:
+        script_parent = eq_args[1].strip()
+            
     # Create and set the object up.
     new_object = Object.objects.create_object(target_name,
                                               defines_global.OTYPE_THING,
                                               source_object,
-                                              source_object)
-    new_object.set_attribute('desc', 'Nothing special.')
-    if len(eq_args)>1:
-        parent_str = eq_args[1]
-        if parent_str and new_object.set_script_parent(parent_str):
+                                              source_object,
+                                              script_parent=script_parent)    
+    if script_parent:
+        if new_object.get_script_parent() == script_parent:        
             source_object.emit_to("You create %s as a child of %s." %
-                                  (new_object, parent_str))
+                                  (new_object, script_parent))
         else:                
             source_object.emit_to("'%s' is not a valid parent. Using default." %
-                                  parent_str)
+                                  script_parent)
     else:        
         source_object.emit_to("You create a new thing: %s" % (new_object,))
-
-    # Trigger stuff to happen after said object is created.
-    new_object.scriptlink.at_object_creation()
 
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
                              priv_tuple=("genperms.builder"),auto_help=True)
@@ -738,97 +739,124 @@ def cmd_dig(command):
     where you are.
     
     Usage: 
-       @dig[/switches] roomname [:parent] [=exitthere,exithere]
+       @dig[/switches] roomname [:parent] [= exitthere [: parent][;alias]] [, exithere [: parent][;alias]] 
 
     switches:
        teleport - move yourself to the new room
+
+    example:
+       @dig kitchen = north; n, south; s
+
     
     """
-    source_object = command.source_object
-    
+    source_object = command.source_object    
     args = command.command_argument
     switches = command.command_switches
 
-    parent = ''
-    exits = []
-
     if not args:
-        source_object.emit_to("Usage[/teleport]: @dig roomname [:parent] [= exitthere, exithere]")
+        source_object.emit_to("Usage[/teleport]: @dig roomname [:parent][= exitthere [:parent] [;alias]] [, exithere [:parent] [;alias]]")
         return
 
-    #handle arguments
-    if ':' in args:
-        roomname, args = args.split(':',1)
-        if '=' in args:
-            parent, args = args.split('=',1)
-            if ',' in args:
-                exits = args.split(',',1)
-            else:
-                exits = args
-        else:
-            parent = args
-    elif '=' in args:
-        roomname, args = args.split('=',1)
-        if ',' in args:
-            exits = args.split(',',1)
-        else:
-            exits = [args]
+    room_name = None
+    room_parent = None    
+    exit_names = [None,None]
+    exit_parents = [None,None]
+    exit_aliases = [[], []]
+    
+    #deal with arguments 
+    arg_list = args.split("=",1)
+    if len(arg_list) < 2:
+        #just create a room, no exits
+        room_name = largs[0].strip()
     else:
-        roomname = args
+        #deal with args left of =
+        larg = arg_list[0]
+        try:
+            room_name, room_parent = [s.strip() for s in larg.split(":",1)]
+        except ValueError:
+            room_name = larg.strip()
             
-    if not roomname:
-        source_object.emit_to("You must supply a new room name.")
-    else:
-        new_room = Object.objects.create_object(roomname,
-                                                defines_global.OTYPE_ROOM,
-                                                None,
-                                                source_object)
-        new_room.set_attribute("desc", "There is nothing special about this place.")
-        source_object.emit_to("Created a new room '%s'." % (new_room,))
-        
-        if parent:
-            #(try to) set the script parent
-            if not new_room.set_script_parent(parent):
-                source_object.emit_to("%s is not a valid parent. Used default room." % parent)
+        #deal with args right of =
+        rarg = arg_list[1]
+        exits = rarg.split(",",1)        
+        for ie, exi in enumerate(exits):
+            aliaslist = exi.split(";")
+            name_and_parent = aliaslist.pop(0) #pops the first index
+            exit_aliases[ie] = aliaslist #what remains are the aliases
+            try:
+                exit_names[ie], exit_parents[ie] = [s.strip() for s in name_and_parent.split(":",1)]
+            except ValueError:
+                exit_names[ie] = name_and_parent.strip()
 
-        # Run custon creation commands on the script parent
-        new_room.scriptlink.at_object_creation()
-                
-        if exits:
-            #create exits to (and possibly back from) the new room)
-            destination = new_room #search_for_object(roomname)
+    #start creating things. 
+    if not room_name:
+        source_object.emit_to("You must supply a new room name.")            
+        return
+    
+    new_room = Object.objects.create_object(room_name,
+                                            defines_global.OTYPE_ROOM,
+                                            None,
+                                            source_object,
+                                            script_parent=room_parent)
+    ptext = ""
+    if room_parent:
+        if new_room.get_script_parent() == room_parent:        
+            ptext += " of type '%s'" % room_parent
+        else:
+            ptext += " of default type (parent '%s' failed!)" % room_parent            
+    source_object.emit_to("Created a new room '%s'%s." % (new_room, ptext))
+    
+    if exit_names[0] != None: 
+        #create exits to the new room
+        destination = new_room 
             
-            if destination and not destination.is_exit():
-                #create an exit from this room
-                location = source_object.get_location()
-
-                new_object = Object.objects.create_object(exits[0].strip(),
-                                                          defines_global.OTYPE_EXIT,
-                                                          location,
-                                                          source_object,
-                                                          destination)
-                new_object.set_attribute("desc", "This is an exit out of here.")
-                source_object.emit_to("Created exit from %s to %s named '%s'." % (location,destination,new_object))
-                
-                # Run custon creation commands on the exit
-                new_object.scriptlink.at_object_creation()
-                
-                if len(exits)>1:
-                    new_object = Object.objects.create_object(exits[1].strip(),
-                                                              defines_global.OTYPE_EXIT,
-                                                              destination,
-                                                              source_object,
-                                                              location)
-                    new_object.set_attribute("desc", "This is an exit out of here.")
-                    source_object.emit_to("Created exit back from %s to %s named '%s'" % (destination, location, new_object))
-                    # Run custon creation commands on the exit
-                    new_object.scriptlink.at_object_creation()
-
+        if destination and not destination.is_exit():
+            #create an exit from this room
+            location = source_object.get_location()
+            new_object = Object.objects.create_object(exit_names[0],
+                                                      defines_global.OTYPE_EXIT,
+                                                      location,
+                                                      source_object,
+                                                      destination)
+            ptext = ""
+            if exit_parents[0]:
+                script_parent = exit_parents[0]
+                if new_object.get_script_parent() == script_parent:        
+                    ptext += " of type %s" % script_parent
+                else:
+                    ptext += " of default type (parent '%s' failed!)" % script_parent
+            source_object.emit_to("Created exit%s from %s to %s named '%s'." % (ptext,location,destination,new_object))
+            #the ALIAS mechanism only works with one ALIAS at this time.
+            try:
+                new_object.set_attribute("ALIAS", exit_aliases[0][0])
+            except IndexError:
+                pass
+                                
+        if len(exit_names) > 1 and exit_names[1] != None:
+            #create exit back from new room to this one.
+            new_object = Object.objects.create_object(exit_names[1],
+                                                      defines_global.OTYPE_EXIT,
+                                                      destination,
+                                                      source_object,
+                                                      location)
+            ptext = ""
+            if exit_parents[1]:
+                script_parent = exit_parents[1]
+                if new_object.get_script_parent() == script_parent:        
+                    ptext += " of type %s" % script_parent
+                else:
+                    ptext += " of default type (parent '%s' failed!)" % script_parent
+            source_object.emit_to("Created exit%s back from %s to %s named '%s'." % \
+                                  (ptext, destination, location, new_object))
+            #the ALIAS mechanism only works with one ALIAS at this time.
+            try:
+                new_object.set_attribute("ALIAS", exit_aliases[1][0])
+            except IndexError:
+                pass
 
         if 'teleport' in switches:
             source_object.move_to(new_room)
-
-                
+               
 GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
                              priv_tuple=("genperms.builder"),)
 
@@ -992,12 +1020,13 @@ def cmd_destroy(command):
        override - The @destroy command will usually avoid accidentally destroying
                   player objects as well as objects with the SAFE flag. This
                   switch overrides this safety.     
-       instant  - Destroy the object immediately, without delay. 
+       instant|now  - Destroy the object immediately, without delay. 
 
     The objects are set to GOING and will be permanently destroyed next time the system
     does cleanup. Until then non-player objects can still be saved  by using the
     @recover command. The contents of a room will be moved out before it is destroyed,
-    but its exits will also be destroyed. Note that player objects can not be recovered. 
+    and all exits leading to and fro the room will also be destroyed. Note that destroyed
+    player objects can not be recovered by the @recover command.
     """
 
     source_object = command.source_object
@@ -1045,7 +1074,7 @@ def cmd_destroy(command):
         #destroy the object (sets it to GOING)
         target_obj.destroy()
 
-        if 'instant' in switches:
+        if 'instant' in switches or 'now' in switches:
             #sets to GARBAGE right away (makes dbref available)
             target_obj.delete()
             source_object.emit_to("You destroy %s." % target_obj.get_name())
