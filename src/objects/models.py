@@ -113,14 +113,11 @@ class Object(models.Model):
     script_parent = models.CharField(max_length=255, blank=True, null=True)
     home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
     type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
-
-    # TODO: Move description to an attribute.
-    #description = models.TextField(blank=True, null=True)
-
     location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
     flags = models.TextField(blank=True, null=True)
     nosave_flags = models.TextField(blank=True, null=True)
     date_created = models.DateField(editable=False, auto_now_add=True)
+
     # 'scriptlink' is a 'get' property for retrieving a reference to the correct
     # script object. Defined down by get_scriptlink()
     scriptlink_cached = None
@@ -426,26 +423,6 @@ class Object(models.Model):
             return "%s%s" % (parse_ansi(name_string.split(';')[0], 
                                              strip_ansi=no_ansi), dbref_string)
     
-    def get_flags(self):
-        """
-        Returns an object's flag list.
-        """
-        all_flags = []
-        if self.flags is not None:
-            # Add saved flags to the display list
-            all_flags = all_flags + self.flags.split()
-        if self.nosave_flags is not None:
-            # Add non-saved flags to the display list
-            all_flags = all_flags + self.nosave_flags.split()
-            
-        if not all_flags:
-            # Guard against returning 'None'
-            return ""
-        else:
-            # Format the Python list to a space separated string of flags
-            return " ".join(all_flags)
-        
-
     def destroy(self):    
         """
         Destroys an object, sets it to GOING. Can still be recovered
@@ -489,8 +466,9 @@ class Object(models.Model):
         self.type = defines_global.OTYPE_GARBAGE
         self.save()
 
-        # Clear all attributes
+        # Clear all attributes & flags
         self.clear_all_attributes()
+        self.clear_all_flags()
 
     def clear_exits(self):
         """
@@ -748,6 +726,31 @@ class Object(models.Model):
     def unset_flag(self, flag):
         self.set_flag(flag,value=False)
     
+    def get_flags(self):
+        """
+        Returns an object's flag list.
+        """
+        all_flags = []
+        if self.flags is not None:
+            # Add saved flags to the display list
+            all_flags = all_flags + self.flags.split()
+        if self.nosave_flags is not None:
+            # Add non-saved flags to the display list
+            all_flags = all_flags + self.nosave_flags.split()
+            
+        if not all_flags:
+            # Guard against returning 'None'
+            return ""
+        else:
+            # Format the Python list to a space separated string of flags
+            return " ".join(all_flags)
+
+    def clear_all_flags(self):
+        "Clears all the flags set on object."
+        flags = self.get_flags()
+        for flag in flags.split():
+            self.unset_flag(flag)
+
     def is_connected_plr(self):
         """
         Is this object a connected player?
@@ -1022,6 +1025,11 @@ class Object(models.Model):
         "Set to no state (return to normal operation)"
         self.state = None
 
+    def purge_object(self):
+        "Completely clears all aspects of the object."
+        self.clear_all_attributes()
+        self.clear_all_flags()
+        self.clear_state()
 
 
 # Deferred imports are poopy. This will require some thought to fix.

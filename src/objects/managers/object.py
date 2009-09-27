@@ -384,16 +384,17 @@ class ObjectManager(models.Manager):
         #get_nextfree_dbnum() returns either an integer or an old object to recycle.
         next_dbref = self.get_nextfree_dbnum()
 
-        if type(next_dbref) == type(int()):        
+        if type(next_dbref) == type(int()):                    
             #create new object with a fresh dbref
             Object = ContentType.objects.get(app_label="objects", 
                                          model="object").model_class()
             new_object = Object()
             new_object.id = next_dbref
         else:
-            #recycle an old object instead
+            #recycle an old object's id instead
             new_object = next_dbref
-
+            new_object.purge_object()
+            
         new_object.type = otype
         new_object.set_name(name)
 
