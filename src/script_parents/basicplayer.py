@@ -7,6 +7,7 @@ SCRIPT_DEFAULT_PLAYER variable in settings.py to point to the new class.
 """
 import time
 from src import comsys
+from src.config.models import ConfigValue
 
 class EvenniaBasicPlayer(object):
     def at_player_creation(self):
@@ -32,6 +33,17 @@ class EvenniaBasicPlayer(object):
         pobject.set_attribute("Last", "%s" % (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()),))
         pobject.set_attribute("Lastsite", "%s" % (session.address[0],))
         pobject.set_flag("CONNECTED", True)
+
+    def at_first_login(self, session):
+        """
+        This hook is called only *once*, when the player is created and logs
+        in for first time. It is called after the user has logged in, but
+        before at_post_login() is called.
+        """
+        pobject = self.scripted_obj
+        pobject.emit_to("Welcome to %s, %s.\n\r" % (
+            ConfigValue.objects.get_configvalue('site_name'), 
+            pobject.get_name(show_dbref=False)))
         
     def at_post_login(self, session):
         """

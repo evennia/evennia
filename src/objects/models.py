@@ -430,7 +430,6 @@ class Object(models.Model):
         """
         Returns an object's flag list.
         """
-        # Holds the list of flags to display
         all_flags = []
         if self.flags is not None:
             # Add saved flags to the display list

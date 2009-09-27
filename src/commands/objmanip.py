@@ -7,6 +7,7 @@ import src.flags
 from src import ansi
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src import defines_global
+from src import logger
 
 def cmd_teleport(command):
     """
@@ -182,7 +183,7 @@ def cmd_set(command):
         # Equal signs are not optional for @set.
         source_object.emit_to("Set what?")
         return
-    target_name = eq_args[0]
+    target_name = eq_args[0].strip()
     target = source_object.search_for_object(eq_args[0])
     # Use search_for_object to handle duplicate/nonexistant results.
     if not target:
@@ -196,7 +197,7 @@ def cmd_set(command):
     attrib_args = eq_args[1].split(':', 1)
     if len(attrib_args) > 1:
         # We're dealing with an attribute/value pair.
-        attrib_name = attrib_args[0]
+        attrib_name = attrib_args[0].strip()
         splicenum = eq_args[1].find(':') + 1
         attrib_value = (eq_args[1][splicenum:]).strip()
     
@@ -225,7 +226,7 @@ def cmd_set(command):
         flag_list = eq_args[1].split()
         s = ""
         for flag in flag_list:
-            flag = flag.upper()
+            flag = flag.upper().strip()
             if flag[0] == '!':
                 # We're un-setting the flag.
                 flag = flag[1:]
@@ -425,7 +426,10 @@ def cmd_create(command):
     """
     @create
 
-    Usage: @create objname [:parent]
+    Usage: @create[/drop] objname [:parent]
+
+    switch:
+       drop - automatically drop the new object into your current location (this is not echoed)
 
     Creates a new object. If parent is given, the object is created as a child of this
     parent. The parent script is assumed to be located under game/gamesrc/parents
@@ -437,7 +441,7 @@ def cmd_create(command):
     source_object = command.source_object
     
     if not command.command_argument:
-        source_object.emit_to("Usage: @create <newname> [:path_to_script_parent]")
+        source_object.emit_to("Usage: @create[/drop] <newname> [:path_to_script_parent]")
         return
     
     eq_args = command.command_argument.split(':', 1)
@@ -464,10 +468,81 @@ def cmd_create(command):
     else:        
         source_object.emit_to("You create a new thing: %s" % (new_object,))
 
+    if "drop" in command.command_switches:
+        new_object.move_to(source_object.get_location(),quiet=True)
+
+
+
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
-                             priv_tuple=("genperms.builder"),auto_help=True)
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
+    
+def cmd_copy(command):
+    """Usage:
+    @copy[/reset] <original obj> [new_name] [, new_location]
+
+    switch:
+      reset - make a 'clean' copy, without any changes that might have happened to the
+             original since it was first created. 
+
+    Create an identical copy of an object.
+    """
+    source_object = command.source_object
+    args = command.command_argument
+    switches = command.command_switches
+    if not args:
+        source_object.emit_to("Usage: @copy <obj> [=new_name] [, new_location]") 
+        return
+    reset = False
+    if "reset" in switches:
+        reset = True        
+
+    objname = None
+    new_objname = None
+    new_location = None
+    new_location_name = None
+    
+    arglist = args.split("=",1)
+    if len(arglist) == 1:
+        objname = args.strip()
+    else:
+        objname, args = arglist[0].strip(), arglist[1]
+    arglist = args.split(",",1)
+    if len(arglist) == 1:
+        new_objname = args.strip() 
+    else:
+        new_objname, new_location_name = arglist[0].strip(), arglist[1].strip()
+    original_object = source_object.search_for_object(objname)
+    if not original_object:
+        return 
+    if new_location_name: 
+        new_location = source_object.search_for_object(new_location_name)
+        if not new_location:
+            return 
+    if original_object.is_player():
+        source_object.emit_to("You cannot copy a player.")
+        return
+    if not source_object.controls_other(original_object,builder_override=True):
+        source_object.emit_to("You don't have permission to do that.")
+        return
+    
+    #we are good to go, perform the copying. 
+    new_object = Object.objects.copy_object(original_object, new_name=new_objname,
+                                            new_location=new_location, reset=reset)            
+    name_text = ""
+    if new_objname:
+        name_text = " to '%s'" % new_objname            
+    loc_text = ""
+    if new_location:
+        loc_text = " in %s" % new_location_name
+    reset_text = ""
+    if reset:
+        reset_text = " (using default attrs/flags)"
+    source_object.emit_to("Copied object '%s'%s%s%s." % (objname,name_text,loc_text,reset_text))
+GLOBAL_CMD_TABLE.add_command("@copy", cmd_copy,
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
     
 
+    
 def cmd_nextfree(command):
     """Usage:
        @nextfree 
@@ -477,7 +552,7 @@ def cmd_nextfree(command):
     nextfree = Object.objects.get_nextfree_dbnum()
     command.source_object.emit_to("Next free object number: #%s" % nextfree)
 GLOBAL_CMD_TABLE.add_command("@nextfree", cmd_nextfree,
-                             priv_tuple=("genperms.builder"),auto_help=True)
+                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
     
 def cmd_open(command):
     """

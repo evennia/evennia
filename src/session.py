@@ -158,7 +158,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         except:
             return False
     
-    def login(self, user):
+    def login(self, user, first_login=False):
         """
         After the user has authenticated, handle logging him in.
         """
@@ -170,6 +170,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.get_pobject()
         #session_mgr.disconnect_duplicate_session(self)
 
+        if first_login:
+            self.pobject.scriptlink.at_first_login(self)
         self.pobject.scriptlink.at_pre_login(self)
         
         logger.log_infomsg("Logged in: %s" % self)

@@ -496,16 +496,62 @@ class ObjectManager(models.Manager):
         user_object.scriptlink.at_player_creation()
 
         # Activate the player's session and set them loose.
-        command.session.login(user)
+        command.session.login(user, first_login=True)
         
         logger.log_infomsg('Registration: %s' % user_object.get_name())
-
-        #Don't show the greeting; it messes with using the login hooks for
-        #making character creation wizards. /Griatch
-        #user_object.emit_to("Welcome to %s, %s.\n\r" % (
-        #    ConfigValue.objects.get_configvalue('site_name'), 
-        #    user_object.get_name(show_dbref=False)))
         
         # Add the user to all of the CommChannel objects that are flagged
         # is_joined_by_default.
         command.session.add_default_channels()
+
+    #
+    # ObjectManager Copy method
+    # 
+
+    def copy_object(self, original_object, new_name=None, new_location=None, reset=False):
+        """
+        Create and return a new object as a copy of the source object. All will
+        be identical to the original except for the dbref. Does not allow the
+        copying of Player objects.
+
+        original_object (obj) - the object to make a copy from
+        new_location (obj) - if None, we create the new object in the same place as the old one.
+        reset (bool) - copy only the default attributes/flags set by the script_parent, ignoring
+                       any changes to the original after it was originally created.
+        """
+        if not original_object or original_object.is_player():
+            return
+
+        # get all the object's stats
+        if new_name:
+            name = new_name
+        else:
+            name = original_object.get_name(show_dbref=False,no_ansi=True)        
+        otype = original_object.type
+        if new_location:
+            location = new_location
+        else:
+            location = original_object.get_location()
+        owner = original_object.get_owner()
+        home = original_object.get_home()
+        script_parent = original_object.get_script_parent()
+
+        # create new object 
+        new_object = self.create_object(name, otype, location, owner, home,
+                                        script_parent=script_parent)
+        if not new_object:
+            return        
+
+        if not reset: 
+            # we make sure that the objects are identical by manually copying over all attributes and
+            # flags; this way we also get those that might have changed since the original was created. 
+
+            all_attribs = original_object.get_all_attributes()
+            for attr in all_attribs:
+                new_object.set_attribute(attr.get_name(), attr.get_value())
+                        
+            all_flags = original_object.get_flags() #this is a string            
+            for flag in all_flags.split():
+                new_object.set_flag(flag)
+
+        return new_object
