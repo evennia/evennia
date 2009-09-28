@@ -39,11 +39,22 @@ def cmd_addcom(command):
     else:
         chan_name = command_argument.strip()
         chan_alias = chan_name
-
+    
     membership = source_object.channel_membership_set.filter(channel__name__iexact=chan_name) 
     try:
         chan = CommChannel.objects.get(name__iexact=chan_name)
-        s = ""
+        s = ""        
+
+        #if we happened to have this alias already defined on another channel, make
+        #sure to tell us. 
+        aliasmatch = [cmatch.channel.name for cmatch in
+                      source_object.channel_membership_set.filter(user_alias=chan_alias)
+                      if cmatch.channel.name != chan_name]
+        if aliasmatch: 
+            s = "The alias '%s' is already in use (for channel '%s')." % (chan_alias, aliasmatch[0])
+            source_object.emit_to(s)
+            return 
+
         if membership:
             #we are already members of this channel. Set a different alias.
             # Note: To this without requiring a the user to logout then login again,
