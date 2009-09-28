@@ -185,9 +185,12 @@ class Object(models.Model):
                                 attribute_name=attribute_name)
 
         if len(results) > 1:
-            s = "More than one match for '%s' (please narrow target):" % ostring
+            s = "More than one match for '%s' (please narrow target):" % ostring            
             for num, result in enumerate(results):
-                s += "\n %i-%s" % (num+1, result.get_name(show_dbref=False))
+                invtext = ""
+                if result.get_location() == self:
+                    invtext = " (carried)"                    
+                s += "\n %i-%s%s" % (num+1, result.get_name(show_dbref=False),invtext)
             emit_to_obj.emit_to(s)            
             return False
         elif len(results) == 0:

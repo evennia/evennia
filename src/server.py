@@ -114,14 +114,19 @@ class EvenniaService(service.Service):
         """
         cmd_modules = self.get_command_modules()        
         s = []
-        for mod_str, mod in sys.modules.items():
-            if mod_str in cmd_modules:                
+        for mod_str in cmd_modules:
+            if not sys.modules.has_key(mod_str):
+                comsys.cemit_mudinfo("... %s not reloadable." % mod_str)
+                logger.log_errmsg("Module %s not reloadable." % mod_str)
+            else:
+                mod = sys.modules[mod_str]
                 s.append(mod_str)
                 try:
                     rebuild.rebuild(mod)
                 except:
                     comsys.cemit_mudinfo("... Error reloading %s!" % mod_str)
                     raise                        
+            
         logger.log_infomsg("%s reloaded %i modules: %s" % (source_object, len(s), s))
         
     def reload_aliases(self, source_object=None):
