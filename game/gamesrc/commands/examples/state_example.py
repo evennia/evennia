@@ -19,6 +19,9 @@ part of the normal help database, they are stored with the state and only access
 from inside it (unless you also set the 'global_help' flag in the add_command(), in
 which case it is also added to the global help system). If you want to describe the
 state itself in more detail you should add that to the main help index manually. 
+
+To further test the state system, try the command 
+> enterstate
 """
 
 #This is the normal command table, accessible by default
@@ -53,7 +56,14 @@ def cmd_entermenu(command):
     # the normal mode of gameplay. 
     source_object.set_state(STATENAME)
     #show the menu.
-    source_object.execute_cmd('menu')    
+    s = """
+     Welcome to the Demo menu!
+     In this demo all you can do is select one of the two options so it changes colour.
+     This is just intended to show off the possibility of the state system. More
+     interesting things should of course happen in a real menu. Use @exit to
+     leave the menu."""  
+    source_object.emit_to(s)
+    source_object.execute_cmd('menu')
 
 #
 # Commands only available while in the 'menu' state. Note that
@@ -93,21 +103,22 @@ def print_menu(source_obj,choice=None):
     Utility function to print the menu. More interesting things
     would happen here in a real menu. 
     """
+    
     if choice==1:
         ch = "%s> option1\n  %soption2" % ('%ch%cy','%cn%cy') #ansi colouring; see src.ansi
     elif choice==2:
         ch = "  %soption1\n%s> option2" % ('%cn%cy','%ch%cy')
     else:
         ch = "  %soption1\n  option2" % ('%cn%cy')
-        
-    s ="%sMenu: \n%s\n  %shelp" % ('%ch%cr',ch,'%cn%cy')
+      
+    s ="\n%sMenu: \n%s\n  %shelp" % ('%ch%cr',ch,'%cn%cy')
     source_obj.emit_to(s)
 
 #Add the 'entry' command to the normal command table
 GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
 
 #create the state.
-GLOBAL_STATE_TABLE.add_state(STATENAME)
+GLOBAL_STATE_TABLE.add_state(STATENAME,exit_command=True)
 
 #Add the menu commands to the state table by tying them to the 'menu' state. It is
 #important that the name of the state matches what we set the player-object to in
@@ -116,7 +127,6 @@ GLOBAL_STATE_TABLE.add_state(STATENAME)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "option1", menu_cmd_option1,auto_help=True)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "option2", menu_cmd_option2,auto_help=True)
 GLOBAL_STATE_TABLE.add_command(STATENAME, "menu", menu_cmd_menu,auto_help=True)
-
 
 
 
@@ -154,38 +164,53 @@ TSTATE4 = 'exclude_some_globals'
 TSTATE5 = 'global_allow_exits'
 TSTATE6 = 'noglobal_allow_exits_obj_cmds'
 
+#
 #the test command @test_state
+#
 def cmd_test_state(command):
     "testing the new state system"
     source_object = command.source_object
     args = command.command_argument
     if not args:
-        source_object.emit_to("Usage: @test_state [1..6]")
+        source_object.emit_to("Usage: enterstate 1 - 6")
         return    
+    s = "\n Entering state ... \nThis state includes the commands 'test', 'help', '@exit' and "
     arg = args.strip()
     if arg=='1':
+        s += "no global commands at all. With some more state commands, this state would work well for e.g. a combat state or a menu where the player don't need access to the normal command definitions. Take a special look at the help command, which is in fact a state-only version of the normal help." 
         state = TSTATE1
     elif arg=='2':
+        s += "all global commands. You should be able to do everything as normal, but not move around."
         state = TSTATE2
     elif arg=='3':
+        s += "the global commands 'inv' and 'get' only."
         state = TSTATE3
     elif arg=='4':
+        s += "all global commands *except* 'inv' and 'get' (try using them). This allows you to disable commands that should not be possible at a certain time (like starting to craft while in a fight or something)."
         state = TSTATE4
     elif arg=='5':
+        s += "all global commands as well as the ability to traverse exits. You do not have the ability to use commands defined on objects though."
         state = TSTATE5
     elif arg=='6':
+        s += "no globals at all, but you have the ability to both use exits and commands on items. This would maybe be interesting for a 'total darkness' state or maybe a 'panic' state where you can move around but cannot actually take in your surroundings."
         state = TSTATE6
     else:
-        source_object.emit_to("Usage: @test_state [1..6]")
+        source_object.emit_to("Usage: enterstate 1 - 6")
         return 
     #set the state
     source_object.set_state(state)
-    source_object.emit_to("Now in state '%s' ..." % state)
+    source_object.emit_to("%s\n (Now in state %s: '%s' ... use @exit to leave the state.)" % (s,arg,state))
 
 #a simple command to include in all states.
 def cmd_instate_cmd(command):
-    "test command in state"
-    command.source_object.emit_to("This command works!")
+    """
+    This is the help text for the test command (created with the auto_help sytem).
+    This is a state-only command that does not exist outside this state. Since this state
+    is completely isolated from the normal gameplay, commands can also
+    harmlessly redefine any normal command - so if there was a normal command named
+    'test', it would remain unchanged when we leave the state.
+    """
+    command.source_object.emit_to("This state command works!")
 
 #define some global commands to filter for
 cmdfilter = ['get','inventory']
@@ -209,7 +234,7 @@ GLOBAL_STATE_TABLE.add_state(TSTATE6,exit_command=True,
                              allow_exits=True,allow_obj_cmds=True)
 
 #append the "test" function to all states
-GLOBAL_STATE_TABLE.add_command(TSTATE1,'test',cmd_instate_cmd)
+GLOBAL_STATE_TABLE.add_command(TSTATE1,'test',cmd_instate_cmd,auto_help=True)
 GLOBAL_STATE_TABLE.add_command(TSTATE2,'test',cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE3,'test',cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE4,'test',cmd_instate_cmd)
@@ -217,6 +242,6 @@ GLOBAL_STATE_TABLE.add_command(TSTATE5,'test',cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE6,'test',cmd_instate_cmd)
 
 #create the entry function for testing all states
-GLOBAL_CMD_TABLE.add_command('@test_state',cmd_test_state)
+GLOBAL_CMD_TABLE.add_command('enterstate',cmd_test_state)
 
 
