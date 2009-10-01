@@ -257,17 +257,17 @@ GLOBAL_CMD_TABLE.add_command("@shutdown", cmd_shutdown,
 
 def cmd_chperm(command):
     """@chperm
-
     Usage:
       @chperm[/switch] [<user>] = [<permission>]
 
     Switches:
       add : add a permission from <user>
       del : delete a permission from <user>
-      list : list all permissions set on <user>
+      list : list all permissions, or those set on <user>
             
       @chperm (change permission) sets/clears individual permission bits on a user.
-      Use /list without any arguments to see all available permissions. 
+      Use /list without any arguments to see all available permissions or those
+      defined on the <user> argument. 
     """
     source_object = command.source_object
     args = command.command_argument
@@ -376,5 +376,5 @@ def cmd_chperm(command):
             obj.emit_to("%s removed your permission '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              permission.name))            
 GLOBAL_CMD_TABLE.add_command("@chperm", cmd_chperm,
-                             priv_tuple=("auth.change_permission",))
+                             priv_tuple=("auth.change_permission",), auto_help=True, staff_help=True)
             
