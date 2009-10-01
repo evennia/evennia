@@ -28,3 +28,12 @@ def add_event(event):
     else:
         schedule.append(event)
     event.start_event_loop()
+
+def del_event(event):
+    """
+    Remove an event from scheduler. 
+    """
+    if event in schedule:
+        i = schedule.index(event)
+        schedule[i].stop_event_loop()
+        del schedule[i]

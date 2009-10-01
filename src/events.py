@@ -38,7 +38,7 @@ class IntervalEvent(object):
         String representation of the event.
         """
         return self.name
-    
+
     def start_event_loop(self):
         """
         Called to start up the event loop when the event is added to the
@@ -49,6 +49,13 @@ class IntervalEvent(object):
         self.looped_task = task.LoopingCall(self.fire_event)
         # Start the task up with the specified interval.
         self.looped_task.start(self.interval, now=False)
+
+    def stop_event_loop(self):
+        """
+        Called to stop the event loop when the event is removed from the
+        scheduler.
+        """
+        self.looped_task.stop()
     
     def event_function(self):
         """                    
