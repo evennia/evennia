@@ -6,6 +6,7 @@ class GenericPerm(models.Model):
     fit under a particular module.
     """
     class Meta:
+
         permissions = (
             ("announce", "May use @wall to make announcements"),
             ("boot", "May use @boot to kick players"),
