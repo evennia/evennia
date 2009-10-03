@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.conf import settings
 from util import functions_general
 from src.objects.models import Object
@@ -202,15 +203,27 @@ class SessionProtocol(StatefulTelnetProtocol):
         Adds the player to the default channels.
         """        
         # Add the default channels.
-        for chan in CommChannel.objects.filter(is_joined_by_default=True):
-            #logger.log_infomsg("ADDING BY DEFAULT %s" % chan)
-            chan_alias = chan.get_default_chan_alias()            
-            membership = CommChannelMembership(channel=chan, 
-                                               listener=self.get_pobject(),
-                                               user_alias=chan_alias)
-            membership.save()            
+        for chan in CommChannel.objects.filter(is_joined_by_default=True):            
+            chan_alias = chan.get_default_chan_alias()
+            comsys.plr_add_channel(self.get_pobject(), chan_alias, chan)            
             comsys.plr_set_channel_listening(self, chan_alias, True)
-        
+
+    def add_default_group(self):        
+        default_group = settings.PERM_DEFAULT_PLAYER_GROUP.strip()
+        if not default_group:
+            logger.log_infomsg("settings.DEFAULT_PLAYER_GROUP is not set. Using no group.")
+            return 
+        try:
+            group = Group.objects.get(name=default_group)            
+        except Group.DoesNotExist:
+            logger.log_errmsg("settings.DEFAULT_PLAYER_GROUP = %s is not a valid group. Using no group." % default_group)
+            return
+        pobj = self.get_pobject()        
+        user = User.objects.get(username=pobj.get_name(show_dbref=False,no_ansi=True))        
+        user.groups.add(group)
+        logger.log_infomsg("Added new player to default permission group '%s'." % default_group)
+        user.save(); pobj.save()
+
     def __str__(self):
         """
         String representation of the user session class. We use

@@ -66,40 +66,122 @@ DATABASE_HOST = ''
 # Empty string defaults to localhost. Not used with sqlite3.
 DATABASE_PORT = ''
 
+## Permissions
+## The variables in this section are used by each evennia subsystem to tell which permissions to define.
+## These variables are called by the respective subsystem ('application' in django lingo) of Evennia. The final
+## look of the permission will be 'app.permission', e.g. 'irc.admin.irc_channels'.
+## Note that beyond what is listed here, django automatically creates 3 add/change/delete permissions
+## for each model defined in each appliction. These are however not used by any default commands in
+## game and are filtered out in e.g. @adminperm/list in order to give the admin more overview.
+## Note that all variables here must be proper nested tuples of tuples. ( (),(), )
 
-# Communication channels in-game
+# irc permissions
+PERM_IRC = ( 
+    ('admin_irc_channels', 'May administer IRC channels.'),)
+# imc2 permissions 
+PERM_IMC2 = ( 
+    ('admin_imc_channels', 'May administer IMC channels.'),)
+# general channel permissions
+PERM_CHANNELS = ( 
+    ('emit_commchannel', 'May @cemit over channels.'),
+    ('channel_admin', 'May administer comm channels.'),
+    ('page','May page other users.'),)
+# help system access permissions
+PERM_HELPSYS = ( 
+    ("staff_help", "May see staff help topics."),
+    ("add_help", "May add or append to help entries"),
+    ("del_help", "May delete help entries"),)
+# object manipulation/information permissions
+PERM_OBJECTS = ( 
+    ("teleport","May teleport an object to any location."),
+    ("wipe","May wipe all attributes on an object."),
+    ("modify_attributes","May modify/delete/add attributes to an object."),
+    ("info","May search for and examine objects."),
+    ("create", "May create, copy and destroy objects."),
+    ("dig", "May dig new rooms, open new exits and link them."),
+    ("admin_ownership", "May change ownership of any object."),
+    ("see_dbref","May see an object's dbref."),)
+# misc general and admin permissions 
+PERM_GENPERMS = ( 
+    ("announce", "May make announcements to everyone."),
+    ("admin_perm", "Can modify individual permissions."),
+    ("admin_group", "Can manage membership in groups."),
+    ("process_control", "May shutdown/restart/reload the game"),
+    ("manage_players", "Can change passwords, siteban, etc."),
+    ("game_info", "Can review game metadata"),)
 
-"""
-Your names of various default comm channels for emitting
-debug- or informative messages.
-"""
+    ## These permissions are not yet used in the default engine. 
+    ## ("boot", "May use @boot to kick players"),
+    ## ("chown_all", "Can @chown anything to anyone."),    
+    ## ("free_money", "Has infinite money"),
+    ## ("long_fingers", "May get/look/examine etc. from a distance"),
+    ## ("steal", "May give negative money"),
+    ## ("set_hide", "May set themself invisible"),
+    ## ("tel_anywhere", "May @teleport anywhere"),
+    ## ("tel_anyone", "May @teleport anything"),
+    ## ("see_session_data", "May see detailed player session data"),)
 
+# Gathering of all permission tuple groups. This is used by e.g. @adminperm to only show these permissions.
+PERM_ALL_DEFAULTS = (PERM_IRC, PERM_IMC2, PERM_CHANNELS, PERM_HELPSYS, PERM_OBJECTS, PERM_GENPERMS)
+# If you defined your own tuple groups, add them below. 
+PERM_ALL_CUSTOM = ()
+
+## Permission Groups 
+## Permission groups clump the permissions into larger chunks for quick assigning to
+## a user (e.g. a builder). Each permission is written on the form app.permission,
+## e.g. 'helpsys.view_staff_help'. Each group can contain an arbitrary number of
+## permissions. A user is added to a group with the default @admingroup command.
+## Superusers are automatically members of all groups.
+
+# A dict defining the groups, on the form {group_name:(perm1,perm2,...),...}
+PERM_GROUPS = \
+            {"Immortals":('irc.admin_irc_channels','imc2.admin_imc_channels','channels.emit_commchannel',
+                          'channels.channel_admin','channels.page','helpsys.staff_help','helpsys.add_help',
+                          'helpsys.del_help','objects.teleport','objects.wipe','objects.modify_attributes',
+                          'objects.info','objects.create','objects.dig','objects.see_dbref','objects.admin_ownership',
+                          'genperms.announce','genperms.admin_perm','genperms.admin_group','genperms.process_control',
+                          'genperms.manage_players','genperms.game_info'),
+             "Wizards": ('irc.admin_irc_channels','imc2.admin_imc_channels','channels.emit_commchannel',
+                         'channels.channel_admin','channels.page','helpsys.staff_help','helpsys.add_help',
+                         'helpsys.del_help','objects.teleport','objects.wipe','objects.see_dbref',
+                         'objects.modify_attributes',
+                         'objects.info','objects.create','objects.dig','objects.admin_ownership','genperms.announce',
+                         'genperms.game_info'),
+             "Builders":('channels.emit_commchannel','channels.page','helpsys.staff_help','helpsys.add_help',
+                         'helpsys.del_help','objects.teleport','objects.wipe','objects.see_dbref',
+                         'objects.modify_attributes', 'objects.info','objects.create','objects.dig',
+                         'genperms.game_info'),
+             "Player Helpers":('channels.emit_commchannel', 'channels.page', 'helpsys.staff_help',
+                               'helpsys.add_help','helpsys.del_help'),
+             "Players":('channels.emit_commchannel','channels.page')
+             }
+# By defining a default player group, all players may start with some permissions pre-set. 
+PERM_DEFAULT_PLAYER_GROUP = "Players"
+
+
+# Your names of various default comm channels for emitting debug- or informative messages.
 COMMCHAN_MUD_INFO = 'MUDInfo'
 COMMCHAN_MUD_CONNECTIONS = 'MUDConnections'
 COMMCHAN_IMC2_INFO = 'MUDInfo'
 COMMCHAN_IRC_INFO = 'MUDInfo'
 
-"""
-IMC Configuration
-
-IMC (Inter-MUD communication) allows for an evennia chat channel that connects
-to people on other MUDs also using the IMC. Your evennia server do *not* have
-to be open to the public to use IMC; it works as a stand-alone chat client.
-
-Copy and paste this section to your game/settings.py file and change the
-values to fit your needs.
-
-Evennia's IMC2 client was developed against MudByte's network. You must
-register your MUD on the network before you can use it, go to
-http://www.mudbytes.net/imc2-intermud-join-network.
-
-Choose 'Other unsupported IMC2 version' from the choices and
-and enter your information there. You have to enter the same
-'short mud name', 'client password' and 'server password' as you
-define in this file. 
-
-The Evennia discussion channel is on server02.mudbytes.net:9000.
-"""
+## IMC Configuration
+## IMC (Inter-MUD communication) allows for an evennia chat channel that connects
+## to people on other MUDs also using the IMC. Your evennia server do *not* have
+## to be open to the public to use IMC; it works as a stand-alone chat client.
+## 
+## Copy and paste this section to your game/settings.py file and change the
+## values to fit your needs.
+## 
+## Evennia's IMC2 client was developed against MudByte's network. You must
+## register your MUD on the network before you can use it, go to
+## http://www.mudbytes.net/imc2-intermud-join-network.
+## 
+## Choose 'Other unsupported IMC2 version' from the choices and
+## and enter your information there. You have to enter the same
+## 'short mud name', 'client password' and 'server password' as you
+## define in this file. 
+## The Evennia discussion channel is on server02.mudbytes.net:9000.
 
 # Change to True if you want IMC active at all.
 IMC2_ENABLED = False
@@ -120,12 +202,10 @@ IMC2_DEBUG = False
 # This isn't something you should generally change.
 IMC2_PROTOCOL_VERSION = '2'
 
-"""
-IRC config. This allows your evennia channels to connect to an external IRC
-channel. Evennia will connect under a nickname that then echoes what is
-said on the channel to IRC and vice versa.
-Obs - make sure the IRC network allows bots. 
-"""
+## IRC config. This allows your evennia channels to connect to an external IRC
+## channel. Evennia will connect under a nickname that then echoes what is
+## said on the channel to IRC and vice versa.
+## Obs - make sure the IRC network allows bots. 
 
 #Activate the IRC bot. 
 IRC_ENABLED = False
@@ -137,8 +217,6 @@ IRC_PORT = 6667
 IRC_CHANNEL = ""
 #Under what nickname should Evennia connect to the channel
 IRC_NICKNAME = ""
-
-
 
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE

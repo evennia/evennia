@@ -175,7 +175,7 @@ def cmd_batchprocess(command):
     
     source_object = command.source_object
 
-    #check permissions
+    #check permissions; this is a superuser only command.
     if not source_object.is_superuser():
         source_object.emit_to(defines_global.NOPERMS_MSG)
         return

@@ -5,13 +5,12 @@ other things.
 
 Everything starts at handle_setup()
 """
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.core import management
 from django.conf import settings
 from src.objects.models import Object
 from src.config.models import ConfigValue, CommandAlias, ConnectScreen
-from src import comsys, defines_global
-
+from src import comsys, defines_global, logger
 def get_god_user():
     """
     Returns the initially created 'god' User object.
@@ -54,13 +53,21 @@ def create_objects():
     
 def create_groups():
     """
-    Creates the default permissions groups.
+    Creates the default permissions groups and assign permissions to each as defined in settings.
     """
-    groups = ("Immortals", "Wizards", "Builders", "Player Helpers")
-    for group in groups:
+    for group_name, perm_tuple in settings.PERM_GROUPS.items():
         newgroup = Group()
-        newgroup.name = group
+        newgroup.name = group_name
         newgroup.save()
+        for perm_string in perm_tuple:
+            #assign permissions to the group
+            app_label, codename = perm_string.split(".",1)
+            try:
+                permission = Permission.objects.filter(content_type__app_label=app_label).get(codename=codename)
+            except Permission.DoesNotExist:
+                logger.log_errmsg("Initial_setup: Permission %s is not defined." % perm_string)
+                continue 
+            newgroup.permissions.add(permission)
         
 def create_channels():
     """

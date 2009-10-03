@@ -1,12 +1,13 @@
 """
 Commands that are available from the connect screen.
 """
+import traceback
 from django.contrib.auth.models import User
-
 from src.objects.models import Attribute, Object
 from src import defines_global
 from src.util import functions_general
 from src.cmdtable import GLOBAL_UNCON_CMD_TABLE
+from src.logger import log_errmsg
 
 def cmd_connect(command):
     """
@@ -104,7 +105,14 @@ def cmd_create(command):
     elif len(password) < 3:
         session.msg("Your password must be at least 3 characters or longer.\n\rFor best security, make it at least 8 characters long, avoid making it a real word and mix numbers into it.")
     else:
-        Object.objects.create_user(command, uname, email, password)
+        try:
+            Object.objects.create_user(command, uname, email, password)
+        except:
+            # we have to handle traceback ourself at this point, if we don't errors will givo no feedback.  
+            session.msg("This is a bug. Please e-mail an admin if the problem persists.\n%s" % traceback.format_exc())
+            log_errmsg(traceback.format_exc())
+            raise
+        
 GLOBAL_UNCON_CMD_TABLE.add_command("create", cmd_create)
 
 def cmd_quit(command):

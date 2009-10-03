@@ -56,7 +56,7 @@ def cmd_IRC2chan(command):
     source_object.emit_to(outstring)
 
 GLOBAL_CMD_TABLE.add_command("@irc2chan",cmd_IRC2chan,auto_help=True,staff_help=True,
-                             priv_tuple=("objects.add_commchannel",))
+                             priv_tuple=("irc.admin_irc_channels",))
     
 def cmd_IRCjoin(command):
     """
@@ -101,7 +101,7 @@ def cmd_IRCjoin(command):
 
 GLOBAL_CMD_TABLE.add_command("@ircjoin",cmd_IRCjoin,auto_help=True,
                              staff_help=True,
-                             priv_tuple=("objects.add_commchannel",))
+                             priv_tuple=("irc.admin_irc_channels",))
 
 def cmd_IRCchanlist(command):
     """

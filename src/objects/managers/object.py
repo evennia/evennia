@@ -242,8 +242,7 @@ class ObjectManager(models.Manager):
                 if match_type == "exact":
                     return [prospect for prospect in searchlist
                             if ostring == str(prospect.get_attribute_value(attribute_name))]
-                else:
-                    print [type(p) for p in searchlist] 
+                else:                    
                     return [prospect for prospect in searchlist
                             if ostring in str(prospect.get_attribute_value(attribute_name))]
         else:
@@ -466,9 +465,7 @@ class ObjectManager(models.Manager):
         # pluck the user ID from it.
         if not str(uid).isdigit():
             uid = uid.id
-            logger.log_infomsg('Next usable object ID is %d. (recycled)' % uid)
-        else:
-            logger.log_infomsg('Next usable object ID is %d. (new)' % uid)
+            logger.log_infomsg('Create_user: Recycling object ID %d.' % uid)
 
         user = User.objects.create_user(uname, email, password)
         # It stinks to have to do this but it's the only trivial way now.
@@ -480,7 +477,6 @@ class ObjectManager(models.Manager):
         
         # Update the session to use the newly created User object's ID.
         command.session.uid = uid
-        logger.log_infomsg('User created with id %d.' % command.session.uid)
         
         # Grab the user object again since we've changed it and the old reference
         # is no longer valid.
@@ -495,16 +491,20 @@ class ObjectManager(models.Manager):
         # The User and player Object are ready, do anything needed by the
         # game to further prepare things.
         user_object.scriptlink.at_player_creation()
-
-        # Activate the player's session and set them loose.
-        command.session.login(user, first_login=True)
-        
-        logger.log_infomsg('Registration: %s' % user_object.get_name())
         
         # Add the user to all of the CommChannel objects that are flagged
         # is_joined_by_default.
         command.session.add_default_channels()
 
+        # Add user to the default permission group, if defined set in preferences.         
+        command.session.add_default_group()
+
+        logger.log_infomsg("Registered new user: %s" % user_object.get_name())
+
+        # Activate the player's session and set them loose.
+        command.session.login(user, first_login=True)
+
+        
     #
     # ObjectManager Copy method
     # 

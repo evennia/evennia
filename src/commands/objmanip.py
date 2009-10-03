@@ -65,7 +65,7 @@ def cmd_teleport(command):
             
         source_object.move_to(target_obj, quiet=tel_quietly)
 GLOBAL_CMD_TABLE.add_command("@teleport", cmd_teleport,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("objects.teleport",))
 
 def cmd_alias(command):
     """
@@ -165,7 +165,7 @@ def cmd_wipe(command):
             target_obj.clear_attribute(attr.get_name())
         source_object.emit_to("%s - %d attributes wiped." % (target_obj.get_name(), 
                                                    len(attr_matches)))
-GLOBAL_CMD_TABLE.add_command("@wipe", cmd_wipe)
+GLOBAL_CMD_TABLE.add_command("@wipe", cmd_wipe,priv_tuple=("objects.wipe",))
 
 def cmd_set(command):
     """
@@ -250,7 +250,7 @@ def cmd_set(command):
                     s += '\nFlag %s=%s set.' % (target_name, flag.upper())
                 target.set_flag(flag, True)
         source_object.emit_to(s[1:])
-GLOBAL_CMD_TABLE.add_command("@set", cmd_set)
+GLOBAL_CMD_TABLE.add_command("@set", cmd_set, priv_tuple=("objects.modify_attributes",))
 
 def cmd_cpattr(command):
     """
@@ -332,7 +332,7 @@ def cmd_cpattr(command):
                                           to_objname, to_attr)
     source_object.emit_to(s)
 GLOBAL_CMD_TABLE.add_command("@cpattr", cmd_cpattr,
-                             priv_tuple=("genperms.builder",))
+                             priv_tuple=("objects.modify_attributes",))
 
         
 def cmd_mvattr(command):
@@ -394,7 +394,7 @@ def cmd_mvattr(command):
     source_object.emit_to(s)
 
 GLOBAL_CMD_TABLE.add_command("@mvattr", cmd_mvattr,
-                             priv_tuple=("genperms.builder",))
+                             priv_tuple=("objects.modify_attributes",))
 
 def cmd_find(command):
     """
@@ -420,7 +420,7 @@ def cmd_find(command):
     else:
         source_object.emit_to("No name matches found for: %s" % (searchstring,))
 GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("objects.info",))
 
 def cmd_create(command):
     """
@@ -474,7 +474,7 @@ def cmd_create(command):
 
 
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
     
 def cmd_copy(command):
     """Usage:
@@ -539,7 +539,7 @@ def cmd_copy(command):
         reset_text = " (using default attrs/flags)"
     source_object.emit_to("Copied object '%s'%s%s%s." % (objname,name_text,loc_text,reset_text))
 GLOBAL_CMD_TABLE.add_command("@copy", cmd_copy,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
     
 
     
@@ -552,7 +552,7 @@ def cmd_nextfree(command):
     nextfree = Object.objects.get_nextfree_dbnum()
     command.source_object.emit_to("Next free object number: #%s" % nextfree)
 GLOBAL_CMD_TABLE.add_command("@nextfree", cmd_nextfree,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.info",),auto_help=True,staff_help=True)
     
 def cmd_open(command):
     """
@@ -625,7 +625,7 @@ def cmd_open(command):
                                                   None)
         source_object.emit_to("You open an unlinked exit - %s" % new_object)
 GLOBAL_CMD_TABLE.add_command("@open", cmd_open,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("objects.dig",))
         
 def cmd_chown(command):
     """
@@ -655,7 +655,7 @@ def cmd_chown(command):
         if not target_obj:
             return
 
-        if not source_object.controls_other(target_obj):
+        if not source_object.controls_other(target_obj) and not source_object.has_perm("objects.admin_ownership"):
             source_object.emit_to(defines_global.NOCONTROL_MSG)
             return
 
@@ -676,7 +676,7 @@ def cmd_chown(command):
         # We haven't provided a target.
         source_object.emit_to("Who should be the new owner of the object?")
         return
-GLOBAL_CMD_TABLE.add_command("@chown", cmd_chown)
+GLOBAL_CMD_TABLE.add_command("@chown", cmd_chown, priv_tuple=("objects.modify_attributes","objects.admin_ownership"))
     
 def cmd_chzone(command):
     """
@@ -728,7 +728,7 @@ def cmd_chzone(command):
         # We haven't provided a target zone.
         source_object.emit_to("What should the object's zone be set to?")
         return
-GLOBAL_CMD_TABLE.add_command("@chzone", cmd_chzone)
+GLOBAL_CMD_TABLE.add_command("@chzone", cmd_chzone, priv_tuple=("objects.dig",))
 
 def cmd_link(command):
     """
@@ -780,7 +780,7 @@ def cmd_link(command):
         source_object.emit_to("You must provide a destination to link to.")
         return
 GLOBAL_CMD_TABLE.add_command("@link", cmd_link,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("objects.dig",))
 
 def cmd_unlink(command):
     """
@@ -806,7 +806,7 @@ def cmd_unlink(command):
         target_obj.set_home(None)
         source_object.emit_to("You have unlinked %s." % target_obj.get_name())
 GLOBAL_CMD_TABLE.add_command("@unlink", cmd_unlink,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("objects.dig",))
 
 def cmd_dig(command):
     """
@@ -933,7 +933,7 @@ def cmd_dig(command):
             source_object.move_to(new_room)
                
 GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
-                             priv_tuple=("genperms.builder"),)
+                             priv_tuple=("objects.dig",))
 
 def cmd_name(command):
     """
@@ -1080,7 +1080,7 @@ def cmd_recover(command):
 
 
 GLOBAL_CMD_TABLE.add_command("@recover", cmd_recover,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
 
 def cmd_destroy(command):
     """
@@ -1157,4 +1157,4 @@ def cmd_destroy(command):
             source_object.emit_to("You schedule %s for destruction." % target_obj.get_name())
         
 GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
-                             priv_tuple=("genperms.builder"),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)

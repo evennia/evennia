@@ -5,6 +5,7 @@ well as creating auto-docs of commands based on their doc strings.
 The system supports help-markup for multiple help entries as well
 as a dynamically updating help index. 
 """
+from django.contrib.auth.models import User
 from src.helpsys.models import HelpEntry
 from src.ansi import ANSITable
 
@@ -44,7 +45,7 @@ def _create_help(topicstr, entrytext, staff_only=False, force_create=False,
     elif pobject:
         #checks access rights before searching (this should have been
         #done already at the command level)
-        if not pobject.is_staff(): return []
+        if not pobject.has_perm("helpsys.add_help"): return []
         topic = HelpEntry.objects.find_topicmatch(pobject, topicstr)
     else:
         return []
@@ -197,7 +198,8 @@ def get_help_index(pobject,filter=None):
     filter='staff' - view only staff-specific help files
     filter='player' - view only those files visible to all
     """
-    if pobject.is_staff():
+
+    if pobject.has_perm("helpsys.staff_help"):
         if filter == 'staff':
             helpentries = HelpEntry.objects.filter(staff_only=True).order_by('topicname')
         elif filter == 'player':

@@ -3,9 +3,7 @@ This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
 
-from django.contrib.auth.models import Permission
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from src.objects.models import Object
@@ -133,7 +131,7 @@ def cmd_newpassword(command):
     newpass = eq_args[1]
     
     if not command.command_argument or len(searchstring) == 0:    
-        source_object.emit_to("What player's password do you want to change")
+        source_object.emit_to("What player's password do you want to change?")
         return
     if len(newpass) == 0:
         source_object.emit_to("You must supply a new password.")
@@ -256,17 +254,30 @@ def cmd_shutdown(command):
 GLOBAL_CMD_TABLE.add_command("@shutdown", cmd_shutdown,
                              priv_tuple=("genperms.process_control",))
 
-def cmd_chperm(command):
-    """@chperm
+# permission administration
+
+# Django automatically creates a host of permissions that we don't want to
+# mess with, but which are not very useful from inside the game. While these
+# permissions are ok to use, we only show the permissions that we have defined
+# in our settings file in order to give better control. 
+APPS_NOSHOW = ("news","admin","auth","config","contentypes",
+               "flatpages","news","sessions","sites")
+SETTINGS_PERM_NAMES = []
+for apps in settings.PERM_ALL_DEFAULTS + settings.PERM_ALL_CUSTOM:
+    for permtuples in apps:
+        SETTINGS_PERM_NAMES.append(permtuples[1])
+
+def cmd_setperm(command):
+    """@setperm
     Usage:
-      @chperm[/switch] [<user>] = [<permission>]
+      @setperm[/switch] [<user>] = [<permission>]
 
     Switches:
       add : add a permission from <user>
       del : delete a permission from <user>
       list : list all permissions, or those set on <user>
             
-      @chperm (change permission) sets/clears individual permission bits on a user.
+      This command sets/clears individual permission bits on a user.
       Use /list without any arguments to see all available permissions or those
       defined on the <user> argument. 
     """
@@ -276,32 +287,31 @@ def cmd_chperm(command):
 
     if not args:
         if "list" not in switches:
-            source_object.emit_to("Usage: @chperm[/switch] [user] = [permission]")
+            source_object.emit_to("Usage: @setperm[/switch] [user] = [permission]")
             return
         else:
             #just print all available permissions
             s = "\n---Permission name  %s  ---Description" % (24 * " ") 
-            for p in Permission.objects.all():
+            permlist  = [perm for perm in Permission.objects.all() if perm.content_type.app_label not in APPS_NOSHOW and
+                                                                      perm.name in SETTINGS_PERM_NAMES]
+            for p in permlist:
                 app = p.content_type.app_label                
-                s += "\n%s.%s%s\t%s" % (app, p.codename, (35 - len(app) - len(p.codename)) * " ", p.name)
+                if app not in APPS_NOSHOW:
+                    s += "\n%s.%s%s\t%s" % (app, p.codename, (35 - len(app) - len(p.codename)) * " ", p.name)
             source_object.emit_to(s)
             return 
     #we have command arguments.     
     arglist = args.split('=',1)
     obj_name = arglist[0].strip()
     if not obj_name:
-        source_object.emit_to("Usage: @chperm[/switch] [user] [= permission]")
+        source_object.emit_to("Usage: @setperm[/switch] [user] [= permission]")
         return
     obj = source_object.search_for_object(obj_name)
     if not obj:
         return
-    if not obj.is_player():
-        source_object.emit_to("Only players may have permissions.")
-        return
-    try: 
-        user = User.objects.get(username=obj.get_name(show_dbref=False,no_ansi=True))
-    except:
-        raise
+    user = obj.get_user_account()
+    if not user:
+        return 
     if len(arglist) == 1:
         #if we didn't have any =, we list the permissions set on <object>. 
         s = ""
@@ -312,16 +322,18 @@ def cmd_chperm(command):
         if obj.is_staff():
             s += "\n  Member of staff (can enter Admin interface)"            
         aperms = user.get_all_permissions()
-        if aperms: 
-            s += "\n  Extra User permissions:"
-            gperms = user.get_group_permissions()
-            for p in aperms:
-                if p in gperms:
-                    s += "\n  --- %s (from group)" % p
-                else:
-                    s += "\n  ---- %s (custom assigned)" % p        
+        gperms = user.get_group_permissions()
+        uperms = [perm for perm in aperms if perm not in gperms]
+        if gperms: 
+            s += "\n  Group-inherited Permissions:"
+            for p in gperms:
+                s += "\n  --- %s" % p
+        if uperms:
+            s += "\n Individually granted Permisssions:"            
+            for p in uperms:
+                s += "\n  ---- %s" % p        
         if not s:
-            s = "User %s has no extra permissions." % obj.get_name()
+            s = "User %s has no permissions." % obj.get_name()
         else: 
             s = "\nPermissions for user %s: %s" % (obj.get_name(),s)     
         source_object.emit_to(s)
@@ -338,11 +350,11 @@ def cmd_chperm(command):
         except Permission.DoesNotExist:
             source_object.emit_to("Permission type '%s' is not a valid permission.\nUse @chperm/list for help with valid permission strings." % perm_string)
             return
+        if not switches:
+            source_object.emit_to("You must supply a switch /add or /del.")
+            return 
         if "add" in switches:
-            #add the permission to this user
-            if not source_object.has_perm("auth.add_permission"):
-                source_object.emit_to(defines_global.NOPERMS_MSG)
-                return
+            #add the permission to this user            
             if user.is_superuser:
                 source_object.emit_to("As a superuser you always have all permissions.")
                 return 
@@ -350,16 +362,12 @@ def cmd_chperm(command):
                 source_object.emit_to("User already has this permission.")
                 return
             user.user_permissions.add(permission)
-            user.save()
-            obj.save()
+            user.save();obj.save()
             source_object.emit_to("%s gained the permission '%s'." % (obj.get_name(), permission.name))       
             obj.emit_to("%s gave you the permission '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              permission.name))
         if "del" in switches:
             #delete the permission from this user
-            if not source_object.has_perm("auth.delete_permission"):
-                source_object.emit_to(defines_global.NOPERMS_MSG)
-                return
             if user.is_superuser:
                 source_object.emit_to("As a superuser you always have all permissions.")
                 return 
@@ -367,25 +375,24 @@ def cmd_chperm(command):
                 source_object.emit_to("User is already lacking this permission.")
                 return 
             user.user_permissions.remove(permission)
-            user.save()
-            obj.save()
+            user.save();obj.save()
             source_object.emit_to("%s lost the permission '%s'." % (obj.get_name(), permission.name))            
             obj.emit_to("%s removed your permission '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              permission.name))            
-GLOBAL_CMD_TABLE.add_command("@chperm", cmd_chperm,
-                             priv_tuple=("auth.change_permission",), auto_help=True, staff_help=True)
+GLOBAL_CMD_TABLE.add_command("@setperm", cmd_setperm,
+                             priv_tuple=("auth.change_permission","genperms.admin_perm"), auto_help=True, staff_help=True)
             
-def cmd_chgroup(command):
-    """@chgroup 
+def cmd_setgroup(command):
+    """@setgroup 
     Usage:
-      @chgroup[/switch] [<user>] [= <group>]
+      @setgroup[/switch] [<user>] [= <group>]
 
     switches
       add : add user to a group
       del : remove user from a group
       list : list all groups a user is part of, or list all available groups if no user is given
 
-    Changes the group membership of a user. 
+    Changes and views the group membership of a user. 
     """
     source_object = command.source_object
     args = command.command_argument
@@ -393,7 +400,7 @@ def cmd_chgroup(command):
 
     if not args:
         if "list" not in switches:
-            source_object.emit_to("Usage: @chgroup[/switch] [user] [= permission]")
+            source_object.emit_to("Usage: @setgroup[/switch] [user] [= permission]")
             return
         else:
             #just print all available permissions
@@ -402,14 +409,15 @@ def cmd_chgroup(command):
                 s += "\n %s" % g.name 
                 for p in g.permissions.all():
                     app = p.content_type.app_label
-                    s += "\n --- %s.%s%s\t%s" % (app, p.codename, (35 - len(app) - len(p.codename)) * " ", p.name)
+                    if app not in APPS_NOSHOW:
+                        s += "\n --- %s.%s%s\t%s" % (app, p.codename, (35 - len(app) - len(p.codename)) * " ", p.name)
             source_object.emit_to(s)
             return 
     #we have command arguments.     
     arglist = args.split('=',1)
     obj_name = arglist[0].strip()
     if not obj_name:
-        source_object.emit_to("Usage: @chgroup[/switch] [user] = [permission]")
+        source_object.emit_to("Usage: @setgroup[/switch] [user] = [permission]")
         return
     obj = source_object.search_for_object(obj_name)
     if not obj:
@@ -417,10 +425,9 @@ def cmd_chgroup(command):
     if not obj.is_player():
         source_object.emit_to("Only players may be members of permission groups.")
         return
-    try: 
-        user = User.objects.get(username=obj.get_name(show_dbref=False,no_ansi=True))
-    except:
-        raise
+    user = obj.get_user_account()
+    if not user:
+        return 
     if len(arglist) == 1:
         #if we didn't have any =, we list the groups this user is member of
         s = ""
@@ -429,7 +436,10 @@ def cmd_chgroup(command):
         if not user.is_active:
             s += "\n  ACCOUNT NOT ACTIVE."
         for g in user.groups.all():
-            s += "\n  --- %s" % g 
+            s += "\n --- %s" % g 
+            for p in g.permissions.all():
+                app = p.content_type.app_label
+                s += "\n   -- %s.%s%s\t%s" % (app, p.codename, (35 - len(app) - len(p.codename)) * " ", p.name)                
         if not s:
             s = "User %s is not a member of any groups." % obj.get_name()
         else: 
@@ -439,15 +449,15 @@ def cmd_chgroup(command):
         # we supplied an argument on the form obj = group
         group_string = arglist[1].strip()
         try: 
-            group = Group.objects.get(name=group_string)
+            group = Group.objects.get(name=group_string)            
         except Group.DoesNotExist:
             source_object.emit_to("Group '%s' is not a valid group. Remember that the name is case-sensitive.\nUse @chperm/list for help with valid group names." % group_string)
             return
+        if not switches:
+            source_object.emit_to("You must supply a switch /add or /del.")
+            return 
         if "add" in switches:
             #add the user to this group
-            if not source_object.has_perm("auth.add_group"):
-                source_object.emit_to(defines_global.NOPERMS_MSG)
-                return
             if user.is_superuser:
                 source_object.emit_to("As a superuser, group access does not matter.")
                 return
@@ -455,16 +465,12 @@ def cmd_chgroup(command):
                 source_object.emit_to("User is already a member of this group.")
                 return
             user.groups.add(group)
-            user.save()
-            obj.save()
+            user.save(); obj.save()
             source_object.emit_to("%s added to group '%s'." % (obj.get_name(), group.name))       
             obj.emit_to("%s added you to the group '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              group.name))
         if "del" in switches:
             #delete the permission from this user
-            if not source_object.has_perm("auth.delete_group"):
-                source_object.emit_to(defines_global.NOPERMS_MSG)
-                return
             if user.is_superuser:
                 source_object.emit_to("As a superuser, group access does not matter.")
                 return
@@ -473,10 +479,10 @@ def cmd_chgroup(command):
                 return
             
             user.groups.remove(group)
-            user.save()
-            obj.save()
+            user.save(); obj.save()
             source_object.emit_to("%s was removed from group '%s'." % (obj.get_name(), group.name))            
             obj.emit_to("%s removed you from group '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              group.name))            
-GLOBAL_CMD_TABLE.add_command("@chgroup", cmd_chgroup,
-                             priv_tuple=("auth.change_group",), auto_help=True, staff_help=True)
+GLOBAL_CMD_TABLE.add_command("@setgroup", cmd_setgroup,
+                             priv_tuple=("auth.change_group","genperms.admin_group"), auto_help=True, staff_help=True)
+

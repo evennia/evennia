@@ -2,6 +2,7 @@
 Models for the help system.
 """
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User, Group
 from src.objects.models import Object
 from src.ansi import parse_ansi
@@ -22,10 +23,7 @@ class CommChannel(models.Model):
     
     class Meta:
         ordering = ['-name']
-        permissions = (
-            ('emit_commchannel', 'May @cemit over channels.'),
-            ('channel_admin', 'May administer comm channels.')
-        )
+        permissions = settings.PERM_CHANNELS
     
     def get_name(self):
         """
@@ -113,8 +111,9 @@ class CommChannelMessage(models.Model):
     message = models.TextField()
     date_sent = models.DateTimeField(editable=False, auto_now_add=True)
 
+    class Meta:
+        ordering = ['-date_sent']
+
     def __str__(self):
         return "%s: %s" % (self.channel.name, self.message)
     
-    class Meta:
-        ordering = ['-date_sent']

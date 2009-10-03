@@ -232,4 +232,4 @@ def cmd_search(command):
                 
     display_results(source_object, search_query)
 GLOBAL_CMD_TABLE.add_command("@search", cmd_search,
-                             priv_tuple=("genperms.builder")),
+                             priv_tuple=("objects.info")),

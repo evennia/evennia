@@ -127,4 +127,4 @@ def cmd_page(command):
         # Now set the LASTPAGED attribute
         source_object.set_attribute("LASTPAGED", ','.join(
                 ["#%d" % (x.id) for x in targets]))
-GLOBAL_CMD_TABLE.add_command("page", cmd_page),
+GLOBAL_CMD_TABLE.add_command("page", cmd_page, priv_tuple=('channels.page',))

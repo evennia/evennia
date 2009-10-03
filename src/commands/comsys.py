@@ -10,10 +10,6 @@ from src import ansi
 from src.util import functions_general
 from src.objects.models import Object
 from src.cmdtable import GLOBAL_CMD_TABLE
-#from src.imc2.models import IMC2ChannelMapping
-#from src.imc2.packets import IMC2PacketIceMsgBroadcasted
-#from src.irc.models import IRCChannelMapping
-#from src.irc.connection import IRC_CHANNELS
 
 def cmd_addcom(command):
     """
@@ -85,9 +81,7 @@ def cmd_addcom(command):
     except CommChannel.DoesNotExist:
         # Failed to match iexact on channel's 'name' attribute.
         source_object.emit_to("Could not find channel %s." % chan_name)
-
-
-GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom),
+GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom)
 
 def cmd_delcom(command):
     """
@@ -275,14 +269,13 @@ def cmd_cdestroy(command):
         source_object.emit_to("Could not find channel %s." % (cname,))
     else:
         is_controlled_by_plr = name_matches[0].controlled_by(source_object)
-        if is_controlled_by_plr: 
+        if is_controlled_by_plr or source_object.has_perm("channels.channel_admin"): 
             source_object.emit_to("Channel %s destroyed." % (name_matches[0],))
             name_matches.delete()
         else:
             source_object.emit_to("Permission denied.")
             return
-GLOBAL_CMD_TABLE.add_command("@cdestroy", cmd_cdestroy,
-                             priv_tuple=("objects.delete_commchannel")),
+GLOBAL_CMD_TABLE.add_command("@cdestroy", cmd_cdestroy)
         
 def cmd_cset(command):
     """
@@ -327,7 +320,7 @@ def cmd_cboot(command):
         return 
 
     #do we have power over this channel?
-    if not channel.controlled_by(source_object):
+    if not channel.controlled_by(source_object) or source_object.has_perm("channels.channel_admin"):
         source_object.emit_to("You don't have that power in channel '%s'." % cname)
         return    
 
@@ -432,7 +425,7 @@ def cmd_cemit(command):
     #pipe to external channels (IRC, IMC) eventually mapped to this channel
     comsys.send_cexternal(cname_parsed, cmessage, caller=source_object)
 
-GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit),
+GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit,priv_tuple=("channels.emit_commchannel",))
 
 def cmd_cwho(command):
     """
@@ -503,8 +496,7 @@ def cmd_ccreate(command):
         # Create and set the object up.
         new_chan = comsys.create_channel(cname, source_object)
         source_object.emit_to("Channel %s created." % (new_chan.get_name(),))
-GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate,
-                             priv_tuple=("objects.add_commchannel",))
+GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate)
 
 def cmd_cchown(command):
     """
@@ -526,7 +518,7 @@ def cmd_cchown(command):
         source_object.emit_to("Channel '%s' not found." % cname)
         return
     #check so we have ownership to give away.
-    if not channel.controlled_by(source_object):
+    if not channel.controlled_by(source_object) and not source_object.has_perm("channels.channel_admin"):
         source_object.emit_to("You don't control this channel.")
         return
     #find the new owner

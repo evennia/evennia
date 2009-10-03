@@ -117,7 +117,8 @@ def cmd_imcstatus(command):
     retval += '-' * 50
     
     source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imcstatus", cmd_imcstatus)
+GLOBAL_CMD_TABLE.add_command("imcstatus", cmd_imcstatus,
+                             priv_tuple=('imc2.admin_imc_channels',))
 
 
 def cmd_IMC2chan(command):
@@ -179,5 +180,5 @@ def cmd_IMC2chan(command):
     source_object.emit_to(outstring)
 
 GLOBAL_CMD_TABLE.add_command("@imc2chan",cmd_IMC2chan,auto_help=True,staff_help=True,
-                             priv_tuple=("objects.add_commchannel",))
+                             priv_tuple=("imc2.admin_imc_channels",))
     

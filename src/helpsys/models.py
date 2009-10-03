@@ -2,6 +2,7 @@
 Models for the help system.
 """
 from django.db import models
+from django.conf import settings
 from src import ansi
 from src.helpsys.managers import HelpEntryManager
 
@@ -18,6 +19,7 @@ class HelpEntry(models.Model):
     class Meta:
         verbose_name_plural = "Help entries"
         ordering = ['topicname']
+        permissions = settings.PERM_HELPSYS
         
     def __str__(self):
         return self.topicname

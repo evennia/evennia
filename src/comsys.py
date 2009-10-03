@@ -338,7 +338,7 @@ def send_cexternal(cname, cmessage,  caller=None, from_external=None):
         
         # Look for IMC2 channel maps. If one is found, send an ice-msg-b
         # packet to the network.            
-        print "caller found: %s (%s). Msg: %s" % (caller,from_external,cmessage)
+        #logger.msg_infomsg("caller found: %s (%s). Msg: %s" % (caller,from_external,cmessage))
 
         imccaller = caller
         imccmessage = cmessage
@@ -349,7 +349,7 @@ def send_cexternal(cname, cmessage,  caller=None, from_external=None):
                 imccaller, imccmessage = cmessage.split("@",1)
                 #throw away IRC channel name; IMC users need not know it
                 imccmessage = (imccmessage.split(":",1)[1]).strip()            
-                print "caller: %s cmessage: %s" % (imccaller, imccmessage)
+                #logger.msg_infomsg("caller: %s cmessage: %s" % (imccaller, imccmessage))
             else:
                 imccaller = "*"
 

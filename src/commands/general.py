@@ -4,6 +4,7 @@ now.
 """
 import time
 from django.conf import settings
+from django.contrib.auth.models import User
 from src.config.models import ConfigValue
 from src.helpsys.models import HelpEntry
 from src.objects.models import Object
@@ -334,7 +335,7 @@ def cmd_examine(command):
         # Send it all
         source_object.emit_to(s)
             
-GLOBAL_CMD_TABLE.add_command("examine", cmd_examine)
+GLOBAL_CMD_TABLE.add_command("examine", cmd_examine,priv_tuple=("objects.info",))
     
 def cmd_quit(command):
     """
@@ -452,6 +453,31 @@ def cmd_pose(command):
     source_object.get_location().emit_to_contents(sent_msg)
 GLOBAL_CMD_TABLE.add_command("pose", cmd_pose)
 
+def cmd_group(command):
+    """@group
+    Usage:
+      @group
+
+    This command shows you which user permission groups you are a member of, if any. 
+    """
+    source_object = command.source_object    
+    user = User.objects.get(username=source_object.get_name(show_dbref=False,no_ansi=True))    
+    s = ""
+    if source_object.is_superuser():
+        s += "\n  This is a SUPERUSER account! Group membership does not matter."
+    if not user.is_active:
+        s += "\n  ACCOUNT NOT ACTIVE."
+    for g in user.groups.all():
+        s += "\n -- %s" % g 
+        for p in g.permissions.all():
+            s += "\n   --- %s" % p.name        
+    if not s:
+        s = "You are not a member of any groups." % source_object.get_name(show_dbref=False)
+    else: 
+        s = "\nYour (%s's) group memberships: %s" % (source_object.get_name(show_dbref=False),s)     
+    source_object.emit_to(s)
+GLOBAL_CMD_TABLE.add_command("@group", cmd_group,auto_help=True)    
+
 
 def cmd_help(command):
     """
@@ -539,8 +565,8 @@ def cmd_help(command):
 
     if 'add' in switches:
         #try to add/replace help text for a command        
-        if not source_object.is_staff():
-            source_object.emit_to("Only staff can add new help entries.")
+        if not source_object.has_perm("helpsys.add_help"):
+            source_object.emit_to(defines_global.NOPERMS_MSG)
             return         
         spl = (topicstr.split(':',1))
         if len(spl) != 2:
@@ -559,11 +585,11 @@ def cmd_help(command):
 
     elif 'append' in switches or 'app' in switches:
         #append text to a help entry
-        if not source_object.is_staff():
-            source_object.emit_to("Only staff can append to help entries.")
+        if not source_object.has_perm("helpsys.add_help"):
+            source_object.emit_to(defines_global.NOPERMS_MSG)
             return         
         spl = (topicstr.split(':',1))
-        if len(spl) != 2:
+        if len(spl) != 2: 
             source_object.emit_to("""Format is help/append <topic>:<text to add>
                                      Use the /newline switch to make a new paragraph.""")
             return        
@@ -582,8 +608,8 @@ def cmd_help(command):
                            
     elif 'del' in switches or 'delete' in switches:
         #delete a help entry
-        if not source_object.is_staff():
-            source_object.emit_to("Only staff can add delete help entries.")
+        if not source_object.has_perm("helpsys.del_help"):
+            source_object.emit_to(defines_global.NOPERMS_MSG)
             return                
         topics = edit_help.del_help(source_object,topicstr)
         if type(topics) != type(list()):

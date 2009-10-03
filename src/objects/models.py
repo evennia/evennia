@@ -127,6 +127,10 @@ class Object(models.Model):
     #state system can set a particular command table to be used (not persistent).
     state = None
 
+    class Meta:
+        ordering = ['-date_created', 'id']
+        permissions = settings.PERM_OBJECTS
+        
     def __cmp__(self, other):
         """
         Used to figure out if one object is the same as another.
@@ -136,9 +140,6 @@ class Object(models.Model):
     def __str__(self):
         return "%s" % (self.get_name(no_ansi=True),)
     
-    class Meta:
-        ordering = ['-date_created', 'id']
-
     def dbref(self):
         """Returns the object's dbref id on the form #NN, directly
         usable by Object.objects.dbref_search()
@@ -206,8 +207,8 @@ class Object(models.Model):
         if self.is_player():
             return session_mgr.sessions_from_object(self)
         else:
-            return []
-        
+            return []                        
+            
     def emit_to(self, message):
         """
         Emits something to any sessions attached to the object.
@@ -291,7 +292,7 @@ class Object(models.Model):
         looker_user = self.get_user_account()
         if looker_user:
             # Builders see dbrefs
-            return looker_user.has_perm('genperms.builder')
+            return looker_user.has_perm('objects.see_dbref')
         else:
             return False
 
@@ -300,7 +301,9 @@ class Object(models.Model):
         Checks to see whether a user has the specified permission or is a super
         user.
 
-        perm: (string) A string representing the desired permission.
+        perm: (string) A string representing the desired permission. This
+                       is on the form app.perm , e.g. 'objects.see_dbref' as
+                       defined in the settings file.         
         """
         if not self.is_player():
             return False

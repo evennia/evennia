@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from src.channels.models import CommChannel
 
 class IMC2ChannelMapping(models.Model):
@@ -14,6 +15,7 @@ class IMC2ChannelMapping(models.Model):
     class Meta:
         verbose_name = "IMC2 Channel mapping"
         verbose_name_plural = "IMC2 Channel mappings"
+        permissions = settings.PERM_IMC2
         
     def __str__(self):
         return "%s <-> %s" % (self.channel, self.imc2_channel_name)

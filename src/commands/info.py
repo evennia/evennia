@@ -99,7 +99,7 @@ def cmd_list(command):
         source_object.emit_to("Flags: "+" ".join(flags.SERVER_FLAGS))
     else:
         source_object.emit_to(msg_invalid)
-GLOBAL_CMD_TABLE.add_command("@list", cmd_list),
+GLOBAL_CMD_TABLE.add_command("@list", cmd_list,priv_tuple=("genperms.game_info",)),
 
 def cmd_ps(command):
     """
@@ -131,4 +131,4 @@ def cmd_stats(command):
         stats_dict["things"],
         stats_dict["players"],
         stats_dict["garbage"]))
-GLOBAL_CMD_TABLE.add_command("@stats", cmd_stats),
+GLOBAL_CMD_TABLE.add_command("@stats", cmd_stats, priv_tuple=("genperms.game_info",)),
