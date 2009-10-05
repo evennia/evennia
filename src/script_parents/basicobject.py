@@ -135,16 +135,24 @@ class EvenniaBasicObject(object):
         # This is the object being looked at.
         target_obj = self.scripted_obj
         # See if the envoker sees dbref numbers.
+        lock_msg = ""
         if pobject:        
-            show_dbrefs = pobject.sees_dbrefs()
+            show_dbrefs = pobject.sees_dbrefs()                                        
+
+            #check for the defaultlock, this shows a lock message after the normal desc, if one is defined.
+            if target_obj.is_room() and \
+                   not target_obj.scriptlink.default_lock(pobject):
+                temp = target_obj.get_attribute_value("lock_msg")
+                if temp:
+                    lock_msg = "\n%s" % temp
         else:
             show_dbrefs = False
-            
+                        
         description = target_obj.get_attribute_value('desc')
         if description is not None:
-            retval = "%s\r\n%s" % (
+            retval = "%s\r\n%s%s" % (
                 target_obj.get_name(show_dbref=show_dbrefs),
-                target_obj.get_attribute_value('desc'),
+                target_obj.get_attribute_value('desc'), lock_msg
             )
         else:
             retval = "%s" % (
@@ -192,8 +200,11 @@ class EvenniaBasicObject(object):
         values:
             * pobject: (Object) The object requesting the action.
         """
-        # Assume everyone passes the default lock by default.
-        return True
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("DefaultLock", pobject)
+        else:
+            return True
 
     def use_lock(self, pobject):
         """
@@ -204,8 +215,11 @@ class EvenniaBasicObject(object):
         values:
             * pobject: (Object) The object requesting the action.
         """
-        # Assume everyone passes the use lock by default.
-        return True
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("UseLock", pobject)
+        else:
+            return True
 
     def enter_lock(self, pobject):
         """
@@ -216,5 +230,8 @@ class EvenniaBasicObject(object):
         values:
             * pobject: (Object) The object requesting the action.
         """
-        # Assume everyone passes the enter lock by default.
-        return True   
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("EnterLock", pobject)
+        else:
+            return True

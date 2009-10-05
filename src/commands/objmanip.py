@@ -1,9 +1,11 @@
 """
 These commands typically are to do with building or modifying Objects.
 """
+from django.contrib.auth.models import Permission, Group
 from src.objects.models import Object, Attribute
 # We'll import this as the full path to avoid local variable clashes.
 import src.flags
+from src import locks
 from src import ansi
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src import defines_global
@@ -445,7 +447,7 @@ def cmd_create(command):
         return
     
     eq_args = command.command_argument.split(':', 1)
-    target_name = eq_args[0]
+    target_name = eq_args[0].strip()
 
     #check if we want to set a custom parent
     script_parent = None
@@ -814,7 +816,7 @@ def cmd_dig(command):
     where you are.
     
     Usage: 
-       @dig[/switches] roomname [:parent] [= exitthere [: parent][;alias]] [, exithere [: parent][;alias]] 
+       @dig[/switches] roomname [:parent] [= exit_to_there [: parent][;alias]] [, exit_to_here [: parent][;alias]] 
 
     switches:
        teleport - move yourself to the new room
@@ -829,7 +831,7 @@ def cmd_dig(command):
     switches = command.command_switches
 
     if not args:
-        source_object.emit_to("Usage[/teleport]: @dig roomname [:parent][= exitthere [:parent] [;alias]] [, exithere [:parent] [;alias]]")
+        source_object.emit_to("Usage: @dig[/teleport] roomname [:parent][= exit_to_there [:parent] [;alias]] [, exit_to_here [:parent] [;alias]]")
         return
 
     room_name = None
@@ -1158,3 +1160,148 @@ def cmd_destroy(command):
         
 GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
                              priv_tuple=("objects.create",),auto_help=True,staff_help=True)
+
+def cmd_lock(command):
+    """@lock
+    Usage:
+      @lock[/switch] <obj> [:type] [= <key>[,key2,key3,...]]    
+
+    switches:
+      add    - add a lock (default) from object 
+      del    - remove a lock from object  
+      list   - view all locks on object (default)
+    type:
+      DefaultLock  - the default lock type (default)
+      
+    Locks an object for everyone except those matching the keys.
+    The keys can be of the following types (and searched in this order):
+       - a user #dbref (#2, #45 etc)
+       - a Group name (Builder, Immortal etc, case sensitive)
+       - a Permission string (genperms.get, etc)
+    If no keys are given, the object is locked for everyone.
+
+    When the lock blocks a user, you may customize which error is given by
+    storing error messages in an attribute. For DefaultLocks, UseLocks and
+    EnterLocks, these attributes are called lock_msg, use_lock_msg and
+    enter_lock_msg respectively.
+    <<TOPIC:lock types>>
+    Lock types:
+
+    Name:          Affects:        Effect:  
+    -----------------------------------------------------------------------
+    DefaultLock:   Exits:          controls who may traverse the exit to
+                                   its destination.
+                   Rooms:          controls whether the player sees a failure
+                                   message after the room description when
+                                   looking at the room.
+                   Players/Things: controls who may 'get' the object.
+
+     UseLock:      All but Exits:  controls who may use commands defined on
+                                   the locked object.
+
+     EnterLock:    Players/Things: controls who may enter/teleport into
+                                   the object.      
+
+    Fail messages echoed to the player are stored in the attributes 'lock_msg',
+    'use_lock_msg' and 'enter_lock_msg' on the locked object in question. If no
+    such message is stored, a default will be used (or none at all in some cases). 
+    """
+
+    source_object = command.source_object
+    arg = command.command_argument
+    switches = command.command_switches
+    
+    if not arg:
+        source_object.emit_to("Usage: @lock[/switch] <obj> [:type] [= <key>[,key2,key3,...]]")
+        return
+    keys = "" 
+    #deal with all possible arguments. 
+    try: 
+        lside, keys = arg.split("=",1)
+    except ValueError:
+        lside = arg    
+    lside, keys = lside.strip(), keys.strip()
+    try:
+        obj_name, ltype = lside.split(":",1)
+    except:
+        obj_name = lside
+        ltype = "DefaultLock"
+    obj_name, ltype = obj_name.strip(), ltype.strip()
+
+    if ltype not in ["DefaultLock","UseLock","EnterLock"]: 
+        source_object.emit_to("Lock type '%s' not recognized." % ltype)
+        return    
+
+    obj = source_object.search_for_object(obj_name)
+    if not obj:
+        return    
+
+    obj_locks = obj.get_attribute_value("LOCKS")    
+
+    if "list" in switches or not switches:        
+        if not obj_locks:
+            s = "There are no locks on %s." % obj.get_name()
+        else:
+            s = "Locks on %s:" % obj.get_name()
+            s += obj_locks.show()
+        source_object.emit_to(s)        
+        return
+    
+    # we are trying to change things. Check permissions.
+    if not source_object.controls_other(obj):
+        source_object.emit_to(defines_global.NOCONTROL_MSG)
+        return
+    
+    if "del" in switches:
+        # clear a lock
+        if obj_locks:
+            if not obj_locks.has_type(ltype):
+                source_object.emit_to("No %s set on this object." % ltype)
+            else:
+                obj_locks.del_type(ltype)
+                obj.set_attribute("LOCKS", obj_locks)
+                source_object.emit_to("Cleared lock %s on %s." % (ltype, obj.get_name()))
+        else:
+            source_object.emit_to("No %s set on this object." % ltype)
+        return     
+    else:
+        #try to add a lock
+        if not obj_locks:
+            obj_locks = locks.Locks()
+        if not keys:
+            #add an impassable lock
+            obj_locks.add_type(ltype, locks.Key())            
+            source_object.emit_to("Added impassable '%s' lock to %s." % (ltype, obj.get_name()))
+        else: 
+            keys = [k.strip() for k in keys.split(",")]
+            okeys, gkeys, pkeys = [], [], []
+            allgroups = [g.name for g in Group.objects.all()]
+            allperms = ["%s.%s" % (p.content_type.app_label, p.codename) for p in Permission.objects.all()]
+            for key in keys:
+                #differentiate different type of keys
+                if Object.objects.is_dbref(key):
+                    okeys.append(key)
+                elif key in allgroups:
+                    gkeys.append(key)
+                elif key in allperms:
+                    pkeys.append(key)
+                else:
+                    source_object.emit_to("Key '%s' is not recognized as a valid dbref, group or permission." % key)
+                    return 
+            # Create actual key objects from the respective lists
+            keys = []
+            if okeys:
+                keys.append(locks.ObjKey(okeys))
+            if gkeys:
+                keys.append(locks.GroupKey(gkeys))
+            if pkeys:
+                keys.append(locks.PermKey(pkeys))
+            #store the keys in the lock
+            obj_locks.add_type(ltype, keys)            
+            kstring = ""
+            for key in keys:
+                kstring += " %s" % key 
+            source_object.emit_to("Added lock '%s' to %s with keys%s." % (ltype, obj.get_name(), kstring))
+
+        obj.set_attribute("LOCKS",obj_locks)
+GLOBAL_CMD_TABLE.add_command("@lock", cmd_lock, priv_tuple=("objects.create",),auto_help=True, staff_help=True)

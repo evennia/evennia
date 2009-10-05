@@ -23,10 +23,10 @@ OBJECT_TYPES = (
 
 # These attribute names can't be modified by players.
 NOSET_ATTRIBS = ["MONEY", "ALIAS", "LASTPAGED", "__CHANLIST", "LAST", 
-                 "__PARENT", "LASTSITE"]
+                 "__PARENT", "LASTSITE", "LOCKS"]
 
 # These attributes don't show up on objects when examined.
-HIDDEN_ATTRIBS = ["__CHANLIST", "__PARENT"]
+HIDDEN_ATTRIBS = ["__CHANLIST", "__PARENT", "LOCKS"]
 
 # Server version number.
 REVISION = os.popen('svnversion .', 'r').readline().strip()

@@ -338,6 +338,22 @@ class Object(models.Model):
         # Fall through to failure
         return False
 
+    def has_group(self, group):
+        """
+        Checks if a user is member of a particular user group.
+        """
+        if not self.is_player():
+            return False
+
+        if self.is_superuser():
+            return True
+
+        if group in [g.name for g in self.get_user_account().groups.all()]:
+            return True
+        else:
+            return False
+        
+
     def owns_other(self, other_obj):
         """
         See if the envoked object owns another object.
@@ -367,7 +383,7 @@ class Object(models.Model):
         
         # When builder_override is enabled, a builder permission means
         # the object controls the other.
-        if builder_override and not other_obj.is_player() and self.has_perm('genperms.builder'):
+        if builder_override and not other_obj.is_player() and self.has_group('Builders'):
             return True
 
         # They've failed to meet any of the above conditions.
@@ -883,9 +899,18 @@ class Object(models.Model):
         quiet:  (bool)    If true, don't emit left/arrived messages.
         force_look: (bool) If true and self is a player, make them 'look'.
         """
-        
+
+        #first, check if we can enter that location at all.
+        if not target.scriptlink.enter_lock(self):
+            lock_desc = self.get_attribute_value("enter_lock_msg")
+            if lock_desc:
+                self.emit_to(lock_desc)
+            else:
+                self.emit_to("That destination is blocked from you.")
+            return 
+               
         #before the move, call eventual pre-commands.
-        if self.scriptlink.at_before_move(target) != None:
+        if self.scriptlink.at_before_move(target) != None:                
             return 
 
         if not quiet:

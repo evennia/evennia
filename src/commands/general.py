@@ -167,13 +167,22 @@ def cmd_get(command):
         return
     
     if not obj_is_staff and (target_obj.is_player() or target_obj.is_exit()):
+
         source_object.emit_to("You can't get that.")
         return
-        
+    
     if target_obj.is_room() or target_obj.is_garbage() or target_obj.is_going():
         source_object.emit_to("You can't get that.")
         return
-        
+
+    if not target_obj.scriptlink.default_lock(source_object):
+        lock_msg = target_obj.get_attribute_value("lock_msg")
+        if lock_msg:
+            source_object.emit_to(lock_msg)
+        else:
+            source_object.emit_to("You can't get that.")
+        return
+            
     target_obj.move_to(source_object, quiet=True)
     source_object.emit_to("You pick up %s." % (target_obj.get_name(show_dbref=False),))
     source_object.get_location().emit_to_contents("%s picks up %s." % 
@@ -282,11 +291,14 @@ def cmd_examine(command):
         
         s += str(target_obj.get_name(fullname=True)) + newl
         s += str("Type: %s Flags: %s" % (target_obj.get_type(), 
-                                         target_obj.get_flags())) + newl
-        #s += str("Desc: %s" % target_obj.get_attribute_value('desc')) + newl
+                                         target_obj.get_flags())) + newl        
         s += str("Owner: %s " % target_obj.get_owner()) + newl
         s += str("Zone: %s" % target_obj.get_zone()) + newl
         s += str("Parent: %s " % target_obj.get_script_parent()) + newl
+
+        locks = target_obj.get_attribute_value("LOCKS")
+        if locks and "%s" % locks:
+            s += str("Locks: %s" % locks) + newl
                
         # Contents container lists for sorting by type.
         con_players = []
@@ -313,6 +325,7 @@ def cmd_examine(command):
             # This obviously isn't valid for rooms.    
             s += str("Location: %s" % target_obj.get_location()) + newl
 
+        # Render other attributes
         for attribute in target_obj.get_all_attributes():            
             s += str(attribute.get_attrline()) + newl
 

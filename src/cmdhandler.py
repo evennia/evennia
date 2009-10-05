@@ -278,7 +278,11 @@ def match_exits(command,test=False):
         if targ_exit.get_home():                   
             # SCRIPT: See if the player can traverse the exit
             if not targ_exit.scriptlink.default_lock(source_object):
-                source_object.emit_to("You can't traverse that exit.")
+                lock_msg = targ_exit.get_attribute_value("lock_msg")
+                if lock_msg:
+                    source_object.emit_to(lock_msg)
+                else:                    
+                    source_object.emit_to("You can't traverse that exit.")
             else:
                 source_object.move_to(targ_exit.get_home())
         else:
@@ -287,22 +291,33 @@ def match_exits(command,test=False):
         raise ExitCommandHandler
     
                
-def command_table_lookup(command, command_table, eval_perms=True,test=False):
+def command_table_lookup(command, command_table, eval_perms=True,test=False,neighbor=None):
     """
     Performs a command table lookup on the specified command table. Also
     evaluates the permissions tuple.
     The test flag only checks without manipulating the command
+    neighbor (object) If this is supplied, we are looking at a object table and
+                      must check for locks. 
     """
     # Get the command's function reference (Or False)
     cmdtuple = command_table.get_command_tuple(command.command_string)
     if cmdtuple:
+        # Check if this is just a test. 
         if test:
             return True
+        # Check locks
+        if neighbor and not neighbor.scriptlink.use_lock(command.source_object):
+            # send an locked error message only if lock_desc is defined
+            lock_msg = neighbor.get_attribute_value("use_lock_msg")
+            if lock_msg:
+                command.source_object.emit_to(lock_msg)
+                raise ExitCommandHandler
+            return False        
         # If there is a permissions element to the entry, check perms.
         if eval_perms and cmdtuple[1]:
             if not command.source_object.has_perm_list(cmdtuple[1]):
                 command.source_object.emit_to(defines_global.NOPERMS_MSG)
-                raise ExitCommandHandler
+                raise ExitCommandHandler            
         # If flow reaches this point, user has perms and command is ready.
         command.command_function = cmdtuple[0]
         command.extra_vars = cmdtuple[2]
@@ -321,7 +336,9 @@ def match_neighbor_ctables(command,test=False):
         neighbors = source_object.location.get_contents()
         for neighbor in neighbors:
             if command_table_lookup(command,
-                                    neighbor.scriptlink.command_table, test=test):
+                                    neighbor.scriptlink.command_table,
+                                    test=test, neighbor=neighbor):
+                # test for a use-lock             
                 # If there was a command match, set the scripted_obj attribute
                 # for the script parent to pick up.
                 if test:
