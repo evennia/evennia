@@ -439,6 +439,8 @@ def cmd_create(command):
     have a correct parent object defined in parents/examples/red_button.py, you would
     load create a new object inheriting from this parent like this:
        @create button:examples.red_button       
+
+    (See also @destroy, @dig and @open.)
     """
     source_object = command.source_object
     
@@ -557,77 +559,119 @@ GLOBAL_CMD_TABLE.add_command("@nextfree", cmd_nextfree,
                              priv_tuple=("objects.info",),auto_help=True,staff_help=True)
     
 def cmd_open(command):
+    """@open
+    Usage:
+      @open <new exit> [:parent] [= <destination> [,<return exit> [:parent]]]  
+
+    Handles the creation of exits. If a destination is given, the exit
+    will point there. The <return exit> argument sets up an exit at the
+    destination leading back to the current room. Destination name
+    can be given both as a #dbref and a name, if that name is globally
+    unique. 
+
+    (See also @create, @dig and @link.)
     """
-    Handle the opening of exits.
+    source_object = command.source_object    
+    args = command.command_argument
+    if not args:
+        source_object.emit_to("Usage: @open <new exit> [:parent] [= <destination> [,<return exit> [:parent]]]")
+        return        
+    dest_name = "" 
+    return_exit = ""
+    exit_parent = None
+    return_exit_parent = None
+    # handle all arguments
+    arglist = args.split('=', 1)
+    #left side of =
+    largs = arglist[0].split(':')
+    if len(largs) > 1:        
+        exit_name, exit_parent = largs[0].strip(), largs[1].strip()
+    else:
+        exit_name = largs[0].strip()    
+    if len(arglist) > 1:
+        # right side of =         
+        rargs = arglist[1].split(',',1)
+        if len(rargs) > 1:
+            dest_name, rargs = rargs[0].strip(),rargs[1].strip()
+            rargs = rargs.split(":")
+            if len(rargs) > 1:
+                return_exit, return_exit_parent = rargs[0].strip(), rargs[1].strip()
+            else:
+                return_exit = rargs[0].strip()
+        else:
+            dest_name = rargs[0].strip()
     
-    Forms:
-    @open <Name>
-    @open <Name>=<Dbref>
-    @open <Name>=<Dbref>,<Name>
-    """
-    source_object = command.source_object
-    
-    if not command.command_argument:
-        source_object.emit_to("Usage: @open <name> [=dbref [,<name>]]")
-        return
-        
-    eq_args = command.command_argument.split('=', 1)
-    exit_name = eq_args[0]
-    
-    if len(exit_name) == 0:
+    # sanity checking
+    if not exit_name:
         source_object.emit_to("You must supply an exit name.")
         return
-        
-    # If we have more than one entry in our '=' delimited argument list,
-    # then we're doing a @open <Name>=<Dbref>[,<Name>]. If not, we're doing
-    # an un-linked exit, @open <Name>.
-    if len(eq_args) > 1:
-        # Opening an exit to another location via @open <Name>=<Dbref>[,<Name>].
-        comma_split = eq_args[1].split(',', 1)
-        # Use search_for_object to handle duplicate/nonexistant results.
-        destination = source_object.search_for_object(comma_split[0])
-        if not destination:
-            return
 
+    if not dest_name:
+        # we want an unlinked exit.
+        new_object = Object.objects.create_object(exit_name,
+                                                  defines_global.OTYPE_EXIT,
+                                                  source_object.get_location(),
+                                                  source_object,
+                                                  None,
+                                                  script_parent=exit_parent)                
+        ptext = ""
+        if exit_parent:
+            if new_object.get_script_parent() == exit_parent:        
+                ptext += " of type %s" % exit_parent
+            else:
+                ptext += " of default type (parent '%s' failed!)" % exit_parent
+        source_object.emit_to("Created unlinked exit%s named '%s'." % (ptext,new_object))
+
+    else: 
+        # We have the name of a destination. Try to find it.        
+        destination = Object.objects.global_object_name_search(dest_name)
+        if not destination:
+            source_object.emit_to("No matches found for '%s'." % dest_name)
+            return 
+        if len(destination) > 1:
+            s = "There are multiple matches. Please use #dbref to be more specific."
+            for d in destination:
+                s += "\n %s" % destination.get_name()
+            source_object.emit_to(s)
+            return
+        destination = destination[0]
+        
         if destination.is_exit():
             source_object.emit_to("You can't open an exit to an exit!")
             return
 
+        #build the exit from here to destination
         new_object = Object.objects.create_object(exit_name,
                                                   defines_global.OTYPE_EXIT,
                                                   source_object.get_location(),
                                                   source_object,
-                                                  destination)
+                                                  destination,
+                                                  script_parent=exit_parent)
+        ptext = ""
+        if exit_parent:
+            if new_object.get_script_parent() == exit_parent:        
+                ptext += " of type %s" % exit_parent
+            else:
+                ptext += " of default type (parent '%s' failed!)" % exit_parent
+        source_object.emit_to("Created exit%s to %s named '%s'." % (ptext,destination,new_object))
 
-        source_object.emit_to("You open the an exit - %s to %s" % (
-                                                        new_object.get_name(),
-                                                        destination.get_name()))
-        if len(comma_split) > 1:
-            second_exit_name = ','.join(comma_split[1:])
-            #odat = {"name": second_exit_name, 
-            #        "type": defines_global.OTYPE_EXIT, 
-            #        "location": destination, 
-            #        "owner": source_object, 
-            #        "home": source_object.get_location()}
-            new_object = Object.objects.create_object(second_exit_name,
+        if return_exit: 
+            new_object = Object.objects.create_object(return_exit,
                                                       defines_global.OTYPE_EXIT,
                                                       destination,
                                                       source_object,
-                                                      source_object.get_location())
-            source_object.emit_to("You open the an exit - %s to %s" % (
-                                            new_object.get_name(),
-                                            source_object.get_location().get_name()))
-
-    else:
-        # Create an un-linked exit.
-        new_object = Object.objects.create_object(exit_name,
-                                                  defines_global.OTYPE_EXIT,
-                                                  source_object.get_location(),
-                                                  source_object,
-                                                  None)
-        source_object.emit_to("You open an unlinked exit - %s" % new_object)
+                                                      source_object.get_location(),
+                                                      script_parent=return_exit_parent)
+            ptext = ""
+            if return_exit_parent:                
+                if new_object.get_script_parent() == return_exit_parent:        
+                    ptext += " of type %s" % return_exit_parent
+                else:
+                    ptext += " of default type (parent '%s' failed!)" % return_exit_parent
+            source_object.emit_to("Created exit%s back from %s named %s." % \
+                                  (ptext, destination, new_object))
 GLOBAL_CMD_TABLE.add_command("@open", cmd_open,
-                             priv_tuple=("objects.dig",))
+                             priv_tuple=("objects.dig",),auto_help=True,staff_help=True)
         
 def cmd_chown(command):
     """
@@ -733,56 +777,95 @@ def cmd_chzone(command):
 GLOBAL_CMD_TABLE.add_command("@chzone", cmd_chzone, priv_tuple=("objects.dig",))
 
 def cmd_link(command):
-    """
-    Sets an object's home or an exit's destination.
+    """@link
+    Usage:
+      @link <object> = <target>
+      @link <object> = 
+      @link <object> 
 
-    Forms:
-    @link <Object>=<Target>
+    If <object> is an exit, set its destination. For all other object types, this
+    command sets the object's Home. 
+    The second form sets the destination/home to None and the third form inspects
+    the current value of destination/home on <object>.
+
+    (See also @create, @dig and @open)
     """
     source_object = command.source_object
-
+    
     if not command.command_argument:
         source_object.emit_to("Usage: @link <object> = <target>")
         return
+    dest_name = ""
+    arglist = command.command_argument.split('=', 1)
+    if len(arglist) > 1:
+        obj_name, dest_name = arglist[0].strip(), arglist[1].strip()
+    else:
+        obj_name = arglist[0].strip()
 
-    eq_args = command.command_argument.split('=', 1)
-    target_name = eq_args[0]
-    dest_name = eq_args[1]    
-
-    if len(target_name) == 0:
+    # sanity checks
+    if not obj_name:
         source_object.emit_to("What do you want to link?")
         return
 
-    if len(eq_args) > 1:
-        target_obj = source_object.search_for_object(target_name)
-        # Use search_for_object to handle duplicate/nonexistant results.
-        if not target_obj:
-            return
-
-        if not source_object.controls_other(target_obj):
-            source_object.emit_to(defines_global.NOCONTROL_MSG)
-            return
-
-        # If we do something like "@link blah=", we unlink the object.
-        if len(dest_name) == 0:
-            target_obj.set_home(None)
-            source_object.emit_to("You have unlinked %s." % (target_obj,))
-            return
-
-        destination = source_object.search_for_object(dest_name)
-        # Use search_for_object to handle duplicate/nonexistant results.
-        if not destination:
-            return
-
-        target_obj.set_home(destination)
-        source_object.emit_to("You link %s to %s." % (target_obj, destination))
-
-    else:
-        # We haven't provided a target.
-        source_object.emit_to("You must provide a destination to link to.")
+    # Use search_for_object to handle duplicate/nonexistant results.
+    obj = source_object.search_for_object(obj_name)    
+    if not obj:
         return
+    otype = obj.get_type()
+    
+    if not dest_name:
+        # We haven't provided a target.
+        if len(arglist) > 1:
+            # the command looks like '@link obj =', this means we unlink the 
+            if not source_object.controls_other(obj):
+                source_object.emit_to(defines_global.NOCONTROL_MSG)
+                return
+            oldhome = obj.get_home()
+            ohome_text = ""
+            if oldhome:
+                ohome_text = " (was %s)" % oldhome
+            obj.set_home(None)            
+            if otype == "EXIT":
+                source_object.emit_to("You have unlinked %s%s." % (obj,ohome_text))
+            else:
+                source_object.emit_to("You removed %s's home setting%s." % (obj,ohome_text))
+            return
+        else:
+            # the command looks like '@link obj', we just inspect the object.
+            if otype == "EXIT":
+                source_object.emit_to("%s currently links to %s." % (obj.get_name(), obj.get_home()))
+            else:
+                source_object.emit_to("%s's current home is %s." % (obj.get_name(), obj.get_home()))
+            return 
+    else:
+        # we have a destination, search for it globally. 
+        if not source_object.controls_other(obj):
+            source_object.emit_to(defines_global.NOCONTROL_MSG)
+            return    
+        destination = Object.objects.global_object_name_search(dest_name)
+        if not destination:
+            source_object.emit_to("No matches found for '%s'." % dest_name)
+            return 
+        if len(destination) > 1:
+            s = "There are multiple matches. Please use #dbref to be more specific."
+            for d in destination:
+                s += "\n %s" % destination.get_name()
+            source_object.emit_to(s)
+            return
+        destination = destination[0]
+
+        # do the link.
+        oldhome = obj.get_home()
+        ohome_text = ""        
+        if oldhome:
+            ohome_text = " (was %s)" % oldhome
+        obj.set_home(destination)
+        if otype == "EXIT":
+            source_object.emit_to("You link %s to %s%s." % (obj, destination, ohome_text))
+        else:
+            source_object.emit_to("You set the home location of %s to %s%s." % (obj, destination, ohome_text))      
 GLOBAL_CMD_TABLE.add_command("@link", cmd_link,
-                             priv_tuple=("objects.dig",))
+                             priv_tuple=("objects.dig",), auto_help=True, staff_help=True)
 
 def cmd_unlink(command):
     """
@@ -811,20 +894,19 @@ GLOBAL_CMD_TABLE.add_command("@unlink", cmd_unlink,
                              priv_tuple=("objects.dig",))
 
 def cmd_dig(command):
-    """
-    Creates a new room object and optionally connects it to
-    where you are.
-    
+    """@dig    
     Usage: 
-       @dig[/switches] roomname [:parent] [= exit_to_there [: parent][;alias]] [, exit_to_here [: parent][;alias]] 
-
+      @dig[/switches] roomname [:parent] [= exit_to_there [: parent][;alias]] [, exit_to_here [: parent][;alias]] 
     switches:
        teleport - move yourself to the new room
-
     example:
        @dig kitchen = north; n, south; s
 
+    This command is a convenient way to build rooms quickly; it creates the new room and you can optionally
+    set up exits back and forth between your current room and the new one. 
+    ((NOTE - ALIASES ARE NOT YET FUNCTIONAL.))
     
+    (See also @create, @open and @link.) 
     """
     source_object = command.source_object    
     args = command.command_argument
@@ -894,7 +976,8 @@ def cmd_dig(command):
                                                       defines_global.OTYPE_EXIT,
                                                       location,
                                                       source_object,
-                                                      destination)
+                                                      destination,
+                                                      script_parent=exit_parents[0])
             ptext = ""
             if exit_parents[0]:
                 script_parent = exit_parents[0]
@@ -915,7 +998,8 @@ def cmd_dig(command):
                                                       defines_global.OTYPE_EXIT,
                                                       destination,
                                                       source_object,
-                                                      location)
+                                                      location,
+                                                      script_parent=exit_parents[1])
             ptext = ""
             if exit_parents[1]:
                 script_parent = exit_parents[1]
@@ -935,7 +1019,7 @@ def cmd_dig(command):
             source_object.move_to(new_room)
                
 GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
-                             priv_tuple=("objects.dig",))
+                             priv_tuple=("objects.dig",), auto_help=True, staff_help=True)
 
 def cmd_name(command):
     """
@@ -1104,6 +1188,8 @@ def cmd_destroy(command):
     @recover command. The contents of a room will be moved out before it is destroyed,
     and all exits leading to and fro the room will also be destroyed. Note that destroyed
     player objects can not be recovered by the @recover command.
+
+    (See also @create and @open.)
     """
 
     source_object = command.source_object

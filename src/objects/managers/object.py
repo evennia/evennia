@@ -133,15 +133,20 @@ class ObjectManager(models.Manager):
         except IndexError:
             return None
 
-    def global_object_name_search(self, ostring, exact_match=False):
+    def global_object_name_search(self, ostring, exact_match=False, limit_types=[]):
         """
         Searches through all objects for a name match.
+        limit_types is a list of types as defined in defines_global. 
         """
+        if self.is_dbref(ostring):
+            return [self.dbref_search(ostring, limit_types=limit_types)]
+
         if exact_match:
             o_query = self.filter(name__iexact=ostring)
         else:
             o_query = self.filter(name__icontains=ostring)
-                            
+        if limit_types:
+            o_query = o_query.include(type__in=limit_types)                            
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])
 

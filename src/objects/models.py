@@ -2,6 +2,7 @@
 This is where all of the crucial, core object models reside. 
 """
 import re
+import traceback
 
 try: import cPickle as pickle
 except ImportError: import pickle
@@ -603,12 +604,16 @@ class Object(models.Model):
         attrib: (str) The attribute's name.
         """
         if self.has_attribute(attrib):            
-            attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)[0]
+            try:
+                attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)[0]
+            except:
+                # safety, if something goes wrong (like unsynced db), catch it.
+                logger.log_errmsg(traceback.print_exc())
+                return default 
             return attrib.get_value()
         else:            
             return default
             
-
     def get_attribute_obj(self, attrib):
         """
         Returns the attribute object matching the specified name.
