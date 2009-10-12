@@ -9,7 +9,6 @@ from src import locks
 from src import ansi
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src import defines_global
-from src import logger
 
 def cmd_teleport(command):
     """
@@ -186,7 +185,7 @@ def cmd_set(command):
         source_object.emit_to("Set what?")
         return
     target_name = eq_args[0].strip()
-    target = source_object.search_for_object(eq_args[0])
+    target = source_object.search_for_object(target_name)
     # Use search_for_object to handle duplicate/nonexistant results.
     if not target:
         return
@@ -926,7 +925,7 @@ def cmd_dig(command):
     arg_list = args.split("=",1)
     if len(arg_list) < 2:
         #just create a room, no exits
-        room_name = largs[0].strip()
+        room_name = arg_list[0].strip()
     else:
         #deal with args left of =
         larg = arg_list[0]
@@ -1264,7 +1263,18 @@ def cmd_lock(command):
        - a user #dbref (#2, #45 etc)
        - a Group name (Builder, Immortal etc, case sensitive)
        - a Permission string (genperms.get, etc)
-    If no keys are given, the object is locked for everyone.
+       - a Function():return_value pair. (ex: alliance():Red). The
+           function() is called on the locked object (if it exists) and
+           if its return value matches the Key is passed. If no
+           return_value is given, matches against True.
+        - an Attribute:return_value pair (ex: key:yellow_key). The
+          Attribute is the name of an attribute defined on the locked
+          object. If this attribute has a value matching return_value,
+          the lock is passed. If no return_value is given, both
+          attributes and flags will be searched, requiring a True
+          value.
+        
+    If no keys at all are given, the object is locked for everyone.
 
     When the lock blocks a user, you may customize which error is given by
     storing error messages in an attribute. For DefaultLocks, UseLocks and
@@ -1298,7 +1308,7 @@ def cmd_lock(command):
     switches = command.command_switches
     
     if not arg:
-        source_object.emit_to("Usage: @lock[/switch] <obj> [:type] [= <key>[,key2,key3,...]]")
+        source_object.emit_to("Usage: @lock[/switch] <obj> [:type] [= <key>[,key2,key3,...]]")        
         return
     keys = "" 
     #deal with all possible arguments. 
@@ -1360,33 +1370,66 @@ def cmd_lock(command):
             source_object.emit_to("Added impassable '%s' lock to %s." % (ltype, obj.get_name()))
         else: 
             keys = [k.strip() for k in keys.split(",")]
-            okeys, gkeys, pkeys = [], [], []
+            obj_keys, group_keys, perm_keys = [], [], []
+            func_keys, attr_keys, flag_keys = [], [], []
             allgroups = [g.name for g in Group.objects.all()]
-            allperms = ["%s.%s" % (p.content_type.app_label, p.codename) for p in Permission.objects.all()]
+            allperms = ["%s.%s" % (p.content_type.app_label, p.codename)
+                        for p in Permission.objects.all()]
             for key in keys:
                 #differentiate different type of keys
                 if Object.objects.is_dbref(key):
-                    okeys.append(key)
+                    # this is an object key, like #2, #6 etc
+                    obj_keys.append(key)
                 elif key in allgroups:
-                    gkeys.append(key)
+                    # a group key 
+                    group_keys.append(key)
                 elif key in allperms:
-                    pkeys.append(key)
+                    # a permission string 
+                    perm_keys.append(key)
+                elif '()' in key:                    
+                    # a function()[:returnvalue] tuple.
+                    # Check if we also request a return value 
+                    funcname, rvalue = [k.strip() for k in key.split('()',1)]
+                    if not funcname:
+                        funcname = "lock_func"
+                    rvalue = rvalue.lstrip(':')
+                    if not rvalue:
+                        rvalue = True
+                    # pack for later adding.
+                    func_keys.append((funcname, rvalue))
+                elif ':' in key: 
+                    # an attribute/flag[:returnvalue] tuple.
+                    attr_name, rvalue = [k.strip() for k in key.split(':',1)]
+                    if not rvalue:
+                        # if return value is not set, also search for a key. 
+                        rvalue = True
+                        flag_keys.append(attr_name)
+                    # pack for later adding
+                    attr_keys.append((attr_name, rvalue))
                 else:
                     source_object.emit_to("Key '%s' is not recognized as a valid dbref, group or permission." % key)
                     return 
             # Create actual key objects from the respective lists
             keys = []
-            if okeys:
-                keys.append(locks.ObjKey(okeys))
-            if gkeys:
-                keys.append(locks.GroupKey(gkeys))
-            if pkeys:
-                keys.append(locks.PermKey(pkeys))
+            if obj_keys:
+                keys.append(locks.ObjKey(obj_keys))
+            if group_keys:
+                keys.append(locks.GroupKey(group_keys))
+            if perm_keys:
+                keys.append(locks.PermKey(perm_keys))
+            if func_keys: 
+                keys.append(locks.FuncKey(func_keys, obj.dbref()))
+            if attr_keys:
+                keys.append(locks.AttrKey(attr_keys))
+            if flag_keys:
+                keys.append(locks.FlagKey(flag_keys))
+                
             #store the keys in the lock
             obj_locks.add_type(ltype, keys)            
-            kstring = ""
+            kstring = " "
             for key in keys:
-                kstring += " %s" % key 
+                kstring += " %s," % key 
+            kstring = kstring[:-1]
             source_object.emit_to("Added lock '%s' to %s with keys%s." % (ltype, obj.get_name(), kstring))
 
         obj.set_attribute("LOCKS",obj_locks)

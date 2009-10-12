@@ -235,3 +235,14 @@ class EvenniaBasicObject(object):
             return locks.check("EnterLock", pobject)
         else:
             return True
+
+    def lock_func(self, obj):
+        """
+        This is a custom function called by locks with the FuncKey key. Its
+        return value should match that specified in the lock (so no true/false
+        lock result is actually determined in here). Default desired return
+        value is True. Also remember that the comparison in FuncKey is made
+        using the string representation of the return value, since @lock can
+        only define string lock criteria. 
+        """
+        return False

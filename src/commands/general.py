@@ -3,15 +3,12 @@ Generic command module. Pretty much every command should go here for
 now.
 """
 import time
-from django.conf import settings
 from django.contrib.auth.models import User
 from src.config.models import ConfigValue
 from src.helpsys.models import HelpEntry
-from src.objects.models import Object
 from src.ansi import ANSITable
 from src import defines_global
 from src import session_mgr
-from src import ansi
 from src.util import functions_general
 import src.helpsys.management.commands.edit_helpfiles as edit_help
 from src.cmdtable import GLOBAL_CMD_TABLE

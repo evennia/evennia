@@ -5,9 +5,8 @@ A lock object contains a set of criteria (keys). When queried, the
 lock tries the tested object/player against these criteria and returns
 a True/False result. 
 """
-import traceback
+
 from src.objects.models import Object 
-from src import logger 
 
 class Key(object):
     """
@@ -17,51 +16,53 @@ class Key(object):
     the entire key is considered a match. With the 'exact' criterion, all criteria
     contained in the key (except the list of object dbrefs) must also exist in the
     object.
-    With the NOT flag the key is inversed, that is, only objects which do not
-    match the criterias (exact or not) will be considered to have access.
+    With the invert_result flag the key is inversed, that is, only objects which do not
+    match the criteria (exact or not) will be considered to have access.
 
-    Supplying no criteria will make the lock impassable (NOT flag results in an alvays open lock)
+    Supplying no criteria will make the lock impassable (invert_result flag results in an alvays open lock)
     """
-    def __init__(self, criteria=[], extra=[], NOT=False, exact=False):
+    def __init__(self, criteria=[], extra=None, invert_result=False, exact=False):
         """
         Defines the basic permission laws
         permlist (list of strings) - permission definitions
         grouplist (list of strings) - group names
         objlist (list of obj or dbrefs) - match individual objects to the lock
-        NOT (bool) - invert the lock 
+        invert_result (bool) - invert the lock 
         exact (bool) - objects must match all criteria. Default is OR operation.
         """
         self.criteria = criteria
         self.extra = extra 
         
         #set the boolean operators 
-        self.NOT = not NOT 
+        self.invert_result = not invert_result 
         self.exact = exact
 
-        # if we have no criteria, this is an impassable lock (or always open if NOT given).
+        # if we have no criteria, this is an impassable lock
+        # (or always open if invert_result given).
         self.impassable = not(criteria)
 
     def __str__(self):
-        s = ""
+        string = " "
         if not self.criteria:
-            s += " <Impassable>"
+            string += " <Impassable>"
         for crit in self.criteria:
-            s += " <%s>" % crit
-        return s.strip()
+            string += " %s," % crit
+        return string[:-1].strip()
         
     def _result(self, result):
+        "Return result depending on exact criterion."
         if self.exact:
             result = result == len(self.criteria)            
         if result:
-            return self.NOT
+            return self.invert_result
         else:
-            return not self.NOT
+            return not self.invert_result
         
-    def check(self, object):
+    def check(self, obj):
         """
         Compare the object to see if the key matches.
         """
-        if self.NOT:            
+        if self.invert_result:            
             return not self.impassable
         return self.impassable
 
@@ -69,70 +70,149 @@ class ObjKey(Key):
     """
     This implements a Key matching against object id
     """
-    def check(self, object):
-           
+    def check(self, obj):
+        "Checks object against the key."           
         if self.impassable:
-            return self.NOT
-        if object.dbref() in self.criteria:
-            return self.NOT
+            return self.invert_result
+        if obj.dbref() in self.criteria:
+            return self.invert_result
         else:
-            return not self.NOT
+            return not self.invert_result
     
 class GroupKey(Key):
     """
     This key matches against group membership
     """
-    def check(self, object):
-        if self.impassable: return self.NOT
-        user = object.get_user_account()
-        if not user: return False
-        return self._result(len([g for g in user.groups.all() if str(g) in self.criteria]))
+    def check(self, obj):
+        "Checks object against the key."
+        if self.impassable:
+            return self.invert_result
+        user = obj.get_user_account()
+        if not user:
+            return False
+        return self._result(len([g for g in user.groups.all()
+                                 if str(g) in self.criteria]))
         
 class PermKey(Key):
     """
     This key matches against permissions
     """
-    def check(self, object):
-        if self.impassable: return self.NOT
-        user = object.get_user_account()
-        if not user: return False
-        return self._result(len([p for p in self.criteria if object.has_perm(p)]))
+    def check(self, obj):
+        "Checks object against the key."
+        if self.impassable:
+            return self.invert_result
+        user = obj.get_user_account()
+        if not user:
+            return False
+        return self._result(len([p for p in self.criteria
+                                 if obj.has_perm(p)]))
 
 class FlagKey(Key):
     """
-    This key use a set of object flagss to define access.
+    This key use a set of object flags to define access.
+    Only if the trying object has the correct flags will
+    it pass the lock. 
+    self.criterion holds the flag names
     """
-    def check(self, object):
-        if self.impassable: return self.NOT
-        return self._result(len([f for f in self.criteria if object.has_flag(f)]))
+    def __str__(self):
+        string = " "
+        if not self.criteria:
+            string += " <Impassable>"
+        for crit in self.criteria:
+            string += " obj.%s," % str(crit).upper()
+        return string[:-1].strip()
+    
+    def check(self, obj):
+        "Checks object against the key."
+        if self.impassable:
+            return self.invert_result
+        return self._result(len([f for f in self.criteria
+                                 if obj.has_flag(f)]))
                 
 class AttrKey(Key):
     """
     This key use a list of arbitrary attributes to define access.
 
-    The attribute names are in the usual criteria. If there is a matching
-    list of values in the self.extra list we compare the values directly,
-    otherwise we just check for the existence of the attribute. 
+    self.criteria contains a list of tuples [(attrname, value),...].
+    The attribute with the given name must match the given value in
+    order to pass the lock. 
     """
-    def check(self, object):
-        if self.impassable: return self.NOT
-        val_list = self.extra 
-        attr_list = self.criteria 
-        if len(val_list) == len(attr_list):
-            return self._result(len([i for i in range(attr_list)
-                                if object.get_attribute_value(attr_list[i])==val_list[i]]))
-        else:
-            return _result(len([a for a in attr_list if object.get_attribute_value(a)]))
+    def __str__(self):
+        string = " "
+        if not self.criteria:
+            string += " <Impassable>"
+        for crit in self.criteria:
+            string += " obj.%s=%s," % (crit[0],crit[1])
+        return string[:-1].strip()
+
+    def check(self, obj):
+        "Checks object against the key."
+
+        if self.impassable:
+            return self.invert_result
+
+        return self._result(len([tup for tup in self.criteria
+                                 if len(tup)>1 and
+                                 obj.get_attribute_value(tup[0]) == tup[1]]))
+
+class FuncKey(Key):
+    """
+    This Key stores a set of function names and return values. The matching
+    of those return values depend on the function (defined on the locked object) to
+    return a matching value to the one stored in the key    
+
+    The relevant data is stored in the key in this format:
+    self.criteria = list of (funcname, return_value) tuples, where funcname
+                    is a function to be called on the locked object.
+                    This function func(obj) takes the calling object
+                    as argument and only
+                    if its return value matches the one set in the tuple
+                    will the lock be passed. Note that the return value
+                    can, in the case of locks set with @lock, only be
+                    a string, so in the comparison we do a string
+                    conversion of the return values. 
+    self.index contains the locked object's dbref. 
+    """
+    def __str__(self):
+        string = ""
+        if not self.criteria:
+            string += " <Impassable>"
+        for crit in self.criteria:
+            string += " lockobj.%s(obj) => %s" % (crit[0],crit[1])
+        return string.strip()
+
+    def check(self, obj):
+        "Checks object against the stored locks."
+        if self.impassable:
+            return self.invert_result
+
+        # we need the locked object since the lock-function is defined on it. 
+        lock_obj = Object.objects.dbref_search(self.extra)
+        if not lock_obj:
+            return self.invert_result
+
+        # build tuples of functions and their return values
+        ftuple_list = [(getattr(lock_obj.scriptlink, tup[0], None),
+                        tup[1]) for tup in self.criteria
+                       if len(tup) > 1]
         
+        # loop through the comparisons. Convert to strings before
+        # doing the comparison. 
+        return self._result(len([ftup for ftup in ftuple_list
+                                if callable(ftup[0]) and
+                                str(ftup[0](obj)) == str(ftup[1])]))
+                
 class Locks(object):
     """
-    The Locks object defines an overall grouping of Locks based after type. Each lock
-    contains a set of keys to limit access to a certain action.
-    The Lock object is stored in the attribute LOCKS on the object in question and the
-    engine queries it during the relevant situations.
+    The Locks object defines an overall grouping of Locks based after type.
+    The Locks object is stored in the reserved attribute LOCKS on the locked object.
+    Each Locks instance stores a set of keys for each Lock type, normally
+    created using the @lock command in-game. The engine queries Locks.check()
+    with an object as argument in order to determine if the object has access. 
 
-    Below is a list copied from MUX. Currently Evennia only use 3 lock types:
-    Default, Use and Enter; it's not clear if any more are really needed.
+    Below is a list of Lock-types copied from MUX. Currently Evennia only use
+    3 lock types: Default, Use and Enter; it's not clear if any more are really
+    needed.
     
     Name:          Affects:        Effect:  
     -----------------------------------------------------------------------
@@ -192,10 +272,10 @@ class Locks(object):
         self.locks = {}
 
     def __str__(self):
-        s = ""
+        string = ""
         for lock in self.locks.keys():
-            s += " %s" % lock
-        return s.strip()
+            string += " %s" % lock
+        return string.strip()
 
     def add_type(self, ltype, keys=[]):
         """
@@ -206,27 +286,32 @@ class Locks(object):
             keys = [keys]
         self.locks[ltype] = keys
 
-    def del_type(self,ltype):
+    def del_type(self, ltype):
         """
         Clears a lock. 
         """
         if self.has_type(ltype):
             del self.locks[ltype]
     
-    def has_type(self,ltype):
+    def has_type(self, ltype):
+        "Checks if LockType ltype exists in the lock."
         return self.locks.has_key(ltype)
 
     def show(self):
+        """
+        Displays a fancier view of the stored locks and their keys. 
+        """
         if not self.locks:
             return "No locks."            
-        s = ""
+        string = " "
         for lock, keys in self.locks.items():
-            s += "\n %s\n  " % lock
+            string += "\n %s\n  " % lock
             for key in keys:
-                s += " %s" % key
-        return s
+                string += " %s," % key
+            string = string[:-1]
+        return string
 
-    def check(self, ltype, object):
+    def check(self, ltype, obj):
         """
         This is called by the engine. It checks if this lock is of the right type,
         and if so if there is access. If the type does not exist, there is no
@@ -237,10 +322,10 @@ class Locks(object):
         result = False 
         for key in self.locks[ltype]:
             try:
-                result = result or key.check(object)
+                result = result or key.check(obj)
             except KeyError:
                 pass 
-        if not result and object.is_superuser():
-            object.emit_to("Lock '%s' - Superuser override." % ltype)
+        if not result and obj.is_superuser():
+            obj.emit_to("Lock '%s' - Superuser override." % ltype)
             return True        
         return result 
