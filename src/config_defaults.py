@@ -88,6 +88,7 @@ PERM_CHANNELS = (
     ('page','May page other users.'),)
 # help system access permissions
 PERM_HELPSYS = ( 
+    ("admin_help","May admin the help system"),
     ("staff_help", "May see staff help topics."),
     ("add_help", "May add or append to help entries"),
     ("del_help", "May delete help entries"),)
@@ -135,31 +136,50 @@ PERM_ALL_CUSTOM = ()
 
 # A dict defining the groups, on the form {group_name:(perm1,perm2,...),...}
 PERM_GROUPS = \
-            {"Immortals":('irc.admin_irc_channels','imc2.admin_imc_channels','channels.emit_commchannel',
-                          'channels.channel_admin','channels.page','helpsys.staff_help','helpsys.add_help',
-                          'helpsys.del_help','objects.teleport','objects.wipe','objects.modify_attributes',
-                          'objects.info','objects.create','objects.dig','objects.see_dbref','objects.admin_ownership',
-                          'genperms.announce','genperms.admin_perm','genperms.admin_group','genperms.process_control',
-                          'genperms.manage_players','genperms.game_info'),
-             "Wizards": ('irc.admin_irc_channels','imc2.admin_imc_channels','channels.emit_commchannel',
-                         'channels.channel_admin','channels.page','helpsys.staff_help','helpsys.add_help',
-                         'helpsys.del_help','objects.teleport','objects.wipe','objects.see_dbref',
-                         'objects.modify_attributes',
-                         'objects.info','objects.create','objects.dig','objects.admin_ownership','genperms.announce',
-                         'genperms.game_info'),
-             "Builders":('channels.emit_commchannel','channels.page','helpsys.staff_help','helpsys.add_help',
-                         'helpsys.del_help','objects.teleport','objects.wipe','objects.see_dbref',
-                         'objects.modify_attributes', 'objects.info','objects.create','objects.dig',
-                         'genperms.game_info'),
-             "Player Helpers":('channels.emit_commchannel', 'channels.page', 'helpsys.staff_help',
-                               'helpsys.add_help','helpsys.del_help'),
-             "Players":('channels.emit_commchannel','channels.page')
+    {"Immortals":('irc.admin_irc_channels', 'imc2.admin_imc_channels', 'channels.emit_commchannel',
+                  'channels.channel_admin', 'channels.page', 'helpsys.admin_help',
+                  'helpsys.staff_help', 'helpsys.add_help',
+                  'helpsys.del_help', 'objects.teleport', 'objects.wipe', 'objects.modify_attributes',
+                  'objects.info','objects.create','objects.dig','objects.see_dbref',
+                  'objects.admin_ownership', 'genperms.announce', 'genperms.admin_perm',
+                  'genperms.admin_group', 'genperms.process_control', 'genperms.manage_players',
+                  'genperms.game_info'),
+    "Wizards": ('irc.admin_irc_channels', 'imc2.admin_imc_channels', 'channels.emit_commchannel',
+                'channels.channel_admin', 'channels.page', 'helpsys.admin_help',
+                'helpsys.staff_help', 'helpsys.add_help',
+                'helpsys.del_help', 'objects.teleport', 'objects.wipe', 'objects.see_dbref',
+                'objects.modify_attributes', 'objects.info', 'objects.create', 'objects.dig',
+                'objects.admin_ownership', 'genperms.announce', 'genperms.game_info'),
+     "Builders":('channels.emit_commchannel', 'channels.page', 'helpsys.staff_help',
+                 'helpsys.add_help', 'helpsys.del_help',
+                 'objects.teleport', 'objects.wipe', 'objects.see_dbref',
+                 'objects.modify_attributes', 'objects.info',
+                 'objects.create', 'objects.dig', 'genperms.game_info'),
+     "Player Helpers":('channels.emit_commchannel', 'channels.page', 'helpsys.staff_help',
+                       'helpsys.add_help', 'helpsys.del_help'),
+     "Players":('channels.emit_commchannel', 'channels.page')
              }
 # By defining a default player group, all players may start with some permissions pre-set. 
 PERM_DEFAULT_PLAYER_GROUP = "Players"
 
+## Help system
+## Evennia allows automatic help-updating of commands by use of the auto-help system
+## which use the command's docstrings for documentation, automatically updating it
+## as commands are reloaded. Auto-help is a powerful way to keep your help database
+## up-to-date, but it will also overwrite manual changes made
+## to the help database using other means (@set_help, admin interface etc), so 
+## for a production environment you might want to turn auto-help off. You can
+## later activate auto-help on a per-command basis (e.g. when developing a new command)
+## using the auto_help_override argument to add_command(). 
 
-# Your names of various default comm channels for emitting debug- or informative messages.
+# activate the auto-help system
+HELP_AUTO_ENABLED = True 
+# Add a dynamically calculated 'See also' footer to help entries
+HELP_SHOW_RELATED = True
+
+## Channels
+## Your names of various default comm channels for emitting debug- or informative messages.
+
 COMMCHAN_MUD_INFO = 'MUDInfo'
 COMMCHAN_MUD_CONNECTIONS = 'MUDConnections'
 COMMCHAN_IMC2_INFO = 'MUDInfo'

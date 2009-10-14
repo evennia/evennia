@@ -1,14 +1,8 @@
 """
 IMC2 user and administrative commands.
 """
-from time import time
 from django.conf import settings
-from src.config.models import ConfigValue
-from src.objects.models import Object
-from src import defines_global
-from src import ansi
 from src import comsys
-from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src.ansi import parse_ansi
 from src.imc2.imc_ansi import IMCANSIParser
@@ -20,7 +14,12 @@ from src.channels.models import CommChannel
 
 def cmd_imcwhois(command):
     """
-    Shows a player's inventory.
+    imcwhois
+
+    Usage:
+      imcwhois
+      
+    IMC2 command. Shows a player's inventory.
     """
     source_object = command.source_object
     if not command.command_argument:    
@@ -30,10 +29,15 @@ def cmd_imcwhois(command):
         source_object.emit_to("Sending IMC whois request. If you receive no response, no matches were found.")
         packet = IMC2PacketWhois(source_object, command.command_argument)
         imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
-GLOBAL_CMD_TABLE.add_command("imcwhois", cmd_imcwhois)
+GLOBAL_CMD_TABLE.add_command("imcwhois", cmd_imcwhois, help_category="Comms")
 
 def cmd_imcansi(command):
     """
+    imcansi
+    
+    Usage:
+      imcansi <string>
+      
     Test IMC ANSI conversion.
     """
     source_object = command.source_object
@@ -43,20 +47,30 @@ def cmd_imcansi(command):
     else:
         retval = parse_ansi(command.command_argument, parser=IMCANSIParser())
         source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imcansi", cmd_imcansi)
+GLOBAL_CMD_TABLE.add_command("imcansi", cmd_imcansi, help_category="Comms")
 
 def cmd_imcicerefresh(command):
     """
-    Semds an ice-refresh packet.
+    imcicerefresh
+
+    Usage:
+      imcicerefresh
+
+    IMC2: Semds an ice-refresh packet.
     """
     source_object = command.source_object
     packet = IMC2PacketIceRefresh()
     imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
     source_object.emit_to("Sent")
-GLOBAL_CMD_TABLE.add_command("imcicerefresh", cmd_imcicerefresh)
+GLOBAL_CMD_TABLE.add_command("imcicerefresh", cmd_imcicerefresh, help_category="Comms")
 
 def cmd_imcchanlist(command):
     """
+    imcchanlist
+
+    Usage:
+      imcchanlist
+      
     Shows the list of cached channels from the IMC2 Channel list.
     """
     source_object = command.source_object
@@ -73,10 +87,15 @@ def cmd_imcchanlist(command):
                                                       channel.policy)
     retval += '%s channels found.' % len(IMC2_CHANLIST.chan_list)
     source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imcchanlist", cmd_imcchanlist)
+GLOBAL_CMD_TABLE.add_command("imcchanlist", cmd_imcchanlist, help_category="Comms")
 
 def cmd_imclist(command):
     """
+    imclist
+
+    Usage:
+       imclist
+
     Shows the list of cached games from the IMC2 Mud list.
     """
     source_object = command.source_object
@@ -88,10 +107,15 @@ def cmd_imclist(command):
         retval += '%s\n\r' % mudline[:78]
     retval += '%s active MUDs found.' % len(IMC2_MUDLIST.mud_list)
     source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imclist", cmd_imclist)
+GLOBAL_CMD_TABLE.add_command("imclist", cmd_imclist, help_category="Comms")
 
 def cmd_imcstatus(command):
     """
+    imcstatus
+
+    Usage:
+      imcstatus
+      
     Shows some status information for your IMC2 connection.
     """
     source_object = command.source_object
@@ -118,21 +142,24 @@ def cmd_imcstatus(command):
     
     source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("imcstatus", cmd_imcstatus,
-                             priv_tuple=('imc2.admin_imc_channels',))
+                             priv_tuple=('imc2.admin_imc_channels',), help_category="Comms")
 
 
 def cmd_IMC2chan(command):
     """
-    @imc2chan IMCServer:IMCchannel channel
+    @imc2chan
 
-    Links an IMC channel to an existing
-    evennia channel. You can link as many existing
+    Usage:
+      @imc2chan <IMCServer> : <IMCchannel> <channel>
+
+    Links an IMC channel to an existing evennia
+    channel. You can link as many existing
     evennia channels as you like to the
     IMC channel this way. Running the command with an
     existing mapping will re-map the channels.
 
-    Use 'imcchanlist' to get a list of IMC channels and servers.
-    Note that both are case sensitive. 
+    Use 'imcchanlist' to get a list of IMC channels and
+    servers. Note that both are case sensitive. 
     """
     source_object = command.source_object
     if not settings.IMC2_ENABLED:
@@ -179,6 +206,6 @@ def cmd_IMC2chan(command):
     outstring += "Mapping set: %s." % mapping    
     source_object.emit_to(outstring)
 
-GLOBAL_CMD_TABLE.add_command("@imc2chan",cmd_IMC2chan,auto_help=True,staff_help=True,
-                             priv_tuple=("imc2.admin_imc_channels",))
+GLOBAL_CMD_TABLE.add_command("@imc2chan",cmd_IMC2chan,
+                             priv_tuple=("imc2.admin_imc_channels",), help_category="Comms")
     

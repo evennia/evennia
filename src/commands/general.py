@@ -7,17 +7,19 @@ from django.contrib.auth.models import User
 from src.config.models import ConfigValue
 from src.helpsys.models import HelpEntry
 from src.ansi import ANSITable
-from src import defines_global
 from src import session_mgr
 from src.util import functions_general
-import src.helpsys.management.commands.edit_helpfiles as edit_help
+from src.helpsys import helpsystem
 from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_password(command):
     """
-    Changes your own password.
-    
-    @password <Oldpass>=<Newpass>
+    @password - set your password
+
+    Usage:
+      @paassword <old password> = <new password>
+
+    Changes your password. Make sure to pick a safe one.
     """
     source_object = command.source_object
     
@@ -54,18 +56,27 @@ def cmd_password(command):
             uaccount.set_password(newpass)
             uaccount.save()
             source_object.emit_to("Password changed.")
-GLOBAL_CMD_TABLE.add_command("@password", cmd_password)
+GLOBAL_CMD_TABLE.add_command("@password", cmd_password, help_category="System")
 
 def cmd_pemit(command):        
     """
+    @pemit
+    
     Emits something to a player.
+
+    (Not yet implemented)
     """
     # TODO: Implement cmd_pemit
 #GLOBAL_CMD_TABLE.add_command("@pemit", cmd_pemit)
 
 def cmd_emit(command):        
     """
-    Emits something to your location.
+    @emit
+
+    Usage:
+      @emit <message>
+      
+    Emits a message to your immediate surroundings.
     """
     message = command.command_argument
     
@@ -74,10 +85,15 @@ def cmd_emit(command):
     else:
         command.source_object.emit_to("Emit what?")
 GLOBAL_CMD_TABLE.add_command("@emit", cmd_emit,
-                             priv_tuple=("genperms.announce")),
+                             priv_tuple=("genperms.announce",),help_category="Comms"),
 
 def cmd_wall(command):
     """
+    @wall
+
+    Usage:
+      @wall <message>
+      
     Announces a message to all connected players.
     """
     wallstring = command.command_argument
@@ -90,18 +106,29 @@ def cmd_wall(command):
             command.source_object.get_name(show_dbref=False), wallstring)
     session_mgr.announce_all(message)
 GLOBAL_CMD_TABLE.add_command("@wall", cmd_wall,
-                             priv_tuple=("genperms.announce"))
+                             priv_tuple=("genperms.announce",),help_category="Comms")
 
 def cmd_idle(command):
     """
-    Returns nothing, this lets the player set an idle timer without spamming
-    his screen.
+    idle
+
+    Usage:
+      idle 
+
+    Returns and does nothing. You can use this to send idle
+    messages to the game, in order to avoid getting timed out.
     """
     pass
-GLOBAL_CMD_TABLE.add_command("idle", cmd_idle)
+GLOBAL_CMD_TABLE.add_command("idle", cmd_idle, help_category="System")
     
 def cmd_inventory(command):
     """
+    inventory
+
+    Usage:
+      inventory
+      inv
+      
     Shows a player's inventory.
     """
     source_object = command.source_object
@@ -121,7 +148,13 @@ GLOBAL_CMD_TABLE.add_command("inventory", cmd_inventory)
 
 def cmd_look(command):
     """
-    Handle looking at objects.
+    look
+
+    Usage:
+      look
+      look <obj> 
+
+    Observers your location or objects in your vicinity. 
     """
     source_object = command.source_object
     
@@ -144,7 +177,13 @@ GLOBAL_CMD_TABLE.add_command("look", cmd_look)
             
 def cmd_get(command):
     """
-    Get an object and put it in a player's inventory.
+    get
+
+    Usage:
+      get <obj>
+      
+    Picks up an object from your location and puts it in
+    your inventory.
     """
     source_object = command.source_object
     obj_is_staff = source_object.is_staff()
@@ -193,11 +232,15 @@ GLOBAL_CMD_TABLE.add_command("get", cmd_get)
             
 def cmd_drop(command):
     """
-    Drop an object from a player's inventory into their current location.
+    drop
+
+    Usage:
+      drop <obj>
+      
+    Has you drop an object from your inventory into the 
+    location you are currently in.
     """
     source_object = command.source_object
-    obj_is_staff = source_object.is_staff()
-
     if not command.command_argument:    
         source_object.emit_to("Drop what?")
         return
@@ -219,153 +262,40 @@ def cmd_drop(command):
                                              target_obj.get_name(show_dbref=False)), 
                                              exclude=source_object)
 
-    # SCRIPT: Call the object's script's a_drop() method.
+    # SCRIPT: Call the object script's a_drop() method.
     target_obj.scriptlink.at_drop(source_object)
 GLOBAL_CMD_TABLE.add_command("drop", cmd_drop),
-            
-def cmd_examine(command):
-    """
-    Detailed object examine command
-    """
-    source_object = command.source_object
-    attr_search = False
-    
-    if not command.command_argument:    
-        # If no arguments are provided, examine the invoker's location.
-        target_obj = source_object.get_location()
-    else:
-        # Look for a slash in the input, indicating an attribute search.
-        attr_split = command.command_argument.split("/", 1)
-        
-        # If the splitting by the "/" character returns a list with more than 1
-        # entry, it's an attribute match.
-        if len(attr_split) > 1:
-            attr_search = True
-            # Strip the object search string from the input with the
-            # object/attribute pair.
-            obj_searchstr = attr_split[0]
-            attr_searchstr = attr_split[1].strip()
-            
-            # Protect against stuff like: ex me/
-            if attr_searchstr == '':
-                source_object.emit_to('No attribute name provided.')
-                return
-        else:
-            # No slash in argument, just examine an object.
-            obj_searchstr = command.command_argument
-
-        # Resolve the target object.
-        target_obj = source_object.search_for_object(obj_searchstr)
-        # Use search_for_object to handle duplicate/nonexistant results.
-        if not target_obj:
-            return
-        
-    # If the user doesn't control the object, just look at it instead.
-    if not source_object.controls_other(target_obj, builder_override=True):
-        command.command_string = 'look'
-        cmd_look(command)
-        return
-            
-    if attr_search:
-        """
-        Player did something like: examine me/* or examine me/TE*. Return
-        each matching attribute with its value.
-        """
-        attr_matches = target_obj.attribute_namesearch(attr_searchstr)
-        if attr_matches:
-            for attribute in attr_matches:
-                source_object.emit_to(attribute.get_attrline())
-        else:
-            source_object.emit_to("No matching attributes found.")
-    else:
-        """
-        Player is examining an object. Return a full readout of attributes,
-        along with detailed information about said object.
-        """
-        s = ""        
-        newl = "\r\n"
-        # Format the examine header area with general flag/type info.
-        
-        s += str(target_obj.get_name(fullname=True)) + newl
-        s += str("Type: %s Flags: %s" % (target_obj.get_type(), 
-                                         target_obj.get_flags())) + newl        
-        s += str("Owner: %s " % target_obj.get_owner()) + newl
-        s += str("Zone: %s" % target_obj.get_zone()) + newl
-        s += str("Parent: %s " % target_obj.get_script_parent()) + newl
-
-        locks = target_obj.get_attribute_value("LOCKS")
-        if locks and "%s" % locks:
-            s += str("Locks: %s" % locks) + newl
-               
-        # Contents container lists for sorting by type.
-        con_players = []
-        con_things = []
-        con_exits = []
-        
-        # Break each object out into their own list.
-        for obj in target_obj.get_contents():
-            if obj.is_player():
-                con_players.append(obj)  
-            elif obj.is_exit():
-                con_exits.append(obj)
-            elif obj.is_thing():
-                con_things.append(obj)
-        
-        # Render the object's home or destination (for exits).
-        if not target_obj.is_room():
-            if target_obj.is_exit():
-                # The Home attribute on an exit is really its destination.
-                s += str("Destination: %s" % target_obj.get_home()) + newl
-            else:
-                # For everything else, home is home.
-                s += str("Home: %s" % target_obj.get_home()) + newl
-            # This obviously isn't valid for rooms.    
-            s += str("Location: %s" % target_obj.get_location()) + newl
-
-        # Render other attributes
-        for attribute in target_obj.get_all_attributes():            
-            s += str(attribute.get_attrline()) + newl
-
-        # Render Contents display.
-        if con_players or con_things:
-            s += str("%sContents:%s" % (ANSITable.ansi["hilite"], 
-                                        ANSITable.ansi["normal"]))
-            for player in con_players:
-                s += str(' %s' % newl + player.get_name(fullname=True))
-            for thing in con_things:
-                s += str(' %s' % newl + thing.get_name(fullname=True))
                 
-        # Render Exists display.
-        if con_exits:
-            s += str("%sExits:%s" % (newl + ANSITable.ansi["hilite"], 
-                                     ANSITable.ansi["normal"]))
-            for exit in con_exits:
-                s += str(' %s' % newl + exit.get_name(fullname=True))
-
-        # Send it all
-        source_object.emit_to(s)
-            
-GLOBAL_CMD_TABLE.add_command("examine", cmd_examine,priv_tuple=("objects.info",))
-    
 def cmd_quit(command):
     """
-    Gracefully disconnect the user as per his own request.
+    quit
+
+    Usage:
+      quit 
+
+    Gracefully disconnect from the game.
     """
     if command.session:
         session = command.session
         session.msg("Quitting. Hope to see you soon again.")
         session.handle_close()
-GLOBAL_CMD_TABLE.add_command("quit", cmd_quit)
+GLOBAL_CMD_TABLE.add_command("quit", cmd_quit, help_category="System")
     
 def cmd_who(command):
     """
-    Generic WHO command.
+    who
+
+    Usage:
+      who 
+
+    Shows who is currently online. 
     """
     session_list = session_mgr.get_session_list()
     source_object = command.source_object
     
     # In the case of the DOING command, don't show session data regardless.
-    if command.extra_vars and command.extra_vars.get("show_session_data", None) == False:
+    if command.extra_vars and \
+           command.extra_vars.get("show_session_data", None) == False:
         show_session_data = False
     else:
         show_session_data = source_object.has_perm("genperms.see_session_data")
@@ -412,12 +342,17 @@ def cmd_who(command):
     
     source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("doing", cmd_who, 
-                             extra_vals={"show_session_data": False})
-GLOBAL_CMD_TABLE.add_command("who", cmd_who)
+                             extra_vals={"show_session_data": False}, help_category="System")
+GLOBAL_CMD_TABLE.add_command("who", cmd_who,help_category="System")
 
 def cmd_say(command):
     """
-    Room-based speech command.
+    say
+
+    Usage:
+      say <message>
+      
+    Talk to those in your current location. 
     """
     source_object = command.source_object
 
@@ -441,7 +376,18 @@ GLOBAL_CMD_TABLE.add_command("say", cmd_say)
 
 def cmd_pose(command):
     """
-    Pose/emote command.
+    pose - strike a pose
+
+    Usage:
+      pose <pose text>
+
+    Example:
+      pose is standing by the wall, smiling.
+       -> others will see:
+     Tom is standing by the wall, smiling.    
+
+    Describe an action being taken. The pose text will
+    automatically begin with your name. 
     """
     source_object = command.source_object
 
@@ -464,189 +410,134 @@ def cmd_pose(command):
 GLOBAL_CMD_TABLE.add_command("pose", cmd_pose)
 
 def cmd_group(command):
-    """@group
+    """
+    @group - show your groups
+
     Usage:
       @group
 
-    This command shows you which user permission groups you are a member of, if any. 
+    This command shows you which user permission groups
+    you are a member of, if any. 
     """
     source_object = command.source_object    
-    user = User.objects.get(username=source_object.get_name(show_dbref=False,no_ansi=True))    
-    s = ""
+    user = User.objects.get(username=source_object.get_name(show_dbref=False, no_ansi=True))    
+    string = ""
     if source_object.is_superuser():
-        s += "\n  This is a SUPERUSER account! Group membership does not matter."
+        string += "\n  This is a SUPERUSER account! Group membership does not matter."
     if not user.is_active:
-        s += "\n  ACCOUNT NOT ACTIVE."
-    for g in user.groups.all():
-        s += "\n -- %s" % g 
-        for p in g.permissions.all():
-            s += "\n   --- %s" % p.name        
-    if not s:
-        s = "You are not a member of any groups." % source_object.get_name(show_dbref=False)
+        string += "\n  ACCOUNT NOT ACTIVE."
+    for group in user.groups.all():
+        string += "\n -- %s" % group 
+        for perm in group.permissions.all():
+            string += "\n   --- %s" % perm.name        
+    if not string:
+        string = "You are not a member of any groups." % source_object.get_name(show_dbref=False)
     else: 
-        s = "\nYour (%s's) group memberships: %s" % (source_object.get_name(show_dbref=False),s)     
-    source_object.emit_to(s)
-GLOBAL_CMD_TABLE.add_command("@group", cmd_group,auto_help=True)    
-
+        string = "\nYour (%s's) group memberships: %s" % (source_object.get_name(show_dbref=False), string)     
+    source_object.emit_to(string)
+GLOBAL_CMD_TABLE.add_command("@group", cmd_group)    
+GLOBAL_CMD_TABLE.add_command("@groups", cmd_group, help_category="System")    
 
 def cmd_help(command):
     """
-    Help command
-    Usage: help <topic>
+    help - view help database
+
+    Usage:
+      help <topic>
 
     Examples: help index
               help topic              
-              help 2
+              help 345
               
-    Shows the available help on <topic>. Use without <topic> to
-    get the help index. If more than one topic match your query, you will get a
+    Shows the available help on <topic>. Use without <topic> to get the help
+    index. If more than one topic match your query, you will get a
     list of topics to choose between. You can also supply a help entry number
     directly if you know it.
-                                
-    <<TOPIC:STAFF:help_staff>>
-    Help command extra functions for staff: 
-    
-    help index         - the normal index
-    help index_staff   - show only help files unique to staff
-    help index_player  - show only help files visible to all players
-
-    The help command has a range of staff-only switches for manipulating the
-    help data base:
-    
-     help/add <topic>:<text>    - add/replace help topic with text (staff only)
-     help/append <topic>:<text> - add text to the end of a topic (staff only)
-                                  (use the /newline switch to add a new paragraph
-                                   to your help entry.)
-     help/delete <topic>        - delete help topic (staff only)
-     
-    Note: further switches are /force and /staff. /force is used together with /add to
-    always create a help entry, also when they partially match a previous entry. /staff
-    makes the help file visible to staff only. The /append switch can be used to change the
-    /staff setting of an existing help file if required.
-
-    The <text> entry supports markup to automatically divide the help text into 
-    sub-entries. These are started by the markup < <TOPIC:MyTopic> > (with no spaces
-    between the << >>), which will create a new subsectioned entry 'MyTopic' for all
-    text to follow it. All subsections to be added this way are automatically
-    referred to in the footer of each help entry. Normally the subsections inherit the
-    staff_only flag from the main entry (so if this is a staff-only help, all subentries
-    will also be staff-only and vice versa). You can override this behaviour using the
-    alternate forms < <TOPIC:STAFF:MyTopic> > and < <TOPIC:ALL:MyTopic> >. 
-     
     """
-    
+                                   
     source_object = command.source_object
-    topicstr = command.command_argument
-    switches = command.command_switches
+    topicstr = command.command_argument    
     
     if not command.command_argument:
         #display topic index if just help command is given
-        if not switches:
-            topicstr = "topic"
-        else:
-            #avoid applying things to "topic" by mistake
-            source_object.emit_to("You have to supply a topic.")
-            return
-        
-    elif len(topicstr) < 2 and not topicstr.isdigit():
+        topicstr = "index"        
+
+    if len(topicstr) < 2 and not topicstr.isdigit():
         #check valid query
         source_object.emit_to("Your search query must be at least two letters long.")
         return
 
-    #speciel help index names. These entries are dynamically
-    #created upon request. 
-    if topicstr == 'index':
-        #the normal index, affected by permissions
-        edit_help.get_help_index(source_object)
+    # speciel help index names. These entries are dynamically
+    # created upon request. 
+    if topicstr in ['topic','topics']:
+        # the full index, affected by permissions        
+        text = helpsystem.viewhelp.index_full(source_object)
+        text = " \nHELP TOPICS (By Category):\n\r%s" % text
+        source_object.emit_to(text)
         return
-    elif topicstr == 'index_staff':
-        #allows staff to view only staff-specific help
-        edit_help.get_help_index(source_object,filter='staff')
-        return
-    elif topicstr == 'index_player':
-        #allows staff to view only the help files a player sees 
-        edit_help.get_help_index(source_object,filter='player')
-        return
-    
-    #handle special switches
 
-    force_create = 'for' in switches or 'force' in switches
-    staff_only = 'sta' in switches or 'staff' in switches
+    elif 'index' in topicstr:
+        # view the category index
+        text = helpsystem.viewhelp.index_categories()
+        text = " \nHELP CATEGORIES (try 'help <category>' or 'help topics'):\n\r\n\r%s" % text
+        source_object.emit_to(text)
+        return
 
-    if 'add' in switches:
-        #try to add/replace help text for a command        
-        if not source_object.has_perm("helpsys.add_help"):
-            source_object.emit_to(defines_global.NOPERMS_MSG)
-            return         
-        spl = (topicstr.split(':',1))
-        if len(spl) != 2:
-            source_object.emit_to("Format is help/add <topic>:<helptext>")
-            return        
-        topicstr = spl[0]
-        text = spl[1]
-        topics = edit_help.add_help(topicstr,text,staff_only,force_create,source_object)
-        if not topics:
-            source_object.emit_to("No topic(s) added due to errors. Check syntax and that you don't have duplicate subtopics with the same name defined.")
+    # not a special help index entry. Do a search for the help entry.
+    topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)
+
+    # display help entry or handle no/multiple matches 
+
+    string = ""
+    if not topics:
+        # no matches.
+
+        # try to see if it is matching the name of a category. If so,
+        # show the topics for this category.
+        text = helpsystem.viewhelp.index_category(source_object, topicstr)
+        if text:
+            # We have category matches, display the index and exit.            
+            string = "\n%s%s%s\n\r\n\r%s" % ("---", " Help topics in category %s: " % \
+                                       topicstr.capitalize(), "-"* (30-len(topicstr)), text)
+            source_object.emit_to(string)
             return 
-        elif len(topics)>1:
-            source_object.emit_to("Added or replaced multiple help entries.")
+
+        # at this point we just give a not-found error and give suggestions.
+        topics = HelpEntry.objects.find_topicsuggestions(source_object, 
+                                                         topicstr)         
+        if topics: 
+            if len(topics) > 3:
+                topics = topics[:3]
+            string += "\n\rMatching similarly named topics (use name or number to refine search):"
+            for entry in topics: 
+                string += "\n  %i.%s" % (entry.id, entry.topicname)
         else:
-            source_object.emit_to("Added or replaced help entry for %s." % topicstr )
+            string += "No matching topics found, please refine your search."        
 
-    elif 'append' in switches or 'app' in switches:
-        #append text to a help entry
-        if not source_object.has_perm("helpsys.add_help"):
-            source_object.emit_to(defines_global.NOPERMS_MSG)
-            return         
-        spl = (topicstr.split(':',1))
-        if len(spl) != 2: 
-            source_object.emit_to("""Format is help/append <topic>:<text to add>
-                                     Use the /newline switch to make a new paragraph.""")
-            return        
-        topicstr = spl[0]
-        text = spl[1]
-        topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)        
-        if len(topics) == 1:
-            newtext = topics[0].get_entrytext_ingame()
-            if 'newl' in switches or 'newline' in switches:
-                newtext += "\n\r\n\r%s" % text
-            else:
-                newtext += "\n\r%s" % text
-            topics = edit_help.add_help(topicstr,newtext,staff_only,force_create,source_object)
-            if topics:
-                source_object.emit_to("Appended text to help entry for %s." % topicstr)
-                           
-    elif 'del' in switches or 'delete' in switches:
-        #delete a help entry
-        if not source_object.has_perm("helpsys.del_help"):
-            source_object.emit_to(defines_global.NOPERMS_MSG)
-            return                
-        topics = edit_help.del_help(source_object,topicstr)
-        if type(topics) != type(list()):
-            source_object.emit_to("Help entry '%s' deleted." % topicstr)
-            return
-
-    else:
-        #no switch; just try to get the help as normal
-        topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)        
-        
-    #display help entry or handle no/multiple matches 
-
-    if len(topics) == 0:
-        source_object.emit_to("No matching topics found, please refine your search.")
-        suggestions = HelpEntry.objects.find_topicsuggestions(source_object, 
-                                                              topicstr)
-        if len(suggestions) > 0:
-            source_object.emit_to("Matching similarly named topics:")
-            for result in suggestions:
-                source_object.emit_to("  %s" % (result,))
-            source_object.emit_to("You may type 'help <#>' to see any of these topics.")
+            
     elif len(topics) > 1:
-        source_object.emit_to("More than one match found:")
+        # multiple matches found
+        string += "More than one match found:"        
         for result in topics:
-            source_object.emit_to("  %3d. %s" % (result.id, result.get_topicname()))
-        source_object.emit_to("You may type 'help <#>' to see any of these topics.")
+            string += "  %3d. %s" % (result.id, result.get_topicname())
+
     else:    
+        # a single match found
         topic = topics[0]
-        source_object.emit_to("\n\r "+ topic.get_entrytext_ingame())
-GLOBAL_CMD_TABLE.add_command("help", cmd_help, auto_help=True)
+        header = "--- Help entry for '%s' (%s category) " % (topic.get_topicname(),
+                                                 topic.get_category())
+        header = "%s%s" % (header, "-" * (80-len(header)))
+        string += "\n\r%s\n\r\n\r%s" % (header, topic.get_entrytext_ingame())
+
+        # add the 'See also:' footer
+        topics = HelpEntry.objects.find_topicsuggestions(source_object, 
+                                                         topicstr)         
+        if topics: 
+            if len(topics) > 5:
+                topics = topics[:5]
+            topics = [str(topic.topicname) for topic in topics ]
+            string +=  "\n\r\n\r" + " " * helpsystem.viewhelp.indent + \
+                      "See also: " + ", ".join(topics)        
+
+    source_object.emit_to(string)
+GLOBAL_CMD_TABLE.add_command("help", cmd_help)

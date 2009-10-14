@@ -11,6 +11,8 @@ from django.conf import settings
 from src.objects.models import Object
 from src.config.models import ConfigValue, CommandAlias, ConnectScreen
 from src import comsys, defines_global, logger
+from src.helpsys import helpsystem
+
 def get_god_user():
     """
     Returns the initially created 'god' User object.
@@ -131,6 +133,16 @@ def import_help_files():
     """
     management.call_command('loaddata', 'docs/help_files.json', verbosity=0)
 
+def categorize_initial_helpdb():
+    """
+    This makes sure that the initially loaded
+    database is separated into its own
+    help category. 
+    """
+    default_category = "MUX"
+    print " Moving initial imported help db to help category '%s'." % default_category
+    helpsystem.edithelp.homogenize_database(default_category)
+
 def handle_setup():
     """
     Main logic for the module.
@@ -142,3 +154,4 @@ def handle_setup():
     create_groups()
     create_channels()
     import_help_files()
+    categorize_initial_helpdb()

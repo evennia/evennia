@@ -2,7 +2,6 @@
 Paging command and support functions.
 """
 from src.objects.models import Object
-from src import defines_global
 from src.cmdtable import GLOBAL_CMD_TABLE
 
 def get_last_paged_objects(source_object):
@@ -31,7 +30,14 @@ def get_last_paged_objects(source_object):
 
 def cmd_page(command):
     """
-    Send a message to target user (if online).
+    page - send private message
+
+    Usage:
+      page [<user> = <message>]
+
+    Send a message to target user (if online). If no
+    argument is given, you will instead see who was the last
+    person you paged to. 
     """
     source_object = command.source_object
     # Get the last paged person(s)
@@ -127,4 +133,4 @@ def cmd_page(command):
         # Now set the LASTPAGED attribute
         source_object.set_attribute("LASTPAGED", ','.join(
                 ["#%d" % (x.id) for x in targets]))
-GLOBAL_CMD_TABLE.add_command("page", cmd_page, priv_tuple=('channels.page',))
+GLOBAL_CMD_TABLE.add_command("page", cmd_page, priv_tuple=('channels.page',), help_category="Comms")

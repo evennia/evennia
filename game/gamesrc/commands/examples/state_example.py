@@ -14,11 +14,10 @@ recognized.
 Next enter the mud and give the command
 > entermenu
 
-Note that the help entries added to the state system with the auto_help flag are NOT
-part of the normal help database, they are stored with the state and only accessible
-from inside it (unless you also set the 'global_help' flag in the add_command(), in
-which case it is also added to the global help system). If you want to describe the
-state itself in more detail you should add that to the main help index manually. 
+Note that the help entries related to this little menu are not part of the normal
+help database, they are stored with the state and only accessible
+from inside it. If you want to describe the state itself in more detail you
+should add a help entry about it to the main help index manually. 
 
 To further test the state system, try the command 
 > enterstate
@@ -58,10 +57,13 @@ def cmd_entermenu(command):
     #show the menu.
     s = """
      Welcome to the Demo menu!
-     In this demo all you can do is select one of the two options so it changes colour.
-     This is just intended to show off the possibility of the state system. More
-     interesting things should of course happen in a real menu. Use @exit to
-     leave the menu."""  
+     In this small demo all you can do is select one of
+     the two options so it changes colour.
+     This is just intended to show off the
+     possibilities of the state system. More
+     interesting things should of course happen
+     in a real menu.
+     Use @exit to leave the menu."""  
     source_object.emit_to(s)
     source_object.execute_cmd('menu')
 
@@ -88,7 +90,7 @@ def menu_cmd_menu(command):
     """
     menu
     Clears the options and redraws the menu.  
-    <<TOPIC:autohelp>>    
+    [[autohelp]]    
     This is an extra topic to test the auto-help functionality. The state-help
     system supports nested ('related') topics just like the normal help index does.
     """
@@ -117,19 +119,15 @@ def print_menu(source_obj,choice=None):
 #Add the 'entry' command to the normal command table
 GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
 
-#create the state.
+#create the state. 
 GLOBAL_STATE_TABLE.add_state(STATENAME,exit_command=True)
 
 #Add the menu commands to the state table by tying them to the 'menu' state. It is
 #important that the name of the state matches what we set the player-object to in
-#the 'entry' command. Since auto_help is on, we will have help entries for all commands
-#while in the menu.
-GLOBAL_STATE_TABLE.add_command(STATENAME, "option1", menu_cmd_option1,auto_help=True)
-GLOBAL_STATE_TABLE.add_command(STATENAME, "option2", menu_cmd_option2,auto_help=True)
-GLOBAL_STATE_TABLE.add_command(STATENAME, "menu", menu_cmd_menu,auto_help=True)
-
-
-
+#the 'entry' command.
+GLOBAL_STATE_TABLE.add_command(STATENAME, "option1", menu_cmd_option1)
+GLOBAL_STATE_TABLE.add_command(STATENAME, "option2", menu_cmd_option2)
+GLOBAL_STATE_TABLE.add_command(STATENAME, "menu", menu_cmd_menu)
 
 #-----------------------testing the depth of the state system
 # This is a test suite that shows off all the features of the state system.
@@ -234,7 +232,7 @@ GLOBAL_STATE_TABLE.add_state(TSTATE6,exit_command=True,
                              allow_exits=True,allow_obj_cmds=True)
 
 #append the "test" function to all states
-GLOBAL_STATE_TABLE.add_command(TSTATE1,'test',cmd_instate_cmd,auto_help=True)
+GLOBAL_STATE_TABLE.add_command(TSTATE1,'test',cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE2,'test',cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE3,'test',cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE4,'test',cmd_instate_cmd)

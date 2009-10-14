@@ -2,10 +2,14 @@
 Contains commands for managing script parents.
 """
 from src import scripthandler
+from src import defines_global
 from src.cmdtable import GLOBAL_CMD_TABLE
       
 def cmd_scriptcache(command):
-    """Usage
+    """
+    @scriptcache 
+
+    Usage
       @scriptcache
 
     Shows the contents of the script cache.
@@ -20,12 +24,21 @@ def cmd_scriptcache(command):
     retval += "%d cached parents" % len(cache_dict)
     command.source_object.emit_to(retval)
 GLOBAL_CMD_TABLE.add_command("@scriptcache", cmd_scriptcache,
-                             priv_tuple=("genperms.builder"),
-                             auto_help=True,staff_help=True)
+                             priv_tuple=("genperms.builder",), help_category="Admin")
 
 def cmd_parent(command):
     """
-    Sets an object's script parent.
+    @parent - set script parent
+
+    Usage:
+      @parent <object> = <parent>
+
+    Example:
+      @parent button = examples.red_button
+      
+    Sets an object's script parent. The parent must be identified
+    by its location using dot-notation pointing to the script
+    parent module.
     """
     source_object = command.source_object
 
@@ -80,5 +93,5 @@ def cmd_parent(command):
                               (target_obj,current_parent)) 
         
 GLOBAL_CMD_TABLE.add_command("@parent", cmd_parent,
-                             priv_tuple=("genperms.builder"))
+                             priv_tuple=("genperms.builder",), help_category="Building" )
 

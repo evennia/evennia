@@ -3,7 +3,7 @@ Commands that are available from the connect screen.
 """
 import traceback
 from django.contrib.auth.models import User
-from src.objects.models import Attribute, Object
+from src.objects.models import Object
 from src import defines_global
 from src.util import functions_general
 from src.cmdtable import GLOBAL_UNCON_CMD_TABLE
@@ -47,7 +47,7 @@ def cmd_connect(command):
     else:
         uname = user.username
         session.login(user)
-GLOBAL_UNCON_CMD_TABLE.add_command("connect", cmd_connect)
+GLOBAL_UNCON_CMD_TABLE.add_command("connect", cmd_connect, auto_help_override=False)
         
 def cmd_create(command):
     """
@@ -113,7 +113,7 @@ def cmd_create(command):
             log_errmsg(traceback.format_exc())
             raise
         
-GLOBAL_UNCON_CMD_TABLE.add_command("create", cmd_create)
+GLOBAL_UNCON_CMD_TABLE.add_command("create", cmd_create, auto_help_override=False)
 
 def cmd_quit(command):
     """
@@ -124,4 +124,4 @@ def cmd_quit(command):
     session = command.session
     session.msg("Good bye! Disconnecting ...")
     session.handle_close()
-GLOBAL_UNCON_CMD_TABLE.add_command("quit", cmd_quit)
+GLOBAL_UNCON_CMD_TABLE.add_command("quit", cmd_quit, auto_help_override=False)

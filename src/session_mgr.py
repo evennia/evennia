@@ -5,7 +5,6 @@ import time
 from django.contrib.auth.models import User
 from src.config.models import ConfigValue
 from src import logger
-from src.util import functions_general
 
 # Our list of connected sessions.
 session_list = []

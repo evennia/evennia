@@ -1,26 +1,22 @@
 """
 Comsys command module.
 """
-import time
-from django.conf import settings
 from src import comsys
 from src.channels.models import CommChannelMembership, CommChannel
 from src import defines_global
-from src import ansi
-from src.util import functions_general
 from src.objects.models import Object
 from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_addcom(command):
     """
-    addcom
+    addcom - join a channel with alias
 
     Usage:
        addcom [alias=] <channel>
        
-    Joins a channel. Allows adding an alias for it to make it
-    easier and faster to use. Subsequent calls of this command
-    can be used to add multiple aliases. 
+    Allows adding an alias for a channel to make is easier and
+    faster to use. Subsequent calls of this command can
+    be used to add multiple aliases. 
     """
     source_object = command.source_object
     command_argument = command.command_argument
@@ -81,11 +77,11 @@ def cmd_addcom(command):
     except CommChannel.DoesNotExist:
         # Failed to match iexact on channel's 'name' attribute.
         source_object.emit_to("Could not find channel %s." % chan_name)
-GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom)
+GLOBAL_CMD_TABLE.add_command("addcom", cmd_addcom, help_category="Comms")
 
 def cmd_delcom(command):
     """
-    delcom
+    delcom - remove a channel alias
 
     Usage:
        delcom <alias>
@@ -113,10 +109,15 @@ def cmd_delcom(command):
     leave_msg = "%s has left the channel." % \
         (source_object.get_name(show_dbref=False),)
     comsys.send_cmessage(chan_name, leave_msg)
-GLOBAL_CMD_TABLE.add_command("delcom", cmd_delcom),
+GLOBAL_CMD_TABLE.add_command("delcom", cmd_delcom,help_category="Comms")
 
 def cmd_comlist(command):
     """
+    comlist - list channel memberships
+
+    Usage:
+      comlist
+
     Lists the channels a user is subscribed to.
     """
     source_object = command.source_object 
@@ -137,11 +138,14 @@ def cmd_comlist(command):
                                              chan.get_name(), chan_on)
     s = s[:-1]
     source_object.emit_to(s)
-GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist)
+GLOBAL_CMD_TABLE.add_command("comlist", cmd_comlist,help_category="Comms")
     
 def cmd_allcom(command):
     """
-    allcom [on|off|who|clear]
+    allcom - operate on all channels
+
+    Usage:    
+      allcom [on | off | who | clear]
 
     Allows the user to universally turn off or on all channels they are on,
     as well as perform a 'who' for all channels they are on. Clear deletes
@@ -197,14 +201,18 @@ def cmd_allcom(command):
                 s = s[:-2] + "\n"
         s = s[:-1]
         source_object.emit_to(s)    
-GLOBAL_CMD_TABLE.add_command("allcom", cmd_allcom)
+GLOBAL_CMD_TABLE.add_command("allcom", cmd_allcom, help_category="Comms")
             
 def cmd_clearcom(command):
     """
-    clearcom
+    clearcom - removes all channels
 
-    Effectively runs delcom on all channels the user is on.  It will remove their aliases,
-    remove them from the channel, and clear any titles they have set.
+    Usage:
+      clearcom
+
+    Effectively runs delcom on all channels the user is on.  It will remove
+    their aliases, remove them from the channel, and clear any titles they
+    have set.
     """    
     source_object = command.source_object
     #get aall subscribed channel memberships
@@ -227,7 +235,10 @@ def cmd_clist(command):
     """
     @clist
 
-    Lists all available channels on the game.
+    Usage:
+      @clist
+
+    Lists all available channels in the game.
     """
     session = command.session
     source_object = command.source_object
@@ -248,13 +259,17 @@ def cmd_clist(command):
     s = s[:-1]
     #s += "** End of Channel List **"
     source_object.emit_to(s)
-GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist),
+GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist, help_category="Comms")
+
 
 def cmd_cdestroy(command):
     """
     @cdestroy
 
-    Destroys a channel.
+    Usage:
+      @cdestroy <channel>
+
+    Destroys a channel that you control.
     """
     source_object = command.source_object
     cname = command.command_argument
@@ -275,7 +290,7 @@ def cmd_cdestroy(command):
         else:
             source_object.emit_to("Permission denied.")
             return
-GLOBAL_CMD_TABLE.add_command("@cdestroy", cmd_cdestroy)
+GLOBAL_CMD_TABLE.add_command("@cdestroy", cmd_cdestroy, help_category="Comms")
         
 def cmd_cset(command):
     """
@@ -297,9 +312,12 @@ def cmd_ccharge(command):
 
 def cmd_cboot(command):
     """
-    @cboot[/quiet] <channel>=<object>
+    @cboot
 
-    Kicks a player or object from the channel
+    Usage:
+      @cboot[/quiet] <channel> = <player or object>
+
+    Kicks a player or object from a channel you control.
     """
     source_object = command.source_object
     args = command.command_argument
@@ -352,14 +370,17 @@ def cmd_cboot(command):
     for mship in membership:
         comsys.plr_del_channel(bootobj, mship.user_alias)
 
-GLOBAL_CMD_TABLE.add_command("@cboot", cmd_cboot)
+GLOBAL_CMD_TABLE.add_command("@cboot", cmd_cboot, help_category="Comms")
 
 
 def cmd_cemit(command):
     """
-    @cemit <channel>=<message>
-    @cemit/noheader <channel>=<message>
-    @cemit/sendername <channel>=<message>
+    @cemit - send a message to channel
+
+    Usage:
+      @cemit <channel>=<message>
+      @cemit/noheader <channel>=<message>
+      @cemit/sendername <channel>=<message>
 
     Allows the user to send a message over a channel as long as
     they own or control it. It does not show the user's name unless they
@@ -425,12 +446,12 @@ def cmd_cemit(command):
     #pipe to external channels (IRC, IMC) eventually mapped to this channel
     comsys.send_cexternal(cname_parsed, cmessage, caller=source_object)
 
-GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit,priv_tuple=("channels.emit_commchannel",))
+GLOBAL_CMD_TABLE.add_command("@cemit", cmd_cemit,priv_tuple=("channels.emit_commchannel",),
+                             help_category="Comms")
 
 def cmd_cwho(command):
     """
     @cwho
-       list 
     
     Usage: 
        @cwho channel[/all]
@@ -468,15 +489,17 @@ def cmd_cwho(command):
     else:
         source_object.emit_to("No channel with that name was found.")
         return
-GLOBAL_CMD_TABLE.add_command("@cwho", cmd_cwho),
+GLOBAL_CMD_TABLE.add_command("@cwho", cmd_cwho, help_category="Comms")
 
 def cmd_ccreate(command):
     """
     @ccreate
 
-    Creates a new channel with the invoker being the default owner.
+    Usage:
+     @ccreate <new channel>
+
+    Creates a new channel owned by you.
     """
-    # TODO: Implement cmd_ccreate
     source_object = command.source_object
     cname = command.command_argument
 
@@ -496,11 +519,14 @@ def cmd_ccreate(command):
         # Create and set the object up.
         new_chan = comsys.create_channel(cname, source_object)
         source_object.emit_to("Channel %s created." % (new_chan.get_name(),))
-GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate)
+GLOBAL_CMD_TABLE.add_command("@ccreate", cmd_ccreate, help_category="Comms")
 
 def cmd_cchown(command):
     """
-    @cchown <channel>=<player>
+    @cchown
+
+    Usage:
+      @cchown <channel> = <player>
 
     Changes the owner of a channel.
     """
@@ -535,4 +561,4 @@ def cmd_cchown(command):
     channel.set_owner(new_owner)
     source_object.emit_to("Owner of %s changed from %s to %s." % (cname, old_pname, pname))
     new_owner.emit_to("%s transfered ownership of channel '%s' to you." % (old_pname, cname))
-GLOBAL_CMD_TABLE.add_command("@cchown", cmd_cchown)
+GLOBAL_CMD_TABLE.add_command("@cchown", cmd_cchown, help_category="Comms")

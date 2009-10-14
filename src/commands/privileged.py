@@ -3,21 +3,30 @@ This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
 
-from django.contrib.auth.models import Permission, Group, User
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission, Group
 from django.conf import settings
 from src.objects.models import Object
-from src import defines_global
-from src import ansi
 from src import session_mgr
 from src import comsys
 from src.scripthandler import rebuild_cache
-from src.util import functions_general
 from src.cmdtable import GLOBAL_CMD_TABLE
+from src.helpsys.models import HelpEntry
+from src.helpsys import helpsystem
 
 def cmd_reload(command):
     """
-    Reloads all modules.
+    @reload - reload game subsystems
+
+    Usage:
+      @reload/switches
+
+    Switches:
+      aliases          - alias definitions
+      commands         - the command modules
+      scripts, parents - the script parent modules      
+      all 
+      
+    Reloads all the identified subsystems.
     """
     source_object = command.source_object
     switches = command.command_switches    
@@ -44,12 +53,17 @@ def cmd_reload(command):
         comsys.cemit_mudinfo("... all Command modules were reloaded.")
 
 GLOBAL_CMD_TABLE.add_command("@reload", cmd_reload,
-                             priv_tuple=("genperms.process_control",)),
+                             priv_tuple=("genperms.process_control",), help_category="Admin")
 GLOBAL_CMD_TABLE.add_command("@restart", cmd_reload,
-                             priv_tuple=("genperms.process_control",)),
+                             priv_tuple=("genperms.process_control",), help_category="Admin")
 
 def cmd_boot(command):
     """
+    @boot 
+
+    Usage
+      @boot <player obj>
+      
     Boot a player object from the server.
     """
     source_object = command.source_object
@@ -119,10 +133,16 @@ def cmd_boot(command):
             session_mgr.remove_session(boot)
             return
 GLOBAL_CMD_TABLE.add_command("@boot", cmd_boot,        
-                             priv_tuple=("genperms.manage_players",))
+                             priv_tuple=("genperms.manage_players",),
+                             help_category="Admin")
 
 def cmd_newpassword(command):
     """
+    @newpassword
+
+    Usage:
+      @newpassword <user obj> = <new password>
+
     Set a player's password.
     """
     source_object = command.source_object
@@ -157,10 +177,16 @@ def cmd_newpassword(command):
         target_obj.emit_to("%s has changed your password." % 
                            (source_object.get_name(show_dbref=False),))
 GLOBAL_CMD_TABLE.add_command("@newpassword", cmd_newpassword, 
-                             priv_tuple=("genperms.manage_players",))
+                             priv_tuple=("genperms.manage_players",),
+                             help_category="Admin")
 
 def cmd_home(command):
     """
+    home
+
+    Usage:
+      home 
+
     Teleport the player to their home.
     """
     pobject = command.source_object
@@ -174,8 +200,18 @@ GLOBAL_CMD_TABLE.add_command("home", cmd_home,
 
 def cmd_service(command):
     """
-    Service management system. Allows for the listing, starting, and stopping
-    of services.
+    @service - manage services
+
+    Usage:
+      @service[/switch] <service>
+
+    Switches:
+      start  - activates a service
+      stop   - stops a service
+      list   - shows all available services
+      
+    Service management system. Allows for the listing,
+    starting, and stopping of services.
     """
     source_object = command.source_object
     switches = command.command_switches
@@ -242,17 +278,25 @@ def cmd_service(command):
         return
     
 GLOBAL_CMD_TABLE.add_command("@service", cmd_service,
-                             priv_tuple=("genperms.process_control",))
+                             priv_tuple=("genperms.process_control",),
+                             help_category="Admin")
 
 def cmd_shutdown(command):
     """
-    Shut the server down gracefully.
+    @shutdown
+
+    Usage:
+      @shutdown 
+
+    Shut the game server down gracefully.
     """    
     command.source_object.emit_to('Shutting down...')
     print 'Server shutdown by %s' % (command.source_object.get_name(show_dbref=False),)
     command.session.server.shutdown()
 GLOBAL_CMD_TABLE.add_command("@shutdown", cmd_shutdown,
-                             priv_tuple=("genperms.process_control",))
+                             priv_tuple=("genperms.process_control",),
+                             help_category="Admin")
+
 
 # permission administration
 
@@ -260,6 +304,7 @@ GLOBAL_CMD_TABLE.add_command("@shutdown", cmd_shutdown,
 # mess with, but which are not very useful from inside the game. While these
 # permissions are ok to use, we only show the permissions that we have defined
 # in our settings file in order to give better control. 
+
 APPS_NOSHOW = ("news","admin","auth","config","contentypes",
                "flatpages","news","sessions","sites")
 SETTINGS_PERM_NAMES = []
@@ -268,7 +313,9 @@ for apps in settings.PERM_ALL_DEFAULTS + settings.PERM_ALL_CUSTOM:
         SETTINGS_PERM_NAMES.append(permtuples[1])
 
 def cmd_setperm(command):
-    """@setperm
+    """
+    @setperm - set permissions
+
     Usage:
       @setperm[/switch] [<user>] = [<permission>]
 
@@ -277,9 +324,9 @@ def cmd_setperm(command):
       del : delete a permission from <user>
       list : list all permissions, or those set on <user>
             
-      This command sets/clears individual permission bits on a user.
-      Use /list without any arguments to see all available permissions or those
-      defined on the <user> argument. 
+    This command sets/clears individual permission bits on a user.
+    Use /list without any arguments to see all available permissions or those
+    defined on the <user> argument. 
     """
     source_object = command.source_object
     args = command.command_argument
@@ -380,17 +427,21 @@ def cmd_setperm(command):
             obj.emit_to("%s removed your permission '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              permission.name))            
 GLOBAL_CMD_TABLE.add_command("@setperm", cmd_setperm,
-                             priv_tuple=("auth.change_permission","genperms.admin_perm"), auto_help=True, staff_help=True)
+                             priv_tuple=("auth.change_permission",
+                                         "genperms.admin_perm"),
+                             help_category="Admin")
             
 def cmd_setgroup(command):
-    """@setgroup 
+    """
+    @setgroup - manage group memberships
+
     Usage:
       @setgroup[/switch] [<user>] [= <group>]
 
-    switches
-      add : add user to a group
-      del : remove user from a group
-      list : list all groups a user is part of, or list all available groups if no user is given
+    Switches:
+      add  - add user to a group
+      del  - remove user from a group
+      list - list all groups a user is part of, or list all available groups if no user is given
 
     Changes and views the group membership of a user. 
     """
@@ -410,7 +461,8 @@ def cmd_setgroup(command):
                 for p in g.permissions.all():
                     app = p.content_type.app_label
                     if app not in APPS_NOSHOW:
-                        s += "\n --- %s.%s%s\t%s" % (app, p.codename, (35 - len(app) - len(p.codename)) * " ", p.name)
+                        s += "\n --- %s.%s%s\t%s" % (app, p.codename,
+                                                     (35 - len(app) - len(p.codename)) * " ", p.name)
             source_object.emit_to(s)
             return 
     #we have command arguments.     
@@ -484,5 +536,155 @@ def cmd_setgroup(command):
             obj.emit_to("%s removed you from group '%s'." % (source_object.get_name(show_dbref=False,no_ansi=True),
                                                              group.name))            
 GLOBAL_CMD_TABLE.add_command("@setgroup", cmd_setgroup,
-                             priv_tuple=("auth.change_group","genperms.admin_group"), auto_help=True, staff_help=True)
+                             priv_tuple=("auth.change_group",
+                                         "genperms.admin_group"),
+                             help_category="Admin")
 
+def cmd_sethelp(command):
+    """
+    @sethelp - edit the help database
+
+    Usage:
+      @sethelp[/switches] <topic>[,category][(permissions)][:<text>]
+
+    Switches:
+      add    - add or replace a new topic with text.
+      append - add text to the end of topic.
+      delete - remove help topic.
+      force  - (used with add) create help topic also if the topic
+               already exists. 
+      newl   - (used with append) add a newline between the old
+               text and the appended text. 
+
+    Examples:
+      @sethelp/add throw : This throws something at ...
+      @sethelp/add throw, General (genperms.throwing) : This throws ...
+      @sethelp/add throw : 1st help entry
+
+    [[@sethelp_markup]]
+
+    @sethelp Help markup
+            
+    The <text> entry in @sethelp supports markup to automatically divide the help text into 
+    several sub-entries. The beginning of each new entry is marked in the form 
+
+     [ [Title, category, (privtuple)] ]  (with no spaces between the square brackets)
+
+    In the markup header, Title is mandatory, the other parts are optional. A new
+    help entry named Title will be created for each occurence. It is recommended
+    that the help entries should begin similarly since the system will then identify
+    them and better handle a list of recommended topics. 
+    """
+
+    source_object = command.source_object
+    arg = command.command_argument
+    switches = command.command_switches
+
+    if not arg or not switches:
+        source_object.emit_to("Usage: @sethelp/[add|del|append] <topic>[,category][:<text>]")
+        return     
+
+    topicstr = ""
+    category = ""
+    text = ""
+    permtuple = ()
+    
+    # analyze the argument
+    arg = arg.split(':', 1)
+    if len(arg) < 2:
+        # no : detected; this means we are deleting something.
+        topicstr = arg[0].strip()
+    else:
+        text = arg[1].strip()
+        # we have 4 possibilities:
+        # topicstr 
+        # topicstr, category
+        # topicstr (perm1,perm2,...) 
+        # topicstr, category, (perm1,perm2,...)
+        arg = arg[0].split('(',1)
+        if len(arg) > 1:
+            # we have a perm tuple
+            arg, permtuple = arg
+            try:
+                permtuple = permtuple.strip()[:-1] # cut last ')'
+            except IndexError:
+                source_object.emit_to("Malformed permission tuple. %s" % permtuple)
+                return 
+            permtuple = tuple(permtuple.split(','))
+        else:
+            # no perm tuple
+            arg = arg[0]        
+        arg = arg.split(',', 1)
+        if len(arg) > 1:
+            # we have a category
+            category = arg[1].strip()            
+        topicstr = arg[0].strip()            
+
+    if 'add' in switches:
+        # add a new help entry. 
+        if not topicstr or not text:
+            source_object.emit_to("Usage: @sethelp/add <topic>[,category]:<text>")
+            return 
+        force_create = ('for' in switches) or ('force' in switches)
+        topics = helpsystem.edithelp.add_help_manual(source_object, topicstr,
+                                                     category, text,
+                                                     permissions=permtuple,
+                                                     force=force_create)
+        if not topics:
+            return 
+        if len(topics) == 1:
+            string = "The topic already exists. Use /force to overwrite it."
+        elif len(topics)>1:
+            string = "The following results are similar to '%s'."
+            string += " Make sure you are not misspelling, then "
+            string += "use the /force flag to create a new entry."
+            string += "\n    ".join(topics)            
+        source_object.emit_to(string)
+        
+    elif 'append' in switches or 'app' in switches:
+        # add text to the end of a help topic        
+        if not topicstr or not text:
+            source_object.emit_to("Usage: @sethelp/append <topic>:<text>")
+            return
+        # find the topic to append to
+        topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)        
+        if not topics:
+            source_object.emit_to("Help topic '%s' not found." % topicstr)        
+        elif len(topics) > 1:
+            string = "Multiple matches to this topic. Refine your search."
+            string += "\n    ".join(topics)
+        else:
+            # we have exactly one match. Extract all info from it,
+            # append the text and feed it back into the system. 
+            newtext = topics[0].get_entrytext_ingame()
+            category = topics[0].category            
+            perm_tuple = topics[0].canview
+            if perm_tuple:
+                perm_tuple = tuple(perm for perm in perm_tuple.split(','))
+
+            newl = "\n"
+            if 'newl' in switches or 'newline' in switches:
+                newl = "\n\n"
+            newtext += "%s%s" % (newl, text)
+        
+            topics = helpsystem.edithelp.add_help_manual(source_object,
+                                                         topicstr,
+                                                         category,
+                                                         newtext,
+                                                         perm_tuple,
+                                                         force=True)
+            
+    elif 'del' in switches or 'delete' in switches:
+        #delete a help entry
+        topics = helpsystem.edithelp.del_help_manual(source_object, topicstr)
+        if not topics:
+            return 
+        else:  
+            string = "Multiple matches for '%s'. Please specify:" % topicstr 
+            string += "\n    ".join(topics)
+
+GLOBAL_CMD_TABLE.add_command("@sethelp", cmd_sethelp,
+                             priv_tuple=("helpsys.add_help",
+                                         "helpsys.del_help",
+                                         "helpsys.admin_heelp"),
+                             help_category="Admin")

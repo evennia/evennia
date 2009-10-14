@@ -55,7 +55,7 @@ from src.statetable import GLOBAL_STATE_TABLE
 
 #global defines for storage
 
-STATENAME="_interactive_batch_processor"
+STATENAME="interactive batch processor"
 CMDSTACKS={} # user:cmdstack pairs (for interactive)
 STACKPTRS={} # user:stackpointer pairs (for interactive)
 FILENAMES={} # user:filename pairs (for interactive/reload)
@@ -161,6 +161,8 @@ def batch_process(source_object, commands):
 
 def cmd_batchprocess(command):
     """    
+    @batchprocess - build from batch file
+
     Usage:
      @batchprocess[/interactive] <filename with full path>
 
@@ -198,16 +200,16 @@ def cmd_batchprocess(command):
         CMDSTACKS[source_object] = commands
         STACKPTRS[source_object] = 0
         FILENAMES[source_object] = filename
-        source_object.emit_to("Interactive mode (h for help).")
+        source_object.emit_to("\nBatch processor - Interactive mode ...")
         show_curr(source_object)
     else:
+        source_object.emit_to("Running Batch processor - Automatic mode ...")
         source_object.clear_state()
         batch_process(source_object, commands)
         source_object.emit_to("%s== Batchfile '%s' applied." % (cgreen,filename))
 
 GLOBAL_CMD_TABLE.add_command("@batchprocess", cmd_batchprocess,
-                             auto_help=True, staff_help=True,
-                             priv_tuple=("genperms.process_control"))
+                             priv_tuple=("genperms.process_control",), help_category="Building")
 
 #interactive state commands
 
@@ -271,43 +273,71 @@ def reload_stack(source_object):
         source_object.emit_to("Commands in file could not be reloaded. Was it moved?")
 
 def move_in_stack(source_object, step=1):
+    "store data in stack"
     global CMDSTACKS, STACKPTRS
     N = len(CMDSTACKS[source_object])    
     currpos = STACKPTRS[source_object]    
     STACKPTRS[source_object] = max(0,min(N-1,currpos+step)) 
 
 def exit_state(source_object):    
+    "Quit the state"
     global CMDSTACKS,STACKPTRS,FILENAMES
-    del CMDSTACKS[source_object]
-    del STACKPTRS[source_object]
-    del FILENAMES[source_object]
+    try:
+        del CMDSTACKS[source_object]
+        del STACKPTRS[source_object]
+        del FILENAMES[source_object]
+    except KeyError:
+        logger.log_errmsg("Batchprocessor quit error: all state vars could not be deleted.")
     source_object.clear_state()
 
-def cmd_state_l(command):
-    "l-ook at current command definition"
+def cmd_state_ll(command):
+    """
+    ll
+    
+    Look at the full source for the current
+    command definition. 
+    """
     show_curr(command.source_object,showall=True)
 
-def cmd_state_p(command):
-    "p-rocess current command definition"
+def cmd_state_pp(command):
+    """
+    pp
+    
+    Process the currently shown command definition.
+    """
     process_commands(command.source_object)
     command.source_object.emit_to(printfooter())
     
-def cmd_state_r(command):
-    "r-eload file, keep current stack position"
+def cmd_state_rr(command):
+    """
+    rr
+
+    Reload the batch file, keeping the current
+    position in it. 
+    """
     reload_stack(command.source_object)
     command.source_object.emit_to("\nFile reloaded. Staying on same command.\n")
     show_curr(command.source_object)
 
-def cmd_state_rr(command):
-    "r-eload file, start over"
+def cmd_state_rrr(command):
+    """
+    rrr
+
+    Reload the batch file, starting over
+    from the beginning.
+    """
     global STACKPTRS
     reload_stack(command.source_object)
     STACKPTRS[command.source_object] = 0
     command.source_object.emit_to("\nFile reloaded. Restarting from top.\n")
     show_curr(command.source_object)
 
-def cmd_state_n(command):
-    "n-ext command (no exec)"
+def cmd_state_nn(command):
+    """
+    nn
+
+    Go to next command. No commands are executed.
+    """
     source_object = command.source_object
     arg = command.command_argument
     if arg and arg.isdigit():
@@ -317,8 +347,29 @@ def cmd_state_n(command):
     move_in_stack(source_object, step)
     show_curr(source_object)
 
-def cmd_state_b(command):
-    "b-ackwards to previous command (no exec)"
+def cmd_state_nl(command):
+    """
+    nl
+
+    Go to next command, viewing its full source.
+    No commands are executed.
+    """
+    source_object = command.source_object
+    arg = command.command_argument
+    if arg and arg.isdigit():
+        step = int(command.command_argument)
+    else:
+        step = 1
+    move_in_stack(source_object, step)
+    show_curr(source_object, showall=True)
+
+def cmd_state_bb(command):
+    """
+    bb
+
+    Backwards to previous command. No commands
+    are executed.
+    """
     source_object = command.source_object
     arg = command.command_argument
     if arg and arg.isdigit():
@@ -328,8 +379,30 @@ def cmd_state_b(command):
     move_in_stack(source_object, step)
     show_curr(source_object)
 
-def cmd_state_s(command):
-    "s-tep to next command (exec)"
+def cmd_state_bl(command):
+    """
+    bl
+
+    Backwards to previous command, viewing its full
+    source. No commands are executed.
+    """
+    source_object = command.source_object
+    arg = command.command_argument
+    if arg and arg.isdigit():
+        step = -int(command.command_argument)
+    else:
+        step = -1    
+    move_in_stack(source_object, step)
+    show_curr(source_object, showall=True)
+
+def cmd_state_ss(command):
+    """
+    ss [steps]
+
+    Process current command, then step to the next
+    one. If steps is given,
+    process this many commands.
+    """
     source_object = command.source_object
     arg = command.command_argument
     if arg and arg.isdigit():
@@ -339,8 +412,30 @@ def cmd_state_s(command):
     process_commands(source_object,step)
     show_curr(source_object)
 
-def cmd_state_c(command):
-    "c-ontinue to process remaining"
+def cmd_state_sl(command):
+    """
+    sl [steps]
+
+    Process current command, then step to the next
+    one, viewing its full source. If steps is given,
+    process this many commands. 
+    """
+    source_object = command.source_object
+    arg = command.command_argument
+    if arg and arg.isdigit():
+        step = int(command.command_argument)
+    else:
+        step = 1    
+    process_commands(source_object,step)
+    show_curr(source_object, showall=True)
+
+def cmd_state_cc(command):
+    """
+    cc
+
+    Continue to process all remaining
+    commands.
+    """
     global CMDSTACKS,STACKPTRS
     source_object = command.source_object
     N = len(CMDSTACKS[source_object])
@@ -350,8 +445,12 @@ def cmd_state_c(command):
     exit_state(source_object)
     source_object.emit_to("Finished processing batch file.")
     
-def cmd_state_j(command):
-    "j-ump to specific command index"
+def cmd_state_jj(command):
+    """
+    j <command number>
+
+    Jump to specific command number
+    """
     global STACKPTRS    
     source_object = command.source_object
     arg = command.command_argument
@@ -365,18 +464,44 @@ def cmd_state_j(command):
     move_in_stack(source_object, step)
     show_curr(source_object)
 
-def cmd_state_q(command):
-    "q-uit state."
+def cmd_state_jl(command):
+    """
+    jl <command number>
+
+    Jump to specific command number and view its full source.
+    """
+    global STACKPTRS    
+    source_object = command.source_object
+    arg = command.command_argument
+    if arg and arg.isdigit():
+        no = int(command.command_argument)-1
+    else:
+        source_object.emit_to("You must give a number index.")
+        return 
+    ptr = STACKPTRS[source_object]
+    step = no - ptr    
+    move_in_stack(source_object, step)
+    show_curr(source_object, showall=True)
+
+def cmd_state_qq(command):
+    """
+    qq 
+
+    Quit the batchprocessor.
+    """
     exit_state(command.source_object)
     command.source_object.emit_to("Aborted interactive batch mode.")
     
-def cmd_state_h(command):
+def cmd_state_hh(command):
     "Help command"
     s = """
     Interactive batch processing commands:
      nn [steps] - next command (no processing)
+     nl [steps] - next & look 
      bb [steps] - back to previous command (no processing)
+     bl [steps] - back & look 
      jj   <N>   - jump to command no N (no processing)
+     jl   <N>   - jump & look 
      pp         - process currently shown command (no step)
      ss [steps] - process & step
      ll         - look at full definition of current command
@@ -384,8 +509,8 @@ def cmd_state_h(command):
      rrr        - reload batch file (start from first)
      hh         - this help list
 
-     cc         - continue processing to end and quit.
-     qq         - quit (abort all remaining)
+     cc         - continue processing to end, then quit.
+     qq         - quit (abort all remaining commands)
     """
     command.source_object.emit_to(s)
 
@@ -394,14 +519,18 @@ def cmd_state_h(command):
 GLOBAL_STATE_TABLE.add_state(STATENAME,global_cmds='all',
                              allow_exits=True,allow_obj_cmds=True)
 #add state commands 
-GLOBAL_STATE_TABLE.add_command(STATENAME,"nn",cmd_state_n)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"bb",cmd_state_b)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"jj",cmd_state_j)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"pp",cmd_state_p)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"ss",cmd_state_s)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"cc",cmd_state_c)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"ll",cmd_state_l)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"rr",cmd_state_r)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"rrr",cmd_state_rr)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"hh",cmd_state_h)
-GLOBAL_STATE_TABLE.add_command(STATENAME,"qq",cmd_state_q)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"nn",cmd_state_nn)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"nl",cmd_state_nl)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"bb",cmd_state_bb)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"bl",cmd_state_bl)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"jj",cmd_state_jj)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"jl",cmd_state_jl)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"pp",cmd_state_pp)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"ss",cmd_state_ss)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"sl",cmd_state_sl)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"cc",cmd_state_cc)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"ll",cmd_state_ll)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"rr",cmd_state_rr)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"rrr",cmd_state_rrr)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"hh",cmd_state_hh)
+GLOBAL_STATE_TABLE.add_command(STATENAME,"qq",cmd_state_qq)

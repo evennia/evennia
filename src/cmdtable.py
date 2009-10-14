@@ -14,8 +14,8 @@ based on the value of settings.COMMAND_MODULES and
 settings.CUSTOM_COMMAND_MODULES. Each module imports cmdtable.py and runs
 add_command on the command table each command belongs to.
 """
-
-from src.helpsys.management.commands.edit_helpfiles import add_help
+from django.conf import settings
+from src.helpsys import helpsystem
 
 class CommandTable(object):
     """
@@ -28,7 +28,8 @@ class CommandTable(object):
         self.ctable = {}
     
     def add_command(self, command_string, function, priv_tuple=None,
-                    extra_vals=None, auto_help=False, staff_help=False):
+                    extra_vals=None, help_category="", priv_help_tuple=None,
+                    auto_help_override=None):
         """
         Adds a command to the command table.
         
@@ -36,29 +37,45 @@ class CommandTable(object):
         function: (reference) The command's function.
         priv_tuple: (tuple) String tuple of permissions required for command.
         extra_vals: (dict) Dictionary to add to the Command object.
-
-        Auto-help system:
-        auto_help (bool): If true, automatically creates/replaces a help topic with the
-                    same name as the command_string, using the functions's __doc__ property
-                    for help text. 
-        staff_help (bool): Only relevant if auto_help is activated; If True, makes the
-                     help topic (and all eventual subtopics) only visible to staff.
-
-        Note: the auto_help system also supports limited markup. If you divide your __doc__
-              with markers of the form <<TOPIC:MyTopic>>, the system will automatically create
-              separate help topics for each topic. Your initial text (if you define no TOPIC)
-              will still default to the name of your command.
-              You can also custon-set the staff_only flag for individual subtopics by
-              using the markup <<TOPIC:STAFF:MyTopic>> and <<TOPIC:NOSTAFF:MyTopic>>. 
+        
+        Auto-help system: (this is only used if settings.HELP_AUTO_ENABLED is active)
+        help_category (str): An overall help category where auto-help will place 
+                             the help entry. If not given, 'General' is assumed.
+        priv_help_tuple (tuple) String tuple of permissions required to view this
+                                help entry. If nothing is given, priv_tuple is used. 
+        auto_help_override (bool): Override the value in settings.AUTO_HELP_ENABLED with the
+                                value given. Use None to not override.  
+                                This can be useful when developing a new routine and
+                                has made manual changes to help entries of other
+                                commands in the database (and so do not want to use global
+                                auto-help). It is also used by e.g. the state system
+                                to selectively deactive auto-help.
+        
+        Note: the auto_help system also supports limited markup. You can divide your __doc__
+              with markers of any combinations of the forms
+                [[Title]]
+                [[Title, category]]
+                [[Title, (priv_tuple)]]
+                [[Title, category, (priv_tuple)]],
+             If such markers are found, the system will automatically create 
+             separate help topics for each topic. Your main help entry will
+             default to the name of your command.
         """
         self.ctable[command_string] = (function, priv_tuple, extra_vals)
 
-        if auto_help:            
+        if auto_help_override == None:
+            auto_help_override = settings.HELP_AUTO_ENABLED
+
+        if auto_help_override:
             #add automatic help text from the command's doc string            
             topicstr = command_string
             entrytext = function.__doc__
-            add_help(topicstr, entrytext, staff_only=staff_help,
-                     force_create=True, auto_help=True)
+            if not help_category:
+                help_category = "General"
+            if not priv_help_tuple:
+                priv_help_tuple = priv_tuple
+            helpsystem.edithelp.add_help_auto(topicstr, help_category,
+                                              entrytext, priv_help_tuple)
                         
     def get_command_tuple(self, func_name):
         """
@@ -67,10 +84,6 @@ class CommandTable(object):
         """
         return self.ctable.get(func_name, False)
 
-
-"""
-Command tables
-"""
 # Global command table, for authenticated users.
 GLOBAL_CMD_TABLE = CommandTable()
 # Global unconnected command table, for unauthenticated users.

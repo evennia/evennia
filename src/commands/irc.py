@@ -11,7 +11,10 @@ from src.channels.models import CommChannel
 
 def cmd_IRC2chan(command):
     """
-    @irc2chan IRCchannel channel
+    @irc2chan - link irc to ingame channel
+
+    Usage:    
+      @irc2chan <#IRCchannel> <local channel>
 
     Links an IRC channel (including #) to an existing
     evennia channel. You can link as many existing
@@ -55,12 +58,16 @@ def cmd_IRC2chan(command):
     outstring += "Mapping set: %s." % mapping    
     source_object.emit_to(outstring)
 
-GLOBAL_CMD_TABLE.add_command("@irc2chan",cmd_IRC2chan,auto_help=True,staff_help=True,
-                             priv_tuple=("irc.admin_irc_channels",))
+GLOBAL_CMD_TABLE.add_command("@irc2chan",cmd_IRC2chan,
+                             priv_tuple=("irc.admin_irc_channels",),
+                             help_category="Comms")
     
 def cmd_IRCjoin(command):
     """
-    @ircjoin IRCchannel
+    @ircjoin - join a new irc channel
+
+    Usage:
+      @ircjoin <#IRCchannel>
 
     Attempts to connect a bot to a new IRC channel (don't forget that
     IRC channels begin with a #).
@@ -99,19 +106,25 @@ def cmd_IRCjoin(command):
 #    irc.setName("%s:%s" % ("IRC",channel))
 #    irc.setServiceParent(mud_service.service_collection)
 
-GLOBAL_CMD_TABLE.add_command("@ircjoin",cmd_IRCjoin,auto_help=True,
-                             staff_help=True,
-                             priv_tuple=("irc.admin_irc_channels",))
+GLOBAL_CMD_TABLE.add_command("@ircjoin",cmd_IRCjoin,
+                             priv_tuple=("irc.admin_irc_channels",),
+                             help_category="Comms")
 
 def cmd_IRCchanlist(command):
     """
     ircchanlist
+
+    Usage:
+      ircchanlist
 
     Lists all externally available IRC channels.
     """
     source_object = command.source_object
     s = "Available IRC channels:"
     for c in IRC_CHANNELS:
-        s += "\n  %s \t(nick '%s') on %s" % (c.factory.channel,c.factory.nickname,c.factory.network,)
+        s += "\n  %s \t(nick '%s') on %s" % (c.factory.channel,
+                                             c.factory.nickname,
+                                             c.factory.network,)
     source_object.emit_to(s)
-GLOBAL_CMD_TABLE.add_command("ircchanlist", cmd_IRCchanlist, auto_help=True)
+GLOBAL_CMD_TABLE.add_command("ircchanlist", cmd_IRCchanlist,
+                             help_category="Comms")

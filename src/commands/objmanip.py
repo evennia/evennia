@@ -9,10 +9,21 @@ from src import locks
 from src import ansi
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src import defines_global
+from src.ansi import ANSITable
 
 def cmd_teleport(command):
     """
-    Teleports an object somewhere.
+    teleport
+
+    Usage:
+      teleport/switch [<object> = <location>]
+
+    Switches:
+      quiet  - don't inform the source and target
+               locations about the move. 
+              
+    Teleports an object somewhere. If no object is
+    given we are teleporting ourselves. 
     """
     source_object = command.source_object
 
@@ -66,10 +77,15 @@ def cmd_teleport(command):
             
         source_object.move_to(target_obj, quiet=tel_quietly)
 GLOBAL_CMD_TABLE.add_command("@teleport", cmd_teleport,
-                             priv_tuple=("objects.teleport",))
+                             priv_tuple=("objects.teleport",), help_category="Building")
 
 def cmd_alias(command):
     """
+    @alias
+
+    Usage:
+      @alias <player> = <alias>
+
     Assigns an alias to a player object for ease of paging, etc.
     """
     source_object = command.source_object
@@ -118,8 +134,17 @@ GLOBAL_CMD_TABLE.add_command("@alias", cmd_alias)
 
 def cmd_wipe(command):
     """
-    Wipes an object's attributes, or optionally only those matching a search
-    string.
+    @wipe - clears attributes
+
+    Usage:
+      @wipe <object> [/attribute-wildcard]
+
+    Example:
+      @wipe box 
+      @wipe box/colour
+
+    Wipes all of an object's attributes, or optionally only those
+    matching the given attribute-wildcard search string. 
     """
     source_object = command.source_object
     attr_search = False
@@ -166,11 +191,21 @@ def cmd_wipe(command):
             target_obj.clear_attribute(attr.get_name())
         source_object.emit_to("%s - %d attributes wiped." % (target_obj.get_name(), 
                                                    len(attr_matches)))
-GLOBAL_CMD_TABLE.add_command("@wipe", cmd_wipe,priv_tuple=("objects.wipe",))
+GLOBAL_CMD_TABLE.add_command("@wipe", cmd_wipe,priv_tuple=("objects.wipe",),
+                             help_category="Building")
 
 def cmd_set(command):
     """
-    Sets flags or attributes on objects.
+    @set - set attributes and flags
+
+    Usage:
+      @set <obj> = <flag>
+      @set <obj> = <attr> : <value>
+      @set <obj> = !<flag>
+      @set <obj> = <attr> : 
+    
+    Sets flags or attributes on objects. The two last forms
+    above unsets the flag and clears the attribute, respectively.
     """
     source_object = command.source_object    
     args = command.command_argument
@@ -251,16 +286,26 @@ def cmd_set(command):
                     s += '\nFlag %s=%s set.' % (target_name, flag.upper())
                 target.set_flag(flag, True)
         source_object.emit_to(s[1:])
-GLOBAL_CMD_TABLE.add_command("@set", cmd_set, priv_tuple=("objects.modify_attributes",))
+GLOBAL_CMD_TABLE.add_command("@set", cmd_set, priv_tuple=("objects.modify_attributes",),
+                             help_category="Building")
 
 def cmd_cpattr(command):
     """
-    copy an attribute to another object
-    
-    @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-    @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-    @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-    @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]
+    @cpattr - copy attributes
+
+    Usage:    
+      @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]
+
+    Example:
+      @cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety
+      ->
+      copies the coolness attribute (defined on yourself), to attributes
+      on Anna and Tom. 
+
+    Copy the attribute one object to one or more attributes on another object.
     """
     source_object = command.source_object
     args = command.command_argument
@@ -333,14 +378,17 @@ def cmd_cpattr(command):
                                           to_objname, to_attr)
     source_object.emit_to(s)
 GLOBAL_CMD_TABLE.add_command("@cpattr", cmd_cpattr,
-                             priv_tuple=("objects.modify_attributes",))
+                             priv_tuple=("objects.modify_attributes",), help_category="Building")
 
         
 def cmd_mvattr(command):
     """
-    @mvattr <object>=<old>,<new>[,<copy1>[, <copy2 ...]]
+    @mvattr - move attributes
 
-    Move attributes around on an object
+    Usage:
+      @mvattr <object>=<old>,<new>[,<copy1>[, <copy2 ...]]
+
+    Move attributes around on the same object.
     """
     source_object = command.source_object
     arg = command.command_argument
@@ -395,10 +443,16 @@ def cmd_mvattr(command):
     source_object.emit_to(s)
 
 GLOBAL_CMD_TABLE.add_command("@mvattr", cmd_mvattr,
-                             priv_tuple=("objects.modify_attributes",))
+                             priv_tuple=("objects.modify_attributes",),
+                             help_category="Building")
 
 def cmd_find(command):
     """
+    find
+
+    Usage:
+      find <searchname>
+
     Searches for an object of a particular name.
     """
     source_object = command.source_object
@@ -421,13 +475,14 @@ def cmd_find(command):
     else:
         source_object.emit_to("No name matches found for: %s" % (searchstring,))
 GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
-                             priv_tuple=("objects.info",))
+                             priv_tuple=("objects.info",), help_category="Building")
 
 def cmd_create(command):
     """
-    @create
+    @create - create new objects
 
-    Usage: @create[/drop] objname [:parent]
+    Usage:
+      @create[/drop] objname [:parent]
 
     switch:
        drop - automatically drop the new object into your current location (this is not echoed)
@@ -477,15 +532,20 @@ def cmd_create(command):
 
 
 GLOBAL_CMD_TABLE.add_command("@create", cmd_create,
-                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",),
+                             help_category="Building")
     
 def cmd_copy(command):
-    """Usage:
-    @copy[/reset] <original obj> [new_name] [, new_location]
+    """
+    @copy - copy objects
+    
+    Usage:
+      @copy[/reset] <original obj> [new_name] [, new_location]
 
     switch:
-      reset - make a 'clean' copy, without any changes that might have happened to the
-             original since it was first created. 
+      reset - make a 'clean' copy off the object's script parent, thus
+              removing any changes that might have been made to the original
+              since it was first created. 
 
     Create an identical copy of an object.
     """
@@ -542,12 +602,13 @@ def cmd_copy(command):
         reset_text = " (using default attrs/flags)"
     source_object.emit_to("Copied object '%s'%s%s%s." % (objname,name_text,loc_text,reset_text))
 GLOBAL_CMD_TABLE.add_command("@copy", cmd_copy,
-                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
-    
-
-    
+                             priv_tuple=("objects.create",), help_category="Building")
+        
 def cmd_nextfree(command):
-    """Usage:
+    """
+    @nextfree
+    
+    Usage:
        @nextfree 
 
     Returns the next free object number.
@@ -555,10 +616,12 @@ def cmd_nextfree(command):
     nextfree = Object.objects.get_nextfree_dbnum()
     command.source_object.emit_to("Next free object number: #%s" % nextfree)
 GLOBAL_CMD_TABLE.add_command("@nextfree", cmd_nextfree,
-                             priv_tuple=("objects.info",),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.info",), help_category="Building")
     
 def cmd_open(command):
-    """@open
+    """    
+    @open - create new exit
+    
     Usage:
       @open <new exit> [:parent] [= <destination> [,<return exit> [:parent]]]  
 
@@ -670,15 +733,17 @@ def cmd_open(command):
             source_object.emit_to("Created exit%s back from %s named %s." % \
                                   (ptext, destination, new_object))
 GLOBAL_CMD_TABLE.add_command("@open", cmd_open,
-                             priv_tuple=("objects.dig",),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.dig",), help_category="Building")
         
 def cmd_chown(command):
     """
-    Changes the ownership of an object. The new owner specified must be a
-    player object.
+    @chown - change ownerships
 
-    Forms:
-    @chown <Object>=<NewOwner>
+    Usage:
+      @chown <Object> = <NewOwner>  
+    
+    Changes the ownership of an object. The new owner specified must be a
+    player object.    
     """
     source_object = command.source_object
 
@@ -721,15 +786,19 @@ def cmd_chown(command):
         # We haven't provided a target.
         source_object.emit_to("Who should be the new owner of the object?")
         return
-GLOBAL_CMD_TABLE.add_command("@chown", cmd_chown, priv_tuple=("objects.modify_attributes","objects.admin_ownership"))
+GLOBAL_CMD_TABLE.add_command("@chown", cmd_chown, priv_tuple=("objects.modify_attributes",
+                                                              "objects.admin_ownership"),
+                             help_category="Building" )
     
 def cmd_chzone(command):
     """
+    @chzone - set zones
+
+    Usage:
+      @chzone <Object> = <NewZone>
+
     Changes an object's zone. The specified zone may be of any object type, but
     will typically be a THING.
-
-    Forms:
-    @chzone <Object>=<NewZone>
     """
     source_object = command.source_object
 
@@ -773,10 +842,13 @@ def cmd_chzone(command):
         # We haven't provided a target zone.
         source_object.emit_to("What should the object's zone be set to?")
         return
-GLOBAL_CMD_TABLE.add_command("@chzone", cmd_chzone, priv_tuple=("objects.dig",))
+GLOBAL_CMD_TABLE.add_command("@chzone", cmd_chzone, priv_tuple=("objects.dig",),
+                             help_category="Building" )
 
 def cmd_link(command):
-    """@link
+    """
+    @link - connect objects
+
     Usage:
       @link <object> = <target>
       @link <object> = 
@@ -864,13 +936,17 @@ def cmd_link(command):
         else:
             source_object.emit_to("You set the home location of %s to %s%s." % (obj, destination, ohome_text))      
 GLOBAL_CMD_TABLE.add_command("@link", cmd_link,
-                             priv_tuple=("objects.dig",), auto_help=True, staff_help=True)
+                             priv_tuple=("objects.dig",), help_category="Building")
 
 def cmd_unlink(command):
     """
-    Unlinks an object.
-    
-    @unlink <Object>
+    @unlink - unconnect objects
+
+    Usage:
+      @unlink <Object>
+
+    Unlinks an object, for example an exit, disconnecting
+    it from whatever it was connected to.
     """
     source_object = command.source_object
     
@@ -890,15 +966,19 @@ def cmd_unlink(command):
         target_obj.set_home(None)
         source_object.emit_to("You have unlinked %s." % target_obj.get_name())
 GLOBAL_CMD_TABLE.add_command("@unlink", cmd_unlink,
-                             priv_tuple=("objects.dig",))
+                             priv_tuple=("objects.dig",), help_category="Building")
 
 def cmd_dig(command):
-    """@dig    
+    """
+    @dig - build and connect new rooms
+
     Usage: 
       @dig[/switches] roomname [:parent] [= exit_to_there [: parent][;alias]] [, exit_to_here [: parent][;alias]] 
-    switches:
+
+    Switches:
        teleport - move yourself to the new room
-    example:
+
+    Example:
        @dig kitchen = north; n, south; s
 
     This command is a convenient way to build rooms quickly; it creates the new room and you can optionally
@@ -1018,13 +1098,16 @@ def cmd_dig(command):
             source_object.move_to(new_room)
                
 GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
-                             priv_tuple=("objects.dig",), auto_help=True, staff_help=True)
+                             priv_tuple=("objects.dig",), help_category="Building")
 
 def cmd_name(command):
     """
-    Handle naming an object.
-    
-    @name <Object>=<Value>
+    @name - name objects
+
+    Usage:
+      @name <Object> = <Value>
+ 
+    Handle naming an object.     
     """
     source_object = command.source_object
     
@@ -1060,10 +1143,16 @@ def cmd_name(command):
         source_object.emit_to("You have renamed %s to %s." % (target_obj, 
                                                               ansi_name))
         target_obj.set_name(new_name)
-GLOBAL_CMD_TABLE.add_command("@name", cmd_name)
+GLOBAL_CMD_TABLE.add_command("@name", cmd_name, priv_tuple=("objects.create",),
+                             help_category="Building")
 
 def cmd_description(command):
     """
+    @desc
+
+    Usage:
+      @desc [obj =] <descriptive text>
+
     Set an object's description.
     """
     source_object = command.source_object
@@ -1099,20 +1188,21 @@ def cmd_description(command):
     else:
         source_object.emit_to("%s - description set." % target_obj)
         target_obj.set_attribute('desc', new_desc)
-GLOBAL_CMD_TABLE.add_command("@describe", cmd_description)
+GLOBAL_CMD_TABLE.add_command("@describe", cmd_description, priv_tuple=("objects.create",),
+                             help_category="Building")
 
 def cmd_recover(command):
     """
-    @recover 
-
-    Recovers @destroyed non-player objects.
+    @recover - undo object deletion
 
     Usage:
-       @recover[/switches] [obj [,obj2, ...]] 
+      @recover[/switches] [obj [,obj2, ...]] 
 
     switches:
-       ROOM - recover as ROOM type instead of THING
-       EXIT - recover as EXIT type instead of THING
+      ROOM - recover as ROOM type instead of THING
+      EXIT - recover as EXIT type instead of THING
+
+    Recovers @destroyed non-player objects.
 
     If no argument is given, a list of all recoverable objects will be given. 
     
@@ -1165,14 +1255,12 @@ def cmd_recover(command):
 
 
 GLOBAL_CMD_TABLE.add_command("@recover", cmd_recover,
-                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",), help_category="Building")
 
 def cmd_destroy(command):
     """
-    @destroy
-
-    Destroys one or many objects. 
-
+    @destroy - send objects to trashbin
+    
     Usage: 
        @destroy[/<switches>] obj [,obj2, obj3, ...]
 
@@ -1182,6 +1270,7 @@ def cmd_destroy(command):
                   switch overrides this safety.     
        instant|now  - Destroy the object immediately, without delay. 
 
+    Destroys one or many objects. 
     The objects are set to GOING and will be permanently destroyed next time the system
     does cleanup. Until then non-player objects can still be saved  by using the
     @recover command. The contents of a room will be moved out before it is destroyed,
@@ -1244,19 +1333,23 @@ def cmd_destroy(command):
             source_object.emit_to("You schedule %s for destruction." % target_obj.get_name())
         
 GLOBAL_CMD_TABLE.add_command("@destroy", cmd_destroy,
-                             priv_tuple=("objects.create",),auto_help=True,staff_help=True)
+                             priv_tuple=("objects.create",), help_category="Building")
 
 def cmd_lock(command):
-    """@lock
+    """
+    @lock - limit use of objects
+
     Usage:
       @lock[/switch] <obj> [:type] [= <key>[,key2,key3,...]]    
 
-    switches:
+    Switches:
       add    - add a lock (default) from object 
       del    - remove a lock from object  
       list   - view all locks on object (default)
     type:
       DefaultLock  - the default lock type (default)
+      UseLock      - prevents usage of objects' commands
+      EnterLock    - blocking objects from entering the object
       
     Locks an object for everyone except those matching the keys.
     The keys can be of the following types (and searched in this order):
@@ -1433,4 +1526,137 @@ def cmd_lock(command):
             source_object.emit_to("Added lock '%s' to %s with keys%s." % (ltype, obj.get_name(), kstring))
 
         obj.set_attribute("LOCKS",obj_locks)
-GLOBAL_CMD_TABLE.add_command("@lock", cmd_lock, priv_tuple=("objects.create",),auto_help=True, staff_help=True)
+GLOBAL_CMD_TABLE.add_command("@lock", cmd_lock, priv_tuple=("objects.create",), help_category="Building")
+
+def cmd_examine(command):
+    """    
+    examine - detailed info on objects
+
+    Usage: 
+      examine [<object>]
+
+    The examine command shows detailed game info about an
+    object; which attributes/flags it has and what it
+    contains. If object is not specified, the current
+    location is examined. 
+    """
+    source_object = command.source_object
+    attr_search = False
+    
+    if not command.command_argument:    
+        # If no arguments are provided, examine the invoker's location.
+        target_obj = source_object.get_location()
+    else:
+        # Look for a slash in the input, indicating an attribute search.
+        attr_split = command.command_argument.split("/", 1)
+        
+        # If the splitting by the "/" character returns a list with more than 1
+        # entry, it's an attribute match.
+        if len(attr_split) > 1:
+            attr_search = True
+            # Strip the object search string from the input with the
+            # object/attribute pair.
+            obj_searchstr = attr_split[0]
+            attr_searchstr = attr_split[1].strip()
+            
+            # Protect against stuff like: ex me/
+            if attr_searchstr == '':
+                source_object.emit_to('No attribute name provided.')
+                return
+        else:
+            # No slash in argument, just examine an object.
+            obj_searchstr = command.command_argument
+
+        # Resolve the target object.
+        target_obj = source_object.search_for_object(obj_searchstr)
+        # Use search_for_object to handle duplicate/nonexistant results.
+        if not target_obj:
+            return
+        
+    # If the user doesn't control the object, just look at it instead.
+    if not source_object.controls_other(target_obj, builder_override=True):
+        command.command_string = 'look'
+        cmd_look(command)
+        return
+            
+    if attr_search:
+        # Player did something like: examine me/* or examine me/TE*. Return
+        # each matching attribute with its value.        
+        attr_matches = target_obj.attribute_namesearch(attr_searchstr)
+        if attr_matches:
+            for attribute in attr_matches:
+                source_object.emit_to(attribute.get_attrline())
+        else:
+            source_object.emit_to("No matching attributes found.")
+    else:
+        
+        # Player is examining an object. Return a full readout of attributes,
+        # along with detailed information about said object.
+         
+        string = ""        
+        newl = "\r\n"
+        # Format the examine header area with general flag/type info.
+        
+        string += str(target_obj.get_name(fullname=True)) + newl
+        string += str("Type: %s Flags: %s" % (target_obj.get_type(), 
+                                         target_obj.get_flags())) + newl        
+        string += str("Owner: %s " % target_obj.get_owner()) + newl
+        string += str("Zone: %s" % target_obj.get_zone()) + newl
+        string += str("Parent: %s " % target_obj.get_script_parent()) + newl
+
+        locks = target_obj.get_attribute_value("LOCKS")
+        if locks and "%s" % locks:
+            string += str("Locks: %s" % locks) + newl
+               
+        # Contents container lists for sorting by type.
+        con_players = []
+        con_things = []
+        con_exits = []
+        
+        # Break each object out into their own list.
+        for obj in target_obj.get_contents():
+            if obj.is_player():
+                con_players.append(obj)  
+            elif obj.is_exit():
+                con_exits.append(obj)
+            elif obj.is_thing():
+                con_things.append(obj)
+        
+        # Render the object's home or destination (for exits).
+        if not target_obj.is_room():
+            if target_obj.is_exit():
+                # The Home attribute on an exit is really its destination.
+                string += str("Destination: %s" % target_obj.get_home()) + newl
+            else:
+                # For everything else, home is home.
+                string += str("Home: %s" % target_obj.get_home()) + newl
+            # This obviously isn't valid for rooms.    
+            string += str("Location: %s" % target_obj.get_location()) + newl
+
+        # Render other attributes
+        for attribute in target_obj.get_all_attributes():            
+            string += str(attribute.get_attrline()) + newl
+
+        # Render Contents display.
+        if con_players or con_things:
+            string += str("%sContents:%s" % (ANSITable.ansi["hilite"], 
+                                        ANSITable.ansi["normal"]))
+            for player in con_players:
+                string += str(' %s' % newl + player.get_name(fullname=True))
+            for thing in con_things:
+                string += str(' %s' % newl + thing.get_name(fullname=True))
+                
+        # Render Exists display.
+        if con_exits:
+            string += str("%sExits:%s" % (newl + ANSITable.ansi["hilite"], 
+                                     ANSITable.ansi["normal"]))
+            for exit in con_exits:
+                string += str(' %s' % newl + exit.get_name(fullname=True))
+
+        # Send it all
+        source_object.emit_to(string)
+            
+GLOBAL_CMD_TABLE.add_command("examine", cmd_examine, priv_tuple=("objects.info",))
+
+
+

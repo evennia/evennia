@@ -17,25 +17,41 @@ from src.cmdtable import GLOBAL_CMD_TABLE
 
 def cmd_version(command):
     """
-    Version info command.
+    @version - game version
+
+    Usage:
+      @version
+
+    Display the game version info
     """
     retval = "-"*50 +"\n\r"
     retval += " Evennia %s\n\r" % (defines_global.EVENNIA_VERSION,)
     retval += " Django %s\n\r" % (django.get_version())
     retval += "-"*50
     command.source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("version", cmd_version),
+GLOBAL_CMD_TABLE.add_command("@version", cmd_version, help_category="Admin"),
 
 def cmd_time(command):
     """
+    @time
+
+    Usage:
+      @time 
+    
     Server local time.
     """
     command.source_object.emit_to('Current server time : %s' % 
                 (time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime(),)))
-GLOBAL_CMD_TABLE.add_command("time", cmd_time),
+GLOBAL_CMD_TABLE.add_command("@time", cmd_time,  priv_tuple=("genperms.game_info",),
+                             help_category="Admin")
 
 def cmd_uptime(command):
     """
+    @uptime
+
+    Usage:
+      @uptime
+
     Server uptime and stats.
     """
     source_object = command.source_object
@@ -54,11 +70,18 @@ def cmd_uptime(command):
         loadavg = os.getloadavg()
         source_object.emit_to('Server load (1 min) : %.2f' % 
                     loadavg[0])
-GLOBAL_CMD_TABLE.add_command("uptime", cmd_uptime),
+GLOBAL_CMD_TABLE.add_command("@uptime", cmd_uptime, priv_tuple=("genperms.game_info",),
+                             help_category="Admin")
 
 def cmd_list(command):
-    """
-    Shows some game related information.
+    """ 
+    @list - list info
+
+    Usage:
+      @list commands | flags | process
+    
+    Shows game related information depending
+    on which argument is given. 
     """
     server = command.session.server
     source_object = command.source_object
@@ -99,10 +122,15 @@ def cmd_list(command):
         source_object.emit_to("Flags: "+" ".join(flags.SERVER_FLAGS))
     else:
         source_object.emit_to(msg_invalid)
-GLOBAL_CMD_TABLE.add_command("@list", cmd_list,priv_tuple=("genperms.game_info",)),
+GLOBAL_CMD_TABLE.add_command("@list", cmd_list,priv_tuple=("genperms.game_info",), help_category="Admin")
 
 def cmd_ps(command):
     """
+    @ps - list processes
+
+    Usage
+      @ps 
+
     Shows the process/event table.
     """
     source_object = command.source_object
@@ -115,13 +143,23 @@ def cmd_ps(command):
                                             event.description))
     source_object.emit_to("Totals: %d interval events" % (len(scheduler.schedule),))
 GLOBAL_CMD_TABLE.add_command("@ps", cmd_ps,
-                             priv_tuple=("genperms.process_control")),
+                             priv_tuple=("genperms.process_control",), help_category="Admin")
 
 def cmd_stats(command):
     """
+    @stats - show object stats
+
+    Usage:
+      @stats
+
+    Example:
+      @stats
+        -> 
+      4012 objects = 144 rooms, 212 exits, 613 things, 1878 players. (1165 garbage)
+
     Shows stats about the database.
-    4012 objects = 144 rooms, 212 exits, 613 things, 1878 players. (1165 garbage)
     """
+
     stats_dict = Object.objects.object_totals()
     command.source_object.emit_to(
         "%d objects = %d rooms, %d exits, %d things, %d players. (%d garbage)" % 
@@ -131,4 +169,4 @@ def cmd_stats(command):
         stats_dict["things"],
         stats_dict["players"],
         stats_dict["garbage"]))
-GLOBAL_CMD_TABLE.add_command("@stats", cmd_stats, priv_tuple=("genperms.game_info",)),
+GLOBAL_CMD_TABLE.add_command("@stats", cmd_stats, priv_tuple=("genperms.game_info",), help_category="Admin"),

@@ -4,11 +4,13 @@ This is where all of the crucial, core object models reside.
 import re
 import traceback
 
-try: import cPickle as pickle
-except ImportError: import pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.conf import settings
 from src.objects.util import object as util_object
 from src.objects.managers.object import ObjectManager
@@ -23,8 +25,6 @@ from src import logger
 # Import as the absolute path to avoid local variable clashes.
 import src.flags
 from src.util import functions_general
-
-from src.logger import log_infomsg
 
 class Attribute(models.Model):
     """
@@ -46,9 +46,9 @@ class Attribute(models.Model):
     def __str__(self):
         return "%s(%s)" % (self.attr_name, self.id)
             
-    """
-    BEGIN COMMON METHODS
-    """
+    #
+    # BEGIN COMMON METHODS
+    # 
     def get_name(self):
         """
         Returns an attribute's name.
@@ -74,7 +74,8 @@ class Attribute(models.Model):
         """
         Returns True if the attribute is hidden.
         """
-        if self.attr_hidden or self.get_name().upper() in defines_global.HIDDEN_ATTRIBS:
+        if self.attr_hidden or self.get_name().upper() \
+               in defines_global.HIDDEN_ATTRIBS:
             return True
         else:
             return False
@@ -83,7 +84,8 @@ class Attribute(models.Model):
         """
         Returns True if the attribute is unsettable.
         """
-        if self.get_name().upper() in defines_global.NOSET_ATTRIBS:            return True
+        if self.get_name().upper() in defines_global.NOSET_ATTRIBS:
+            return True
         else:
             return False
         
@@ -103,21 +105,28 @@ class Object(models.Model):
     ROOM, or other entities within the database. Pretty much anything in the
     game is an object. Objects may be one of several different types, and
     may be parented to allow for differing behaviors.
-    
-    We eventually want to find some way to implement object parents via loadable 
-    modules or sub-classing.
     """
     name = models.CharField(max_length=255)
     ansi_name = models.CharField(max_length=255)
-    owner = models.ForeignKey('self', related_name="obj_owner", blank=True, null=True)
-    zone = models.ForeignKey('self', related_name="obj_zone", blank=True, null=True)
-    script_parent = models.CharField(max_length=255, blank=True, null=True)
-    home = models.ForeignKey('self', related_name="obj_home", blank=True, null=True)
+    owner = models.ForeignKey('self',
+                              related_name="obj_owner",
+                              blank=True, null=True)
+    zone = models.ForeignKey('self',
+                             related_name="obj_zone",
+                             blank=True, null=True)
+    script_parent = models.CharField(max_length=255,
+                                     blank=True, null=True)
+    home = models.ForeignKey('self',
+                             related_name="obj_home",
+                             blank=True, null=True)
     type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
-    location = models.ForeignKey('self', related_name="obj_location", blank=True, null=True)
+    location = models.ForeignKey('self',
+                                 related_name="obj_location",
+                                 blank=True, null=True)
     flags = models.TextField(blank=True, null=True)
     nosave_flags = models.TextField(blank=True, null=True)
-    date_created = models.DateField(editable=False, auto_now_add=True)
+    date_created = models.DateField(editable=False,
+                                    auto_now_add=True)
 
     # 'scriptlink' is a 'get' property for retrieving a reference to the correct
     # script object. Defined down by get_scriptlink()
@@ -125,10 +134,15 @@ class Object(models.Model):
     
     objects = ObjectManager()
 
-    #state system can set a particular command table to be used (not persistent).
+    # state system can set a particular command
+    # table to be used (not persistent).
     state = None
 
     class Meta:
+        """
+        Define permission types on the object class and
+        how it is ordered in the database.
+        """
         ordering = ['-date_created', 'id']
         permissions = settings.PERM_OBJECTS
         
@@ -147,13 +161,17 @@ class Object(models.Model):
         """
         return "#%s" % str(self.id)
         
-    """
-    BEGIN COMMON METHODS
-    """
-    def search_for_object(self, ostring, emit_to_obj=None, search_contents=True, 
-                                search_location=True, dbref_only=False, 
-                                limit_types=False, search_aliases=False,
-                                attribute_name=None):
+    #
+    # BEGIN COMMON METHODS
+    # 
+    def search_for_object(self, ostring,
+                          emit_to_obj=None,
+                          search_contents=True, 
+                          search_location=True,
+                          dbref_only=False, 
+                          limit_types=False,
+                          search_aliases=False,
+                          attribute_name=None):
         """
         Perform a standard object search, handling multiple
         results and lack thereof gracefully.
@@ -187,13 +205,15 @@ class Object(models.Model):
                                 attribute_name=attribute_name)
 
         if len(results) > 1:
-            s = "More than one match for '%s' (please narrow target):" % ostring            
+            string = "More than one match for '%s' (please narrow target):" % ostring            
             for num, result in enumerate(results):
                 invtext = ""
                 if result.get_location() == self:
                     invtext = " (carried)"                    
-                s += "\n %i-%s%s" % (num+1, result.get_name(show_dbref=False),invtext)
-            emit_to_obj.emit_to(s)            
+                string += "\n %i-%s%s" % (num+1,
+                                     result.get_name(show_dbref=False),
+                                     invtext)
+            emit_to_obj.emit_to(string)            
             return False
         elif len(results) == 0:
             emit_to_obj.emit_to("I don't see that here.")
@@ -224,13 +244,18 @@ class Object(models.Model):
         for session in sessions:
             session.msg(parse_ansi(message))
             
-    def execute_cmd(self, command_str, session=None):
+    def execute_cmd(self, command_str, session=None, ignore_state=False):
         """
         Do something as this object.
+
+        bypass_state - ignore the fact that a player is in a state
+                       (means the normal command table will be used
+                       no matter what)
         """      
         # The Command object has all of the methods for parsing and preparing
         # for searching and execution. Send it to the handler once populated.
-        cmdhandler.handle(cmdhandler.Command(self, command_str, session=session))
+        cmdhandler.handle(cmdhandler.Command(self, command_str, session=session),
+                          ignore_state=ignore_state)
             
     def emit_to_contents(self, message, exclude=None):
         """
@@ -384,7 +409,8 @@ class Object(models.Model):
         
         # When builder_override is enabled, a builder permission means
         # the object controls the other.
-        if builder_override and not other_obj.is_player() and self.has_group('Builders'):
+        if builder_override and not other_obj.is_player() \
+               and self.has_group('Builders'):
             return True
 
         # They've failed to meet any of the above conditions.
@@ -466,7 +492,8 @@ class Object(models.Model):
                 uobj.is_active = False
                 uobj.save()
             except:
-                functions_general.log_errmsg('Destroying object %s but no matching player.' % (self,))
+                string = 'Destroying object %s but no matching player.' % (self,)
+                functions_general.log_errmsg(string)
 
         # Set the object type to GOING
         self.type = defines_global.OTYPE_GOING                
@@ -511,7 +538,7 @@ class Object(models.Model):
         """
         # Gather up everything, other than exits and going/garbage, that is under
         # the belief this is its location.
-        objs = self.obj_location.filter(type__in=[1,2,3])
+        objs = self.obj_location.filter(type__in=[1, 2, 3])
         default_home_id = ConfigValue.objects.get_configvalue('default_home')
         try:
             default_home = Object.objects.get(id=default_home_id)
@@ -644,7 +671,8 @@ class Object(models.Model):
         """
         Returns a QuerySet of an object's attributes.
         """
-        return [attr for attr in self.attribute_set.all() if not attr.is_hidden()]
+        return [attr for attr in self.attribute_set.all()
+                if not attr.is_hidden()]
         
 
     def clear_all_attributes(self):
@@ -684,9 +712,11 @@ class Object(models.Model):
                                re.IGNORECASE)
         # If the regular expression search returns a match object, add to results.
         if exclude_noset:
-            return [attr for attr in attrs if match_exp.search(attr.get_name()) and not attr.is_hidden() and not attr.is_noset()]
+            return [attr for attr in attrs if match_exp.search(attr.get_name())
+                    and not attr.is_hidden() and not attr.is_noset()]
         else:
-            return [attr for attr in attrs if match_exp.search(attr.get_name()) and not attr.is_hidden()]
+            return [attr for attr in attrs if match_exp.search(attr.get_name())
+                    and not attr.is_hidden()]
         
 
     def has_flag(self, flag):
@@ -751,7 +781,10 @@ class Object(models.Model):
             self.save()
 
     def unset_flag(self, flag):
-        self.set_flag(flag,value=False)
+        """
+        Clear the flag.
+        """
+        self.set_flag(flag, value=False)
     
     def get_flags(self):
         """
@@ -815,7 +848,8 @@ class Object(models.Model):
         try:
             return self.location
         except:
-            functions_general.log_errmsg("Object '%s(#%d)' has invalid location: #%s" % (self.name,self.id,self.location_id))
+            functions_general.log_errmsg("Object '%s(#%d)' has invalid location: #%s" % \
+                                         (self.name,self.id,self.location_id))
             return False
             
     def get_scriptlink(self):
@@ -827,7 +861,7 @@ class Object(models.Model):
             
             # Load the script reference into the object's attribute.
             self.scriptlink_cached = scripthandler.scriptlink(self, 
-                                                            script_to_load)        
+                                                              script_to_load)        
         if self.scriptlink_cached:    
             # If the scriptlink variable can't be populated, this will fail
             # silently and let the exception hit in the scripthandler.
@@ -857,7 +891,8 @@ class Object(models.Model):
         script_parent: (string) String pythonic import path of the script parent
                                 assuming the python path is game/gamesrc/parents. 
         """        
-        if script_parent != None and scripthandler.scriptlink(self, str(script_parent).strip()):
+        if script_parent != None and scripthandler.scriptlink(self,
+                                                              str(script_parent).strip()):
             #assigning a custom parent 
             self.script_parent = str(script_parent).strip()
             self.save()
@@ -1046,7 +1081,10 @@ class Object(models.Model):
 
     #state access functions
 
-    def get_state(self):        
+    def get_state(self):
+        """
+        Returns the player's current state.
+        """
         return self.state
     
     def set_state(self, state_name=None):

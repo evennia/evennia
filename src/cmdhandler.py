@@ -291,7 +291,8 @@ def match_exits(command,test=False):
         raise ExitCommandHandler
     
                
-def command_table_lookup(command, command_table, eval_perms=True,test=False,neighbor=None):
+def command_table_lookup(command, command_table, eval_perms=True,
+                         test=False, neighbor=None):
     """
     Performs a command table lookup on the specified command table. Also
     evaluates the permissions tuple.
@@ -329,7 +330,7 @@ def match_neighbor_ctables(command,test=False):
     Looks through the command tables of neighboring objects for command
     matches.
     test mode just checks if the command is a match, without manipulating
-      any commands. 
+      any commands.
     """
     source_object = command.source_object
     if source_object.location != None:
@@ -349,7 +350,7 @@ def match_neighbor_ctables(command,test=False):
         #no matches
         return False
 
-def handle(command):
+def handle(command, ignore_state=False):
     """
     Use the spliced (list) uinput variable to retrieve the correct
     command, or return an invalid command error.
@@ -357,6 +358,8 @@ def handle(command):
     We're basically grabbing the player's command by tacking
     their input on to 'cmd_' and looking it up in the GenCommands
     class.
+
+    ignore_state : ignore eventual statetable lookups completely.
     """
     try:
         # TODO: Protect against non-standard characters.
@@ -379,11 +382,11 @@ def handle(command):
             state = command.source_object.get_state()
             state_cmd_table = statetable.GLOBAL_STATE_TABLE.get_cmd_table(state)
 
-            if state and state_cmd_table:            
+            if state and state_cmd_table and not ignore_state:            
                 # Caller is in a special state.                
 
                 state_allow_exits, state_allow_obj_cmds = \
-                        statetable.GLOBAL_STATE_TABLE.get_state_flags(state)    
+                        statetable.GLOBAL_STATE_TABLE.get_exec_rights(state)    
 
                 state_lookup = True
                 if match_channel(command):

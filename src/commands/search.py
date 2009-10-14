@@ -146,6 +146,11 @@ def build_query(source_object, search_query, search_player, search_type,
 
 def cmd_search(command):
     """
+    search
+
+    Usage:
+      search <name>
+
     Searches for owned objects as per MUX2.
     """
     source_object = command.source_object
@@ -232,4 +237,5 @@ def cmd_search(command):
                 
     display_results(source_object, search_query)
 GLOBAL_CMD_TABLE.add_command("@search", cmd_search,
-                             priv_tuple=("objects.info")),
+                             priv_tuple=("objects.info",),
+                             help_category="Building")
