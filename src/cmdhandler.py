@@ -383,7 +383,7 @@ def handle(command, ignore_state=False):
             state_cmd_table = statetable.GLOBAL_STATE_TABLE.get_cmd_table(state)
 
             if state and state_cmd_table and not ignore_state:            
-                # Caller is in a special state.                
+                # Caller is in a special state.
 
                 state_allow_exits, state_allow_obj_cmds = \
                         statetable.GLOBAL_STATE_TABLE.get_exec_rights(state)    

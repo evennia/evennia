@@ -6,13 +6,15 @@ gamesrc/parents and set SCRIPT_DEFAULT_OBJECT = 'custom_basicobject'
 in game/settings.py. 
 
 Generally, if you want to conveniently set future objects to inherit from this
-script parent, this files and others like it need to be
+script parent, this file and others like it need to be
 located under the game/gamesrc/parent directory. 
 """
 from game.gamesrc.parents.base.basicobject import BasicObject
 
 class CustomBasicObject(BasicObject):
-    
+    """
+    This defines the base class of all non-player objects in game.
+    """    
     def at_object_creation(self):
         """
         This function is called whenever the object is created. Use
@@ -31,7 +33,7 @@ class CustomBasicObject(BasicObject):
                             show_dbref=False,
                             show_flags=False)
         #assign the name to the new attribute
-        obj.set_attribute('sdesc',name)
+        obj.set_attribute('sdesc', name)
 
     def at_object_destruction(self, pobject=None):
         """

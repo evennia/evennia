@@ -2,7 +2,7 @@
 This is the basic Evennia-standard player parent. 
 
 NOTE: This file should NOT be directly modified. Sub-class the BasicPlayer
-class in game/gamesrc/parents/base/basicplayer.py and change the 
+class in your own class in game/gamesrc/parents and change the 
 SCRIPT_DEFAULT_PLAYER variable in settings.py to point to the new class. 
 """
 from src.script_parents.basicobject import EvenniaBasicObject

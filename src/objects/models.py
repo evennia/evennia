@@ -891,8 +891,7 @@ class Object(models.Model):
         script_parent: (string) String pythonic import path of the script parent
                                 assuming the python path is game/gamesrc/parents. 
         """        
-        if script_parent != None and scripthandler.scriptlink(self,
-                                                              str(script_parent).strip()):
+        if script_parent != None and scripthandler.scriptlink(self, str(script_parent).strip()):
             #assigning a custom parent 
             self.script_parent = str(script_parent).strip()
             self.save()

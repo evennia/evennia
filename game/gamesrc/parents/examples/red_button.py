@@ -14,13 +14,17 @@ test button you must drop it before you will see its messages!
 """
 from game.gamesrc.parents.base.basicobject import BasicObject
 
-#you have to import the event definition(s) from somewhere covered by @reload,
-# - this is as good a place as any.
+# you have to import the event definition(s) from somewhere
+# covered by @reload, and this is as good a place as any.
+# Doing this will start the event ticking.
+
 import game.gamesrc.events.example 
 
 #
-#commands on the button object
-#
+# commands for using the button object. These are added to 
+# the object in the class_factory function at the
+# bottom of this module.
+# 
 
 def cmd_push_button(command):
     """
@@ -40,31 +44,22 @@ def cmd_pull_button(command):
     command.source_object.emit_to(retval)
                         
 #
-#The object itself
+# Definition of the object itself
 #
     
 class RedButton(BasicObject):
-
-    def __init__(self, scripted_obj, *args, **kwargs):
-        """
-        This is called when class_factory() instantiates a temporary instance
-        of the script parent. This is typically not something you want to
-        mess with much.
-        """
-        # Calling the super class' __init__ is critical! Never forget to do
-        # this or everything else from here on out will fail.
-        super(RedButton, self).__init__(scripted_obj, args, kwargs)
-        # Add the commands to the object's command table (this is about
-        #the only thing you should use the __init__ for).
-        self.command_table.add_command("pushbutton", cmd_push_button)
-        self.command_table.add_command("pullbutton", cmd_pull_button)
-
-
+    """
+    This class describes an evil red button.
+    It will use the event definition in
+    game/gamesrc/events/example.py to blink
+    at regular intervals until the lightbulb
+    breaks. 
+    """
     def at_object_creation(self):
         """
         This function is called when object is created. Use this
         preferably over __init__.
-        """
+        """        
         #get stored object related to this class
         obj = self.scripted_obj
         
@@ -73,9 +68,12 @@ class RedButton(BasicObject):
         obj.set_attribute("count", 0)
         
     def blink(self):
-        """If the event system is active, it will regularly call this function to make
-        the button blink. Note the use of attributes to store the variable count and
-        breakpoint in a persistent way."""
+        """
+        If the event system is active, it will regularly call this
+        function to make the button blink. Note the use of attributes
+        to store the variable count and breakpoint in a persistent
+        way.
+        """
         obj = self.scripted_obj
         
         try:            
@@ -86,13 +84,13 @@ class RedButton(BasicObject):
 
         if count <= breakpoint:
             if int(count) == int(breakpoint):            
-                s = "The button flashes, then goes dark. "
-                s += "Looks like the lamp just broke."
+                string = "The button flashes, then goes dark. "
+                string += "Looks like the lamp just broke."
             else: 
-                s = "The red button flashes, demanding your attention."
+                string = "The red button flashes, demanding your attention."
             count += 1            
-            obj.set_attribute("count",count)            
-            obj.get_location().emit_to_contents(s)
+            obj.set_attribute("count", count)            
+            obj.get_location().emit_to_contents(string)
 
 def class_factory(source_obj):
     """
@@ -100,6 +98,12 @@ def class_factory(source_obj):
     creates an instance of the class and returns it transparently. 
     
     source_obj: (Object) A reference to the object being scripted (the child).
-    """
-    return RedButton(source_obj)  
 
+    This is a good place for adding new commands to the button since this is
+    where it is actually instantiated. 
+    """
+    button = RedButton(source_obj)  
+    # add the object-based commands to the button
+    button.command_table.add_command("pushbutton", cmd_push_button)
+    button.command_table.add_command("pullbutton", cmd_pull_button)
+    return button

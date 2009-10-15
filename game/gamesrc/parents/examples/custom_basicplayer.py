@@ -1,17 +1,19 @@
 """
 This is an example of customizing the basic player character object.
 You will want to do this to add all sorts of custom things like
-attributes, skill values, injuries and so on. 
+attributes, skill values, injuries and so on.
 
-If you want to make this the default player object for all players, move it
-into gamesrc/parents and set SCRIPT_DEFAULT_PLAYER = 'custom_basicplayer'
-in game/settings.py.
+If you want to make this the default player object for all players,
+move it into gamesrc/parents and set SCRIPT_DEFAULT_PLAYER =
+'custom_basicplayer' in game/settings.py.
 """
 
 from game.gamesrc.parents.base.basicplayer import BasicPlayer
 
 class CustomBasicPlayer(BasicPlayer):    
-
+    """
+    This is the base class for all players in game. 
+    """
     def at_player_creation(self):        
         """
         Called when player object is first created. Use this

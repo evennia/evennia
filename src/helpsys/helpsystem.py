@@ -221,10 +221,10 @@ class EditHelp(object):
 
         # identify markup and do nice formatting as well as eventual
         # related entries to the help entries.
-        logger.log_infomsg("auto-help in: %s %s %s %s" % (topicstr, category, entrytext, permissions))
+        #logger.log_infomsg("auto-help in: %s %s %s %s" % (topicstr, category, entrytext, permissions))
         topics = self.format_help_entry(topicstr, category,
                                         entrytext, permissions)
-        logger.log_infomsg("auto-help: %s -> %s" % (topicstr,topics))
+        #logger.log_infomsg("auto-help: %s -> %s" % (topicstr,topics))
         # create the help entries:
         if topics: 
             for topic in topics:

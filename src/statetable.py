@@ -87,7 +87,6 @@ class StateTable(object):
                       special conditions or clean-up operations before allowing a player
                       to exit (e.g. combat states and text editors), in which case this
                       feature should be turned off and handled by custom exit commands.
-        help_command
         """
         
         state_name = state_name.strip()
