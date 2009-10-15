@@ -270,6 +270,13 @@ class StateHelpIndex(object):
         
         if not self.help_index.has_key(state):
             return 
+        if not help_text:
+            # if there is no doc-string, we don't
+            # create any help entry. This can be useful
+            # when overwriting global commands but want
+            # to retain their doc-strings.
+            return 
+
         # produce nicely formatted help entries, taking markup
         # into account.
         topics = helpsystem.edithelp.format_help_entry(topicstr,
