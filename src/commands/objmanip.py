@@ -482,7 +482,7 @@ def cmd_create(command):
     @create - create new objects
 
     Usage:
-      @create[/drop] objname [:parent]
+      @create[/drop] objname[;alias;alias...] [:parent]
 
     switch:
        drop - automatically drop the new object into your current location (this is not echoed)
@@ -499,7 +499,7 @@ def cmd_create(command):
     source_object = command.source_object
     
     if not command.command_argument:
-        source_object.emit_to("Usage: @create[/drop] <newname> [:path_to_script_parent]")
+        source_object.emit_to("Usage: @create[/drop] <newname>[;alias;alias...] [:path_to_script_parent]")
         return
     
     eq_args = command.command_argument.split(':', 1)
@@ -540,14 +540,15 @@ def cmd_copy(command):
     @copy - copy objects
     
     Usage:
-      @copy[/reset] <original obj> [new_name] [, new_location]
+      @copy[/reset] <original obj> [new_name][;alias...] [, new_location]
 
     switch:
       reset - make a 'clean' copy off the object's script parent, thus
               removing any changes that might have been made to the original
               since it was first created. 
 
-    Create an identical copy of an object.
+    Create an identical copy of an object. For every ; after your new name
+    you can add an alias for the object. 
     """
     source_object = command.source_object
     args = command.command_argument
@@ -623,7 +624,7 @@ def cmd_open(command):
     @open - create new exit
     
     Usage:
-      @open <new exit> [:parent] [= <destination> [,<return exit> [:parent]]]  
+      @open <new exit>[;alias;alias...] [:parent] [= <destination> [,<return exit>[;alias;alias...] [:parent]]]  
 
     Handles the creation of exits. If a destination is given, the exit
     will point there. The <return exit> argument sets up an exit at the
@@ -973,7 +974,7 @@ def cmd_dig(command):
     @dig - build and connect new rooms
 
     Usage: 
-      @dig[/switches] roomname [:parent] [= exit_to_there [: parent][;alias]] [, exit_to_here [: parent][;alias]] 
+      @dig[/switches] roomname[;alias;alias...] [:parent] [= exit_to_there[;alias] [: parent]] [, exit_to_here[;alias] [: parent]] 
 
     Switches:
        teleport - move yourself to the new room
@@ -982,8 +983,8 @@ def cmd_dig(command):
        @dig kitchen = north; n, south; s
 
     This command is a convenient way to build rooms quickly; it creates the new room and you can optionally
-    set up exits back and forth between your current room and the new one. 
-    ((NOTE - ALIASES ARE NOT YET FUNCTIONAL.))
+    set up exits back and forth between your current room and the new one. You can add as many aliases as you
+    like to the name of the room and the exits in question; an example would be 'north;no;n'.
     
     (See also @create, @open and @link.) 
     """
@@ -1064,13 +1065,7 @@ def cmd_dig(command):
                     ptext += " of type %s" % script_parent
                 else:
                     ptext += " of default type (parent '%s' failed!)" % script_parent
-            source_object.emit_to("Created exit%s from %s to %s named '%s'." % (ptext,location,destination,new_object))
-            #the ALIAS mechanism only works with one ALIAS at this time.
-            try:
-                new_object.set_attribute("ALIAS", exit_aliases[0][0])
-            except IndexError:
-                pass
-                                
+            source_object.emit_to("Created exit%s from %s to %s named '%s'." % (ptext,location,destination,new_object))                       
         if len(exit_names) > 1 and exit_names[1] != None:
             #create exit back from new room to this one.
             new_object = Object.objects.create_object(exit_names[1],
@@ -1088,12 +1083,7 @@ def cmd_dig(command):
                     ptext += " of default type (parent '%s' failed!)" % script_parent
             source_object.emit_to("Created exit%s back from %s to %s named '%s'." % \
                                   (ptext, destination, location, new_object))
-            #the ALIAS mechanism only works with one ALIAS at this time.
-            try:
-                new_object.set_attribute("ALIAS", exit_aliases[1][0])
-            except IndexError:
-                pass
-
+ 
         if 'teleport' in switches:
             source_object.move_to(new_room)
                
@@ -1105,9 +1095,9 @@ def cmd_name(command):
     @name - name objects
 
     Usage:
-      @name <Object> = <Value>
+      @name <object> = <newname>[;alias;alias...]
  
-    Handle naming an object.     
+    Handle naming an object.
     """
     source_object = command.source_object
     
