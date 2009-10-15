@@ -4,6 +4,7 @@ now.
 """
 import time
 from django.contrib.auth.models import User
+from src.objects.models import Object
 from src.config.models import ConfigValue
 from src.helpsys.models import HelpEntry
 from src.ansi import ANSITable
@@ -74,18 +75,133 @@ def cmd_emit(command):
     @emit
 
     Usage:
-      @emit <message>
+      @emit[/switches] [<obj>, <obj>, ... =] <message>
       
-    Emits a message to your immediate surroundings.
+    Switches:
+      room : limit emits to rooms only 
+      contents : send to the contents of objects
+      
+    Emits a message to the selected objects or to
+    your immediate surroundings. If the object is a room,
+    send to its contents. @pemit and @remit are
+    restricted aliases to this main command. 
     """
-    message = command.command_argument
-    
-    if message:
-        command.source_object.get_location().emit_to_contents(message)
+    source_object = command.source_object
+    args = command.command_argument
+    switches = command.command_switches
+    if not args:
+        source_object.emit_to("Usage: @emit/switches [<obj>, <obj>, ... =] <message>")
+        return 
+    if '=' in args:
+        args, message = [arg.strip() for arg in args.split('=',1)]
+        targets = [arg.strip() for arg in args.split(',')]        
     else:
-        command.source_object.emit_to("Emit what?")
+        targets = [source_object.get_location().dbref()]
+        message = args.strip()
+    # we now have a text to send and a list of target names.
+    # perform a global search for actual objects
+    tobjects = []
+    for target in targets:
+        if target in ['here']:
+            results = [source_object.get_location()]
+        elif target in ['me','my']:
+            results = [source_object]
+        else:
+            results = Object.objects.global_object_name_search(target)
+        if not results:
+            source_object.emit_to("No matches found for '%s'." % target)
+            return 
+        if len(results) > 1:
+            string = "There are multiple matches. Please use #dbref to be more specific."
+            for result in results:
+                string += "\n %s" % results.get_name(show_dbref=True)
+            source_object.emit_to(string)
+            return
+        tobjects.append(results[0])
+    if not tobjects:
+        return
+    
+    # sort the objects into categories
+    players = [obj for obj in tobjects if obj.is_player()]
+    rooms = [obj for obj in tobjects if obj.is_room()]
+    exits = [obj for obj in tobjects if obj.is_exit()]
+    things = [obj for obj in tobjects if obj.is_thing()]
+
+    # send differently depending on flags
+    if "room" in switches or "rooms" in switches:
+        # send to rooms only
+        norooms = players + exits + things
+        if norooms:            
+            source_object.emit_to("These are not rooms: %s" %
+                                  ", ".join([r.get_name() for r in norooms]))
+            return
+        for room in rooms:
+            room.emit_to_contents(message, exclude=source_object)
+    elif "contents" in switches:
+        # send to contents of objects
+        allobj = players + rooms + exits + things
+        for obj in allobj:
+            if not source_object.controls_other(obj):
+                source_object.emit_to("Cannot emit to %s (you don's control it)" % obj.get_name())
+                continue
+            obj.emit_to_contents(message)
+    else:
+        # assume reasonable defaults depending on object type
+        for obj in players:
+            obj.emit_to(message)
+        for obj in rooms:
+            obj.emit_to_contents(message)
+        for obj in exits: #send to destination
+            obj.get_home().emit_to_contents(message)
+        for obj in things:
+            if not source_object.controls_other(obj):
+                source_object.emit_to("Cannot emit to %s (you don's control it)" % obj.get_name())
+                continue
+            obj. emit_to_contents(message)
+    allobj = players + rooms + exits + things
+    string = ", ".join([obj.get_name() for obj in allobj])
+    source_object.emit_to("Emitted message to: %s." % string)
 GLOBAL_CMD_TABLE.add_command("@emit", cmd_emit,
-                             priv_tuple=("genperms.announce",),help_category="Comms"),
+                             priv_tuple=("genperms.announce",),help_category="Comms")
+
+def cmd_remit(command):
+    """
+    @remit - emit to a room
+
+    Usage:
+      @remit <room> [<room2>,<room3>,...] = <message>
+
+    Emits message to the contents of the room. 
+    """
+    if not command.command_argument:
+        command.source_object.emit_to("Usage: @remit <room>[,<room2>,<room3>,...] = <message>")
+        return 
+    command.command_switches = ["room"]
+    cmd_emit(command)
+GLOBAL_CMD_TABLE.add_command("@remit", cmd_remit,
+                             priv_tuple=("genperms.announce",),help_category="Comms")
+
+def cmd_pemit(command):
+    """
+    @pemit - emit to an object or player
+
+    Usage:
+      @pemit[/switch] <obj> [,<obj2>, <obj3>, ...] = <message>
+
+    Switches:
+      contents : emit to the contents of each object (only if you own it)
+
+    Emits message to objects or the contents of objects.
+    """
+    if not command.command_argument:
+        command.source_object.emit_to("Usage: @pemit <obj>[,<obj2>,<obj3>,...] = <message>")
+        return 
+    command.command_switches = [switch for switch in command.command_switches
+                                if switch == 'contents']
+    cmd_emit(command)
+GLOBAL_CMD_TABLE.add_command("@pemit", cmd_pemit,
+                             priv_tuple=("genperms.announce",),help_category="Comms")
+
 
 def cmd_wall(command):
     """
@@ -374,12 +490,69 @@ def cmd_say(command):
                                                   exclude=source_object)
 GLOBAL_CMD_TABLE.add_command("say", cmd_say)
 
+def cmd_fsay(command):
+    """
+    @fsay - make an object say something
+
+    Usage:
+      @fsay <obj> = <text to say>
+      
+    Make an object talk to its current location.
+    """
+    source_object = command.source_object
+    args = command.command_argument
+
+    if not args or not "=" in args: 
+        source_object.emit_to("Usage: @fsay <obj> = <text to say>")
+        return
+    target, speech = [arg.strip() for arg in args.split("=",1)]
+
+    # find object
+    if target in ['here']:
+        results = [source_object.get_location()]
+    elif target in ['me','my']:
+        results = [source_object]
+    else:
+        results = Object.objects.global_object_name_search(target)
+    if not results:
+        source_object.emit_to("No matches found for '%s'." % target)
+        return 
+    if len(results) > 1:
+        string = "There are multiple matches. Please use #dbref to be more specific."
+        for result in results:
+            string += "\n %s" % results.get_name(show_dbref=True)
+        source_object.emit_to(string)
+        return
+    target = results[0]
+
+    # permission check
+    if not source_object.controls_other(target):
+        source_object.emit_to("Cannot pose %s (you don's control it)" % obj.get_name())
+        return
+        
+    # Feedback for the object doing the talking.
+    source_object.emit_to("%s says, '%s%s'" % (target.get_name(show_dbref=False),
+                                               speech,
+                                               ANSITable.ansi['normal']))
+    
+    # Build the string to emit to neighbors.
+    emit_string = "%s says, '%s'" % (target.get_name(show_dbref=False), 
+                                     speech)    
+    target.get_location().emit_to_contents(emit_string, 
+                                                  exclude=source_object)
+GLOBAL_CMD_TABLE.add_command("@fsay", cmd_fsay)
+
+
 def cmd_pose(command):
     """
     pose - strike a pose
 
     Usage:
-      pose <pose text>
+      pose[/switches] <pose text>
+
+    Switches:
+      /nospace : put no space between your name
+                 and the start of the pose.
 
     Example:
       pose is standing by the wall, smiling.
@@ -408,6 +581,67 @@ def cmd_pose(command):
     
     source_object.get_location().emit_to_contents(sent_msg)
 GLOBAL_CMD_TABLE.add_command("pose", cmd_pose)
+
+def cmd_fpose(command):
+    """
+    @fpose - force an object to pose
+
+    Usage:
+      @fpose[/switches] <obj> = <pose text>
+      
+    Switches:
+      nospace : put no text between the object's name
+                and the start of the pose.
+
+    Describe an action being taken as performed by obj.
+    The pose text will automatically begin with the name
+    of the object. 
+    """
+    source_object = command.source_object
+    args = command.command_argument
+
+    if not args or not "=" in args: 
+        source_object.emit_to("Usage: @fpose <obj> = <pose text>")
+        return
+    target, pose_string = [arg.strip() for arg in args.split("=",1)]
+    # find object
+    if target in ['here']:
+        results = [source_object.get_location()]
+    elif target in ['me','my']:
+        results = [source_object]
+    else:
+        results = Object.objects.global_object_name_search(target)
+    if not results:
+        source_object.emit_to("No matches found for '%s'." % target)
+        return 
+    if len(results) > 1:
+        string = "There are multiple matches. Please use #dbref to be more specific."
+        for result in results:
+            string += "\n %s" % results.get_name(show_dbref=True)
+        source_object.emit_to(string)
+        return
+    target = results[0]
+
+    # permission check
+    if not source_object.controls_other(target):
+        source_object.emit_to("Cannot pose %s (you don's control it)" % obj.get_name())
+        return
+    
+    if "nospace" in command.command_switches:
+        # Output without a space between the player name and the emote.
+        sent_msg = "%s%s" % (target.get_name(show_dbref=False), 
+                             pose_string)
+    else:
+        # No switches, default.
+        sent_msg = "%s %s" % (target.get_name(show_dbref=False), 
+                              pose_string)
+    
+    source_object.get_location().emit_to_contents(sent_msg)
+GLOBAL_CMD_TABLE.add_command("@fpose", cmd_fpose)
+
+
+
+
 
 def cmd_group(command):
     """

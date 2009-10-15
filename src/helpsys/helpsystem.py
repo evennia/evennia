@@ -113,6 +113,10 @@ class EditHelp(object):
         """
         # sanitize input
         topics = []
+
+        if not helptext:
+            return topics
+
         if '[[' not in helptext:
             formatted_text = self.format_help_text(helptext)
             topics.append((helptopic, category,

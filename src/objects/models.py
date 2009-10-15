@@ -220,7 +220,7 @@ class Object(models.Model):
             return False
         else:
             return results[0]
-        
+                
     def get_sessions(self):
         """
         Returns a list of sessions matching this object.

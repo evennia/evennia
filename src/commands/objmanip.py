@@ -920,7 +920,7 @@ def cmd_link(command):
         if len(destination) > 1:
             s = "There are multiple matches. Please use #dbref to be more specific."
             for d in destination:
-                s += "\n %s" % destination.get_name()
+                s += "\n %s" % destination.get_name(show_dbref=True)
             source_object.emit_to(s)
             return
         destination = destination[0]
