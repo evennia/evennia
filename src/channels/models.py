@@ -65,6 +65,13 @@ class CommChannel(models.Model):
         """
         self.owner = new_owner
         self.save()
+
+    def set_description(self, new_description):
+        """
+        Sets a channel's description.
+        """
+        self.description = new_description
+        self.save()
         
     def controlled_by(self, pobject):
         """

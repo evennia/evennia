@@ -562,3 +562,36 @@ def cmd_cchown(command):
     source_object.emit_to("Owner of %s changed from %s to %s." % (cname, old_pname, pname))
     new_owner.emit_to("%s transfered ownership of channel '%s' to you." % (old_pname, cname))
 GLOBAL_CMD_TABLE.add_command("@cchown", cmd_cchown, help_category="Comms")
+
+def cmd_cdesc(command):
+    """
+    @cdesc - set channel description
+
+    Usage:
+      @cdesc <channel> = <description>
+
+    Changes the description of the channel as shown in
+    channel lists. 
+    """
+    source_object = command.source_object
+    args = command.command_argument
+    if not args or "=" not in args:
+        source_object.emit_to("Usage: @cdesc <channel> = <description>")
+        return
+    cname, text = args.split("=",1)
+    cname, text = cname.strip(), text.strip()
+    #locate channel
+    try:
+        channel = CommChannel.objects.get(name__iexact=cname)
+    except CommChannel.DoesNotExist:
+        source_object.emit_to("Channel '%s' not found." % cname)
+        return
+    #check permissions
+    if not channel.controlled_by(source_object) \
+           and not source_object.has_perm("channels.channel_admin"):
+        source_object.emit_to("You don't control this channel.")
+        return
+    # set the description
+    channel.set_description(text)
+    source_object.emit_to("Description of channel '%s' set to '%s'." % (cname, text))
+GLOBAL_CMD_TABLE.add_command("@cdesc", cmd_cdesc, help_category="Comms")
