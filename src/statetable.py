@@ -127,7 +127,7 @@ class StateTable(object):
         # both a custom help command and state auto-help; replace this too
         # to completely hide auto-help functionality in the state.
         self.add_command(state_name, 'help', cmd_state_help)
-        self.add_command(state_name, 'info', cmd_state_help)
+        self.add_command(state_name, 'statehelp', cmd_state_help)
         
         if exit_command:                
             #add the @exit command
