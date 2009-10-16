@@ -113,19 +113,24 @@ def create_connect_screens():
                   
 def create_aliases():
     """
-    Populates the standard aliases.
+    Populates the standard aliases. by reading the COMMAND_ALIASES dict
+    from the settings file. 
     """
-    CommandAlias(user_input="@desc", equiv_command="@describe").save()
-    CommandAlias(user_input="@dest", equiv_command="@destroy").save()
-    CommandAlias(user_input="@nuke", equiv_command="@destroy").save()
-    CommandAlias(user_input="@tel", equiv_command="@teleport").save()
-    CommandAlias(user_input="i", equiv_command="inventory").save()
-    CommandAlias(user_input="inv", equiv_command="inventory").save()
-    CommandAlias(user_input="l", equiv_command="look").save()
-    CommandAlias(user_input="ex", equiv_command="examine").save()
-    CommandAlias(user_input="sa", equiv_command="say").save()
-    #CommandAlias(user_input="emote", equiv_command="pose").save()
-    CommandAlias(user_input="p", equiv_command="page").save()
+    command_aliases = settings.COMMAND_ALIASES
+    for user_input, equiv_command in command_aliases.items():
+        CommandAlias(user_input=user_input, equiv_command=equiv_command).save()
+
+    ## CommandAlias(user_input="@desc", equiv_command="@describe").save()
+    ## CommandAlias(user_input="@dest", equiv_command="@destroy").save()
+    ## CommandAlias(user_input="@nuke", equiv_command="@destroy").save()
+    ## CommandAlias(user_input="@tel", equiv_command="@teleport").save()
+    ## CommandAlias(user_input="i", equiv_command="inventory").save()
+    ## CommandAlias(user_input="inv", equiv_command="inventory").save()
+    ## CommandAlias(user_input="l", equiv_command="look").save()
+    ## CommandAlias(user_input="ex", equiv_command="examine").save()
+    ## CommandAlias(user_input="sa", equiv_command="say").save()
+    ## #CommandAlias(user_input="emote", equiv_command="pose").save()
+    ## CommandAlias(user_input="p", equiv_command="page").save()
     
 def import_help_files():
     """

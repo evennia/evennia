@@ -12,6 +12,8 @@ from src.scripthandler import rebuild_cache
 from src.cmdtable import GLOBAL_CMD_TABLE
 from src.helpsys.models import HelpEntry
 from src.helpsys import helpsystem
+from src.config.models import CommandAlias
+from src.config import edit_aliases
 
 def cmd_reload(command):
     """
@@ -687,4 +689,60 @@ GLOBAL_CMD_TABLE.add_command("@sethelp", cmd_sethelp,
                              priv_tuple=("helpsys.add_help",
                                          "helpsys.del_help",
                                          "helpsys.admin_heelp"),
+                             help_category="Admin")
+
+def cmd_setcmdalias(command):
+    """
+    @setcmdalias - define shortcuts for commands
+
+    Usage:
+      @setcmdalias[/switch] [command = ] alias
+
+    Switches:
+      list - view all command aliases (default)
+      add - add alias
+      del - remove and existing alias
+
+    This defins a new alias for a common command,
+    for example like letting 'l' work as
+    well as 'look'. When you change an alias you must
+    use @reload/aliases before the alias-change gets
+    recognized.
+    """
+    source_object = command.source_object
+    args = command.command_argument
+    switches = command.command_switches
+
+    if not args or 'list' in switches:
+        # show all aliases
+        string = "Command aliases defined:"
+        aliases = CommandAlias.objects.all()
+        if not aliases:
+            string = "No command aliases defined."
+        for alias in aliases:
+            string += "\n  %s = %s" % (alias.equiv_command, alias.user_input)
+        source_object.emit_to(string)
+        return
+
+    equiv_command = ""
+    user_input = ""
+    # analyze args
+    if '=' in args:
+        equiv_command, user_input = [arg.strip() for arg in args.split("=",1)]
+    else:
+        user_input = args.strip()
+
+    if 'add' in switches:
+        # add alias
+        edit_aliases.add_alias(user_input, equiv_command)
+        source_object.emit_to("Alias %s -> %s added. Now do '@reload/aliases'." % (user_input, equiv_command))
+        return
+    elif 'del' in switches:
+        # delete alias
+        edit_aliases.del_alias(user_input)
+        source_object.emit_to("Removed alias %s (if it existed). Now do '@reload/aliases'." % user_input)
+    else:
+        source_object.emit_to("Usage: @setcmdalias[/switch] [command = ] alias")
+GLOBAL_CMD_TABLE.add_command("@setcmdalias", cmd_setcmdalias,
+                             priv_tuple=("genperms.process_control",),
                              help_category="Admin")

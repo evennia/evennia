@@ -16,7 +16,7 @@ class CommandAlias(models.Model):
     class Meta:
         verbose_name_plural = "Command aliases"
         ordering = ['user_input']
-
+            
 class ConfigValue(models.Model):
     """
     Experimental new config model.
