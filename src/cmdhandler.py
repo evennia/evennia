@@ -3,8 +3,9 @@ This is the command processing module. It is instanced once in the main
 server module and the handle() function is hit every time a player sends
 something.
 """
-import time
+#import time
 from traceback import format_exc
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 import defines_global
 import cmdtable
@@ -12,6 +13,8 @@ import statetable
 import logger
 import comsys
 import alias_mgr
+
+COMMAND_MAXLEN = settings.COMMAND_MAXLEN
 
 class UnknownCommand(Exception):
     """
@@ -47,6 +50,8 @@ class Command(object):
     command_switches = []
     # The un-parsed argument provided. IE: if input is "look dog", this is "dog".
     command_argument = None
+    # list of tuples for possible multi-space commands and their arguments
+    command_alternatives = None
     # A reference to the command function looked up in a command table.
     command_function = None
     # An optional dictionary that is passed through the command table as extra_vars.
@@ -66,45 +71,63 @@ class Command(object):
         Breaks the command up into the main command string, a list of switches,
         and a string containing the argument provided with the command. More
         specific processing is left up to the individual command functions.
-        """
-        try:
-            """
-            Break the command in half into command and argument. If the
-            command string can't be parsed, it has no argument and is
-            handled by the except ValueError block below.
-            """
-            # Lop off the return at the end.
-            self.raw_input = self.raw_input.strip('\r')
-            # Break the command up into the root command and its arguments.
-            (self.command_string, self.command_argument) = self.raw_input.split(' ', 1)
-            # Yank off trailing and leading spaces.
-            self.command_argument = self.command_argument.strip()
-            self.command_string = self.command_string.strip()
-            """
-            This is a really important behavior to note. If the user enters
-            anything other than a string with some character in it, the value
-            of the argument is None, not an empty string.
-            """
-            if self.command_string == '':
-                self.command_string = None
-            if self.command_argument == '':
-                self.command_argument = None
-                
-            if self.command_string == None:
-                """
-                This prevents any bad stuff from happening as a result of
-                trying to further parse a None object.
-                """
-                return 
-        except ValueError:
-            """
-            No arguments. IE: look, who.
-            """
-            self.command_string = self.raw_input
 
-        # Parse command_string for switches, regardless of what happens.
-        self.parse_command_switches()
-    
+        The command can come in two forms:
+         command/switches arg
+         command_with_spaces arg  
+
+        The first form is the normal one, used for administration and other commands
+        that benefit from the use of switches and options. The drawback is that it
+        can only consist of one single word (no spaces).
+        The second form, which does not accept switches, allows for longer command
+        names (e.g. 'press button' instead of pressbutton) and is mainly useful for
+        object-based commands for roleplay, puzzles etc. 
+        """
+        if not self.raw_input:
+            return 
+        
+        # add a space after the raw input; this cause split() to always
+        # create a list with at least two entries. 
+        raw = "%s " % self.raw_input
+        cmd_words = raw.split()
+        try:
+            if '/' in cmd_words[0]:
+                # if we have switches we directly go for the first command form.
+                command_string, command_argument = \
+                                (inp.strip() for inp in raw.split(' ', 1))
+                if command_argument:
+                    self.command_argument = command_argument
+                if command_string:
+                    # we have a valid command, store and parse switches.
+                    self.command_string = command_string            
+                    self.parse_command_switches()
+            else:
+                # no switches - we need to save a list of all possible command
+                # names up to the max-length allowed.
+                command_maxlen = min(COMMAND_MAXLEN, len(cmd_words))
+                command_alternatives = []
+                for spacecount in reversed(range(command_maxlen)):
+                    # store all space-separated possible command names
+                    # as tuples (commandname, args). They are stored with
+                    # the longest possible name first. 
+                    try:
+                        command_alternatives.append( (" ".join(cmd_words[:spacecount+1]),
+                                                      " ".join(cmd_words[spacecount+1:])) )
+                    except IndexError:
+                        continue 
+                if command_alternatives:
+                    # store alternatives. Store the one-word command
+                    # as the default command name.
+                    one_word_command = command_alternatives.pop()
+                    self.command_string = one_word_command[0]
+                    self.command_argument = one_word_command[1]
+                    self.command_alternatives = command_alternatives 
+        except IndexError:
+            # this SHOULD only happen if raw_input is malformed
+            # (like containing only control characters).
+            pass
+        
+
     def __init__(self, source_object, raw_input, session=None):
         """
         Instantiates the Command object and does some preliminary parsing.
@@ -179,6 +202,16 @@ def match_alias(command):
     command.command_string = alias_mgr.CMD_ALIAS_LIST.get(
                                             command.command_string,
                                             command.command_string)
+    # Run aliasing on alternative command names (for commands with
+    # spaces in them)
+    if command.command_alternatives:
+        command_alternatives = []
+        for command_alternative in command.command_alternatives:
+            command_alternatives.append( (alias_mgr.CMD_ALIAS_LIST.get(
+                                               command_alternative[0],
+                                               command_alternative[0]),
+                                          command_alternative[1]) )
+        command.command_alternatives = command_alternatives
     
     def get_aliased_message():
         """
@@ -201,7 +234,6 @@ def match_alias(command):
     elif first_char == ':':
         command.command_argument = get_aliased_message()
         command.command_string = "pose"
-#        command.command_string = "emote"
     # Pose without space alias.
     elif first_char == ';':
         command.command_argument = get_aliased_message()
@@ -298,13 +330,35 @@ def command_table_lookup(command, command_table, eval_perms=True,
     evaluates the permissions tuple.
     The test flag only checks without manipulating the command
     neighbor (object) If this is supplied, we are looking at a object table and
-                      must check for locks. 
+                      must check for locks.
+
+    In the case of one-word commands with switches, this is a
+    quick look-up. For non-switch commands the command might
+    however consist of several words separated by spaces up to
+    a certain max number of words. We don't know beforehand if one
+    of these match an entry in this particular command table. We search
+    them in order longest to shortest before deferring to the normal,
+    one-word assumption. 
     """
-    # Get the command's function reference (Or False)
-    cmdtuple = command_table.get_command_tuple(command.command_string)
+    cmdtuple = None
+    if command.command_alternatives:
+        # we have command alternatives (due to spaces in command definition)
+        for cmd_alternative in command.command_alternatives:
+            # the alternatives are ordered longest -> shortest.
+            cmdtuple = command_table.get_command_tuple(cmd_alternative[0])
+            if cmdtuple:
+                # we have a match, so this is the 'right' command to use
+                # with this particular command table.
+                command.command_string = cmd_alternative[0]
+                command.command_argument = cmd_alternative[1]
+    if not cmdtuple:
+        # None of the alternatives match, go with the default one-word name
+        cmdtuple = command_table.get_command_tuple(command.command_string)
+
     if cmdtuple:
-        # Check if this is just a test. 
+        # if we get here we have found a command match in the table
         if test:
+            # Check if this is just a test. 
             return True
         # Check locks
         if neighbor and not neighbor.scriptlink.use_lock(command.source_object):

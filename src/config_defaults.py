@@ -66,10 +66,14 @@ DATABASE_HOST = ''
 # Empty string defaults to localhost. Not used with sqlite3.
 DATABASE_PORT = ''
 
+# How many words a single command name may have (e.g. 'push button' instead of 'pushbutton')
+# (commands with switches always accept only one word in the name, e.g. @sethelp/add)
+COMMAND_MAXLEN = 3
+
 ## Command aliases
 # These are convenient aliases set up when the game is started
 # for the very first time. You can add/delete aliases in-game using
-# the @cmdalias command. 
+# the @setcmdalias command. 
 COMMAND_ALIASES = {"@desc":"@describe",
                    "@dest":"@destroy", "@nuke":"@destroy",
                    "@tel":"@teleport",
@@ -78,7 +82,7 @@ COMMAND_ALIASES = {"@desc":"@describe",
                    "ex":"examine",
                    "sa":"say",
                    "emote":"pose",
-                   "p":"page" }
+                   "p":"page"}
 
 ## Permissions
 ## The variables in this section are used by each evennia subsystem to tell which permissions to define.

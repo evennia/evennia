@@ -104,6 +104,6 @@ def class_factory(source_obj):
     """
     button = RedButton(source_obj)  
     # add the object-based commands to the button
-    button.command_table.add_command("pushbutton", cmd_push_button)
-    button.command_table.add_command("pullbutton", cmd_pull_button)
+    button.command_table.add_command("push button", cmd_push_button)
+    button.command_table.add_command("pull button", cmd_pull_button)
     return button

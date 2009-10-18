@@ -696,10 +696,10 @@ def cmd_setcmdalias(command):
     @setcmdalias - define shortcuts for commands
 
     Usage:
-      @setcmdalias[/switch] [command = ] alias
+      @setcmdalias[/switch] alias [= command]
 
     Switches:
-      list - view all command aliases (default)
+      list - view all command aliases
       add - add alias
       del - remove and existing alias
 
@@ -713,22 +713,26 @@ def cmd_setcmdalias(command):
     args = command.command_argument
     switches = command.command_switches
 
-    if not args or 'list' in switches:
+    if "list" in switches:
         # show all aliases
         string = "Command aliases defined:"
         aliases = CommandAlias.objects.all()
         if not aliases:
             string = "No command aliases defined."
         for alias in aliases:
-            string += "\n  %s = %s" % (alias.equiv_command, alias.user_input)
+            string += "\n  %s -> %s" % (alias.user_input, alias.equiv_command)
         source_object.emit_to(string)
         return
 
+    if not args:
+        source_object.emit_to("Usage: @setcmdalias[/list/add/del] alias [= command]")
+        return
+    
     equiv_command = ""
     user_input = ""
     # analyze args
     if '=' in args:
-        equiv_command, user_input = [arg.strip() for arg in args.split("=",1)]
+        user_input, equiv_command = [arg.strip() for arg in args.split("=",1)]
     else:
         user_input = args.strip()
 
