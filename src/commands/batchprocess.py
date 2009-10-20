@@ -194,7 +194,7 @@ def cmd_batchprocess(command):
     #parse indata file
     commands = parse_batchbuild_file(filename)
     if not commands:
-        source_object.emit_to("'%s' not found.\nYou have to supply the real path to the file relative to \nyour batch-file directory (e.g. game/gamesrc/world)." % filename)
+        source_object.emit_to("'%s' not found.\nYou have to supply the real path of the file relative to \nyour batch-file directory (%s)." % (filename, settings.BATCH_IMPORT_PATH))
         return
     switches = command.command_switches
     if switches and switches[0] in ['inter','interactive']:
@@ -206,10 +206,10 @@ def cmd_batchprocess(command):
         CMDSTACKS[source_object] = commands
         STACKPTRS[source_object] = 0
         FILENAMES[source_object] = filename
-        source_object.emit_to("\nBatch processor - Interactive mode ...")
+        source_object.emit_to("\nBatch processor - Interactive mode for %s ..." % filename)
         show_curr(source_object)
     else:
-        source_object.emit_to("Running Batch processor - Automatic mode ...")
+        source_object.emit_to("Running Batch processor - Automatic mode for %s ..." % filename)
         source_object.clear_state()
         batch_process(source_object, commands)
         source_object.emit_to("%s== Batchfile '%s' applied." % (cgreen,filename))
