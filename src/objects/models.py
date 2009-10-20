@@ -1090,13 +1090,46 @@ class Object(models.Model):
         """
         Only allow setting a state on a player object, otherwise
         fail silently.
-        """
-        if self.is_player():            
-            self.state = state_name      
 
+        This command safeguards the batch processor against dropping
+        out of interactive mode; it also allows builders to
+        sidestep room-based states when building (the genperm.admin_nostate
+        permission is not set on anyone by default, set it temporarily
+        when building a state-based room). 
+        """
+        if not self.is_player():
+            return False
+
+        if self.is_superuser():
+            # we have to deal with superusers separately since
+            # they would always appear to have the genperm.admin_nostate
+            # permission. Instead we expect them to set the flag
+            # ADMIN_NOSTATE on themselves if they don't want to
+            # enter states. 
+            nostate = self.has_flag("admin_nostate")
+        else:
+            # for other users we request the permission as normal. 
+            nostate = self.has_perm("genperms.admin_nostate")
+
+        # we never enter other states if we are in the interactive batch processor.
+        nostate = nostate or self.state == "_interactive batch processor"        
+
+        if nostate:
+            return False
+        self.state = state_name      
+        return True
+        
+    
     def clear_state(self):
-        "Set to no state (return to normal operation)"
-        self.state = None
+        """
+        Set to no state (return to normal operation)
+
+        This safeguards the batch processor from exiting its
+        interactive mode when entering a room cancelling states.
+        (batch processor clears the state directly instead)
+        """        
+        if not self.state == "_interactive batch processor":
+            self.state = None
 
     def purge_object(self):
         "Completely clears all aspects of the object."

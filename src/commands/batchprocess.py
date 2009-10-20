@@ -48,6 +48,7 @@ An example batch file is found in game/gamesrc/commands/examples.
 """
 import os
 import re
+from django.conf import settings
 from src import logger
 from src import defines_global
 from src.cmdtable import GLOBAL_CMD_TABLE
@@ -55,7 +56,7 @@ from src.statetable import GLOBAL_STATE_TABLE
 
 #global defines for storage
 
-STATENAME="interactive batch processor"
+STATENAME="_interactive batch processor"
 CMDSTACKS={} # user:cmdstack pairs (for interactive)
 STACKPTRS={} # user:stackpointer pairs (for interactive)
 FILENAMES={} # user:filename pairs (for interactive/reload)
@@ -69,8 +70,10 @@ cnorm = r"%cn"
 def read_batchbuild_file(filename):
     """
     This reads the contents of batchfile.
-    """
-    filename = os.path.abspath(filename)
+    Filename is considered to be the name of the batch file
+    relative the directory specified in settings.py
+    """    
+    filename = os.path.abspath("%s/%s" % (settings.BATCH_IMPORT_PATH, filename))
     try:
         f = open(filename)
     except IOError:
@@ -191,12 +194,15 @@ def cmd_batchprocess(command):
     #parse indata file
     commands = parse_batchbuild_file(filename)
     if not commands:
-        source_object.emit_to("'%s'\ncould not be found. Remember that you have to supply the absolute path to the file." % filename)
+        source_object.emit_to("'%s' not found.\nYou have to supply the real path to the file relative to \nyour batch-file directory (e.g. game/gamesrc/world)." % filename)
         return
     switches = command.command_switches
     if switches and switches[0] in ['inter','interactive']:
-        #allow more control over how batch file is executed
-        source_object.set_state(STATENAME)
+        # allow more control over how batch file is executed
+        if not source_object.set_state(STATENAME):        
+            source_object.emit_to("You cannot use the interactive mode while you have the flag ADMIN_NOSTATE set.")
+            return
+
         CMDSTACKS[source_object] = commands
         STACKPTRS[source_object] = 0
         FILENAMES[source_object] = filename
@@ -288,7 +294,10 @@ def exit_state(source_object):
         del FILENAMES[source_object]
     except KeyError:
         logger.log_errmsg("Batchprocessor quit error: all state vars could not be deleted.")
-    source_object.clear_state()
+    # since clear_state() is protected against exiting the interactive mode
+    # (to avoid accidental drop-outs by rooms clearing a player's state),
+    # we have to clear the state directly here. 
+    source_object.state = None 
 
 def cmd_state_ll(command):
     """
@@ -517,7 +526,7 @@ def cmd_state_hh(command):
 #create the state; we want it as open as possible so we can do everything
 # in our batch processing. 
 GLOBAL_STATE_TABLE.add_state(STATENAME,global_cmds='all',
-                             allow_exits=True,allow_obj_cmds=True)
+                             allow_exits=True,allow_obj_cmds=True,exit_command=True)
 #add state commands 
 GLOBAL_STATE_TABLE.add_command(STATENAME,"nn",cmd_state_nn)
 GLOBAL_STATE_TABLE.add_command(STATENAME,"nl",cmd_state_nl)

@@ -44,7 +44,7 @@ SRC_DIR = os.path.join(BASE_PATH, 'src')
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, 'web', 'media')
 
-# Import style path to the script parent module. Must be in the import path.
+# Import style path to the directory holding script parents. Must be in the import path.
 SCRIPT_IMPORT_PATH = 'game.gamesrc.parents'
 # Default parent associated with non-player objects. This starts from where
 # the SCRIPT_IMPORT_PATH left off.
@@ -52,6 +52,10 @@ SCRIPT_DEFAULT_OBJECT = 'base.basicobject'
 # Default parent associated with player objects. This starts from where
 # the SCRIPT_IMPORT_PATH left off.
 SCRIPT_DEFAULT_PLAYER = 'base.basicplayer'
+# Real path to a directory to be searched for batch scripts for the
+# batch processor. Specify relative evennia's 'game' directory. 
+BATCH_IMPORT_PATH = 'gamesrc/world'
+
 
 # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3', and 'oracle'.
 DATABASE_ENGINE = 'sqlite3'
@@ -125,9 +129,10 @@ PERM_GENPERMS = (
     ("announce", "May make announcements to everyone."),
     ("admin_perm", "Can modify individual permissions."),
     ("admin_group", "Can manage membership in groups."),
-    ("process_control", "May shutdown/restart/reload the game"),
+    ("process_control", "May shutdown/restart/reload the game."),
     ("manage_players", "Can change passwords, siteban, etc."),
-    ("game_info", "Can review game metadata"),)
+    ("game_info", "Can review game metadata."),
+    ("admin_nostate", "Do not enter states (should be set only temporarily)."),)
 
     ## These permissions are not yet used in the default engine. 
     ## ("boot", "May use @boot to kick players"),
