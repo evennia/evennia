@@ -393,16 +393,23 @@ def match_neighbor_ctables(command,test=False):
             if command_table_lookup(command,
                                     neighbor.scriptlink.command_table,
                                     test=test, neighbor=neighbor):
-                # test for a use-lock             
+                # Test for a use-lock.             
                 # If there was a command match, set the scripted_obj attribute
                 # for the script parent to pick up.
                 if test:
                     return True
                 command.scripted_obj = neighbor
                 return True
-    else:
-        #no matches
-        return False
+            
+        # Check the object's location for command matches.
+        if command_table_lookup(command,
+                                source_object.location.scriptlink.command_table,
+                                test=test, neighbor=source_object.location):
+            command.scripted_obj = source_object.location
+            return True
+
+    # No matches
+    return False
 
 def handle(command, ignore_state=False):
     """
@@ -425,7 +432,8 @@ def handle(command, ignore_state=False):
         
         if command.session and not command.session.logged_in:
             # Not logged in, look through the unlogged-in command table.
-            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE,eval_perms=False)
+            command_table_lookup(command, cmdtable.GLOBAL_UNCON_CMD_TABLE,
+                                 eval_perms=False)
         else:
             # User is logged in. 
             # Match against the 'idle' command.            
