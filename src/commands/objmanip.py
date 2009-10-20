@@ -1000,7 +1000,6 @@ def cmd_dig(command):
     room_parent = None    
     exit_names = [None,None]
     exit_parents = [None,None]
-    exit_aliases = [[], []]
     
     #deal with arguments 
     arg_list = args.split("=",1)
@@ -1019,13 +1018,10 @@ def cmd_dig(command):
         rarg = arg_list[1]
         exits = rarg.split(",",1)        
         for ie, exi in enumerate(exits):
-            aliaslist = exi.split(";")
-            name_and_parent = aliaslist.pop(0) #pops the first index
-            exit_aliases[ie] = aliaslist #what remains are the aliases
             try:
-                exit_names[ie], exit_parents[ie] = [s.strip() for s in name_and_parent.split(":",1)]
+                exit_names[ie], exit_parents[ie] = [s.strip() for s in exi.split(":",1)]
             except ValueError:
-                exit_names[ie] = name_and_parent.strip()
+                exit_names[ie] = exi.strip()
 
     #start creating things. 
     if not room_name:

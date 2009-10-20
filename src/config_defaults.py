@@ -67,7 +67,7 @@ DATABASE_HOST = ''
 DATABASE_PORT = ''
 
 # How many words a single command name may have (e.g. 'push button' instead of 'pushbutton')
-# (commands with switches always accept only one word in the name, e.g. @sethelp/add)
+# (commands with switches can always only have one word in the name, e.g. @sethelp/add)
 COMMAND_MAXLEN = 3
 
 ## Command aliases

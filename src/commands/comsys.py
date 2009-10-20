@@ -239,6 +239,11 @@ def cmd_clist(command):
       @clist
 
     Lists all available channels in the game.
+
+    [[clist]]
+
+    This is the same as @clist - it shows all
+    available channels in game. 
     """
     session = command.session
     source_object = command.source_object
@@ -260,7 +265,7 @@ def cmd_clist(command):
     #s += "** End of Channel List **"
     source_object.emit_to(s)
 GLOBAL_CMD_TABLE.add_command("@clist", cmd_clist, help_category="Comms")
-
+GLOBAL_CMD_TABLE.add_command("clist", cmd_clist, help_category="Comms")
 
 def cmd_cdestroy(command):
     """
@@ -385,6 +390,27 @@ def cmd_cemit(command):
     Allows the user to send a message over a channel as long as
     they own or control it. It does not show the user's name unless they
     provide the /sendername switch.
+    
+    [[channel_commands]]
+
+    Useful channel commands
+    (see their help pages for detailed help and options)
+
+    - Listing channels
+      clist           - show all channels available to you
+      comlist         - show channels you listen to  
+
+    - Joining/parting channels
+      addcom          - add your alias for a channel 
+      delcom          - remove alias for channel
+                        (leave channel if no more aliases)      
+      allcom          - view, on/off or remove all your channels
+      clearcom        - removes all channels
+
+    - Other
+      who             - list who's online
+      <chanalias> off - silence channel temporarily
+      <chanalias> on  - turn silenced channel back on
     """
     source_object = command.source_object
 

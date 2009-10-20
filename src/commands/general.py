@@ -765,7 +765,7 @@ def cmd_help(command):
 
         # add the 'See also:' footer
         topics = HelpEntry.objects.find_topicsuggestions(source_object, 
-                                                         topicstr)         
+                                                         topic.get_topicname())         
         if topics: 
             if len(topics) > 5:
                 topics = topics[:5]

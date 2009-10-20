@@ -179,7 +179,7 @@ class EvenniaBasicObject(object):
             for player in con_players:
                 retval +='\n\r%s' % (player.get_name(show_dbref=show_dbrefs),)
         if not con_things == []:
-            retval += "\n\r%sContents:%s" % (ANSITable.ansi["hilite"], 
+            retval += "\n\r%sYou see:%s" % (ANSITable.ansi["hilite"], 
                                              ANSITable.ansi["normal"])
             for thing in con_things:
                 retval += '\n\r%s' % (thing.get_name(show_dbref=show_dbrefs),)

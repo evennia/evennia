@@ -7,6 +7,7 @@ something.
 from traceback import format_exc
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from objects.models import Object
 import defines_global
 import cmdtable
 import statetable
@@ -207,6 +208,7 @@ def match_alias(command):
     if command.command_alternatives:
         command_alternatives = []
         for command_alternative in command.command_alternatives:
+            # create correct command_alternative tuples for storage
             command_alternatives.append( (alias_mgr.CMD_ALIAS_LIST.get(
                                                command_alternative[0],
                                                command_alternative[0]),
@@ -292,17 +294,33 @@ def match_exits(command,test=False):
         logger.log_errmsg("cmdhandler.match_exits(): Object '%s' has no location." % 
                           source_object)
         return
-    
+    # get all exits at location
     exits = location.get_contents(filter_type=defines_global.OTYPE_EXIT)
-    Object = ContentType.objects.get(app_label="objects", 
-                                     model="object").model_class()
-    exit_matches = Object.objects.list_search_object_namestr(exits, 
-                                                     command.command_string, 
-                                                     match_type="exact")
+    
+    # /not sure why this was done this way when one can import Object. 
+    # Object = ContentType.objects.get(app_label="objects", 
+    #                                 model="object").model_class()
+
+    exit_matches = None 
+    if command.command_alternatives:
+        # we have command alternatives (due to spaces in command definition).
+        # if so we replace the command_string appropriately.
+        for cmd_alternative in command.command_alternatives:
+            # the alternatives are ordered longest -> shortest.
+            exit_matches = Object.objects.list_search_object_namestr(exits, 
+                                                                     cmd_alternative[0],
+                                                                     match_type="exact")
+            if exit_matches:
+                command.command_string = cmd_alternative[0]
+                command.command_argument = cmd_alternative[1]
+                break        
+    if not exit_matches:
+        exit_matches = Object.objects.list_search_object_namestr(exits, 
+                                                                 command.command_string, 
+                                                                 match_type="exact")
     if exit_matches:
         if test:
-            return True
-        
+            return True        
         # Only interested in the first match.
         targ_exit = exit_matches[0]
         # An exit's home is its destination. If the exit has a None home value,
@@ -351,6 +369,7 @@ def command_table_lookup(command, command_table, eval_perms=True,
                 # with this particular command table.
                 command.command_string = cmd_alternative[0]
                 command.command_argument = cmd_alternative[1]
+                break 
     if not cmdtuple:
         # None of the alternatives match, go with the default one-word name
         cmdtuple = command_table.get_command_tuple(command.command_string)
@@ -360,14 +379,14 @@ def command_table_lookup(command, command_table, eval_perms=True,
         if test:
             # Check if this is just a test. 
             return True
-        # Check locks
+        # Check uselocks
         if neighbor and not neighbor.scriptlink.use_lock(command.source_object):
             # send an locked error message only if lock_desc is defined
             lock_msg = neighbor.get_attribute_value("use_lock_msg")
             if lock_msg:
                 command.source_object.emit_to(lock_msg)
                 raise ExitCommandHandler
-            return False        
+            return False
         # If there is a permissions element to the entry, check perms.
         if eval_perms and cmdtuple[1]:
             if not command.source_object.has_perm_list(cmdtuple[1]):
@@ -387,27 +406,21 @@ def match_neighbor_ctables(command,test=False):
       any commands.
     """
     source_object = command.source_object
-    if source_object.location != None:
-        neighbors = source_object.location.get_contents()
+    location = source_object.get_location()
+    if location:
+        # get all objects, including the current room
+        neighbors = location.get_contents()  + [location]
         for neighbor in neighbors:
             if command_table_lookup(command,
                                     neighbor.scriptlink.command_table,
                                     test=test, neighbor=neighbor):
-                # Test for a use-lock.             
+
                 # If there was a command match, set the scripted_obj attribute
                 # for the script parent to pick up.
                 if test:
                     return True
                 command.scripted_obj = neighbor
-                return True
-            
-        # Check the object's location for command matches.
-        if command_table_lookup(command,
-                                source_object.location.scriptlink.command_table,
-                                test=test, neighbor=source_object.location):
-            command.scripted_obj = source_object.location
-            return True
-
+                return True            
     # No matches
     return False
 
