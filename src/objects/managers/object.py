@@ -145,8 +145,9 @@ class ObjectManager(models.Manager):
             o_query = self.filter(name__iexact=ostring)
         else:
             o_query = self.filter(name__icontains=ostring)
-        if limit_types:
-            o_query = o_query.include(type__in=limit_types)                            
+        if limit_types is not False:
+            for limiter in limit_types:
+                o_query.filter(type=limiter)
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])
 

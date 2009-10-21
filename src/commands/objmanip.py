@@ -16,7 +16,7 @@ def cmd_teleport(command):
     teleport
 
     Usage:
-      teleport/switch [<object> = <location>]
+      teleport/switch [<object> =] <location>
 
     Switches:
       quiet  - don't inform the source and target
@@ -48,16 +48,14 @@ def cmd_teleport(command):
         # Use search_for_object to handle duplicate/nonexistant results.
         if not victim:
             return
-
-        destination = source_object.search_for_object(eq_args[1])
-        # Use search_for_object to handle duplicate/nonexistant results.
-        if not destination:
-            return
-
         if victim.is_room():
             source_object.emit_to("You can't teleport a room.")
             return
-
+        destination = source_object.search_for_object_global(eq_args[1],exact_match=True,
+                                                             limit_types=[defines_global.OTYPE_THING,
+                                                                          defines_global.OTYPE_ROOM])
+        if not destination:
+            return 
         if victim == destination:
             source_object.emit_to("You can't teleport an object inside of itself!")
             return
@@ -65,7 +63,9 @@ def cmd_teleport(command):
         victim.move_to(destination, quiet=tel_quietly)
     else:
         # Direct teleport (no equal sign)
-        target_obj = source_object.search_for_object(command.command_argument)
+        target_obj = source_object.search_for_object_global(eq_args[0],exact_match=True,
+                                                            limit_types=[defines_global.OTYPE_THING,
+                                                                         defines_global.OTYPE_ROOM])
         # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
@@ -687,18 +687,12 @@ def cmd_open(command):
 
     else: 
         # We have the name of a destination. Try to find it.        
-        destination = Object.objects.global_object_name_search(dest_name)
+        destination = source_object.search_for_object_global(dest_name, exact_match=True,
+                                                             limit_types=[defines_global.OTYPE_THING,
+                                                                          defines_global.OTYPE_ROOM])
         if not destination:
-            source_object.emit_to("No matches found for '%s'." % dest_name)
             return 
-        if len(destination) > 1:
-            s = "There are multiple matches. Please use #dbref to be more specific."
-            for d in destination:
-                s += "\n %s" % destination.get_name()
-            source_object.emit_to(s)
-            return
-        destination = destination[0]
-        
+
         if destination.is_exit():
             source_object.emit_to("You can't open an exit to an exit!")
             return
@@ -914,18 +908,11 @@ def cmd_link(command):
         if not source_object.controls_other(obj):
             source_object.emit_to(defines_global.NOCONTROL_MSG)
             return    
-        destination = Object.objects.global_object_name_search(dest_name)
+        destination = source_object.search_for_object_global(dest_name, exact_match=True,
+                                                             limit_types=[defines_global.OTYPE_THING,
+                                                                          defines_global.OTYPE_ROOM])
         if not destination:
-            source_object.emit_to("No matches found for '%s'." % dest_name)
             return 
-        if len(destination) > 1:
-            s = "There are multiple matches. Please use #dbref to be more specific."
-            for d in destination:
-                s += "\n %s" % destination.get_name(show_dbref=True)
-            source_object.emit_to(s)
-            return
-        destination = destination[0]
-
         # do the link.
         oldhome = obj.get_home()
         ohome_text = ""        

@@ -220,6 +220,27 @@ class Object(models.Model):
             return False
         else:
             return results[0]
+        
+    def search_for_object_global(self, ostring, exact_match=True, limit_types=[]):
+        """
+        Search for ostring in all objects, globally. Handle multiple-matches
+        and no matches gracefully. This is mainly intended to be used by
+        admin and build-type commands. It also accepts #dbref
+        search queries. 
+        """
+        results = Object.objects.global_object_name_search(ostring, exact_match=exact_match,
+                                                           limit_types=limit_types)
+        if not results:
+            self.emit_to("No matches found for '%s'." % ostring)
+            return 
+        if len(results) > 1:
+            string = "More than one match for '%s' (please narrow target):" % ostring            
+            for res in results:
+                string += "\n %s" % res.get_name()
+            self.emit_to(string)
+            return
+        return results[0]
+
                 
     def get_sessions(self):
         """
