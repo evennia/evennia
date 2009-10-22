@@ -150,14 +150,14 @@ class EvenniaBasicObject(object):
                         
         description = target_obj.get_attribute_value('desc')
         if description is not None:
-            retval = "%s\r\n%s%s" % (
+            retval = "%s%s\r\n%s%s%s" % ("%ch%cc",
                 target_obj.get_name(show_dbref=show_dbrefs),
-                target_obj.get_attribute_value('desc'), lock_msg
-            )
+                target_obj.get_attribute_value('desc'), lock_msg,
+                "%cn")
         else:
-            retval = "%s" % (
-                target_obj.get_name(show_dbref=show_dbrefs),
-            )
+            retval = "%s%s%s" % ("%ch%cc",
+                                 target_obj.get_name(show_dbref=show_dbrefs),
+                                 "%cn")
 
         # Storage for the different object types.
         con_players = []

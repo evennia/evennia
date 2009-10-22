@@ -569,12 +569,12 @@ class Object(models.Model):
         for obj in objs:
             home = obj.get_home()
             text = "object"
-
+            
             if obj.is_player():
                 text = "player"
 
             # Obviously, we can't send it back to here.
-            if home.id == self.id:
+            if home and home.id == self.id:
                 obj.home = default_home
                 obj.save()
                 home = default_home

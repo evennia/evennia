@@ -1010,6 +1010,8 @@ def cmd_dig(command):
             except ValueError:
                 exit_names[ie] = exi.strip()
 
+    #source_object.emit_to("dig args: %s %s" % (room_name, exit_names))
+
     #start creating things. 
     if not room_name:
         source_object.emit_to("You must supply a new room name.")            
@@ -1031,10 +1033,10 @@ def cmd_dig(command):
     if exit_names[0] != None: 
         #create exits to the new room
         destination = new_room 
-            
+        location = source_object.get_location()
+        
         if destination and not destination.is_exit():
-            #create an exit from this room
-            location = source_object.get_location()
+            #create an exit from this room to the new one            
             new_object = Object.objects.create_object(exit_names[0],
                                                       defines_global.OTYPE_EXIT,
                                                       location,
@@ -1042,23 +1044,27 @@ def cmd_dig(command):
                                                       destination,
                                                       script_parent=exit_parents[0])
             ptext = ""
-            if exit_parents[0]:
+            if exit_parents[0] != None:
                 script_parent = exit_parents[0]
                 if new_object.get_script_parent() == script_parent:        
                     ptext += " of type %s" % script_parent
                 else:
                     ptext += " of default type (parent '%s' failed!)" % script_parent
-            source_object.emit_to("Created exit%s from %s to %s named '%s'." % (ptext,location,destination,new_object))                       
-        if len(exit_names) > 1 and exit_names[1] != None:
-            #create exit back from new room to this one.
+            source_object.emit_to("Created exit%s from %s to %s named '%s'." % \
+                                  (ptext,location,destination,new_object))                       
+    if len(exit_names) > 1 and exit_names[1] != None:
+        #create exit back from new room to this one.
+        destination = source_object.get_location()
+        location = new_room
+        if destination and not destination.is_exit():
             new_object = Object.objects.create_object(exit_names[1],
                                                       defines_global.OTYPE_EXIT,
-                                                      destination,
-                                                      source_object,
                                                       location,
+                                                      source_object,
+                                                      destination,
                                                       script_parent=exit_parents[1])
             ptext = ""
-            if exit_parents[1]:
+            if exit_parents[1] != None:
                 script_parent = exit_parents[1]
                 if new_object.get_script_parent() == script_parent:        
                     ptext += " of type %s" % script_parent
@@ -1067,8 +1073,8 @@ def cmd_dig(command):
             source_object.emit_to("Created exit%s back from %s to %s named '%s'." % \
                                   (ptext, destination, location, new_object))
  
-        if 'teleport' in switches:
-            source_object.move_to(new_room)
+    if new_room and 'teleport' in switches:
+        source_object.move_to(new_room)
                
 GLOBAL_CMD_TABLE.add_command("@dig", cmd_dig,
                              priv_tuple=("objects.dig",), help_category="Building")
@@ -1333,20 +1339,21 @@ def cmd_lock(command):
            function() is called on the locked object (if it exists) and
            if its return value matches the Key is passed. If no
            return_value is given, matches against True.
-        - an Attribute:return_value pair (ex: key:yellow_key). The
-          Attribute is the name of an attribute defined on the locked
-          object. If this attribute has a value matching return_value,
-          the lock is passed. If no return_value is given, both
-          attributes and flags will be searched, requiring a True
-          value.
+       - an Attribute:return_value pair (ex: key:yellow_key). The
+           Attribute is the name of an attribute defined on the locked
+           object. If this attribute has a value matching return_value,
+           the lock is passed. If no return_value is given, both
+           attributes and flags will be searched, requiring a True
+           value.
         
     If no keys at all are given, the object is locked for everyone.
-
     When the lock blocks a user, you may customize which error is given by
     storing error messages in an attribute. For DefaultLocks, UseLocks and
     EnterLocks, these attributes are called lock_msg, use_lock_msg and
     enter_lock_msg respectively.
-    <<TOPIC:lock types>>
+
+    [[lock_types]]
+
     Lock types:
 
     Name:          Affects:        Effect:  
