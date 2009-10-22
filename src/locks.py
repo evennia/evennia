@@ -44,10 +44,9 @@ class Key(object):
     def __str__(self):
         string = " "
         if not self.criteria:
-            string += " <Impassable>"
-        for crit in self.criteria:
-            string += " %s," % crit
-        return string[:-1].strip()
+            string += " (Impassable)"
+        string += ", ".join(self.criteria)
+        return string
         
     def _result(self, result):
         "Return result depending on exact criterion."

@@ -109,3 +109,74 @@ class EvenniaBasicPlayer(object):
         location = pobject.get_location()
         if location != None:
             location.emit_to_contents("%s has disconnected." % (pobject.get_name(show_dbref=False),), exclude=pobject)
+
+    def default_lock(self, pobject):
+        """
+        This method returns a True or False boolean value to determine whether
+        the actor passes the lock. This is generally used for picking up
+        objects or traversing exits.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("DefaultLock", pobject)
+        else:
+            return True
+
+    def use_lock(self, pobject):
+        """
+        This method returns a True or False boolean value to determine whether
+        the actor passes the lock. This is generally used for seeing whether
+        a player can use an object or any of its commands.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("UseLock", pobject)
+        else:
+            return True
+
+    def enter_lock(self, pobject):
+        """
+        This method returns a True or False boolean value to determine whether
+        the actor passes the lock. This is generally used for seeing whether
+        a player can enter another object.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("EnterLock", pobject)
+        else:
+            return True
+
+    def visible_lock(self, pobject):
+        """
+        This method returns a True or False boolean value to determine whether
+        the actor passes the lock. This is generally used for picking up
+        objects or traversing exits.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("VisibleLock", pobject)
+        else:
+            return True
+    
+    def lock_func(self, obj):
+        """
+        This is a custom function called by locks with the FuncKey key. Its
+        return value should match that specified in the lock (so no true/false
+        lock result is actually determined in here). Default desired return
+        value is True. Also remember that the comparison in FuncKey is made
+        using the string representation of the return value, since @lock can
+        only define string lock criteria. 
+        """
+        return False

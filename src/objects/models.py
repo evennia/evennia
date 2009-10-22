@@ -221,23 +221,27 @@ class Object(models.Model):
         else:
             return results[0]
         
-    def search_for_object_global(self, ostring, exact_match=True, limit_types=[]):
+    def search_for_object_global(self, ostring, exact_match=True, limit_types=[],
+                                 emit_to_obj=None):
         """
         Search for ostring in all objects, globally. Handle multiple-matches
         and no matches gracefully. This is mainly intended to be used by
         admin and build-type commands. It also accepts #dbref
         search queries. 
         """
+        if not emit_to_obj:
+            emit_to_obj = self
+
         results = Object.objects.global_object_name_search(ostring, exact_match=exact_match,
-                                                           limit_types=limit_types)
+                                                           limit_types=limit_types)       
         if not results:
-            self.emit_to("No matches found for '%s'." % ostring)
+            emit_to_obj.emit_to("No matches found for '%s'." % ostring)
             return 
         if len(results) > 1:
             string = "More than one match for '%s' (please narrow target):" % ostring            
             for res in results:
                 string += "\n %s" % res.get_name()
-            self.emit_to(string)
+            emit_to_obj.emit_to(string)
             return
         return results[0]
 
@@ -1157,7 +1161,10 @@ class Object(models.Model):
         self.clear_all_attributes()
         self.clear_all_flags()
         self.clear_state()
-
+        self.home = None 
+        self.owner = None 
+        self.location = None
+        self.save()
 
 # Deferred imports are poopy. This will require some thought to fix.
 from src import cmdhandler

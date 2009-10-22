@@ -133,21 +133,35 @@ class ObjectManager(models.Manager):
         except IndexError:
             return None
 
-    def global_object_name_search(self, ostring, exact_match=False, limit_types=[]):
+    def global_object_name_search(self, ostring, exact_match=True, limit_types=[]):
         """
         Searches through all objects for a name match.
         limit_types is a list of types as defined in defines_global. 
         """
         if self.is_dbref(ostring):
-            return [self.dbref_search(ostring, limit_types=limit_types)]
-
+            o_query = self.dbref_search(ostring, limit_types=limit_types)
+            if o_query:
+                return [o_query]
+            return None
+        # get rough match 
+        o_query = self.filter(name__icontains=ostring)
+        o_query = o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
+                                            defines_global.OTYPE_GOING])
+        if not o_query:
+            # use list-search to catch N-style queries. Note
+            # that we want to keep the original ostring since
+            # search_object_namestr does its own N-string treatment
+            # on this.
+            dum, test_ostring = self._parse_match_number(ostring)
+            o_query = self.filter(name__icontains=test_ostring)
+            o_query = o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
+                                                defines_global.OTYPE_GOING])
+        match_type = "fuzzy"
         if exact_match:
-            o_query = self.filter(name__iexact=ostring)
-        else:
-            o_query = self.filter(name__icontains=ostring)
-        if limit_types is not False:
-            for limiter in limit_types:
-                o_query.filter(type=limiter)
+            match_type = "exact"        
+        return self.list_search_object_namestr(o_query, ostring,
+                                               limit_types=limit_types,
+                                               match_type=match_type)
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])
 
@@ -196,16 +210,16 @@ class ObjectManager(models.Manager):
                         if prospect.dbref_match(ostring)]
 
         #search by name - this may return multiple matches.
-        results = self._list_search_helper1(searchlist,ostring,dbref_only,
+        results = self._match_name_attribute(searchlist,ostring,dbref_only,
                                             limit_types, match_type,
                                             attribute_name=attribute_name)
         match_number = None
         if not results:
             #if we have no match, check if we are dealing
             #with a "N-keyword" query - if so, strip it and run again. 
-            match_number, ostring = self._list_search_helper2(ostring)
+            match_number, ostring = self._parse_match_number(ostring)
             if match_number != None and ostring:
-                results = self._list_search_helper1(searchlist,ostring,dbref_only,
+                results = self._match_name_attribute(searchlist,ostring,dbref_only,
                                                     limit_types, match_type,
                                                     attribute_name=attribute_name) 
         if match_type == "fuzzy":             
@@ -226,7 +240,7 @@ class ObjectManager(models.Manager):
                 pass                        
         return results
 
-    def _list_search_helper1(self, searchlist, ostring, dbref_only,
+    def _match_name_attribute(self, searchlist, ostring, dbref_only,
                              limit_types, match_type,
                              attribute_name=None):            
         """
@@ -261,10 +275,10 @@ class ObjectManager(models.Manager):
                 return [prospect for prospect in searchlist
                         if prospect.name_match(ostring, match_type=match_type)]
 
-    def _list_search_helper2(self, ostring):
+    def _parse_match_number(self, ostring):
         """
-        Hhelper function for list_search_object_namestr -
-        strips eventual keyword-N endings from a search criterion
+        Helper function for list_search_object_namestr -
+        strips eventual N-keyword endings from a search criterion
         """
         if not '-' in ostring:
             return False, ostring
@@ -426,6 +440,7 @@ class ObjectManager(models.Manager):
             default_desc = defines_global.DESC_PLAYER
         elif otype == defines_global.OTYPE_ROOM:
             default_desc = defines_global.DESC_ROOM
+            location = None 
         elif otype == defines_global.OTYPE_EXIT:
             default_desc = defines_global.DESC_EXIT
         else:

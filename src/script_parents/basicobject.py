@@ -133,10 +133,17 @@ class EvenniaBasicObject(object):
             * pobject: (Object) The object requesting the action.
         """
         # This is the object being looked at.
-        target_obj = self.scripted_obj
+        target_obj = self.scripted_obj        
         # See if the envoker sees dbref numbers.
         lock_msg = ""
         if pobject:        
+            #check visibility lock
+            if not target_obj.scriptlink.visible_lock(pobject):
+                temp = target_obj.get_attribute_value("visible_lock_msg")
+                if temp:
+                    return temp
+                return "I don't see that here."
+            
             show_dbrefs = pobject.sees_dbrefs()                                        
 
             #check for the defaultlock, this shows a lock message after the normal desc, if one is defined.
@@ -165,8 +172,11 @@ class EvenniaBasicObject(object):
         con_exits = []
         
         for obj in target_obj.get_contents():
+            # check visible lock.
+            if pobject and not obj.scriptlink.visible_lock(pobject):
+                continue
             if obj.is_player():
-                if (obj != pobject and obj.is_connected_plr()) or pobject == None:
+                if (obj != pobject and obj.is_connected_plr()) or pobject == None:            
                     con_players.append(obj)
             elif obj.is_exit():
                 con_exits.append(obj)
@@ -236,6 +246,21 @@ class EvenniaBasicObject(object):
         else:
             return True
 
+    def visible_lock(self, pobject):
+        """
+        This method returns a True or False boolean value to determine whether
+        the actor passes the lock. This is generally used for picking up
+        objects or traversing exits.
+        
+        values:
+            * pobject: (Object) The object requesting the action.
+        """
+        locks = self.scripted_obj.get_attribute_value("LOCKS")
+        if locks: 
+            return locks.check("VisibleLock", pobject)
+        else:
+            return True
+    
     def lock_func(self, obj):
         """
         This is a custom function called by locks with the FuncKey key. Its

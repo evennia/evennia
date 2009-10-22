@@ -1022,6 +1022,7 @@ def cmd_dig(command):
                                             None,
                                             source_object,
                                             script_parent=room_parent)
+
     ptext = ""
     if room_parent:
         if new_room.get_script_parent() == room_parent:        
@@ -1277,26 +1278,26 @@ def cmd_destroy(command):
         switch_override = True
 
     for targetname in targetlist:
-        target_obj = source_object.search_for_object(targetname)
+        target_obj = source_object.search_for_object_global(targetname)
         # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
         if target_obj.is_player() or target_obj.has_flag('SAFE'):
             if source_object.id == target_obj.id:
-                source_object.emit_to("You can't destroy yourself.")
-                return
+                source_object.emit_to("%s: You can't destroy yourself." % targetname)
+                continue
             if not switch_override:
-                source_object.emit_to("You must use @destroy/override on Players and objects with the SAFE flag set.")
-                return
+                source_object.emit_to("%s: You must use @destroy/override on Players and objects with the SAFE flag set." % targetname)
+                continue
             if target_obj.is_superuser():
-                source_object.emit_to("You can't destroy a superuser.")
-                return
+                source_object.emit_to("%s: You can't destroy a superuser." % targetname)
+                continue
         elif target_obj.is_garbage():
-            source_object.emit_to("That object is already destroyed.")
-            return
+            source_object.emit_to("%s: That object is already destroyed." % targetname)
+            continue
         elif target_obj.is_going() and 'instant' not in switches:
-            source_object.emit_to("That object is already scheduled for destruction.") 
-            return
+            source_object.emit_to("%s: That object is already scheduled for destruction." % targetname) 
+            continue
         
         # Run any scripted things that happen before destruction.
         target_obj.scriptlink.at_object_destruction(pobject=source_object)
@@ -1370,10 +1371,13 @@ def cmd_lock(command):
 
      EnterLock:    Players/Things: controls who may enter/teleport into
                                    the object.      
+     VisibleLock:  Players/Things: controls if the object is visible to
+                                   someone using the look command.
 
     Fail messages echoed to the player are stored in the attributes 'lock_msg',
-    'use_lock_msg' and 'enter_lock_msg' on the locked object in question. If no
-    such message is stored, a default will be used (or none at all in some cases). 
+    'use_lock_msg', 'enter_lock_msg' and 'visible_lock_msg' on the locked object
+    in question. If no such message is stored, a default will be used (or none at
+    all in some cases). 
     """
 
     source_object = command.source_object
@@ -1397,7 +1401,7 @@ def cmd_lock(command):
         ltype = "DefaultLock"
     obj_name, ltype = obj_name.strip(), ltype.strip()
 
-    if ltype not in ["DefaultLock","UseLock","EnterLock"]: 
+    if ltype not in ["DefaultLock","UseLock","EnterLock","VisibleLock"]: 
         source_object.emit_to("Lock type '%s' not recognized." % ltype)
         return    
 
@@ -1407,7 +1411,7 @@ def cmd_lock(command):
 
     obj_locks = obj.get_attribute_value("LOCKS")    
 
-    if "list" in switches or not switches:        
+    if "list" in switches:        
         if not obj_locks:
             s = "There are no locks on %s." % obj.get_name()
         else:
