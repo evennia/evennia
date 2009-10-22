@@ -222,7 +222,7 @@ class Object(models.Model):
             return results[0]
         
     def search_for_object_global(self, ostring, exact_match=True, limit_types=[],
-                                 emit_to_obj=None):
+                                 emit_to_obj=None, dbref_limits=()):
         """
         Search for ostring in all objects, globally. Handle multiple-matches
         and no matches gracefully. This is mainly intended to be used by
@@ -234,15 +234,29 @@ class Object(models.Model):
 
         results = Object.objects.global_object_name_search(ostring, exact_match=exact_match,
                                                            limit_types=limit_types)       
+        if dbref_limits:
+            # if this is set we expect a tuple of 2, even if one is None. 
+            try:
+                if dbref_limits[0]:                    
+                    results = [result for result in results
+                               if result.id >= int(dbref_limits[0].strip('#'))]
+                if dbref_limits[1]:
+                    results = [result for result in results
+                               if result.id <= int(dbref_limits[1].strip("#"))]
+            except KeyError:
+                pass
+
         if not results:
             emit_to_obj.emit_to("No matches found for '%s'." % ostring)
-            return 
+            return  
+
         if len(results) > 1:
-            string = "More than one match for '%s' (please narrow target):" % ostring            
+            string = "Multiple matches for '%s':" % ostring            
             for res in results:
                 string += "\n %s" % res.get_name()
             emit_to_obj.emit_to(string)
             return
+        
         return results[0]
 
                 

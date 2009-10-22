@@ -451,31 +451,45 @@ def cmd_find(command):
     find
 
     Usage:
-      find <searchname>
+      find <searchname> [,low_dbref[,high_dbref]]
 
     Searches for an object of a particular name.
     """
     source_object = command.source_object
     can_find = source_object.has_perm("genperms.builder")
-
-    if not command.command_argument:
-        source_object.emit_to("Usage: @find <name>")
+    args = command.command_argument
+    if not args:
+        source_object.emit_to("Usage: @find <name> [,low [,high]]")
         return
-    
-    searchstring = command.command_argument
-    results = Object.objects.global_object_name_search(searchstring)
-
-    if len(results) > 0:
-        source_object.emit_to("Name matches for: %s" % (searchstring,))
-        s = ""
-        for result in results:
-            s += " %s\n\r" % (result.get_name(fullname=True),)
-        s += "%d matches returned." % (len(results),)
-        source_object.emit_to(s)
+    lowlim = None
+    highlim = None 
+    args = args.split(",",2)
+    if len(args) < 2:     
+        searchstring = args[0].strip()
+    elif len(args) == 2:
+        # we have only the low dbref given
+        searchstring, lowlim = [arg.strip() for arg in args]
     else:
-        source_object.emit_to("No name matches found for: %s" % (searchstring,))
+        # we have all input given
+        searchstring, lowlim, highlim = [arg.strip() for arg in args]
+    results = source_object.search_for_object_global(searchstring, exact_match=False,
+                                                     dbref_limits=(lowlim, highlim))
+    if not results:
+        return 
+    source_object.emit_to("Name match: %s" % results)
+
+    ## if len(results) > 0:
+    ##     source_object.emit_to("Name matches for: %s" % (searchstring,))
+    ##     s = ""
+    ##     for result in results:
+    ##         s += " %s\n\r" % (result.get_name(fullname=True),)
+    ##     s += "%d matches returned." % (len(results),)
+    ##     source_object.emit_to(s)
+    ## else:
+    ##     source_object.emit_to("No name matches found for: %s" % (searchstring,))
 GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
-                             priv_tuple=("objects.info",), help_category="Building")
+                             priv_tuple=("objects.info",), help_category="Building",
+                             auto_help_override=False)
 
 def cmd_create(command):
     """
