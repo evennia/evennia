@@ -1292,7 +1292,7 @@ def cmd_destroy(command):
         switch_override = True
 
     for targetname in targetlist:
-        target_obj = source_object.search_for_object_global(targetname)
+        target_obj = source_object.search_for_object(targetname)
         # Use search_for_object to handle duplicate/nonexistant results.
         if not target_obj:
             return
