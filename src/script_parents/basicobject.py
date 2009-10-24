@@ -157,12 +157,12 @@ class EvenniaBasicObject(object):
                         
         description = target_obj.get_attribute_value('desc')
         if description is not None:
-            retval = "%s%s\r\n%s%s%s" % ("%ch%cc",
+            retval = "%s%s\r\n%s%s%s" % ("%ch",
                 target_obj.get_name(show_dbref=show_dbrefs),
                 target_obj.get_attribute_value('desc'), lock_msg,
                 "%cn")
         else:
-            retval = "%s%s%s" % ("%ch%cc",
+            retval = "%s%s%s" % ("%ch",
                                  target_obj.get_name(show_dbref=show_dbrefs),
                                  "%cn")
 
