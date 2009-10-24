@@ -534,12 +534,12 @@ class Object(models.Model):
                 string = 'Destroying object %s but no matching player.' % (self,)
                 functions_general.log_errmsg(string)
 
+        # Clear out any objects located within the object
+        self.clear_objects()
         # Set the object type to GOING
         self.type = defines_global.OTYPE_GOING                
         # Destroy any exits to and from this room, do this first
         self.clear_exits()
-        # Clear out any objects located within the object
-        self.clear_objects()
         self.save()
               
     def delete(self):
@@ -613,9 +613,6 @@ class Object(models.Model):
                     
             # If home is still None, it goes to a null location.            
             obj.move_to(home)
-            obj.save()
-
-
 
     def set_attribute(self, attribute, new_value=None):
         """
@@ -977,8 +974,7 @@ class Object(models.Model):
         quiet:  (bool)    If true, don't emit left/arrived messages.
         force_look: (bool) If true and self is a player, make them 'look'.
         """
-
-        #first, check if we can enter that location at all.
+        # First, check if we can enter that location at all.
         if not target.scriptlink.enter_lock(self):
             lock_desc = self.get_attribute_value("enter_lock_msg")
             if lock_desc:
@@ -987,7 +983,7 @@ class Object(models.Model):
                 self.emit_to("That destination is blocked from you.")
             return 
                
-        #before the move, call eventual pre-commands.
+        # Before the move, call eventual pre-commands.
         if self.scriptlink.at_before_move(target) != None:                
             return 
 
@@ -996,20 +992,19 @@ class Object(models.Model):
             self.scriptlink.announce_move_from(target)
             source_location = self.location
             
-        #perform move
+        # Perform move
         self.location = target
         self.save()        
                 
         if not quiet:
-            #tell the new room we are there. 
+            # Tell the new room we are there. 
             self.scriptlink.announce_move_to(source_location)
 
-        #execute eventual extra commands on this object after moving it
+        # Execute eventual extra commands on this object after moving it
         self.scriptlink.at_after_move()
                                 
         if force_look and self.is_player():
             self.execute_cmd('look')
-        
 
     def dbref_match(self, oname):
         """

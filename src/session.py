@@ -134,11 +134,7 @@ class SessionProtocol(StatefulTelnetProtocol):
     def get_pobject(self):
         """
         Returns the object associated with a session.
-        """
-        # If the pobject is already cached, return it and skip the lookup.
-        if self.pobject:
-            return self.pobject
-        
+        """        
         try:
             # Cache the result in the session object for quick retrieval.
             result = Object.objects.get(id=self.uid)
