@@ -125,6 +125,12 @@ class EvenniaBasicObject(object):
         #print "SCRIPT TEST: %s dropped %s." % (pobject, self.scripted_obj)
         pass
     
+    def at_obj_receive(self, object=None):
+        """
+        Called whenever an object is added to the contents of this object.        
+        """
+        pass
+
     def return_appearance(self, pobject=None):
         """
         Returns a string representation of an object's appearance when LOOKed at.

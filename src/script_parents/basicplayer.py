@@ -99,6 +99,11 @@ class EvenniaBasicPlayer(object):
         """
         pass
 
+    def at_obj_receive(self, object=None):
+        """
+        Called whenever an object is added to the inventory of the player.        
+        """
+        pass
 
     def at_disconnect(self):
         """

@@ -1002,6 +1002,9 @@ class Object(models.Model):
 
         # Execute eventual extra commands on this object after moving it
         self.scriptlink.at_after_move()
+
+        # Perform eventual extra commands on the receiving location
+        target.scriptlink.at_obj_receive(self)
                                 
         if force_look and self.is_player():
             self.execute_cmd('look')

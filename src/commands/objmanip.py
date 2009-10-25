@@ -476,17 +476,8 @@ def cmd_find(command):
                                                      dbref_limits=(lowlim, highlim))
     if not results:
         return 
-    source_object.emit_to("Name match: %s" % results)
+    source_object.emit_to("Found a unique name match: %s" % results)
 
-    ## if len(results) > 0:
-    ##     source_object.emit_to("Name matches for: %s" % (searchstring,))
-    ##     s = ""
-    ##     for result in results:
-    ##         s += " %s\n\r" % (result.get_name(fullname=True),)
-    ##     s += "%d matches returned." % (len(results),)
-    ##     source_object.emit_to(s)
-    ## else:
-    ##     source_object.emit_to("No name matches found for: %s" % (searchstring,))
 GLOBAL_CMD_TABLE.add_command("@find", cmd_find,
                              priv_tuple=("objects.info",), help_category="Building",
                              auto_help_override=False)
