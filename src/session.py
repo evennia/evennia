@@ -78,12 +78,6 @@ class SessionProtocol(StatefulTelnetProtocol):
         Any line return indicates a command for the purpose of a MUD. So we take
         the user input and pass it to this session's pobject.
         """
-        try: 
-            test = u"%s" % data
-        except UnicodeDecodeError:
-            self.msg("Couldn't parse that - one or more characters were not recognized.")
-            return 
-        
         if self.pobject:
             # Session is logged in, run through the normal object execution.
             self.pobject.execute_cmd(data, session=self)
