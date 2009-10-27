@@ -47,6 +47,10 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.address = self.getClientAddress()
         self.name = None
         self.uid = None
+        # This is merely here to serve as a convenient reference. It is not
+        # necessarily the most up to date version of the object, so it is NOT
+        # safe to look at pobject's location or any other attributes from
+        # the Object model.
         self.pobject = None
         self.logged_in = False
         # The time the user last issued a command.
@@ -78,9 +82,12 @@ class SessionProtocol(StatefulTelnetProtocol):
         Any line return indicates a command for the purpose of a MUD. So we take
         the user input and pass it to this session's pobject.
         """
-        if self.pobject:
+        if self.is_loggedin():
             # Session is logged in, run through the normal object execution.
-            self.pobject.execute_cmd(data, session=self)
+            # Get the most up to date copy of the Object.
+            pobject = self.get_pobject()
+            if pobject:
+                pobject.execute_cmd(data, session=self)
         else:
             # Not logged in, manually execute the command.
             cmdhandler.handle(cmdhandler.Command(None, data, session=self))

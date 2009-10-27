@@ -133,7 +133,9 @@ class Command(object):
         """
         Instantiates the Command object and does some preliminary parsing.
         """
-        self.raw_input = raw_input
+        # If we get a unicode string with un-recognizable characters, replace
+        # them instead of throwing errors.
+        self.raw_input = unicode(raw_input, errors='replace')
         self.source_object = source_object
         self.session = session
         # The work starts here.
@@ -441,7 +443,8 @@ def handle(command, ignore_state=False):
             # Nothing sent in of value, ignore it.
             raise ExitCommandHandler
 
-        state = None #no state by default
+        # No state by default.
+        state = None 
         
         if command.session and not command.session.logged_in:
             # Not logged in, look through the unlogged-in command table.
