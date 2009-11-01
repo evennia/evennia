@@ -21,6 +21,7 @@ from src import scripthandler
 from src import defines_global
 from src import session_mgr
 from src import logger
+from src import cache 
 
 # Import as the absolute path to avoid local variable clashes.
 import src.flags
@@ -887,6 +888,8 @@ class Object(models.Model):
             functions_general.log_errmsg("Object '%s(#%d)' has invalid location: #%s" % \
                                          (self.name,self.id,self.location_id))
             return False
+
+    
             
     def get_scriptlink(self):
         """
@@ -905,6 +908,20 @@ class Object(models.Model):
         return None
     # Set a property to make accessing the scriptlink more transparent.
     scriptlink = property(fget=get_scriptlink)
+
+    def get_cache(self):
+        """
+        Returns an object's volatile cache (in-memory storage)
+        """
+        return cache.get(self.dbref())
+
+    def del_cache(self):
+        """
+        Cleans the object cache for this object
+        """
+        cache.flush(self.dbref())
+        
+    cache = property(fget=get_cache, fdel=del_cache)
     
     def get_script_parent(self):
         """
@@ -1121,7 +1138,7 @@ class Object(models.Model):
         """
         Returns the player's current state.
         """
-        return self.state
+        return self.cache.state
     
     def set_state(self, state_name=None):
         """
@@ -1136,7 +1153,7 @@ class Object(models.Model):
         """
         if not self.is_player():
             return False
-
+        
         if self.is_superuser():
             # we have to deal with superusers separately since
             # they would always appear to have the genperm.admin_nostate
@@ -1148,12 +1165,12 @@ class Object(models.Model):
             # for other users we request the permission as normal. 
             nostate = self.has_perm("genperms.admin_nostate")
 
-        # we never enter other states if we are in the interactive batch processor.
-        nostate = nostate or self.state == "_interactive batch processor"        
+        # we never enter other states if we are already in the interactive batch processor.
+        nostate = nostate or self.get_state() == "_interactive batch processor"        
 
         if nostate:
             return False
-        self.state = state_name      
+        self.cache.state = state_name      
         return True
         
     

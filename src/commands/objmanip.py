@@ -44,14 +44,15 @@ def cmd_teleport(command):
     # a direct teleport, @tel <destination>.
     if len(eq_args) > 1:
         # Equal sign teleport.
-        victim = source_object.search_for_object(eq_args[0])
+        victim = source_object.search_for_object(eq_args[0].strip())
         # Use search_for_object to handle duplicate/nonexistant results.
         if not victim:
             return
         if victim.is_room():
             source_object.emit_to("You can't teleport a room.")
             return
-        destination = source_object.search_for_object_global(eq_args[1],exact_match=True,
+        destination = source_object.search_for_object_global(eq_args[1].strip(),
+                                                             exact_match=True,
                                                              limit_types=[defines_global.OTYPE_THING,
                                                                           defines_global.OTYPE_ROOM])
         if not destination:
@@ -63,7 +64,7 @@ def cmd_teleport(command):
         victim.move_to(destination, quiet=tel_quietly)
     else:
         # Direct teleport (no equal sign)
-        target_obj = source_object.search_for_object_global(eq_args[0],exact_match=True,
+        target_obj = source_object.search_for_object_global(eq_args[0].strip(),exact_match=True,
                                                             limit_types=[defines_global.OTYPE_THING,
                                                                          defines_global.OTYPE_ROOM])
         # Use search_for_object to handle duplicate/nonexistant results.
@@ -997,7 +998,10 @@ def cmd_dig(command):
     arg_list = args.split("=",1)
     if len(arg_list) < 2:
         #just create a room, no exits
-        room_name = arg_list[0].strip()
+        try:
+            room_name, room_parent = [s.strip() for s in arg_list[0].split(":",1)]
+        except ValueError:
+            room_name = arg_list[0].strip()
     else:
         #deal with args left of =
         larg = arg_list[0]
@@ -1596,7 +1600,10 @@ def cmd_examine(command):
         locks = target_obj.get_attribute_value("LOCKS")
         if locks and "%s" % locks:
             string += str("Locks: %s" % locks) + newl
-               
+        state = target_obj.get_state()
+        if state: 
+            string += str("State: %s" % state) + newl
+        
         # Contents container lists for sorting by type.
         con_players = []
         con_things = []

@@ -22,7 +22,7 @@ def add_event(event):
     """
 
     #don't add multiple instances of the same event, instead replace
-    if event in schedule:        
+    if event in schedule:
         schedule[schedule.index(event)] = event
         return
     else:
@@ -36,4 +36,4 @@ def del_event(event):
     if event in schedule:
         i = schedule.index(event)
         schedule[i].stop_event_loop()
-        del schedule[i]
+        del schedule[i]        

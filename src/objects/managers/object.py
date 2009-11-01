@@ -174,7 +174,9 @@ class ObjectManager(models.Manager):
                                          defines_global.OTYPE_GOING])
 
     def local_object_script_parent_search(self, script_parent, location):
-        o_query = self.filter(script_parent__exact=script_parent).filter(location__iexact=location)
+        o_query = self.filter(script_parent__exact=script_parent)        
+        if o_query:
+            o_query = o_query.filter(location__iexact=location)
         return o_query.exclude(type__in=[defines_global.OTYPE_GARBAGE,
                                          defines_global.OTYPE_GOING])
 
@@ -367,12 +369,13 @@ class ObjectManager(models.Manager):
 
         # If the search string is one of the following, return immediately with
         # the appropriate result.
+        
         if searcher.get_location().dbref_match(ostring) or ostring == 'here':
             return [searcher.get_location()]
         elif ostring == 'me' and searcher:
             return [searcher]
 
-        if search_query[0] == "*":
+        if search_query and search_query[0] == "*":
             # Player search- gotta search by name or alias
             search_target = search_query[1:]
             player_match = self.player_name_search(search_target)

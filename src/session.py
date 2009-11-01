@@ -47,11 +47,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.address = self.getClientAddress()
         self.name = None
         self.uid = None
-        # This is merely here to serve as a convenient reference. It is not
-        # necessarily the most up to date version of the object, so it is NOT
-        # safe to look at pobject's location or any other attributes from
-        # the Object model.
-        self.pobject = None
+        #self.pobject = None
         self.logged_in = False
         # The time the user last issued a command.
         self.cmd_last = time.time()
@@ -96,7 +92,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         """
         Sends a command to this session's object for processing.
         """
-        self.pobject.execute_cmd(command_str, session=self)
+        self.get_pobject().pobject.execute_cmd(command_str, session=self)
       
     def count_command(self, silently=False):
         """
@@ -132,17 +128,20 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.logged_in = False
         session_mgr.remove_session(self)
         
-    def get_pobject(self):
+    def get_pobject(self, log_err=True):
         """
         Returns the object associated with a session.
         """        
         try:
-            # Cache the result in the session object for quick retrieval.
-            result = Object.objects.get(id=self.uid)
-            self.pobject = result
-            return result
+            # Cache the result in the session object during
+            # the login procedure. 
+            #result = Object.objects.get(id=self.uid)
+            #self.pobject = result
+            #return result
+            return Object.objects.get(id=self.uid)
         except:
-            logger.log_errmsg("No pobject match for session uid: %s" % self.uid)
+            if log_err:
+                logger.log_errmsg("No pobject match for session uid: %s" % self.uid)
             return None
         
     def game_connect_screen(self):
@@ -170,13 +169,14 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.name = user.username
         self.logged_in = True
         self.conn_time = time.time()
-        # This will cache with the first call of this function.
-        self.get_pobject()
+        
+        pobject = self.get_pobject()
+
         #session_mgr.disconnect_duplicate_session(self)
 
         if first_login:
-            self.pobject.scriptlink.at_first_login(self)
-        self.pobject.scriptlink.at_pre_login(self)
+            pobject.scriptlink.at_first_login(self)
+        pobject.scriptlink.at_pre_login(self)
         
         logger.log_infomsg("Logged in: %s" % self)
         self.cemit_info('Logged in: %s' % self)
@@ -186,12 +186,11 @@ class SessionProtocol(StatefulTelnetProtocol):
         user.save()
         
         # In case the account and the object get out of sync, fix it.
-        if self.pobject.name != user.username:
-            self.pobject.set_name(user.username)
-            self.pobject.save()
+        if pobject.name != user.username:
+            pobject.set_name(user.username)
+            pobject.save()
 
-        self.pobject.scriptlink.at_post_login(self)
-
+        pobject.scriptlink.at_post_login(self)
         
     def msg(self, message):
         """

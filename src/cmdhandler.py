@@ -89,8 +89,9 @@ class Command(object):
         
         # add a space after the raw input; this cause split() to always
         # create a list with at least two entries. 
-        raw = "%s " % self.raw_input
-        cmd_words = raw.split()
+        raw = "%s " % self.raw_input        
+        cmd_words = raw.split(' ')
+        
         try:
             if '/' in cmd_words[0]:
                 # if we have switches we directly go for the first command form.
@@ -112,8 +113,9 @@ class Command(object):
                     # as tuples (commandname, args). They are stored with
                     # the longest possible name first. 
                     try:
-                        command_alternatives.append( (" ".join(cmd_words[:spacecount+1]),
-                                                      " ".join(cmd_words[spacecount+1:])) )
+                        command_alternatives.append( (" ".join([w.strip()
+                                                                for w in cmd_words[:spacecount+1]]).strip(),
+                                                      " ".join(cmd_words[spacecount+1:]).strip()) )
                     except IndexError:
                         continue 
                 if command_alternatives:
@@ -362,6 +364,8 @@ def command_table_lookup(command, command_table, eval_perms=True,
     """
     cmdtuple = None
     if command.command_alternatives:
+        #print "alternatives:",command.command_alternatives
+        #print command_table.ctable
         # we have command alternatives (due to spaces in command definition)
         for cmd_alternative in command.command_alternatives:
             # the alternatives are ordered longest -> shortest.
@@ -375,7 +379,7 @@ def command_table_lookup(command, command_table, eval_perms=True,
     if not cmdtuple:
         # None of the alternatives match, go with the default one-word name
         cmdtuple = command_table.get_command_tuple(command.command_string)
-
+    
     if cmdtuple:
         # if we get here we have found a command match in the table
         if test:
@@ -411,8 +415,9 @@ def match_neighbor_ctables(command,test=False):
     location = source_object.get_location()
     if location:
         # get all objects, including the current room
-        neighbors = location.get_contents()  + [location]
+        neighbors = location.get_contents()  + [location] + source_object.get_contents()
         for neighbor in neighbors:
+            #print "neighbor:", neighbor 
             if command_table_lookup(command,
                                     neighbor.scriptlink.command_table,
                                     test=test, neighbor=neighbor):

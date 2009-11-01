@@ -14,7 +14,7 @@ from src.helpsys.models import HelpEntry
 from src.helpsys import helpsystem
 from src.config.models import CommandAlias
 from src.config import edit_aliases
-
+from src import cache 
 def cmd_reload(command):
     """
     @reload - reload game subsystems
@@ -26,30 +26,41 @@ def cmd_reload(command):
       aliases          - alias definitions
       commands         - the command modules
       scripts, parents - the script parent modules      
-      all 
+      all              - reload all of the above 
       
-    Reloads all the identified subsystems.
+      cache            - flush the volatile cache (warning, this
+                         might cause unexpected results if your
+                         script parents use the cache a lot)
+      reset            - flush cache then reload all 
+
+    Reloads all the identified subsystems. Flushing the cache is
+    generally not needed outside the main game development. 
     """
     source_object = command.source_object
     switches = command.command_switches    
     if not switches or switches[0] not in ['all','aliases','alias',
                                            'commands','command',
-                                           'scripts','parents']:
+                                           'scripts','parents',
+                                           'cache','reset']:
         source_object.emit_to("Usage: @reload/<aliases|scripts|commands|all>")
         return
     switch = switches[0]
     sname = source_object.get_name(show_dbref=False)
-    
-    if switch in ["all","aliases","alias"]:
-        #reload Aliases
+
+    if switch in ["reset", "cache"]:
+        # Clear the volatile cache 
+        cache.flush()        
+        comsys.cemit_mudinfo("%s flushed the non-persistent cache." % sname)
+    if switch in ["reset","all","aliases","alias"]:
+        # Reload Aliases
         command.session.server.reload_aliases(source_object=source_object)
         comsys.cemit_mudinfo("%s reloaded Aliases." % sname)    
-    if switch in ["all","scripts","parents"]:
-        #reload Script parents
+    if switch in ["reset","all","scripts","parents"]:
+        # Reload Script parents
         rebuild_cache()
         comsys.cemit_mudinfo("%s reloaded Script parents." % sname)        
-    if switch in ["all","commands","command"]:
-        #reload command objects.
+    if switch in ["reset","all","commands","command"]:
+        # Reload command objects.
         comsys.cemit_mudinfo("%s is reloading Command modules ..." % sname)
         command.session.server.reload(source_object=command.source_object)
         comsys.cemit_mudinfo("... all Command modules were reloaded.")

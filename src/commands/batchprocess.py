@@ -136,7 +136,7 @@ def parse_batchbuild_file(filename):
         else: #comment
             if curr_cmd:
                 commands.append(curr_cmd.strip())                
-            curr_cmd = ""
+            curr_cmd = ""    
     if curr_cmd: commands.append(curr_cmd.strip())
 
     #second round to clean up now merged line edges etc.
@@ -145,7 +145,6 @@ def parse_batchbuild_file(filename):
 
     #remove eventual newline at the end of commands
     commands = [c.strip('\r\n') for c in commands]
-
     return commands
     
 def batch_process(source_object, commands):
@@ -202,7 +201,6 @@ def cmd_batchprocess(command):
         if not source_object.set_state(STATENAME):        
             source_object.emit_to("You cannot use the interactive mode while you have the flag ADMIN_NOSTATE set.")
             return
-
         CMDSTACKS[source_object] = commands
         STACKPTRS[source_object] = 0
         FILENAMES[source_object] = filename
@@ -263,10 +261,10 @@ def process_commands(source_object, steps=0):
         for cmd in cmds:
             #this so it is kept in case of traceback
             STACKPTRS[source_object] = ptr + 1 
-            show_curr(source_object)
+            #show_curr(source_object)
             source_object.execute_cmd(cmd)
     else:
-        show_curr(source_object)
+        #show_curr(source_object)
         source_object.execute_cmd(commands[ptr])
     
 def reload_stack(source_object):
@@ -298,7 +296,7 @@ def exit_state(source_object):
     # (to avoid accidental drop-outs by rooms clearing a player's state),
     # we have to clear the state directly here. 
     source_object.state = None 
-
+    
 def cmd_state_ll(command):
     """
     ll
