@@ -18,18 +18,28 @@ class IntervalEvent(object):
     """
     Represents an event that is triggered periodically. Sub-class this and
     fill in the stub function.
+
+    self.repeats decides if this event will fire indefinitely or only a
+    certain number of times.
     """    
-    def __init__(self):
+    def __init__(self, description="IntervalEvent"):
         """
         Executed when the class is instantiated.
         """
+        # This is a globally unique ID of this event. If None, a new one will
+        # be allocated when the event is added to the scheduler.
+        self.pid = None
         # This is set to prevent a Nonetype exception on @ps before the
         # event is fired for the first time.
         self.time_last_executed = time.time()
-        # This is what shows up on @ps in-game.
-        self.name = None
+        # This used to describe the event in @ps listings.
+        self.description = description
         # An interval (in seconds) for execution.
         self.interval = None
+        # How many times to repeat this event.
+        # None : indefinitely,
+        # positive integer : number of times
+        self.repeats = None 
         # A reference to the task.LoopingCall object.
         self.looped_task = None
     
@@ -38,6 +48,18 @@ class IntervalEvent(object):
         String representation of the event.
         """
         return self.name
+
+    def __eq__(self, event2):
+        """
+        Handles comparison operations.
+        """
+        return self.pid == event2.pid
+
+    def __hash__(self):
+        """
+        Used for dictionary key comparisons.
+        """
+        return self.pid
 
     def start_event_loop(self):
         """
@@ -78,9 +100,16 @@ class IntervalEvent(object):
     def fire_event(self):
         """
         Set the last ran stamp and fire off the event.
+        Stop repeating if number of repeats have been achieved.  
         """
-        self.set_lastfired()
+        self.set_lastfired()        
         self.event_function()
+        if self.repeats != None:
+            self.repeats -= 1
+            if self.repeats <= 0 and self.pid != None:
+                scheduler.del_event(self.pid)
+            
+
 
 class IEvt_Check_Sessions(IntervalEvent):
     """

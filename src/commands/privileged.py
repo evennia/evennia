@@ -15,6 +15,9 @@ from src.helpsys import helpsystem
 from src.config.models import CommandAlias
 from src.config import edit_aliases
 from src import cache 
+from src import scheduler
+
+
 def cmd_reload(command):
     """
     @reload - reload game subsystems
@@ -761,3 +764,37 @@ def cmd_setcmdalias(command):
 GLOBAL_CMD_TABLE.add_command("@setcmdalias", cmd_setcmdalias,
                              priv_tuple=("genperms.process_control",),
                              help_category="Admin")
+
+
+def cmd_delevent(command):
+    """
+    @delevent - remove events manually
+    
+    Usage:
+      @delevent <pid>
+
+    Removes an event with the given pid (process ID) from the event scheduler.
+    To see all active events and their pids, use the @ps command.  
+    """
+    source_object = command.source_object
+
+    if not command.command_argument:
+        source_object.emit_to("Usage: @delevent <pid>")
+        return        
+    try:
+        pid = int(command.command_argument)
+    except ValueError:
+        source_object.emit_to("You must supply a valid pid number.")
+        return 
+    event = scheduler.get_event(pid)
+    if event:
+        desc = event.description
+        scheduler.del_event(pid)
+        source_object.emit_to("Event %i - '%s' removed." % (pid, desc))
+    else:
+        source_object.emit_to("No event found with a pid of %i. Use @ps to list process IDs." % pid)
+
+GLOBAL_CMD_TABLE.add_command("@delevent", cmd_delevent,
+                             priv_tuple=("genperms.process_control",),
+                             help_category="Admin")    
+

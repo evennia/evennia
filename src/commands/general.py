@@ -775,3 +775,21 @@ def cmd_help(command):
 
     source_object.emit_to(string)
 GLOBAL_CMD_TABLE.add_command("help", cmd_help)
+
+## def cmd_testevent(command):
+##     from src import events
+##     from src import scheduler
+##     source_object = command.source_object
+
+##     if not command.command_argument:
+##         #event = events.IntervalEvent()
+##         event = events.IntervalEvent()
+##         event.repeats = 3
+##         event.interval = 5
+##         pid = scheduler.add_event(event)
+##         source_object.emit_to("event with pid %s added." % pid)
+##     else:
+##         pid = command.command_argument
+##         scheduler.del_event(pid)
+##         source_object.emit_to("event with pid %s removed (if it existed)." % pid)
+## GLOBAL_CMD_TABLE.add_command("testevent", cmd_testevent)    
