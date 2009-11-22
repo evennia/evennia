@@ -5,6 +5,7 @@ other things.
 
 Everything starts at handle_setup()
 """
+import time
 from django.contrib.auth.models import User, Group, Permission
 from django.core import management
 from django.conf import settings
@@ -12,6 +13,12 @@ from src.objects.models import Object
 from src.config.models import ConfigValue, CommandAlias, ConnectScreen
 from src import comsys, defines_global, logger
 from src.helpsys import helpsystem
+from src import session_mgr
+from src import scheduler
+from src import events
+from src.cache import cache
+
+# Main module methods
 
 def get_god_user():
     """
@@ -119,19 +126,7 @@ def create_aliases():
     command_aliases = settings.COMMAND_ALIASES
     for user_input, equiv_command in command_aliases.items():
         CommandAlias(user_input=user_input, equiv_command=equiv_command).save()
-
-    ## CommandAlias(user_input="@desc", equiv_command="@describe").save()
-    ## CommandAlias(user_input="@dest", equiv_command="@destroy").save()
-    ## CommandAlias(user_input="@nuke", equiv_command="@destroy").save()
-    ## CommandAlias(user_input="@tel", equiv_command="@teleport").save()
-    ## CommandAlias(user_input="i", equiv_command="inventory").save()
-    ## CommandAlias(user_input="inv", equiv_command="inventory").save()
-    ## CommandAlias(user_input="l", equiv_command="look").save()
-    ## CommandAlias(user_input="ex", equiv_command="examine").save()
-    ## CommandAlias(user_input="sa", equiv_command="say").save()
-    ## #CommandAlias(user_input="emote", equiv_command="pose").save()
-    ## CommandAlias(user_input="p", equiv_command="page").save()
-    
+        
 def import_help_files():
     """
     Imports the help files.
@@ -148,6 +143,44 @@ def categorize_initial_helpdb():
     print " Moving initial imported help db to help category '%s'." % default_category
     helpsystem.edithelp.homogenize_database(default_category)
 
+def create_pcache():
+    """
+    Create the global persistent cache object.    
+    """    
+    from src.cache import cache
+    # create the main persistent cache
+    cache.init_pcache()
+
+def create_system_events():
+    """
+    Set up the default system events of the server
+    """    
+    # create instances of events and add to scheduler (which survives a reboot)
+    print " Defining system events ..."
+    scheduler.add_event(events.IEvt_Check_Sessions())
+    scheduler.add_event(events.IEvt_Destroy_Objects())
+    scheduler.add_event(events.IEvt_Sync_PCache())    
+
+    # Make sure that these events are saved to pcache right away. 
+    ecache = [event for event in scheduler.SCHEDULE if event.persistent]
+    cache.set_pcache("_persistent_event_cache", ecache)
+    cache.save_pcache()
+
+def start_game_time():
+    """
+    This creates a persistent time stamp (in s since an arbitrary start)
+    upon first server start and is saved and updated regularly in persistent cache. 
+    _game_time0 is the current absolute time (in s since an arbitrary start)
+    _game_time is the current relative number of seconds that the server has been running
+               (not counting offline time), accurate to the time between
+               cache saves, when this is stored. 
+    """
+    time0 = time.time()
+    time1 = 0 
+    cache.set_pcache("_game_time0", time0)
+    cache.set_pcache("_game_time", time1)
+    cache.save_pcache()
+    
 def handle_setup():
     """
     Main logic for the module.
@@ -160,3 +193,6 @@ def handle_setup():
     create_channels()
     import_help_files()
     categorize_initial_helpdb()
+    create_pcache()
+    create_system_events()
+    start_game_time()

@@ -59,17 +59,6 @@ def cmd_password(command):
             source_object.emit_to("Password changed.")
 GLOBAL_CMD_TABLE.add_command("@password", cmd_password, help_category="System")
 
-def cmd_pemit(command):        
-    """
-    @pemit
-    
-    Emits something to a player.
-
-    (Not yet implemented)
-    """
-    # TODO: Implement cmd_pemit
-#GLOBAL_CMD_TABLE.add_command("@pemit", cmd_pemit)
-
 def cmd_emit(command):        
     """
     @emit
@@ -527,7 +516,7 @@ def cmd_fsay(command):
 
     # permission check
     if not source_object.controls_other(target):
-        source_object.emit_to("Cannot pose %s (you don's control it)" % obj.get_name())
+        source_object.emit_to("Cannot pose %s (you don's control it)" % target.get_name())
         return
         
     # Feedback for the object doing the talking.
@@ -624,7 +613,7 @@ def cmd_fpose(command):
 
     # permission check
     if not source_object.controls_other(target):
-        source_object.emit_to("Cannot pose %s (you don's control it)" % obj.get_name())
+        source_object.emit_to("Cannot pose %s (you don's control it)" % target.get_name())
         return
     
     if "nospace" in command.command_switches:
@@ -776,6 +765,8 @@ def cmd_help(command):
     source_object.emit_to(string)
 GLOBAL_CMD_TABLE.add_command("help", cmd_help)
 
+
+
 ## def cmd_testevent(command):
 ##     from src import events
 ##     from src import scheduler
@@ -793,3 +784,33 @@ GLOBAL_CMD_TABLE.add_command("help", cmd_help)
 ##         scheduler.del_event(pid)
 ##         source_object.emit_to("event with pid %s removed (if it existed)." % pid)
 ## GLOBAL_CMD_TABLE.add_command("testevent", cmd_testevent)    
+
+## def cmd_testcache(command):    
+##     from src.cache import cache
+##     from src import scheduler
+##     from src import events
+##     from src import gametime
+##     source_object = command.source_object
+##     switches = command.command_switches
+##     s1 = "Temp_cache_val_OK"
+##     s2 = "Perm_cache_val_OK"
+##     s3 = "Perm_cache_val2_OK"
+##     if switches and "get" in switches:
+##         cache.load_pcache()
+##         cache_vol = source_object.cache.testcache        
+##         source_object.emit_to("< volatile cache: %s" % cache_vol)
+##         cache_perm = source_object.pcache.testcache_perm
+##         source_object.emit_to("< cache_perm1: %s" % cache_perm)
+##         cache_perm2 = cache.get_pcache("permtest2")
+##         source_object.emit_to("< cache_perm2: %s" % cache_perm2)
+##     else:
+##         source_object.cache.testcache = s1
+##         source_object.pcache.testcache_perm = s2
+##         cache.set_pcache("permtest2", s3)
+##         source_object.emit_to("> volatile cache: %s" % s1)
+##         source_object.emit_to("> cache_perm1: %s" % s2)
+##         source_object.emit_to("> cache_perm2: %s" % s3)
+##         cache.save_pcache()
+##         source_object.emit_to("Caches saved.")
+##     source_object.emit_to("Time: %i" % gametime.time())
+## GLOBAL_CMD_TABLE.add_command("testcache", cmd_testcache)   

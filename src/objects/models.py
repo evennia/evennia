@@ -21,7 +21,7 @@ from src import scripthandler
 from src import defines_global
 from src import session_mgr
 from src import logger
-from src import cache 
+from src.cache import cache
 
 # Import as the absolute path to avoid local variable clashes.
 import src.flags
@@ -222,7 +222,8 @@ class Object(models.Model):
         else:
             return results[0]
         
-    def search_for_object_global(self, ostring, exact_match=True, limit_types=[],
+    def search_for_object_global(self, ostring, exact_match=True,
+                                 limit_types=[],
                                  emit_to_obj=None, dbref_limits=()):
         """
         Search for ostring in all objects, globally. Handle multiple-matches
@@ -233,7 +234,8 @@ class Object(models.Model):
         if not emit_to_obj:
             emit_to_obj = self
 
-        results = Object.objects.global_object_name_search(ostring, exact_match=exact_match,
+        results = Object.objects.global_object_name_search(ostring,
+                                                           exact_match=exact_match,
                                                            limit_types=limit_types)       
         if dbref_limits:
             # if this is set we expect a tuple of 2, even if one is None. 
@@ -294,7 +296,8 @@ class Object(models.Model):
         """      
         # The Command object has all of the methods for parsing and preparing
         # for searching and execution. Send it to the handler once populated.
-        cmdhandler.handle(cmdhandler.Command(self, command_str, session=session),
+        cmdhandler.handle(cmdhandler.Command(self, command_str,
+                                             session=session),
                           ignore_state=ignore_state)
             
     def emit_to_contents(self, message, exclude=None):
@@ -573,11 +576,12 @@ class Object(models.Model):
 
     def clear_objects(self):
         """
-        Moves all objects (players/things) currently in a GOING -> GARBAGE location
-        to their home or default home (if it can be found).
+        Moves all objects (players/things) currently in a
+        GOING -> GARBAGE location to their home or default
+        home (if it can be found).
         """
-        # Gather up everything, other than exits and going/garbage, that is under
-        # the belief this is its location.
+        # Gather up everything, other than exits and going/garbage,
+        # that is under the belief this is its location.
         objs = self.obj_location.filter(type__in=[1, 2, 3])
         default_home_id = ConfigValue.objects.get_configvalue('default_home')
         try:
@@ -600,12 +604,13 @@ class Object(models.Model):
 
             # If for some reason it's still None...
             if not home:
-                functions_general.log_errmsg("Missing default home, %s '%s(#%d)' now has a null location." %
+                string = "Missing default home, %s '%s(#%d)' now has a null location."
+                functions_general.log_errmsg(string %
                                              (text, obj.name, obj.id))
                     
             if obj.is_player():
                 if obj.is_connected_plr():
-                    if home:
+                    if home:                        
                         obj.emit_to("Your current location has ceased to exist, moving you to your home %s(#%d)." %
                                     (home.name, home.id))
                     else:
@@ -677,6 +682,8 @@ class Object(models.Model):
             return attrib.get_value()
         else:            
             return default
+
+    attribute = property(fget=get_attribute_value, fset=set_attribute)
             
     def get_attribute_obj(self, attrib):
         """
@@ -747,7 +754,8 @@ class Object(models.Model):
         # wild-carded search string.
         match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), 
                                re.IGNORECASE)
-        # If the regular expression search returns a match object, add to results.
+        # If the regular expression search returns a match
+        # object, add to results.
         if exclude_noset:
             return [attr for attr in attrs if match_exp.search(attr.get_name())
                     and not attr.is_hidden() and not attr.is_noset()]
@@ -885,7 +893,8 @@ class Object(models.Model):
         try:
             return self.location
         except:
-            functions_general.log_errmsg("Object '%s(#%d)' has invalid location: #%s" % \
+            string = "Object '%s(#%d)' has invalid location: #%s"
+            functions_general.log_errmsg(string % \
                                          (self.name,self.id,self.location_id))
             return False
 
@@ -913,15 +922,29 @@ class Object(models.Model):
         """
         Returns an object's volatile cache (in-memory storage)
         """
-        return cache.get(self.dbref())
+        return cache.get_cache(self.dbref())
 
     def del_cache(self):
         """
         Cleans the object cache for this object
         """
-        cache.flush(self.dbref())
+        cache.flush_cache(self.dbref())
         
     cache = property(fget=get_cache, fdel=del_cache)
+
+    def get_pcache(self):
+        """
+        Returns an object's persistent cache (in-memory storage)
+        """
+        return cache.get_pcache(self.dbref())
+
+    def del_pcache(self):
+        """
+        Cleans the object persistent cache for this object
+        """
+        cache.flush_pcache(self.dbref())
+        
+    pcache = property(fget=get_pcache, fdel=del_pcache)
     
     def get_script_parent(self):
         """
@@ -944,7 +967,8 @@ class Object(models.Model):
         script_parent: (string) String pythonic import path of the script parent
                                 assuming the python path is game/gamesrc/parents. 
         """        
-        if script_parent != None and scripthandler.scriptlink(self, str(script_parent).strip()):
+        if script_parent != None and scripthandler.scriptlink(self,
+                                                              str(script_parent).strip()):
             #assigning a custom parent 
             self.script_parent = str(script_parent).strip()
             self.save()
@@ -1165,7 +1189,8 @@ class Object(models.Model):
             # for other users we request the permission as normal. 
             nostate = self.has_perm("genperms.admin_nostate")
 
-        # we never enter other states if we are already in the interactive batch processor.
+        # we never enter other states if we are already in
+        # the interactive batch processor.
         nostate = nostate or self.get_state() == "_interactive batch processor"        
 
         if nostate:

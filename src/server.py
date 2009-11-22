@@ -15,6 +15,9 @@ from src import alias_mgr
 from src import cmdtable
 from src import initial_setup
 from src.util import functions_general
+from src.cache import cache
+from src import scheduler
+from src import gametime
 
 class EvenniaService(service.Service):
     def __init__(self):
@@ -34,11 +37,13 @@ class EvenniaService(service.Service):
         # Begin startup debug output.
         print '-'*50
 
+        firstrun = False 
         try:
             # If this fails, this is an empty DB that needs populating.
             ConfigValue.objects.get_configvalue('game_firstrun')
         except ConfigValue.DoesNotExist:            
             print ' Game started for the first time, setting defaults.'
+            firstrun = True
             initial_setup.handle_setup()
             
         self.start_time = time.time()
@@ -52,9 +57,27 @@ class EvenniaService(service.Service):
         # Cache the aliases from the database for quick access.
         alias_mgr.load_cmd_aliases()
         
+        # Load persistent cache from database into memory
+        cache.load_pcache()
+        
+        if not firstrun:
+            # Find out how much offset the timer is (due to being
+            # offline).
+            time_sync = gametime.time_last_sync()
+            
+            # Sync the in-game timer.
+            cache.set_pcache("_game_time0", self.start_time)                        
+
+            # Fire up the event scheduler.        
+            event_cache = cache.get_pcache("_persistent_event_cache")                
+            if event_cache and type(event_cache) == type(list()):            
+                for event in event_cache:
+                    # we adjust the executed time to account for offline time.
+                    event.time_last_executed = event.time_last_executed + time_sync
+                    scheduler.add_event(event)
+
         print '-'*50
-        # Fire up the event scheduler.
-        events.add_global_events()
+
 
     """
     BEGIN SERVER STARTUP METHODS
@@ -102,6 +125,9 @@ class EvenniaService(service.Service):
         """
         Gracefully disconnect everyone and kill the reactor.
         """
+        gametime.time_save()
+        cache.save_pcache()
+        logger.log_infomsg("Persistent cache and time saved prior to shutdown.")
         session_mgr.announce_all(message)
         session_mgr.disconnect_all_sessions()
         reactor.callLater(0, reactor.stop)
@@ -140,7 +166,6 @@ class EvenniaService(service.Service):
         f.protocol = SessionProtocol
         f.server = self
         return f
-
 
     def start_services(self, application):
         """

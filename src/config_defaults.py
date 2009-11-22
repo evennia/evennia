@@ -70,9 +70,27 @@ DATABASE_HOST = ''
 # Empty string defaults to localhost. Not used with sqlite3.
 DATABASE_PORT = ''
 
+# How often the persistent cache will save to disk (in seconds).
+CACHE_BACKUP_INTERVAL = 600
+
 # How many words a single command name may have (e.g. 'push button' instead of 'pushbutton')
 # (commands with switches can always only have one word in the name, e.g. @sethelp/add)
 COMMAND_MAXLEN = 3
+
+## Time units - this defines a useful base for how fast time will run in the game.
+# You don't actually have to use this, but it affects the routines in src.gametime.py
+# and allows for a convenient measure to determine the current in-game time. 
+# The time factor dictates if the game world runs faster (timefactor>1) or
+# slower (timefactor<1) than the real world. 
+TIME_FACTOR = 2.0 
+# The tick is the smallest unit of time in the game. Smallest value is 1. 
+TIME_TICK = 1.0
+# These measures might or might not make sense to the game world.
+TIME_MIN_PER_HOUR = 60
+TIME_HOUR_PER_DAY = 24
+TIME_DAY_PER_WEEK = 7
+TIME_WEEK_PER_MONTH = 4
+TIME_MONTH_PER_YEAR = 12
 
 ## Command aliases
 # These are convenient aliases set up when the game is started
@@ -114,6 +132,9 @@ PERM_HELPSYS = (
     ("staff_help", "May see staff help topics."),
     ("add_help", "May add or append to help entries"),
     ("del_help", "May delete help entries"),)
+# handling cache
+PERM_CACHE = (
+    ("admin_cache","May admin the cache system"),)
 # object manipulation/information permissions
 PERM_OBJECTS = ( 
     ("teleport","May teleport an object to any location."),
@@ -383,6 +404,7 @@ INSTALLED_APPS = (
     'src.irc',
     'src.helpsys',
     'src.genperms',
+    'src.cache',
     'game.web.apps.news',
     'game.web.apps.website',    
 )

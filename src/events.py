@@ -6,13 +6,21 @@ Create your sub-class, call src.scheduler.add_event(YourEventClass()) to add
 it to the global scheduler.
 
 Use @ps to view the event list.
+
+The events set with the member variable persistent equal to True will be
+stored in persistent cache and will survive server downtime. 
 """
 import time
+import copy 
 from twisted.internet import task
+from django.conf import settings
 import session_mgr
 from src import scheduler
 from src import defines_global
 from src.objects.models import Object
+from src.cache import cache
+from src import logger
+from src import gametime
 
 class IntervalEvent(object):
     """
@@ -42,12 +50,23 @@ class IntervalEvent(object):
         self.repeats = None 
         # A reference to the task.LoopingCall object.
         self.looped_task = None
-    
+        # If true, the event definition will survive a reboot.
+        self.persistent = False
+
+    def __getstate__(self):        
+        """
+        Used by pickle.
+        """
+        edict = copy.copy(self.__dict__)
+        edict["looped_task"] = None 
+        edict["pid"] = None
+        return edict
+
     def __unicode__(self):
         """
         String representation of the event.
         """
-        return self.name
+        return self.description
 
     def __eq__(self, event2):
         """
@@ -89,7 +108,7 @@ class IntervalEvent(object):
         """
         Returns a value in seconds when the event is going to fire off next.
         """
-        return max(0,(self.time_last_executed + self.interval) - time.time())
+        return max(0, (self.time_last_executed + self.interval) - time.time())
     
     def set_lastfired(self):
         """
@@ -110,6 +129,7 @@ class IntervalEvent(object):
                 scheduler.del_event(self.pid)
             
 
+# Some default server events
 
 class IEvt_Check_Sessions(IntervalEvent):
     """
@@ -117,9 +137,10 @@ class IEvt_Check_Sessions(IntervalEvent):
     """
     def __init__(self):
         super(IEvt_Check_Sessions, self).__init__()
-        self.name = 'IEvt_Check_Sessions'
+        #self.name = 'IEvt_Check_Sessions'
         self.interval = 60
         self.description = "Session consistency checks."
+        self.persistent = True
     
     def event_function(self):
         """
@@ -133,9 +154,10 @@ class IEvt_Destroy_Objects(IntervalEvent):
     """
     def __init__(self):
         super(IEvt_Destroy_Objects, self).__init__()
-        self.name = 'IEvt_Destroy_Objects'
+        #self.name = 'IEvt_Destroy_Objects'
         self.interval = 1800
         self.description = "Clean out objects marked for destruction."
+        self.persistent = True
 
     def event_function(self):
         """
@@ -144,13 +166,34 @@ class IEvt_Destroy_Objects(IntervalEvent):
         going_objects = Object.objects.filter(type__exact=defines_global.OTYPE_GOING)
         for obj in going_objects:
             obj.delete()
-    
-def add_global_events():
-    """
-    When the server is started up, this is triggered to add all of the
-    events in this file to the scheduler.
-    """
-    # Create an instance and add it to the scheduler.
-    scheduler.add_event(IEvt_Check_Sessions())
-    scheduler.add_event(IEvt_Destroy_Objects())
 
+class IEvt_Sync_PCache(IntervalEvent):
+    """
+    Event: Sync the persistent cache to with the database.
+    This is an important event since it also makes sure to
+    update the time stamp. 
+    """
+    def __init__(self):
+        super(IEvt_Sync_PCache, self).__init__()
+        #self.name = 'IEvt_Sync_PCache'
+        self.interval = settings.CACHE_BACKUP_INTERVAL
+        self.description = "Backup pcache to disk."
+        self.persistent = True
+
+    def event_function(self):
+        """
+        This is the function that is fired every self.interval seconds.
+        """
+        infostring = "Syncing time, events and persistent cache to disk."
+        logger.log_infomsg(infostring)        
+        # updating the current time                 
+        time0 = time.time()
+        time1 = gametime.time(time0)        
+        cache.set_pcache("_game_time0", time0)
+        cache.set_pcache("_game_time", time1)
+        # update the event database to pcache
+        ecache = [event for event in scheduler.SCHEDULE
+                  if event.persistent]            
+        cache.set_pcache("_persistent_event_cache", ecache)            
+        # save pcache to disk.
+        cache.save_pcache()

@@ -8,6 +8,8 @@ ADDING AN EVENT:
   imported, or that add_event() is called by a command or some kind of action.
 * Profit.
 """
+from src.cache import cache
+CACHE_NAME = "_persistent_event_cache"
 
 # dict of IntervalEvent sub-classed objects, keyed by their
 # process id:s.
@@ -35,19 +37,30 @@ def add_event(event):
      * event: (IntervalEvent) The event to add to the scheduler.
     Returns:
      * pid :  (int) The process ID assigned to this event, for future reference. 
-
     """
     # Make sure not to add multiple instances of the same event. 
-    matches = [i for i, stored_event in enumerate(SCHEDULE) if event == stored_event]
+    matches = [i for i, stored_event in enumerate(SCHEDULE)
+               if event == stored_event]
     if matches:
+        #print "replacing existing event pid=%i: %s" % (event.pid, event.name)
         # Before replacing an event, stop its old incarnation.
         del_event(matches[0])
         SCHEDULE[matches[0]] = event
     else:
         # Add a new event with a fresh pid. 
         event.pid = next_free_pid()
+        #print "adding new event with fresh pid=%i: %s" % (event.pid,event.name)
         SCHEDULE.append(event)
     event.start_event_loop()
+
+    if event.persistent:
+        # We have to sync to disk, otherwise we might end up
+        # in situations (such as after a crash) where an object exists,
+        # but the event tied to it does not.
+        ecache = [event for event in SCHEDULE if event.persistent]            
+        cache.set_pcache("_persistent_event_cache", ecache)
+        cache.save_pcache()
+        
     return event.pid 
 
 def get_event(pid):
@@ -56,7 +69,8 @@ def get_event(pid):
     otherwise return None.
     """
     pid = int(pid)
-    imatches = [i for i, stored_event in enumerate(SCHEDULE) if stored_event.pid == pid]
+    imatches = [i for i, stored_event in enumerate(SCHEDULE)
+                if stored_event.pid == pid]
     if imatches:
         return SCHEDULE[imatches[0]]
 
@@ -66,7 +80,18 @@ def del_event(pid):
     event with a certain pid, this cleans up in case there are any multiples.
     """    
     pid = int(pid)
-    imatches = [i for i, stored_event in enumerate(SCHEDULE) if stored_event.pid == pid]
+    imatches = [i for i, stored_event in enumerate(SCHEDULE)
+                if stored_event.pid == pid]
     for imatch in imatches:
-        SCHEDULE[imatch].stop_event_loop()
-        del SCHEDULE[imatch]        
+        event = SCHEDULE[imatch]
+        event.stop_event_loop()
+        del SCHEDULE[imatch]
+
+        if event.persistent:
+            # We have to sync to disk, otherwise we might end
+            # up in situations (such as after a crash) where an
+            # object has been removed, but the event tied to it remains.
+            ecache = [event for event in SCHEDULE
+                      if event.persistent]            
+            cache.set_pcache("_persistent_event_cache", ecache)
+            cache.save_pcache()

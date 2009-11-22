@@ -14,6 +14,8 @@ from src import scheduler
 from src import defines_global
 from src import flags
 from src.cmdtable import GLOBAL_CMD_TABLE
+from src.cache import cache 
+from src import gametime 
 
 def cmd_version(command):
     """
@@ -40,8 +42,14 @@ def cmd_time(command):
     
     Server local time.
     """
-    command.source_object.emit_to('Current server time : %s' % 
-                (time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime(),)))
+    gtime = gametime.time()
+    synctime = gametime.time_last_sync()
+    ltime = time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime())
+    string = " Current game time: %i s." % gtime
+    string += "\n Time since cache was last saved: %i s." % synctime
+    string += "\n Current server time: %s" % ltime 
+    command.source_object.emit_to(string)
+
 GLOBAL_CMD_TABLE.add_command("@time", cmd_time,  priv_tuple=("genperms.game_info",),
                              help_category="Admin")
 
@@ -175,3 +183,22 @@ def cmd_stats(command):
         stats_dict["players"],
         stats_dict["garbage"]))
 GLOBAL_CMD_TABLE.add_command("@stats", cmd_stats, priv_tuple=("genperms.game_info",), help_category="Admin"),
+
+def cmd_showcache(command):
+    """
+    @showcache - show stats about the cache system
+
+    Usage:
+      @showcache 
+
+    Study the current contents and size of the cache.
+    """
+    source_object = command.source_object
+    str_cache, str_pcache = cache.show()
+    string = ""
+    if str_cache:
+        string += "\nVolatile cache:\n " + str_cache
+    if str_pcache:
+        string += "\nPersistent cache:\n " + str_pcache
+    source_object.emit_to(string)
+GLOBAL_CMD_TABLE.add_command("@showcache", cmd_showcache, priv_tuple=("genperms.game_info",), help_category="Admin"),
