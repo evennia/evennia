@@ -193,24 +193,40 @@ def cmd_batchprocess(command):
     #parse indata file
     commands = parse_batchbuild_file(filename)
     if not commands:
-        source_object.emit_to("'%s' not found.\nYou have to supply the real path of the file relative to \nyour batch-file directory (%s)." % (filename, settings.BATCH_IMPORT_PATH))
+        string = "'%s' not found.\nYou have to supply the real path "
+        string += "of the file relative to \nyour batch-file directory (%s)."
+        source_object.emit_to(string % (filename, settings.BATCH_IMPORT_PATH))
         return
     switches = command.command_switches
     if switches and switches[0] in ['inter','interactive']:
         # allow more control over how batch file is executed
+
         if not source_object.set_state(STATENAME):        
-            source_object.emit_to("You cannot use the interactive mode while you have the flag ADMIN_NOSTATE set.")
-            return
+            # if we failed it is likely because we have
+            # ADMIN_NOSTATE set.
+            source_object.unset_flag("ADMIN_NOSTATE")
+            if not source_object.set_state(STATENAME):
+                source_object.emit_to("Error in entering the interactive state.")
+                source_object.set_flag("ADMIN_NOSTATE")
+                return
+            else:
+                string = "OBS: Flag ADMIN_NOSTATE unset in order to "
+                string += "run Interactive mode. Don't forget to re-set "
+                string += "it (if you need it) after you're done."
+                source_object.emit_to(string)
+            
         CMDSTACKS[source_object] = commands
         STACKPTRS[source_object] = 0
         FILENAMES[source_object] = filename
         source_object.emit_to("\nBatch processor - Interactive mode for %s ..." % filename)
         show_curr(source_object)
     else:
+        source_object.set_flag("ADMIN_NOSTATE")
         source_object.emit_to("Running Batch processor - Automatic mode for %s ..." % filename)
         source_object.clear_state()
         batch_process(source_object, commands)
         source_object.emit_to("%s== Batchfile '%s' applied." % (cgreen,filename))
+        source_object.unset_flag("ADMIN_NOSTATE")
 
 GLOBAL_CMD_TABLE.add_command("@batchprocess", cmd_batchprocess,
                              priv_tuple=("genperms.process_control",), help_category="Building")
@@ -507,10 +523,11 @@ def cmd_state_hh(command):
      nl [steps] - next & look 
      bb [steps] - back to previous command (no processing)
      bl [steps] - back & look 
-     jj   <N>   - jump to command no N (no processing)
+     jj   <N>   - jump to command nr N (no processing)
      jl   <N>   - jump & look 
      pp         - process currently shown command (no step)
      ss [steps] - process & step
+     sl [steps] - process & step & look
      ll         - look at full definition of current command
      rr         - reload batch file (stay on current)
      rrr        - reload batch file (start from first)
