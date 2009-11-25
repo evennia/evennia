@@ -57,9 +57,6 @@ from src.statetable import GLOBAL_STATE_TABLE
 #global defines for storage
 
 STATENAME="_interactive batch processor"
-CMDSTACKS={} # user:cmdstack pairs (for interactive)
-STACKPTRS={} # user:stackpointer pairs (for interactive)
-FILENAMES={} # user:filename pairs (for interactive/reload)
 
 cwhite = r"%cn%ch%cw"
 cred = r"%cn%ch%cw"
@@ -175,7 +172,7 @@ def cmd_batchprocess(command):
     Interactive mode allows the user more control over the
     processing of the file.     
     """
-    global CMDSTACKS,STACKPTRS,FILENAMES
+    #global CMDSTACKS,STACKPTRS,FILENAMES
     
     source_object = command.source_object
 
@@ -214,19 +211,25 @@ def cmd_batchprocess(command):
                 string += "run Interactive mode. Don't forget to re-set "
                 string += "it (if you need it) after you're done."
                 source_object.emit_to(string)
-            
-        CMDSTACKS[source_object] = commands
-        STACKPTRS[source_object] = 0
-        FILENAMES[source_object] = filename
+
+        # store work data in cache 
+        source_object.cache.batch_cmdstack = commands
+        source_object.cache.batch_stackptr = 0
+        source_object.cache.batch_filename = filename
+
         source_object.emit_to("\nBatch processor - Interactive mode for %s ..." % filename)
         show_curr(source_object)
     else:
-        source_object.set_flag("ADMIN_NOSTATE")
+        set_admin_nostate = False
+        if not source_object.has_flag("ADMIN_NOSTATE"):
+            source_object.set_flag("ADMIN_NOSTATE")
+            set_admin_nostate = True 
         source_object.emit_to("Running Batch processor - Automatic mode for %s ..." % filename)
         source_object.clear_state()
         batch_process(source_object, commands)
         source_object.emit_to("%s== Batchfile '%s' applied." % (cgreen,filename))
-        source_object.unset_flag("ADMIN_NOSTATE")
+        if set_admin_nostate:
+            source_object.unset_flag("ADMIN_NOSTATE")
 
 GLOBAL_CMD_TABLE.add_command("@batchprocess", cmd_batchprocess,
                              priv_tuple=("genperms.process_control",), help_category="Building")
@@ -241,14 +244,14 @@ def printfooter():
 
 def show_curr(source_object,showall=False):
     "Show the current command."
-    global CMDSTACKS,STACKPTRS
-    ptr = STACKPTRS[source_object]
-    commands = CMDSTACKS[source_object]
+    ptr = source_object.cache.batch_stackptr
+    commands = source_object.cache.batch_cmdstack
+
     if ptr >= len(commands):
         s = "\n You have reached the end of the batch file."
         s += "\n Use qq to exit or bb to go back."        
         source_object.emit_to(s)       
-        STACKPTRS[source_object] = len(commands)-1
+        source_object.cache.batch_stackptr = len(commands)-1
         show_curr(source_object)
         return 
     command = commands[ptr]            
@@ -266,9 +269,9 @@ def show_curr(source_object,showall=False):
 
 def process_commands(source_object, steps=0):
     "process one or more commands "
-    global CMDSTACKS,STACKPTRS
-    ptr = STACKPTRS[source_object]
-    commands = CMDSTACKS[source_object]
+    ptr = source_object.cache.batch_stackptr
+    commands = source_object.cache.batch_cmdstack
+
     if steps:
         try:
             cmds = commands[ptr:ptr+steps]
@@ -276,7 +279,7 @@ def process_commands(source_object, steps=0):
             cmds = commands[ptr:]
         for cmd in cmds:
             #this so it is kept in case of traceback
-            STACKPTRS[source_object] = ptr + 1 
+            source_object.cache.batch_stackptr = ptr + 1 
             #show_curr(source_object)
             source_object.execute_cmd(cmd)
     else:
@@ -285,29 +288,24 @@ def process_commands(source_object, steps=0):
     
 def reload_stack(source_object):
     "reload the stack"
-    global CMDSTACKS,FILENAMES
-    commands = parse_batchbuild_file(FILENAMES[source_object])
+    commands = parse_batchbuild_file(source_object.cache.batch_filename)
     if commands:
-        CMDSTACKS[source_object] = commands
+        ptr = source_object.cache.batch_stackptr
     else:
         source_object.emit_to("Commands in file could not be reloaded. Was it moved?")
 
 def move_in_stack(source_object, step=1):
     "store data in stack"
-    global CMDSTACKS, STACKPTRS
-    N = len(CMDSTACKS[source_object])    
-    currpos = STACKPTRS[source_object]    
-    STACKPTRS[source_object] = max(0,min(N-1,currpos+step)) 
+    N = len(source_object.cache.batch_cmdstack)
+    currpos = source_object.cache.batch_stackptr
+    source_object.cache.batch_stackptr = max(0,min(N-1,currpos+step)) 
 
 def exit_state(source_object):    
     "Quit the state"
-    global CMDSTACKS,STACKPTRS,FILENAMES
-    try:
-        del CMDSTACKS[source_object]
-        del STACKPTRS[source_object]
-        del FILENAMES[source_object]
-    except KeyError:
-        logger.log_errmsg("Batchprocessor quit error: all state vars could not be deleted.")
+    source_object.cache.batch_cmdstack = None
+    source_object.cache.batch_stackptr = None
+    source_object.cache.batch_filename = None 
+
     # since clear_state() is protected against exiting the interactive mode
     # (to avoid accidental drop-outs by rooms clearing a player's state),
     # we have to clear the state directly here. 
@@ -349,9 +347,8 @@ def cmd_state_rrr(command):
     Reload the batch file, starting over
     from the beginning.
     """
-    global STACKPTRS
     reload_stack(command.source_object)
-    STACKPTRS[command.source_object] = 0
+    command.source_object.cache.batch_stackptr = 0
     command.source_object.emit_to("\nFile reloaded. Restarting from top.\n")
     show_curr(command.source_object)
 
@@ -459,10 +456,9 @@ def cmd_state_cc(command):
     Continue to process all remaining
     commands.
     """
-    global CMDSTACKS,STACKPTRS
     source_object = command.source_object
-    N = len(CMDSTACKS[source_object])
-    ptr = STACKPTRS[source_object]
+    N = len(source_object.cache.batch_cmdstack)
+    ptr = source_object.cache.batch_stackptr
     step = N - ptr
     process_commands(source_object,step)
     exit_state(source_object)
@@ -474,7 +470,6 @@ def cmd_state_jj(command):
 
     Jump to specific command number
     """
-    global STACKPTRS    
     source_object = command.source_object
     arg = command.command_argument
     if arg and arg.isdigit():
@@ -482,7 +477,7 @@ def cmd_state_jj(command):
     else:
         source_object.emit_to("You must give a number index.")
         return 
-    ptr = STACKPTRS[source_object]
+    ptr = source_object.cache.batch_stackptr
     step = no - ptr    
     move_in_stack(source_object, step)
     show_curr(source_object)
@@ -501,7 +496,7 @@ def cmd_state_jl(command):
     else:
         source_object.emit_to("You must give a number index.")
         return 
-    ptr = STACKPTRS[source_object]
+    ptr = source_object.cache.batch_stackptr
     step = no - ptr    
     move_in_stack(source_object, step)
     show_curr(source_object, showall=True)
