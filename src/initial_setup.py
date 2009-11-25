@@ -17,7 +17,7 @@ from src import session_mgr
 from src import scheduler
 from src import events
 from src.cache import cache
-
+from src import gametime
 # Main module methods
 
 def get_god_user():
@@ -170,16 +170,8 @@ def start_game_time():
     """
     This creates a persistent time stamp (in s since an arbitrary start)
     upon first server start and is saved and updated regularly in persistent cache. 
-    _game_time0 is the current absolute time (in s since an arbitrary start)
-    _game_time is the current relative number of seconds that the server has been running
-               (not counting offline time), accurate to the time between
-               cache saves, when this is stored. 
     """
-    time0 = time.time()
-    time1 = 0 
-    cache.set_pcache("_game_time0", time0)
-    cache.set_pcache("_game_time", time1)
-    cache.save_pcache()
+    gametime.time_init()
     
 def handle_setup():
     """

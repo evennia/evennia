@@ -64,7 +64,25 @@ class Attribute(models.Model):
         if self.attr_ispickled:
             attr_value = pickle.loads(attr_value)                        
         return attr_value
-    
+
+    def set_value(self, new_value):
+        """
+        Sets an attributes value
+        """
+        if new_value == None:
+            self.delete()
+            return
+        #pickle everything but strings
+        if type(new_value) != type(str()):
+            new_value = pickle.dumps(new_value) #,pickle.HIGHEST_PROTOCOL)
+            ispickled = True
+        else:
+            new_value = new_value
+            ispickled = False
+        self.attr_value = new_value
+        self.attr_ispickled = ispickled
+        self.save()
+
     def get_object(self):
         """
         Returns the object that the attribute resides on.
@@ -99,6 +117,8 @@ class Attribute(models.Model):
         return "%s%s%s: %s" % (ANSITable.ansi["hilite"], 
                                self.get_name(),ANSITable.ansi["normal"],
                                self.get_value())
+    value = property(fget=get_value,fset=set_value)
+
 
 class Object(models.Model):
     """
@@ -634,35 +654,22 @@ class Object(models.Model):
         if self.has_attribute(attribute):
             attrib_obj = \
               Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
-                    
-        if new_value != None:
-            #pickle if anything else than str
-            if type(new_value) != type(str()):
-                new_value = pickle.dumps(new_value)#,pickle.HIGHEST_PROTOCOL)
-                ispickled = True
-            else:
-                new_value = new_value
-                ispickled = False
 
-            if attrib_obj:                
-                # Save over the existing attribute's value.
-                attrib_obj.attr_value = new_value
-                attrib_obj.attr_ispickled = ispickled
-                attrib_obj.save()
-            else:
-                # Create a new attribute
-                new_attrib = Attribute()
-                new_attrib.attr_name = attribute
-                new_attrib.attr_value = new_value
-                new_attrib.attr_object = self
-                new_attrib.attr_hidden = False
-                new_attrib.attr_ispickled = ispickled
-                new_attrib.save()
-
-        elif attrib_obj:
-            # If you do something like @set me=attrib: , destroy the attrib.   
-            attrib_obj.delete()
-                            
+        if new_value == None:
+            if attrib_obj:
+                attrib_obj.delete()
+            return
+                
+        if attrib_obj:                
+            # Save over the existing attribute's value.
+            attrib_obj.set_value(new_value)
+        else:
+            # Create a new attribute
+            new_attrib = Attribute()
+            new_attrib.attr_name = attribute
+            new_attrib.attr_object = self
+            new_attrib.attr_hidden = False
+            new_attrib.set_value(new_value)
 
     def get_attribute_value(self, attrib, default=None):
         """
@@ -682,10 +689,8 @@ class Object(models.Model):
             return attrib.get_value()
         else:            
             return default
-
-    attribute = property(fget=get_attribute_value, fset=set_attribute)
             
-    def get_attribute_obj(self, attrib):
+    def get_attribute_obj(self, attrib, auto_create=False):
         """
         Returns the attribute object matching the specified name.
         
@@ -694,9 +699,16 @@ class Object(models.Model):
         if self.has_attribute(attrib):
             return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
         else:
-            return False
-
-
+            if auto_create:
+                new_attrib = Attribute()
+                new_attrib.attr_name = attrib
+                new_attrib.attr_object = self
+                new_attrib.attr_hidden = False
+                new_attrib.save()
+                return new_attrib
+            else:
+                return False
+    
     def clear_attribute(self, attribute):
         """
         Removes an attribute entirely.
@@ -717,8 +729,7 @@ class Object(models.Model):
         """
         return [attr for attr in self.attribute_set.all()
                 if not attr.is_hidden()]
-        
-
+    
     def clear_all_attributes(self):
         """
         Clears all of an object's attributes.

@@ -766,7 +766,6 @@ def cmd_help(command):
 GLOBAL_CMD_TABLE.add_command("help", cmd_help)
 
 
-
 ## def cmd_testevent(command):
 ##     from src import events
 ##     from src import scheduler

@@ -1,8 +1,8 @@
 """
 The gametime module handles the global passage of time in the mud.
 
-It also 
-
+It also supplies some useful methods to convert between
+in-mud time and real-worl time.
 """
 
 from django.conf import settings
@@ -32,6 +32,34 @@ DAY = HOUR * settings.TIME_HOUR_PER_DAY
 WEEK = DAY * settings.TIME_DAY_PER_WEEK
 MONTH = WEEK * settings.TIME_WEEK_PER_MONTH
 YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
+
+# Access routines
+
+def time(currtime=None):
+    """
+    Find the current in-game time (in seconds) since the start of the mud.
+    The value returned from this function can be used to track the 'true'
+    in-game time since only the time the game has actually been active will
+    be adding up (ignoring downtimes). 
+
+    Obs: depending on how often the persistent cache is saved to disk
+    (this is defined in the config file), there might be some discrepancy
+    here after a server crash, notably that some time will be 'lost' (i.e.
+    the time since last backup). If this is a concern, consider saving
+    the cache more often. 
+
+    currtime : An externally calculated current time to compare with.
+               This is used by Evennia to make sure to sync the game 
+               time to a new real-world timestamp
+    """
+    # saved real world timestamp (seconds since 1970 or so)
+    time0 = cache.get_pcache("_game_time0")
+    # saved game time at real-world time time0
+    time1 = cache.get_pcache("_game_time")  
+    if currtime:
+        return time1 + (currtime - time0)
+    else:
+        return time1 + (time_module.time() - time0)
 
 def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
                          weeks=0, months=0, yrs=0):
@@ -63,37 +91,20 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
                          weeks*604800 + months*2419200 + yrs*29030400)
     return stot
 
-def time(currtime=None):
-    """
-    Find the current in-game time (in seconds) since the start of the mud.
-    This is the main measure of in-game time and is persistently saved to
-    disk, so is the main thing to use to determine passage of time like
-    seasons etc. 
-    
-    Obs depending on how often the persistent cache is saved to disk
-    (this is defined in the config file), there might be some discrepancy
-    here after a server crash, notably that some time will be 'lost' (i.e.
-    the time since last backup). If this is a concern, consider saving
-    the cache more often. 
 
-    currtime : An externally calculated current time to compare with.
-    """
-    time0 = cache.get_pcache("_game_time0")
-    time1 = cache.get_pcache("_game_time")
-    if currtime:
-        return time1 + (currtime - time0)
-    else:
-        return time1 + (time_module.time() - time0)
-    
-def time_last_sync():
-    """
-    Calculates the time since the system was last synced to disk. This e.g. used
-    to adjust event counters for offline time. The error of this measure is
-    dependent on how often the cache is saved to disk. 
-    """
-    time0 = cache.get_pcache("_game_time0")
-    return time_module.time() - time0
+# Time administration routines 
 
+def time_init():
+    """
+    Called by Evennia's initial startup; this should normally not be called from
+    a running game, it resets the global in-game time! 
+    """
+    time0 = time_module.time()
+    time1 = 0
+    cache.set_pcache("_game_time0", time0)
+    cache.set_pcache("_game_time", time1)
+    cache.save_pcache()
+    
 def time_save():
     """
     Force a save of the current time to persistent cache.
@@ -106,4 +117,17 @@ def time_save():
     cache.set_pcache("_game_time0", time0)
     cache.set_pcache("_game_time", time1)
     cache.save_pcache()
+    
+def time_last_sync():
+    """
+    Calculates the time since the system was last synced to disk. This e.g. used
+    to adjust event counters for offline time, resulting in a maximum error being
+    the time between backups. 
+    """
+    # Real-world timestamp for last backup
+    time0 = cache.get_pcache("_game_time0") 
+    # The correction factor is the time
+    # since last backup + downtime. 
+    return time_module.time() - time0
+
 

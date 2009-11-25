@@ -63,17 +63,19 @@ class EvenniaService(service.Service):
         if not firstrun:
             # Find out how much offset the timer is (due to being
             # offline).
-            time_sync = gametime.time_last_sync()
+            downtime_sync = gametime.time_last_sync()
             
             # Sync the in-game timer.
-            cache.set_pcache("_game_time0", self.start_time)                        
-
+            gametime.time_save()
+                        
             # Fire up the event scheduler.        
             event_cache = cache.get_pcache("_persistent_event_cache")                
             if event_cache and type(event_cache) == type(list()):            
                 for event in event_cache:
-                    # we adjust the executed time to account for offline time.
-                    event.time_last_executed = event.time_last_executed + time_sync
+                    # We adjust the last executed time to account for offline time.
+                    # If we don't, the events will be confused since their last
+                    # executed time is further away than their firing interval. 
+                    event.time_last_executed = event.time_last_executed + downtime_sync
                     scheduler.add_event(event)
 
         print '-'*50

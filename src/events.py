@@ -184,13 +184,10 @@ class IEvt_Sync_PCache(IntervalEvent):
         """
         This is the function that is fired every self.interval seconds.
         """
-        infostring = "Syncing time, events and persistent cache to disk."
-        logger.log_infomsg(infostring)        
-        # updating the current time                 
-        time0 = time.time()
-        time1 = gametime.time(time0)        
-        cache.set_pcache("_game_time0", time0)
-        cache.set_pcache("_game_time", time1)
+        #infostring = "Syncing time, events and persistent cache to disk."
+        #logger.log_infomsg(infostring)        
+        # save the current time                 
+        gametime.time_save()
         # update the event database to pcache
         ecache = [event for event in scheduler.SCHEDULE
                   if event.persistent]            

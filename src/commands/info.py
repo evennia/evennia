@@ -9,6 +9,7 @@ if not functions_general.host_os_is('nt'):
     # Don't import the resource module if the host OS is Windows.
     import resource
 import django
+from django.conf import settings
 from src.objects.models import Object
 from src import scheduler
 from src import defines_global
@@ -43,11 +44,24 @@ def cmd_time(command):
     Server local time.
     """
     gtime = gametime.time()
+    gtime_h = functions_general.time_format(gtime, style=2)
+    ictime = gtime * settings.TIME_FACTOR
+    ictime_h = functions_general.time_format(ictime, style=2)
+    uptime =  time.time() - command.session.server.start_time    
+    uptime_h = functions_general.time_format(uptime, style=2)
     synctime = gametime.time_last_sync()
-    ltime = time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime())
-    string = " Current game time: %i s." % gtime
-    string += "\n Time since cache was last saved: %i s." % synctime
-    string += "\n Current server time: %s" % ltime 
+    synctime_h = functions_general.time_format(synctime, style=2)
+    ltime = time.strftime('%a %b %d %H:%M:%S %Y (%Z)', time.localtime())    
+    string = " Real-world times:"
+    string += "\n -- Main time counter: %s (%i s)." % (gtime_h, gtime)
+
+    string += "\n -- Time since last reboot: %s (%i s). " % (uptime_h, uptime) 
+    string += "\n -- Time since cache was last saved: %s (%i s)." % (synctime_h,
+                                                                  synctime)
+    string += "\n -- Current server time: %s" % ltime
+    string +=  "\n In-game time (time factor %s):" % settings.TIME_FACTOR
+    string += "\n -- Time passed: %s" % ictime_h                                         
+
     command.source_object.emit_to(string)
 
 GLOBAL_CMD_TABLE.add_command("@time", cmd_time,  priv_tuple=("genperms.game_info",),
@@ -66,19 +80,22 @@ def cmd_uptime(command):
     server = command.session.server
     start_delta = time.time() - server.start_time
     
-    source_object.emit_to('Current server time : %s' % 
-                (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),)))
-    source_object.emit_to('Server start time   : %s' % 
-                (time.strftime('%a %b %d %H:%M %Y', time.localtime(server.start_time),)))
-    source_object.emit_to('Server uptime       : %s' % 
-                functions_general.time_format(start_delta, style=2))
-    
-    # os.getloadavg() is not available on Windows.
+    string = " Server time info:"
+    string += "\n -- Current server time : %s" % \
+              (time.strftime('%a %b %d %H:%M %Y (%Z)', time.localtime(),))
+    string += "\n -- Server start time   : %s" % \
+              (time.strftime('%a %b %d %H:%M %Y',
+                             time.localtime(server.start_time),))
+    string += "\n -- Server uptime       : %s" % \
+                (functions_general.time_format(start_delta, style=2))        
     if not functions_general.host_os_is('nt'):
+        # os.getloadavg() is not available on Windows.
         loadavg = os.getloadavg()
-        source_object.emit_to('Server load (1 min) : %.2f' % 
-                    loadavg[0])
-GLOBAL_CMD_TABLE.add_command("@uptime", cmd_uptime, priv_tuple=("genperms.game_info",),
+        string += "\n -- Server load (1 min) : %.2f" % loadavg[0]
+    source_object.emit_to(string)
+GLOBAL_CMD_TABLE.add_command("@uptime",
+                             cmd_uptime,
+                             priv_tuple=("genperms.game_info",),
                              help_category="Admin")
 
 def cmd_list(command):
@@ -195,10 +212,12 @@ def cmd_showcache(command):
     """
     source_object = command.source_object
     str_cache, str_pcache = cache.show()
+    ncache = len(str_cache.split(','))
+    npcache = len(str_pcache.split(','))
     string = ""
     if str_cache:
-        string += "\nVolatile cache:\n " + str_cache
+        string += "\nVolatile cache (%i):\n %s" % (ncache, str_cache)
     if str_pcache:
-        string += "\nPersistent cache:\n " + str_pcache
+        string += "\nPersistent cache (%i):\n %s" % (npcache, str_pcache)
     source_object.emit_to(string)
 GLOBAL_CMD_TABLE.add_command("@showcache", cmd_showcache, priv_tuple=("genperms.game_info",), help_category="Admin"),
