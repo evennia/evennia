@@ -137,7 +137,9 @@ class Command(object):
         """
         # If we get a unicode string with un-recognizable characters, replace
         # them instead of throwing errors.
-        self.raw_input = unicode(raw_input, errors='replace')
+        self.raw_input = raw_input 
+        if not isinstance(raw_input, unicode):
+            self.raw_input = unicode(raw_input, errors='replace')           
         self.source_object = source_object
         self.session = session
         # The work starts here.
