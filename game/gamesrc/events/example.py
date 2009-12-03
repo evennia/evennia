@@ -6,18 +6,21 @@ the red_button parent to see its effects (e.g. @create button=examples/red_butto
 Technically the event don't contain any game logics, all it does is locate all
 objects inheriting to a particular script parent and calls one of its functions
 at a regular interval.
+
+Note that this type of event will cause *all* red buttons to blink at the same
+time, regardless when they were created. This is a very efficient way
+to do it (it is also very useful for global events like weather patterns
+and day-night cycles), but you can also add events directly to individual objecs
+(see the example event in gamesrc/parents/examples/red_button)
 """
 
-import sys
+import traceback 
 from src.events import IntervalEvent
-from src.scheduler import add_event
+from src import scheduler
 from src.objects.models import Object
 
 #the logger is useful for debugging
-from src.logger import log_errmsg
-
-#Example of the event system. This example adds an event to the red_button parent
-#in parents/examples. It makes the button blink temptingly at a regular interval.
+from src import logger
 
 class EventBlinkButton(IntervalEvent):
     """    
@@ -25,8 +28,9 @@ class EventBlinkButton(IntervalEvent):
     """
     def __init__(self):
         """
-        A custom init method also storing the source object.
-
+        Note that we do NOT make this event persistent across
+        reboots since we are actually creating it (i.e. restarting it)
+        every time the module is reloaded. 
         """
         super(EventBlinkButton, self).__init__()
         self.name = 'event_blink_red_button'
@@ -34,13 +38,16 @@ class EventBlinkButton(IntervalEvent):
         self.interval = 30 
         #the description is seen when you run @ps in-game.
         self.description = "Blink red buttons regularly."            
-
+        
     def event_function(self):
         """
         This stub function is automatically fired every self.interval seconds.
 
         In this case we do a search for all objects inheriting from the correct
         parent and call a function on them.
+
+        Note that we must make sure to handle all tracebacks in this
+        function to avoid trouble. 
         """
         #find all objects inheriting from red_button (parents are per definition
         #stored with the gamesrc/parent/ drawer as a base)
@@ -51,11 +58,10 @@ class EventBlinkButton(IntervalEvent):
             try:
                 b.scriptlink.blink()
             except:
-                #show other tracebacks to log and owner of object.
-                #This is important, we must handle these exceptions gracefully!
-                b.get_owner().emit_to(sys.exc_info()[1])
-                log_errmsg(sys.exc_info()[1])
-        
+                # Print all tracebacks to the log instead of letting them by. 
+                # This is important, we must handle these exceptions gracefully!
+                logger.log_errmsg(traceback.print_exc())
+                
 #create and add the event to the global handler
 blink_event = EventBlinkButton()
-add_event(blink_event)
+scheduler.add_event(blink_event)

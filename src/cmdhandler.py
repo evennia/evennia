@@ -6,7 +6,7 @@ something.
 #import time
 from traceback import format_exc
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
+#from django.contrib.contenttypes.models import ContentType
 from objects.models import Object
 import defines_global
 import cmdtable
@@ -420,9 +420,10 @@ def match_neighbor_ctables(command,test=False):
         neighbors = location.get_contents()  + [location] + source_object.get_contents()
         for neighbor in neighbors:
             #print "neighbor:", neighbor 
-            if command_table_lookup(command,
-                                    neighbor.scriptlink.command_table,
-                                    test=test, neighbor=neighbor):
+            obj_cmdtable = neighbor.get_cmdtable()
+            if obj_cmdtable and command_table_lookup(command, obj_cmdtable,
+                                                 test=test,
+                                                 neighbor=neighbor):
 
                 # If there was a command match, set the scripted_obj attribute
                 # for the script parent to pick up.

@@ -27,7 +27,9 @@ class EvenniaBasicObject(object):
         scripted_obj: (Object) A reference to the object being scripted (the child).
         """
         self.scripted_obj = scripted_obj
-        self.command_table = CommandTable()
+        # below is now handled by self.scripted_obj.add_command() in
+        # self.at_object_creation(). 
+        #self.command_table = CommandTable() 
         
     def at_object_creation(self):
         """

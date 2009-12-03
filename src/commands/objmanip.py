@@ -241,12 +241,16 @@ def cmd_set(command):
         if not attrib_name:
             source_object.emit_to("Cannot set an empty attribute name.")
             return                
+        if attrib_name == "__command_table__":
+                string = "This is a protected attribute, choose another name."
+                source_object.emit_to(string)
+                return 
         if not Attribute.objects.is_modifiable_attrib(attrib_name):
             # In global_defines.py, see NOSET_ATTRIBS for protected attribute names.
             source_object.emit_to("You can't modify that attribute.")
             return
         if attrib_value:
-            # An attribute value was specified, create or set the attribute.
+            # An attribute value was specified, create or set the attribute.            
             target.set_attribute(attrib_name, attrib_value)
             s = "Attribute %s=%s set to '%s'" % (target_name, attrib_name, attrib_value)
         else:
@@ -1630,8 +1634,16 @@ def cmd_examine(command):
             string += str("Location: %s" % target_obj.get_location()) + newl
 
         # Render other attributes
+        cmd_string = ""
+        attr_string = ""
         for attribute in target_obj.get_all_attributes():            
-            string += str(attribute.get_attrline()) + newl
+            if attribute.get_name() == "__command_table__":
+                cmdtable = attribute.get_value()
+                cmd_string = "Commands: "
+                cmd_string += ", ".join(cmdtable.ctable.keys()) + newl                
+            else:
+                attr_string += str(attribute.get_attrline()) + newl
+        string += cmd_string + attr_string
 
         # Render Contents display.
         if con_players or con_things:

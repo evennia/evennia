@@ -60,9 +60,9 @@ class Attribute(models.Model):
         """
         Returns an attribute's value.
         """        
-        attr_value = str(self.attr_value)        
+        attr_value = self.attr_value        
         if self.attr_ispickled:
-            attr_value = pickle.loads(attr_value)                        
+            attr_value = pickle.loads(str(attr_value))                        
         return attr_value
 
     def set_value(self, new_value):
@@ -650,6 +650,11 @@ class Object(models.Model):
                                 a str, the object will be stored as a pickle.  
         """
 
+        if attribute == "__command_table__":
+            # protect the command table attribute,
+            # this is only settable by self.add_command()
+            return 
+
         attrib_obj = None
         if self.has_attribute(attribute):
             attrib_obj = \
@@ -689,6 +694,14 @@ class Object(models.Model):
             return attrib.get_value()
         else:            
             return default
+
+    def get_attribute(self, attrib, default=None):
+        """
+        Convenience function (to keep compatability). While
+        get_attribute_value() is a correct name, it is not really
+        consistent with set_attribute() anyway. 
+        """
+        return self.get_attribute_value(attrib, default)
             
     def get_attribute_obj(self, attrib, auto_create=False):
         """
@@ -697,7 +710,7 @@ class Object(models.Model):
         attrib: (str) The attribute's name.
         """
         if self.has_attribute(attrib):
-            return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)
+            return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)[0]
         else:
             if auto_create:
                 new_attrib = Attribute()
@@ -909,8 +922,7 @@ class Object(models.Model):
                                          (self.name,self.id,self.location_id))
             return False
 
-    
-            
+               
     def get_scriptlink(self):
         """
         Returns an object's script parent.
@@ -1166,6 +1178,59 @@ class Object(models.Model):
         # about tuple index types. Bleh.
         otype = int(self.type)
         return defines_global.OBJECT_TYPES[otype][1][0]
+
+    # object custom commands
+
+    def add_command(self, command_string, function,
+                    priv_tuple=None, extra_vals=None,
+                    help_category="", priv_help_tuple=None,
+                    auto_help_override=False):
+        """
+        Add an object-based command to this object. The command
+        definition is added to an attribute-stored command table
+        (this table is created when adding the first command)
+
+        command_string: (string) Command string (IE: WHO, QUIT, look).
+        function: (reference) The command's function.
+        priv_tuple: (tuple) String tuple of permissions required for command.
+        extra_vals: (dict) Dictionary to add to the Command object.
+
+        By default object commands are NOT added to the global help system
+        with auto-help. You have to actively set auto_help_override to True
+        if you explicitly want auto-help for your object command.
+        
+        help_category (str): An overall help category where auto-help will place 
+                             the help entry. If not given, 'General' is assumed.
+        priv_help_tuple (tuple) String tuple of permissions required to view this
+                                help entry. If nothing is given, priv_tuple is used. 
+        auto_help_override (bool): If True, use auto-help. If None, use setting
+                                   in settings.AUTO_HELP_ENABLED. Default is False
+                                   for object commands.
+        """
+
+        # we save using the attribute object to avoid
+        # the protection on the __command_table__ keyword
+        # in set_attribute_value()
+        attrib_obj = self.get_attribute_obj("__command_table__",
+                                            auto_create=True)        
+        cmdtable = attrib_obj.get_value()        
+        if not cmdtable:
+            # create new table if we didn't have one before
+            from src.cmdtable import CommandTable 
+            had_table = False 
+            cmdtable = CommandTable()
+        # add the command to the object's command table.
+        cmdtable.add_command(command_string, function, priv_tuple, extra_vals,
+                             help_category, priv_help_tuple,
+                             auto_help_override)
+        # store the cmdtable again
+        attrib_obj.set_value(cmdtable)
+            
+    def get_cmdtable(self):
+        """
+        Return this object's local command table, if it exists.
+        """
+        return self.get_attribute("__command_table__")
 
     #state access functions
 
