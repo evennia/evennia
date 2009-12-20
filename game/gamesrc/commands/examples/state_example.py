@@ -15,7 +15,7 @@ files are recognized.
 
 Next enter the mud and give the command
 
-> entermenu
+> @testmenu
 
 Note that the help entries related to this little menu are not part of
 the normal help database, they are stored with the state and only
@@ -25,10 +25,12 @@ in action.
 
 To further test the state system, try the command
 
-> enterstate
+> @teststate
 
 This takes arguments between 1-6 to set up various states with varying
 access to different global commands.
+
+See also misc_tests.py for other tests.
 """
 
 # This is the normal command table, accessible by default
@@ -54,7 +56,7 @@ STATENAME = 'menu'
 def cmd_entermenu(command):
     """
     entermenu - enter the example menu
-
+    
     Usage:
       entermenu 
     
@@ -144,7 +146,8 @@ def print_menu(source_obj, choice=None):
     source_obj.emit_to(string)
 
 # Add the 'entry' command to the normal command table
-GLOBAL_CMD_TABLE.add_command("entermenu", cmd_entermenu)
+GLOBAL_CMD_TABLE.add_command("@testmenu", cmd_entermenu,
+                             auto_help_override=False)
 
 # create the state. We make sure the player can exit it at
 # any time by @exit. 
@@ -182,11 +185,11 @@ TSTATE6 = 'noglobal_allow_exits_obj_cmds'
 #
 def cmd_test_state(command):
     """
-    enterstate - testing the state system
+    @teststate - testing the state system
 
-    Usage: enterstate [1 - 6]
+    Usage: @teststate [1 - 6]
 
-    Give arguments 1..6 to enter different game states. Use @exit to
+    Give arguments 1-6 to enter different game states. Use @exit to
     get out of the state at any time.
 
     1: A very limited state; only contains the 'test' state command.
@@ -202,13 +205,13 @@ def cmd_test_state(command):
        both traverse exits and use object-based cmds.
 
     Ideas for in-game use:
-    1: Try out the 'entermenu' command for an example of this state.
+    1: Try out the '@testmenu' command for an example of this state.
     2: Could be used in order to stop someone from moving despite exits
        being open (tied up? In combat?)
     3: someone incapacitated or blinded might get only limited commands
        available
     4: in e.g. a combat state, things like crafting should not be
-       possible
+       possible.
     5: Pretty much default operation, just removing some global commands.
        Maybe limiting the use of magical weapons in a room or similar. 
     6: A state of panic - You can move, but not take in your surroundings.
@@ -219,7 +222,7 @@ def cmd_test_state(command):
     args = command.command_argument
     # check for missing arguments
     if not args:
-        source_object.emit_to("Usage: enterstate  [1 - 6]")
+        source_object.emit_to("Usage: @teststate [1 - 6]")
         return
     # build up a return string 
     string = "\n Entering state ... \nThis state includes the"
@@ -325,6 +328,6 @@ GLOBAL_STATE_TABLE.add_command(TSTATE5, 'test', cmd_instate_cmd)
 GLOBAL_STATE_TABLE.add_command(TSTATE6, 'test', cmd_instate_cmd)
 
 #create the entry function for testing all states
-GLOBAL_CMD_TABLE.add_command('enterstate', cmd_test_state)
+GLOBAL_CMD_TABLE.add_command('@teststate', cmd_test_state)
 
 

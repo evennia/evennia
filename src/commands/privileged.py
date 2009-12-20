@@ -18,6 +18,7 @@ from src import cache
 from src import scheduler
 
 
+
 def cmd_reload(command):
     """
     @reload - reload game subsystems
@@ -771,13 +772,18 @@ def cmd_delevent(command):
     @delevent - remove events manually
     
     Usage:
-      @delevent <pid>
+      @delevent[/switch] <pid>
+
+    Switch:
+      force  - by default, certain default low-pid system events are protected
+               from accidental deletion. This switch overrides this
+               protection.
 
     Removes an event with the given pid (process ID) from the event scheduler.
     To see all active events and their pids, use the @ps command.  
     """
     source_object = command.source_object
-
+    switches = command.command_switches
     if not command.command_argument:
         source_object.emit_to("Usage: @delevent <pid>")
         return        
@@ -786,6 +792,19 @@ def cmd_delevent(command):
     except ValueError:
         source_object.emit_to("You must supply a valid pid number.")
         return 
+
+    if pid < 3 and "force" not in switches:
+        # low-pid protection
+        string = "Warning:\n"
+        string += " Pid %i is a low-pid system event. It is usually not\n" % pid
+        string +=" something you want to delete since crucial\n"
+        string += " engine functions depend on it. If you were not\n"
+        string += " mistaken and know what you are doing, give this\n"
+        string += " command again with the /force switch to override\n"
+        string += " this protection."
+        source_object.emit_to(string)
+        return 
+
     event = scheduler.get_event(pid)
     if event:
         desc = event.description

@@ -91,7 +91,6 @@ class Command(object):
         # create a list with at least two entries. 
         raw = "%s " % self.raw_input        
         cmd_words = raw.split(' ')
-        
         try:
             if '/' in cmd_words[0]:
                 # if we have switches we directly go for the first command form.
@@ -489,8 +488,7 @@ def handle(command, ignore_state=False):
                     command_table_lookup(command, state_cmd_table)
             else:
                 # Not in a state. Normal operation.
-                state = None #make sure, in case the object had a malformed statename.
-
+                state = None # make sure, in case the object had a malformed statename.
                 # Check if the user is using a channel command.                    
                 match_channel(command)
                 # See if the user is trying to traverse an exit.                

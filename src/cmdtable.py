@@ -43,14 +43,13 @@ class CommandTable(object):
                              the help entry. If not given, 'General' is assumed.
         priv_help_tuple (tuple) String tuple of permissions required to view this
                                 help entry. If nothing is given, priv_tuple is used. 
-        auto_help_override (bool): Override the value in settings.AUTO_HELP_ENABLED with the
+        auto_help_override (bool/None): Override the value in settings.AUTO_HELP_ENABLED with the
                                 value given. Use None to not override.  
                                 This can be useful when developing a new routine and
                                 has made manual changes to help entries of other
                                 commands in the database (and so do not want to use global
-                                auto-help). It is also used by e.g. the state system
-                                to selectively deactive auto-help.
-        
+                                auto-help).
+                                
         Note: the auto_help system also supports limited markup. You can divide your __doc__
               with markers of any combinations of the forms
                 [[Title]]

@@ -59,7 +59,7 @@ from src.statetable import GLOBAL_STATE_TABLE
 STATENAME="_interactive batch processor"
 
 cwhite = r"%cn%ch%cw"
-cred = r"%cn%ch%cw"
+cred = r"%cn%ch%cr"
 cgreen = r"%cn%ci%cg"
 cyellow = r"%cn%ch%cy"
 cnorm = r"%cn"
@@ -172,7 +172,6 @@ def cmd_batchprocess(command):
     Interactive mode allows the user more control over the
     processing of the file.     
     """
-    #global CMDSTACKS,STACKPTRS,FILENAMES
     
     source_object = command.source_object
 
@@ -183,7 +182,7 @@ def cmd_batchprocess(command):
 
     args = command.command_argument
     if not args:
-        source_object.emit_to("Usage: @batchprocess[/interactive] <filename with full path>")
+        source_object.emit_to("Usage: @batchprocess[/interactive] <path/to/file>")
         return    
     filename = args.strip()
 
@@ -196,23 +195,19 @@ def cmd_batchprocess(command):
         return
     switches = command.command_switches
     if switches and switches[0] in ['inter','interactive']:
-        # allow more control over how batch file is executed
+        # Allow more control over how batch file is executed
+    
+        if source_object.has_flag("ADMIN_NOSTATE"):
+            source_object.unset_flag("ADMIN_NOSTATE")                
+            string = cred + "\nOBS: Flag ADMIN_NOSTATE unset in order to "
+            string += "run Interactive mode. Don't forget to re-set "
+            string += "it (if you need it) after you're done."
+            source_object.emit_to(string)
 
-        if not source_object.set_state(STATENAME):        
-            # if we failed it is likely because we have
-            # ADMIN_NOSTATE set.
-            source_object.unset_flag("ADMIN_NOSTATE")
-            if not source_object.set_state(STATENAME):
-                source_object.emit_to("Error in entering the interactive state.")
-                source_object.set_flag("ADMIN_NOSTATE")
-                return
-            else:
-                string = "OBS: Flag ADMIN_NOSTATE unset in order to "
-                string += "run Interactive mode. Don't forget to re-set "
-                string += "it (if you need it) after you're done."
-                source_object.emit_to(string)
-
-        # store work data in cache 
+        # Set interactive state directly 
+        source_object.cache.state = STATENAME
+                    
+        # Store work data in cache 
         source_object.cache.batch_cmdstack = commands
         source_object.cache.batch_stackptr = 0
         source_object.cache.batch_filename = filename
@@ -234,13 +229,8 @@ def cmd_batchprocess(command):
 GLOBAL_CMD_TABLE.add_command("@batchprocess", cmd_batchprocess,
                              priv_tuple=("genperms.process_control",), help_category="Building")
 
-#interactive state commands
 
-def printfooter():
-    "prints a nice footer"
-    #s = "%s\n== nn/bb/jj == pp/ss == ll == rr/rrr == cc/qq == (hh for help) ==" % cgreen
-    s = ""
-    return s
+# The Interactive batch processor state
 
 def show_curr(source_object,showall=False):
     "Show the current command."
@@ -264,7 +254,6 @@ def show_curr(source_object,showall=False):
                                                 cnorm)
     if showall:
         s += "\n%s" % command
-    s += printfooter()
     source_object.emit_to(s)
 
 def process_commands(source_object, steps=0):
@@ -309,7 +298,7 @@ def exit_state(source_object):
     # since clear_state() is protected against exiting the interactive mode
     # (to avoid accidental drop-outs by rooms clearing a player's state),
     # we have to clear the state directly here. 
-    source_object.state = None 
+    source_object.cache.state = None 
     
 def cmd_state_ll(command):
     """
@@ -327,7 +316,6 @@ def cmd_state_pp(command):
     Process the currently shown command definition.
     """
     process_commands(command.source_object)
-    command.source_object.emit_to(printfooter())
     
 def cmd_state_rr(command):
     """

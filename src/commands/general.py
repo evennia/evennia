@@ -18,7 +18,7 @@ def cmd_password(command):
     @password - set your password
 
     Usage:
-      @paassword <old password> = <new password>
+      @password <old password> = <new password>
 
     Changes your password. Make sure to pick a safe one.
     """
@@ -666,12 +666,17 @@ def cmd_help(command):
     help - view help database
 
     Usage:
-      help <topic>
+      help[/switches] <topic>
+      
+    Switch:
+      apropos - show a list of all topics loosely matching the search criterion      
+                (you can also use the commands 'apropos' or 'suggest' for this).
 
     Examples: help index
               help topic              
               help 345
-              
+              help/apropos del
+                  
     Shows the available help on <topic>. Use without <topic> to get the help
     index. If more than one topic match your query, you will get a
     list of topics to choose between. You can also supply a help entry number
@@ -680,6 +685,7 @@ def cmd_help(command):
                                    
     source_object = command.source_object
     topicstr = command.command_argument    
+    switches = command.command_switches
     
     if not command.command_argument:
         #display topic index if just help command is given
@@ -689,7 +695,7 @@ def cmd_help(command):
         #check valid query
         source_object.emit_to("Your search query must be at least two letters long.")
         return
-
+    
     # speciel help index names. These entries are dynamically
     # created upon request. 
     if topicstr in ['topic','topics']:
@@ -706,6 +712,21 @@ def cmd_help(command):
         source_object.emit_to(text)
         return
 
+    if switches and 'apropos' in switches:
+        # run a loose apropos match
+        topics = HelpEntry.objects.find_apropos(source_object, topicstr)
+        if topics:            
+            if len(topics) > 50: 
+                string = "Topics containing string '%s' (first 50):\n" % topicstr 
+                topics = topics[:49]
+            else:
+                string = "Topics containing string '%s':\n" % topicstr
+            string += ", ".join(topic.get_topicname() for topic in topics)
+        else:
+            string = "No matches found for %s." % topicstr
+        source_object.emit_to(string)
+        return
+    
     # not a special help index entry. Do a search for the help entry.
     topics = HelpEntry.objects.find_topicmatch(source_object, topicstr)
 
@@ -765,51 +786,22 @@ def cmd_help(command):
     source_object.emit_to(string)
 GLOBAL_CMD_TABLE.add_command("help", cmd_help)
 
+def cmd_apropos(command):
+    """    
+    apropos - show rough help matches
 
-## def cmd_testevent(command):
-##     from src import events
-##     from src import scheduler
-##     source_object = command.source_object
-
-##     if not command.command_argument:
-##         #event = events.IntervalEvent()
-##         event = events.IntervalEvent()
-##         event.repeats = 3
-##         event.interval = 5
-##         pid = scheduler.add_event(event)
-##         source_object.emit_to("event with pid %s added." % pid)
-##     else:
-##         pid = command.command_argument
-##         scheduler.del_event(pid)
-##         source_object.emit_to("event with pid %s removed (if it existed)." % pid)
-## GLOBAL_CMD_TABLE.add_command("testevent", cmd_testevent)    
-
-## def cmd_testcache(command):    
-##     from src.cache import cache
-##     from src import scheduler
-##     from src import events
-##     from src import gametime
-##     source_object = command.source_object
-##     switches = command.command_switches
-##     s1 = "Temp_cache_val_OK"
-##     s2 = "Perm_cache_val_OK"
-##     s3 = "Perm_cache_val2_OK"
-##     if switches and "get" in switches:
-##         cache.load_pcache()
-##         cache_vol = source_object.cache.testcache        
-##         source_object.emit_to("< volatile cache: %s" % cache_vol)
-##         cache_perm = source_object.pcache.testcache_perm
-##         source_object.emit_to("< cache_perm1: %s" % cache_perm)
-##         cache_perm2 = cache.get_pcache("permtest2")
-##         source_object.emit_to("< cache_perm2: %s" % cache_perm2)
-##     else:
-##         source_object.cache.testcache = s1
-##         source_object.pcache.testcache_perm = s2
-##         cache.set_pcache("permtest2", s3)
-##         source_object.emit_to("> volatile cache: %s" % s1)
-##         source_object.emit_to("> cache_perm1: %s" % s2)
-##         source_object.emit_to("> cache_perm2: %s" % s3)
-##         cache.save_pcache()
-##         source_object.emit_to("Caches saved.")
-##     source_object.emit_to("Time: %i" % gametime.time())
-## GLOBAL_CMD_TABLE.add_command("testcache", cmd_testcache)   
+    Usage:
+      apropos <text>
+      or
+      suggest <text>
+    
+    This presents a list of topics very loosely matching your
+    search text. Use this command when you are searching for
+    help on a certain concept but don't know any exact
+    command names. You can also use the normal help command
+    with the /apropos switch to get the same functionality. 
+    """
+    arg = command.command_argument    
+    command.source_object.execute_cmd("help/apropos %s" % arg)
+GLOBAL_CMD_TABLE.add_command("apropos", cmd_apropos)
+GLOBAL_CMD_TABLE.add_command("suggest", cmd_apropos)

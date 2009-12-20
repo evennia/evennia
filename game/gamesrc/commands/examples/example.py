@@ -30,10 +30,10 @@ def cmd_example(command):
     example - example command
 
     Usage:
-      example[/switches] <text>
+      @testcommand[/switches] <text>
 
     switches:
-      use any string 
+      (can be any string, e.g. /test1 or /tom/sarah/peter)
 
     This is the help text for the 'example' command, a command to
     show how the pluggable command system works.
@@ -70,17 +70,34 @@ def cmd_example(command):
     # A list of switches provided (if any)
     retval += " Switches: %s\n\r" % command.command_switches
     # A string with any arguments provided with the command
-    retval += " Arguments: %s\n\r" % command.command_argument
+    retval += " Arguments: %s\n\r" % command.command_argument    
     # The function that was looked up via cmdtable.py
     retval += " Function: %s\n\r" % command.command_function
     # Extra variables passed with cmdtable.py's add_command().
     retval += " Extra vars: %s\n\r" % command.extra_vars
+
+    # Some more info for more advanced commands.
+    if not command.command_switches and \
+           command.command_argument:
+        retval += "\n Obs: When no switches, also multi-word\n"
+        retval += " command names are possible. Max allowed\n"
+        retval += " length is set in game/settings.py.\n"
+        retval += " So if there exist a matching command in the\n"
+        retval += " command table, Evennia would also allow\n"
+        retval += " the following as valid commands (and the\n"
+        retval += " argument list would shrink accordingly):\n"
+        multi = ""
+        for arg in command.command_argument.split():
+            multi += " %s" % arg
+            retval += "   %s%s\n" % (command.command_string, multi)
+
+    # send string to player
     command.source_object.emit_to(retval)
 
 # Add the command to the common global command table. Note that
 # this will auto-create help entries 'example' and
 # "example_auto_help" for us.
-GLOBAL_CMD_TABLE.add_command("example", cmd_example)
+GLOBAL_CMD_TABLE.add_command("@testcommand", cmd_example)
 
 #
 # another simple example

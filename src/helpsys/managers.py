@@ -19,37 +19,24 @@ class HelpEntryManager(models.Manager):
         # check permissions 
         t_query = [topic for topic in t_query if topic.can_view(pobject)]
         return t_query
+
+    def find_apropos(self, pobject, topicstr):
+        """
+        Do a very loose search, returning all help entries containing
+        the search criterion in their titles. 
+        """
+        topics = self.filter(topicname__icontains=topicstr)
+        return [topic for topic in topics if topic.can_view(pobject)]
         
     def find_topicsuggestions(self, pobject, topicstr):
         """
         Do a fuzzy match, preferably within the category of the
         current topic.
         """                
-        basetopic = self.filter(topicname__iexact=topicstr)
-        if not basetopic:
-            # this topic does not exist; just reply partial
-            # matches to the string
-            topics = self.filter(topicname__icontains=topicstr)                    
-            return [topic for topic in topics if topic.can_view(pobject)]
-
-        # we know that the topic exists, try to find similar ones within
-        # its category.
-        basetopic = basetopic[0]
-        category = basetopic.category
-        topics = []
-
-        #remove the @
-        crop = topicstr.lstrip('@')
-        
-        # first we filter for matches with the full name 
-        topics = self.filter(category__iexact=category).filter(topicname__icontains=crop)
-        if len(crop) > 4:
-            # next search with a cropped version of the command.
-            ttemp = self.filter(category__iexact=category).filter(topicname__icontains=crop[:4])
-            ttemp = [topic for topic in ttemp if topic not in topics]
-            topics = list(topics) + list(ttemp)
+        topics = self.find_apropos(pobject, topicstr)       
         # we need to clean away the given help entry.
-        return [topic for topic in topics if topic.topicname.lower() != topicstr.lower()]
+        return [topic for topic in topics
+                if topic.topicname.lower() != topicstr.lower()]
                     
     def find_topics_with_category(self, pobject, category):
         """
@@ -57,3 +44,4 @@ class HelpEntryManager(models.Manager):
         """
         t_query = self.filter(category__iexact=category)
         return [topic for topic in t_query if topic.can_view(pobject)]
+

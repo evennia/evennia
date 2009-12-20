@@ -62,7 +62,7 @@ class Attribute(models.Model):
         """        
         attr_value = self.attr_value        
         if self.attr_ispickled:
-            attr_value = pickle.loads(str(attr_value))                        
+            attr_value = pickle.loads(str(attr_value))
         return attr_value
 
     def set_value(self, new_value):
@@ -82,7 +82,7 @@ class Attribute(models.Model):
         self.attr_value = new_value
         self.attr_ispickled = ispickled
         self.save()
-
+        
     def get_object(self):
         """
         Returns the object that the attribute resides on.
@@ -315,7 +315,7 @@ class Object(models.Model):
                        no matter what)
         """      
         # The Command object has all of the methods for parsing and preparing
-        # for searching and execution. Send it to the handler once populated.
+        # for searching and execution. Send it to the handler once populated.        
         cmdhandler.handle(cmdhandler.Command(self, command_str,
                                              session=session),
                           ignore_state=ignore_state)
@@ -1267,14 +1267,15 @@ class Object(models.Model):
 
         # we never enter other states if we are already in
         # the interactive batch processor.
-        nostate = nostate or self.get_state() == "_interactive batch processor"        
+        nostate = nostate or \
+                  self.get_state() == "_interactive batch processor"        
 
         if nostate:
             return False
+        # switch the state 
         self.cache.state = state_name      
         return True
-        
-    
+            
     def clear_state(self):
         """
         Set to no state (return to normal operation)
@@ -1284,7 +1285,7 @@ class Object(models.Model):
         (batch processor clears the state directly instead)
         """        
         if not self.state == "_interactive batch processor":
-            self.state = None
+            self.cache.state = None
 
     def purge_object(self):
         "Completely clears all aspects of the object."

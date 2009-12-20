@@ -354,10 +354,21 @@ def cmd_state_help(command):
     help - view help database
 
     Usage:
-      help <topic>
+      help[/switches] <topic>
+      
+    Switch:
+      apropos - show a list of all matches containing the search criterion      
+                (you can also use the command 'apropos' for this).
 
-    Shows the available help on <topic>. Use without a topic
-    to get the index. 
+    Examples: help index
+              help topic              
+              help 345
+              help/apropos del
+                  
+    Shows the available help on <topic>. Use without <topic> to get the help
+    index. If more than one topic match your query, you will get a
+    list of topics to choose between. You can also supply a help entry number
+    directly if you know it.
     """
 
     source_object = command.source_object
@@ -385,7 +396,7 @@ def cmd_state_help(command):
     if helptext:
         source_object.emit_to("\n%s" % helptext)
     else:
-        source_object.execute_cmd("help %s" % topicstr, ignore_state=True)
+        source_object.execute_cmd("%s" % command.raw_input, ignore_state=True)
 
 #import this instance into your modules
 GLOBAL_STATE_TABLE = StateTable()

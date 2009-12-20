@@ -441,6 +441,12 @@ class ObjectManager(models.Manager):
             new_object.owner = None
             new_object.zone = None            
         else:
+            if owner == None:
+                # if owner is None for a non-player object we are probably
+                # creating an object from a script. In this case we set
+                # the owner to be the superuser.
+                owner = self.get_object_from_dbref("#1")
+
             new_object.owner = owner
             if new_object.get_owner().get_zone():
                 new_object.zone = new_object.get_owner().get_zone()
