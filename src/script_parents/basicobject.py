@@ -109,7 +109,7 @@ class EvenniaBasicObject(object):
             if loc.is_player():
                 loc.emit_to("%s is now in your inventory." % obj.get_name())
 
-    def at_after_move(self):
+    def at_after_move(self, old_loc=None):
         """
         This hook is called just after the object was successfully moved.
         No return values.
@@ -127,7 +127,7 @@ class EvenniaBasicObject(object):
         #print "SCRIPT TEST: %s dropped %s." % (pobject, self.scripted_obj)
         pass
     
-    def at_obj_receive(self, object=None):
+    def at_obj_receive(self, object=None, old_loc=None):
         """
         Called whenever an object is added to the contents of this object.        
         """

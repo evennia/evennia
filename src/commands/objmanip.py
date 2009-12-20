@@ -1085,7 +1085,7 @@ def cmd_dig(command):
                 else:
                     ptext += " of default type (parent '%s' failed!)" % script_parent
             source_object.emit_to("Created exit%s back from %s to %s named '%s'." % \
-                                  (ptext, destination, location, new_object))
+                                  (ptext, location, destination, new_object))
  
     if new_room and 'teleport' in switches:
         source_object.move_to(new_room)

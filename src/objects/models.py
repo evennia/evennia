@@ -573,6 +573,11 @@ class Object(models.Model):
         # Delete the associated player object permanently.
         uobj = User.objects.filter(id=self.id)
         if len(uobj) > 0:
+            # clean out channel memberships
+            memberships = self.channel_membership_set.filter(listener=self)
+            for membership in memberships: 
+                membership.delete()                
+            # delete user 
             uobj[0].delete()
             
         # Set the object to type GARBAGE.
@@ -1045,16 +1050,27 @@ class Object(models.Model):
                 self.emit_to(lock_desc)
             else:
                 self.emit_to("That destination is blocked from you.")
-            return 
-               
-        # Before the move, call eventual pre-commands.
-        if self.scriptlink.at_before_move(target) != None:                
-            return 
+            return
+        
+        source_location = self.location
+        owner = self.get_owner()
+        errtxt = "There was a bug in a move_to() scriptlink. Contact an admin.\n"
 
+        # Before the move, call eventual pre-commands.
+        try:
+            if self.scriptlink.at_before_move(target) != None:                
+                return
+        except:            
+            owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
+            return 
+        
         if not quiet:
             #tell the old room we are leaving
-            self.scriptlink.announce_move_from(target)
-            source_location = self.location
+            try:
+                self.scriptlink.announce_move_from(target)            
+            except:
+                owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
+
             
         # Perform move
         self.location = target
@@ -1062,15 +1078,23 @@ class Object(models.Model):
                 
         if not quiet:
             # Tell the new room we are there. 
-            self.scriptlink.announce_move_to(source_location)
-
+            try:
+                self.scriptlink.announce_move_to(source_location)
+            except:
+                owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
+            
         # Execute eventual extra commands on this object after moving it
-        self.scriptlink.at_after_move()
-
+        try:
+            self.scriptlink.at_after_move(source_location)
+        except:
+            owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
         # Perform eventual extra commands on the receiving location
-        target.scriptlink.at_obj_receive(self)
-                                
-        if force_look and self.is_player():
+        try:
+            target.scriptlink.at_obj_receive(self, source_location)
+        except:
+            owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
+
+        if force_look and self.is_player():            
             self.execute_cmd('look')
 
     def dbref_match(self, oname):

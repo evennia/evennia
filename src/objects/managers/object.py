@@ -64,8 +64,10 @@ class ObjectManager(models.Manager):
         """
         Returns an object when given a dbref.
         """
-        if len(dbref)>1 and dbref[0]=="#":
-            dbref = dbref[1:]
+        if type(dbref) == type(str()):            
+            if len(dbref)>1 and dbref[0]=="#":
+                dbref = dbref[1:]
+        dbref = "%s" % dbref            
         try:
             return self.get(id=dbref)
         except self.model.DoesNotExist:

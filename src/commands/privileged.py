@@ -3,7 +3,7 @@ This file contains commands that require special permissions to use. These
 are generally @-prefixed commands, but there are exceptions.
 """
 
-from django.contrib.auth.models import Permission, Group
+from django.contrib.auth.models import Permission, Group, User
 from django.conf import settings
 from src.objects.models import Object
 from src import session_mgr
@@ -79,9 +79,14 @@ def cmd_boot(command):
     @boot 
 
     Usage
-      @boot <player obj>
+      @boot[/switches] <player obj> [: reason]
+
+    Switches:
+      quiet - Silently boot without informing player
+      port - boot by port number instead of name or dbref
       
-    Boot a player object from the server.
+    Boot a player object from the server. If a reason is
+    supplied it will be echoed to the user unless /quiet is set. 
     """
     source_object = command.source_object
     switch_quiet = False
@@ -96,23 +101,27 @@ def cmd_boot(command):
         switch_port = True
 
     if not command.command_argument:
-        source_object.emit_to("Who would you like to boot?")
+        source_object.emit_to("Usage: @boot[/switches] <player> [:reason]")
         return
     else:
+        arg = command.command_argument
+        reason = ""
+        if ':' in arg:
+            arg, reason = [a.strip() for a in arg.split(':',1)]
+            
         boot_list = []
         if switch_port:
             # Boot a particular port.
             sessions = session_mgr.get_session_list(True)
             for sess in sessions:
                 # Find the session with the matching port number.
-                if sess.getClientAddress()[1] == int(command.command_argument):
+                if sess.getClientAddress()[1] == int(arg):
                     boot_list.append(sess)
                     # Match found, kill the loop and continue with booting.
                     break
         else:
             # Grab the objects that match
-            objs = Object.objects.local_and_global_search(source_object, 
-                                                    command.command_argument)
+            objs = Object.objects.local_and_global_search(source_object, arg)
             
             if not objs:
                 source_object.emit_to("No name or dbref match found for booting.")
@@ -145,7 +154,10 @@ def cmd_boot(command):
         # Carry out the booting of the sessions in the boot list.
         for boot in boot_list:
             if not switch_quiet:
-                boot.msg("You have been disconnected by %s." % (source_object.name))
+                msg = "You have been disconnected by %s." % (source_object.name)
+                if reason:
+                    msg += "\n Reason given:\n  '%s'" % reason
+                boot.msg(msg)
             boot.disconnectClient()
             session_mgr.remove_session(boot)
             return
@@ -153,6 +165,54 @@ GLOBAL_CMD_TABLE.add_command("@boot", cmd_boot,
                              priv_tuple=("genperms.manage_players",),
                              help_category="Admin")
 
+
+def cmd_delplayer(command):
+    """
+    delplayer - delete player from server
+
+    Usage:
+      @delplayer <name> [: reason]
+      
+    Completely deletes a user from the server database,
+    making their nick and e-mail again available.    
+    """
+    source_object = command.source_object
+    arg = command.command_argument
+    if not arg:
+        source_object.emit_to("Usage: @delplayer <player name or #id>")
+        return
+
+    reason = ""
+    if ':' in arg:
+        arg, reason = [a.strip() for a in arg.split(':',1)]
+
+    objs = Object.objects.local_and_global_search(source_object, arg)
+    if not objs:
+        source_object.emit_to("No player object matches found for '%s'." % arg)
+        return
+    pobj = objs[0]
+    if not source_object.controls_other(pobj):
+        if pobj.is_superuser():
+            source_object.emit_to("You cannot delete a Superuser.")
+            return
+        else:
+            source_object.emit_to("You do not have permission to delete that player.")
+            return
+    # boot the player then delete 
+    source_object.emit_to("Booting and informing player if currently online ...")
+    name = pobj.get_name()
+    msg = "\nYour account '%s' is being *permanently* deleted.\n" %  name
+    if reason:
+        msg += " Reason given:\n  '%s'" % reason
+    pobj.emit_to(msg)
+    source_object.execute_cmd("@boot %s" % arg)
+    pobj.delete()    
+    source_object.emit_to("Player %s was successfully deleted." % name)
+GLOBAL_CMD_TABLE.add_command("@delplayer", cmd_delplayer,        
+                             priv_tuple=("genperms.manage_players",),
+                             help_category="Admin")
+
+    
 def cmd_newpassword(command):
     """
     @newpassword

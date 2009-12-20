@@ -11,6 +11,7 @@ as 'game.gamesrc.commands.examples.misc_tests'.
 None of these commands are auto-added to the help database
 (they have no docstrings) in order to help make it clean. 
 """
+
 from src.cmdtable import GLOBAL_CMD_TABLE
 
 #------------------------------------------------------------

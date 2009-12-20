@@ -131,7 +131,8 @@ def plr_set_channel_listening(session, alias, listening):
     alias: (str) The channel alias.
     listening: (bool) A True or False value to determine listening status.
     """
-    membership = session.pobject.channel_membership_set.get(user_alias=alias)
+    
+    membership = session.get_pobject().channel_membership_set.get(user_alias=alias)
     membership.is_listening = listening
     membership.save()
     plr_get_cdict(session).get(alias)[1] = listening
