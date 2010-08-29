@@ -7,6 +7,7 @@ exceptions.
 import traceback
 from django.contrib.auth.models import User
 from src.server import sessionhandler
+from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.permissions.models import PermissionGroup
@@ -411,25 +412,15 @@ class CmdNewPassword(MuxCommand):
             caller.msg("Usage: @newpassword <user obj> = <new password>")
             return 
         
-        pobj = caller.search("*%s" % self.lhs, global_search=True)
-        if not pobj:
-            # if we cannot find an object connected to this user, 
-            # try a more direct approach
-            try:
-                user = User.objects.get(id=self.lhs)
-            except Exception:            
-                try:
-                    user = User.objects.get(name__iexact=self.lhs)    
-                except Exception:
-                    caller.msg("Could not find user/id '%s'." % self.lhs)
-                return
-        else:
-            user = pobj.user            
-        user.set_password(self.rhs)
-        user.save()
-        caller.msg("%s - new password set to '%s'." % (user.username, self.rhs))
-        if pobj:
-            pobj.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
+        # the player search also matches 'me' etc. 
+        player = caller.search("*%s" % self.lhs, global_search=True)            
+        if not player:
+            return     
+        player.user.set_password(self.rhs)
+        player.user.save()
+        caller.msg("%s - new password set to '%s'." % (player.name, self.rhs))
+        if player != caller:
+            player.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
 
 class CmdHome(MuxCommand):
     """
@@ -583,15 +574,17 @@ class CmdPerm(MuxCommand):
     @perm - set permissions
 
     Usage:
-      @perm[/switch] [<user>] = [<permission>]
+      @perm[/switch] [<object>] = [<permission>]
+      @perm[/switch] [*<player>] = [<permission>]
 
     Switches:
-      del : delete the given permission from <user>.
-      list : list all permissions, or those set on <user>
+      del : delete the given permission from <object>.
+      list : list all permissions, or those set on <object>
             
-    This command sets/clears individual permission strings on a user.
+    Use * before the search string to add permissions to a player. 
+    This command sets/clears individual permission strings on an object.
     Use /list without any arguments to see all available permissions
-    or those defined on the <user> argument.
+    or those defined on the <object>/<player> argument. 
     """
     key = "@perm"
     permissions = "cmd:perm"
@@ -604,45 +597,35 @@ class CmdPerm(MuxCommand):
         switches = self.switches
         lhs, rhs = self.lhs, self.rhs
 
-        if not self.args and "list" not in switches:
-            caller.msg("Usage: @setperm[/switch] [user = permission]")
-            return
-        if "list" in switches:            
-            #just print all available permissions
-            string = "\nAll currently available permissions (i.e. not locks):"
-            pgroups = PermissionGroup.objects.all()
-            for pgroup in pgroups:
-                string += "\n\n - %s (%s):" % (pgroup.key, pgroup.desc)
-                string += "\n%s" % \
-                    utils.fill(", ".join(pgroup.group_permissions.split(',')))                
-            caller.msg(string)
-            return 
-        
-        pobj = caller.search("*%s" % self.lhs, global_search=True)
-        if not pobj:
-            # if we cannot find an object connected to this user, 
-            # try a more direct approach
-            try:
-                user = User.objects.get(id=self.lhs)
-            except Exception:            
-                try:
-                    user = User.objects.get(name__iexact=self.lhs)    
-                except Exception:
-                    caller.msg("Could not find user/id '%s'." % self.lhs)
+        if not self.args:
+            
+            if "list" not in switches:
+                caller.msg("Usage: @setperm[/switch] [player = permission]")
                 return
-        else:
-            pobj = pobj
-            user = pobj.user
-        uprofile = user.get_profile()
+            else:
+                #just print all available permissions
+                string = "\nAll currently available permissions (i.e. not locks):"
+                pgroups = PermissionGroup.objects.all()
+                for pgroup in pgroups:
+                    string += "\n\n - %s (%s):" % (pgroup.key, pgroup.desc)
+                    string += "\n%s" % \
+                        utils.fill(", ".join(pgroup.group_permissions))                
+                caller.msg(string)
+                return 
+
+        # locate the object         
+        obj = caller.search(self.lhs, global_search=True)
+        if not obj:
+            return         
 
         if not rhs: 
             #if we didn't have any =, we list the permissions set on <object>. 
-            if user.is_superuser:
+            if hasattr(obj, 'is_superuser') and obj.is_superuser:
                 string = "\n  This is a SUPERUSER account! "
                 string += "All permissions are automatically set."
             else:
                 string = "Permissions set on this object:\n"
-                string += uprofile.permissions
+                string += ", ".join(obj.permissions)
             caller.msg(string)
             return 
             
@@ -650,21 +633,23 @@ class CmdPerm(MuxCommand):
 
         if 'del' in switches:
             # delete the given permission from object.
-            uprofile.del_perm(rhs)
-            caller.msg("Permission '%s' removed (if it existed)." % rhs)
-            if pobj:
-                pobj.msg("%s revokes the permission '%s' from you." % (caller.name, rhs))
+            try:
+                index = obj.permissions.index(rhs)
+            except ValueError:
+                caller.msg("Permission '%s' was not defined on object." % rhs)    
+                return 
+            permissions = obj.permissions
+            del permissions[index]
+            obj.permissions = permissions 
+            caller.msg("Permission '%s' was removed from object %s." % (rhs, obj.name))                               
+            obj.msg("%s revokes the permission '%s' from you." % (caller.name, rhs))                
 
         else:
             # As an extra check, we warn the user if they customize the 
             # permission string (which is okay, and is used by the lock system)
-            uprofile.set_perm(rhs)
-            string = "Permission '%s' given to %s." % (rhs, uprofile.user.username)
-            if not any(group.contains(rhs) 
-                       for group in PermissionGroup.objects.all()):
-                string += "Note: The given permission is not found in any permission groups." 
-                string += "\nThis is not an error, it just shows that it will work only as a lock."
-            caller.msg(string) 
-            if pobj:
-                pobj.msg("%s granted you the permission '%s'." % (caller.name, rhs))
-
+            permissions = obj.permissions
+            permissions.append(rhs)
+            obj.permissions = permissions
+            string = "Permission '%s' given to %s." % (rhs, obj.name)
+            caller.msg(string)  
+            obj.msg("%s granted you the permission '%s'." % (caller.name, rhs))
