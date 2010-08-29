@@ -1,10 +1,34 @@
+
+Evennia README http://evennia.com
+-------------- 
+
+- < 2010 (earlier revisions)
+- May 2010 - merged ABOUT and README. Added Current status /Griatch
+- Aug 2010 - evennia devel merged into trunk /Griatch
+
+Contents:
+---------
+- Version
+- About Evennia
+- Current Status
+- Contact, Support and Development
+- Directory structure
+- Design Objectives
+- The Components
+
+
+Version
+-------
+Evennia Alpha SVN version
+
 About Evennia
 -------------
 Evennia is a proof-of-concept MU* server that aims to provide a functional
-base for developers. While there are quite a few codebases that do the same
+bare-bones base for developers. While there are quite a few codebases that do the same
 (and very well in many cases), we are taking a unique spin on the problem.
 Some of our flagship features include (or will one day include):
 
+* Coded fully in Python using Django and Twisted
 * Extensive web integration.
 * The ability to build/administer through a web browser.
 * Shared accounts between the website and the game.
@@ -13,6 +37,7 @@ Some of our flagship features include (or will one day include):
   (djangoproject.com)
 * Simple and easily extensible design.
 * Very granular permissions. Individual and group based.
+* Powerful an extremely extendable base system 
 
 The essential points here are the web integration and the SQL backing via
 Django. The Django framework has database abstraction abilities that give us
@@ -24,19 +49,135 @@ many features free, such as:
   simple yet very powerful.
 * For any model we outline for the server's use, we have the ability to
   more or less automatically generate a web-based admin interface for it with
-  two lines of code. This lets you Create, Update, or Delete entries.
+  two lines of code. This lets you Create, Update, or Delete entries, as well
+  limit permissions for those abilities.
 * On the web-based side of things, features such as automatic form validation,
   abstraction of sessions and cookies, and access to whatever game data you
-  desire are all attractive.
-  
-Support and Development
+  desire are all attractive.  
+
+See the INSTALL file for help on setting up and running Evennia. 
+
+
+Current Status
+--------------
+Aug 2010:
+Evennia-griatch-branch is ready for merging with trunk. This marks
+a rather big change in the inner workings of the server, but should
+hopefully bring everything together into one consistent package as
+code development continues. 
+
+May 2010:
+Evennia is currently being heavily revised and cleaned from 
+the years of gradual piecemeal development. It is thus in a very 
+'Alpha' stage at the moment. This means that old code snippets
+will not be backwards compatabile. Changes touch almost all
+parts of Evennia's innards, from the way Objects are handled 
+to Events, Commands and Permissions. 
+
+
+Contact, Support and Development
 -----------------------
-Since we're so early in development, we really can't hope to offer much support.
-However, if you'd like to report bugs, make suggestions, or help with the
-code work, visit either or both of the following links:
+We are early in development, but we try to give support best we can
+if you feel daring enough to play with the codebase. Make a post to
+the mailing list or chat us up on IRC if you have questions. We also
+have a bug tracker if you want to report bugs. Finally, if 
+you are willing to help with the code work, we much appreciate all help!
+Visit either of the following resources:
 
 * Evennia Webpage
   http://evennia.com
+  
+* Evennia wiki (documentation)
+  http://code.google.com/p/evennia/wiki/Index
 
-* Evennia Code Page
-  http://code.evennia.com
+* Evennia Code Page (See INSTALL text for installation)
+  http://code.google.com/p/evennia/source/checkout
+
+* Bug tracker 
+  http://code.google.com/p/evennia/issues/list
+
+* IRC channel 
+  visit channel #evennia on the Freenode IRC network
+
+
+Directory structure
+-------------------
+evennia
+ |_______src
+ |        |___(engine-related dirs)
+ |        
+ |_______game (start the server)
+          |___gamesrc
+                |___(game-related dirs)
+
+The two main directories you will spend most of your time in
+are src/ and game/ (probably mostly game/). 
+
+Basically src contains everything related to 
+running the gritty stuff behind the scenes. Unless you are an
+Evennia developer you should normally make sure never to edit 
+things in src/, since this is where we push new revisions that
+may overwrite your changes when you update. You will however 
+need to have a good feeling for the resources supplied by 
+the functions in src, since accessing them correctly is the key 
+to making your dream game come true. 
+
+If src/ is the Evennia developer's domain, the game/ directory 
+on the other hand contains YOUR game. This is where you will 
+define and extend the commands, objects and systems of Evennia
+to make your dream game. game/ contains the main server settings
+and the actual evennia executable to start things. game/gamesrc/
+holds all the templates for creating objects in your virtual world. 
+
+With this little first orientation, you should head into the online 
+Evennia wiki documentation to get going with the codebase. 
+
+
+Design Objectives
+-----------------
+1) To create a barebones MU* server that serves as a great foundation
+for capable admins to craft their own respective games. It is not the
+intention to provide a full-fledged, ready-to-run base, rather Evennia
+is offering the means to make such games.
+
+2) Development of games on Evennia must be easy for anyone with some degree
+of Python experience. Building needs to be easy, and per-room, per-object,
+and environmental customizations need to be simple to do.
+
+3) The server must utilize SQL as a storage back-end to allow for web->game
+integration. See the details on Django later on in the document for more
+details.
+
+4) Any and all game-specific configuration must reside in SQL, not
+external configuration files. The only exception is the settings.py file
+containing the SQL information.
+
+
+The Components
+--------------
+Python (Including the SQL driver of your choice)
+  |-Twisted (http://twistedmatrix.com)
+  |-SQL (MySQL, SQLite, Postgresql)
+  |-Django (http://djangoproject.com)
+
+Evennia is built on top of Twisted, a networking engine that handles a lot
+of the guts and lower-level socket stuff for us.
+
+Serving as our storage medium, SQL allows for very simple code in many cases, and
+can lead to a game being a lot more scalable due to the inherent speed of
+most modern SQL servers. Another extremely important benefit is that by
+storing everything in SQL, we make the entire game accessible from other
+means, such as a website. Which leads us to the next component.
+
+Django is perhaps one of the most interesting introductions to the codebase.
+ Django is technically a Python web framework, but it also includes a great 
+data modeling and database abstraction module. This means that things like 
+Players or Objects can be represented by a very short class, then related to one 
+another. This allows us to add, remove, delete, and manipulate things in our database
+very easily. Another huge benefit is the admin interface that Django more
+or less automatically generates for us. Instead of a bunch of clunky admin
+commands, you can fire up your web browser and administer pretty much 
+everything from there, although equivalent in-game commands may be offered.
+
+The possibilities for developing your game's website are nearly endless with
+this tandem of MU* server, SQL, and Django.

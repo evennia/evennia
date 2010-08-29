@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header_ext %}
+{% endblock %}
+
+{% block sidebar %}
+{{sidebar|safe}}
+{% endblock %}
+
+{% block content %}
+<h1 id="alt-layout">Search News</h1>
+    <p>Enter a search term or phrase to search by. Matches will be made against
+    news titles and their contents. Searches must be at least three characters
+    long.</p>
+    <form method="GET">
+    {{search_form.search_terms}}
+    <button type="Submit">Search</button>
+    </form>
+{% endblock %}

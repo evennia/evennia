@@ -1,14 +1,29 @@
-from src.objects.models import Attribute, Object
+#
+# This sets up how models are displayed 
+# in the web admin interface. 
+#
+
+from src.objects.models import ObjAttribute, ObjectDB
 from django.contrib import admin
 
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('attr_object', 'attr_name', 'attr_value',)
-    search_fields = ['attr_name']
-admin.site.register(Attribute, AttributeAdmin)
+class ObjAttributeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'db_key', 'db_value', 'db_mode', 'db_obj', 'db_permissions')
+    list_display_links = ("id", 'db_key')
+    ordering = ["db_obj", 'db_key']
+    readonly_fields = ['db_permissions']
+    search_fields = ['id', 'db_key', 'db_obj']
+    save_as = True 
+    save_on_top = True   
+    list_select_related = True 
+admin.site.register(ObjAttribute, ObjAttributeAdmin)
 
-class ObjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'type', 'date_created')
-    list_filter = ('type',)
-    search_fields = ['name']
+class ObjectDBAdmin(admin.ModelAdmin):
+    list_display = ('id', 'db_key', 'db_typeclass_path', 'db_location', 'db_player')
+    list_display_links = ('id', 'db_key')
+    ordering = ['id', 'db_typeclass_path']
+    readonly_fields = ['db_permissions']
+    search_fields = ['^db_key', 'db_typeclass_path']
+    save_as = True 
     save_on_top = True
-admin.site.register(Object, ObjectAdmin)
+    list_select_related = True 
+admin.site.register(ObjectDB, ObjectDBAdmin)

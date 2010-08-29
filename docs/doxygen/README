@@ -1,8 +1,0 @@
-To create the developer auto-docs, install doxygen (it's available for most platforms here:
- http://www.stack.nl/~dimitri/doxygen/ ), and run
-
-> doxygen Doxyfile
-
-in this directory. This will create the auto-docs in ./output/html. To read, point your web browser to 
-evennia/docs/doxygen/output/html/index.html. If you prefer a pdf / paper hardcopy, install the LaTeX 
-system and activate the relevant section in Doxyfile.

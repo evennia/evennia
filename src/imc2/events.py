@@ -3,9 +3,11 @@ This module contains all IMC2 events that are triggered periodically.
 Most of these are used to maintain the existing connection and keep various
 lists/caches up to date.
 """
+# TODO: This is deprecated!
+
 from time import time
-from src import events
-from src import scheduler
+#from src import events
+#from src import scheduler
 from src.imc2 import connection as imc2_conn
 from src.imc2.packets import *
 from src.imc2.trackers import IMC2_MUDLIST

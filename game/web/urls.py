@@ -10,7 +10,12 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
 
+# loop over all settings.INSTALLED_APPS and execute code in 
+# files named admin.py ine each such app (this will add those
+# models to the admin site)
 admin.autodiscover()
+
+# Setup the root url tree from / 
 
 urlpatterns = patterns('',
     # User Authentication
@@ -18,17 +23,20 @@ urlpatterns = patterns('',
     url(r'^accounts/logout', 'django.contrib.auth.views.logout'),
 
     # Front page
-    url(r'^', include('game.web.apps.website.urls')),
-
+    url(r'^', include('game.web.website.urls')),
     # News stuff
-    url(r'^news/', include('game.web.apps.news.urls')),
+    url(r'^news/', include('game.web.news.urls')),
 
     # Page place-holder for things that aren't implemented yet.
-    url(r'^tbi/', 'game.web.apps.website.views.to_be_implemented'),
+    url(r'^tbi/', 'game.web.website.views.to_be_implemented'),
     
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/(.*)', admin.site.root, name='admin'),
+    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/(.*)', admin.site.root, name='admin'),
+
+    # favicon
+    url(r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url':'/media/images/favicon.ico'}),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),

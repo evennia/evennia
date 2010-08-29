@@ -8,13 +8,14 @@ from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor, task
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.conf import settings
-from src import logger
-from src import session_mgr
+
+from src.utils import logger
+from src.server import sessionhandler
 from src.imc2.packets import *
 from src.imc2.trackers import *
 from src.imc2 import reply_listener
 from src.imc2.models import IMC2ChannelMapping
-from src import comsys
+#from src import comsys
 
 # The active instance of IMC2Protocol. Set at server startup.
 IMC2_PROTOCOL_INSTANCE = None
@@ -174,7 +175,7 @@ class IMC2Protocol(StatefulTelnetProtocol):
             elif packet.packet_type == 'ice-destroy':
                 IMC2_CHANLIST.remove_channel_from_packet(packet)
             elif packet.packet_type == 'tell':
-                sessions = session_mgr.find_sessions_from_username(packet.target)
+                sessions = sessionhandler.find_sessions_from_username(packet.target)
                 for session in sessions:
                     session.msg("%s@%s IMC tells: %s" %
                                 (packet.sender,

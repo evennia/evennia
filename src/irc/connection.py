@@ -3,14 +3,15 @@ This connects to an IRC network/channel and launches an 'bot' onto it.
 The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
+# TODO: This is deprecated!
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 from twisted.internet import reactor
 from django.conf import settings
 from src.irc.models import IRCChannelMapping
-from src import comsys
-from src import logger 
+#from src import comsys
+from src.utils import logger 
 
 #store all irc channels
 IRC_CHANNELS = []

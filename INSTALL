@@ -1,37 +1,114 @@
-The most detailed and up-to-date instructions can always be found at
-http://groups.google.com/group/evennia/web/getting-started?hl=en
-It is recommended that you refer to there. The instructions below
-should be fine, but are terse and may be slightly out of date.
+
+Evennia install 
+---------------
+
 
 Requirements
 ------------
-* Python 2.5 strongly recommended, although 2.3 or 2.4 may work just fine.
-* Twisted -- http://twistedmatrix.com/
-* PySqlite2 (If you're using the default SQLite driver)
-* Django (Latest trunk from Subversion recommended)
-* Optional: Apache2 or equivalent webserver with a Python interpreter
-  module. Required for web interface.
+
+* Python (www.python.org)
+   Version 2.5+ strongly recommended, although 2.3 or 2.4 *may* work just fine.
+
+* Twisted (http://twistedmatrix.com) 
+   Version 10.0+   
+   + ZopeInterface 3.0+ (www.zope.org/Products/ZopeInterface)
+   + (pywin32 (sourceforge.net/projects/pywin32) - needed for Windows only) 
+
+* Django (www.djangoproject.com)
+   Version 1.1+ or latest subversion trunk recommended. 
+   + PIL library (www.pythonware.com/products/pil)
+
+* PySqlite2 (http://code.google.com/p/pysqlite)
+   Needed if you want to use the sqlite default database. Otherwise you need to 
+   check which databases are supported by Django and install/setup that instead.
+
+* Apache2 (http://httpd.apache.org)
+   Optional. Other equivalent webservers with a Python interpreter module can also
+   be used. Required for serving final production web interface (not needed for   
+   web development, django has a test server that's good enough for that).
+
+* Subversion (subversion.apache.org) 
+   This is needed to download Evennia itself.
+
+Users of most decent Linux distros should be able to install all the above through 
+their normal package managers. Windows users will need to visit the various homepages 
+and install the programs manually. 
+
 
 Installation
 ------------
-At this point in time, the codebase is changing so rapidly that writing
-installation instructions is pretty much pointless. When we get to that stage
-in development, we'll make sure to update this. But for the really determined
-(or stubborn), here's a rough outline:
 
-* Install Django.
-* Get a copy of the Evennia source.
-* Optional: Set up your apache2.conf to point mod-python to the settings.py 
-  file if you want the web features.
-* Change to the evennia/game directory and run something like:
-        python manage.py 
+* Make sure you have/install the prerequsites listed above. 
+
+* Get a copy of the Evennia source through subversion (SVN):
+  
+  >  svn checkout http://code.google.com/p/evennia/source/checkout evennia 
+
+  Once you have downloaded, this is as much internet connectivity you need 
+  for trying out Evennia; you don't need to run any web server or to make 
+  anything visible online (that's for when you have a game created and
+  want people to join it). For now it runs just fine locally on your machine. 
+
+* Change to the evennia/game directory and run
+   
+  >  python manage.py 
+  
   This will create a settings.py file. You may override any of the default
   values in src/config_defaults.py by pasting them into settings.py and
-  changing the values.
+  changing the values. Never edit src/config_defaults.py directly!
+
 * If you want to use anything other than the default SQLite setup, copy and
-  modify the DATABASE_* variables from src/config_defaults.py.
-* Run 'python manage.py syncdb' 
-* Run 'python evennia.py -i start'. This will start the MU* server on port 4000
-  by default. You may change this via the web interface or by editing the
-  config table in SQL.
+  modify the database-related variables from src/config_defaults.py.
+
+* Run 
+ 
+  > python manage.py syncdb 
+
+  This sets up the database. Answer 'yes' to create an admin account. Supply 
+  a name, e-mail and password when prompted. Remember what you enter since 
+  they are used when you log into the server as admin. The name given will 
+  be the name of your admin character.
+
+* Run   
+
+  > python evennia.py -i start
+
+  This will start the MU* server on port 4000 by default. You may change  
+  this in the settings.py file by changing the variable GAMEPORTS to one
+  or more port numbers you want to use. 
+
+  Note: Using -i starts the server in 'interactive mode' - it will print 
+  messages to standard output and you can shut it down with (on most systems) 
+  Ctrl-C. To start the server as a background process (suitable for production 
+  environments), just skip the -i flag. A server running as a process is 
+  stopped  with 'python evennia.py stop'.
+
+* Start up your MUD client of choice and point it to your server and port 4000.
+  If you are just running locally the server name is most likely 'localhost'.
+
 * Login with the email address and password you provided to the syncdb script.
+  Welcome to Evennia! 
+
+
+Web features (Optional)
+-----------------------
+  
+  If you want to test web features you can also start Django's 
+  test web server. You should start this as a separate process, e.g.
+  in a separate terminal. Go to Evennia's game/ directory and enter
+  
+  > python manage.py runserver 
+
+  (obs, not to be confused with 'testserver').
+
+  Django's test webserver starts up locally on port 8000. Point your webbrowser 
+  to 'localhost:8000' and you should see Evennia's nice default page, 
+  graphics and all (gasp!). You cannot play the game from here, but you can
+  view and edit the database extensively using the powerful admin interface,    
+  courtesy of Django. 
+
+  Note: You should never use the django testserver for anything more than local
+  tests. If you have a full-fledged web server (like Apache) running you should use 
+  that for production environments. Set up your apache2.conf to point mod-python 
+  to your newly created settings.py file (see online documentation for details).
+

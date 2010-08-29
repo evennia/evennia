@@ -1,6 +1,7 @@
 """
 This module handles some of the -reply packets like whois-reply.
 """
+#TODO: This is deprecated!
 from src.objects.models import Object
 from src.imc2 import imc_ansi
 

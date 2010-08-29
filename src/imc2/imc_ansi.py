@@ -1,5 +1,10 @@
-from src import ansi
-from src.ansi import BaseParser, ANSITable
+"""
+ANSI parser - this adds colour to text according to
+special markup strings. 
+"""
+
+from src.utils import ansi
+from ansi import BaseParser, ANSITable
 
 class IMCANSIParser(BaseParser):
     """

@@ -1,1325 +1,719 @@
 """
-This is where all of the crucial, core object models reside. 
-"""
-import re
-import traceback
+This module defines the database models for all in-game objects, that
+is, all objects that has an actual existence in-game. 
 
+Each database object is 'decorated' with a 'typeclass', a normal
+python class that implements all the various logics needed by the game
+in question. Objects created of this class transparently communicate
+with its related database object for storing all attributes. The
+admin should usually not have to deal directly with this database
+object layer.
+
+Attributes are separate objects that store values persistently onto
+the database object. Like everything else, they can be accessed
+transparently through the decorating TypeClass.
+"""
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
-
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
-from src.objects.util import object as util_object
-from src.objects.managers.object import ObjectManager
-from src.objects.managers.attribute import AttributeManager
+
+from src.typeclasses.models import Attribute, TypedObject
+from src.typeclasses.typeclass import TypeClass
+from src.objects.manager import ObjectManager
 from src.config.models import ConfigValue
-from src.ansi import ANSITable, parse_ansi
-from src import scripthandler
-from src import defines_global
-from src import session_mgr
-from src import logger
-from src.cache import cache
+from src.permissions.permissions import has_perm
+from src.utils import logger
+from src.utils.utils import is_iter
 
-# Import as the absolute path to avoid local variable clashes.
-import src.flags
-from src.util import functions_general
+FULL_PERSISTENCE = settings.FULL_PERSISTENCE 
 
-class Attribute(models.Model):
-    """
-    Attributes are things that are specific to different types of objects. For
-    example, a drink container needs to store its fill level, whereas an exit
-    needs to store its open/closed/locked/unlocked state. These are done via
-    attributes, rather than making different classes for each object type and
-    storing them directly. The added benefit is that we can add/remove 
-    attributes on the fly as we like.
-    """
-    attr_name = models.CharField(max_length=255)
-    attr_value = models.TextField(blank=True, null=True)
-    attr_hidden = models.BooleanField(default=False)
-    attr_object = models.ForeignKey("Object")
-    attr_ispickled = models.BooleanField(default=False)
-    
-    objects = AttributeManager()
-    
-    def __str__(self):
-        return "%s(%s)" % (self.attr_name, self.id)
-            
-    #
-    # BEGIN COMMON METHODS
-    # 
-    def get_name(self):
-        """
-        Returns an attribute's name.
-        """
-        return self.attr_name
-        
-    def get_value(self):
-        """
-        Returns an attribute's value.
-        """        
-        attr_value = self.attr_value        
-        if self.attr_ispickled:
-            attr_value = pickle.loads(str(attr_value))
-        return attr_value
+try:
+    HANDLE_SEARCH_ERRORS = __import__(
+        settings.ALTERNATE_OBJECT_SEARCH_ERROR_HANDLER).handle_search_errors
+except Exception:
+    from src.objects.object_search_funcs \
+         import handle_search_errors as HANDLE_SEARCH_ERRORS
 
-    def set_value(self, new_value):
-        """
-        Sets an attributes value
-        """
-        if new_value == None:
-            self.delete()
-            return
-        #pickle everything but strings
-        if type(new_value) != type(str()):
-            new_value = pickle.dumps(new_value) #,pickle.HIGHEST_PROTOCOL)
-            ispickled = True
-        else:
-            new_value = new_value
-            ispickled = False
-        self.attr_value = new_value
-        self.attr_ispickled = ispickled
-        self.save()
-        
-    def get_object(self):
-        """
-        Returns the object that the attribute resides on.
-        """
-        return self.attr_object
-        
-    def is_hidden(self):
-        """
-        Returns True if the attribute is hidden.
-        """
-        if self.attr_hidden or self.get_name().upper() \
-               in defines_global.HIDDEN_ATTRIBS:
-            return True
-        else:
-            return False
+#------------------------------------------------------------
+#
+# ObjAttribute
+#
+#------------------------------------------------------------
 
-    def is_noset(self):
-        """
-        Returns True if the attribute is unsettable.
-        """
-        if self.get_name().upper() in defines_global.NOSET_ATTRIBS:
-            return True
-        else:
-            return False
-        
-    def get_attrline(self):
-        """
-        Best described as a __str__ method for in-game. Renders the attribute's
-        name and value as per MUX.
-        """
-        
-        return "%s%s%s: %s" % (ANSITable.ansi["hilite"], 
-                               self.get_name(),ANSITable.ansi["normal"],
-                               self.get_value())
-    value = property(fget=get_value,fset=set_value)
-
-
-class Object(models.Model):
-    """
-    The Object class is very generic representation of a THING, PLAYER, EXIT,
-    ROOM, or other entities within the database. Pretty much anything in the
-    game is an object. Objects may be one of several different types, and
-    may be parented to allow for differing behaviors.
-    """
-    name = models.CharField(max_length=255)
-    ansi_name = models.CharField(max_length=255)
-    owner = models.ForeignKey('self',
-                              related_name="obj_owner",
-                              blank=True, null=True)
-    zone = models.ForeignKey('self',
-                             related_name="obj_zone",
-                             blank=True, null=True)
-    script_parent = models.CharField(max_length=255,
-                                     blank=True, null=True)
-    home = models.ForeignKey('self',
-                             related_name="obj_home",
-                             blank=True, null=True)
-    type = models.SmallIntegerField(choices=defines_global.OBJECT_TYPES)
-    location = models.ForeignKey('self',
-                                 related_name="obj_location",
-                                 blank=True, null=True)
-    flags = models.TextField(blank=True, null=True)
-    nosave_flags = models.TextField(blank=True, null=True)
-    date_created = models.DateField(editable=False,
-                                    auto_now_add=True)
-
-    # 'scriptlink' is a 'get' property for retrieving a reference to the correct
-    # script object. Defined down by get_scriptlink()
-    scriptlink_cached = None
-    
-    objects = ObjectManager()
-
-    # state system can set a particular command
-    # table to be used (not persistent).
-    state = None
+class ObjAttribute(Attribute):
+    "Attributes for ObjectDB objects."
+    db_obj = models.ForeignKey("ObjectDB")
 
     class Meta:
-        """
-        Define permission types on the object class and
-        how it is ordered in the database.
-        """
-        ordering = ['-date_created', 'id']
-        permissions = settings.PERM_OBJECTS
-        
-    def __cmp__(self, other):
-        """
-        Used to figure out if one object is the same as another.
-        """
-        return self.id == other.id
+        "Define Django meta options"
+        verbose_name = "Object Attribute"
+        verbose_name_plural = "Object Attributes"
 
-    def __str__(self):
-        return "%s" % (self.get_name(no_ansi=True),)
-    
-    def dbref(self):
-        """Returns the object's dbref id on the form #NN, directly
-        usable by Object.objects.dbref_search()
-        """
-        return "#%s" % str(self.id)
         
+#------------------------------------------------------------
+#
+# ObjectDB
+#
+#------------------------------------------------------------
+
+class ObjectDB(TypedObject):
+    """
+    All objects in the game use the ObjectDB model to store
+    data in the database. This is handled transparently through
+    the typeclass system.
+
+    Note that the base objectdb is very simple, with
+    few defined fields. Use attributes to extend your
+    type class with new database-stored variables. 
+
+    The TypedObject supplies the following (inherited) properties:
+      key - main name
+      name - alias for key
+      typeclass_path - the path to the decorating typeclass
+      typeclass - auto-linked typeclass
+      date_created - time stamp of object creation
+      permissions - perm strings 
+      dbref - #id of object 
+      db - persistent attribute storage
+      ndb - non-persistent attribute storage 
+
+    The ObjectDB adds the following properties:
+      aliases - alternative names for object
+      player - optional connected player
+      location - in-game location of object
+      home - safety location for object
+      nicks - this objects nicknames for *other* objects
+      sessions - sessions connected to this object (see also player)
+      has_player - bool if an active player is currently connected
+      contents - other objects having this object as location
+      
+      
+    """
+
+
     #
-    # BEGIN COMMON METHODS
-    # 
-    def search_for_object(self, ostring,
-                          emit_to_obj=None,
-                          search_contents=True, 
-                          search_location=True,
-                          dbref_only=False, 
-                          limit_types=False,
-                          search_aliases=False,
-                          attribute_name=None):
+    # ObjectDB Database model setup
+    #
+    #
+    # inherited fields (from TypedObject):
+    # db_key (also 'name' works), db_typeclass_path, db_date_created, 
+    # db_permissions
+    #
+    # These databse fields (including the inherited ones) are all set
+    # using their corresponding properties, named same as the field,
+    # but withtout the db_* prefix.
+
+    # comma-separated list of alias-names of this object. Note that default
+    # searches only search aliases in the same location as caller. 
+    db_aliases = models.CharField(max_length=255, blank=True)
+    # If this is a character object, the player is connected here.
+    db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True)    
+    # The location in the game world. Since this one is likely
+    # to change often, we set this with the 'location' property
+    # to transparently handle Typeclassing. 
+    db_location = models.ForeignKey('self', related_name="locations_set",
+                                     blank=True, null=True)
+    # a safety location, this usually don't change much.
+    db_home = models.ForeignKey('self', related_name="homes_set",
+                                 blank=True, null=True)
+    # pickled dictionary storing the object's assigned nicknames
+    # (use the 'nicks' property to access)
+    db_nicks = models.TextField(null=True, blank=True)
+
+    # Database manager
+    objects = ObjectManager()
+
+    # Wrapper properties to easily set database fields. These are
+    # @property decorators that allows to access these fields using
+    # normal python operations (without having to remember to save()
+    # etc). So e.g. a property 'attr' has a get/set/del decorator
+    # defined that allows the user to do self.attr = value, 
+    # value = self.attr and del self.attr respectively (where self 
+    # is the object in question).
+
+    # aliases property (wraps (db_aliases)
+    #@property 
+    def aliases_get(self):
+        "Getter. Allows for value = self.aliases"
+        if self.db_aliases:
+            return [alias for alias in self.db_aliases.split(',')]    
+        return []
+    #@aliases.setter
+    def aliases_set(self, aliases):
+        "Setter. Allows for self.aliases = value"
+        if not is_iter(aliases):
+            aliases = str(aliases).split(',')
+        self.db_aliases = ",".join([alias.strip() for alias in aliases])
+        self.save()
+    #@aliases.deleter
+    def aliases_del(self):
+        "Deleter. Allows for del self.aliases"
+        self.db_aliases = ""
+    aliases = property(aliases_get, aliases_set, aliases_del)
+
+    # player property (wraps db_player)
+    #@property
+    def player_get(self):
         """
-        Perform a standard object search, handling multiple
-        results and lack thereof gracefully.
+        Getter. Allows for value = self.player.
+        We have to be careful here since Player is also
+        a TypedObject, so as to not create a loop.
+        """
+        try:
+            return object.__getattribute__(self, 'db_player')
+        except AttributeError:
+            return None 
+    #@player.setter
+    def player_set(self, player):
+        "Setter. Allows for self.player = value"
+        if isinstance(player, TypeClass):
+            player = player.dbobj
+        self.db_player = player 
+        self.save()
+    #@player.deleter
+    def player_del(self):
+        "Deleter. Allows for del self.player"
+        self.db_player = None
+        self.save()
+    player = property(player_get, player_set, player_del)
+
+    # location property (wraps db_location)
+    #@property 
+    def location_get(self):
+        "Getter. Allows for value = self.location."
+        loc = self.db_location
+        if loc:
+            return loc.typeclass(loc)
+        return None 
+    #@location.setter
+    def location_set(self, location):
+        "Setter. Allows for self.location = location"
+        try:
+            if location == None or type(location) == ObjectDB:
+                # location is None or a valid object
+                loc = location                       
+            elif ObjectDB.objects.dbref(location):
+                # location is a dbref; search
+                loc = ObjectDB.objects.dbref_search(location)
+                if loc and hasattr(loc,'dbobj'):
+                    loc = loc.dbobj
+                else:
+                    loc = location.dbobj    
+            else:                
+                loc = location.dbobj                        
+            self.db_location = loc 
+            self.save()
+        except Exception:
+            string = "Cannot set location: "
+            string += "%s is not a valid location." 
+            self.msg(string % location)
+            logger.log_trace(string)
+            raise         
+    #@location.deleter
+    def location_del(self):
+        "Deleter. Allows for del self.location"
+        self.db_location = None 
+    location = property(location_get, location_set, location_del)
+
+    # home property (wraps db_home)
+    #@property 
+    def home_get(self):
+        "Getter. Allows for value = self.home"
+        home = self.db_home 
+        if home:
+            return home.typeclass(home)
+        return None 
+    #@home.setter
+    def home_set(self, home):
+        "Setter. Allows for self.home = value"
+        try:
+            if home == None or type(home) == ObjectDB:
+                hom = home                       
+            elif ObjectDB.objects.dbref(home):
+                hom = ObjectDB.objects.dbref_search(home)
+                if hom and hasattr(hom,'dbobj'):
+                    hom = hom.dbobj
+                else:
+                    hom = home.dbobj    
+            else:                
+                hom = home.dbobj                
+            if home:
+                self.db_home = hom        
+        except Exception:
+            string = "Cannot set home: "
+            string += "%s is not a valid home." 
+            self.msg(string % home)
+            logger.log_trace(string)
+            raise 
+        self.save()
+    #@home.deleter
+    def home_del(self):
+        "Deleter. Allows for del self.home."
+        self.db_home = None 
+    home = property(home_get, home_set, home_del)
+
+    # nicks property (wraps db_nicks)
+    #@property 
+    def nicks_get(self):
+        """
+        Getter. Allows for value = self.nicks. 
+        This unpickles the nick dictionary. 
+        """
+        if self.db_nicks:
+            return pickle.loads(str(self.db_nicks))
+        return {}
+    #@nicks.setter
+    def nicks_set(self, nick_dict):
+        """
+        Setter. Allows for self.nicks = nick_dict.
+        This re-pickles the nick dictionary.
+        """
+        if type(nick_dict) == dict:
+            # only allow storing dicts.
+            self.db_nicks = pickle.dumps(nick_dict)
+            self.save()    
+    #@nicks.deleter
+    def nicks_del(self):
+        """
+        Deleter. Allows for del self.nicks.
+        Don't delete nicks, set to empty dict
+        """
+        self.db_nicks = {}
+    nicks = property(nicks_get, nicks_set, nicks_del)
+
+
+    class Meta:
+        "Define Django meta options"
+        verbose_name = "Object"
+        verbose_name_plural = "Objects"
+
+    #
+    # ObjectDB class access methods/properties
+    # 
+
+    # this is required to properly handle attributes
+    attribute_model_path = "src.objects.models"
+    attribute_model_name = "ObjAttribute"
+
+    # this is used by all typedobjects as a fallback
+    try:
+        default_typeclass_path = settings.BASE_OBJECT_TYPECLASS
+    except Exception:
+        default_typeclass_path = "src.objects.objects.Object"
+
+    #@property
+    def sessions_get(self):
+        """
+        Retrieve sessions connected to this object.
+        """
+        # if the player is not connected, this will simply be an empty list. 
+        if self.player:
+            return self.player.sessions
+        return []
+    sessions = property(sessions_get)
+
+    #@property 
+    def has_player_get(self):
+        """
+        Convenience function for checking if an active player is
+        currently connected to this object
+        """
+        return any(self.sessions)
+    has_player = property(has_player_get)
+
+    #@property 
+    def contents_get(self):
+        """
+        Returns the contents of this object, i.e. all
+        objects that has this object set as its location.
+        """
+        return ObjectDB.objects.get_contents(self)
+    contents = property(contents_get)
+
+        
+
+    #
+    # Nicks - custom nicknames
+    #
+    #
+    # nicks - the object can with this create
+    # personalized aliases for in-game words. Essentially
+    # anything can be re-mapped, it's up to the implementation
+    # as to how often the nick is checked and converted
+    # to its real counterpart before entering into the system.
+    #
+    #  Some system defaults:
+    #    {"nick":"cmdname",  # re-maps command names(also channels)
+    #     "_player:nick":"player_name", # re-maps player names
+    #     "_obj:nick":"realname"}  # re-maps object names    
+    #
+    #  Example: a nick 'obj:red' mapped to the word "big red man" would
+    #   allow you to search for the big red man with just 'red' (note 
+    #   that it's dumb substitution though; red will always translate
+    #   to big red man when searching, regardless of if there is such
+    #   a man or not. Such logics need to implemented for your particular 
+    #   game). 
+    #  
+
+
+    def set_nick(self, nick, realname=None):
+        """
+        Map a nick to a realname. Be careful if mapping an
+        existing realname into a nick - you could make that
+        realname inaccessible until you deleted the alias. 
+        Don't set realname to delete a previously set nick. 
+        
+        returns a string with the old realname that this alias
+             used to map (now overwritten), in case the
+             nickname was already defined before.
+        """
+        if not nick:
+            return 
+        if not realname:
+            nicks = self.nicks
+            delnick = "Old alias not found!"
+            if nick in nicks:
+                # delete the nick
+                delnick = nicks[nick]
+                del nicks[nick]
+                self.nicks = nicks
+            return delnick
+        nick = nick.strip()
+        realname = realname.strip()
+        if nick == realname:
+            return 
+        # set the new alias 
+        retval = None 
+        nicks = self.nicks
+        if nick in nicks:
+            retval = nicks[nick]            
+        nicks[nick] = realname
+        self.nicks = nicks
+        return retval
+    
+
+    #
+    # Main Search method
+    #
+    
+    def search(self, ostring,
+               global_search=False,
+               attribute_name=None,
+               use_nicks=False,
+               ignore_errors=False):
+        """
+        Perform a standard object search in the database, handling
+        multiple results and lack thereof gracefully.
+        
+        if local_only AND search_self are both false, a global
+         search is done instead. 
 
         ostring: (str) The string to match object names against.
-                       Obs - To find a player, append * to the start of ostring. 
-        emit_to_obj: (obj) An object (instead of caller) to receive search feedback
-        search_contents: (bool) Search the caller's inventory
-        search_location: (bool) Search the caller's location
-        dbref_only: (bool) Requires ostring to be a #dbref
-        limit_types: (list) Object identifiers from defines_global.OTYPE:s
-        search_aliases: (bool) Search player aliases first
-        attribute_name: (string) Which attribute to match (if None, uses default 'name')
+                       Obs - To find a player, append * to the
+                       start of ostring. 
+        attribute_name: (string) Which attribute to match
+                        (if None, uses default 'name')
+        use_nicks : Use nickname replace (off by default)              
+        ignore_errors : Don't display any error messages even
+                    if there are none/multiple matches - 
+                    just return the result as a list. 
+
+        Note - for multiple matches, the engine accepts a number
+        linked to the key in order to separate the matches from
+        each other without showing the dbref explicitly. Default
+        syntax for this is 'N-searchword'. So for example, if there
+        are three objects in the room all named 'ball', you could
+        address the individual ball as '1-ball', '2-ball', '3-ball'
+        etc. 
         """
+        if use_nicks:
+            if ostring.startswith('*'):
+                # player nick replace 
+                for nick, real in ((nick.lstrip('_player:').strip(), real)
+                                   for nick, real in self.nicks.items()
+                                   if nick.strip().startswith('_player:')):
+                    if ostring.lstrip('*').lower() == nick.lower():
+                        ostring = "*%s" % real              
+                        break            
+            else:
+                # object nick replace 
+                for nick, real in ((nick.lstrip('_obj:').strip(), real)
+                                   for nick, real in self.nicks.items() 
+                                   if nick.strip().startswith('_obj:')):
+                    if ostring.lower() == nick.lower():
+                        ostring = real
+                        break 
 
-        # This is the object that gets the duplicate/no match emits.
-        if not emit_to_obj:
-            emit_to_obj = self
-            
-        if search_aliases:
-            # If an alias match is found, get out of here and skip the rest.
-            alias_results = Object.objects.player_alias_search(self, ostring)
-            if alias_results:
-                return alias_results[0]
-            
-        results = Object.objects.local_and_global_search(self, ostring, 
-                                search_contents=search_contents, 
-                                search_location=search_location, 
-                                dbref_only=dbref_only, 
-                                limit_types=limit_types,
-                                attribute_name=attribute_name)
+        results = ObjectDB.objects.object_search(self, ostring, 
+                                                 global_search,
+                                                 attribute_name)
+        if ignore_errors:
+            return results
+        return HANDLE_SEARCH_ERRORS(self, ostring, results, global_search)
 
-        if len(results) > 1:
-            string = "More than one match for '%s' (please narrow target):" % ostring            
-            for num, result in enumerate(results):
-                invtext = ""
-                if result.get_location() == self:
-                    invtext = " (carried)"                    
-                string += "\n %i-%s%s" % (num+1,
-                                     result.get_name(show_dbref=False),
-                                     invtext)
-            emit_to_obj.emit_to(string)            
-            return False
-        elif len(results) == 0:
-            emit_to_obj.emit_to("I don't see that here.")
-            return False
-        else:
-            return results[0]
-        
-    def search_for_object_global(self, ostring, exact_match=True,
-                                 limit_types=[],
-                                 emit_to_obj=None, dbref_limits=()):
+
+    #
+    # Execution/action methods
+    #
+    
+    def has_perm(self, accessing_obj, lock_type):
         """
-        Search for ostring in all objects, globally. Handle multiple-matches
-        and no matches gracefully. This is mainly intended to be used by
-        admin and build-type commands. It also accepts #dbref
-        search queries. 
+        Determines if another object has permission to access 
+        this object.
+        accessing_obj - the object trying to gain access.
+        lock_type : type of access checked for
         """
-        if not emit_to_obj:
-            emit_to_obj = self
+        return has_perm(accessing_obj, self, lock_type)
 
-        results = Object.objects.global_object_name_search(ostring,
-                                                           exact_match=exact_match,
-                                                           limit_types=limit_types)       
-        if dbref_limits:
-            # if this is set we expect a tuple of 2, even if one is None. 
-            try:
-                if dbref_limits[0]:                    
-                    results = [result for result in results
-                               if result.id >= int(dbref_limits[0].strip('#'))]
-                if dbref_limits[1]:
-                    results = [result for result in results
-                               if result.id <= int(dbref_limits[1].strip("#"))]
-            except KeyError:
-                pass
-
-        if not results:
-            emit_to_obj.emit_to("No matches found for '%s'." % ostring)
-            return  
-
-        if len(results) > 1:
-            string = "Multiple matches for '%s':" % ostring            
-            for res in results:
-                string += "\n %s" % res.get_name()
-            emit_to_obj.emit_to(string)
-            return
-        
-        return results[0]
-
-                
-    def get_sessions(self):
+    def has_perm_on(self, accessed_obj, lock_type):
         """
-        Returns a list of sessions matching this object.
+        Determines if *this* object has permission to access
+        another object.
+        accessed_obj - the object being accessed by this one
+        lock_type : type of access checked for 
         """
-        if self.is_player():
-            return session_mgr.sessions_from_object(self)
-        else:
-            return []                        
-            
-    def emit_to(self, message):
+        return has_perm(self, accessed_obj, lock_type)
+
+    def execute_cmd(self, raw_string):
+        """
+        Do something as this object. This command transparently
+        lets its typeclass execute the command. 
+        raw_string - raw command input coming from the command line. 
+        """        
+        # nick replacement
+        for nick, real in self.nicks.items():
+            if raw_string.startswith(nick):
+                raw_string = raw_string.replace(nick, real, 1) 
+                break
+        cmdhandler.cmdhandler(self.typeclass(self), raw_string)
+
+    def msg(self, message, from_obj=None, markup=True):
         """
         Emits something to any sessions attached to the object.
         
-        message: (str) The message to send
+        message (str): The message to send
+        from_obj (obj): object that is sending.
+        markup (bool): Markup. Determines if the message is parsed
+                       for special markup, such as ansi colors. If
+                       false, all markup will be cleaned from the
+                       message in the session.msg() and message
+                       passed on as raw text. 
         """
-        # We won't allow emitting to objects... yet.
-        if not self.is_player():
-            return False
-            
-        sessions = self.get_sessions()
-        for session in sessions:
-            session.msg(parse_ansi(message))
-            
-    def execute_cmd(self, command_str, session=None, ignore_state=False):
-        """
-        Do something as this object.
+        # This is an important function that must always work. 
+        # we use a different __getattribute__ to avoid recursive loops.
+        if from_obj:
+            try:
+                from_obj.at_msg_send(message, self)
+            except Exception:
+                pass
+        if self.at_msg_receive(message, from_obj):
+            for session in object.__getattribute__(self, 'sessions'):
+                session.msg(message, markup)
 
-        bypass_state - ignore the fact that a player is in a state
-                       (means the normal command table will be used
-                       no matter what)
-        """      
-        # The Command object has all of the methods for parsing and preparing
-        # for searching and execution. Send it to the handler once populated.        
-        cmdhandler.handle(cmdhandler.Command(self, command_str,
-                                             session=session),
-                          ignore_state=ignore_state)
-            
-    def emit_to_contents(self, message, exclude=None):
+    def emit_to(self, message, from_obj=None):
+        "Deprecated. Alias for msg"
+        self.msg(message, from_obj)
+        
+    def msg_contents(self, message, exclude=None):
         """
         Emits something to all objects inside an object.
-        """
-        contents = self.get_contents()
 
+        exclude is a list of objects not to send to.
+        """
+        contents = self.contents
         if exclude:
-            try:
-                contents.remove(exclude)
-            except ValueError:
-                # Sometimes very weird things happen with locations, fail
-                # silently.
-                pass
-            
+            if not is_iter(exclude):
+                exclude = [exclude]              
+            contents = [obj for obj in contents
+                        if (obj not in exclude and obj not in exclude)]
         for obj in contents:
-            obj.emit_to(message)
+            obj.msg(message)
+
+    def emit_to_contents(self, message, exclude=None):
+        "Deprecated. Alias for msg_contents"
+        self.msg_contents(message, exclude)
             
-    def get_user_account(self):
+    def move_to(self, destination, quiet=False,
+                emit_to_obj=None):
         """
-        Returns the player object's account object (User object).
-        """
-        try:
-            return User.objects.get(id=self.id)
-        except User.DoesNotExist:
-            logger.log_errmsg("No account match for object id: %s" % self.id)
-            return None
-    
-    def is_staff(self):
-        """
-        Returns True if the object is a staff player.
-        """
-        if not self.is_player():
-            return False        
-        try:
-            profile = self.get_user_account()
-            return profile.is_staff
-        except User.DoesNotExist:
-            return False
-
-    def is_superuser(self):
-        """
-        Returns True if the object is a super user player.
-        """
-        if not self.is_player():
-            return False
+        Moves this object to a new location.
         
+        destination: (Object) Reference to the object to move to.
+        quiet:  (bool)    If true, don't emit left/arrived messages.
+        emit_to_obj: (Object) object to receive error messages
+        """
+        errtxt = "Couldn't perform move ('%s'). Contact an admin."
+        if not emit_to_obj:
+            emit_to_obj = self
+
+        if not destination:
+            emit_to_obj.msg("The destination doesn't exist.")
+            return 
+
+        # Before the move, call eventual pre-commands.
         try:
-            profile = self.get_user_account()
-            return profile.is_superuser
-        except User.DoesNotExist:
+            if not self.at_before_move(destination):
+                return
+        except Exception:
+            emit_to_obj.msg(errtxt % "at_before_move()")
+            logger.log_trace()
             return False
-        
-    def sees_dbrefs(self):
-        """
-        Returns True if the object sees dbrefs in messages. This is here
-        instead of session.py due to potential future expansion in the
-        direction of MUX-style puppets.
-        """
-        looker_user = self.get_user_account()
-        if looker_user:
-            # Builders see dbrefs
-            return looker_user.has_perm('objects.see_dbref')
-        else:
-            return False
-
-    def has_perm(self, perm):
-        """
-        Checks to see whether a user has the specified permission or is a super
-        user.
-
-        perm: (string) A string representing the desired permission. This
-                       is on the form app.perm , e.g. 'objects.see_dbref' as
-                       defined in the settings file.         
-        """
-        if not self.is_player():
-            return False
-
-        if self.is_superuser():
-            return True
-
-        if self.get_user_account().has_perm(perm):
-            return True
-        else:
-            return False
-
-    def has_perm_list(self, perm_list):
-        """
-        Checks to see whether a user has the specified permission or is a super
-        user. This form accepts an iterable of strings representing permissions,
-        if the user has any of them return true.
-
-        perm_list: (iterable) An iterable of strings of permissions.
-        """
-        if not self.is_player():
-            return False
-
-        if self.is_superuser():
-            return True
-
-        for perm in perm_list:
-            # Stop searching perms on the first match.
-            if self.get_user_account().has_perm(perm):
-                return True
-            
-        # Fall through to failure
-        return False
-
-    def has_group(self, group):
-        """
-        Checks if a user is member of a particular user group.
-        """
-        if not self.is_player():
-            return False
-
-        if self.is_superuser():
-            return True
-
-        if group in [g.name for g in self.get_user_account().groups.all()]:
-            return True
-        else:
-            return False
-        
-
-    def owns_other(self, other_obj):
-        """
-        See if the envoked object owns another object.
-        other_obj: (Object) Reference for object to check ownership of.
-        """
-        return self.id == other_obj.get_owner().id
-
-    def controls_other(self, other_obj, builder_override=False):
-        """
-        See if the envoked object controls another object.
-        other_obj: (Object) Reference for object to check dominance of.
-        builder_override: (bool) True if builder perm allows controllership.
-        """
-        if self == other_obj:
-            return True
-            
-        if self.is_superuser():
-            # Don't allow superusers to dominate other superusers.
-            if not other_obj.is_superuser():
-                return True
+       
+        # Save the old location 
+        source_location = self.location
+        if not source_location:
+            # there was some error in placing this room.
+            # we have to set one or we won't be able to continue
+            if self.home:
+                source_location = self.home
             else:
-                return False
-        
-        if self.owns_other(other_obj):
-            # If said object owns the target, then give it the green.
-            return True
-        
-        # When builder_override is enabled, a builder permission means
-        # the object controls the other.
-        if builder_override and not other_obj.is_player() \
-               and self.has_group('Builders'):
-            return True
+                default_home_id = ConfigValue.objects.conf(db_key="default_home")            
+                default_home = ObjectDB.objects.get_id(default_home_id)                
+                source_location = default_home
 
-        # They've failed to meet any of the above conditions.
-        return False
-
-    def set_home(self, new_home):
-        """
-        Sets an object's home.
-        """
-        self.home = new_home
-        self.save()
+        # Call hook on source location
+        try:
+            source_location.at_object_leave(self, destination)
+        except Exception:
+            emit_to_obj.msg(errtxt % "at_object_leave()")
+            logger.log_trace()
+            return False
         
-    def set_owner(self, new_owner):
-        """
-        Sets an object's owner.
-        """
-        self.owner = new_owner
-        self.save()
-
-    def set_name(self, new_name):
-        """
-        Rename an object.
-        """
-        self.name = parse_ansi(new_name, strip_ansi=True)
-        self.ansi_name = parse_ansi(new_name, strip_formatting=True)
-        self.save()
-        
-        # If it's a player, we need to update their user object as well.
-        if self.is_player():
-            pobject = self.get_user_account()
-            pobject.username = new_name
-            pobject.save()
-
-    def get_name(self, fullname=False, show_dbref=True, show_flags=True, 
-                                                        no_ansi=False):
-        """
-        Returns an object's name.
-        """
-        if not no_ansi and self.ansi_name:
-            name_string = self.ansi_name
-        else:
-            name_string = self.name
-            
-        if show_dbref:
-            # Allow hiding of the flags but show the dbref.
-            if show_flags:
-                flag_string = self.flag_string()
-            else:
-                flag_string = ""
-
-            dbref_string = "(#%s%s)" % (self.id, flag_string)
-        else:
-            dbref_string = ""
-        
-        if fullname:
-            return "%s%s" % (parse_ansi(name_string, strip_ansi=no_ansi), 
-                             dbref_string)
-        else:
-            return "%s%s" % (parse_ansi(name_string.split(';')[0], 
-                                             strip_ansi=no_ansi), dbref_string)
-    
-    def destroy(self):    
-        """
-        Destroys an object, sets it to GOING. Can still be recovered
-        if the user decides to.
-        """
-        
-        # See if we need to kick the player off.
-        sessions = self.get_sessions()
-        for session in sessions:
-            session.msg("You have been destroyed, goodbye.")
-            session.handle_close()
-            
-        # If the object is a player, set the player account object to inactive.
-        # It can still be recovered at this point.        
-        if self.is_player():
+        if not quiet:
+            #tell the old room we are leaving
             try:
-                uobj = User.objects.get(id=self.id)
-                uobj.is_active = False
-                uobj.save()
-            except:
-                string = 'Destroying object %s but no matching player.' % (self,)
-                functions_general.log_errmsg(string)
+                self.announce_move_from(destination)            
+            except Exception:
+                emit_to_obj.msg(errtxt % "at_announce_move()" )
+                logger.log_trace()
+                return False       
+        
+        # Perform move
+        try:
+            self.location = destination
+        except Exception:
+            emit_to_obj.msg(errtxt % "location change")
+            logger.log_trace()
+            return False           
+                
+        if not quiet:
+            # Tell the new room we are there. 
+            try:
+                self.announce_move_to(source_location)
+            except Exception:
+                emit_to_obj.msg(errtxt % "announce_move_to()")
+                logger.log_trace()
+                return  False                   
+        
+        # Execute eventual extra commands on this object after moving it
+        # (usually calling 'look')
+        try:
+            self.at_after_move(source_location)
+        except Exception:
+            emit_to_obj.msg(errtxt % "at_after_move()")
+            logger.log_trace()
+            return False                    
 
-        # Clear out any objects located within the object
-        self.clear_objects()
-        # Set the object type to GOING
-        self.type = defines_global.OTYPE_GOING                
-        # Destroy any exits to and from this room, do this first
-        self.clear_exits()
-        self.save()
-              
-    def delete(self):
-        """
-        Deletes an object permanently. Marks it for re-use by a new object.
-        """
-        # Delete the associated player object permanently.
-        uobj = User.objects.filter(id=self.id)
-        if len(uobj) > 0:
-            # clean out channel memberships
-            memberships = self.channel_membership_set.filter(listener=self)
-            for membership in memberships: 
-                membership.delete()                
-            # delete user 
-            uobj[0].delete()
+        # Perform eventual extra commands on the receiving location
+        try:
+            destination.at_object_receive(self, source_location)
+        except Exception:
+            emit_to_obj.msg(errtxt % "at_obj_receive()")
+            logger.log_trace()
+            return False                              
+
+
+    #
+    # Object Swap, Delete and Cleanup methods 
+    #              
             
-        # Set the object to type GARBAGE.
-        self.type = defines_global.OTYPE_GARBAGE
-        self.save()
-
-        # Clear all attributes & flags
-        self.clear_all_attributes()
-        self.clear_all_flags()
-
     def clear_exits(self):
         """
         Destroys all of the exits and any exits pointing to this
         object as a destination.
         """
-        exits = self.get_contents(filter_type=defines_global.OTYPE_EXIT)
-        exits += self.obj_home.all().filter(type__exact=defines_global.OTYPE_EXIT)
+        for out_exit in [obj for obj in self.contents 
+                            if obj.attr('_destination')]:
+            out_exit.delete()
+        for in_exit in \
+                ObjectDB.objects.get_objs_with_attr_match('_destination', self):
+            in_exit.delete()
 
-        for exit in exits:
-            exit.destroy()
-
-    def clear_objects(self):
+    def clear_contents(self):
         """
-        Moves all objects (players/things) currently in a
-        GOING -> GARBAGE location to their home or default
-        home (if it can be found).
+        Moves all objects (players/things) to their home
+        location or to default home. 
         """
-        # Gather up everything, other than exits and going/garbage,
-        # that is under the belief this is its location.
-        objs = self.obj_location.filter(type__in=[1, 2, 3])
-        default_home_id = ConfigValue.objects.get_configvalue('default_home')
+        # Gather up everything that thinks this is its location.
+        objs = ObjectDB.objects.filter(db_location=self)
+        default_home_id = int(ConfigValue.objects.conf('default_home'))
         try:
-            default_home = Object.objects.get(id=default_home_id)
-        except:
-            functions_general.log_errmsg("Could not find default home '(#%d)'." % (default_home_id))
+            default_home = ObjectDB.objects.get(id=default_home_id)
+        except Exception:
+            string = "Could not find default home '(#%d)'."
+            logger.log_errmsg(string % default_home_id)
+            default_home = None 
 
-        for obj in objs:
-            home = obj.get_home()
-            text = "object"
-            
-            if obj.is_player():
-                text = "player"
-
+        for obj in objs:            
+            home = obj.home 
             # Obviously, we can't send it back to here.
             if home and home.id == self.id:
-                obj.home = default_home
-                obj.save()
                 home = default_home
-
+                
             # If for some reason it's still None...
             if not home:
-                string = "Missing default home, %s '%s(#%d)' now has a null location."
-                functions_general.log_errmsg(string %
-                                             (text, obj.name, obj.id))
-                    
-            if obj.is_player():
-                if obj.is_connected_plr():
-                    if home:                        
-                        obj.emit_to("Your current location has ceased to exist, moving you to your home %s(#%d)." %
-                                    (home.name, home.id))
-                    else:
-                        # Famous last words: The player should never see this.
-                        obj.emit_to("You seem to have found a place that does not exist ...")
-                    
-            # If home is still None, it goes to a null location.            
+                string = "Missing default home, '%s(#%d)' "
+                string += "now has a null location."
+                logger.log_errmsg(string % (obj.name, obj.id))
+                return 
+
+            if self.has_player:
+                if home:                        
+                    string = "Your current location has ceased to exist,"
+                    string += " moving you to %s(#%d)."
+                    obj.msg(string % (home.name, home.id))
+                else:
+                    # Famous last words: The player should never see this.
+                    string = "This place should not exist ... contact an admin."
+                    obj.msg(string)
             obj.move_to(home)
 
-    def set_attribute(self, attribute, new_value=None):
+    def delete(self):    
         """
-        Sets an attribute on an object. Creates the attribute if need
-        be.
-        
-        attribute: (str) The attribute's name.
-        new_value: (python obj) The value to set the attribute to. If this is not
-                                a str, the object will be stored as a pickle.  
+        Deletes this object. 
+        Before deletion, this method makes sure to move all contained
+        objects to their respective home locations, as well as clean
+        up all exits to/from the object.
         """
-
-        if attribute == "__command_table__":
-            # protect the command table attribute,
-            # this is only settable by self.add_command()
-            return 
-
-        attrib_obj = None
-        if self.has_attribute(attribute):
-            attrib_obj = \
-              Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)[0]
-
-        if new_value == None:
-            if attrib_obj:
-                attrib_obj.delete()
-            return
-                
-        if attrib_obj:                
-            # Save over the existing attribute's value.
-            attrib_obj.set_value(new_value)
-        else:
-            # Create a new attribute
-            new_attrib = Attribute()
-            new_attrib.attr_name = attribute
-            new_attrib.attr_object = self
-            new_attrib.attr_hidden = False
-            new_attrib.set_value(new_value)
-
-    def get_attribute_value(self, attrib, default=None):
-        """
-        Returns the value of an attribute on an object. You may need to
-        type cast the returned value from this function since the attribute
-        can be of any type.
-        
-        attrib: (str) The attribute's name.
-        """
-        if self.has_attribute(attrib):            
-            try:
-                attrib = Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)[0]
-            except:
-                # safety, if something goes wrong (like unsynced db), catch it.
-                logger.log_errmsg(traceback.print_exc())
-                return default 
-            return attrib.get_value()
-        else:            
-            return default
-
-    def get_attribute(self, attrib, default=None):
-        """
-        Convenience function (to keep compatability). While
-        get_attribute_value() is a correct name, it is not really
-        consistent with set_attribute() anyway. 
-        """
-        return self.get_attribute_value(attrib, default)
-            
-    def get_attribute_obj(self, attrib, auto_create=False):
-        """
-        Returns the attribute object matching the specified name.
-        
-        attrib: (str) The attribute's name.
-        """
-        if self.has_attribute(attrib):
-            return Attribute.objects.filter(attr_object=self).filter(attr_name=attrib)[0]
-        else:
-            if auto_create:
-                new_attrib = Attribute()
-                new_attrib.attr_name = attrib
-                new_attrib.attr_object = self
-                new_attrib.attr_hidden = False
-                new_attrib.save()
-                return new_attrib
-            else:
-                return False
-    
-    def clear_attribute(self, attribute):
-        """
-        Removes an attribute entirely.
-        
-        attribute: (str) The attribute's name.
-        """
-        if self.has_attribute(attribute):
-            attrib_obj = self.get_attribute_obj(attribute)
-            attrib_obj.delete()
-            return True
-        else:
-            return False
-            
-
-    def get_all_attributes(self):
-        """
-        Returns a QuerySet of an object's attributes.
-        """
-        return [attr for attr in self.attribute_set.all()
-                if not attr.is_hidden()]
-    
-    def clear_all_attributes(self):
-        """
-        Clears all of an object's attributes.
-        """
-        attribs = self.get_all_attributes()
-        for attrib in attribs:
-            attrib.delete()
-
-
-    def has_attribute(self, attribute):
-        """
-        See if we have an attribute set on the object.
-        
-        attribute: (str) The attribute's name.
-        """
-        attr = Attribute.objects.filter(attr_object=self).filter(attr_name__iexact=attribute)
-        if attr.count() == 0:
-            return False
-        else:
-            return True
-            
-
-    def attribute_namesearch(self, searchstr, exclude_noset=False):
-        """
-        Searches the object's attributes for name matches against searchstr
-        via regular expressions. Returns a list.
-        
-        searchstr: (str) A string (maybe with wildcards) to search for.
-        """
-        # Retrieve the list of attributes for this object.
-        attrs = Attribute.objects.filter(attr_object=self)
-        # Compile a regular expression that is converted from the user's
-        # wild-carded search string.
-        match_exp = re.compile(functions_general.wildcard_to_regexp(searchstr), 
-                               re.IGNORECASE)
-        # If the regular expression search returns a match
-        # object, add to results.
-        if exclude_noset:
-            return [attr for attr in attrs if match_exp.search(attr.get_name())
-                    and not attr.is_hidden() and not attr.is_noset()]
-        else:
-            return [attr for attr in attrs if match_exp.search(attr.get_name())
-                    and not attr.is_hidden()]
-        
-
-    def has_flag(self, flag):
-        """
-        Does our object have a certain flag?
-        
-        flag: (str) Flag name
-        """
-        # For whatever reason, we have to do this so things work
-        # in SQLite.
-        flags = str(self.flags).split()
-        nosave_flags = str(self.nosave_flags).split()
-        return flag.upper() in flags or flag in nosave_flags
-        
-    def set_flag(self, flag, value=True):
-        """
-        Add a flag to our object's flag list.
-        
-        flag: (str) Flag name
-        value: (bool) Set (True) or un-set (False)
-        """
-        flag = flag.upper()
-        has_flag = self.has_flag(flag)
-        
-        if value == False and has_flag:
-            # Clear the flag.
-            if src.flags.is_unsavable_flag(flag):
-                # Not a savable flag (CONNECTED, etc)
-                flags = self.nosave_flags.split()
-                flags.remove(flag)
-                self.nosave_flags = ' '.join(flags)
-            else:
-                # Is a savable flag.
-                flags = self.flags.split()
-                flags.remove(flag)
-                self.flags = ' '.join(flags)
-            self.save()
-            
-        elif value == False and not has_flag:
-            # Object doesn't have the flag to begin with.
-            pass
-        elif value == True and has_flag:
-            # We've already got it.
-            pass
-        else:
-            # Setting a flag.
-            if src.flags.is_unsavable_flag(flag):
-                # Not a savable flag (CONNECTED, etc)
-                flags = str(self.nosave_flags).split()
-                flags.append(flag)
-                self.nosave_flags = ' '.join(flags)
-            else:
-                # Is a savable flag.
-                if self.flags is not None:
-                    flags = str(self.flags).split()
-                else:
-                    # This prevents conversion of None to strings
-                    flags = []
-
-                flags.append(flag)
-                self.flags = ' '.join(flags)
-            self.save()
-
-    def unset_flag(self, flag):
-        """
-        Clear the flag.
-        """
-        self.set_flag(flag, value=False)
-    
-    def get_flags(self):
-        """
-        Returns an object's flag list.
-        """
-        all_flags = []
-        if self.flags is not None:
-            # Add saved flags to the display list
-            all_flags = all_flags + self.flags.split()
-        if self.nosave_flags is not None:
-            # Add non-saved flags to the display list
-            all_flags = all_flags + self.nosave_flags.split()
-            
-        if not all_flags:
-            # Guard against returning 'None'
-            return ""
-        else:
-            # Format the Python list to a space separated string of flags
-            return " ".join(all_flags)
-
-    def clear_all_flags(self):
-        "Clears all the flags set on object."
-        flags = self.get_flags()
-        for flag in flags.split():
-            self.unset_flag(flag)
-
-    def is_connected_plr(self):
-        """
-        Is this object a connected player?
-        """
-        if self.is_player():
-            if self.get_sessions():
-                return True
-
-        # No matches or not a player
-        return False
-        
-    def get_owner(self):
-        """
-        Returns an object's owner.
-        """
-        # Players always own themselves.
-        if self.is_player():
-            return self
-        else:
-            return self.owner
-    
-    def get_home(self):
-        """
-        Returns an object's home.
-        """
-        try:
-            return self.home
-        except:
-            return None
-    
-    def get_location(self):
-        """
-        Returns an object's location.
-        """
-        try:
-            return self.location
-        except:
-            string = "Object '%s(#%d)' has invalid location: #%s"
-            functions_general.log_errmsg(string % \
-                                         (self.name,self.id,self.location_id))
+        if not self.at_object_delete():
+            # this is an extra pre-check
+            # run before deletion mechanism
+            # is kicked into gear. 
             return False
 
-               
-    def get_scriptlink(self):
-        """
-        Returns an object's script parent.
-        """
-        if not self.scriptlink_cached:
-            script_to_load = self.get_script_parent()
+        # See if we need to kick the player off.
+        for session in self.sessions:
+            session.msg("Your character %s has been destroyed. Goodbye." % self.name)
+            session.handle_close()
             
-            # Load the script reference into the object's attribute.
-            self.scriptlink_cached = scripthandler.scriptlink(self, 
-                                                              script_to_load)        
-        if self.scriptlink_cached:    
-            # If the scriptlink variable can't be populated, this will fail
-            # silently and let the exception hit in the scripthandler.
-            return self.scriptlink_cached
-        return None
-    # Set a property to make accessing the scriptlink more transparent.
-    scriptlink = property(fget=get_scriptlink)
+        # # If the object is a player, set the player account
+        # # object to inactive. We generally avoid deleting a
+        # # player completely in case it messes with things
+        # # like sent-message memory etc in some games.
+        # if self.player:
+        #     self.player.user.is_active = False 
+        #     self.player.user.save()
 
-    def get_cache(self):
-        """
-        Returns an object's volatile cache (in-memory storage)
-        """
-        return cache.get_cache(self.dbref())
+        # Destroy any exits to and from this room, if any
+        self.clear_exits()
+        # Clear out any non-exit objects located within the object
+        self.clear_contents()
+        # Perform the deletion of the object
+        super(ObjectDB, self).delete()
+        return True 
 
-    def del_cache(self):
-        """
-        Cleans the object cache for this object
-        """
-        cache.flush_cache(self.dbref())
-        
-    cache = property(fget=get_cache, fdel=del_cache)
-
-    def get_pcache(self):
-        """
-        Returns an object's persistent cache (in-memory storage)
-        """
-        return cache.get_pcache(self.dbref())
-
-    def del_pcache(self):
-        """
-        Cleans the object persistent cache for this object
-        """
-        cache.flush_pcache(self.dbref())
-        
-    pcache = property(fget=get_pcache, fdel=del_pcache)
-    
-    def get_script_parent(self):
-        """
-        Returns a string representing the object's script parent.
-        """
-        if not self.script_parent or self.script_parent.strip() == '':
-            # No parent value, assume the defaults based on type.
-            if self.is_player():
-                return settings.SCRIPT_DEFAULT_PLAYER
-            else:
-                return settings.SCRIPT_DEFAULT_OBJECT
-        else:
-            # A parent has been set, load it from the field's value.
-            return self.script_parent
-    
-    def set_script_parent(self, script_parent=None):
-        """
-        Sets the object's script_parent attribute and does any logistics.
-        
-        script_parent: (string) String pythonic import path of the script parent
-                                assuming the python path is game/gamesrc/parents. 
-        """        
-        if script_parent != None and scripthandler.scriptlink(self,
-                                                              str(script_parent).strip()):
-            #assigning a custom parent 
-            self.script_parent = str(script_parent).strip()
-            self.save()
-            return            
-        #use a default parent instead
-        if self.is_player():
-            self.script_parent = settings.SCRIPT_DEFAULT_PLAYER
-        else:
-            self.script_parent = settings.SCRIPT_DEFAULT_OBJECT                                        
-        self.save()
-    
-    def get_contents(self, filter_type=None):
-        """
-        Returns the contents of an object.
-        
-        filter_type: (int) An object type number to filter by.
-        """
-        if filter_type:
-            return list(Object.objects.filter(location__id=self.id).filter(type=filter_type))
-        else:
-            return list(Object.objects.filter(location__id=self.id).exclude(type__gt=4))
-        
-    def get_zone(self):
-        """
-        Returns the object that is marked as this object's zone.
-        """
-        try:
-            return self.zone
-        except:
-            return None
-
-    def set_zone(self, new_zone):
-        """
-        Sets an object's zone.
-        """
-        self.zone = new_zone
-        self.save()
-    
-    def move_to(self, target, quiet=False, force_look=True):
-        """
-        Moves the object to a new location.
-        
-        target: (Object) Reference to the object to move to.
-        quiet:  (bool)    If true, don't emit left/arrived messages.
-        force_look: (bool) If true and self is a player, make them 'look'.
-        """
-        # First, check if we can enter that location at all.
-        if not target.scriptlink.enter_lock(self):
-            lock_desc = self.get_attribute_value("enter_lock_msg")
-            if lock_desc:
-                self.emit_to(lock_desc)
-            else:
-                self.emit_to("That destination is blocked from you.")
-            return
-        
-        source_location = self.location
-        owner = self.get_owner()
-        errtxt = "There was a bug in a move_to() scriptlink. Contact an admin.\n"
-
-        # Before the move, call eventual pre-commands.
-        try:
-            if self.scriptlink.at_before_move(target) != None:                
-                return
-        except:            
-            owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
-            return 
-        
-        if not quiet:
-            #tell the old room we are leaving
-            try:
-                self.scriptlink.announce_move_from(target)            
-            except:
-                owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
-
-            
-        # Perform move
-        self.location = target
-        self.save()        
-                
-        if not quiet:
-            # Tell the new room we are there. 
-            try:
-                self.scriptlink.announce_move_to(source_location)
-            except:
-                owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
-            
-        # Execute eventual extra commands on this object after moving it
-        try:
-            self.scriptlink.at_after_move(source_location)
-        except:
-            owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
-        # Perform eventual extra commands on the receiving location
-        try:
-            target.scriptlink.at_obj_receive(self, source_location)
-        except:
-            owner.emit_to("%s%s" % (errtxt, traceback.print_exc()))
-
-        if force_look and self.is_player():            
-            self.execute_cmd('look')
-
-    def dbref_match(self, oname):
-        """
-        Check if the input (oname) can be used to identify this particular object
-        by means of a dbref match.
-        
-        oname: (str) Name to match against.
-        """
-        if not util_object.is_dbref(oname):
-            return False
-            
-        try:
-            is_match = int(oname[1:]) == self.id
-        except ValueError:
-            return False
-            
-        return is_match
-        
-    def name_match(self, oname, match_type="fuzzy"):
-        """    
-        See if the input (oname) can be used to identify this particular object.
-        Check the # sign for dbref (exact) reference, and anything else is a
-        name comparison.
-        
-        NOTE: A 'name' can be a dbref or the actual name of the object. See
-        dbref_match for an exclusively name-based match.
-        """
-        
-        if util_object.is_dbref(oname):
-            # First character is a pound sign, looks to be a dbref.
-            return self.dbref_match(oname)
-
-        oname = oname.lower()
-        if match_type == "exact":
-            #exact matching
-            name_chunks = self.name.lower().split(';')
-            #False=0 and True=1 in python, so if sum>0, we
-            #have at least one exact match.
-            return sum(map(lambda o: oname == o, name_chunks)) > 0
-        else:
-            #fuzzy matching
-            return oname in self.name.lower()
-            
-    def filter_contents_from_str(self, oname):
-        """
-        Search an object's contents for name and dbref matches. Don't put any
-        logic in here, we'll do that from the end of the command or function.
-        
-        oname: (str) The string to filter from.
-        """
-        contents = self.get_contents()
-        return [prospect for prospect in contents if prospect.name_match(oname)]
-
-    # Type comparison methods.
-    def is_player(self):
-        return self.type == defines_global.OTYPE_PLAYER
-    def is_room(self):    
-        return self.type == defines_global.OTYPE_ROOM
-    def is_thing(self):
-        return self.type == defines_global.OTYPE_THING
-    def is_exit(self):
-        return self.type == defines_global.OTYPE_EXIT
-    def is_going(self):
-        return self.type == defines_global.OTYPE_GOING
-    def is_garbage(self):
-        return self.type == defines_global.OTYPE_GARBAGE
-    
-    def get_type(self, return_number=False):
-        """
-        Returns the numerical or string representation of an object's type.
-        
-        return_number: (bool) True returns numeric type, False returns string.
-        """
-        if return_number:
-            return self.type
-        else:
-            return defines_global.OBJECT_TYPES[self.type][1]
-     
-    def is_type(self, otype):
-        """
-        See if an object is a certain type.
-        
-        otype: (str) A string representation of the object's type (ROOM, THING)
-        """
-        otype = otype[0]
-        
-        if otype == 'p':
-            return self.is_player()
-        elif otype == 'r':
-            return self.is_room()
-        elif otype == 't':
-            return self.is_thing()
-        elif otype == 'e':
-            return self.is_exit()
-        elif otype == 'g':
-            return self.is_garbage()
-
-    def flag_string(self):
-        """
-        Returns the flag string for an object. This abbreviates all of the flags
-        set on the object into a list of single-character flag characters.
-        """
-        # We have to cast this because the admin interface is really picky
-        # about tuple index types. Bleh.
-        otype = int(self.type)
-        return defines_global.OBJECT_TYPES[otype][1][0]
-
-    # object custom commands
-
-    def add_command(self, command_string, function,
-                    priv_tuple=None, extra_vals=None,
-                    help_category="", priv_help_tuple=None,
-                    auto_help_override=False):
-        """
-        Add an object-based command to this object. The command
-        definition is added to an attribute-stored command table
-        (this table is created when adding the first command)
-
-        command_string: (string) Command string (IE: WHO, QUIT, look).
-        function: (reference) The command's function.
-        priv_tuple: (tuple) String tuple of permissions required for command.
-        extra_vals: (dict) Dictionary to add to the Command object.
-
-        By default object commands are NOT added to the global help system
-        with auto-help. You have to actively set auto_help_override to True
-        if you explicitly want auto-help for your object command.
-        
-        help_category (str): An overall help category where auto-help will place 
-                             the help entry. If not given, 'General' is assumed.
-        priv_help_tuple (tuple) String tuple of permissions required to view this
-                                help entry. If nothing is given, priv_tuple is used. 
-        auto_help_override (bool): If True, use auto-help. If None, use setting
-                                   in settings.AUTO_HELP_ENABLED. Default is False
-                                   for object commands.
-        """
-
-        # we save using the attribute object to avoid
-        # the protection on the __command_table__ keyword
-        # in set_attribute_value()
-        attrib_obj = self.get_attribute_obj("__command_table__",
-                                            auto_create=True)        
-        cmdtable = attrib_obj.get_value()        
-        if not cmdtable:
-            # create new table if we didn't have one before
-            from src.cmdtable import CommandTable 
-            had_table = False 
-            cmdtable = CommandTable()
-        # add the command to the object's command table.
-        cmdtable.add_command(command_string, function, priv_tuple, extra_vals,
-                             help_category, priv_help_tuple,
-                             auto_help_override)
-        # store the cmdtable again
-        attrib_obj.set_value(cmdtable)
-            
-    def get_cmdtable(self):
-        """
-        Return this object's local command table, if it exists.
-        """
-        return self.get_attribute("__command_table__")
-
-    #state access functions
-
-    def get_state(self):
-        """
-        Returns the player's current state.
-        """
-        return self.cache.state
-    
-    def set_state(self, state_name=None):
-        """
-        Only allow setting a state on a player object, otherwise
-        fail silently.
-
-        This command safeguards the batch processor against dropping
-        out of interactive mode; it also allows builders to
-        sidestep room-based states when building (the genperm.admin_nostate
-        permission is not set on anyone by default, set it temporarily
-        when building a state-based room). 
-        """
-        if not self.is_player():
-            return False
-        
-        if self.is_superuser():
-            # we have to deal with superusers separately since
-            # they would always appear to have the genperm.admin_nostate
-            # permission. Instead we expect them to set the flag
-            # ADMIN_NOSTATE on themselves if they don't want to
-            # enter states. 
-            nostate = self.has_flag("admin_nostate")
-        else:
-            # for other users we request the permission as normal. 
-            nostate = self.has_perm("genperms.admin_nostate")
-
-        # we never enter other states if we are already in
-        # the interactive batch processor.
-        nostate = nostate or \
-                  self.get_state() == "_interactive batch processor"        
-
-        if nostate:
-            return False
-        # switch the state 
-        self.cache.state = state_name      
-        return True
-            
-    def clear_state(self):
-        """
-        Set to no state (return to normal operation)
-
-        This safeguards the batch processor from exiting its
-        interactive mode when entering a room cancelling states.
-        (batch processor clears the state directly instead)
-        """        
-        if not self.state == "_interactive batch processor":
-            self.cache.state = None
-
-    def purge_object(self):
-        "Completely clears all aspects of the object."
-        self.clear_all_attributes()
-        self.clear_all_flags()
-        self.clear_state()
-        self.home = None 
-        self.owner = None 
-        self.location = None
-        self.save()
-
-# Deferred imports are poopy. This will require some thought to fix.
-from src import cmdhandler
+# Deferred import to avoid circular import errors. 
+from src.commands import cmdhandler
