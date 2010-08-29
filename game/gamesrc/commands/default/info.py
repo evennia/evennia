@@ -190,7 +190,7 @@ class CmdStats(MuxCommand):
         # get all objects
         stats_allobj = ObjectDB.objects.all().count()
         # get all rooms 
-        stats_room = ObjectDB.objects.filter(obj_location=None).count()
+        stats_room = ObjectDB.objects.filter(db_location=None).count()
         # get all players 
         stats_users = User.objects.all().count()
 
