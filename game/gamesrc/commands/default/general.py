@@ -89,8 +89,7 @@ class CmdNick(MuxCommand):
       alias[/switches] <alias> = [<string>]
       nick             ''
 
-    Switches:
-      obj      - alias an object
+    Switches:      obj      - alias an object
       player   - alias a player 
       clearall - clear all your aliases
       list     - show all defined aliases 
@@ -323,8 +322,10 @@ class CmdGet(MuxCommand):
             caller.msg("You can't get that.")
             return
         if not has_perm(caller, obj, 'get'):
-            #TODO - have the object store fail messages?
-            caller.msg("You can't get that.")
+            if obj.db.get_err_msg:
+                caller.msg(obj.db.get_err_msg)
+            else:
+                caller.msg("You can't get that.")
             return
 
         obj.move_to(caller, quiet=True)
