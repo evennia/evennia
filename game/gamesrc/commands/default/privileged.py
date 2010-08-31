@@ -587,6 +587,7 @@ class CmdPerm(MuxCommand):
     or those defined on the <object>/<player> argument. 
     """
     key = "@perm"
+    aliases = "@setperm"
     permissions = "cmd:perm"
     help_category = "Admin"
 
@@ -600,7 +601,9 @@ class CmdPerm(MuxCommand):
         if not self.args:
             
             if "list" not in switches:
-                caller.msg("Usage: @setperm[/switch] [player = permission]")
+                string = "Usage: @setperm[/switch] [object = permission]\n" 
+                string +="       @setperm[/switch] [*player = permission]"
+                caller.msg(string)
                 return
             else:
                 #just print all available permissions
@@ -646,10 +649,14 @@ class CmdPerm(MuxCommand):
 
         else:
             # As an extra check, we warn the user if they customize the 
-            # permission string (which is okay, and is used by the lock system)
+            # permission string (which is okay, and is used by the lock system)            
             permissions = obj.permissions
-            permissions.append(rhs)
-            obj.permissions = permissions
-            string = "Permission '%s' given to %s." % (rhs, obj.name)
+            if rhs in permissions:
+                string = "Permission '%s' is already defined on %s." % (rhs, obj.name)
+            else:
+                permissions.append(rhs)
+                obj.permissions = permissions
+                string = "Permission '%s' given to %s." % (rhs, obj.name)
+                obj.msg("%s granted you the permission '%s'." % (caller.name, rhs))
             caller.msg(string)  
-            obj.msg("%s granted you the permission '%s'." % (caller.name, rhs))
+            
