@@ -711,11 +711,24 @@ class CmdOpen(ObjManipCommand):
         """
         caller = self.caller
         string = ""
-        # check if this exit object already exists here
-        exit_obj = [obj for obj in location.contents 
-                    if (obj.key.lower() == exit_name.lower() and obj.db._destination)]
-        if exit_obj:
-            exit_obj = exit_obj[0]
+        # check if this exit object already exists. We need to 
+        # know what the result is before we can decide what to do;
+        # so we deactivate the automatic error handling. This
+        # always returns a list.
+        exit_obj = caller.search(exit_name, ignore_errors=True)
+        if len(exit_obj) > 1:
+            # give error message and return
+            caller.search(exit_name)
+            return
+        exit_obj = exit_obj[0]
+        if exit_obj:            
+            if not exit_obj.db._destination:
+                # we are trying to link a non-exit
+                string = "'%s' already exists and is not an exit!\nIf you want to convert it "
+                string += "to an exit, you must assign it an attribute '_destination' first."
+                caller.msg(string % exit_name)
+                return None
+            # we are re-linking an old exit.
             old_destination = exit_obj.db._destination
             if old_destination:
                 string = "Exit %s already exists." % exit_name

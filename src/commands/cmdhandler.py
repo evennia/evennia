@@ -101,7 +101,6 @@ def get_and_merge_cmdsets(caller):
     exit_cmdset = None
     local_objects_cmdsets = [None] 
     
-    #print "cmdset flags:", caller_cmdset.no_channels, caller_cmdset.no_exits, caller_cmdset.no_objs
     if not caller_cmdset.no_channels:
         # Make cmdsets out of all valid channels
         channel_cmdset = CHANNELHANDLER.get_cmdset(caller)
@@ -110,20 +109,25 @@ def get_and_merge_cmdsets(caller):
         exit_cmdset = EXITHANDLER.get_cmdset(caller)
     location = caller.location 
     if location and not caller_cmdset.no_objs:
-        # Gather all cmdsets stored on objects in the room
+        # Gather all cmdsets stored on objects in the room. 
         local_objlist = location.contents
         local_objects_cmdsets = [obj.cmdset.current
                                  for obj in local_objlist
-                                 if obj.cmdset.outside_access 
-                                 and obj.cmdset.allow_outside_access(caller)]
+                                 if obj.cmdset.allow_outside_access(caller)]
     # Merge all command sets into one
     # (the order matters, the higher-prio cmdsets are merged last)
     cmdset = caller_cmdset
     for obj_cmdset in local_objects_cmdsets:
+        # Here only, object cmdsets are merged with duplicates=True
+        # (or we would never be able to differentiate between objects)
         try:
+            old_duplicate_flag = obj_cmdset.duplicates
+            obj_cmdset.duplicates = True
             cmdset = obj_cmdset + cmdset
+            obj_cmdset.duplicates = old_duplicate_flag
         except TypeError:
             pass
+    # Exits and channels automatically has duplicates=True.
     try:
         cmdset = exit_cmdset + cmdset
     except TypeError:
@@ -146,54 +150,113 @@ def match_command(cmd_candidates, cmdset, logged_caller=None):
     # Searching possible command matches in the given cmdset
     matches = []
     prev_found_cmds = [] # to avoid aliases clashing with themselves
-    for cmd_candidate in cmd_candidates:
+    for cmd_candidate in cmd_candidates:        
         cmdmatches = list(set([cmd for cmd in cmdset
                                if cmd == cmd_candidate.cmdname and 
                                cmd not in prev_found_cmds]))
         matches.extend([(cmd_candidate, cmd) for cmd in cmdmatches])
         prev_found_cmds.extend(cmdmatches)
 
-    if not matches or len(matches) == 1:
+    if not matches or len(matches) == 1:        
         return matches
 
-    # Do our damndest to resolve multiple matches
+    # Do our damndest to resolve multiple matches ...
     
-    # First try candidate priority to separate them                 
+    # At this point we might still have several cmd candidates,
+    # each with a cmd match. We try to use candidate priority to 
+    # separate them (for example this will give precedences to 
+    # multi-word matches rather than one-word ones).                  
+
     top_ranked = []
-    top_priority = None            
+    top_priority = None
     for match in matches:
-        if top_priority == None \
-               or match[0].priority >= top_priority:
-            top_priority = match[0].priority
-            top_ranked.append(match)
+        prio = match[0].priority
+        if top_priority == None or prio > top_priority:
+            top_ranked = [match]
+            top_priority = prio
+        elif top_priority == prio:
+            top_ranked.append(match)            
+            
     matches = top_ranked
-    if not matches or len(matches) == 1:
+    if not matches or len(matches) == 1:       
         return matches
 
-    # still multiplies. Check if player supplied
-    # an obj name on the command line. We know they
-    # all have at least the same cmdname and obj_key 
-    # at this point.
+    # Still multiplies. At this point we should have sorted out
+    # all candidate multiples; the multiple comes from one candidate
+    # matching more than one command. 
+
+    # Check if player supplied
+    # an obj name on the command line (e.g. 'clock's open' would
+    # with the default parser tell us we want the open command
+    # associated with the clock and not, say, the open command on 
+    # the door in the same location). It's up to the cmdparser to
+    # interpret and store this reference in candidate.obj_key if given. 
 
     if logged_caller:
         try:
             local_objlist = logged_caller.location.contents            
-            match = matches[0] 
-            top_ranked = [obj for obj in local_objlist
-                          if match[0].obj_key == obj.name
-                          and any(cmd == match[0].cmdname 
-                                  for cmd in obj.cmdset.current)]
+            top_ranked = []
+            candidate = matches[0][0] # all candidates should be the same
+            top_ranked.extend([(candidate, obj.cmdset.current.get(candidate.cmdname))
+                               for obj in local_objlist
+                               if candidate.obj_key == obj.name
+                               and any(cmd == candidate.cmdname 
+                                       for cmd in obj.cmdset.current)])
             if top_ranked:
-                matches = \
-                    [(match[0],
-                      obj.cmdset.current.get(match[0].cmdname))
-                     for obj in top_ranked]
+                matches = top_ranked
         except Exception:
             logger.log_trace()
+        if not matches or len(matches) == 1:            
+            return matches 
 
-    # regardless what we have at this point, we have to be content
+    # We should still have only one candidate type, but matching 
+    # several same-named commands.
+
+    # Maybe the player tried to supply a separator in the form
+    # of a number (e.g. 1-door, 2-door for two different door exits)? If so,
+    # we pick the Nth-1 multiple as our result. It is up to the cmdparser
+    # to read and store this number in candidate.obj_key if given. 
+
+    candidate = matches[0][0] # all candidates should be the same
+    if candidate.obj_key and candidate.obj_key.isdigit():
+        num = int(candidate.obj_key) - 1
+        if 0 <= num < len(matches):            
+            matches = [matches[num]]
+            
+    # regardless what we have at this point, we have to be content    
     return matches
 
+def format_multimatches(caller, matches):
+    """
+    Format multiple command matches to a useful error.
+    """
+    string = "There where multiple matches:"
+    for num, match in enumerate(matches): 
+        # each match is a tuple (candidate, cmd)
+        candidate, cmd = match        
+
+        is_channel = hasattr(cmd, "is_channel") and cmd.is_channel
+        if is_channel:
+            is_channel = " (channel)"
+        else:
+            is_channel = ""
+        is_exit = hasattr(cmd, "is_exit") and cmd.is_exit 
+        if is_exit and cmd.destination:
+            is_exit =  " (exit to %s)" % cmd.destination
+        else:
+            is_exit = ""
+
+        id1 = ""
+        id2 = ""
+        if not (is_channel or is_exit) and (hasattr(cmd, 'obj') and cmd.obj != caller):
+            # the command is defined on some other object
+            id1 = "%s-" % cmd.obj.name
+            id2 = " (%s-%s)" % (num + 1, candidate.cmdname)
+        else:
+            id1 = "%s-" % (num + 1)
+            id2 = ""
+        string += "\n  %s%s%s%s%s" % (id1, candidate.cmdname, id2, is_channel, is_exit)
+    return string
 
 # Main command-handler function 
 
@@ -252,14 +315,12 @@ def cmdhandler(caller, raw_string, unloggedin=False):
 
             if len(matches) > 1:
                 # We have a multiple-match
-                syscmd = cmdset.get(CMD_MULTIMATCH)                
-                matchstring = ", ".join([match[0].cmdname 
-                                        for match in matches])
+                syscmd = cmdset.get(CMD_MULTIMATCH)
+                sysarg = "There where multiple matches."
                 if syscmd:
-                    sysarg = matchstring
+                    syscmd.matches = matches
                 else:
-                    sysarg = "There were multiple matches:\n %s" 
-                    sysarg = sysarg % matchstring
+                    sysarg = format_multimatches(caller, matches)
                 raise ExecSystemCommand(syscmd, sysarg)
             
             # At this point, we have a unique command match. 

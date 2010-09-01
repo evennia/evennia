@@ -52,6 +52,8 @@ class Object(TypeClass):
             create_scripts = True 
         if create_cmdset:
             dbobj.cmdset = CmdSetHandler(dbobj)
+            if dbobj.player:
+                dbobj.cmdset.outside_access = False
         if create_scripts:
             dbobj.scripts = ScriptHandler(dbobj)
 
@@ -321,13 +323,12 @@ class Character(Object):
         """        
         from settings import CMDSET_DEFAULT
         self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
-        # this makes sure other objects are not accessing our 
-        # command sets as they would any other object's sets.
-        self.cmdset.outside_access = False 
 
     def at_after_move(self, source_location):
         "Default is to look around after a move."
         self.execute_cmd('look')
+        
+
     
 #
 # Base Room object 

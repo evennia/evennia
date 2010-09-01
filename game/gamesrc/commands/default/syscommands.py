@@ -67,16 +67,62 @@ class SystemNoMatch(MuxCommand):
 #
 class SystemMultimatch(MuxCommand):
     """
-    Multiple command matches
+    Multiple command matches.
+
+    The cmdhandler adds a special attribute 'matches' to this 
+    system command. 
+
+      matches = [(candidate, cmd) , (candidate, cmd), ...],
+     
+    where candidate is an instance of src.commands.cmdparser.CommandCandidate
+    and cmd is an an instantiated Command object matching the candidate. 
     """
     key = CMD_MULTIMATCH
+
+    def format_multimatches(self, caller, matches):
+        """
+        Format multiple command matches to a useful error.
+
+        This is copied directly from the default method in 
+        src.commands.cmdhandler. 
+
+        """
+        string = "There where multiple matches:"
+        for num, match in enumerate(matches): 
+            # each match is a tuple (candidate, cmd)
+            candidate, cmd = match        
+
+            is_channel = hasattr(cmd, "is_channel") and cmd.is_channel
+            if is_channel:
+                is_channel = " (channel)"
+            else:
+                is_channel = ""
+            is_exit = hasattr(cmd, "is_exit") and cmd.is_exit 
+            if is_exit and cmd.destination:
+                is_exit =  " (exit to %s)" % cmd.destination
+            else:
+                is_exit = ""
+
+            id1 = ""
+            id2 = ""
+            if not (is_channel or is_exit) and (hasattr(cmd, 'obj') and cmd.obj != caller):
+                # the command is defined on some other object
+                id1 = "%s-" % cmd.obj.name
+                id2 = " (%s-%s)" % (num + 1, candidate.cmdname)
+            else:
+                id1 = "%s-" % (num + 1)
+                id2 = ""
+            string += "\n  %s%s%s%s%s" % (id1, candidate.cmdname, id2, is_channel, is_exit)
+        return string
     
     def func(self):
         """
         argument to cmd is a comma-separated string of
         all the clashing matches.
         """
-        self.caller.msg("Multiple matches found:\n %s" % self.args)
+        string = self.format_multimatches(self.caller, self.matches)
+        self.caller.msg(string)
+        
 
 class SystemNoPerm(MuxCommand):
     """

@@ -130,6 +130,7 @@ class ChannelHandler(object):
         chan_cmdset = cmdset.CmdSet()
         chan_cmdset.key = '_channelset'
         chan_cmdset.priority = 10
+        chan_cmdset.duplicates = True 
         for cmd in [cmd for cmd in self.cached_channel_cmds
                     if has_perm(source_object, cmd, 'chan_send')]:
             chan_cmdset.add(cmd)

@@ -58,6 +58,7 @@ class ExitHandler(object):
         exit_cmdset = cmdset.CmdSet(None)
         exit_cmdset.key = '_exitset'
         exit_cmdset.priority = 9
+        exit_cmdset.duplicates = True 
         try:
             location = srcobj.location        
         except Exception:

@@ -19,6 +19,7 @@ SPECIAL_CHARS = ["/", "\\", "'", '"', ":", ";", "\-", '#', '=', '!']
 # Pre-compiling the regular expression is more effective
 REGEX = re.compile(r"""["%s"]""" % ("".join(SPECIAL_CHARS)))
 
+
 class CommandCandidate(object):
     """
     This is a convenient container for one possible
@@ -32,7 +33,9 @@ class CommandCandidate(object):
         self.priority = priority
         self.obj_key = obj_key
     def __str__(self):
-        return "<cmdname:'%s',args:'%s'>" % (self.cmdname, self.args)
+        string = "cmdcandidate <name:'%s',args:'%s', "
+        string += "prio:%s, obj_key:'%s'>" 
+        return string % (self.cmdname, self.args, self.priority, self.obj_key)
         
 #
 # The command parser 
@@ -79,26 +82,28 @@ def cmdparser(raw_string):
     longer written name means being more specific, a longer command
     name takes precedence over a short one.
 
-    There is one optional form:
-    <objname>'s [<char>]cmdname[ cmdname2 cmdname3 ...][<char>] [the rest]
+    There are two optional forms:
+    <objname>-[<char>]cmdname[ cmdname2 cmdname3 ...][<char>] [the rest]
+    <num>-[<char>]cmdname[ cmdname2 cmdname3 ...][<char>] [the rest]
 
-    This is to be used for object command sets with the 'duplicate' flag
-    set. It allows the player to define a particular object by name.
-    This object name(without the 's) will be stored as obj_key in the
-    CommandCandidates object and one version of the command name will be added
-    that lack this first part. If a command exists that has the same
-    name (including the 's), that command will be used
-    instead. Observe that the player setting <objname> will not override
-    normal commandset priorities - it's only used if there is no other
-    way to differentiate between commands (e.g. two objects in the
-    room both having the exact same command names and priorities).
+    This allows for the user to manually choose between unresolvable
+    command matches. The main use for this is probably for Exit-commands.
+    The <objname>- identifier is used to differentiate between same-named
+    commands on different objects. E.g. if a 'watch' and a 'door' both
+    have a command 'open' defined on them, the user could differentiate 
+    between them with 
+      > watch-open
+    Alternatively, if they know (and the Multiple-match error reports
+    it correctly), the number among the multiples may be picked with 
+    the <num>- identifier: 
+      > 2-open 
+
     """    
 
     def produce_candidates(nr_candidates, wordlist):    
         "Helper function"
         candidates = []
         cmdwords_list = []
-        #print "wordlist:",wordlist
         for n_words in range(nr_candidates):                        
             cmdwords_list.append(wordlist.pop(0))
             cmdwords = " ".join([word.strip().lower()
@@ -115,21 +120,22 @@ def cmdparser(raw_string):
             candidates.append(CommandCandidate(cmdwords, args, priority=n_words))
         return candidates
 
-    raw_string = raw_string.strip()
-    #TODO: check for non-standard characters.
-    
+    raw_string = raw_string.strip()    
     candidates = []
     
     regex_result = REGEX.search(raw_string)
+
     if not regex_result == None:
         # there are characters from SPECIAL_CHARS in the string.
         # since they cannot be part of a longer command, these
         # will cut short the command, no matter how long we 
         # allow commands to be.
+
         end_index = regex_result.start()
         end_char = raw_string[end_index]
+
         if end_index == 0:
-            # There is one exception: if the input begins with
+            # There is one exception: if the input *begins* with
             # a special char, we let that be the command name.
             cmdwords = end_char
             if len(raw_string) > 1:
@@ -140,22 +146,18 @@ def cmdparser(raw_string):
             return candidates 
         else:
             # the special char occurred somewhere inside the string
-            if end_char == "'" and \
-                   len(raw_string) > end_index+1 and \
-                   raw_string[end_index+1:end_index+3] == "s ":
-                # The command is of the form "<word>'s ". The 
-                # player might have made an attempt at identifying the 
-                # object of which's cmdtable we should prefer (e.g.
-                # > red door's button). 
+            if end_char == "-" and len(raw_string) > end_index+1:
+                # the command is on the forms "<num>-command" 
+                # or "<word>-command"
                 obj_key = raw_string[:end_index]
-                alt_string = raw_string[end_index+2:]                
-                alt_candidates = cmdparser(alt_string)
-                for candidate in alt_candidates:
+                alt_string = raw_string[end_index+1:]
+                for candidate in cmdparser(alt_string):
                     candidate.obj_key = obj_key
-                candidates.extend(alt_candidates)
-                # now we let the parser continue as normal, in case
-                # the 's -business was not meant to be an obj ref at all.
-
+                    candidate.priority =- 1 
+                    candidates.append(candidate)
+                                     
+            # We have dealt with the special possibilities. We now continue
+            # in case they where just accidental.
             # We only run the command finder up until the end char
             nr_candidates = len(raw_string[:end_index].split(None))
             if nr_candidates <= COMMAND_MAXLEN:

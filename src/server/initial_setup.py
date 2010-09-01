@@ -81,7 +81,7 @@ def create_objects():
                                          typeclass=character_typeclass,
                                          user=god_user)    
     god_character.id = 1
-    god_character.attr('desc', 'You are Player #1.')
+    god_character.db.desc = 'This is User #1.'
     god_character.save()
    
     # Limbo is the initial starting room.
@@ -93,7 +93,7 @@ def create_objects():
     string += " From here you are ready to begin development."
     string += " If you should need help or would like to participate"
     string += " in community discussions, visit http://evennia.com."
-    limbo_obj.attr('desc', string)
+    limbo_obj.db.desc = string
     limbo_obj.save()
 
     # Now that Limbo exists, set the user up in Limbo.

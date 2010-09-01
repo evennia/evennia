@@ -210,7 +210,7 @@ class CmdSetHandler(object):
         for player-object handlers, which are only available to the
         player herself. Handle individual permission checks with
         the command.permissions mechanic instead. 
-        """
+        """        
         return self.outside_access or self.obj == source_object
 
     def update(self):        
