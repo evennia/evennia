@@ -42,7 +42,7 @@ Installation
 
 * Get a copy of the Evennia source through subversion (SVN):
   
-  >  svn checkout http://code.google.com/p/evennia/source/checkout evennia 
+  >  svn checkout http://evennia.googlecode.com/svn/trunk/ evennia 
 
   Once you have downloaded, this is as much internet connectivity you need 
   for trying out Evennia; you don't need to run any web server or to make 
