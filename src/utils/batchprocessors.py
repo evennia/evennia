@@ -147,13 +147,6 @@ from game import settings as settings_module
 from django.core.management import setup_environ
 from traceback import format_exc
 
-# colours
-
-WHITE = r"%cn%ch%cw"
-RED = r"%cn%ch%cr"
-GREEN = r"%cn%ci%cg"
-YELLOW = r"%cn%ch%cy"
-NORM = r"%cn"
 
 #------------------------------------------------------------
 #
@@ -161,90 +154,96 @@ NORM = r"%cn"
 #
 #------------------------------------------------------------
 
-def read_batchcommand_file(pythonpath):
+class BatchCommandProcessor(object):
     """
-    This reads the contents of a batch-command file.
-    Filename is considered to be the name of the batch file
-    relative the directory specified in settings.py
+    This class implements a batch-command processor.
+
     """    
     
-    if pythonpath and not (pythonpath.startswith('src.') or 
-                           pythonpath.startswith('game.')):
-        pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
-                                pythonpath)
-    abspath = utils.pypath_to_realpath(pythonpath, 'ev')
-    try:
-        fobj = open(abspath)
-    except IOError:
-        logger.log_errmsg("Could not open path '%s'." % pythonpath)
-        return None
-    lines = fobj.readlines()
-    fobj.close()
-    return lines
-
-def parse_batchcommand_file(pythonpath):
-    """
-    This parses the lines of a batchfile according to the following
-    rules:
-      1) # at the beginning of a line marks the end of the command before it.
-           It is also a comment and any number of # can exist on subsequent
-           lines (but not inside comments).
-      2) Commands are placed alone at the beginning of a line and their
-         arguments are considered to be everything following (on any
-         number of lines) until the next comment line beginning with #.
-      3) Newlines are ignored in command definitions
-      4) A completely empty line in a command line definition is condered
-         a newline (so two empty lines is a paragraph).
-      5) Excess spaces and indents inside arguments are stripped. 
- 
-    """
-
-    #helper function
-    def identify_line(line):
+    def read_file(self, pythonpath):
         """
-        Identifies the line type (comment, commanddef or empty)
-        """
+        This reads the contents of a batch-command file.
+        Filename is considered to be the name of the batch file
+        relative the directory specified in settings.py
+        """    
+
+        if pythonpath and not (pythonpath.startswith('src.') or 
+                               pythonpath.startswith('game.')):
+            pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
+                                    pythonpath)
+        abspath = utils.pypath_to_realpath(pythonpath, 'ev')
         try:
-            if line.strip()[0] == '#':
-                return "comment"
-            else:
-                return "commanddef"
-        except IndexError:
-            return "empty"
+            fobj = open(abspath)
+        except IOError:
+            logger.log_errmsg("Could not open path '%s'." % abspath)
+            return None
+        lines = fobj.readlines()
+        fobj.close()
+        return lines
 
-    #read the indata, if possible.
-    lines = read_batchcommand_file(pythonpath)
-    if not lines:
-        return None 
+    def parse_file(self, pythonpath):
+        """
+        This parses the lines of a batchfile according to the following
+        rules:
+          1) # at the beginning of a line marks the end of the command before it.
+               It is also a comment and any number of # can exist on subsequent
+               lines (but not inside comments).
+          2) Commands are placed alone at the beginning of a line and their
+             arguments are considered to be everything following (on any
+             number of lines) until the next comment line beginning with #.
+          3) Newlines are ignored in command definitions
+          4) A completely empty line in a command line definition is condered
+             a newline (so two empty lines is a paragraph).
+          5) Excess spaces and indents inside arguments are stripped. 
 
-    commands = []
-    curr_cmd = ""
+        """
 
-    #purge all superfluous whitespace and newlines from lines
-    reg1 = re.compile(r"\s+")
-    lines = [reg1.sub(" ", l) for l in lines]
+        #helper function
+        def identify_line(line):
+            """
+            Identifies the line type (comment, commanddef or empty)
+            """
+            try:
+                if line.strip()[0] == '#':
+                    return "comment"
+                else:
+                    return "commanddef"
+            except IndexError:
+                return "empty"
 
-    #parse all command definitions into a list.
-    for line in lines:
-        typ = identify_line(line)
-        if typ == "commanddef":
-            curr_cmd += line
-        elif typ == "empty" and curr_cmd:
-            curr_cmd += "\r\n"
-        else: #comment
-            if curr_cmd:
-                commands.append(curr_cmd.strip())                
-            curr_cmd = ""    
-    if curr_cmd: 
-        commands.append(curr_cmd.strip())
+        #read the indata, if possible.
+        lines = self.read_file(pythonpath)
+        if not lines:
+            return None 
 
-    #second round to clean up now merged line edges etc.
-    reg2 = re.compile(r"[ \t\f\v]+")
-    commands = [reg2.sub(" ", c) for c in commands]   
+        commands = []
+        curr_cmd = ""
 
-    #remove eventual newline at the end of commands
-    commands = [c.strip('\r\n') for c in commands]
-    return commands
+        #purge all superfluous whitespace and newlines from lines
+        reg1 = re.compile(r"\s+")
+        lines = [reg1.sub(" ", l) for l in lines]
+
+        #parse all command definitions into a list.
+        for line in lines:
+            typ = identify_line(line)
+            if typ == "commanddef":
+                curr_cmd += line
+            elif typ == "empty" and curr_cmd:
+                curr_cmd += "\r\n"
+            else: #comment
+                if curr_cmd:
+                    commands.append(curr_cmd.strip())                
+                curr_cmd = ""    
+        if curr_cmd: 
+            commands.append(curr_cmd.strip())
+
+        #second round to clean up now merged line edges etc.
+        reg2 = re.compile(r"[ \t\f\v]+")
+        commands = [reg2.sub(" ", c) for c in commands]   
+
+        #remove eventual newline at the end of commands
+        commands = [c.strip('\r\n') for c in commands]
+        return commands
 
 #------------------------------------------------------------
 #
@@ -252,148 +251,170 @@ def parse_batchcommand_file(pythonpath):
 #
 #------------------------------------------------------------
 
-def read_batchcode_file(pythonpath):
+
+class BatchCodeProcessor(object):
     """
-    This reads the contents of batchfile.
-    Filename is considered to be the name of the batch file
-    relative the directory specified in settings.py
-    """    
-    
-    if pythonpath and not (pythonpath.startswith('src.') or 
-                           pythonpath.startswith('game.')):
-        pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
-                                pythonpath)
-    abspath = utils.pypath_to_realpath(pythonpath)
-    try:
-        fobj = open(abspath)
-    except IOError:
-        logger.log_errmsg("Could not open path '%s'." % pythonpath)
-        return None
-    lines = fobj.readlines()
-    fobj.close()
-    return lines
-
-
-def parse_batchcode_file(pythonpath):
-    """
-    This parses the lines of a batchfile according to the following
-    rules:
-    
-    1) Lines starting with #HEADER starts a header block (ends other blocks)
-    2) Lines starting with #CODE begins a code block (ends other blocks)
-    3) All lines outside blocks are stripped.
-    4) All excess whitespace beginning/ending a block is stripped.
-
+    This implements a batch-code processor
+ 
     """
 
-    # helper function
-    def parse_line(line):
+    def read_file(self, pythonpath):
         """
-        Identifies the line type: block command, comment, empty or normal code.          
-
+        This reads the contents of batchfile.
+        Filename is considered to be the name of the batch file
+        relative the directory specified in settings.py
         """    
-        line = line.strip()
-    
-        if line.startswith("#HEADER"):
-            return "header", ""
-        elif line.startswith("#CODE"):
-            # parse code command
-            line = line.lstrip("#CODE").strip()
-            objs = []
-            if line:
-                objs = [obj.strip() for obj in line.split(',')]                
-            return "code", objs
-        elif line.startswith("#"):
-            return "comment", ""
-        else:
-            #normal line - return it with a line break.
-            return None, "\n%s" % line
 
-    # read indata
+        if pythonpath and not (pythonpath.startswith('src.') or 
+                               pythonpath.startswith('game.')):
+            pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
+                                    pythonpath)
+        abspath = utils.pypath_to_realpath(pythonpath, 'py')
+        try:
+            fobj = open(abspath)
+        except IOError:
+            logger.log_errmsg("Could not open path '%s'." % abspath)
+            return None
+        lines = fobj.readlines()
+        fobj.close()
+        return lines
 
-    lines = read_batchcode_file(pythonpath)
-    if not lines:
-        return None
-        
-    # parse file into blocks
-        
-    header = ""
-    codes = []
-        
-    in_header = False
-    in_code = False
 
-    for line in lines:
-        # parse line 
-        mode, line = parse_line(line)
-        # try:
-        #     print "::", in_header, in_code, mode, line.strip() 
-        # except:
-        #     print "::", in_header, in_code, mode, line 
-        if mode == 'comment':
-            continue 
-        elif mode == 'header':
-            in_header = True
-            in_code = False
-        elif mode == 'code':
-            in_header = False
-            in_code = True
-            # the line is a list of object variable names
-            # (or an empty list) at this point.
-            codedict = {'objs':line,
-                        'code':""}
-            codes.append(codedict)
-        else:
-            # another type of line (empty or code)
-            if in_header:
-                header += line
-            elif in_code:
-                codes[-1]['code'] += line
+    def parse_file(self, pythonpath):
+        """
+        This parses the lines of a batchfile according to the following
+        rules:
+
+        1) Lines starting with #HEADER starts a header block (ends other blocks)
+        2) Lines starting with #CODE begins a code block (ends other blocks)
+        3) #CODE headers may be of the following form: #CODE (info) objname, objname2, ...
+        3) All lines outside blocks are stripped.
+        4) All excess whitespace beginning/ending a block is stripped.
+
+        """
+
+        # helper function
+        def parse_line(line):
+            """
+            Identifies the line type: block command, comment, empty or normal code.          
+
+            """    
+            line = line.strip()
+
+            if line.startswith("#HEADER"):
+                return ("header", "", "")
+            elif line.startswith("#CODE"):
+                # parse code command
+                line = line.lstrip("#CODE").strip()
+                objs = []
+                info = ""
+                if line and '(' in line and ')' in line:
+                    # a code description
+                    lp = line.find('(')
+                    rp = line.find(')')
+                    info = line[lp:rp+1]
+                    line = line[rp+1:] 
+                if line:
+                    objs = [obj.strip() for obj in line.split(',')]                
+                return ("codeheader", info, objs)
+            elif line.startswith('#'):
+                return ('comment', "", "\n%s" % line)
             else:
-                # not in a block (e.g. first in file). Ignore.
+                #normal line - return it with a line break.
+                return ('line', "", "\n%s" % line)
+
+        # read indata
+
+        lines = self.read_file(pythonpath)
+        if not lines:
+            return None
+
+        # parse file into blocks
+
+        header = ""
+        codes = []
+
+        in_header = False
+        in_code = False
+
+        for line in lines:
+            # parse line 
+            mode, info, line = parse_line(line)
+            # try:
+            #     print "::", in_header, in_code, mode, line.strip() 
+            # except:
+            #     print "::", in_header, in_code, mode, line             
+            if mode == 'header':
+                in_header = True
+                in_code = False
+            elif mode == 'codeheader':                
+                in_header = False
+                in_code = True
+                # the line is a list of object variable names
+                # (or an empty list) at this point.
+                codedict = {'objs':line,
+                            'info':info,
+                            'code':""}
+                codes.append(codedict)
+            elif mode == 'comment' and in_header:
                 continue
-    # last, we merge the headers with all codes.
-    for codedict in codes:
-        codedict["firstline"] = codedict["code"].strip()[:min(35, len(codedict['code'].strip())-1)]
-        codedict["code"] = "%s\n%s" % (header, codedict["code"])
-    return codes
+            else:
+                # another type of line (empty, comment or code)
+                if line and in_header:
+                    header += line
+                elif line and in_code:
+                    codes[-1]['code'] += line
+                else:
+                    # not in a block (e.g. first in file). Ignore.
+                    continue
 
-def batch_code_exec(codedict, extra_environ=None, debug=False):
-    """
-    Execute a single code block, including imports and appending global vars
+        # last, we merge the headers with all codes.
+        for codedict in codes:
+            codedict["code"] = "#CODE %s %s\n%s\n\n%s" % (codedict['info'],
+                                                          ", ".join(codedict["objs"]),
+                                                          header.strip(), 
+                                                          codedict["code"].strip())
+        return codes
 
-    extra_environ - dict with environment variables
-    """
+    def code_exec(self, codedict, extra_environ=None, debug=False):
+        """
+        Execute a single code block, including imports and appending global vars
 
-    # define the execution environment
-    environ = "setup_environ(settings_module)"
-    environdict = {"setup_environ":setup_environ, 
-                   "settings_module":settings_module}
-    if extra_environ:
-        for key, value in extra_environ.items():
-            environdict[key] = value
+        extra_environ - dict with environment variables
+        """
 
-    # merge all into one block
-    code = "%s\n%s" % (environ, codedict['code'])
-    if debug:
-        # try to delete marked objects
-        for obj in codedict['objs']:
-            code += "\ntry:    %s.delete()\nexcept:    pass" % obj
-        
-    # execute the block 
-    try:
-        exec(code, environdict)
-    except Exception:
-        errlist = format_exc().split('\n')
-        if len(errlist) > 4:
-            errlist = errlist[4:]
-        err = "\n".join("<<< %s" % line for line in errlist if line)
+        # define the execution environment
+        environ = "setup_environ(settings_module)"
+        environdict = {"setup_environ":setup_environ, 
+                       "settings_module":settings_module}
+        if extra_environ:
+            for key, value in extra_environ.items():
+                environdict[key] = value
+
+        # merge all into one block
+        code = "%s\n%s" % (environ, codedict['code'])
         if debug:
-            # try to delete objects again.
-            try:
-                for obj in codedict['objs']:
-                    eval("%s.delete()" % obj, environdict)
-            except Exception:
-                pass
-        return err
-    return None
+            # try to delete marked objects
+            for obj in codedict['objs']:
+                code += "\ntry:    %s.delete()\nexcept:    pass" % obj
+
+        # execute the block 
+        try:
+            exec(code, environdict)
+        except Exception:
+            errlist = format_exc().split('\n')
+            if len(errlist) > 4:
+                errlist = errlist[4:]
+            err = "\n".join(" %s" % line for line in errlist if line)
+            if debug:
+                # try to delete objects again.
+                try:
+                    for obj in codedict['objs']:
+                        eval("%s.delete()" % obj, environdict)
+                except Exception:
+                    pass
+            return err
+        return None
+
+BATCHCMD = BatchCommandProcessor()
+BATCHCODE = BatchCodeProcessor()

@@ -23,22 +23,45 @@ Example batch-code file: game/gamesrc/commands/examples/example_batch_code.py
 """
 from traceback import format_exc
 from django.conf import settings
-from src.utils import batchprocessors
+from src.utils.batchprocessors import BATCHCMD, BATCHCODE
 from game.gamesrc.commands.default.muxcommand import MuxCommand
 from src.commands.cmdset import CmdSet
 
+
+HEADER_WIDTH = 70
+
 #global defines for storage
-
-CWHITE = r"%cn%ch%cw"
-CRED = r"%cn%ch%cr"
-CGREEN = r"%cn%ci%cg"
-CYELLOW = r"%cn%ch%cy"
-CNORM = r"%cn"
-
 
 #------------------------------------------------------------
 # Helper functions
 #------------------------------------------------------------
+
+def format_header(caller, entry):
+    """
+    Formats a header
+    """
+    width = HEADER_WIDTH - 10
+    entry = entry.strip()    
+    header = entry[:min(width, min(len(entry), entry.find('\n')))]
+    if len(entry) > width:
+        header = "%s[...]" % header    
+    ptr = caller.ndb.batch_stackptr + 1 
+    stacklen = len(caller.ndb.batch_stack)    
+    header = "{w%02i/%02i{G: %s{n" % (ptr, stacklen, header)
+    # add extra space to the side for padding.
+    header = "%s%s" % (header, " "*(width-len(header)))
+    header = header.replace('\n', '\\n')
+    
+    return header 
+
+def format_code(entry):
+    """
+    Formats the viewing of code and errors
+    """
+    code = ""
+    for line in entry.split('\n'):
+        code += "\n{G>>>{n %s" % line
+    return code.strip()
 
 def batch_cmd_exec(caller):
     """
@@ -47,18 +70,13 @@ def batch_cmd_exec(caller):
     ptr = caller.ndb.batch_stackptr
     stack = caller.ndb.batch_stack
     command = stack[ptr]
-    cmdname = command[:command.find(" ")]        
-    caller.msg("%s   %02i/%02i: %s %s%s" % (CGREEN, ptr+1,
-                                            len(stack),
-                                            cmdname,
-                                            CGREEN, " "*(50-len(cmdname))))
+    caller.msg(format_header(caller, command))
     try:
         caller.execute_cmd(command)        
     except Exception:
-        caller.msg(format_exc())
+        caller.msg(format_code(format_exc()))
         return False
     return True
-
 
 def batch_code_exec(caller):
     """
@@ -67,19 +85,15 @@ def batch_code_exec(caller):
     ptr = caller.ndb.batch_stackptr
     stack = caller.ndb.batch_stack
     debug = caller.ndb.batch_debug
-    
     codedict = stack[ptr]
-    caller.msg("%s   %02i/%02i: %s %s%s" % (CGREEN, ptr + 1,
-                                            len(stack),
-                                            codedict["firstline"],
-                                            CGREEN, " "*(50-len(codedict["firstline"])))) 
-    err = batchprocessors.batch_code_exec(codedict, 
-                                          extra_environ={"caller":caller}, debug=debug)       
+                      
+    caller.msg(format_header(caller, codedict['code']))
+    err = BATCHCODE.code_exec(codedict, 
+                              extra_environ={"caller":caller}, debug=debug)       
     if err:
-        caller.msg(err)
+        caller.msg(format_code(err))
         return False
     return True 
-
 
 def step_pointer(caller, step=1):
     """
@@ -93,13 +107,15 @@ def step_pointer(caller, step=1):
     stack = caller.ndb.batch_stack
     nstack = len(stack)
     if ptr + step <= 0:
-        caller.msg("Beginning of batch file.")
+        caller.msg("{RBeginning of batch file.")
     if ptr + step >= nstack:
-        caller.msg("End of batch file.")
+        caller.msg("{REnd of batch file.")
     caller.ndb.batch_stackptr = max(0, min(nstack-1, ptr + step))
 
 def show_curr(caller, showall=False):
-    "Show the current position in stack."
+    """
+    Show the current position in stack
+    """
     stackptr = caller.ndb.batch_stackptr
     stack = caller.ndb.batch_stack
 
@@ -107,25 +123,39 @@ def show_curr(caller, showall=False):
         caller.ndb.batch_stackptr = len(stack) - 1
         show_curr(caller, showall)
         return     
+
     entry = stack[stackptr]           
+               
     if type(entry) == dict:
-        # we first try the batch-code syntax
-        firstline = entry['code'][:min(35, len(entry['code'])-1)]
-        codeall = entry['code']
+        # this is a batch-code entry
+        string = format_header(caller, entry['code'])
+        codeall = entry['code'].strip()
     else:
-        # we try the batch-cmd syntax instead
-        firstline = entry[:min(35, len(entry)-1)]
-        codeall = entry
-    string = "%s   %02i/%02i: %s %s      %s %s%s" % (CGREEN,
-                                                     stackptr+1, len(stack),
-                                                     firstline, CGREEN,
-                                                     "(hh for help)",
-                                                     " "*(35-len(firstline.strip())),
-                                                     CNORM)
+        # this is a batch-cmd entry
+        string = format_header(caller, entry)
+        codeall = entry.strip()
+    string += "{G(hh for help)"
     if showall:
-        string += "\n%s" % codeall
+        for line in codeall.split('\n'):
+            string += "\n{n>>> %s" % line
     caller.msg(string)
 
+def purge_processor(caller):
+    """
+    This purges all effects running
+    on the caller. 
+    """
+    try:
+        del caller.ndb.batch_stack
+        del caller.ndb.batch_stackptr
+        del caller.ndb.batch_pythonpath
+        del caller.ndb.batch_batchmode
+    except:
+        pass
+    # clear everything but the default cmdset.        
+    caller.cmdset.delete(BatchSafeCmdSet)            
+    caller.cmdset.clear()        
+    caller.scripts.validate() # this will purge interactive mode
 
 #------------------------------------------------------------
 # main access commands 
@@ -164,7 +194,7 @@ class CmdBatchCommands(MuxCommand):
 
         #parse indata file
         
-        commands = batchprocessors.parse_batchcommand_file(python_path)
+        commands = BATCHCMD.parse_file(python_path)
         if not commands:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \nyour batch-file directory (%s)."
@@ -202,7 +232,8 @@ class CmdBatchCommands(MuxCommand):
             del caller.ndb.batch_pythonpath
             del caller.ndb.batch_batchmode
             string = "  Batchfile '%s' applied." % python_path 
-            caller.msg("%s%s%s" % (CGREEN, string, " "*(60-len(string))))
+            caller.msg("{G%s" % string)
+            purge_processor(caller)
 
 class CmdBatchCode(MuxCommand):
     """    
@@ -240,7 +271,7 @@ class CmdBatchCode(MuxCommand):
         python_path = self.args
 
         #parse indata file
-        codes = batchprocessors.parse_batchcode_file(python_path)
+        codes = BATCHCODE.parse_file(python_path)
         if not codes:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \nyour batch-file directory (%s)."
@@ -283,7 +314,8 @@ class CmdBatchCode(MuxCommand):
             del caller.ndb.batch_pythonpath
             del caller.ndb.batch_batchmode
             string = "  Batchfile '%s' applied." % python_path 
-            caller.msg("%s%s%s" % (CGREEN, string, " "*(60-len(string))))
+            caller.msg("{G%s" % string)
+            purge_processor(caller)
 
 #------------------------------------------------------------
 # State-commands for the interactive batch processor modes
@@ -294,23 +326,17 @@ class CmdStateAbort(MuxCommand):
     """
     @abort
 
-    Exits back the default cmdset, regardless of what state
-    we are currently in.
+    This is a safety feature. It force-ejects us out of the processor and to
+    the default cmdset, regardless of what current cmdset the processor might 
+    have put us in (e.g. when testing buggy scripts etc).
     """
     key = "@abort"
     help_category = "BatchProcess"
 
     def func(self):
         "Exit back to default."
-        caller = self.caller
-        del caller.ndb.batch_stack
-        del caller.ndb.batch_stackptr
-        del caller.ndb.batch_pythonpath
-        del caller.ndb.batch_batchmode
-        # clear everything but the default cmdset.        
-        caller.cmdset.delete(BatchSafeCmdSet)        
-        caller.cmdset.clear()        
-        caller.msg("Exit: Cleared back to default state.")
+        purge_processor(self.caller)
+        self.caller.msg("Exited processor and reset out active cmdset back to the default one.")
     
 class CmdStateLL(MuxCommand):
     """
@@ -358,10 +384,10 @@ class CmdStateRR(MuxCommand):
     def func(self):
         caller = self.caller
         if caller.ndb.batch_batchmode == "batch_code":
-            batchprocessors.read_batchcommand_file(caller.ndb.batch_pythonpath)
+            BATCHCODE.read_file(caller.ndb.batch_pythonpath)
         else:
-            batchprocessors.read_batchcode_file(caller.ndb.batch_pythonpath)
-        caller.msg("\nFile reloaded. Staying on same command.\n")
+            BATHCMD.read_file(caller.ndb.batch_pythonpath)
+        caller.msg(format_code("File reloaded. Staying on same command."))
         show_curr(caller)
 
 class CmdStateRRR(MuxCommand):
@@ -377,11 +403,11 @@ class CmdStateRRR(MuxCommand):
     def func(self):
         caller = self.caller
         if caller.ndb.batch_batchmode == "batch_code":
-            batchprocessors.read_batchcommand_file(caller.ndb.batch_pythonpath)
+            BATCHCODE.read_file(caller.ndb.batch_pythonpath)
         else:
-            batchprocessors.read_batchcode_file(caller.ndb.batch_pythonpath)
+            BATCHCMD.read_file(caller.ndb.batch_pythonpath)
         caller.ndb.batch_stackptr = 0
-        caller.msg("\nFile reloaded. Restarting from top.\n")
+        caller.msg(format_code("File reloaded. Restarting from top."))
         show_curr(caller)
 
 class CmdStateNN(MuxCommand):
@@ -545,7 +571,7 @@ class CmdStateCC(MuxCommand):
         del caller.ndb.batch_stackptr
         del caller.ndb.batch_pythonpath
         del caller.ndb.batch_batchmode
-        caller.msg("Finished processing batch file.")
+        caller.msg(format_code("Finished processing batch file."))
     
 class CmdStateJJ(MuxCommand):
     """
@@ -562,7 +588,7 @@ class CmdStateJJ(MuxCommand):
         if arg and arg.isdigit():
             number = int(self.args)-1
         else:
-            caller.msg("You must give a number index.")
+            caller.msg(format_code("You must give a number index."))
             return 
         ptr = caller.ndb.batch_stackptr
         step = number - ptr    
@@ -584,7 +610,7 @@ class CmdStateJL(MuxCommand):
         if arg and arg.isdigit():
             number = int(self.args)-1
         else:
-            caller.msg("You must give a number index.")
+            caller.msg(format_code("You must give a number index."))
             return 
         ptr = caller.ndb.batch_stackptr
         step = number - ptr    
@@ -601,26 +627,19 @@ class CmdStateQQ(MuxCommand):
     help_category = "BatchProcess"
 
     def func(self):
-        caller = self.caller
-        del caller.ndb.batch_stack
-        del caller.ndb.batch_stackptr
-        del caller.ndb.batch_pythonpath
-        del caller.ndb.batch_batchmode
-        caller.cmdset.delete(BatchSafeCmdSet)
-        caller.cmdset.delete(BatchInteractiveCmdSet)
-        caller.scripts.validate() # this will clear interactive mode.
-        caller.msg("Aborted interactive batch mode.")
+        purge_processor(self.caller)
+        self.caller.msg("Aborted interactive batch mode.")
     
 class CmdStateHH(MuxCommand):
     "Help command"
 
-    key = "help"
-    aliases = "hh"
+    key = "hh"
     help_category = "BatchProcess"
 
     def func(self):
         string = """
     Interactive batch processing commands:
+
      nn [steps] - next command (no processing)
      nl [steps] - next & look 
      bb [steps] - back to previous command (no processing)
@@ -637,6 +656,11 @@ class CmdStateHH(MuxCommand):
 
      cc         - continue processing to end, then quit.
      qq         - quit (abort all remaining commands)
+
+     @abort - this is a safety command that always is available 
+              regardless of what cmdsets gets added to us during
+              batch-command processing. It immediately shuts down 
+              the processor and returns us to the default cmdset.
     """
         self.caller.msg(string)
 

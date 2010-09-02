@@ -603,13 +603,13 @@ class CmdCreate(ObjManipCommand):
             obj = create.create_object(typeclass, name, caller, 
                                        home=caller, aliases=aliases)
             if not obj:
-                string += "\nError when creating object."
+                string = "Error when creating object."
                 continue
             if aliases: 
-                string += "\nYou create a new %s: %s (aliases: %s)."
+                string = "You create a new %s: %s (aliases: %s)."
                 string = string % (obj.typeclass, obj.name, ", ".join(aliases))
             else:
-                string += "\nYou create a new %s: %s."
+                string = "You create a new %s: %s."
                 string = string % (obj.typeclass, obj.name)
             if 'drop' in self.switches:    
                 if caller.location:
@@ -1189,21 +1189,22 @@ class CmdDestroy(MuxCommand):
         for objname in self.lhslist:
             obj = caller.search(objname)
             if not obj:                
-                continue 
+                continue
             objname = obj.name
             if obj.player and not 'override' in self.switches:
-                string += "\n\rObject %s is a player object. Use /override to delete anyway." % objname
+                string = "Object %s is a player object. Use /override to delete anyway." % objname
                 continue 
             if not has_perm(caller, obj, 'create'):
-                string += "\n\rYou don't have permission to delete %s." % objname
+                string = "You don't have permission to delete %s." % objname
                 continue
             # do the deletion
             okay = obj.delete()
             if not okay:
-                string += "\n\rERROR: %s NOT deleted, probably because at_obj_delete() returned False." % objname
+                string = "ERROR: %s NOT deleted, probably because at_obj_delete() returned False." % objname
             else:
-                string += "\n\r%s was deleted." % objname
-        caller.msg(string.strip('\n'))
+                string = "%s was deleted." % objname
+        if string:
+            caller.msg(string.strip())
 
 
 #NOT VALID IN NEW SYSTEM!

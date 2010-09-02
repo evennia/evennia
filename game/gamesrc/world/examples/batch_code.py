@@ -17,37 +17,43 @@
 #           automatically be made available for each block.  Observe
 #           that changes to these variables made in one block is not
 #           preserved between blocks!)
-# #CODE [objname, objname, ...] - This designates a code block that will be executed like a 
+# #CODE (infotext) [objname, objname, ...] - This designates a code block that will be executed like a 
 #            stand-alone piece of code together with any #HEADER
-#            defined. <objname>s mark the (variable-)names of objects created in the code, 
+#            defined. 
+#            infotext is a describing text about what goes in in this block. It will be 
+#            shown by the batchprocessing command.
+#            <objname>s mark the (variable-)names of objects created in the code, 
 #            and which may be auto-deleted by the processor if desired (such as when 
 #            debugging the script). E.g., if the code contains the command 
 #            myobj = create.create_object(...), you could put 'myobj' in the #CODE header
 #            regardless of what the created object is actually called in-game. 
 
-# The following variables are automatically made available for the script:
+# The following variable is automatically made available for the script:
 
 # caller - the object executing the script
 #
-#
+
 
 #HEADER 
 
-# everything in this block will be imported to all CODE blocks when
-# they are executed.
+# everything in this block will be appended to the beginning of 
+# all other #CODE blocks when they are executed.
 
 from src.utils import create, search
-from game.gamesrc.typeclasses.examples import red_button
-from game.gamesrc.typeclasses import basetypes
+from game.gamesrc.objects.examples import red_button
+from game.gamesrc.objects import baseobjects
 
-#CODE 
+limbo = search.objects(caller, 'Limbo', global_search=True)[0]
+
+
+#CODE (create red button)
 
 # This is the first code block. Within each block, python
-# code works as normal.
+# code works as normal. Note how we make use if imports and 
+# 'limbo' defined in the #HEADER block. This block's header
+# offers no information about red_button variable, so it 
+# won't be able to be deleted in debug mode. 
 
-# get the limbo room.
-limbo = search.objects(caller, 'Limbo', global_search=True)[0]
-caller.msg(limbo)
 # create a red button in limbo
 red_button = create.create_object(red_button.RedButton, key="Red button", 
                                   location=limbo, aliases=["button"])
@@ -55,17 +61,22 @@ red_button = create.create_object(red_button.RedButton, key="Red button",
 # we take a look at what we created
 caller.msg("A %s was created." % red_button.key)
 
-#CODE table, chair
+
+#CODE (create table and chair) table, chair
 
 # this code block has 'table' and 'chair' set as deletable
 # objects. This means that when the batchcode processor runs in
 # testing mode, objects created in these variables will be deleted
-# again (so as to avoid duplicate objects when testing the script).
+# again (so as to avoid duplicate objects when testing the script many
+# times).
 
-limbo = search.objects(caller, 'Limbo', global_search=True)[0]
 caller.msg(limbo.key)
-table = create.create_object(basetypes.Object, key="Table", location=limbo)
-chair = create.create_object(basetypes.Object, key="Chair", location=limbo)
+
+# the python variables we assign to must match the ones given in the
+# header for the system to be able to delete them afterwards during a 
+# debugging run. 
+table = create.create_object(baseobjects.Object, key="Table", location=limbo)
+chair = create.create_object(baseobjects.Object, key="Chair", location=limbo)
 
 string = "A %s and %s were created. If debug was active, they were deleted again." 
 caller.msg(string % (table, chair))

@@ -27,7 +27,7 @@ def handle_search_errors(emit_to_obj, ostring, results, global_search=False):
             dbrefs instead of only numbers)
     """
     if not results: 
-        emit_to_obj.emit_to("Could not find '%s'." % ostring)
+        emit_to_obj.msg("Could not find '%s'." % ostring)
         return None 
     if len(results) > 1:
         # we have more than one match. We will display a
@@ -47,8 +47,8 @@ def handle_search_errors(emit_to_obj, ostring, results, global_search=False):
             if show_dbref:
                 dbreftext = "(#%i)" % result.id 
             string += "\n %i-%s%s%s" % (num+1, result.name, 
-                                        dbreftext, invtext)
-        emit_to_obj.emit_to(string)            
+                                        dbreftext, invtext)        
+        emit_to_obj.msg(string.strip())            
         return None 
     else:
         return results[0]
@@ -101,4 +101,3 @@ def object_multimatch_parser(ostring):
         return (None, ostring)
     except IndexError:
         return (None, ostring)
-

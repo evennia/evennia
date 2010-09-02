@@ -504,6 +504,7 @@ class ObjectDB(TypedObject):
         """
         # This is an important function that must always work. 
         # we use a different __getattribute__ to avoid recursive loops.
+
         if from_obj:
             try:
                 from_obj.at_msg_send(message, self)
