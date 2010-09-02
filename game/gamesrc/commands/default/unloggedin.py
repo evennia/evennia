@@ -39,20 +39,19 @@ class CmdConnect(MuxCommand):
         if not arglist or len(arglist) < 2:
             session.msg("\n\r Usage (without <>): connect <email> <password>")
             return
-        uemail = arglist[0]
+        email = arglist[0]
         password = arglist[1]
         
         # Match an email address to an account.
-        email_match = PlayerDB.objects.get_player_from_email(uemail)
+        player = PlayerDB.objects.get_player_from_email(email)
         # No playername match
-        if not email_match:
-            string = "The email '%s' does not match any accounts." % uemail
+        if not player:
+            string = "The email '%s' does not match any accounts." % email
             string += "\n\r\n\rIf you are new you should first create a new account "
             string += "using the 'create' command."
             session.msg(string)
             return
         # We have at least one result, so we can check the password.
-        player = email_match
         if not player.user.check_password(password):
             session.msg("Incorrect password.")
             return 

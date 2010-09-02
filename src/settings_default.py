@@ -65,7 +65,11 @@ LANGUAGE_CODE = 'en-us'
 # since it creates a lot of help entries that has nothing to do 
 # with what is actually available in the game.
 IMPORT_MUX_HELP = False 
-
+# How long time (seconds) a user may idle before being logged
+# out. This can be set as big as desired. A user may avoid being
+# thrown off by sending the empty system command 'idle' to the server
+# at regular intervals.
+IDLE_TIMEOUT = 3600
 
 ###################################################
 # Evennia Database config 

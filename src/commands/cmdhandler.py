@@ -117,7 +117,7 @@ def get_and_merge_cmdsets(caller):
     # Merge all command sets into one
     # (the order matters, the higher-prio cmdsets are merged last)
     cmdset = caller_cmdset
-    for obj_cmdset in local_objects_cmdsets:
+    for obj_cmdset in [obj_cmdset for obj_cmdset in local_objects_cmdsets if obj_cmdset]:
         # Here only, object cmdsets are merged with duplicates=True
         # (or we would never be able to differentiate between objects)
         try:
