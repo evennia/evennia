@@ -386,7 +386,7 @@ class CmdStateRR(MuxCommand):
         if caller.ndb.batch_batchmode == "batch_code":
             BATCHCODE.read_file(caller.ndb.batch_pythonpath)
         else:
-            BATHCMD.read_file(caller.ndb.batch_pythonpath)
+            BATCHCMD.read_file(caller.ndb.batch_pythonpath)
         caller.msg(format_code("File reloaded. Staying on same command."))
         show_curr(caller)
 
