@@ -70,8 +70,6 @@ caller.msg("A %s was created." % red_button.key)
 # again (so as to avoid duplicate objects when testing the script many
 # times).
 
-caller.msg(limbo.key)
-
 # the python variables we assign to must match the ones given in the
 # header for the system to be able to delete them afterwards during a 
 # debugging run. 

@@ -259,7 +259,27 @@ class CmdSet(object):
         cmdset.key_mergetypes = copy.deepcopy(self.key_mergetypes)
         return cmdset
         
-    
+    def make_unique(self, caller):
+        """
+        This is an unsafe command meant to clean out a cmdset of
+        doublet commands after it has been created. It is useful 
+        for commands inheriting cmdsets from the cmdhandler where
+        obj-based cmdsets always are added double. Doublets will
+        be weeded out with preference to commands defined on caller,
+        otherwise just by first-come-first-served.
+        """
+        unique = {}
+        for cmd in self.commands:
+            if cmd.key in unique:
+                ocmd = unique[cmd.key]
+                if (hasattr(cmd, 'obj') and cmd.obj == caller) and not \
+                        (hasattr(ocmd, 'obj') and ocmd.obj == caller):
+                    unique[cmd.key] = cmd
+            else:
+                unique[cmd.key] = cmd
+        self.commands = unique.values()
+                    
+   
     def __str__(self):
         """
         Show all commands in cmdset when printing it. 

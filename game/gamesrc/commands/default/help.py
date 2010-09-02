@@ -17,7 +17,9 @@ LIST_ARGS = ["list", "all"]
 
 def format_help_entry(title, help_text, aliases=None,
                       suggested=None):
-    "This visually formats the help entry."            
+    """
+    This visually formats the help entry.
+    """            
     string = "-"*70 + "\n"
     if title: 
         string += "Help topic for {w%s{n" % (title.capitalize()) 
@@ -33,13 +35,17 @@ def format_help_entry(title, help_text, aliases=None,
     return string 
 
 def format_help_list(hdict_cmds, hdict_db):
-    "Output a category-ordered list"
-    string = "\n\r" + "-"*70 + "\n\r  {gCommand help entries{n\n" + "-"*70
-    for category in sorted(hdict_cmds.keys()):
-        string += "\n  {w%s{n:\n" % \
-                  (str(category).capitalize()) 
-        string += fill(", ".join(sorted(hdict_cmds[category])))
-    if hdict_db:
+    """
+    Output a category-ordered list.
+    """    
+    string = ""
+    if hdict_cmds and hdict_cmds.values():
+        string += "\n\r" + "-"*70 + "\n\r  {gCommand help entries{n\n" + "-"*70
+        for category in sorted(hdict_cmds.keys()):
+            string += "\n  {w%s{n:\n" % \
+                (str(category).capitalize()) 
+            string += fill(", ".join(sorted(hdict_cmds[category])))
+    if hdict_db and hdict_db.values():
         string += "\n\r\n\r" + "-"*70 + "\n\r  {gOther help entries{n\n" + '-'*70 
         for category in sorted(hdict_db.keys()):
             string += "\n\r  {w%s{n:\n" % (str(category).capitalize()) 
@@ -78,6 +84,10 @@ class CmdHelp(Command):
 
         if not query:
             query = "all"
+
+        # removing doublets in cmdset, caused by cmdhandler
+        # having to allow doublet commands to manage exits etc.
+        cmdset.make_unique(caller)
         
         # Listing help entries
         
@@ -129,15 +139,20 @@ class CmdHelp(Command):
         # Handle result 
         if (not cmdmatches) and (not dbmatches):
             # no normal match. Check if this is a category match instead
-            categ_cmdmatches = [cmd for cmd in cmdset
+            categ_cmdmatches = [cmd.key for cmd in cmdset
                                 if query == cmd.help_category and has_perm(caller, cmd, 'cmd')]
             categ_dbmatches = \
-                    [topic for topic in
+                    [topic.key for topic in
                      HelpEntry.objects.find_topics_with_category(query)
                      if has_perm(caller, topic, 'view')]
-            if categ_cmdmatches or categ_dbmatches:                
-                help_entry = format_help_list({query:categ_cmdmatches},
-                                              {query:categ_dbmatches})
+            cmddict = None
+            dbdict = None
+            if categ_cmdmatches:
+                cmddict = {query:categ_cmdmatches}
+            if categ_dbmatches:                
+                dbdict = {query:categ_dbmatches}            
+            if cmddict or dbdict:
+                help_entry = format_help_list(cmddict, dbdict)                                              
             else:
                 help_entry = "No help entry found for '%s'" % query
 
