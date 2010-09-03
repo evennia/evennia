@@ -184,7 +184,7 @@ class CmdSetObjAlias(MuxCommand):
         objname, aliases = self.lhs, self.rhslist
 
         if not aliases:
-            caller.msg("Usage: @alias <obj> = <alias>")
+            caller.msg("Usage: @alias <obj> = <alias>,<alias>,...")
             return
         # Find the object to receive aliases
         obj = caller.search(objname, global_search=True)
@@ -195,17 +195,15 @@ class CmdSetObjAlias(MuxCommand):
             caller.msg("You don't have permission to do that.")
             return 
         # merge the old and new aliases (if any)
-        old_aliases = obj.aliases.split(',')
+        old_aliases = obj.aliases
         new_aliases = [str(alias).strip().lower() 
                        for alias in aliases if alias.strip()]
         # make the aliases only appear once 
         old_aliases.extend(new_aliases)
-        aliases = list(set(old_aliases))
-        aliases = ",".join(str(alias).lower().strip() for alias in aliases if alias)
+        aliases = list(set(old_aliases))        
         # save back to object.
         obj.aliases = aliases 
-        obj.save()  
-        caller.msg("Aliases for '%s' are now set to [%s]." % (obj.name, aliases))
+        caller.msg("Aliases for '%s' are now set to %s." % (obj.name, aliases))
 
 
 class CmdName(ObjManipCommand):
@@ -1465,19 +1463,21 @@ class CmdExamine(ObjManipCommand):
 
         returns a string.
         """
-        dbref = ""
-        if has_perm_string(self.caller, 'see_dbref'):
-            dbref = "(#%i)" % obj.id
-        string = "\n{wName{n: %s%s" % (obj.name, dbref)
+
+        string = "\n{wName/key{n: %s (#%i)" % (obj.name, obj.id)        
+        if obj.aliases:
+            string += "\n{wAliases{n: %s" % (", ".join(obj.aliases))
         if obj.has_player:
             string += "\n{wPlayer{n: %s" % obj.player.name
-        string += "\n{wTypeclass{n: %s" % utils.fill(obj.typeclass)
+        string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass, obj.typeclass_path)
         string += "\n{wLocation{n: %s" % obj.location
         perms = obj.permissions
         if obj.player and obj.player.is_superuser:
-            perms = "<Superuser>"
-        string += "\n{wPerms/Locks{n: %s" % utils.fill(perms) 
-        if obj.cmdset.all():
+            perms = ["<Superuser>"]
+        elif not perms:
+            perms = ["<None>"]
+        string += "\n{wPerms/Locks{n: %s" % (", ".join(perms))  
+        if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
             string += "\n{wCurrent Cmdset{n:\n\r %s" % obj.cmdset
         if obj.scripts.all():
             string += "\n{wScripts{n:\n\r %s" % obj.scripts

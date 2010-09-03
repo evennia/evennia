@@ -33,12 +33,33 @@ class CmdReload(MuxCommand):
 
     def func(self):
         """
-        reload the system. 
+        Reload the system. 
         """        
         caller = self.caller 
-        reloads.reload_modules()
-        reloads.reload_scripts()
-        reloads.reload_commands()
+        reloads.reload_modules()                 
+
+        max_attempts = 4 
+        for attempt in range(max_attempts):            
+            # if reload modules take a long time,
+            # we might end up in a situation where
+            # the subsequent commands fail since they
+            # can't find the reloads module (due to it
+            # not yet fully loaded). So we retry a few 
+            # times before giving up. 
+            try:
+                reloads.reload_scripts()
+                reloads.reload_commands()
+                break
+            except AttributeError:
+                if attempt < max_attempts-1:
+                    caller.msg("            Waiting for modules(s) to finish (%s) ..." % attempt)
+                    pass 
+                else:
+                    string =  "            ... The module(s) took too long to reload, "
+                    string += "\n            so the remainding reloads where skipped."
+                    string += "\n            Re-run @reload again when modules have fully "
+                    string += "\n            re-initialized."
+                    caller.msg(string)
 
 class CmdPy(MuxCommand):
     """
@@ -607,12 +628,14 @@ class CmdPerm(MuxCommand):
                 return
             else:
                 #just print all available permissions
-                string = "\nAll currently available permissions (i.e. not locks):"
-                pgroups = PermissionGroup.objects.all()
+                string = "\nAll defined permission groups and keys (i.e. not locks):"
+                pgroups = list(PermissionGroup.objects.all())
+                pgroups.sort(lambda x,y: cmp(x.key, y.key)) # sort by group key
+
                 for pgroup in pgroups:
-                    string += "\n\n - %s (%s):" % (pgroup.key, pgroup.desc)
+                    string += "\n\n - {w%s{n (%s):" % (pgroup.key, pgroup.desc)
                     string += "\n%s" % \
-                        utils.fill(", ".join(pgroup.group_permissions))                
+                        utils.fill(", ".join(sorted(pgroup.group_permissions)))                
                 caller.msg(string)
                 return 
 
@@ -622,13 +645,16 @@ class CmdPerm(MuxCommand):
             return         
 
         if not rhs: 
-            #if we didn't have any =, we list the permissions set on <object>. 
-            if hasattr(obj, 'is_superuser') and obj.is_superuser:
-                string = "\n  This is a SUPERUSER account! "
-                string += "All permissions are automatically set."
+            string = "Permission string on {w%s{n: " % obj.key
+            if not obj.permissions:
+                string += "<None>"
             else:
-                string = "Permissions set on this object:\n"
                 string += ", ".join(obj.permissions)
+            if obj.player and obj.player.is_superuser:
+                string += "\n(... But this object's player is a SUPERUSER! "
+                string += "All access checked are passed automatically.)"
+
+
             caller.msg(string)
             return 
             

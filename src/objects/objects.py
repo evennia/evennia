@@ -327,9 +327,7 @@ class Character(Object):
     def at_after_move(self, source_location):
         "Default is to look around after a move."
         self.execute_cmd('look')
-        
-
-    
+            
 #
 # Base Room object 
 #

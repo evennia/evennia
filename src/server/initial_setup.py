@@ -86,8 +86,8 @@ def create_objects():
    
     # Limbo is the initial starting room.
 
-    object_typeclass = settings.BASE_OBJECT_TYPECLASS
-    limbo_obj = create.create_object(object_typeclass, 'Limbo')
+    room_typeclass = settings.BASE_ROOM_TYPECLASS
+    limbo_obj = create.create_object(room_typeclass, 'Limbo')
     limbo_obj.id = 2
     string = "Welcome to your new %chEvennia%cn-based game."
     string += " From here you are ready to begin development."

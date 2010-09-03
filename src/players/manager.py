@@ -6,6 +6,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from src.typeclasses.managers import returns_typeclass_list, returns_typeclass
+from src.utils import logger
 
 #
 # Player Manager
@@ -32,7 +33,7 @@ def returns_player_list(method):
             try:
                 players.append(user.get_profile())
             except Exception:
-                players.append(user)                
+                logger.log_trace("User has no profile(), maybe database was partially reset?")                
         return players
     return func 
 
