@@ -56,7 +56,7 @@ class CmdReload(MuxCommand):
                     pass 
                 else:
                     string =  "            ... The module(s) took too long to reload, "
-                    string += "\n            so the remainding reloads where skipped."
+                    string += "\n            so the remaining reloads where skipped."
                     string += "\n            Re-run @reload again when modules have fully "
                     string += "\n            re-initialized."
                     caller.msg(string)
