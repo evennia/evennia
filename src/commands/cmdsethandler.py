@@ -202,17 +202,6 @@ class CmdSetHandler(object):
                                      mergetype, self.current)
         return string.strip() 
 
-    def allow_outside_access(self, source_object):
-        """
-        This is what the main commandhandler is using to check if
-        it should include this handler when searching for matching
-        commands. It should return True for most of the time except
-        for player-object handlers, which are only available to the
-        player herself. Handle individual permission checks with
-        the command.permissions mechanic instead. 
-        """        
-        return self.outside_access or self.obj == source_object
-
     def update(self):        
         """
         Re-adds all sets in the handler to have an updated

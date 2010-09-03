@@ -113,7 +113,11 @@ def get_and_merge_cmdsets(caller):
         local_objlist = location.contents
         local_objects_cmdsets = [obj.cmdset.current
                                  for obj in local_objlist
-                                 if obj.cmdset.allow_outside_access(caller)]
+                                 if obj.cmdset.outside_access]
+        # print "used objs: %s" % ([obj.name
+        #                           for obj in local_objlist
+        #                           if obj.cmdset.outside_access])
+
     # Merge all command sets into one
     # (the order matters, the higher-prio cmdsets are merged last)
     cmdset = caller_cmdset

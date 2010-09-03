@@ -53,7 +53,7 @@ class Object(TypeClass):
         if create_cmdset:
             dbobj.cmdset = CmdSetHandler(dbobj)
             if dbobj.player:
-                dbobj.cmdset.outside_access = False
+                dbobj.cmdset.outside_access = False             
         if create_scripts:
             dbobj.scripts = ScriptHandler(dbobj)
 
