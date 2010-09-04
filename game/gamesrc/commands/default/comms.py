@@ -741,9 +741,6 @@ class CmdPage(MuxCommand):
         # get last messages we've got
         pages_we_got = list(Msg.objects.get_messages_by_receiver(player))        
         
-        print "we sent:", pages_we_sent
-        print "we_got:", pages_we_got
-
         if 'list' in self.switches:
             pages = pages_we_sent + pages_we_got
             pages.sort(lambda x,y: cmp(x.date_sent, y.date_sent))
@@ -812,12 +809,13 @@ class CmdPage(MuxCommand):
         message = self.rhs
 
         # if message begins with a :, we assume it is a 'page-pose'
-        if message[0] == ":":
-            message = message.replace(':', "%s " % caller.key, 1)
+        if message.startswith(":"):            
+            message = "%s %s" % (caller.key, message.strip(':').strip())
 
         # create the persistent message object
         msg = create.create_message(player, message, 
                                     receivers=recobjs)  
+
         # tell the players they got a message.
         received = []
         for pobj in recobjs:

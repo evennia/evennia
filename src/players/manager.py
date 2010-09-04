@@ -33,6 +33,8 @@ def returns_player_list(method):
             try:
                 players.append(user.get_profile())
             except Exception:
+                print players
+                print user, user.__class__
                 logger.log_trace("User has no profile(), maybe database was partially reset?")                
         return players
     return func 
@@ -56,6 +58,8 @@ class PlayerManager(models.Manager):
     Custom manager for the player profile model. We use this
     to wrap users in general in evennia, and supply some useful
     search/statistics methods. 
+
+    Note how ALL these commands return character objects if possible. 
     """
     def num_total_players(self):
         """

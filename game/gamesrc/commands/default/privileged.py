@@ -639,7 +639,7 @@ class CmdPerm(MuxCommand):
                 caller.msg(string)
                 return 
 
-        # locate the object         
+        # locate the object/player         
         obj = caller.search(self.lhs, global_search=True)
         if not obj:
             return         

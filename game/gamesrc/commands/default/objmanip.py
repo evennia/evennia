@@ -719,8 +719,8 @@ class CmdOpen(ObjManipCommand):
             # give error message and return
             caller.search(exit_name)
             return
-        exit_obj = exit_obj[0]
-        if exit_obj:            
+        exit_obj = exit_obj
+        if exit_obj:
             if not exit_obj.db._destination:
                 # we are trying to link a non-exit
                 string = "'%s' already exists and is not an exit!\nIf you want to convert it "
