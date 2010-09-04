@@ -495,7 +495,7 @@ class CmdService(MuxCommand):
         
         if not switches or \
                 switches[0] not in ["list","start","stop"]:
-            caller.msg("Usage: @servive/<start|stop|list> [service]")
+            caller.msg("Usage: @service/<start|stop|list> [service]")
             return             
         switch = switches[0]
 
