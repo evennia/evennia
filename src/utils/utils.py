@@ -149,11 +149,11 @@ def get_evennia_version():
     except IOError:
         return "Unknown version"
         
-def pypath_to_realpath(python_path, file_ending='py'):
+def pypath_to_realpath(python_path, file_ending='.py'):
     """
-    Converts a path on dot python form (e.g. src.objects.models)
-    to a system path (src/objects/models.py). Calculates all
-    paths starting from the evennia main directory.
+    Converts a path on dot python form (e.g. 'src.objects.models') to
+    a system path (src/objects/models.py). Calculates all paths as
+    absoulte paths starting from the evennia main directory.
     """
     pathsplit = python_path.strip().split('.')
     if not pathsplit:
@@ -161,14 +161,15 @@ def pypath_to_realpath(python_path, file_ending='py'):
     path = settings.BASE_PATH 
     for directory in pathsplit:
         path = os.path.join(path, directory)
-    return "%s.%s" % (path, file_ending) 
+    if file_ending:
+        return "%s%s" % (path, file_ending) 
+    return path 
 
 def dbref(dbref):
     """
-    Converts/checks if input is a valid dbref
-    Valid forms of dbref (database reference number)
-    are either a string '#N' or an integer N.
-    Output is the integer part. 
+    Converts/checks if input is a valid dbref Valid forms of dbref
+    (database reference number) are either a string '#N' or 
+    an integer N.  Output is the integer part.
     """
     if type(dbref) == str:
         dbref = dbref.lstrip('#')

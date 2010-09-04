@@ -491,11 +491,11 @@ class CmdSay(MuxCommand):
         speech = caller.location.at_say(caller, speech)
 
         # Feedback for the object doing the talking.
-        caller.msg("You say, '%s'" % speech)
+        caller.msg('You say, "%s{n"' % speech)
         
         # Build the string to emit to neighbors.
-        emit_string = "{c%s{n says, '%s'" % (caller.name, 
-                                             speech)
+        emit_string = '{c%s{n says, "%s{n"' % (caller.name, 
+                                               speech)
         caller.location.msg_contents(emit_string, 
                                          exclude=caller)
 

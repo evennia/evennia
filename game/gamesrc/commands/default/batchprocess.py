@@ -29,8 +29,24 @@ from src.commands.cmdset import CmdSet
 
 
 HEADER_WIDTH = 70
+UTF8_ERROR = \
+"""
+ {rDecode error in '%s'.{n
 
-#global defines for storage
+ This file contains non-ascii character(s). This is common if you
+ wrote some input in a language that has more letters and special
+ symbols than English; such as accents or umlauts.  This is usually
+ fine and fully supported! But for Evennia to know how to decode such
+ characters in a universal way, the batchfile must be saved with the
+ international 'UTF-8' encoding. This file is not.
+ 
+ Please re-save the batchfile with the UTF-8 encoding (refer to the
+ documentation of your text editor on how to do this, or switch to a 
+ better featured one) and try again. 
+
+ The (first) error was found with a character on line %s in the file.
+"""
+
 
 #------------------------------------------------------------
 # Helper functions
@@ -192,9 +208,15 @@ class CmdBatchCommands(MuxCommand):
             return    
         python_path = self.args
 
-        #parse indata file
-        
-        commands = BATCHCMD.parse_file(python_path)
+        #parse indata file        
+
+        try:
+            commands = BATCHCMD.parse_file(python_path)
+        except UnicodeDecodeError, err:
+            lnum = err.linenum
+            caller.msg(UTF8_ERROR % (python_path, lnum))
+            return 
+
         if not commands:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \nyour batch-file directory (%s)."
@@ -271,7 +293,13 @@ class CmdBatchCode(MuxCommand):
         python_path = self.args
 
         #parse indata file
-        codes = BATCHCODE.parse_file(python_path)
+        try:
+            codes = BATCHCODE.parse_file(python_path)
+        except UnicodeDecodeError, err:
+            lnum = err.linenum
+            caller.msg(UTF8_ERROR % (python_path, lnum))
+            return 
+
         if not codes:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \nyour batch-file directory (%s)."

@@ -96,9 +96,9 @@ Code blocks are separated by python comments starting with special code words.
 
 #HEADER - this denotes commands global to the entire file, such as
           import statements and global variables. They will
-          automatically be made available for each block.  Observe
+          automatically be pasted at the top of all code blocks. Observe
           that changes to these variables made in one block is not
-          preserved between blocks!)
+          preserved between blocks!
 #CODE [objname, objname, ...] - This designates a code block that will be executed like a 
            stand-alone piece of code together with any #HEADER
            defined. <objname>s mark the (variable-)names of objects created in the code, 
@@ -138,15 +138,70 @@ script = create.create_script()
 """
 
 import re
+import codecs
+from traceback import format_exc
 from django.conf import settings
+from django.core.management import setup_environ
 from src.utils import logger
 from src.utils import utils
-#from src.commands.cmdset import CmdSet
-#from src.scripts.scripts import Script
 from game import settings as settings_module
-from django.core.management import setup_environ
-from traceback import format_exc
 
+
+#------------------------------------------------------------
+# Helper function
+#------------------------------------------------------------
+
+def read_batchfile(pythonpath, file_ending='.py', file_encoding='utf-8'):
+    """
+    This reads the contents of a batch-file.
+    Filename is considered to be the name of the batch file
+    relative the directory specified in settings.py.
+
+    file_ending specify which batchfile ending should be 
+    assumed (.ev or .py).
+    """    
+
+    # open the file
+
+    if pythonpath and not (pythonpath.startswith('src.') or 
+                           pythonpath.startswith('game.')):
+        pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
+                                pythonpath)
+    abspath = utils.pypath_to_realpath(pythonpath, file_ending)
+    try:        
+        # we read the file directly into unicode.
+        fobj = codecs.open(abspath, 'r', encoding=file_encoding)
+    except IOError:
+        # try again without the appended file ending
+        abspath2 = utils.pypath_to_realpath(pythonpath, None)
+        try:
+            fobj = codecs.open(abspath, 'r', encoding=file_encoding)
+        except IOError:            
+            string = "Could not open batchfile '%s', nor '%s'."
+            logger.log_errmsg(string % (abspath2, abspath))
+        return None
+    
+    # We have successfully found and opened the file. Now actually
+    # try to decode it using the given protocol. 
+
+    try:
+        lines = fobj.readlines()
+    except UnicodeDecodeError:
+        # give the line of failure
+        fobj.seek(0)
+        try:
+            lnum = 0
+            for lnum, line in enumerate(fobj):
+                pass
+        except UnicodeDecodeError, err:
+            # lnum starts from 0, so we add +1 line, 
+            # besides the faulty line is never read
+            # so we add another 1 (thus +2) to get
+            # the actual line number seen in an editor. 
+            err.linenum = lnum + 2
+            raise err
+    fobj.close()
+    return lines
 
 #------------------------------------------------------------
 #
@@ -158,29 +213,7 @@ class BatchCommandProcessor(object):
     """
     This class implements a batch-command processor.
 
-    """    
-    
-    def read_file(self, pythonpath):
-        """
-        This reads the contents of a batch-command file.
-        Filename is considered to be the name of the batch file
-        relative the directory specified in settings.py
-        """    
-
-        if pythonpath and not (pythonpath.startswith('src.') or 
-                               pythonpath.startswith('game.')):
-            pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
-                                    pythonpath)
-        abspath = utils.pypath_to_realpath(pythonpath, 'ev')
-        try:
-            fobj = open(abspath)
-        except IOError:
-            logger.log_errmsg("Could not open path '%s'." % abspath)
-            return None
-        lines = fobj.readlines()
-        fobj.close()
-        return lines
-
+    """   
     def parse_file(self, pythonpath):
         """
         This parses the lines of a batchfile according to the following
@@ -212,7 +245,9 @@ class BatchCommandProcessor(object):
                 return "empty"
 
         #read the indata, if possible.
-        lines = self.read_file(pythonpath)
+        lines = read_batchfile(pythonpath, file_ending='.ev')
+        
+        #line = utils.to_unicode(line)
         if not lines:
             return None 
 
@@ -225,6 +260,7 @@ class BatchCommandProcessor(object):
 
         #parse all command definitions into a list.
         for line in lines:
+                        
             typ = identify_line(line)
             if typ == "commanddef":
                 curr_cmd += line
@@ -257,28 +293,6 @@ class BatchCodeProcessor(object):
     This implements a batch-code processor
  
     """
-
-    def read_file(self, pythonpath):
-        """
-        This reads the contents of batchfile.
-        Filename is considered to be the name of the batch file
-        relative the directory specified in settings.py
-        """    
-
-        if pythonpath and not (pythonpath.startswith('src.') or 
-                               pythonpath.startswith('game.')):
-            pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
-                                    pythonpath)
-        abspath = utils.pypath_to_realpath(pythonpath, 'py')
-        try:
-            fobj = open(abspath)
-        except IOError:
-            logger.log_errmsg("Could not open path '%s'." % abspath)
-            return None
-        lines = fobj.readlines()
-        fobj.close()
-        return lines
-
 
     def parse_file(self, pythonpath):
         """
@@ -325,7 +339,7 @@ class BatchCodeProcessor(object):
 
         # read indata
 
-        lines = self.read_file(pythonpath)
+        lines = read_batchfile(pythonpath, file_ending='.py')
         if not lines:
             return None
 

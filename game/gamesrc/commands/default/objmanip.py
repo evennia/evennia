@@ -205,7 +205,6 @@ class CmdSetObjAlias(MuxCommand):
         obj.aliases = aliases 
         caller.msg("Aliases for '%s' are now set to %s." % (obj.name, aliases))
 
-
 class CmdName(ObjManipCommand):
     """
     cname - change the name and/or aliases of an object
