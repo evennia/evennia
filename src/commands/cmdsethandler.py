@@ -58,7 +58,7 @@ When we are tired of fishing, we give the 'go home' command (or
 whatever) and the Cmdhandler simply removes the fishing CommandSet
 so that we are back at defaults (and can throw rocks again).
 
-Since any number of ComandSets can be piled on top of each other, you
+Since any number of CommandSets can be piled on top of each other, you
 can then implement separate sets for different situations. For
 example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
