@@ -249,3 +249,29 @@ def validate_email_address(emailaddress):
         return True # Email address is fine.
     else:
         return False # Email address has funny characters.
+
+
+def inherits_from(obj, parent):
+    """
+    Takes an object and tries to determine if it inherits 
+    from parent. What differs this function from e.g. isinstance()
+    is that obj may be both an instance and a class, and parent
+    may be an instance, a class, or the python path to a class (counting
+    from the evennia root directory). 
+    """
+
+    if callable(obj):
+        # this is a class
+        obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.mro()]
+    else:
+        obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()]
+        
+    if isinstance(parent, basestring):
+        # a given string path, for direct matching
+        parent_path = parent
+    elif callable(parent):
+        # this is a class
+        parent_path = "%s.%s" % (parent.__module__, parent.__name__)
+    else:
+        parent_path = "%s.%s" % (parent.__class__.__module__, parent.__class__.__name__)
+    return any(True for obj_path in obj_paths if obj_path == parent_path)

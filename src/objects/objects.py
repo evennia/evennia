@@ -14,11 +14,13 @@ That an object is controlled by a player/user is just defined by its
 'user' property being set.  This means a user may switch which object
 they control by simply linking to a new object's user property.
 """
+
+from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
 from src.commands.cmdsethandler import CmdSetHandler
 from src.scripts.scripthandler import ScriptHandler
-#from src.permissions.permissions import has_perm
 from src.objects.exithandler import EXITHANDLER
+from src.utils import utils
 
 #
 # Base class to inherit from. 
@@ -48,12 +50,13 @@ class Object(TypeClass):
         try: 
             dummy = object.__getattribute__(dbobj, 'scripts')
             create_scripts = type(dbobj.scripts) != ScriptHandler            
+            
         except AttributeError:
             create_scripts = True 
         if create_cmdset:
             dbobj.cmdset = CmdSetHandler(dbobj)
-            if dbobj.player:
-                dbobj.cmdset.outside_access = False             
+            if utils.inherits_from(self, settings.BASE_CHARACTER_TYPECLASS):
+                dbobj.cmdset.outside_access = False
         if create_scripts:
             dbobj.scripts = ScriptHandler(dbobj)
 
