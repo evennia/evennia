@@ -6,7 +6,9 @@ be of use when designing your own game.
 """
 import os
 import textwrap
+import datetime
 from django.conf import settings
+
 
 def is_iter(iterable):
     """
@@ -85,9 +87,9 @@ def time_format(seconds, style=0):
         # We'll just use integer math, no need for decimal precision.
         seconds = int(seconds) 
         
-    days      = seconds / 86400
+    days     = seconds / 86400
     seconds -= days * 86400
-    hours     = seconds / 3600
+    hours    = seconds / 3600
     seconds -= hours * 3600
     minutes  = seconds / 60
     seconds -= minutes * 60
@@ -117,20 +119,50 @@ def time_format(seconds, style=0):
             
     elif style is 2:
         """
-        Full-detailed, long-winded format.
+        Full-detailed, long-winded format. We ignore seconds.
         """
-        days_str = hours_str = minutes_str = ''
+        days_str = hours_str = minutes_str = seconds_str = ''
         if days > 0:
-            days_str = '%i days, ' % (days,)
+            if days == 1:
+                days_str = '%i day, ' % days
+            else:
+                days_str = '%i days, ' % days
         if days or hours > 0:
-            hours_str = '%i hours, ' % (hours,)
+            if hours == 1:
+                hours_str = '%i hour, ' % hours
+            else:
+                hours_str = '%i hours, ' % hours
         if hours or minutes > 0:
-            minutes_str = '%i minutes, ' % (minutes,)
-        seconds_str = '%i seconds' % (seconds,)
-        
-        retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str,)
+            if minutes == 1:
+                minutes_str = '%i minute ' % minutes
+            else:
+                minutes_str = '%i minutes ' % minutes        
+        retval = '%s%s%s' % (days_str, hours_str, minutes_str)
         return retval  
-    
+
+def datetime_format(dtobj):
+    """
+    Takes a datetime object instance (e.g. from django's DateTimeField)
+    and returns a string. 
+    """
+    year, month, day = dtobj.year, dtobj.date, dtobj.day
+    hour, minute, second = dtobj.hour, dtobj.minute, dtobj.second
+    now = datetime.datetime.now()
+
+    if year < now.year:
+        # another year 
+        timestring = str(dtobj.date())
+    elif dtobj.date() < now.date():
+        # another date, same year
+        timestring = "%02i-%02i" % (day, month)
+    elif hour < now.hour - 1:
+        # same day, more than 1 hour ago
+        timestring = "%02i:%02i" % (hour, minute)
+    else: 
+        # same day, less than 1 hour ago
+        timestring = "%02i:%02i:%02i" % (hour, minute, second) 
+    return timestring
+
 def host_os_is(osname):
     """
     Check to see if the host OS matches the query.

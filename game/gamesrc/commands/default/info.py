@@ -2,7 +2,7 @@
 Commands that are generally staff-oriented that show information regarding
 the server instance.
 """
-import os
+import os, datetime
 import django, twisted
 from django.contrib.auth.models import User
 from src.objects.models import ObjectDB
@@ -52,26 +52,22 @@ class CmdTime(MuxCommand):
     def func(self):
         "Show times."
 
-        string2 = "\nCurrent server uptime:\n %i yrs, %i months, "
-        string2 += "%i weeks, %i days, %i hours, %i minutes and %i secs." 
-        string2 = string2 %  gametime.uptime(format=True)
+        string1 = "\nCurrent server uptime: "        
+        string1 += "{w%s{n" % (utils.time_format(gametime.uptime(format=False), 2))
 
-        string3 =  "\nTotal running time (gametime x %g):" % (1.0/gametime.TIMEFACTOR)
-        string3 += "\n %i yrs, %i months, %i weeks, %i days, "
-        string3 += "%i hours, %i minutes and %i secs." 
-        string3 = string3 % gametime.runtime(format=True)
-        #print "runtime:", gametime.runtime()
-        string1 = "\nTotal game time (realtime x %g):" % (gametime.TIMEFACTOR)
-        string1 += "\n %i yrs, %i months, %i weeks, %i days, "
-        string1 += "%i hours, %i minutes and %i secs." 
-        string1 = string1 % (gametime.gametime(format=True))
-        #print "gametime:", gametime.gametime()
-        string4 = ""
+        string2 =  "\nTotal server running time: "        
+        string2 += "{w%s{n" % (utils.time_format(gametime.runtime(format=False), 2))
+
+        string3 = "\nTotal in-game time (realtime x %g): " % (gametime.TIMEFACTOR)
+        string3 += "{w%s{n" % (utils.time_format(gametime.gametime(format=False), 2))
+
+        string4 = "\nServer time stamp: {w%s{n" % (str(datetime.datetime.now()))
+        string5 = ""
         if not utils.host_os_is('nt'):
             # os.getloadavg() is not available on Windows.
             loadavg = os.getloadavg()
-            string4 = "\n Server load (1 min) : %g%%" % (100 * loadavg[0])
-        string = "%s%s%s%s" % (string2, string3, string1, string4)
+            string5 += "\nServer load (per minute): {w%g%%{n" % (100 * loadavg[0])
+        string = "%s%s%s%s%s" % (string1, string2, string3, string4, string5)
         self.caller.msg(string)
 
 class CmdList(MuxCommand):

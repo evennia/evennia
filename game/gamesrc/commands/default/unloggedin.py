@@ -102,7 +102,6 @@ class CmdConnect(MuxCommand):
         #print "character:", character, character.scripts.all(), character.cmdset.current
         character.execute_cmd('look')
 
-
 class CmdCreate(MuxCommand):
     """
     Create a new account.
@@ -291,7 +290,7 @@ To login to the system, you need to do one of the following:
    > connect anna@myemail.com tuK3221mP
 
    This should log you in. Run 'help' again once you're logged in 
-   to get more aid. Welcome to Evennia! 
+   to get more aid. Hope you enjoy your stay! 
 
 You can use the 'look' command if you want to see the connect screen again. 
 """

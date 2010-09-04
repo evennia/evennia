@@ -208,8 +208,7 @@ class Msg(SharedMemoryModel):
     #@property
     def date_sent_get(self):
         "Getter. Allows for value = self.date_sent"
-        date = self.db_date_sent
-        return str(date).rsplit('.',1)[0]
+        return self.db_date_sent
     #@date_sent.setter
     def date_sent_set(self, value):
         "Setter. Allows for self.date_sent = value"

@@ -32,8 +32,8 @@ REAL_MIN = 60.0 # seconds per minute in real world
 # e.g. when defining events. The words month, week and year can
 # of course mean whatever units of time are used in the game.
 
-TICK = REAL_TICK / TIMEFACTOR
-MIN = REAL_MIN / TIMEFACTOR
+TICK = REAL_TICK * TIMEFACTOR
+MIN = REAL_MIN * TIMEFACTOR
 HOUR = MIN * settings.TIME_MIN_PER_HOUR
 DAY = HOUR * settings.TIME_HOUR_PER_DAY
 WEEK = DAY * settings.TIME_DAY_PER_WEEK

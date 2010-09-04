@@ -76,7 +76,7 @@ class MsgManager(models.Manager):
         if not receiver:
             return None 
         return [msg for msg in self.all()
-                if receiver in msg.recivers
+                if receiver in msg.receivers
                 and receiver not in msg.hide_from_receivers]
 
     def get_messages_by_channel(self, channel):

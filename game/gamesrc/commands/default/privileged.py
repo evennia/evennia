@@ -303,7 +303,7 @@ class CmdBoot(MuxCommand):
             pobj = caller.search("*%s" % args, global_search=True)
             if not pobj:
                 return
-            pobj = pobj[0]
+            pobj = pobj
             if pobj.has_player:
                 if not has_perm(caller, pobj, 'can_boot'):
                     string = "You don't have the permission to boot %s."

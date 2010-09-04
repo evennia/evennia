@@ -4,7 +4,7 @@ Comsys command module.
 
 from src.comms.models import Channel, Msg, ChannelConnection
 from game.gamesrc.commands.default.muxcommand import MuxCommand
-from src.utils import create
+from src.utils import create, utils
 from src.permissions.permissions import has_perm
             
 
@@ -712,9 +712,10 @@ class CmdPage(MuxCommand):
     Usage:
       page[/switches] [<player>,<player>,... = <message>]
       tell        ''
+      page/list <number>
 
     Switch:
-      list  - show your last 10 tells/pages. 
+      list  - show your last <number> of tells/pages. 
       
     Send a message to target user (if online). If no
     argument is given, you will instead see who was the last
@@ -733,30 +734,44 @@ class CmdPage(MuxCommand):
         caller = self.caller
         player = caller.player
 
-        # get the last messages we sent
-        messages = list(Msg.objects.get_messages_by_sender(player))
-        pages = [msg for msg in messages 
-                 if msg.receivers]
-
-        if pages:
-            lastpage = pages[-1]
+        # get the messages we've sent
+        messages_we_sent = list(Msg.objects.get_messages_by_sender(player))        
+        pages_we_sent = [msg for msg in messages_we_sent 
+                         if msg.receivers]
+        # get last messages we've got
+        pages_we_got = list(Msg.objects.get_messages_by_receiver(player))        
+        
+        print "we sent:", pages_we_sent
+        print "we_got:", pages_we_got
 
         if 'list' in self.switches:
-            if len(messages) > 10:
-                lastpages = messages[-10:]
+            pages = pages_we_sent + pages_we_got
+            pages.sort(lambda x,y: cmp(x.date_sent, y.date_sent))
+
+            number = 10
+            if self.args:
+                try:
+                    number = int(self.args)
+                except ValueError:
+                    pass
+
+            if len(pages) > number:
+                lastpages = pages[-number:]
             else:
-                lastpages = messages 
-            lastpages = "\n ".join(["{w%s{n to {c%s{n: %s" % (page.date_sent, 
-                                    "{n,{c ".join([obj.name for obj in page.receivers]),
+                lastpages = pages 
+        
+            lastpages = "\n ".join(["{w%s{n {c%s{n to {c%s{n: %s" % (utils.datetime_format(page.date_sent), 
+                                                                     page.sender.name, 
+                            "{n,{c ".join([obj.name for obj in page.receivers]),
                                                               page.message)
-                                    for page in pages])
+                                    for page in lastpages])
             caller.msg("Your latest pages:\n %s" % lastpages )
             return
 
         if not self.args or not self.rhs:
-            if pages:
+            if pages_we_sent:
                 string = "You last paged {c%s{n." % (", ".join([obj.name 
-                                                        for obj in lastpage.receivers]))
+                                                                for obj in pages_we_sent[-1].receivers]))
                 caller.msg(string)
                 return
             else:
@@ -764,29 +779,49 @@ class CmdPage(MuxCommand):
                 caller.msg(string)
                 return
 
-        # Build a list of targets
+        # We are sending. Build a list of targets
 
         if not self.lhs:
             # If there are no targets, then set the targets 
             # to the last person they paged.
-            receivers = lastpage.receivers
+            if pages_we_sent:
+                receivers = pages_we_sent[-1].receivers
+            else:
+                caller.msg("Who do you want to page?")
+                return 
         else:
             receivers = self.lhslist        
         
         recobjs = []
         for receiver in set(receivers):
-            pobj = caller.search("*%s" % (receiver.lstrip('*')), global_search=True)
-            if not pobj:
-                return
+            if isinstance(receiver, basestring):
+                pobj = caller.search("*%s" % (receiver.lstrip('*')), global_search=True)
+                if not pobj:
+                    return
+            elif hasattr(receiver, 'character'):
+                pobj = receiver.character
+            else:
+                caller.msg("Who do you want to page?")
+                return 
             recobjs.append(pobj)
+        if not recobjs:
+            caller.msg("No players matching your target were found.")
+            return 
 
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
         message = self.rhs
+
         # create the persistent message object
         msg = create.create_message(player, message, 
-                                    receivers=recobjs)
+                                    receivers=recobjs)  
         # tell the players they got a message.
+        received = []
         for pobj in recobjs:
             pobj.msg("%s %s" % (header, message))
-        target_names = "{n,{c ".join([pobj.name for pobj in recobjs])
-        caller.msg("You paged {c%s{n with: '%s'." % (target_names, message))
+            if not pobj.has_player:
+                received.append("{C%s{n" % pobj.name)
+                caller.msg("%s is offline. They will see your message if they list their pages later." % received[-1])
+            else:
+                received.append("{c%s{n" % pobj.name)
+        received = ", ".join(received)
+        caller.msg("You paged %s with: '%s'." % (received, message))
