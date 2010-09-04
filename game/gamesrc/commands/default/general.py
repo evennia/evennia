@@ -475,6 +475,7 @@ class CmdSay(MuxCommand):
     """
     
     key = "say"
+    aliases = ['"']
     
     def func(self):
         "Run the say command"
