@@ -1410,7 +1410,7 @@ class CmdExamine(ObjManipCommand):
     If object is not specified, the current location is examined. 
     """
     key = "examine"
-    aliases = ["ex"]
+    aliases = ["ex","exam"]
     permissions = "cmd:examine"
     help_category = "Building"
 
