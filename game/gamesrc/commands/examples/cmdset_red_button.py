@@ -29,7 +29,7 @@ class CmdNudge(Command):
     """
     
     key = "nudge lid" # two-word command name!
-    alias = ["nudge"]
+    aliases = ["nudge"]
 
     def func(self):
         """
