@@ -811,6 +811,10 @@ class CmdPage(MuxCommand):
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
         message = self.rhs
 
+        # if message begins with a :, we assume it is a 'page-pose'
+        if message[0] == ":":
+            message = message.replace(':', "%s " % caller.key, 1)
+
         # create the persistent message object
         msg = create.create_message(player, message, 
                                     receivers=recobjs)  
