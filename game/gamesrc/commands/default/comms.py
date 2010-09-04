@@ -738,9 +738,6 @@ class CmdPage(MuxCommand):
         pages = [msg for msg in messages 
                  if msg.receivers]
 
-        print messages
-        print pages
-
         if pages:
             lastpage = pages[-1]
 
