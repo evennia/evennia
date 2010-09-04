@@ -107,9 +107,9 @@ class Msg(SharedMemoryModel):
     # Stored as a comma-separated string of dbrefs. Can be used by the
     # game to mask out messages from being visible in the archive (no
     # messages are actually deleted)
-    #db_hide_from_sender = models.BooleanField(default=False)
-    #db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
-    #db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
+    db_hide_from_sender = models.BooleanField(default=False)
+    db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
+    db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
     # permission strings, separated by commas
     db_permissions = models.CharField(max_length=255, blank=True)
  

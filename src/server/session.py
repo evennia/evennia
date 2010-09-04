@@ -140,9 +140,9 @@ class SessionProtocol(StatefulTelnetProtocol):
             character = ObjectDB.objects.get_object_with_user(self.uid)
             if not character:
                 string  = "No character match for session uid: %s" % self.uid
-                logger.log_errmsg(string)
-                return None
-            return character[0]
+                logger.log_errmsg(string)                
+            else:
+                return character
         return None 
 
     def execute_cmd(self, raw_string):

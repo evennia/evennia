@@ -4,7 +4,7 @@ Custom manager for Objects.
 from django.conf import settings
 from django.contrib.auth.models import User
 from src.typeclasses.managers import TypedObjectManager
-from src.typeclasses.managers import returns_typeclass_list
+from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import create 
 
 # Try to use a custom way to parse id-tagged multimatches.
@@ -62,17 +62,23 @@ class ObjectManager(TypedObjectManager):
     # ObjectManager Get methods 
     #
    
-    @returns_typeclass_list
+    @returns_typeclass
     def get_object_with_user(self, user):
         """
         Matches objects with obj.player.user matching the argument.
-        Both an user object and a user id may be supplied. 
+        A player<->user is a one-to-relationship, so this always
+        returns just one result or None. 
+
+        user - mayb be a user object or user id.
         """
         try:
             uid = int(user)
         except TypeError:
-            uid = user.id        
-        return self.filter(db_player__user__id=uid)
+            uid = user.id             
+        try:
+            return self.get(db_player__user__id=uid)
+        except Exception:
+            return None
         
     # This returns typeclass since get_object_with_user and get_dbref does. 
     def player_name_search(self, search_string):
@@ -273,7 +279,7 @@ class ObjectManager(TypedObjectManager):
             player_string = ostring.lstrip("*")  
             player_match = self.player_name_search(player_string)
             if player_match is not None:
-                return [player_match]            
+                return [player_match]
 
         if global_search or not location:
             # search all objects

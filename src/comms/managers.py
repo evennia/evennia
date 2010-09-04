@@ -66,8 +66,7 @@ class MsgManager(models.Manager):
         sender = to_object(sender)
         if not sender:
             return None 
-        return [msg for msg in sender.sender_set.all()
-                if sender not in msg.hide_from_senders.all()]
+        return self.filter(db_sender=sender).exclude(db_hide_from_sender=False)
 
     def get_messages_by_receiver(self, receiver):
         """
@@ -76,8 +75,9 @@ class MsgManager(models.Manager):
         receiver = to_object(receiver)
         if not receiver:
             return None 
-        return [msg for msg in receiver.receiver_set.all()
-                if receiver not in msg.hide_from_receivers.all()]
+        return [msg for msg in self.all()
+                if receiver in msg.recivers
+                and receiver not in msg.hide_from_receivers]
 
     def get_messages_by_channel(self, channel):
         """
@@ -86,9 +86,9 @@ class MsgManager(models.Manager):
         channel = to_object(channel, objtype='channel')
         if not channel:
             return None 
-        return [msg for msg in channel.channel_set.all()
-                if channel not in msg.hide_from_channels.all()]
-
+        return [msg for msg in self.all()
+                if channel in msg.channels 
+                and channel not in msg.hide_from_channels]
 
     #TODO add search limited by send_times 
     def text_search(self, searchstring, filterdict=None):

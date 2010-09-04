@@ -763,7 +763,6 @@ class CmdPage(MuxCommand):
                 caller.msg(string)
                 return
 
-
         # Build a list of targets
 
         if not self.lhs:
@@ -775,10 +774,10 @@ class CmdPage(MuxCommand):
         
         recobjs = []
         for receiver in receivers:
-            obj = caller.search("*%s" % (receiver.lstrip('*')), global_search=True)
-            if not obj:
+            pobj = caller.search("*%s" % (receiver.lstrip('*')), global_search=True)
+            if not pobj:
                 return
-            recobjs.append(obj)
+            recobjs.append(pobj)
 
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
         message = self.rhs
@@ -786,7 +785,7 @@ class CmdPage(MuxCommand):
         msg = create.create_message(caller, message, 
                                     receivers=recobjs)
         # tell the players they got a message.
-        for obj in recobjs:
-            obj.msg("%s %s" % (header, message))
-        caller.msg("You paged %s with '%s'." % (recobjs, message))
- 
+        for pobj in recobjs:
+            pobj.msg("%s %s" % (header, message))
+        target_names = "{n,{c ".join([pobj.name for pobj in recobjs])
+        caller.msg("You paged {c%s{n with: '%s'." % (target_names, message))

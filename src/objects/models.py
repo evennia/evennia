@@ -450,6 +450,7 @@ class ObjectDB(TypedObject):
         results = ObjectDB.objects.object_search(self, ostring, 
                                                  global_search,
                                                  attribute_name)
+    
         if ignore_errors:
             return results
         return HANDLE_SEARCH_ERRORS(self, ostring, results, global_search)
