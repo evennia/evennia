@@ -49,7 +49,7 @@ def id_to_obj(dbref, db_model='PlayerDB'):
     for the id. 
     """    
     if db_model == 'PlayerDB':
-        from src.player.objects import PlayerDB as db_model
+        from src.players.models import PlayerDB as db_model
     else:
         db_model = Channel
     try:
@@ -208,7 +208,8 @@ class Msg(SharedMemoryModel):
     #@property
     def date_sent_get(self):
         "Getter. Allows for value = self.date_sent"
-        return self.db_date_sent
+        date = self.db_date_sent
+        return str(date).rsplit('.',1)[0]
     #@date_sent.setter
     def date_sent_set(self, value):
         "Setter. Allows for self.date_sent = value"

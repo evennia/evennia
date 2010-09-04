@@ -292,10 +292,6 @@ def create_message(senderobj, message, channels=None,
     to let a message both go to several channels and to several receivers
     at the same time, it's up to the command definitions to limit this as
     desired. 
-
-    Since messages are often directly created by the user, this method (and all
-    comm methods) raise CommErrors with different message strings to make it
-    easier for the Command definition to give proper feedback to the user. 
     """
     
     def to_player(obj):

@@ -59,14 +59,14 @@ class MsgManager(models.Manager):
         except:
             return None
         
-    def get_messages_by_sender(self, sender):
+    def get_messages_by_sender(self, player):
         """
         Get all messages sent by one player
         """
-        sender = to_object(sender)
-        if not sender:
+        player = to_object(player, objtype='player')        
+        if not player:
             return None 
-        return self.filter(db_sender=sender).exclude(db_hide_from_sender=False)
+        return self.filter(db_sender=player).exclude(db_hide_from_sender=True)
 
     def get_messages_by_receiver(self, receiver):
         """

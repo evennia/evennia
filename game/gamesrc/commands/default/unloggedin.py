@@ -192,6 +192,10 @@ class CmdCreate(MuxCommand):
                                                   location=default_home,
                                                   typeclass=typeclass,
                                                   home=default_home)                
+
+                # set a default description
+                new_character.db.desc = "This is a Player."
+
                 new_character.db.FIRST_LOGIN = True                
                 new_player = new_character.player
                 new_player.db.FIRST_LOGIN = True 

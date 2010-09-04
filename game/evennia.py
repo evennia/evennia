@@ -64,16 +64,19 @@ if os.name == 'nt':
         bat_file.write("@%s %%*" % twistd_path)
         bat_file.close()
         print """
-    INFO: Since you are running Windows, a twistd.bat file was created for you.
-    The twistd.bat is a simple batch file that tries to call the twisted 
-    executable. The system has determined this to be:
+    INFO: Since you are running Windows, a file 'twistd.bat' was
+    created for you. This is a simple batch file that tries to call
+    the twisted executable. Evennia determined this to be:
       
        %s
 
-    If you should run into errors you might need to edit twistd.bat to point to 
-    the correct location of the Twisted executable (usually called twistd.py).  
+    If you run into errors at startup you might need to edit
+    twistd.bat to point to the actual location of the Twisted
+    executable (usually called twistd.py) on your machine.
 
-    When you are ready, run this program again to retry the server restart.""" % twistd_path
+    This procedure is only done once. Run evennia.py again when you 
+    are ready to start the server.
+    """ % twistd_path       
         sys.exit()
 
     TWISTED_BINARY = 'twistd.bat'

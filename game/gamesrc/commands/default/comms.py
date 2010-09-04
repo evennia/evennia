@@ -733,11 +733,14 @@ class CmdPage(MuxCommand):
         caller = self.caller
         player = caller.player
 
-
-        # get the last message we sent
+        # get the last messages we sent
         messages = list(Msg.objects.get_messages_by_sender(player))
         pages = [msg for msg in messages 
                  if msg.receivers]
+
+        print messages
+        print pages
+
         if pages:
             lastpage = pages[-1]
 
@@ -746,16 +749,17 @@ class CmdPage(MuxCommand):
                 lastpages = messages[-10:]
             else:
                 lastpages = messages 
-            lastpages = "\n ".join(["%s to %s: %s" % (mess.date_sent, mess.receivers.all(), 
-                                                      mess.message)
-                                    for mess in messages])
+            lastpages = "\n ".join(["{w%s{n to {c%s{n: %s" % (page.date_sent, 
+                                    "{n,{c ".join([obj.name for obj in page.receivers]),
+                                                              page.message)
+                                    for page in pages])
             caller.msg("Your latest pages:\n %s" % lastpages )
-            return 
+            return
 
         if not self.args or not self.rhs:
             if pages:
-                string = "You last paged %s." % (", ".join([obj.name 
-                                                        for obj in lastpage.receivers.all()]))
+                string = "You last paged {c%s{n." % (", ".join([obj.name 
+                                                        for obj in lastpage.receivers]))
                 caller.msg(string)
                 return
             else:
@@ -773,7 +777,7 @@ class CmdPage(MuxCommand):
             receivers = self.lhslist        
         
         recobjs = []
-        for receiver in receivers:
+        for receiver in set(receivers):
             pobj = caller.search("*%s" % (receiver.lstrip('*')), global_search=True)
             if not pobj:
                 return
@@ -782,7 +786,7 @@ class CmdPage(MuxCommand):
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
         message = self.rhs
         # create the persistent message object
-        msg = create.create_message(caller, message, 
+        msg = create.create_message(player, message, 
                                     receivers=recobjs)
         # tell the players they got a message.
         for pobj in recobjs:
