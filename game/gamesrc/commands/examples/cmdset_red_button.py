@@ -294,5 +294,9 @@ class BlindCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         "Setup the blind cmdset"
+        from game.gamesrc.commands.default.general import CmdSay
+        from game.gamesrc.commands.default.general import CmdPose
+        self.add(CmdSay())
+        self.add(CmdPose())
         self.add(CmdBlindLook())
         self.add(CmdBlindHelp())
