@@ -119,7 +119,7 @@ class CmdSmashGlass(Command):
             string = "You hit the lid hard. It doesn't move an inch."
         else:
             string = "You place a well-aimed fist against the glass of the lid." 
-            string += "Unfortunately all you get is a pain in your hand. Maybe"
+            string += " Unfortunately all you get is a pain in your hand. Maybe"
             string += " you should just try to open the lid instead?"
         self.caller.msg(string)
         self.caller.location.msg_contents("%s tries to smash the glass of the button." %
