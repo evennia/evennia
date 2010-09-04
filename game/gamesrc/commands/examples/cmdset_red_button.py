@@ -36,14 +36,20 @@ class CmdNudge(Command):
         nudge the lid.
         """
         rand = random.random()
+        open_ok = False
+
         if rand < 0.5:
             string = "You nudge at the lid. It seems stuck."
-        elif 0.5 <= 0.5 < 0.7:
+        elif 0.5 <= rand < 0.7:
             string = "You move the lid back and forth. It won't budge."
         else:
             string = "You manage to get a nail under the lid. It pops open."
-            self.obj.open_lid()
+            open_ok = True
         self.caller.msg(string)
+        
+        if open_ok:
+            """open_lid() does its own emits, so defer it until we speak"""
+            self.obj.open_lid()
 
 class CmdPush(Command):
     """
