@@ -672,13 +672,14 @@ class CmdGroup(MuxCommand):
             string += "\n  This is a SUPERUSER account! Group membership does not matter."
         else:            
             # get permissions and determine if they are groups
-            perms = [perm.strip().lower() for perm in caller.player.permissions 
-                     if perm.strip()]
+            perms = list(set(caller.permissions + caller.player.permissions))
+
             for group in [group for group in PermissionGroup.objects.all() 
-                          if group.key.lower() in perms]:
-                string += "\n %s\t\t%s" % (group.key, [str(perm) for perm in group.group_permissions])
+                          if group.key in perms]:
+                string += "\n {w%s{n\n%s" % (group.key, ", ".join(group.group_permissions))
             if string:        
-                string = "\nYour (%s's) group memberships: %s" % (caller.name, string)     
+                string = "\nGroup memberships for you (Player %s + Character %s): %s" % (caller.player.name, 
+                                                                                         caller.name, string)     
             else:
                 string = "\nYou are not not a member of any groups."
         caller.msg(string)
