@@ -154,18 +154,20 @@ class CmdListScripts(MuxCommand):
                 table[3].append("--")
             else:
                 table[3].append("%ss" % script.interval)                
-            if not hasattr(script, 'next_repeat') or not script.next_repeat:
-                table[5].append("--")
-            else:
-                table[5].append("%ss" % script.next_repeat)
-            if not hasattr(script, 'repeats') or not script.repeats:
+            next = script.time_until_next_repeat()
+            if not next:
                 table[4].append("--")
             else:
-                table[4].append("%ss" % script.repeats)
-            if script.persistent:
-                table[6].append("Y")
+                table[4].append("%ss" % next)
+
+            if not hasattr(script, 'repeats') or not script.repeats:
+                table[5].append("--")
             else:
-                table[6].append("N")           
+                table[5].append("%ss" % script.repeats)
+            if script.persistent:
+                table[6].append("*")
+            else:
+                table[6].append("-")           
             typeclass_path = script.typeclass_path.rsplit('.', 1)
             table[7].append("%s" % typeclass_path[-1])
             table[8].append(script.desc)
@@ -232,8 +234,7 @@ class CmdListScripts(MuxCommand):
             string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
         else:
             # No stopping or validation. We just want to view things.
-            string = self.format_script_list(scripts)
-        print string
+            string = self.format_script_list(scripts)        
         caller.msg(string)
 
 

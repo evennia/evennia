@@ -95,9 +95,8 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 #print "cmdset %s not in cache. Reloading." % wanted_cache_key
                 # Not in cache. Reload from disk.
                 modulepath, classname = python_path.rsplit('.', 1)
-
                 module = __import__(modulepath, fromlist=[True])
-                cmdsetclass = module.__dict__[classname]
+                cmdsetclass = module.__dict__[classname]                
                 CACHED_CMDSETS[wanted_cache_key] = cmdsetclass            
             #print "cmdset %s found." % wanted_cache_key 
             #instantiate the cmdset (and catch its errors)
@@ -122,7 +121,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             logger.log_trace()    
             if emit_to_obj:
                 emit_to_obj.msg(errstring)
-        raise 
+        raise # have to raise, or we will not see any errors in some situations!
 
 # classes 
 
