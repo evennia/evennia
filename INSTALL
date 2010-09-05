@@ -15,7 +15,7 @@ Requirements
    + (pywin32 (sourceforge.net/projects/pywin32) - needed for Windows only) 
 
 * Django (www.djangoproject.com)
-   Version 1.1+ or latest subversion trunk recommended. 
+   Version 1.2.1+ or latest subversion trunk highly recommended. 
    + PIL library (www.pythonware.com/products/pil)
 
 * PySqlite2 (http://code.google.com/p/pysqlite)
