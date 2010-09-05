@@ -88,8 +88,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
     try:
         try:                        
-            wanted_cache_key = python_path
-            print "inport cmdsets: cache=", CACHED_CMDSETS
+            wanted_cache_key = python_path            
             cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
             if not cmdsetclass:

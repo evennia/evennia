@@ -33,9 +33,15 @@ def returns_player_list(method):
             try:
                 players.append(user.get_profile())
             except Exception:
-                print players
-                print user, user.__class__
-                logger.log_trace("User has no profile(), maybe database was partially reset?")                
+                # there is something wrong with get_profile. But
+                # there is a 1-1 relation between Users-Players, so we 
+                # try to go the other way instead.
+                from src.players.models import PlayerDB                
+                match = PlayerDB.objects.filter(user=user)
+                if match:
+                    players.append(match[0])
+                else:
+                    logger.log_trace("No connection User<->Player, maybe database was partially reset?")                
         return players
     return func 
 
