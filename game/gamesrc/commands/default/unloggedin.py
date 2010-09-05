@@ -187,10 +187,10 @@ class CmdCreate(MuxCommand):
                 permissions = settings.PERMISSION_PLAYER_DEFAULT
 
                 new_character = create.create_player(playername, email, password,
-                                                  permissions=permissions,
-                                                  location=default_home,
-                                                  typeclass=typeclass,
-                                                  home=default_home)                
+                                                     permissions=permissions,
+                                                     location=default_home,
+                                                     typeclass=typeclass,
+                                                     home=default_home)                
 
                 # set a default description
                 new_character.db.desc = "This is a Player."

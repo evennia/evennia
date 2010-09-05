@@ -417,7 +417,7 @@ def create_player(name, email, password,
             new_user = User.objects.create_user(name, email, password) 
 
     # create the associated Player for this User, and tie them together
-    new_player = PlayerDB(user=new_user)        
+    new_player = PlayerDB(db_key=name, user=new_user)        
     new_player.save()        
 
     # assign mud permissions 

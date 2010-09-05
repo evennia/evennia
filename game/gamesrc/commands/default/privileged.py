@@ -12,7 +12,7 @@ from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.permissions.models import PermissionGroup
 from src.utils import reloads, create, logger, utils
-from src.permissions.permissions import has_perm
+from src.permissions.permissions import has_perm, has_perm_string
 from game.gamesrc.commands.default.muxcommand import MuxCommand
 
 
@@ -437,43 +437,78 @@ class CmdDelPlayer(MuxCommand):
         if ':' in args:
             args, reason = [arg.strip() for arg in args.split(':', 1)]
 
-        # Search for the object connected to this user (this is done by 
-        # adding a * to the beginning of the search criterion)
-        pobj = caller.search("*%s" % args, global_search=True)
-        if not pobj:
-            # if we cannot find an object connected to this user, 
-            # try a more direct approach
+        # We use player_search since we want to be sure to find also players
+        # that lack characters.
+        players = PlayerDB.objects.filter(db_key=args)
+        if not players:
+            try:
+                players = PlayerDB.objects.filter(id=args)
+            except ValueError:
+                pass
+
+        if not players:            
+            # try to find a user instead of a Player
             try:
                 user = User.objects.get(id=args)
             except Exception:            
                 try:
-                    user = User.objects.get(name__iexact=args)    
+                    user = User.objects.get(username__iexact=args)                        
                 except Exception:
-                    caller.msg("Could not find user/id '%s'." % args)
-                return
-            uprofile = user.get_profile
-        else:
-            user = pobj.user
-            uprofile = pobj.user_profile
-
-        if not has_perm(caller, uprofile, 'manage_players'):
-            string = "You don't have the permissions to delete that player."
+                    string = "No Player nor User found matching '%s'." % args
+                    caller.msg(string)
+                    return                     
+            try:
+                player = user.get_profile()
+            except Exception:
+                player = None
+                                
+            if not has_perm_string(caller, 'manage_players'):
+                string = "You don't have the permissions to delete this player."
+                caller.msg(string)
+                return 
+            string = ""
+            name = user.username
+            user.delete()
+            if player:
+                name = player.name
+                player.delete()
+                string = "Player %s was deleted." % name
+            else:
+                string += "The User %s was deleted, but had no Player associated with it." % name
             caller.msg(string)
             return 
-        
-        uname = user.username
-        # boot the player then delete 
-        if pobj and pobj.has_user:
-            caller.msg("Booting and informing player ...")
-            msg = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
-            if reason:
-                msg += " Reason given:\n  '%s'" % reason
-            pobj.msg(msg)
-            caller.execute_cmd("@boot %s" % uname)
+    
+        elif len(players) > 1:
+            string = "There where multiple matches:"
+            for player in players:
+                string += "\n %s %s" % (player.id, player.key) 
+            return 
 
-        uprofile.delete()
-        user.delete()    
-        caller.msg("Player %s was successfully deleted." % uname)
+        else:
+            # one single match
+
+            player = players[0]
+            user = player.user
+            character = player.character
+
+            if not has_perm(caller, player, 'manage_players'):
+                string = "You don't have the permissions to delete that player."
+                caller.msg(string)
+                return 
+
+            uname = user.username
+            # boot the player then delete 
+            if character and character.has_player:
+                caller.msg("Booting and informing player ...")
+                string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
+                if reason:
+                    string += " Reason given:\n  '%s'" % reason
+                character.msg(string)
+                caller.execute_cmd("@boot %s" % uname)
+                
+            player.delete()
+            user.delete()    
+            caller.msg("Player %s was successfully deleted." % uname)
 
 
 class CmdNewPassword(MuxCommand):

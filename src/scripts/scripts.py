@@ -301,3 +301,13 @@ class AddCmdSet(Script):
             else:
                 self.obj.cmdset.add(cmdset)
         
+    def at_stop(self):
+        """
+        This removes the cmdset when the script stops
+        """
+        cmdset = self.db.cmdset
+        if cmdset:
+            if self.db.add_default:
+                self.obj.cmdset.delete_default()
+            else:
+                self.obj.cmdset.delete(cmdset)

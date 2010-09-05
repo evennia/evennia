@@ -307,7 +307,7 @@ class CmdSetHandler(object):
         the last cmdset in the stack is removed. Whenever
         the cmdset_stack changes, the cmdset is updated.
         The default cmdset (first entry in stack) is never
-        removed - set it to an empty set with add_default instead.
+        removed - remove it explicitly with delete_default.
 
         key_or_class - a specific cmdset key or a cmdset class (in
                        the latter case, *all* cmdsets of this class 
@@ -337,6 +337,11 @@ class CmdSetHandler(object):
             self.cmdset_stack.insert(0, default_cmdset)
 
         # re-sync the cmdsethandler. 
+        self.update()
+
+    def delete_default(self):
+        "This explicitly deletes the default cmdset. It's the only command that can."
+        self.cmdset_stack[0] = CmdSet(cmdsetobj=self.obj, key="Empty")
         self.update()
 
     def all(self):
