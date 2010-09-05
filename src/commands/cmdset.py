@@ -84,6 +84,7 @@ def instantiate(cmd):
         return cmd()
     return cmd 
         
+
 class CmdSet(object):
     """
     This class describes a unique cmdset that understands priorities. CmdSets

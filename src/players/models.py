@@ -48,7 +48,6 @@ from src.server import sessionhandler
 from src.players import manager 
 from src.typeclasses.models import Attribute, TypedObject
 from src.permissions import permissions
-from src.utils.ansi import parse_ansi
 from src.utils import logger
 
 #------------------------------------------------------------
@@ -248,12 +247,11 @@ class PlayerDB(TypedObject):
         "Delete permission from old ones"
         return permissions.del_perm(self, perm)
 
-
     #
     # PlayerDB class access methods 
     # 
     
-    def msg(self, message, from_obj=None):
+    def msg(self, message, from_obj=None, markup=True):
         """
         This duplicates the same-named method on the Character. 
         It forwards messages to the character or uses
@@ -268,8 +266,9 @@ class PlayerDB(TypedObject):
                 except Exception:
                     pass
             if self.at_msg_receive(message, from_obj):
-                for session in self.sessions:
-                    session.msg(parse_ansi(message))
+                for session in object.__getattribute__(self, 'sessions'):
+                    session.msg(message, markup)
+
     def emit_to(self, message, from_obj=None):
         """
         Deprecated. Use msg instead.

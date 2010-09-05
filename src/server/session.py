@@ -125,11 +125,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         except Exception, e:
             self.sendLine(str(e))
             return 
-        if markup: 
-            message = ansi.parse_ansi(message)
-        else:
-            message = ansi.clean_ansi(message)
-        self.sendLine(message)
+        self.sendLine(ansi.parse_ansi(message, strip_ansi=not markup))
 
     def get_character(self):
         """

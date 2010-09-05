@@ -1,11 +1,25 @@
 """
-ANSI - gives colour to text.
+ANSI - Gives colour to text.
+
+Use the codes defined in ANSIPARSER in your text
+to apply colour to text according to the ANSI standard. 
+
+Examples: 
+ This is %crRed text%cn and this is normal again.
+ This is {rRed text{n and this is normal again.
+
+Mostly you should not need to call parse_ansi() explicitly;
+it is run by Evennia just before returning data to/from the
+user. 
+
 """
 import re
 
 class ANSITable(object):
     """
-    A table of ANSI characters to use when replacing things.
+    A table defining the 
+    standard ANSI command sequences.
+
     """
     ansi = {}
     ansi["beep"] = "\07"
@@ -46,41 +60,19 @@ class ANSITable(object):
     ansi["tab"] = "\t"
     ansi["space"] = " "
     
-class BaseParser(object):
-    def parse_ansi(self, string, strip_ansi=False, strip_formatting=False):
-        """
-        Parses a string, subbing color codes as needed.
-        """
-        if string == None or string == '':
-            return ''
-        
-        # Convert to string to prevent problems with lists, ints, and other types.
-        string = str(string)
-        
-        # if strip_formatting:
-        #     char_return = ""
-        #     char_tab = ""
-        #     char_space = ""
-        # else:
-        #     char_return = ANSITable.ansi["return"]
-        #     char_tab = ANSITable.ansi["tab"]
-        #     char_space = ANSITable.ansi["space"]
-               
-        for sub in self.ansi_subs:
-            p = re.compile(sub[0], re.DOTALL)
-            if strip_ansi:
-                string = p.sub("", string)
-            else:
-                string = p.sub(sub[1], string)
-    
-        if strip_ansi:
-            return '%s' % (string)
-        else:
-            return '%s%s' % (string, ANSITable.ansi["normal"])
 
-class MuxANSIParser(BaseParser):
+class ANSIParser(object):
+    """
+    A class that parses ansi markup 
+    to ANSI command sequences
+    """
+
     def __init__(self):
-        self.ansi_subs = [
+        "Sets the mappings"
+
+        # MUX-style mappings %cr %cn etc
+
+        mux_ansi_map = [
             (r'%r',  ANSITable.ansi["return"]),
             (r'%t',  ANSITable.ansi["tab"]),
             (r'%b',  ANSITable.ansi["space"]),
@@ -104,52 +96,68 @@ class MuxANSIParser(BaseParser):
             (r'%cC', ANSITable.ansi["back_cyan"]),
             (r'%cw', ANSITable.ansi["white"]),
             (r'%cW', ANSITable.ansi["back_white"]),
-        ]
+            ]
 
-class ExtendedANSIParser(MuxANSIParser):
-    """
-    Extends the standard mux colour commands with {-style commands
-    (shortcuts for writing light/dark text without background)
-    """
-    def __init__(self):
-        super(ExtendedANSIParser, self).__init__()        
+        # Expanded mapping {r {n etc
+
         hilite = ANSITable.ansi['hilite']
         normal = ANSITable.ansi['normal']
-        self.ansi_subs.extend( [
-        (r'{r', hilite + ANSITable.ansi['red']),    
-        (r'{R', normal + ANSITable.ansi['red']),    
-        (r'{g', hilite + ANSITable.ansi['green']),
-        (r'{G', normal + ANSITable.ansi['green']),
-        (r'{y', hilite + ANSITable.ansi['yellow']),
-        (r'{Y', normal + ANSITable.ansi['yellow']),
-        (r'{b', hilite + ANSITable.ansi['blue']),
-        (r'{B', normal + ANSITable.ansi['blue']),
-        (r'{m', hilite + ANSITable.ansi['magenta']),
-        (r'{M', normal + ANSITable.ansi['magenta']),
-        (r'{c', hilite + ANSITable.ansi['cyan']),
-        (r'{C', normal + ANSITable.ansi['cyan']),
-        (r'{w', hilite + ANSITable.ansi['white']), #white
-        (r'{W', normal + ANSITable.ansi['white']), #light grey
-        (r'{x', hilite + ANSITable.ansi['black']), #dark grey
-        (r'{X', normal + ANSITable.ansi['black']), #pure black
-        (r'{n', normal)                            #reset
-        ] )
-    
-#ANSI_PARSER = MuxANSIParser()
-ANSI_PARSER = ExtendedANSIParser()
+        ext_ansi_map = [
+            (r'{r', hilite + ANSITable.ansi['red']),    
+            (r'{R', normal + ANSITable.ansi['red']),    
+            (r'{g', hilite + ANSITable.ansi['green']),
+            (r'{G', normal + ANSITable.ansi['green']),
+            (r'{y', hilite + ANSITable.ansi['yellow']),
+            (r'{Y', normal + ANSITable.ansi['yellow']),
+            (r'{b', hilite + ANSITable.ansi['blue']),
+            (r'{B', normal + ANSITable.ansi['blue']),
+            (r'{m', hilite + ANSITable.ansi['magenta']),
+            (r'{M', normal + ANSITable.ansi['magenta']),
+            (r'{c', hilite + ANSITable.ansi['cyan']),
+            (r'{C', normal + ANSITable.ansi['cyan']),
+            (r'{w', hilite + ANSITable.ansi['white']), #white
+            (r'{W', normal + ANSITable.ansi['white']), #light grey
+            (r'{x', hilite + ANSITable.ansi['black']), #dark grey
+            (r'{X', normal + ANSITable.ansi['black']), #pure black
+            (r'{n', normal)                            #reset
+            ] 
 
-def parse_ansi(string, strip_ansi=False, strip_formatting=False, parser=ANSI_PARSER):
+        self.ansi_map = mux_ansi_map + ext_ansi_map
+
+        # prepare regex matching
+        self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
+                         for sub in self.ansi_map]
+        # prepare matching ansi codes overall
+        self.ansi_regex = re.compile("\033\[[0-9;]+m")
+
+    def parse_ansi(self, string, strip_ansi=False):
+        """
+        Parses a string, subbing color codes according to
+        the stored mapping. 
+
+        strip_ansi flag instead removes all ansi markup.
+
+        """
+        if not string:
+            return ''
+        string = str(string)
+        for sub in self.ansi_sub:                
+            # go through all available mappings and translate them
+            string = sub[0].sub(sub[1], string)
+        if strip_ansi:
+            # remove all ANSI escape codes
+            string = self.ansi_regex.sub("", string)
+        return string 
+            
+ANSI_PARSER = ANSIParser()
+
+#
+# Access function
+#
+
+def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER):
     """
     Parses a string, subbing color codes as needed.
+
     """
-    return parser.parse_ansi(string, strip_ansi=strip_ansi, 
-                             strip_formatting=strip_formatting)
-def clean_ansi(string):
-    """
-    Cleans all ansi symbols from a string
-    """
-    # convert all to their ansi counterpart
-    string = parse_ansi(string)
-    # next, strip it all away
-    regex = re.compile("\033\[[0-9;]+m")
-    return regex.sub("", string) #replace all matches with empty strings
+    return parser.parse_ansi(string, strip_ansi=strip_ansi)

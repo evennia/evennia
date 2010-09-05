@@ -150,9 +150,3 @@ class HelpEntry(SharedMemoryModel):
 
     def __unicode__(self):
         return u'%s' % self.key
-                
-    def get_entrytext_ingame(self):
-        """
-        Gets the entry text for in-game viewing.
-        """
-        return ansi.parse_ansi(self.entrytext)
