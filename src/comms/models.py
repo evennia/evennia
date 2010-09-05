@@ -212,8 +212,7 @@ class Msg(SharedMemoryModel):
     #@date_sent.setter
     def date_sent_set(self, value):
         "Setter. Allows for self.date_sent = value"
-        self.db_date_sent = value
-        self.save()
+        raise Exception("You cannot edit date_sent!")
     #@date_sent.deleter
     def date_sent_del(self):
         "Deleter. Allows for del self.date_sent"

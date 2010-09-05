@@ -11,7 +11,6 @@ from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.permissions.models import PermissionGroup
-from src.scripts.scripthandler import format_script_list
 from src.utils import reloads, create, logger, utils
 from src.permissions.permissions import has_perm
 from game.gamesrc.commands.default.muxcommand import MuxCommand
@@ -117,7 +116,7 @@ class CmdPy(MuxCommand):
 
 class CmdListScripts(MuxCommand):
     """
-    List all scripts.
+    Operate on scripts.
 
     Usage:
       @scripts[/switches] [<obj or scriptid>]
@@ -137,6 +136,51 @@ class CmdListScripts(MuxCommand):
     permissions = "cmd:listscripts"
     help_category = "Admin"
 
+    def format_script_list(self, scripts):
+        "Takes a list of scripts and formats the output."
+        if not scripts:
+            return "<No scripts>"
+
+        table = [["id"], ["obj"], ["key"],["intval"],["next"],["rept"], ["db"],["typeclass"],["desc"]]
+        for script in scripts:
+
+            table[0].append(script.id)            
+            if not hasattr(script, 'obj') or not script.obj:
+                table[1].append("<Global>")
+            else:
+                table[1].append(script.obj.key)            
+            table[2].append(script.key)                
+            if not hasattr(script, 'interval') or not script.interval:
+                table[3].append("--")
+            else:
+                table[3].append("%ss" % script.interval)                
+            if not hasattr(script, 'next_repeat') or not script.next_repeat:
+                table[5].append("--")
+            else:
+                table[5].append("%ss" % script.next_repeat)
+            if not hasattr(script, 'repeats') or not script.repeats:
+                table[4].append("--")
+            else:
+                table[4].append("%ss" % script.repeats)
+            if script.persistent:
+                table[6].append("Y")
+            else:
+                table[6].append("N")           
+            typeclass_path = script.typeclass_path.rsplit('.', 1)
+            table[7].append("%s" % typeclass_path[-1])
+            table[8].append(script.desc)
+
+        ftable = utils.format_table(table)
+        string = ""
+        for irow, row in enumerate(ftable):
+            if irow == 0:
+                srow = "\n" + "".join(row)
+                srow = "{w%s{n" % srow.rstrip()
+            else:
+                srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
+            string += srow.rstrip()
+        return string.strip()
+
     def func(self):
         "implement method"
 
@@ -145,13 +189,14 @@ class CmdListScripts(MuxCommand):
         
         string = ""
         if args:
-            # test first if this is an script match
+
+            # test first if this is a script match
             scripts = ScriptDB.objects.get_all_scripts(key=args)
             if not scripts:
                 # try to find an object instead.
-                objects = ObjectDB.objects.pobject_search(caller, 
-                                                          args, 
-                                                          global_search=True)
+                objects = ObjectDB.objects.object_search(caller, 
+                                                         args, 
+                                                         global_search=True)
                 if objects:                    
                     scripts = []
                     for obj in objects:
@@ -160,9 +205,11 @@ class CmdListScripts(MuxCommand):
         else:
             # we want all scripts.
             scripts = ScriptDB.objects.get_all_scripts()
+
         if not scripts:
-            return 
-        #caller.msg(scripts)
+            string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
+            caller.msg(string)
+            return         
             
         if self.switches and self.switches[0] in ('stop', 'del', 'delete'):
             # we want to delete something
@@ -177,17 +224,16 @@ class CmdListScripts(MuxCommand):
             else:
                 # multiple matches.
                 string = "Multiple script matches. Please refine your search:\n"
-                string += ", ".join([str(script.key) for script in scripts])
-        
+                string += self.format_script_list(scripts)        
         elif self.switches and self.switches[0] in ("validate", "valid", "val"):
             # run validation on all found scripts
             nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts)
             string = "Validated %s scripts. " % ScriptDB.objects.all().count()
-            string += "Started %s and stopped %s scripts." % (nr_started, 
-                                                             nr_stopped)
+            string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
         else:
             # No stopping or validation. We just want to view things.
-            string = format_script_list(scripts)
+            string = self.format_script_list(scripts)
+        print string
         caller.msg(string)
 
 
@@ -219,16 +265,17 @@ class CmdListCmdSets(MuxCommand):
 
 class CmdListObjects(MuxCommand):
     """
-    List all objects in database
+    Give a summary of object types in database
 
     Usage:
-      @listobjects [nr]
+      @objects [<nr>]
 
-    Gives a list of nr latest objects in database ang give 
-    statistics. If not given, nr defaults to 10.
+    Gives statictics on objects in database as well as 
+    a list of <nr> latest objects in database. If not 
+    given, <nr> defaults to 10.
     """
-    key = "@listobjects"
-    aliases = ["@listobj", "@listobjs"]
+    key = "@objects"
+    aliases = ["@listobjects", "@listobjs"]
     permissions = "cmd:listobjects"
     help_category = "Building"
 
@@ -243,18 +290,36 @@ class CmdListObjects(MuxCommand):
             nlim = 10
         dbtotals = ObjectDB.objects.object_totals()
         #print dbtotals 
-        string = "\nObjects in database:\n"
-        string += "Count\tTypeclass"
+        string = "\n{wDatase Object totals:{n"
+        table = [["Count"], ["Typeclass"]]
         for path, count in dbtotals.items():            
-            string += "\n %s\t%s" % (count, path)
-        string += "\nLast %s Objects created:" % nlim
-        objs = list(ObjectDB.objects.all())       
+            table[0].append(count)
+            table[1].append(path)
+        ftable = utils.format_table(table, 3)
+        for irow, row in enumerate(ftable):
+            srow = "\n" + "".join(row)
+            srow = srow.rstrip()
+            if irow == 0:
+                srow = "{w%s{n" % srow
+            string += srow
+
+        string += "\n\n{wLast %s Objects created:{n" % nlim
+        objs = list(ObjectDB.objects.all())[:nlim]               
+
+        table = [["Created"], ["dbref"], ["name"], ["typeclass"]]
         for i, obj in enumerate(objs):
-            if i <= nlim:
-                string += "\n %s\t%s(#%i) (%s)" % \
-                    (obj.date_created, obj.name, obj.id, str(obj.typeclass))
-            else:
-                break
+            table[0].append(utils.datetime_format(obj.date_created))
+            table[1].append(obj.dbref)
+            table[2].append(obj.key)
+            table[3].append(str(obj.typeclass))
+        ftable = utils.format_table(table, 5)
+        for irow, row in enumerate(ftable):
+            srow = "\n" + "".join(row)
+            srow = srow.rstrip()
+            if irow == 0:
+                srow = "{w%s{n" % srow
+            string += srow
+
         caller.msg(string)
     
 class CmdBoot(MuxCommand):

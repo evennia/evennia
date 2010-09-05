@@ -820,7 +820,7 @@ class CmdPage(MuxCommand):
         received = []
         for pobj in recobjs:
             pobj.msg("%s %s" % (header, message))
-            if not pobj.has_player:
+            if hasattr(pobj, 'has_player') and not pobj.has_player:
                 received.append("{C%s{n" % pobj.name)
                 caller.msg("%s is offline. They will see your message if they list their pages later." % received[-1])
             else:

@@ -9,54 +9,6 @@ from src.scripts.models import ScriptDB
 from src.utils import create 
 from src.utils import logger
 
-def format_script_list(scripts):
-    "Takes a list of scripts and format the output."
-    if not scripts:
-        return "<No scripts>"
-    string = "id obj\t\tkey\t\tinterval\trepeats\tnext\tpersistent"            
-
-    for script in scripts:
-        obj = None
-        interval = None
-        repeats = None 
-        try: 
-            obj = script.obj
-        except AttributeError: 
-            pass
-        try: 
-            interval = script.interval
-        except AttributeError: 
-            pass
-        try: 
-            repeats = script.repeats
-        except AttributeError: 
-            pass
-        try: 
-            next_repeat = script.time_until_next_repeat()
-        except: 
-            pass
-
-        if not obj:
-            obj = "<Global>"
-        if not interval:
-            interval = "N/A"
-        else:
-            interval = "%ss" % interval                
-        if not repeats:
-            repeats = "N/A"
-        else:
-            repeats = "%ss" % repeats
-        if not next_repeat:
-            next_repeat = "N/A"
-        else:
-            next_repeat = "%ss" % next_repeat
-
-        string += "\n %s %s\t\t%s\t%s\t%s\t%s\t%s\n    %s (%s)" % \
-                  (script.id, obj, script.key, interval,
-                   repeats, next_repeat, script.persistent,
-                   script.typeclass_path, script.desc)
-    return string 
-
 class ScriptHandler(object):
     """
     Implements the handler.  This sits on each game object.   

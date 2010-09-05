@@ -8,7 +8,7 @@ import os
 import textwrap
 import datetime
 from django.conf import settings
-
+from src.utils import ansi
 
 def is_iter(iterable):
     """
@@ -145,7 +145,8 @@ def datetime_format(dtobj):
     Takes a datetime object instance (e.g. from django's DateTimeField)
     and returns a string. 
     """
-    year, month, day = dtobj.year, dtobj.date, dtobj.day
+
+    year, month, day = dtobj.year, dtobj.month, dtobj.day
     hour, minute, second = dtobj.hour, dtobj.minute, dtobj.second
     now = datetime.datetime.now()
 
@@ -307,3 +308,30 @@ def inherits_from(obj, parent):
     else:
         parent_path = "%s.%s" % (parent.__class__.__module__, parent.__class__.__name__)
     return any(True for obj_path in obj_paths if obj_path == parent_path)
+
+
+def format_table(table, extra_space=1):
+    """
+    Takes a table of collumns: [[val,val,val,...], [val,val,val,...], ...]
+    where each val will be placed on a separate row in the column. All
+    collumns must have the same number of rows (some positions may be 
+    empty though). 
+
+    The function formats the columns to be as wide as the wides member
+    of each column.
+    
+    extra_space defines how much extra padding should minimum be left between
+    collumns. 
+    first_row_ansi defines an evential colour string for the first row. 
+
+    """
+    if not table:
+        return [[]]
+
+    max_widths = [max([len(str(val))
+                       for val in col]) for col in table]
+    ftable = []    
+    for irow in range(len(table[0])): 
+        ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space 
+                       for icol, col in enumerate(table)])
+    return ftable

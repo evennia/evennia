@@ -89,7 +89,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     try:
         try:                        
             wanted_cache_key = python_path
-
+            print "inport cmdsets: cache=", CACHED_CMDSETS
             cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
             if not cmdsetclass:
@@ -124,14 +124,6 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             if emit_to_obj:
                 emit_to_obj.msg(errstring)
         raise 
-
-def get_cached_cmdsets():
-    """
-    Get the currently live cache from outside this module.
-    Calling a routine avoids update-problems when importing
-    the variable from an external module.
-    """
-    return CACHED_CMDSETS
 
 # classes 
 

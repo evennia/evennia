@@ -99,7 +99,7 @@ class Attribute(SharedMemoryModel):
     # by each child class to this abstact class)
     db_obj =  None # models.ForeignKey("RefencedObject")
     # time stamp
-    db_date_created = models.DateField(editable=False, auto_now_add=True)    
+    db_date_created = models.DateTimeField(editable=False, auto_now_add=True)
     
     # Database manager 
     objects = managers.AttributeManager()
@@ -197,8 +197,7 @@ class Attribute(SharedMemoryModel):
     #@date_created.setter
     def date_created_set(self, value):
         "Setter. Allows for self.date_created = value"
-        self.db_date_created = value
-        self.save()
+        raise Exception("Cannot edit date_created!")
     #@date_created.deleter
     def date_created_del(self):
         "Deleter. Allows for del self.date_created"
@@ -360,7 +359,7 @@ class TypedObject(SharedMemoryModel):
     # (the type class is what defines what kind of Object this is)
     db_typeclass_path = models.CharField(max_length=255, null=True)
     # Creation date
-    db_date_created = models.DateField(editable=False, auto_now_add=True)    
+    db_date_created = models.DateTimeField(editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
     db_permissions = models.CharField(max_length=512, blank=True)
     
@@ -441,8 +440,7 @@ class TypedObject(SharedMemoryModel):
     #@date_created.setter
     def date_created_set(self, value):
         "Setter. Allows for self.date_created = value"
-        self.db_date_created = value
-        self.save()
+        raise Exception("Cannot change date_created!")
     #@date_created.deleter
     def date_created_del(self):
         "Deleter. Allows for del self.date_created"

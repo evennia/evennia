@@ -29,7 +29,7 @@ class CmdVersion(MuxCommand):
         "Show the version"
         version = utils.get_evennia_version()
         string = "-"*50 +"\n\r"
-        string += " Evennia %s\n\r" % version
+        string += " {cEvennia{n %s\n\r" % version
         string += " (Django %s, " % (django.get_version())
         string += " Twisted %s)\n\r" % (twisted.version.short())
         string += "-"*50
@@ -52,21 +52,23 @@ class CmdTime(MuxCommand):
     def func(self):
         "Show times."
 
-        string1 = "\nCurrent server uptime: "        
+        string1 = "\nCurrent server uptime:             \t"        
         string1 += "{w%s{n" % (utils.time_format(gametime.uptime(format=False), 2))
 
-        string2 =  "\nTotal server running time: "        
+        string2 =  "\nTotal server running time:        \t"        
         string2 += "{w%s{n" % (utils.time_format(gametime.runtime(format=False), 2))
 
-        string3 = "\nTotal in-game time (realtime x %g): " % (gametime.TIMEFACTOR)
+        string3 = "\nTotal in-game time (realtime x %g):\t" % (gametime.TIMEFACTOR)
         string3 += "{w%s{n" % (utils.time_format(gametime.gametime(format=False), 2))
 
-        string4 = "\nServer time stamp: {w%s{n" % (str(datetime.datetime.now()))
+        string4 = "\nServer time stamp:                 \t"
+        string4 += "{w%s{n" % (str(datetime.datetime.now()))
         string5 = ""
         if not utils.host_os_is('nt'):
             # os.getloadavg() is not available on Windows.
             loadavg = os.getloadavg()
-            string5 += "\nServer load (per minute): {w%g%%{n" % (100 * loadavg[0])
+            string5 += "\nServer load (per minute):         \t"
+            string5 += "{w%g%%{n" % (100 * loadavg[0])
         string = "%s%s%s%s%s" % (string1, string2, string3, string4, string5)
         self.caller.msg(string)
 
@@ -75,10 +77,16 @@ class CmdList(MuxCommand):
     @list - list info
 
     Usage:
-      @list commands | process
-    
+      @list <option>
+
+    Options:
+      process - list processes
+      objects - list objects
+      scripts - list scripts
+      perms   - list permission keys and groups    
+
     Shows game related information depending
-    on which argument is given. 
+    on which argument is given.
     """
     key = "@list"
     permissions = "cmd:list"
@@ -89,43 +97,98 @@ class CmdList(MuxCommand):
 
         caller = self.caller        
         if not self.args:
-            caller.msg("Usage: @list commands|process")
+            caller.msg("Usage: @list process|objects|scripts|perms")
             return 
 
         string = ""
-        if self.arglist[0] in ["com", "command", "commands"]:            
-            string = "Command sets currently in cache:"
-            for cmdset in cmdsethandler.get_cached_cmdsets():
-                string += "\n %s" % cmdset
-        elif self.arglist[0] in ["proc","process"]:
+        if self.arglist[0] in ["proc","process"]:
+
+            # display active processes
+
             if utils.host_os_is('nt'):
                 string = "Feature not available on Windows."              
             else:
                 import resource                                
-                loadavg = os.getloadavg()
-                string = "\n Server load (1 min) : %.2f " % loadavg[0]
+                loadavg = os.getloadavg()                
                 psize = resource.getpagesize()
                 rusage = resource.getrusage(resource.RUSAGE_SELF)                                
-                string += "\n Process ID: %10d" % os.getpid()
-                string += "\n Bytes per page: %10d" % psize
-                string += "\n Time used: %10d, user: %g" % (rusage[0], rusage[1]) 
-                string += "\n Integral mem: %10d shared,  %10d, private, %10d stack " % \
-                    (rusage[3], rusage[4], rusage[5])
-                string += "\n Max res mem: %10d pages %10d bytes" % \
-                    (rusage[2],rusage[2] * psize)
-                string += "\n Page faults: %10d hard    %10d soft   %10d swapouts " % \
-                    (rusage[7], rusage[6], rusage[8])
-                string += "\n Disk I/O: %10d reads   %10d writes " % \
-                    (rusage[9], rusage[10])
-                string += "\n Network I/O: %10d in      %10d out " % \
-                    (rusage[12], rusage[11])
-                string += "\n Context swi: %10d vol     %10d forced %10d sigs " % \
-                    (rusage[14], rusage[15], rusage[13])
+                table = [["Server load (1 min):", 
+                          "Process ID:",
+                          "Bytes per page:",
+                          "Time used:",
+                          "Integral memory:",
+                          "Max res memory:",
+                          "Page faults:",
+                          "Disk I/O:",
+                          "Network I/O",
+                          "Context switching:"
+                          ],
+                         ["%g%%" % (100 * loadavg[0]),
+                          "%10d" % os.getpid(),
+                          "%10d " % psize,
+                          "%10d" % rusage[0],
+                          "%10d shared" % rusage[3],
+                          "%10d pages" % rusage[2],
+                          "%10d hard" % rusage[7],
+                          "%10d reads" % rusage[9],
+                          "%10d in" % rusage[12],
+                          "%10d vol" % rusage[14]                          
+                        ],
+                         ["", "", "", 
+                          "(user: %g)" % rusage[1],
+                          "%10d private" % rusage[4],
+                          "%10d bytes" % (rusage[2] * psize),
+                          "%10d soft" % rusage[6],
+                          "%10d writes" % rusage[10],
+                          "%10d out" % rusage[11],
+                          "%10d forced" % rusage[15]
+                          ],
+                         ["", "", "", "", 
+                          "%10d stack" % rusage[5],
+                          "", 
+                          "%10d swapouts" % rusage[8],
+                          "", "",
+                          "%10d sigs" % rusage[13]
+                        ]                         
+                         ]
+                stable = []
+                for col in table:
+                    stable.append([str(val).strip() for val in col])
+                ftable = utils.format_table(stable, 5)
+                string = ""
+                for row in ftable:
+                    string += "\n " + "{w%s{n" % row[0] + "".join(row[1:]) 
+                                
+                # string = "\n Server load (1 min) : %.2f " % loadavg[0]
+                # string += "\n Process ID: %10d" % os.getpid()
+                # string += "\n Bytes per page: %10d" % psize
+                # string += "\n Time used: %10d, user: %g" % (rusage[0], rusage[1]) 
+                # string += "\n Integral mem: %10d shared,  %10d, private, %10d stack " % \
+                #     (rusage[3], rusage[4], rusage[5])
+                # string += "\n Max res mem: %10d pages %10d bytes" % \
+                #     (rusage[2],rusage[2] * psize)
+                # string += "\n Page faults: %10d hard    %10d soft   %10d swapouts " % \
+                #     (rusage[7], rusage[6], rusage[8])
+                # string += "\n Disk I/O: %10d reads   %10d writes " % \
+                #     (rusage[9], rusage[10])
+                # string += "\n Network I/O: %10d in      %10d out " % \
+                #     (rusage[12], rusage[11])
+                # string += "\n Context swi: %10d vol     %10d forced %10d sigs " % \
+                #     (rusage[14], rusage[15], rusage[13])
+
+        elif self.arglist[0] in ["obj","objects"]:
+            caller.execute_cmd("@objects")
+        elif self.arglist[0] in ["scr","scripts"]:
+            caller.execute_cmd("@scripts")
+        elif self.arglist[0] in ["perm","perms","permissions"]:
+            caller.execute_cmd("@perm/list")
         else:
-            string = "Not a valid option."
+            string = "'%s' is not a valid option." % self.arglist[0]
         # send info
         caller.msg(string)
             
+
+#TODO - expand @ps as we add irc/imc2 support. 
 class CmdPs(MuxCommand):
     """
     @ps - list processes
@@ -190,11 +253,9 @@ class CmdStats(MuxCommand):
         # get all players 
         stats_users = User.objects.all().count()
 
-        string = "-"*60
-        string += "\n Number of users: %i" % stats_users
-        string += "\n Total number of objects: %i" % stats_allobj
-        string += "\n Number of rooms (location==None): %i" % stats_room        
-        string += "\n Object type statistics:"
-        for path, num in stats_dict.items():
-            string += "\n %i - %s" % (num, path) 
+        string = "\n{wNumber of users:{n %i" % stats_users
+        string += "\n{wTotal number of objects:{n %i" % stats_allobj
+        string += "\n{wNumber of rooms (location==None):{n %i" % stats_room        
+        string += "\n (Use @objects for detailed info)"
         self.caller.msg(string)
+
