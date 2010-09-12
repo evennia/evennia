@@ -6,8 +6,6 @@ from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import ObjectDB, ObjAttribute
 from game.gamesrc.commands.default.muxcommand import MuxCommand
 from src.utils import create 
-from src.utils import utils
-from src.utils import debug
 
 class ObjManipCommand(MuxCommand):
     """
@@ -1637,64 +1635,3 @@ class CmdTypeclass(MuxCommand):
             string += "same-named attributes on the existing object."            
         caller.msg(string)
 
-
-class CmdDebug(MuxCommand):
-    """
-    Debug game entities
-
-    Usage:
-      @debug[/switch] <path to code>
-
-    Switches:
-      obj - debug an object
-      script - debug a script
-
-    Examples:
-      @debug/script game.gamesrc.scripts.myscript.MyScript
-      @debug/script myscript.MyScript
-      @debug/obj examples.red_button.RedButton
-
-    This command helps when debugging the codes of objects and scripts.
-    It creates the given object and runs tests on its hooks. You can 
-    supply both full paths (starting from the evennia base directory),
-    otherwise the system will start from the defined root directory
-    for scripts and objects respectively (defined in settings file). 
-
-    """
-
-    key = "@debug"
-    permissions = "cmd:debug"
-    help_category = "Building"
-
-    def func(self):
-        "Running the debug"
-
-        if not self.args or not self.switches:
-            self.caller.msg("Usage: @debug[/obj][/script] <path>")
-            return
-        
-        path = self.args
-
-        if 'obj' in self.switches or 'object' in self.switches:
-            # analyze path. If it starts at the evennia basedir,
-            # (i.e. starts with game or src) we let it be, otherwise we 
-            # add a base path as defined in settings
-            if path and not (path.startswith('src.') or 
-                                  path.startswith('game.')):
-                path = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                       path)
-
-            # create and debug the object
-            self.caller.msg(debug.debug_object(path, self.caller))
-            self.caller.msg(debug.debug_object_scripts(path, self.caller))
-
-        elif 'script' in self.switches:
-            # analyze path. If it starts at the evennia basedir,
-            # (i.e. starts with game or src) we let it be, otherwise we 
-            # add a base path as defined in settings
-            if path and not (path.startswith('src.') or 
-                                  path.startswith('game.')):
-                path = "%s.%s" % (settings.BASE_SCRIPT_PATH, 
-                                       path)
-            
-            self.caller.msg(debug.debug_syntax_script(path))

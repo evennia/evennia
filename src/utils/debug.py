@@ -31,7 +31,7 @@ def trace():
 
 def debug_script(script_path, obj=None, auto_delete=True):
     """
-    This function takes a script database object (ScriptDB) tests
+    This function takes a script database object (ScriptDB) and tests
     all its hooks for syntax errors. Note that no run-time errors
     will be caught, only weird python syntax.
 
@@ -226,7 +226,8 @@ def debug_object_scripts(obj_path, caller):
     try:
         string = "\n Testing scripts on {w%s{n ... " % obj_path
         obj = create.create_object(obj_path)
-        obj.location = caller.location        
+        obj.location = caller.location
+        obj = obj.dbobj
         string += "{gOk{n."
     except Exception:
         string += trace()
