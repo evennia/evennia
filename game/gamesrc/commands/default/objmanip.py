@@ -55,7 +55,7 @@ class ObjManipCommand(MuxCommand):
             if ';' in objdef:
                 objdef, aliases = [str(part).strip() 
                                    for part in objdef.split(';', 1)]
-                aliases = [str(alias).strip().lower() 
+                aliases = [str(alias).strip() 
                            for alias in aliases.split(';') if alias.strip()]
             lhs_objs.append({"name":objdef, 
                              'option': option, 'aliases': aliases})
@@ -70,7 +70,7 @@ class ObjManipCommand(MuxCommand):
             if ';' in objdef:
                 objdef, aliases = [str(part).strip() 
                                    for part in objdef.split(';', 1)]
-                aliases = [str(alias).strip().lower() 
+                aliases = [str(alias).strip() 
                            for alias in aliases.split(';') if alias.strip()]
             rhs_objs.append({"name":objdef, 'option': option, 'aliases': aliases})
         
@@ -1026,7 +1026,7 @@ class CmdDig(ObjManipCommand):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage: @dig[/teleport] roomname[:parent] [= exit_there"
+            string = "Usage: @dig[/teleport] roomname[;alias;alias...][:parent] [= exit_there"
             string += "[;alias;alias..][:parent]] "
             string += "[, exit_back_here[;alias;alias..][:parent]]"
             caller.msg(string)
@@ -1425,7 +1425,6 @@ class CmdExamine(ObjManipCommand):
         if  textlen > (line_width - headlen):
             text = "%s[...]" % text[:line_width - headlen - 5]                    
         return text
-
 
     def format_attributes(self, obj, attrname=None):
         """

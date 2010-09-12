@@ -90,6 +90,8 @@ def object_multimatch_parser(ostring):
     that the engine assumes this number to start with 1 (i.e. not
     zero as in normal Python).
     """
+    if not isinstance(ostring, basestring):
+        return (None, ostring)
     if not '-' in ostring:
         return (None, ostring)
     try: 

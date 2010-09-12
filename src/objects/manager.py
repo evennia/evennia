@@ -15,7 +15,7 @@ except Exception:
     from src.objects.object_search_funcs import object_multimatch_parser as IDPARSER
 
 #
-# Helper function for the ObjectManger's search methods
+# Helper functions for the ObjectManger's search methods
 #
 
 def match_list(searchlist, ostring, exact_match=True,
@@ -24,30 +24,95 @@ def match_list(searchlist, ostring, exact_match=True,
     Helper function.
     does name/attribute matching through a list of objects.
     """
-    ostring = ostring.lower()
-    if attribute_name:
-        #search an arbitrary attribute name for a value match. 
-        if exact_match:
-            return [prospect for prospect in searchlist
-                    if (hasattr(prospect, attribute_name) and
-                       ostring == str(getattr(prospect, attribute_name)).lower()) \
-                    or (ostring == str(prospect.get_attribute(attribute_name)).lower())]
-        else:                    
-            return [prospect for prospect in searchlist
-                    if (hasattr(prospect, attribute_name) and
-                        ostring in str(getattr(prospect, attribute_name)).lower()) \
-                    or (ostring in (str(p).lower() for p in prospect.get_attribute(attribute_name)))]
-    else:
-        #search the default "key" attribute
 
+    if not ostring:
+        return []
+
+    if not attribute_name:
+        attribute_name = "key"
+
+    if isinstance(ostring, basestring): 
+        # strings are case-insensitive
+        ostring = ostring.lower()        
         if exact_match:
             return [prospect for prospect in searchlist
-                    if ostring == str(prospect.key).lower()]
+                    if (hasattr(prospect, attribute_name) and 
+                        ostring == str(getattr(prospect, attribute_name)).lower())
+                        or (prospect.has_attribute(attribute_name) and 
+                            ostring == str(prospect.get_attribute(attribute_name)).lower())]
         else:
             return [prospect for prospect in searchlist
-                    if ostring in str(prospect.key).lower()]
-
+                    if (hasattr(prospect, attribute_name) and 
+                        ostring in str(getattr(prospect, attribute_name)).lower())
+                    or (prospect.has_attribute(attribute_name) and 
+                        ostring in str(prospect.get_attribute(attribute_name)).lower())]
+    else:
+        # If it's not a string, we don't convert to lowercase. This is also 
+        # always treated as an exact match.
+        return [prospect for prospect in searchlist
+                if (hasattr(prospect, attribute_name) and 
+                    ostring == getattr(prospect, attribute_name))
+                or (prospect.has_attribute(attribute_name) 
+                    and ostring == prospect.get_attribute(attribute_name))]
     
+
+def separable_search(ostring, searchlist,
+                     attribute_name='db_key', exact_match=False):
+    """
+    Searches a list for a object match to ostring or separator+keywords. 
+
+    This version handles search criteria defined by IDPARSER. By default this
+    is of the type N-keyword, used to differentiate several objects of the 
+    exact same name, e.g. 1-box, 2-box etc.      
+
+    ostring:     (string) The string to match against.
+    searchlist:  (List of Objects) The objects to perform attribute comparisons on.
+    attribute_name: (string) attribute name to search.
+    exact_match: (bool) 'exact' or 'fuzzy' matching.
+
+    Note that the fuzzy matching gives precedence to exact matches; so if your
+    search query matches an object in the list exactly, it will be the only result.
+    This means that if the list contains [box,box11,box12], the search string 'box'
+    will only match the first entry since it is exact. The search 'box1' will however
+    match both box11 and box12 since neither is an exact match.
+
+    This method always returns a list, also for a single result. 
+    """
+
+    # Full search - this may return multiple matches.
+    results = match_list(searchlist, ostring, exact_match, attribute_name)
+
+    # Deal with results of search
+    match_number = None
+    if not results:
+        # if we have no match, check if we are dealing
+        # with a "N-keyword" query, if so, strip it out.
+        match_number, ostring = IDPARSER(ostring)
+        if match_number != None and ostring:
+            # Run the search again, without the match number                
+            results = match_list(searchlist, ostring, exact_match, attribute_name)
+    elif not exact_match:
+        # we have results, but are using fuzzy matching; run
+        # second sweep in results to catch eventual exact matches
+        # (these are given precedence, so a search for 'ball' in
+        # ['ball', 'ball2'] will correctly return the first ball
+        # only).
+        exact_results = match_list(results, ostring, True, attribute_name)            
+        if exact_results:
+            results = exact_results
+
+    if len(results) > 1 and match_number != None:
+        # We have multiple matches, but a N-type match number
+        # is available to separate them.
+        try:
+            results = [results[match_number]]
+        except IndexError:
+            pass
+    # this is always a list.
+    return results
+
+
+
 class ObjectManager(TypedObjectManager):
     """
     This is the main ObjectManager for all in-game objects. It
@@ -61,6 +126,9 @@ class ObjectManager(TypedObjectManager):
     #
     # ObjectManager Get methods 
     #
+
+
+    # user/player related
    
     @returns_typeclass
     def get_object_with_user(self, user):
@@ -81,7 +149,7 @@ class ObjectManager(TypedObjectManager):
             return None
         
     # This returns typeclass since get_object_with_user and get_dbref does. 
-    def player_name_search(self, search_string):
+    def get_object_with_player(self, search_string):
         """        
         Search for an object based on its player's name or dbref. 
         This search
@@ -89,21 +157,26 @@ class ObjectManager(TypedObjectManager):
         the search criterion (e.g. in local_and_global_search). 
         search_string:  (string) The name or dbref to search for.
         """
-        search_string = str(search_string).lstrip('*')
-        
+        search_string = str(search_string).lstrip('*')        
         dbref = self.dbref(search_string)
-        if dbref: 
-            # this is a valid dbref. Try to match it. 
-            dbref_match = self.dbref_search(dbref)
-            if dbref_match:
-                return dbref_match
+        if not dbref:           
+            # not a dbref. Search by name.
+            player_matches = User.objects.filter(username__iexact=search_string)
+            if player_matches:
+                dbref = player_matches[0].id
+        # use the id to find the player
+        return self.get_object_with_user(dbref)
+        
 
-        # not a dbref. Search by name.
-        player_matches = User.objects.filter(username__iexact=search_string)
-        if player_matches:
-            uid = player_matches[0].id
-            return self.get_object_with_user(uid)
-        return None
+    # attr/property related
+
+    @returns_typeclass_list
+    def get_objs_with_attr(self, attribute_name):
+        """
+        Returns all objects having the given attribute_name defined at all.
+        """
+        from src.objects.models import ObjAttribute
+        return [attr.obj for attr in ObjAttribute.objects.filter(db_key=attribute_name)]
 
     @returns_typeclass_list
     def get_objs_with_attr_match(self, attribute_name, attribute_value):
@@ -111,20 +184,32 @@ class ObjectManager(TypedObjectManager):
         Returns all objects having the valid 
         attrname set to the given value. Note that no conversion is made
         to attribute_value, and so it can accept also non-strings.
-        """
-        
-        return [prospect for prospect in self.all()
-                if attribute_value 
-                and attribute_value == prospect.get_attribute(attribute_name)]
+        """        
+        from src.objects.models import ObjAttribute
+        return [attr.obj for attr in ObjAttribute.objects.filter(db_key=attribute_name)
+                if attribute_value == attr.value]    
     
     @returns_typeclass_list
-    def get_objs_with_attr(self, attribute_name):
+    def get_objs_with_db_property(self, property_name):
         """
-        Returns all objects having the given attribute_name defined at all.
+        Returns all objects having a given db field property
         """
-        return [prospect for prospect in self.all()
-                if prospect.get_attribute(attribute_name)]
+        return [prospect for prospect in self.all() 
+                if hasattr(prospect, 'db_%s' % property_name) 
+                or hasattr(prospect, property_name)]
+        
+    @returns_typeclass_list
+    def get_objs_with_db_property_match(self, property_name, property_value):
+        """
+        Returns all objects having a given db field property
+        """
+        try:
+            return eval("self.filter(db_%s=%s)" % (property_name, property_value))
+        except Exception:
+            return []
 
+    # main search methods and helper functions
+        
     @returns_typeclass_list
     def get_contents(self, location, excludeobj=None):
         """
@@ -147,94 +232,6 @@ class ObjectManager(TypedObjectManager):
                     ostring in obj.aliases):
             matches.append(obj)
         return matches
-
-    @returns_typeclass_list
-    def separable_search(self, ostring, searchlist=None,
-                           attribute_name=None, exact_match=False):
-        """
-        Searches for a object hit for ostring.
-
-        This version handles search criteria of the type N-keyword, this is used
-        to differentiate several objects of the exact same name, e.g. 1-box, 2-box etc.      
-
-        ostring:     (string) The string to match against.
-        searchlist:  (List of Objects) The objects to perform name comparisons on.
-                      if not given, will search the database normally. 
-        attribute_name: (string) attribute name to search, if None, object key is used. 
-        exact_match: (bool) 'exact' or 'fuzzy' matching.
-
-        Note that the fuzzy matching gives precedence to exact matches; so if your
-        search query matches an object in the list exactly, it will be the only result.
-        This means that if the list contains [box,box11,box12], the search string 'box'
-        will only match the first entry since it is exact. The search 'box1' will however
-        match both box11 and box12 since neither is an exact match.
-
-        This method always returns a list, also for a single result. 
-        """
-
-        def run_dbref_search(ostring):
-            "dbref matching only"
-            dbref = self.dbref(ostring)
-            if searchlist:            
-                results = [prospect for prospect in searchlist
-                           if prospect.id == dbref]
-            else:
-                results = self.filter(id=dbref)
-            return results 
-
-        def run_full_search(ostring, searchlist, exact_match=False):
-            "full matching"
-            if searchlist: 
-                results = match_list(searchlist, ostring,
-                                     exact_match, attribute_name)
-            elif attribute_name:
-                results = match_list(self.all(), ostring,
-                                     exact_match, attribute_name)
-            elif exact_match:
-                results = self.filter(db_key__iexact=ostring)
-            else:
-                results = self.filter(db_key__icontains=ostring)
-            return results 
-
-        # Easiest case - dbref matching (always exact)        
-        if self.dbref(ostring):
-            results = run_dbref_search(ostring)
-            if results:
-                return results 
-            
-        # Full search - this may return multiple matches.
-        results = run_full_search(ostring, searchlist, exact_match)
-                           
-        # Deal with results of full search 
-        match_number = None
-        if not results:
-            # if we have no match, check if we are dealing
-            # with a "N-keyword" query, if so, strip it out.
-            match_number, ostring = IDPARSER(ostring)
-            if match_number != None and ostring:
-                # Run the search again, without the match number                
-                results = run_full_search(ostring, searchlist, exact_match)
-
-        elif not exact_match:
-            # we have results, but are using fuzzy matching; run
-            # second sweep in results to catch eventual exact matches
-            # (these are given precedence, so a search for 'ball' in
-            # ['ball', 'ball2'] will correctly return the first ball
-            # only).
-            exact_results = run_full_search(ostring, results, True)
-            if exact_results:
-                results = exact_results
-
-        if len(results) > 1 and match_number != None:
-            # We have multiple matches, but a N-type match number
-            # is available to separate them.
-            try:
-                results = [results[match_number]]
-            except IndexError:
-                pass
-        # this is always a list.
-        return results
-
             
     @returns_typeclass_list
     def object_search(self, character, ostring,
@@ -248,59 +245,68 @@ class ObjectManager(TypedObjectManager):
                   Can be a dbref. If name is appended by *, a player is searched for.         
         global_search: Search all objects, not just the current location/inventory
         attribute_name: (string) Which attribute to search in each object.
-                                 If None, the default 'name' attribute is used.        
+                                 If None, the default 'key' attribute is used.        
         """
-        ostring = str(ostring).strip()
-            
+        #ostring = str(ostring).strip()
+
         if not ostring or not character:
             return None 
 
+        location = character.location        
+
+
+        # Easiest case - dbref matching (always exact)        
         dbref = self.dbref(ostring)
-        if dbref: 
-            # this is a valid dbref. If it matches, we return directly.
+        if dbref:
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
                 return [dbref_match]
+            
+        # not a dbref. Search by attribute/property.
+ 
+        if not attribute_name:
+            # If the search string is one of the following, return immediately with
+            # the appropriate result.        
+            if location and ostring == 'here':
+                return [location]            
+            if character and ostring in ['me', 'self']:
+                return [character]
+            if character and ostring in ['*me', '*self']:            
+                return [character.player]
 
-        location = character.location        
-
-        # If the search string is one of the following, return immediately with
-        # the appropriate result.        
-        if location and ostring == 'here':
-            return [location]
-
-        if character and ostring in ['me', 'self']:
-            return [character]
-        if character and ostring in ['*me', '*self']:            
-            return [character.player]
-
-        if ostring.startswith("*"):
-            # Player search - search player base
-            player_string = ostring.lstrip("*")  
-            player_match = self.player_name_search(player_string)
+            attribute_name = 'key'
+    
+        if str(ostring).startswith("*"):
+            # Player search - try to find obj by its player's name
+            player_string = ostring.lstrip("*") 
+            player_match = self.get_obj_with_player(player_string)
             if player_match is not None:
                 return [player_match]
+        
+        # find suitable objects
 
         if global_search or not location:
-            # search all objects
-            return self.separable_search(ostring, None,
-                                         attribute_name)
-                    
-        # None of the above cases yielded a return, so we fall through to
-        # location/contents searches. 
-        matches = []
-        local_objs = []        
-        local_objs.extend(character.contents)
-        local_objs.extend(location.contents)
-        local_objs.append(location) #easy to forget! 
-        if local_objs:
-            # normal key/attribute search (typedobject_search is 
-            # found in class parent)            
-            matches = self.separable_search(ostring, local_objs,
-                                            attribute_name, exact_match=False)        
-            if not matches:
-                # no match, try an alias search 
-                matches = self.alias_list_search(ostring, local_objs)
+            # search all objects in database 
+            objlist = self.get_objs_with_db_property(attribute_name)
+            if not objlist:
+                objlist = self.get_objs_with_attr(attribute_name)
+        else:
+            # local search                        
+            objlist = character.contents
+            objlist.extend(location.contents)                
+            objlist.append(location) #easy to forget! 
+        if not objlist:
+            return []
+
+        # do the search on the found objects
+        matches = separable_search(ostring, objlist,
+                                   attribute_name, exact_match=False)        
+
+        if not matches and attribute_name in ('key', 'name'):
+            # No matches. If we tried to match a key/name field, we also try to 
+            # see if an alias works better.
+            matches = self.alias_list_search(ostring, objlist)
+
         return matches 
 
     #

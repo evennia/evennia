@@ -418,8 +418,8 @@ class ObjectDB(TypedObject):
                         (if None, uses default 'name')
         use_nicks : Use nickname replace (off by default)              
         ignore_errors : Don't display any error messages even
-                    if there are none/multiple matches - 
-                    just return the result as a list. 
+                        if there are none/multiple matches - 
+                        just return the result as a list. 
 
         Note - for multiple matches, the engine accepts a number
         linked to the key in order to separate the matches from

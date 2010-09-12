@@ -24,6 +24,7 @@ class AttributeManager(models.Manager):
             return self.filter(db_obj=obj).filter(
                 db_key__icontains=searchstr)
 
+
 #
 # helper functions for the TypedObjectManager. 
 #    
