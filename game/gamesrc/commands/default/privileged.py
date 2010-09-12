@@ -535,13 +535,14 @@ class CmdNewPassword(MuxCommand):
             return 
         
         # the player search also matches 'me' etc. 
-        player = caller.search("*%s" % self.lhs, global_search=True)            
-        if not player:
+        character = caller.search("*%s" % self.lhs, global_search=True)            
+        if not character:
             return     
+        player = character.player
         player.user.set_password(self.rhs)
         player.user.save()
         caller.msg("%s - new password set to '%s'." % (player.name, self.rhs))
-        if player != caller:
+        if character != caller:
             player.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
 
 class CmdHome(MuxCommand):

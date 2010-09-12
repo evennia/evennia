@@ -279,7 +279,7 @@ class ObjectManager(TypedObjectManager):
         if str(ostring).startswith("*"):
             # Player search - try to find obj by its player's name
             player_string = ostring.lstrip("*") 
-            player_match = self.get_obj_with_player(player_string)
+            player_match = self.get_object_with_player(player_string)
             if player_match is not None:
                 return [player_match]
         
