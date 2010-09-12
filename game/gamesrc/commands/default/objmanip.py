@@ -609,7 +609,8 @@ class CmdCreate(ObjManipCommand):
                 string = "You create a new %s: %s."
                 string = string % (obj.typeclass, obj.name)
             # set a default desc
-            obj.db.desc = "You see nothing special."
+            if not obj.db.desc:
+                obj.db.desc = "You see nothing special."
             if 'drop' in self.switches:    
                 if caller.location:
                     obj.move_to(caller.location, quiet=True)
