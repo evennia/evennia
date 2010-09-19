@@ -480,7 +480,7 @@ class TypedObject(SharedMemoryModel):
     attribute_model_name = "Attribute"
 
     def __eq__(self, other):        
-        return other and self.id == other.id
+        return other and hasattr(other, 'id') and self.id == other.id
 
     def __str__(self):
         return smart_str("%s" % self.key)

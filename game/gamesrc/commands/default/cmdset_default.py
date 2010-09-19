@@ -91,7 +91,6 @@ class DefaultCmdSet(CmdSet):
 
         # Testing commands 
         self.add(tests.CmdTest())
-        self.add(tests.CmdTestState())
         self.add(tests.CmdTestPerms())
         self.add(tests.TestCom())
         self.add(tests.CmdDebug())    

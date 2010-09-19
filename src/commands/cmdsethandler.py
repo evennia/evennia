@@ -77,7 +77,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     instance from a python module, given a python_path. It's usually accessed
     through the cmdsethandler's add() and add_default() methods. 
     python_path - This is the full path to the cmdset object. 
-    cmsetobj - the database object/typeclass on which this cmdset is to be assigned 
+    cmdsetobj - the database object/typeclass on which this cmdset is to be assigned 
                (this can be also channels and exits, as well as players but there will 
                always be such an object)
     emit_to_obj - if given, error is emitted to this object (in addition to logging)
@@ -88,17 +88,18 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
     try:
         try:                        
+            print "importing %s: CACHED_CMDSETS=%s" % (python_path, CACHED_CMDSETS)
             wanted_cache_key = python_path            
             cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
             if not cmdsetclass:
-                #print "cmdset %s not in cache. Reloading." % wanted_cache_key
+                print "cmdset %s not in cache. Reloading." % wanted_cache_key
                 # Not in cache. Reload from disk.
                 modulepath, classname = python_path.rsplit('.', 1)
                 module = __import__(modulepath, fromlist=[True])
                 cmdsetclass = module.__dict__[classname]                
                 CACHED_CMDSETS[wanted_cache_key] = cmdsetclass            
-            #print "cmdset %s found." % wanted_cache_key 
+            print "cmdset %s found." % wanted_cache_key 
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj) 
@@ -118,6 +119,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             raise
     except Exception:            
         if errstring and not no_logging:
+            print errstring 
             logger.log_trace()    
             if emit_to_obj:
                 emit_to_obj.msg(errstring)
