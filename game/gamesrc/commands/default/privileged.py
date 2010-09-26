@@ -305,7 +305,7 @@ class CmdListObjects(MuxCommand):
             string += srow
 
         string += "\n\n{wLast %s Objects created:{n" % nlim
-        objs = list(ObjectDB.objects.all())[:nlim]               
+        objs = list(ObjectDB.objects.all())[-nlim:]               
 
         table = [["Created"], ["dbref"], ["name"], ["typeclass"]]
         for i, obj in enumerate(objs):
