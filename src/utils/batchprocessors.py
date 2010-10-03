@@ -146,12 +146,13 @@ from src.utils import logger
 from src.utils import utils
 from game import settings as settings_module
 
+ENCODINGS = settings.ENCODINGS
 
 #------------------------------------------------------------
 # Helper function
 #------------------------------------------------------------
 
-def read_batchfile(pythonpath, file_ending='.py', file_encoding='utf-8'):
+def read_batchfile(pythonpath, file_ending='.py'):
     """
     This reads the contents of a batch-file.
     Filename is considered to be the name of the batch file
@@ -168,40 +169,49 @@ def read_batchfile(pythonpath, file_ending='.py', file_encoding='utf-8'):
         pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
                                 pythonpath)
     abspath = utils.pypath_to_realpath(pythonpath, file_ending)
-    try:        
-        # we read the file directly into unicode.
-        fobj = codecs.open(abspath, 'r', encoding=file_encoding)
-    except IOError:
-        # try again without the appended file ending
-        abspath2 = utils.pypath_to_realpath(pythonpath, None)
-        try:
-            fobj = codecs.open(abspath, 'r', encoding=file_encoding)
-        except IOError:            
-            string = "Could not open batchfile '%s', nor '%s'."
-            logger.log_errmsg(string % (abspath2, abspath))
-        return None
-    
-    # We have successfully found and opened the file. Now actually
-    # try to decode it using the given protocol. 
 
-    try:
-        lines = fobj.readlines()
-    except UnicodeDecodeError:
-        # give the line of failure
-        fobj.seek(0)
+    for file_encoding in ENCODINGS:
+        # try different encodings, in order 
+        err = None 
+        try:        
+            # we read the file directly into unicode.
+            fobj = codecs.open(abspath, 'r', encoding=file_encoding)
+        except IOError:
+            # try again without the appended file ending
+            abspath2 = utils.pypath_to_realpath(pythonpath, None)
+            try:
+                fobj = codecs.open(abspath, 'r', encoding=file_encoding)
+            except IOError:            
+                string = "Could not open batchfile '%s', nor '%s'."
+                logger.log_errmsg(string % (abspath2, abspath))
+            return None
+    
+        # We have successfully found and opened the file. Now actually
+        # try to decode it using the given protocol. 
         try:
-            lnum = 0
-            for lnum, line in enumerate(fobj):
-                pass
-        except UnicodeDecodeError, err:
-            # lnum starts from 0, so we add +1 line, 
-            # besides the faulty line is never read
-            # so we add another 1 (thus +2) to get
-            # the actual line number seen in an editor. 
-            err.linenum = lnum + 2
-            raise err
-    fobj.close()
-    return lines
+            lines = fobj.readlines()
+        except UnicodeDecodeError:
+            # give the line of failure
+            fobj.seek(0)
+            try:
+                lnum = 0
+                for lnum, line in enumerate(fobj):
+                    pass
+            except UnicodeDecodeError, err:
+                # lnum starts from 0, so we add +1 line, 
+                # besides the faulty line is never read
+                # so we add another 1 (thus +2) to get
+                # the actual line number seen in an editor. 
+                err.linenum = lnum + 2                
+            fobj.close()
+            # possibly try another encoding
+            continue 
+        # if we get here, the encoding worked. Stop iteration.
+        break 
+    if err: 
+        return err
+    else:
+        return lines
 
 #------------------------------------------------------------
 #
