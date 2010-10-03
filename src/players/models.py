@@ -253,19 +253,15 @@ class PlayerDB(TypedObject):
     
     def msg(self, message, from_obj=None, markup=True):
         """
-        This duplicates the same-named method on the Character. 
-        It forwards messages to the character or uses
-        the session messaging directly.         
+        This is the main route for sending data to the user.
         """
+        if from_obj:
+            try:
+                from_obj.at_msg_send(message, self)
+            except Exception:
+                pass
         if self.character:
-            self.character.msg(message, from_obj)
-        else:
-            if from_obj:
-                try:
-                    from_obj.at_msg_send(message, self)
-                except Exception:
-                    pass
-            if self.at_msg_receive(message, from_obj):
+            if self.character.at_msg_receive(message, from_obj):
                 for session in object.__getattribute__(self, 'sessions'):
                     session.msg(message, markup)
 

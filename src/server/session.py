@@ -16,6 +16,8 @@ from src.utils import reloads
 from src.utils import logger
 from src.utils import utils
 
+ENCODINGS = settings.ENCODINGS
+
 class SessionProtocol(StatefulTelnetProtocol):
     """
     This class represents a player's session. Each player
@@ -71,6 +73,7 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.name = None
         self.uid = None
         self.logged_in = False
+        self.encoding = "utf-8"
 
         # The time the user last issued a command.
         self.cmd_last = time.time()
@@ -103,13 +106,31 @@ class SessionProtocol(StatefulTelnetProtocol):
         So we take the user input and pass it to the Player and their currently
         connected character.
         """
-        try:
-            raw_string = utils.to_unicode(raw_string)
-        except Exception, e:
-            self.sendLine(str(e))
-            return 
-        self.execute_cmd(raw_string)        
 
+        if self.encoding:
+            try:            
+                raw_string = utils.to_unicode(raw_string, encoding=self.encoding)
+                self.execute_cmd(raw_string)                        
+                return 
+            except Exception, e:
+                err = str(e)
+                print err
+                pass 
+
+        # malformed/wrong encoding defined on player-try some defaults 
+        for encoding in ENCODINGS:
+            try:
+                raw_string = utils.to_unicode(raw_string, encoding=encoding)
+                err = None
+                break             
+            except Exception, e:
+                err = str(e)
+                continue 
+        if err:
+            self.sendLine(err)
+        else:
+            self.execute_cmd(raw_string)        
+ 
     def msg(self, message, markup=True):
         """
         Communication Evennia -> Player
@@ -120,12 +141,27 @@ class SessionProtocol(StatefulTelnetProtocol):
                  colors, but could also be html tags for 
                  web connections etc.        
         """
-        try:
-            message = utils.to_str(message)
-        except Exception, e:
-            self.sendLine(str(e))
-            return 
-        self.sendLine(ansi.parse_ansi(message, strip_ansi=not markup))
+        if self.encoding:
+            try:
+                message = utils.to_str(message, encoding=self.encoding)
+                self.sendLine(ansi.parse_ansi(message, strip_ansi=not markup))
+                return 
+            except Exception:
+                pass 
+
+        # malformed/wrong encoding defined on player - try some defaults
+        for encoding in ENCODINGS:
+            try:
+                message = utils.to_str(message, encoding=encoding)
+                err = None
+                break 
+            except Exception, e:
+                err = str(e)                
+                continue
+        if err:
+            self.sendLine(err)
+        else:
+            self.sendLine(ansi.parse_ansi(message, strip_ansi=not markup))
 
     def get_character(self):
         """
@@ -228,6 +264,8 @@ class SessionProtocol(StatefulTelnetProtocol):
         self.name = user.username
         self.logged_in = True
         self.conn_time = time.time()
+        if player.db.encoding: 
+            self.encoding = player.db.encoding
         
         if not settings.ALLOW_MULTISESSION:
             # disconnect previous sessions.

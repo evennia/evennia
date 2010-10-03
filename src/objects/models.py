@@ -505,15 +505,9 @@ class ObjectDB(TypedObject):
         """
         # This is an important function that must always work. 
         # we use a different __getattribute__ to avoid recursive loops.
-
-        if from_obj:
-            try:
-                from_obj.at_msg_send(message, self)
-            except Exception:
-                pass
-        if self.at_msg_receive(message, from_obj):
-            for session in object.__getattribute__(self, 'sessions'):
-                session.msg(message, markup)
+        
+        if object.__getattribute__(self, 'player'):
+            object.__getattribute__(self, 'player').msg(message, markup)
 
     def emit_to(self, message, from_obj=None):
         "Deprecated. Alias for msg"

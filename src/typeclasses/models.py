@@ -273,7 +273,7 @@ class Attribute(SharedMemoryModel):
         such as dhango model instances, cannot be directly stored/pickled
         in an attribute, so we have to be clever about it. 
         Types of objects and how they are handled:        
-          *  str - stored directly in field
+          *  str - s5Atored directly in field
           *  django model object - store its dbref in field
           *  any other python structure - pickle in field
 
@@ -813,7 +813,8 @@ class TypedObject(SharedMemoryModel):
         """
         Returns all attributes defined on the object.
         """
-        return [attr for attr in self.objattribute_set.all()]
+        attr_set_all = eval("self.%s_set.all()" % (self.attribute_model_name.lower()))
+        return [attr for attr in attr_set_all]
 
     def attr(self, attribute_name=None, value=None, delete=False):
         """

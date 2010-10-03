@@ -70,6 +70,12 @@ IMPORT_MUX_HELP = False
 # thrown off by sending the empty system command 'idle' to the server
 # at regular intervals.
 IDLE_TIMEOUT = 3600
+# The set of encodings tried. A Player object may set an attribute "encoding" on 
+# itself to match the client used. If not set, or wrong encoding is
+# given, this list is tried, in order, aborting on the first match. 
+# Add sets for languages/regions your players are likely to use.
+# (see http://en.wikipedia.org/wiki/Character_encoding)
+ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"] 
 
 ###################################################
 # Evennia Database config 
