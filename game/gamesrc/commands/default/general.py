@@ -3,6 +3,7 @@ Generic command module. Pretty much every command should go here for
 now.
 """
 import time
+from django.conf import settings
 from src.server import sessionhandler
 from src.permissions.models import PermissionGroup
 from src.permissions.permissions import has_perm, has_perm_string
@@ -649,6 +650,61 @@ class CmdPose(MuxCommand):
 ##     caller.location.msg_contents(sent_msg)
 ## GLOBAL_CMD_TABLE.add_command("@fpose", cmd_fpose)
 
+
+class CmdEncoding(MuxCommand):
+    """
+    encoding - set a custom text encoding
+
+    Usage: 
+      @encoding/switches [<encoding>]
+
+    Switches:
+      clear - clear your custom encoding
+
+           
+    This sets the text encoding for communicating with Evennia. This is mostly an issue only if 
+    you want to use non-ASCII characters (i.e. letters/symbols not found in English). If you see
+    that your characters look strange (or you get encoding errors), you should use this command
+    to set the server encoding to be the same used in your client program. 
+    
+    Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
+    
+    If you don't submit an encoding, the current encoding will be displayed instead. 
+    """
+
+    key = "@encoding"
+    aliases = "@encode"
+
+    def func(self):
+        """
+        Sets the encoding.
+        """
+        caller = self.caller
+        if 'clear' in self.switches:
+            # remove customization
+            old_encoding = caller.player.db.encoding
+            if old_encoding:
+                string = "Your custom text encoding ('%s') was cleared." % old_encoding
+            else:
+                string = "No custom encoding was set."
+            del caller.player.db.encoding
+        elif not self.args:
+            # just list the encodings supported
+            encodings = []
+            encoding = caller.player.db.encoding            
+            string = "Supported encodings "
+            if encoding: 
+                encodings.append(encoding)
+                string += "(the first one you can change with {w@encoding <encoding>{n)"
+            encodings.extend(settings.ENCODINGS)
+            string += ":\n  " + ", ".join(encodings)
+        else:            
+            # change encoding 
+            old_encoding = caller.player.db.encoding
+            encoding = self.args
+            caller.player.db.encoding = encoding
+            string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
+        caller.msg(string)                    
 
 class CmdGroup(MuxCommand):
     """

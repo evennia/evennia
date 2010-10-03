@@ -29,6 +29,7 @@ class DefaultCmdSet(CmdSet):
         self.add(general.CmdWho())
         self.add(general.CmdSay())
         self.add(general.CmdGroup())
+        self.add(general.CmdEncoding())
 
         # The help system
         self.add(help.CmdHelp())

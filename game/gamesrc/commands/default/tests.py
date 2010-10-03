@@ -29,7 +29,7 @@ class CmdTest(MuxCommand):
 
     key = "@test"
     aliases = ["@te", "@test all"]
-    #permissions = "cmd:Immortals Wizards"
+    permissions = "cmd:Immortals Wizards"
 
     # the muxcommand class itself handles the display
     # so we just defer to it by not adding any function.
