@@ -24,7 +24,9 @@ class Player(TypeClass):
         register with the game). It's a good place
         to store attributes all players should have,
         like configuration values etc. 
-        """
+        """        
+        # the text encoding to use.
+        self.db.encoding = "utf-8"
         pass 
 
     # Note that the hooks below also exist

@@ -94,6 +94,25 @@ class Character(BaseCharacter):
 
         # expand with whatever customizations you want below...
         # ...
+
+    def at_disconnect(self):
+        """
+        We stove away the character when logging off, otherwise they will remain where 
+        they are, 'headless', so to say.
+        """
+        self.location.msg_contents("%s has left the game." % self.name)
+        self.db.prelogout_location = self.location
+        self.location = None 
+
+    def at_post_login(self):
+        """
+        This recovers the character again after having been "stoved away" at disconnect.
+        """
+        if self.db.prelogout_location:
+            self.location = self.db.prelogout_location
+        else:
+            self.db.prelogout_location = self.location
+        self.location.msg_contents("%s has entered the game." % self.name)
     
 class Room(BaseRoom):
     """
