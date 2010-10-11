@@ -10,6 +10,7 @@ from src.server import sessionhandler
 from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
+from src.config.models import ConfigValue
 from src.permissions.models import PermissionGroup
 from src.utils import reloads, create, logger, utils
 from src.permissions.permissions import has_perm, has_perm_string
@@ -92,11 +93,13 @@ class CmdPy(MuxCommand):
                                       'testscript')
         obj = create.create_object("src.objects.objects.Object",
                                    'testobject')        
+        conf = ConfigValue() # used to access conf values
         available_vars = {'self':caller,
                           'me':caller,
                           'here':caller.location,
                           'obj':obj,
-                          'script':script}
+                          'script':script,
+                          'config':conf}
         caller.msg(">>> %s" % pycode)
         try:
             ret = eval(pycode, {}, available_vars)

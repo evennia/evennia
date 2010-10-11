@@ -26,8 +26,6 @@ def create_config_values():
     ConfigValue.objects.conf("default_home", "2")
     ConfigValue.objects.conf("site_name", settings.SERVERNAME)
     ConfigValue.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
-    #ConfigValue.objects.conf("money_name_singular", "Credit")
-    #ConfigValue.objects.conf("money_name_plural", "Credits")
 
 def create_connect_screens():
     """

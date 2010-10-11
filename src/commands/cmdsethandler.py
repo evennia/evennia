@@ -88,7 +88,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
     try:
         try:                        
-            print "importing %s: CACHED_CMDSETS=%s" % (python_path, CACHED_CMDSETS)
+            #print "importing %s: CACHED_CMDSETS=%s" % (python_path, CACHED_CMDSETS)
             wanted_cache_key = python_path            
             cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
@@ -99,7 +99,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 module = __import__(modulepath, fromlist=[True])
                 cmdsetclass = module.__dict__[classname]                
                 CACHED_CMDSETS[wanted_cache_key] = cmdsetclass            
-            print "cmdset %s found." % wanted_cache_key 
+            #print "cmdset %s found." % wanted_cache_key 
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj) 
@@ -164,6 +164,8 @@ class CmdSetHandler(object):
         # this tracks which mergetypes are actually in play in the stack
         self.mergetype_stack = ["Union"] 
         self.update()
+
+        #print "cmdsethandler init. id:%s, obj:%s, cmdsetstack:%s " % (id(self), self.obj.key,  [cmdset.key for cmdset in self.cmdset_stack])
                                                                 
     def __str__(self):
         "Display current commands"                

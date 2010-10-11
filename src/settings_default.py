@@ -65,16 +65,15 @@ LANGUAGE_CODE = 'en-us'
 # since it creates a lot of help entries that has nothing to do 
 # with what is actually available in the game.
 IMPORT_MUX_HELP = False 
-# How long time (seconds) a user may idle before being logged
+# How long time (in seconds) a user may idle before being logged
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
-# at regular intervals.
+# at regular intervals. Set <=0 to deactivate idle timout completely.
 IDLE_TIMEOUT = 3600
-# The set of encodings tried. A Player object may set an attribute "encoding" on 
-# itself to match the client used. If not set, or wrong encoding is
-# given, this list is tried, in order, aborting on the first match. 
-# Add sets for languages/regions your players are likely to use.
-# (see http://en.wikipedia.org/wiki/Character_encoding)
+# If the PlayerAttribute 'encoding' is not set, or wrong encoding is
+# given, this list is tried, in order, stopping on the first match.
+# Add sets for languages/regions your players are likely to use.  (see
+# http://en.wikipedia.org/wiki/Character_encoding).
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"] 
 
 ###################################################
@@ -314,9 +313,10 @@ IRC_NICKNAME = ""
 
 # While DEBUG is False, show a regular server error page on the web
 # stuff, email the traceback to the people in the ADMINS tuple
-# below. By default (True), show a detailed traceback for the web
-# browser to display.
-DEBUG = True
+# below. If True, show a detailed traceback for the web
+# browser to display. Note however that this might leak memory when
+# active, so make sure turn it off for a production server!
+DEBUG = False
 # While true, show "pretty" error messages for template syntax errors.
 TEMPLATE_DEBUG = DEBUG
 # Emails are sent to these people if the above DEBUG value is False. If you'd
