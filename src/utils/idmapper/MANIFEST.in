@@ -1,0 +1,2 @@
+include setup.py README.rst LICENSE MANIFEST.in
+global-exclude *~

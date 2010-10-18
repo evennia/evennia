@@ -75,6 +75,7 @@ class DefaultCmdSet(CmdSet):
         self.add(objmanip.CmdDestroy())
         self.add(objmanip.CmdExamine())
         self.add(objmanip.CmdTypeclass())
+        self.add(objmanip.CmdPuppet())
 
         # Comm commands
         self.add(comms.CmdAddCom())

@@ -76,7 +76,7 @@ class ObjectDB(TypedObject):
       typeclass - auto-linked typeclass
       date_created - time stamp of object creation
       permissions - perm strings 
-      dbref - #id of object 
+      Dbref - #id of object 
       db - persistent attribute storage
       ndb - non-persistent attribute storage 
 

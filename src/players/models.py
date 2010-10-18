@@ -271,3 +271,10 @@ class PlayerDB(TypedObject):
         """
         self.msg(message, from_obj)
 
+
+    def swap_character(self, new_character, delete_old_character=False):
+        """
+        Swaps character, if possible
+        """
+        return self.__class__.objects.swap_character(self, new_character, delete_old_character=delete_old_character)
+    

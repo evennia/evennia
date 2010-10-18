@@ -1635,3 +1635,35 @@ class CmdTypeclass(MuxCommand):
             string += "same-named attributes on the existing object."            
         caller.msg(string)
 
+class CmdPuppet(MuxCommand):
+    """
+    Switch control to an object
+    
+    Usage:
+      @puppet <character object>
+      
+    This will attempt to "become" a different character. Note that this command does not check so that
+    the target object has the appropriate cmdset. You cannot puppet a character that is already "taken".
+    """
+
+    key = "@puppet"
+    permissions = "cmd:puppet"
+    help_category = "Admin"
+
+    def func(self):
+        """
+        Simple puppet method (does not check permissions)
+        """
+        caller = self.caller
+        if not self.args:
+            caller.msg("Usage: @puppet <character>")
+            return 
+
+        player = caller.player
+        new_character = caller.search(self.args)
+        if not new_character:
+            return 
+        if player.swap_character(new_character):
+            new_character.msg("You now control %s." % new_character.name)
+        else:
+            caller.msg("You couldn't control %s." % new_character.name)
