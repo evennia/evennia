@@ -61,7 +61,7 @@ if os.name == 'nt':
                          os.pardir, os.pardir, os.pardir, os.pardir, 
                          'scripts', 'twistd.py'))        
         bat_file = open('twistd.bat','w')
-        bat_file.write("@%s %%*" % twistd_path)
+        bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
         bat_file.close()
         print """
     INFO: Since you are running Windows, a file 'twistd.bat' was
