@@ -135,7 +135,7 @@ class BlindedState(Script):
         It's important that we clear out that blinded cmdset
         when we are done! 
         """
-        self.obj.msg("Your blink feverishly as your eyesight slowly returns.")
+        self.obj.msg("You blink feverishly as your eyesight slowly returns.")
         self.obj.location.msg_contents("%s seems to be recovering their eyesight." 
                                        % self.obj.name, 
                                        exclude=self.obj)
