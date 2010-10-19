@@ -558,7 +558,7 @@ class CmdCreate(ObjManipCommand):
     game/gamesrc/types/examples/red_button.py, you could create a new
     object of this type like this: 
 
-       @create button;red : examples.red_button       
+       @create button;red : examples.red_button.RedButton       
 
     """
 
