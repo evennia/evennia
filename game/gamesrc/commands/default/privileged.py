@@ -69,7 +69,17 @@ class CmdPy(MuxCommand):
     Usage:
       @py <cmd>
 
-    In this limited python environment, only two
+    In this limited python environment.
+
+    available_vars: 'self','me'  : caller
+                    'here'  : caller.location
+                    'obj'   : dummy obj instance
+                    'script': dummy script instance
+                    'config': dummy conf instance
+                    'ObjectDB' : ObjectDB class
+                    'ScriptDB' : ScriptDB class
+                    'ConfigValue' ConfigValue class
+    only two
     variables are defined: 'self'/'me' which refers to one's
     own object, and 'here' which refers to the current
     location. 
@@ -100,7 +110,11 @@ class CmdPy(MuxCommand):
                           'here':caller.location,
                           'obj':obj,
                           'script':script,
-                          'config':conf}
+                          'config':conf,
+                          'ObjectDB':ObjectDB,
+                          'ScriptDB':ScriptDB,
+                          'ConfigValue':ConfigValue}
+
         caller.msg(">>> %s" % pycode)
         try:
             ret = eval(pycode, {}, available_vars)
