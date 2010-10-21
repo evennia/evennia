@@ -6,6 +6,7 @@ exceptions.
 
 import traceback
 from django.contrib.auth.models import User
+from django.conf import settings
 from src.server import sessionhandler
 from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
@@ -745,49 +746,59 @@ class CmdPerm(MuxCommand):
                 return 
 
         # locate the object/player         
-        obj = caller.search(self.lhs, global_search=True)
+        obj = caller.search(lhs, global_search=True)
         if not obj:
             return         
-
+        
+        pstring = ""
+        if utils.inherits_from(obj, settings.BASE_PLAYER_TYPECLASS):
+            pstring = " Player "
+        
         if not rhs: 
-            string = "Permission string on {w%s{n: " % obj.key
+            string = "Permission string on %s{w%s{n: " % (pstring, obj.key)
             if not obj.permissions:
                 string += "<None>"
             else:
                 string += ", ".join(obj.permissions)
-            if obj.player and obj.player.is_superuser:
+            if pstring and obj.is_superuser:
+                string += "\n(... But this player is a SUPERUSER! "
+                string += "All access checked are passed automatically.)"
+            elif obj.player and obj.player.is_superuser:
                 string += "\n(... But this object's player is a SUPERUSER! "
                 string += "All access checked are passed automatically.)"
-
-
             caller.msg(string)
             return 
             
         # we supplied an argument on the form obj = perm
 
+        cstring = ""
+        tstring = ""
         if 'del' in switches:
-            # delete the given permission from object.
-            try:
-                index = obj.permissions.index(rhs)
-            except ValueError:
-                caller.msg("Permission '%s' was not defined on object." % rhs)    
-                return 
-            permissions = obj.permissions
-            del permissions[index]
-            obj.permissions = permissions 
-            caller.msg("Permission '%s' was removed from object %s." % (rhs, obj.name))                               
-            obj.msg("%s revokes the permission '%s' from you." % (caller.name, rhs))                
-
+            # delete the given permission(s) from object.
+            for perm in self.rhslist:
+                try:
+                    index = obj.permissions.index(perm)
+                except ValueError:
+                    cstring += "\nPermission '%s' was not defined on %s%s." % (perm, pstring, lhs)
+                    continue
+                permissions = obj.permissions
+                del permissions[index]
+                obj.permissions = permissions 
+                cstring += "\nPermission '%s' was removed from %s%s." % (perm, pstring, obj.name)
+                tstring += "\n%s revokes the permission '%s' from you." % (caller.name, perm)
         else:
             # As an extra check, we warn the user if they customize the 
             # permission string (which is okay, and is used by the lock system)            
             permissions = obj.permissions
-            if rhs in permissions:
-                string = "Permission '%s' is already defined on %s." % (rhs, obj.name)
-            else:
-                permissions.append(rhs)
-                obj.permissions = permissions
-                string = "Permission '%s' given to %s." % (rhs, obj.name)
-                obj.msg("%s granted you the permission '%s'." % (caller.name, rhs))
-            caller.msg(string)  
-            
+            for perm in self.rhslist:
+
+                if perm in permissions:
+                    cstring += "\nPermission '%s' is already defined on %s%s." % (rhs, pstring, obj.name)
+                else:
+                    permissions.append(perm)
+                    obj.permissions = permissions
+                    cstring += "\nPermission '%s' given to %s%s." % (rhs, pstring, obj.name)
+                    tstring += "\n%s granted you the permission '%s'." % (caller.name, rhs)        
+        caller.msg(cstring.strip())
+        if tstring:
+            obj.msg(tstring.strip())

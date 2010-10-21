@@ -5,7 +5,7 @@ from django.conf import settings
 from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import ObjectDB, ObjAttribute
 from game.gamesrc.commands.default.muxcommand import MuxCommand
-from src.utils import create 
+from src.utils import create, utils 
 
 class ObjManipCommand(MuxCommand):
     """
@@ -1468,16 +1468,20 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wAliases{n: %s" % (", ".join(obj.aliases))
         if obj.has_player:
             string += "\n{wPlayer{n: %s" % obj.player.name
+            perms = obj.player.permissions
+            if obj.player.is_superuser:
+                perms = ["<Superuser>"]
+            elif not perms:
+                perms = ["<None>"]                
+            string += "\n{wPlayer Perms/Locks{n: %s" % (", ".join(perms))
+         
         string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass, obj.typeclass_path)
         string += "\n{wLocation{n: %s" % obj.location
         perms = obj.permissions
-        if obj.player and obj.player.is_superuser:
-            perms = ["<Superuser>"]
-        elif not perms:
-            perms = ["<None>"]
-        string += "\n{wPerms/Locks{n: %s" % (", ".join(perms))  
+        if perms:            
+            string += "\n{wObj Perms/Locks{n: %s" % (", ".join(perms)) 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
-            string += "\n{wCurrent Cmdset{n:\n\r %s" % obj.cmdset
+            string += "\n{wCurrent Cmdset (before permission checks){n:\n\r %s" % obj.cmdset
         if obj.scripts.all():
             string += "\n{wScripts{n:\n\r %s" % obj.scripts
         # add the attributes                    
@@ -1663,6 +1667,9 @@ class CmdPuppet(MuxCommand):
         new_character = caller.search(self.args)
         if not new_character:
             return 
+        if not utils.inherits_from(new_character, settings.BASE_CHARACTER_TYPECLASS):
+            caller.msg("%s is not a Character." % self.args)
+            return
         if player.swap_character(new_character):
             new_character.msg("You now control %s." % new_character.name)
         else:

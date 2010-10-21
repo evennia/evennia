@@ -434,6 +434,6 @@ def create_player(name, email, password,
         new_character = create_object(typeclass, name,
                                       location, home,
                                       player=new_player)        
-        set_perm(new_character, permissions)
+        #set_perm(new_character, permissions)
         return new_character
     return new_player

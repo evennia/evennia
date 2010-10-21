@@ -93,7 +93,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
             if not cmdsetclass:
-                print "cmdset %s not in cache. Reloading." % wanted_cache_key
+                #print "cmdset %s not in cache. Reloading." % wanted_cache_key
                 # Not in cache. Reload from disk.
                 modulepath, classname = python_path.rsplit('.', 1)
                 module = __import__(modulepath, fromlist=[True])

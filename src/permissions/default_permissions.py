@@ -38,6 +38,7 @@ PERMS = [
     'examine',
     'typeclass',
     'debug',
+    'puppet',
     
     'batchcommands',
     'batchcodes',
@@ -89,6 +90,7 @@ GROUPS = {
                                  'perm',
                                  'batchcommands',
                                  'batchcodes',
+                                 'puppet',
                                  
                                  'wall',
                                  'boot',

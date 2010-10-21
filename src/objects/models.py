@@ -414,6 +414,8 @@ class ObjectDB(TypedObject):
         ostring: (str) The string to match object names against.
                        Obs - To find a player, append * to the
                        start of ostring. 
+        global_search: Search all objects, not just the current
+                       location/inventory
         attribute_name: (string) Which attribute to match
                         (if None, uses default 'name')
         use_nicks : Use nickname replace (off by default)              

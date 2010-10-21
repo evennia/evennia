@@ -137,7 +137,7 @@ class ObjectManager(TypedObjectManager):
         A player<->user is a one-to-relationship, so this always
         returns just one result or None. 
 
-        user - mayb be a user object or user id.
+        user - may be a user object or user id.
         """
         try:
             uid = int(user)
@@ -281,7 +281,7 @@ class ObjectManager(TypedObjectManager):
             player_string = ostring.lstrip("*") 
             player_match = self.get_object_with_player(player_string)
             if player_match is not None:
-                return [player_match]
+                return [player_match.player]
         
         # find suitable objects
 
