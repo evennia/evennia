@@ -7,6 +7,7 @@ be of use when designing your own game.
 import os
 import textwrap
 import datetime
+from twisted.internet import threads
 from django.conf import settings
 from src.utils import ansi
 
@@ -335,3 +336,35 @@ def format_table(table, extra_space=1):
         ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space 
                        for icol, col in enumerate(table)])
     return ftable
+
+def run_async(async_func, at_return=None, at_err=None):
+    """
+    This wrapper will use Twisted's asynchronous features to run a slow
+    function using a separate reactor thread. In effect this means that 
+    the server will not be blocked while the slow process finish. 
+
+    Use this function with restrain and only for features/commands
+    that you know has no influence on the cause-and-effect order of your
+    game (commands given after the async function might be executed before
+    it has finished).
+    
+    async_func() - function that should be run asynchroneously
+    at_return(r) - if given, this function will be called when async_func returns
+                   value r at the end of a successful execution
+    at_err(e) - if given, this function is called if async_func fails with an exception e. 
+                use e.trap(ExceptionType1, ExceptionType2)
+
+    """
+    # create deferred object 
+    
+    deferred = threads.deferToThread(async_func)
+    if at_return:
+        deferred.addCallback(at_return)
+    if at_err:
+        deferred.addErrback(at_err)
+    # always add a logging errback as a last catch
+    def default_errback(e):
+        from src.utils import logger
+        logger.log_trace(e)   
+    deferred.addErrback(default_errback)
+
