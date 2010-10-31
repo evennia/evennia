@@ -129,7 +129,7 @@ class ObjectDB(TypedObject):
 
     # comma-separated list of alias-names of this object. Note that default
     # searches only search aliases in the same location as caller. 
-    db_aliases = models.ForeignKey(Alias, db_index=True, blank=True, null=True)
+    db_aliases = models.ForeignKey(Alias, blank=True, null=True, db_index=True)
     # If this is a character object, the player is connected here.
     db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True)    
     # The location in the game world. Since this one is likely

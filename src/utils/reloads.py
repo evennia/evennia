@@ -21,22 +21,21 @@ def reload_modules():
     """
     Reload modules that don't have any variables that can be reset.
     Note that python reloading is a tricky art and strange things have
-    been known to happen if debugging and reloading a lot while
-    working with src/ modules. A cold reboot is often needed
-    eventually.
+    been known to happen if debugging and reloading a lot. A server 
+    cold reboot is often needed eventually.
 
     """
     # We protect e.g. src/ from reload since reloading it in a running
-    # server can create unexpected results (and besides, we should
-    # never need to do that anyway. Updating src requires a server
-    # reboot).
+    # server can create unexpected results (and besides, non-evennia devs 
+    # should never need to do that anyway). Updating src requires a server
+    # reboot.
     protected_dirs = ('src.',)
 
     # flag 'dangerous' typeclasses (those which retain a memory
     # reference, notably Scripts with a timer component) for
     # non-reload, since these cannot be safely cleaned from memory
     # without causing havoc. A server reboot is required for updating
-    # these.
+    # these (or killing all running, timed scripts).
     unsafe_modules = []
     for scriptobj in ScriptDB.objects.get_all_scripts():
         if (scriptobj.interval > -1) and scriptobj.typeclass_path:

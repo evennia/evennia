@@ -48,7 +48,7 @@ class ScriptHandler(object):
             interval = "inf"
             next_repeat = "inf"
             repeats = "inf"
-            if script.interval: 
+            if script.interval > 0: 
                 interval = script.interval
                 if script.repeats:
                     repeats = script.repeats                    

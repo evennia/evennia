@@ -165,7 +165,7 @@ class CmdListScripts(MuxCommand):
             else:
                 table[1].append(script.obj.key)            
             table[2].append(script.key)                
-            if not hasattr(script, 'interval') or not script.interval:
+            if not hasattr(script, 'interval') or script.interval < 0:
                 table[3].append("--")
             else:
                 table[3].append("%ss" % script.interval)                

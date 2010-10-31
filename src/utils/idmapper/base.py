@@ -4,17 +4,17 @@ from django.db.models.base import Model, ModelBase
 
 from manager import SharedMemoryManager
 
-TCACHE = {}
+TCACHE = {} # test cache, for debugging /Griatch
 
 class SharedMemoryModelBase(ModelBase):
-    def __new__(cls, name, bases, attrs):
-        super_new = super(ModelBase, cls).__new__
-        parents = [b for b in bases if isinstance(b, SharedMemoryModelBase)]
-        if not parents:
-            # If this isn't a subclass of Model, don't do anything special.
-            return super_new(cls, name, bases, attrs)
-
-        return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
+    #def __new__(cls, name, bases, attrs):
+    #    super_new = super(ModelBase, cls).__new__
+    #    parents = [b for b in bases if isinstance(b, SharedMemoryModelBase)]
+    #    if not parents:
+    #        # If this isn't a subclass of Model, don't do anything special.
+    #        print "not a subclass of Model", name, bases
+    #        return super_new(cls, name, bases, attrs)
+    #    return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
 
     def __call__(cls, *args, **kwargs):
         """
@@ -49,6 +49,9 @@ class SharedMemoryModel(Model):
     # subclass now?
     __metaclass__ = SharedMemoryModelBase
 
+    class Meta:
+        abstract = True 
+    
     def _get_cache_key(cls, args, kwargs):
         """
         This method is used by the caching subsystem to infer the PK value from the constructor arguments. 

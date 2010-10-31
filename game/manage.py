@@ -95,9 +95,7 @@ from src.settings_default import *
 
     print """
     Welcome to Evennia (version %s)! 
-    Created a fresh settings.py file for you.""" % VERSION 
-
-
+    We created a fresh settings.py file for you.""" % VERSION 
 
 try:
     from game import settings
