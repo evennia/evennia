@@ -92,8 +92,8 @@ class ScriptDB(TypedObject):
     db_desc = models.CharField(max_length=255, blank=True)
     # A reference to the database object affected by this Script, if any.
     db_obj = models.ForeignKey(ObjectDB, null=True, blank=True)
-    # how often to run Script (secs). 0 means there is no timer
-    db_interval = models.IntegerField(default=0)
+    # how often to run Script (secs). -1 means there is no timer
+    db_interval = models.IntegerField(default=-1)
     # start script right away or wait interval seconds first
     db_start_delay = models.BooleanField(default=False)
     # how many times this script is to be repeated, if interval!=0.

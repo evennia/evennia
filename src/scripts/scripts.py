@@ -34,7 +34,7 @@ class ScriptClass(TypeClass):
 
     def _start_task(self):
         "start the task runner."
-        if self.interval:
+        if self.interval > 0:
             #print "Starting task runner"
             start_now = not self.start_delay
             self.ndb.twisted_task = task.LoopingCall(self._step_task)

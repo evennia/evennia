@@ -39,7 +39,7 @@ def reload_modules():
     # these.
     unsafe_modules = []
     for scriptobj in ScriptDB.objects.get_all_scripts():
-        if scriptobj.interval and scriptobj.typeclass_path:
+        if (scriptobj.interval > -1) and scriptobj.typeclass_path:
             unsafe_modules.append(scriptobj.typeclass_path)            
     unsafe_modules = list(set(unsafe_modules))
 
