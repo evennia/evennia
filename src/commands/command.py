@@ -73,7 +73,7 @@ class Command(object):
     # access to this command.
     permissions = []
     # used by the help system to group commands in lists.
-    help_category = "default"
+    help_category = "general"
     # There is also the property 'obj'. This gets set by the system 
     # on the fly to tie this particular command to a certain in-game entity.
     # self.obj should NOT be defined here since it will not be overwritten 

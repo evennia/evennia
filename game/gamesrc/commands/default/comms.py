@@ -704,7 +704,6 @@ class CmdCdesc(MuxCommand):
         channel.save()
         caller.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
 
-
 class CmdPage(MuxCommand):
     """
     page - send private message

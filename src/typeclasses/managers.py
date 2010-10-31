@@ -4,6 +4,8 @@ abstract models in dbobjects.py (and which are thus shared by
 all Attributes and TypedObjects). 
 """
 from django.db import models
+from src.utils import idmapper
+#from src.typeclasses import idmap
 
 # Managers 
 
@@ -76,7 +78,10 @@ def returns_typeclass(method):
         return None 
     return func
 
-class TypedObjectManager(models.Manager):
+
+#class TypedObjectManager(idmap.CachingManager):
+#class TypedObjectManager(models.Manager):
+class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     """
     Common ObjectManager for all dbobjects. 
     """

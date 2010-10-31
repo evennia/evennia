@@ -2,9 +2,9 @@
 This module ties together all the commands of the default command set. 
 """
 from src.commands.cmdset import CmdSet
-from game.gamesrc.commands.default import general, help, privileged
-from game.gamesrc.commands.default import tests, comms, objmanip
-from game.gamesrc.commands.default import info, batchprocess
+from game.gamesrc.commands.default import general, help, admin, system
+from game.gamesrc.commands.default import tests, comms, building
+from game.gamesrc.commands.default import batchprocess
 
 class DefaultCmdSet(CmdSet):
     """
@@ -17,13 +17,12 @@ class DefaultCmdSet(CmdSet):
 
         # The general commands
         self.add(general.CmdLook())
+        self.add(general.CmdHome())
         self.add(general.CmdPassword())
-        self.add(general.CmdWall())
         self.add(general.CmdInventory())
         self.add(general.CmdQuit())
         self.add(general.CmdPose())
         self.add(general.CmdNick())
-        self.add(general.CmdEmit())
         self.add(general.CmdGet())
         self.add(general.CmdDrop())
         self.add(general.CmdWho())
@@ -35,47 +34,49 @@ class DefaultCmdSet(CmdSet):
         self.add(help.CmdHelp())
         self.add(help.CmdSetHelp())
 
-        # Privileged commands
-        self.add(privileged.CmdReload())
-        self.add(privileged.CmdPy())
-        self.add(privileged.CmdListScripts())
-        self.add(privileged.CmdListCmdSets())
-        self.add(privileged.CmdListObjects())
-        self.add(privileged.CmdBoot())
-        self.add(privileged.CmdDelPlayer())
-        self.add(privileged.CmdNewPassword())
-        self.add(privileged.CmdHome())
-        self.add(privileged.CmdService())
-        self.add(privileged.CmdShutdown())
-        self.add(privileged.CmdPerm())
+        # System commands
+        self.add(system.CmdReload())
+        self.add(system.CmdPy())
+        self.add(system.CmdListScripts())        
+        self.add(system.CmdListObjects())
+        self.add(system.CmdService())
+        self.add(system.CmdShutdown())
+        self.add(system.CmdVersion())
+        self.add(system.CmdTime())
+        self.add(system.CmdList())
+        self.add(system.CmdPs())
+        self.add(system.CmdStats())
 
-        # Info commands
-        self.add(info.CmdVersion())
-        self.add(info.CmdTime())
-        self.add(info.CmdList())
-        self.add(info.CmdPs())
-        self.add(info.CmdStats())
+        # Admin commands
+        self.add(admin.CmdBoot())
+        self.add(admin.CmdDelPlayer())
+        self.add(admin.CmdEmit())
+        self.add(admin.CmdNewPassword())
+        self.add(admin.CmdPerm())
+        self.add(admin.CmdPuppet())
+        self.add(admin.CmdWall())
 
-        # Object manipulation commands
-        self.add(objmanip.CmdTeleport())
-        self.add(objmanip.CmdSetObjAlias())
-        self.add(objmanip.CmdWipe())
-        self.add(objmanip.CmdSetAttribute())        
-        self.add(objmanip.CmdName())
-        self.add(objmanip.CmdDesc())
-        #self.add(objmanip.CmdCpAttr()) #TODO - need testing/debugging
-        #self.add(objmanip.CmdMvAttr()) #TODO - need testing/debugging
-        self.add(objmanip.CmdFind())
-        self.add(objmanip.CmdCopy()) #TODO - need testing/debugging
-        self.add(objmanip.CmdOpen())
-        self.add(objmanip.CmdLink())
-        self.add(objmanip.CmdUnLink())
-        self.add(objmanip.CmdCreate())        
-        self.add(objmanip.CmdDig())
-        self.add(objmanip.CmdDestroy())
-        self.add(objmanip.CmdExamine())
-        self.add(objmanip.CmdTypeclass())
-        self.add(objmanip.CmdPuppet())
+        # Building and world manipulation
+        self.add(building.CmdTeleport())
+        self.add(building.CmdSetObjAlias())
+        self.add(building.CmdListCmdSets())
+        self.add(building.CmdDebug())    
+        self.add(building.CmdWipe())
+        self.add(building.CmdSetAttribute())        
+        self.add(building.CmdName())
+        self.add(building.CmdDesc())
+        #self.add(building.CmdCpAttr()) #TODO - need testing/debugging
+        #self.add(building.CmdMvAttr()) #TODO - need testing/debugging
+        self.add(building.CmdFind())
+        self.add(building.CmdCopy()) #TODO - need testing/debugging
+        self.add(building.CmdOpen())
+        self.add(building.CmdLink())
+        self.add(building.CmdUnLink())
+        self.add(building.CmdCreate())        
+        self.add(building.CmdDig())
+        self.add(building.CmdDestroy())
+        self.add(building.CmdExamine())
+        self.add(building.CmdTypeclass())
 
         # Comm commands
         self.add(comms.CmdAddCom())
@@ -95,4 +96,3 @@ class DefaultCmdSet(CmdSet):
         self.add(tests.CmdTest())
         self.add(tests.CmdTestPerms())
         self.add(tests.TestCom())
-        self.add(tests.CmdDebug())    

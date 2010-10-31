@@ -424,6 +424,7 @@ INSTALLED_APPS = (
     'src.permissions',
     'game.web.news',
     'game.web.website',)
+
 # The user profile extends the User object with more functionality;
 # This should usually not be changed. 
 AUTH_PROFILE_MODULE = "players.PlayerDB"
@@ -439,3 +440,9 @@ try:
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
     pass
+# South handles automatic database scheme migrations when evennia updates
+#try: 
+#    import south
+#    INSTALLED_APPS = INSTALLED_APPS + ('south',)
+#except ImportError:
+#    pass

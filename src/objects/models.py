@@ -736,3 +736,12 @@ class ObjectDB(TypedObject):
 
 # Deferred import to avoid circular import errors. 
 from src.commands import cmdhandler
+
+
+# from src.typeclasses import idmap
+# class CachedObj(models.Model):
+#     key = models.CharField(max_length=255, null=True, blank=True)
+#     test = models.BooleanField(default=False)
+#     objects = idmap.CachingManager()
+#     def id(self):
+#         return id(self)

@@ -181,10 +181,10 @@ class CmdHelp(Command):
 
 class CmdSetHelp(MuxCommand):
     """
-    @sethelp - edit the help database
+    @help - edit the help database
 
     Usage:
-      @sethelp[/switches] <topic>[,category[,permission,permission,...]] = <text>
+      @help[/switches] <topic>[,category[,permission,permission,...]] = <text>
 
     Switches:
       add    - add or replace a new topic with text.
@@ -201,7 +201,8 @@ class CmdSetHelp(MuxCommand):
       @sethelp/append pickpocketing, ,is_thief, is_staff) = This steals ...
       
     """
-    key = "@sethelp"
+    key = "@help"
+    aliases = "@sethelp"
     permissions = "cmd:sethelp"
     help_category = "Building"
     

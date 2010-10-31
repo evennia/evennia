@@ -1,22 +1,20 @@
 """
-This file contains commands that require special permissions to
-use. These are generally @-prefixed commands, but there are
-exceptions.
+
+System commands
+
 """
 
 import traceback
+import os, datetime
+import django, twisted
+
 from django.contrib.auth.models import User
-from django.conf import settings
 from src.server import sessionhandler
-from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.config.models import ConfigValue
-from src.permissions.models import PermissionGroup
-from src.utils import reloads, create, logger, utils
-from src.permissions.permissions import has_perm, has_perm_string
+from src.utils import reloads, create, logger, utils, gametime
 from game.gamesrc.commands.default.muxcommand import MuxCommand
-
 
 class CmdReload(MuxCommand):
     """
@@ -54,7 +52,6 @@ class CmdReload(MuxCommand):
             except AttributeError:
                 if attempt < max_attempts-1:
                     caller.msg("            Waiting for modules(s) to finish (%s) ..." % attempt)
-                    pass 
                 else:
                     string =  "            ... The module(s) took too long to reload, "
                     string += "\n            so the remaining reloads where skipped."
@@ -87,7 +84,7 @@ class CmdPy(MuxCommand):
     key = "@py"
     aliases = ["!"]
     permissions = "cmd:py"
-    help_category = "Admin"
+    help_category = "System"
     
     def func(self):
         "hook function"
@@ -152,7 +149,7 @@ class CmdListScripts(MuxCommand):
     key = "@scripts"
     aliases = "@listscripts"
     permissions = "cmd:listscripts"
-    help_category = "Admin"
+    help_category = "System"
 
     def format_script_list(self, scripts):
         "Takes a list of scripts and formats the output."
@@ -256,31 +253,6 @@ class CmdListScripts(MuxCommand):
         caller.msg(string)
 
 
-class CmdListCmdSets(MuxCommand):
-    """
-    list command sets on an object
-
-    Usage:
-      @listcmdsets [obj]
-
-    This displays all cmdsets assigned
-    to a user. Defaults to yourself.
-    """
-    key = "@listcmdsets"
-    permissions = "cmd:listcmdsets"
-    
-    def func(self):
-        "list the cmdsets"
-
-        caller = self.caller
-        if self.arglist:
-            obj = caller.search(self.arglist[0]) 
-            if not obj:
-                return 
-        else:
-            obj = caller
-        string = "%s" % obj.cmdset 
-        caller.msg(string)
 
 class CmdListObjects(MuxCommand):
     """
@@ -296,7 +268,7 @@ class CmdListObjects(MuxCommand):
     key = "@objects"
     aliases = ["@listobjects", "@listobjs"]
     permissions = "cmd:listobjects"
-    help_category = "Building"
+    help_category = "System"
 
     def func(self):
         "Implement the command"
@@ -340,252 +312,7 @@ class CmdListObjects(MuxCommand):
             string += srow
 
         caller.msg(string)
-    
-class CmdBoot(MuxCommand):
-    """
-    @boot 
-
-    Usage
-      @boot[/switches] <player obj> [: reason]
-
-    Switches:
-      quiet - Silently boot without informing player
-      port - boot by port number instead of name or dbref
-      
-    Boot a player object from the server. If a reason is
-    supplied it will be echoed to the user unless /quiet is set. 
-    """
-    
-    key = "@boot"
-    permissions = "cmd:boot"
-    help_category = "Admin"
-
-    def func(self):
-        "Implementing the function"
-        caller = self.caller
-        args = self.args
-        
-        if not args:
-            caller.msg("Usage: @boot[/switches] <player> [:reason]")
-            return
-
-        if ':' in args:
-            args, reason = [a.strip() for a in args.split(':', 1)]
-        boot_list = []
-        reason = ""
-
-        if 'port' in self.switches:
-            # Boot a particular port.
-            sessions = sessionhandler.get_session_list(True)
-            for sess in sessions:
-                # Find the session with the matching port number.
-                if sess.getClientAddress()[1] == int(args):
-                    boot_list.append(sess)
-                    break
-        else:
-            # Boot by player object
-            pobj = caller.search("*%s" % args, global_search=True)
-            if not pobj:
-                return
-            pobj = pobj
-            if pobj.has_player:
-                if not has_perm(caller, pobj, 'can_boot'):
-                    string = "You don't have the permission to boot %s."
-                    pobj.msg(string)
-                    return 
-                # we have a bootable object with a connected user
-                matches = sessionhandler.sessions_from_object(pobj)
-                for match in matches:
-                    boot_list.append(match)
-            else:
-                caller.msg("That object has no connected player.")
-                return
-
-        if not boot_list:
-            caller.msg("No matches found.")
-            return
-
-        # Carry out the booting of the sessions in the boot list.
-
-        feedback = None 
-        if not 'quiet' in self.switches:
-            feedback = "You have been disconnected by %s.\n" % caller.name
-            if reason:
-                feedback += "\nReason given: %s" % reason
-
-        for session in boot_list:
-            name = session.name
-            if feedback:
-                session.msg(feedback)
-            session.disconnectClient()
-            sessionhandler.remove_session(session)
-            caller.msg("You booted %s." % name)
-
-
-class CmdDelPlayer(MuxCommand):
-    """
-    delplayer - delete player from server
-
-    Usage:
-      @delplayer[/switch] <name> [: reason]
-      
-    Switch:
-      delobj - also delete the player's currently
-                assigned in-game object.   
-
-    Completely deletes a user from the server database,
-    making their nick and e-mail again available.    
-    """
-
-    key = "@delplayer"
-    permissions = "cmd:delplayer"
-    help_category = "Admin"
-
-    def func(self):
-        "Implements the command."
-
-        caller = self.caller
-        args = self.args 
-
-        if not args:
-            caller.msg("Usage: @delplayer[/delobj] <player/user name or #id>")
-            return
-
-        reason = ""
-        if ':' in args:
-            args, reason = [arg.strip() for arg in args.split(':', 1)]
-
-        # We use player_search since we want to be sure to find also players
-        # that lack characters.
-        players = PlayerDB.objects.filter(db_key=args)
-        if not players:
-            try:
-                players = PlayerDB.objects.filter(id=args)
-            except ValueError:
-                pass
-
-        if not players:            
-            # try to find a user instead of a Player
-            try:
-                user = User.objects.get(id=args)
-            except Exception:            
-                try:
-                    user = User.objects.get(username__iexact=args)                        
-                except Exception:
-                    string = "No Player nor User found matching '%s'." % args
-                    caller.msg(string)
-                    return                     
-            try:
-                player = user.get_profile()
-            except Exception:
-                player = None
-                                
-            if not has_perm_string(caller, 'manage_players'):
-                string = "You don't have the permissions to delete this player."
-                caller.msg(string)
-                return 
-            string = ""
-            name = user.username
-            user.delete()
-            if player:
-                name = player.name
-                player.delete()
-                string = "Player %s was deleted." % name
-            else:
-                string += "The User %s was deleted, but had no Player associated with it." % name
-            caller.msg(string)
-            return 
-    
-        elif len(players) > 1:
-            string = "There where multiple matches:"
-            for player in players:
-                string += "\n %s %s" % (player.id, player.key) 
-            return 
-
-        else:
-            # one single match
-
-            player = players[0]
-            user = player.user
-            character = player.character
-
-            if not has_perm(caller, player, 'manage_players'):
-                string = "You don't have the permissions to delete that player."
-                caller.msg(string)
-                return 
-
-            uname = user.username
-            # boot the player then delete 
-            if character and character.has_player:
-                caller.msg("Booting and informing player ...")
-                string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
-                if reason:
-                    string += " Reason given:\n  '%s'" % reason
-                character.msg(string)
-                caller.execute_cmd("@boot %s" % uname)
-                
-            player.delete()
-            user.delete()    
-            caller.msg("Player %s was successfully deleted." % uname)
-
-
-class CmdNewPassword(MuxCommand):
-    """
-    @newpassword
-
-    Usage:
-      @newpassword <user obj> = <new password>
-
-    Set a player's password.
-    """
-    
-    key = "@newpassword"
-    permissions = "cmd:newpassword"
-    help_category = "Admin"
-
-    def func(self):
-        "Implement the function."
-
-        caller = self.caller
-
-        if not self.rhs:
-            caller.msg("Usage: @newpassword <user obj> = <new password>")
-            return 
-        
-        # the player search also matches 'me' etc. 
-        character = caller.search("*%s" % self.lhs, global_search=True)            
-        if not character:
-            return     
-        player = character.player
-        player.user.set_password(self.rhs)
-        player.user.save()
-        caller.msg("%s - new password set to '%s'." % (player.name, self.rhs))
-        if character != caller:
-            player.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
-
-class CmdHome(MuxCommand):
-    """
-    home
-
-    Usage:
-      home 
-
-    Teleport the player to their home.
-    """
-    
-    key = "home"
-    permissions = "cmd:home"
-    
-    def func(self):
-        "Implement the command"
-        caller = self.caller        
-        home = caller.home
-        if not home:
-            caller.msg("You have no home set.")
-        else:
-            caller.move_to(home)
-            caller.msg("There's no place like home ...")
-        
+           
 
 class CmdService(MuxCommand):
     """
@@ -605,7 +332,7 @@ class CmdService(MuxCommand):
 
     key = "@service"
     permissions = "cmd:service"
-    help_category = "Admin"
+    help_category = "System"
 
     def func(self):
         "Implement command"
@@ -710,109 +437,250 @@ class CmdShutdown(MuxCommand):
         # (importing it directly would restart it...)
         session.server.shutdown()
 
-class CmdPerm(MuxCommand):
+class CmdVersion(MuxCommand):
     """
-    @perm - set permissions
+    @version - game version
 
     Usage:
-      @perm[/switch] [<object>] = [<permission>]
-      @perm[/switch] [*<player>] = [<permission>]
+      @version
 
-    Switches:
-      del : delete the given permission from <object>.
-      list : list all permissions, or those set on <object>
-            
-    Use * before the search string to add permissions to a player. 
-    This command sets/clears individual permission strings on an object.
-    Use /list without any arguments to see all available permissions
-    or those defined on the <object>/<player> argument. 
+    Display the game version info.
     """
-    key = "@perm"
-    aliases = "@setperm"
-    permissions = "cmd:perm"
-    help_category = "Admin"
+
+    key = "@version"
+    help_category = "System"
+    
+    def func(self):
+        "Show the version"
+        version = utils.get_evennia_version()
+        string = "-"*50 +"\n\r"
+        string += " {cEvennia{n %s\n\r" % version
+        string += " (Django %s, " % (django.get_version())
+        string += " Twisted %s)\n\r" % (twisted.version.short())
+        string += "-"*50
+        self.caller.msg(string)
+
+class CmdTime(MuxCommand):
+    """
+    @time
+
+    Usage:
+      @time 
+    
+    Server local time.
+    """        
+    key = "@time"
+    aliases = "@uptime"
+    permissions = "cmd:time"
+    help_category = "System"
 
     def func(self):
-        "Implement function"
+        "Show times."
 
-        caller = self.caller
-        switches = self.switches
-        lhs, rhs = self.lhs, self.rhs
+        string1 = "\nCurrent server uptime:             \t"        
+        string1 += "{w%s{n" % (utils.time_format(gametime.uptime(format=False), 2))
 
+        string2 =  "\nTotal server running time:        \t"        
+        string2 += "{w%s{n" % (utils.time_format(gametime.runtime(format=False), 2))
+
+        string3 = "\nTotal in-game time (realtime x %g):\t" % (gametime.TIMEFACTOR)
+        string3 += "{w%s{n" % (utils.time_format(gametime.gametime(format=False), 2))
+
+        string4 = "\nServer time stamp:                 \t"
+        string4 += "{w%s{n" % (str(datetime.datetime.now()))
+        string5 = ""
+        if not utils.host_os_is('nt'):
+            # os.getloadavg() is not available on Windows.
+            loadavg = os.getloadavg()
+            string5 += "\nServer load (per minute):         \t"
+            string5 += "{w%g%%{n" % (100 * loadavg[0])
+        string = "%s%s%s%s%s" % (string1, string2, string3, string4, string5)
+        self.caller.msg(string)
+
+class CmdList(MuxCommand):
+    """ 
+    @list - list info
+
+    Usage:
+      @list <option>
+
+    Options:
+      process - list processes
+      objects - list objects
+      scripts - list scripts
+      perms   - list permission keys and groups    
+
+    Shows game related information depending
+    on which argument is given.
+    """
+    key = "@list"
+    permissions = "cmd:list"
+    help_category = "System"
+
+    def func(self):
+        "Show list."
+
+        caller = self.caller        
         if not self.args:
-            
-            if "list" not in switches:
-                string = "Usage: @setperm[/switch] [object = permission]\n" 
-                string +="       @setperm[/switch] [*player = permission]"
-                caller.msg(string)
-                return
-            else:
-                #just print all available permissions
-                string = "\nAll defined permission groups and keys (i.e. not locks):"
-                pgroups = list(PermissionGroup.objects.all())
-                pgroups.sort(lambda x,y: cmp(x.key, y.key)) # sort by group key
-
-                for pgroup in pgroups:
-                    string += "\n\n - {w%s{n (%s):" % (pgroup.key, pgroup.desc)
-                    string += "\n%s" % \
-                        utils.fill(", ".join(sorted(pgroup.group_permissions)))                
-                caller.msg(string)
-                return 
-
-        # locate the object/player         
-        obj = caller.search(lhs, global_search=True)
-        if not obj:
-            return         
-        
-        pstring = ""
-        if utils.inherits_from(obj, settings.BASE_PLAYER_TYPECLASS):
-            pstring = " Player "
-        
-        if not rhs: 
-            string = "Permission string on %s{w%s{n: " % (pstring, obj.key)
-            if not obj.permissions:
-                string += "<None>"
-            else:
-                string += ", ".join(obj.permissions)
-            if pstring and obj.is_superuser:
-                string += "\n(... But this player is a SUPERUSER! "
-                string += "All access checked are passed automatically.)"
-            elif obj.player and obj.player.is_superuser:
-                string += "\n(... But this object's player is a SUPERUSER! "
-                string += "All access checked are passed automatically.)"
-            caller.msg(string)
+            caller.msg("Usage: @list process|objects|scripts|perms")
             return 
-            
-        # we supplied an argument on the form obj = perm
 
-        cstring = ""
-        tstring = ""
-        if 'del' in switches:
-            # delete the given permission(s) from object.
-            for perm in self.rhslist:
-                try:
-                    index = obj.permissions.index(perm)
-                except ValueError:
-                    cstring += "\nPermission '%s' was not defined on %s%s." % (perm, pstring, lhs)
-                    continue
-                permissions = obj.permissions
-                del permissions[index]
-                obj.permissions = permissions 
-                cstring += "\nPermission '%s' was removed from %s%s." % (perm, pstring, obj.name)
-                tstring += "\n%s revokes the permission '%s' from you." % (caller.name, perm)
+        string = ""
+        if self.arglist[0] in ["proc","process"]:
+
+            # display active processes
+
+            if utils.host_os_is('nt'):
+                string = "Feature not available on Windows."              
+            else:
+                import resource                                
+                loadavg = os.getloadavg()                
+                psize = resource.getpagesize()
+                rusage = resource.getrusage(resource.RUSAGE_SELF)                                
+                table = [["Server load (1 min):", 
+                          "Process ID:",
+                          "Bytes per page:",
+                          "Time used:",
+                          "Integral memory:",
+                          "Max res memory:",
+                          "Page faults:",
+                          "Disk I/O:",
+                          "Network I/O",
+                          "Context switching:"
+                          ],
+                         ["%g%%" % (100 * loadavg[0]),
+                          "%10d" % os.getpid(),
+                          "%10d " % psize,
+                          "%10d" % rusage[0],
+                          "%10d shared" % rusage[3],
+                          "%10d pages" % rusage[2],
+                          "%10d hard" % rusage[7],
+                          "%10d reads" % rusage[9],
+                          "%10d in" % rusage[12],
+                          "%10d vol" % rusage[14]                          
+                        ],
+                         ["", "", "", 
+                          "(user: %g)" % rusage[1],
+                          "%10d private" % rusage[4],
+                          "%10d bytes" % (rusage[2] * psize),
+                          "%10d soft" % rusage[6],
+                          "%10d writes" % rusage[10],
+                          "%10d out" % rusage[11],
+                          "%10d forced" % rusage[15]
+                          ],
+                         ["", "", "", "", 
+                          "%10d stack" % rusage[5],
+                          "", 
+                          "%10d swapouts" % rusage[8],
+                          "", "",
+                          "%10d sigs" % rusage[13]
+                        ]                         
+                         ]
+                stable = []
+                for col in table:
+                    stable.append([str(val).strip() for val in col])
+                ftable = utils.format_table(stable, 5)
+                string = ""
+                for row in ftable:
+                    string += "\n " + "{w%s{n" % row[0] + "".join(row[1:]) 
+                                
+                # string = "\n Server load (1 min) : %.2f " % loadavg[0]
+                # string += "\n Process ID: %10d" % os.getpid()
+                # string += "\n Bytes per page: %10d" % psize
+                # string += "\n Time used: %10d, user: %g" % (rusage[0], rusage[1]) 
+                # string += "\n Integral mem: %10d shared,  %10d, private, %10d stack " % \
+                #     (rusage[3], rusage[4], rusage[5])
+                # string += "\n Max res mem: %10d pages %10d bytes" % \
+                #     (rusage[2],rusage[2] * psize)
+                # string += "\n Page faults: %10d hard    %10d soft   %10d swapouts " % \
+                #     (rusage[7], rusage[6], rusage[8])
+                # string += "\n Disk I/O: %10d reads   %10d writes " % \
+                #     (rusage[9], rusage[10])
+                # string += "\n Network I/O: %10d in      %10d out " % \
+                #     (rusage[12], rusage[11])
+                # string += "\n Context swi: %10d vol     %10d forced %10d sigs " % \
+                #     (rusage[14], rusage[15], rusage[13])
+
+        elif self.arglist[0] in ["obj", "objects"]:
+            caller.execute_cmd("@objects")
+        elif self.arglist[0] in ["scr", "scripts"]:
+            caller.execute_cmd("@scripts")
+        elif self.arglist[0] in ["perm", "perms","permissions"]:
+            caller.execute_cmd("@perm/list")
         else:
-            # As an extra check, we warn the user if they customize the 
-            # permission string (which is okay, and is used by the lock system)            
-            permissions = obj.permissions
-            for perm in self.rhslist:
+            string = "'%s' is not a valid option." % self.arglist[0]
+        # send info
+        caller.msg(string)
+            
 
-                if perm in permissions:
-                    cstring += "\nPermission '%s' is already defined on %s%s." % (rhs, pstring, obj.name)
-                else:
-                    permissions.append(perm)
-                    obj.permissions = permissions
-                    cstring += "\nPermission '%s' given to %s%s." % (rhs, pstring, obj.name)
-                    tstring += "\n%s granted you the permission '%s'." % (caller.name, rhs)        
-        caller.msg(cstring.strip())
-        if tstring:
-            obj.msg(tstring.strip())
+#TODO - expand @ps as we add irc/imc2 support. 
+class CmdPs(MuxCommand):
+    """
+    @ps - list processes
+    Usage
+      @ps 
+
+    Shows the process/event table.
+    """
+    key = "@ps"
+    permissions = "cmd:ps"
+    help_category = "System"
+
+    def func(self):
+        "run the function."
+ 
+        string = "Processes Scheduled:\n-- PID [time/interval] [repeats] description --"
+        all_scripts = ScriptDB.objects.get_all_scripts()
+        repeat_scripts = [script for script in all_scripts if script.interval]
+        nrepeat_scripts = [script for script in all_scripts if script not in repeat_scripts]
+        
+        string = "\nNon-timed scripts:"
+        for script in nrepeat_scripts:
+            string += "\n %i %s %s" % (script.id, script.key, script.desc)
+
+        string += "\n\nTimed scripts:"
+        for script in repeat_scripts:
+            repeats = "[inf] "
+            if script.repeats: 
+                repeats = "[%i] " % script.repeats            
+            string += "\n %i %s [%d/%d] %s%s" % (script.id, script.key, 
+                                                 script.time_until_next_repeat(),
+                                                 script.interval,
+                                                 repeats,
+                                                 script.desc)
+        string += "\nTotals: %d interval scripts" % len(all_scripts)
+        self.caller.msg(string)
+
+class CmdStats(MuxCommand):
+    """
+    @stats - show object stats
+
+    Usage:
+      @stats
+
+    Shows stats about the database.
+    """
+    
+    key = "@stats"   
+    aliases = "@db"
+    permissions = "cmd:stats"
+    help_category = "System"
+
+    def func(self):
+        "Show all stats"
+
+        # get counts for all typeclasses 
+        stats_dict = ObjectDB.objects.object_totals()
+        # get all objects
+        stats_allobj = ObjectDB.objects.all().count()
+        # get all rooms 
+        stats_room = ObjectDB.objects.filter(db_location=None).count()
+        # get all players 
+        stats_users = User.objects.all().count()
+
+        string = "\n{wNumber of users:{n %i" % stats_users
+        string += "\n{wTotal number of objects:{n %i" % stats_allobj
+        string += "\n{wNumber of rooms (location==None):{n %i" % stats_room        
+        string += "\n (Use @objects for detailed info)"
+        self.caller.msg(string)
+
