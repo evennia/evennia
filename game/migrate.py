@@ -64,13 +64,13 @@ def run_south(mode):
     if mode == "init":
         for appname in APPLIST:
             print "Initializing %s ..." % appname
-            call(["python", "manage.py", "convert_to_south", appname])
+            call([sys.executable, "manage.py", "convert_to_south", appname])
         print "\nInitialization complete. That's all you need to do for now."    
     elif mode == "update":        
         for appname in APPLIST:        
             print "Updating/migrating schema for %s ..." % appname                
-            call(["python", "manage.py", "schemamigration", appname, "--auto"])
-            call(["python", "manage.py", "migrate", appname])                        
+            call([sys.executable, "manage.py", "schemamigration", appname, "--auto"])
+            call([sys.executable, "manage.py", "migrate", appname])                        
         print "\nUpdate complete."        
     
 def south_ui():
@@ -81,23 +81,28 @@ def south_ui():
     string = """
     Evennia Database Migration Tool
 
-    You usually don't need to use this tool unless a new version of Evennia tells you that 
-    the database scheme changed in some way, AND you don't want to reset your database. 
-    This tool will help you to migrate an existing database without having to manually edit 
-    your tables and fields to match the new scheme. For that to work you must have run this 
-    tool *before* applying the changes however.
+    You usually don't need to use this tool unless a new version of Evennia
+    tells you that the database scheme changed in some way, AND you don't want
+    to reset your database.
+    
+    This tool will help you to migrate an existing database without having to
+    manually edit your tables and fields to match the new scheme. For that
+    to work you must have run this tool *before* applying the changes however.
 
-    This is a simple wrapper on top of South, a Django database scheme migration tool.
-    If you want more control, you can call manage.py directly using the instructions
-    found at http://south.aeracode.org/docs.
+    This is a simple wrapper on top of South, a Django database scheme
+    migration tool.
+    
+    If you want more control, you can call manage.py directly using the
+    instructions found at http://south.aeracode.org/docs.
 
-    NOTE: Evennia is still in Alpha - there is no guarantee that database changes will still 
-          not be too advanced to handle with this simple tool, and it is too soon to talk
-          of supplying custom migration schemes to new versions. 
+    NOTE: Evennia is still in Alpha - there is no guarantee that database
+          changes will still not be too advanced to handle with this simple
+          tool, and it is too soon to talk of supplying custom migration
+          schemes to new versions. 
 
     Options: 
 
-    i - Initialize an existing/fresh database with migration mappings (done once)
+    i - Initialize an existing/new database with migration mappings (done once)
     u - Update an initialized database to the changed scheme
     q - Quit 
     """ 
