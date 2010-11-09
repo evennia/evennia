@@ -142,7 +142,7 @@ class ObjectManager(TypedObjectManager):
             lstring_alias = ", db_obj__db_location=location"
         if exact:
             estring = "iexact"
-        matches = eval("self.filter(db_key__%s=ostring%s)" % (estring, lstring_key))
+        matches = eval("self.filter(db_key__%s=ostring%s)" % (estring, lstring_key))        
         if not matches:
             alias_matches = eval("self.model.alias_set.related.model.objects.filter(db_key__%s=ostring%s)" % (estring, lstring_alias))
             matches = [alias.db_obj for alias in alias_matches]
@@ -156,10 +156,10 @@ class ObjectManager(TypedObjectManager):
         Get all objects that has a location
         set to this one.
         """
-        oquery = self.filter(db_location__id=location.id)
+        estring = ""
         if excludeobj:
-            oquery = oquery.exclude(db_key=excludeobj)
-        return oquery
+            estring = ".exclude(db_key=excludeobj)"
+        return eval("self.filter(db_location__id=location.id)%s" % estring)
             
     @returns_typeclass_list
     def object_search(self, character, ostring,
@@ -220,7 +220,7 @@ class ObjectManager(TypedObjectManager):
         def local_and_global_search(ostring, exact=False):
             "Helper method for searching objects" 
             matches = []            
-            for location in search_locations:            
+            for location in search_locations:                            
                 if attribute_name:
                     # Attribute/property search. First, search for db_<attrname> matches on the model
                     matches.extend(self.get_objs_with_db_property_match(attribute_name, ostring, location, exact))
@@ -229,13 +229,13 @@ class ObjectManager(TypedObjectManager):
                         matches.extend(self.get_objs_with_attr_match(attribute_name, ostring, location, exact))
                 else:
                     # No attribute/property named. Do a normal key/alias-search            
-                    matches = self.get_objs_with_key_or_alias(ostring, location, exact)
+                    matches.extend(self.get_objs_with_key_or_alias(ostring, location, exact))
             return matches
 
         # Search through all possibilities.
 
         match_number = None
-        matches = local_and_global_search(ostring, exact=True)
+        matches = local_and_global_search(ostring, exact=True)        
         if not matches:
             # if we have no match, check if we are dealing with an "N-keyword" query - if so, strip it.
             match_number, ostring = IDPARSER(ostring)

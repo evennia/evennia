@@ -109,10 +109,11 @@ class CmdSetObjAlias(MuxCommand):
     Adding permanent aliases
 
     Usage:
-      @alias <obj> = alias[,alias,alias,...]
+      @alias <obj> = [alias[,alias,alias,...]]
 
     Assigns aliases to an object so it can be referenced by more 
-    than one name. Observe that this is not the same thing as aliases 
+    than one name. Assign empty to remove all aliases from object.
+    Observe that this is not the same thing as aliases 
     created with the 'alias' command! Aliases set with @alias are 
     changing the object in question, making those aliases usable 
     by everyone. 
@@ -127,17 +128,32 @@ class CmdSetObjAlias(MuxCommand):
         "Set the aliases."
         caller = self.caller    
         objname, aliases = self.lhs, self.rhslist
-
-        if not aliases:
+        if not objname:
             caller.msg("Usage: @alias <obj> = <alias>,<alias>,...")
-            return
+            return        
         # Find the object to receive aliases
         obj = caller.search(objname, global_search=True)
-        # Use search to handle duplicate/nonexistant results.
         if not obj:
             return
+        if self.rhs == None:
+            # no =, so we just list aliases on object.
+            aliases = obj.aliases
+            if aliases:
+                caller.msg("Aliases for '%s': %s" % (obj.key, ", ".join(aliases)))
+            else:
+                caller.msg("No aliases exist for '%s'." % obj.key)
+            return 
         if not has_perm(caller, obj, 'modify_attributes'):
             caller.msg("You don't have permission to do that.")
+            return 
+        if not aliases or not aliases[0]:
+            # we have given an empty =, so delete aliases
+            old_aliases = obj.aliases
+            if old_aliases:
+                caller.msg("Cleared aliases from %s: %s" % (obj.key, ", ".join(old_aliases)))
+                del obj.dbobj.aliases # TODO: del does not understand indirect typeclass reference!
+            else:
+                caller.msg("No aliases to clear.")
             return 
         # merge the old and new aliases (if any)
         old_aliases = obj.aliases
@@ -148,8 +164,7 @@ class CmdSetObjAlias(MuxCommand):
         aliases = list(set(old_aliases))        
         # save back to object.
         obj.aliases = aliases 
-        caller.msg("Aliases for '%s' are now set to %s." % (obj.name, aliases))
-
+        caller.msg("Aliases for '%s' are now set to %s." % (obj.key, obj.aliases))
 
 class CmdCopy(ObjManipCommand):    
     """
@@ -875,9 +890,11 @@ class CmdName(ObjManipCommand):
         # change the name and set aliases:
         if newname:
             obj.name = newname
+        astring = ""
         if aliases:
             obj.aliases = aliases 
-        caller.msg("Object's name changed to '%s' %s." % (newname, ", ".join(aliases)))
+            astring = " (%s)" % (", ".join(aliases))
+        caller.msg("Object's name changed to '%s'%s." % (newname, astring))
 
 
 class CmdOpen(ObjManipCommand):            
@@ -1355,11 +1372,9 @@ class CmdExamine(ObjManipCommand):
                 obj_name = objdef['name']
                 obj_attrs = objdef['attrs']
                 
-                obj = caller.search(obj_name)
-                
+                obj = caller.search(obj_name)                
                 if not obj:
-                    string += "\nObject '%s' not found." % obj_name
-                    continue                 
+                    continue
                 if not has_perm(caller, obj, 'obj_info'):
                     #If we don't have special info access, just look at the object instead.
                     caller.exec_cmd('look %s' % obj_name)
@@ -1370,8 +1385,10 @@ class CmdExamine(ObjManipCommand):
                         string += self.format_attributes(obj, attrname)                        
                 else:
                     string += self.format_output(obj)        
+        string = string.strip()
         # Send it all
-        caller.msg(string)
+        if string:
+            caller.msg(string.strip())
 
 
 class CmdFind(MuxCommand):

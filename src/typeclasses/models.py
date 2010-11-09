@@ -587,7 +587,7 @@ class TypedObject(SharedMemoryModel):
             TYPECLASS_CACHE[path] = typeclass         
         return typeclass
     #@typeclass.deleter
-    def typeclass_del(self, value):
+    def typeclass_del(self):
         "Deleter. Allows for del self.typeclass (don't allow deletion)"
         raise Exception("The typeclass property should never be deleted!")
     typeclass = property(typeclass_get, fdel=typeclass_del)
