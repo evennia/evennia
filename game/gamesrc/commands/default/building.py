@@ -8,7 +8,7 @@ from django.conf import settings
 from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import ObjectDB, ObjAttribute
 from game.gamesrc.commands.default.muxcommand import MuxCommand
-from src.utils import create, utils 
+from src.utils import create, utils, debug 
 
 class ObjManipCommand(MuxCommand):
     """
