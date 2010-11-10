@@ -42,7 +42,10 @@ class ObjectManager(TypedObjectManager):
         try:
             uid = int(user)
         except TypeError:
-            uid = user.id             
+            try:
+                uid = user.id             
+            except:
+                return None
         try:
             return self.get(db_player__user__id=uid)
         except Exception:
