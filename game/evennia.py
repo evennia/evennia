@@ -186,4 +186,6 @@ def main():
     else:
         parser.print_help()
 if __name__ == '__main__':
-    main()
+    from src.utils.utils import check_evennia_dependencies
+    if check_evennia_dependencies():
+        main()

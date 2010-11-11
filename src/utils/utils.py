@@ -4,7 +4,7 @@ General helper functions that don't fit neatly under any given category.
 They provide some useful string and conversion methods that might
 be of use when designing your own game. 
 """
-import os
+import os, sys
 import textwrap
 import datetime
 from twisted.internet import threads
@@ -368,3 +368,56 @@ def run_async(async_func, at_return=None, at_err=None):
         logger.log_trace(e)   
     deferred.addErrback(default_errback)
 
+
+def check_evennia_dependencies():
+    """
+    Checks the versions of Evennia's dependencies.
+
+    Returns False if a show-stopping version mismatch is found.
+    """
+
+    # defining the requirements
+    python_min = '2.5'
+    twisted_min = '10.0'
+    django_min = '1.2'
+    south_min = '0.7'
+
+    errstring = ""
+    no_error = True
+
+    # Python
+    pversion = ".".join([str(num) for num in sys.version_info if type(num) == int])
+    if pversion < python_min:
+        errstring += "\n WARNING: Python %s used. Evennia recommends version %s or higher (but not 3.x)." % (pversion, python_min)
+        no_error = False
+    # Twisted
+    try:
+        import twisted
+        tversion = twisted.version.short()
+        if tversion < twisted_min:
+            errstring += "\n WARNING: Twisted %s found. Evennia recommends version %s or higher." % (twisted.version.short(), twisted_min)    
+    except ImportError:
+        errstring += "\n ERROR: Twisted does not seem to be installed."
+        no_error = False
+    # Django
+    try:
+        import django
+        dversion = ".".join([str(num) for num in django.VERSION if type(num) == int])
+        if dversion < django_min:
+            errstring += "\n ERROR: Django version %s found. Evennia requires version %s or higher." % (dversion, django_min)
+            no_error = False
+    except ImportError:
+        errstring += "\n ERROR: Django does not seem to be installed."
+        no_error = False
+    # South
+    try:
+        import south
+        sversion = south.__version__ 
+        if sversion < south_min:
+            errstring += "\n WARNING: South version %s found. Evennia recommends version %s or higher." % (sversion, south_min)            
+    except ImportError:
+        pass
+    errstring = errstring.strip()
+    if errstring:
+        print "%s\n %s\n%s" % ("-"*78, errstring, '-'*78)
+    return no_error

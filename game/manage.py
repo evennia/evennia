@@ -113,7 +113,9 @@ except Exception:
     """ % __file__
     print string 
     sys.exit(1)
-        
+
+# check required versions
+
 if __name__ == "__main__":
     from django.core.management import execute_manager    
     if _CREATED_SETTINGS: 
@@ -124,4 +126,6 @@ if __name__ == "__main__":
         """
         sys.exit()
     # run the django setups
-    execute_manager(settings)
+    from src.utils.utils import check_evennia_dependencies
+    if check_evennia_dependencies():
+        execute_manager(settings)
