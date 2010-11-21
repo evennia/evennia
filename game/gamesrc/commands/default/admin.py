@@ -459,8 +459,7 @@ class CmdPuppet(MuxCommand):
         if player.swap_character(new_character):
             new_character.msg("You now control %s." % new_character.name)
         else:
-            caller.msg("You couldn't control %s." % new_character.name)
-
+            caller.msg("You cannot control %s." % new_character.name)
 
 class CmdWall(MuxCommand):
     """

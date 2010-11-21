@@ -39,6 +39,7 @@ PERMS = [
     'typeclass',
     'debug',
     'puppet',
+    'typeclass',
     
     'batchcommands',
     'batchcodes',
@@ -79,6 +80,7 @@ GROUPS = {
                                 'reload', 
                                 'service', 
                                 'perm',
+                                'typeclass',
                                 'batchcommands',
                                 'batchcodes']],
     

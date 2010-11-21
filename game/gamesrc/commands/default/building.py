@@ -1111,7 +1111,8 @@ class CmdTypeclass(MuxCommand):
     Switch:
       reset - clean out *all* the attributes on the object - 
               basically making this a new clean object. 
-
+      force - change to the typeclass also if the object
+              already has a typeclass of the same name.      
     Example:
       @type button = examples.red_button.RedButton
       
@@ -1174,18 +1175,20 @@ class CmdTypeclass(MuxCommand):
 
         reset = "reset" in self.switches
         
-        old_typeclass = obj.typeclass
-        obj.swap_typeclass(typeclass, clean_attributes=reset)        
-        new_typeclass = obj.typeclass
-
-        string = "%s's type is now %s (instead of %s).\n\r" % (obj.name, 
-                                                               new_typeclass, 
-                                                               old_typeclass)
-        if reset:
-            string += "All attributes where reset."
-        else:    
-            string += "Note that the new class type could have overwritten "
-            string += "same-named attributes on the existing object."            
+        old_typeclass = obj.typeclass_path
+        if old_typeclass == typeclass and not 'force' in self.switches:
+            string = "%s already has the typeclass '%s'." % (obj.name, typeclass)
+        else:
+            obj.swap_typeclass(typeclass, clean_attributes=reset)        
+            new_typeclass = obj.typeclass
+            string = "%s's type is now %s (instead of %s).\n\r" % (obj.name, 
+                                                                   new_typeclass, 
+                                                                   old_typeclass)            
+            if reset:
+                string += "All attributes where reset."                                                               
+            else:    
+                string += "Note that the new class type could have overwritten "
+                string += "same-named attributes on the existing object."            
         caller.msg(string)
 
 
