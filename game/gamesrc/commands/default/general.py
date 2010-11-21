@@ -92,7 +92,7 @@ class CmdPassword(MuxCommand):
         oldpass = self.lhslist[0] # this is already stripped by parse()
         newpass = self.rhslist[0] #               ''
         try:
-            uaccount = caller.user
+            uaccount = caller.player.user
         except AttributeError:
             caller.msg("This is only applicable for players.")
             return

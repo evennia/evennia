@@ -538,7 +538,7 @@ def has_perm(accessing_obj, accessed_obj, lock_type, default_deny=False):
                 if typelist and lock_type in typelist]
 
     if not locklist or not any(locklist):
-        # No locks; use default security policy
+        # No viable locks; use default security policy
         return not default_deny 
 
     # we have locks of the right type. Set default flag OR on all that 
@@ -562,8 +562,7 @@ def has_perm(accessing_obj, accessed_obj, lock_type, default_deny=False):
 
     # try to add permissions from connected player
     if hasattr(accessing_obj, 'has_player') and accessing_obj.has_player:
-        # accessing_obj has a valid, connected player. We start with 
-        # those permissions. 
+        # accessing_obj has a valid, connected player. We start with those permissions. 
         player = accessing_obj.player        
         if player.is_superuser:
             # superuser always has access

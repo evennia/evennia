@@ -133,7 +133,8 @@ def cemit_info(message):
         infochan = Channel.objects.get_channel(infochan[0])
     except Exception:
         return 
-    cname = infochan.key
-    cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])        
-    infochan.msg(cmessage)        
+    if infochan:        
+        cname = infochan.key
+        cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])        
+        infochan.msg(cmessage)        
 

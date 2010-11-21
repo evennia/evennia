@@ -264,9 +264,15 @@ def format_multimatches(caller, matches):
 
 # Main command-handler function 
 
-def cmdhandler(caller, raw_string, unloggedin=False):
+def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
     """
     This is the main function to handle any string sent to the engine.    
+    
+    caller - calling object
+    raw_string - the command string given on the command line
+    unloggedin - if caller is an authenticated user or not
+    testing - if we should actually execute the command or not. 
+              if True, the command instance will be returned instead.
     """    
     try: # catch bugs in cmdhandler itself
         try: # catch special-type commands
@@ -375,7 +381,11 @@ def cmdhandler(caller, raw_string, unloggedin=False):
                 # we make sure to validate its scripts. 
                 cmd.obj.scripts.validate()
             
-            # Parse and execute
+            if testing:
+                # only return the command instance
+                return cmd
+
+            # Parse and execute        
             cmd.parse()
             cmd.func()
             # Done! 
@@ -395,6 +405,10 @@ def cmdhandler(caller, raw_string, unloggedin=False):
                     # cmd.obj is automatically made available.
                     # we make sure to validate its scripts. 
                     cmd.obj.scripts.validate()
+                    
+                if testing:
+                    # only return the command instance
+                    return syscmd
 
                 # parse and run the command
                 syscmd.parse()
