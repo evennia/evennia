@@ -1,0 +1,3 @@
+twisted>=10.0
+django>=1.2.1
+PIL
