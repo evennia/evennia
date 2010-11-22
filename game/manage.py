@@ -125,29 +125,7 @@ except Exception:
     print string 
     sys.exit(1)
 
-#------------------------------------------------------------
-# Test runner setup
-#------------------------------------------------------------
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
-from django.test.simple import DjangoTestSuiteRunner
-
-class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
-    """
-    This test runner only runs tests on the apps specified in src/ and game/ to
-     avoid running the large number of tests defined by Django
-    """
-    def build_suite(self, test_labels, extra_tests=None, **kwargs):
-        """
-        Build a test suite for Evennia. test_labels is a list of apps to test. 
-        If not given, a subset of settings.INSTALLED_APPS will be used.
-        """
-        if not test_labels:
-            test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS 
-                           if (applabel.startswith('src.') or applabel.startswith('game.'))]
-        return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
-    def run_suite(self, test_labels=None, extra_tests=None, **kwargs):
-        "Run wrapper for the tests"
-        return super(EvenniaTestSuiteRunner, self).run_suite(self.build_suite(test_labels, extra_tests), **kwargs)
 
 #------------------------------------------------------------
 # This is run only if the module is called as a program
@@ -161,12 +139,6 @@ if __name__ == "__main__":
     'python manage syncdb' and follow the prompts to
     create the database and your superuser account.
         """
-        sys.exit()
-
-    # running the unit tests
-    if len(sys.argv) > 1 and sys.argv[1] == 'test-evennia':        
-        print "Running Evennia-specific test suites ..."
-        EvenniaTestSuiteRunner(sys.argv[2:]).run_suite()
         sys.exit()
 
     # run the standard django manager, if dependencies match

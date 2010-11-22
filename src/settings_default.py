@@ -398,6 +398,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.debug',
     'game.web.utils.general_context.general_context',)
+# Use a custom test runner that just tests Evennia-specific apps.
+TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
 
 ###################################################
 # Evennia components (django apps)
