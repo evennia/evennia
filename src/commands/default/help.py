@@ -11,7 +11,7 @@ from src.commands.command import Command
 from src.help.models import HelpEntry
 from src.permissions.permissions import has_perm
 from src.utils import create 
-from game.gamesrc.commands.default.muxcommand import MuxCommand
+from src.commands.default.muxcommand import MuxCommand
 
 LIST_ARGS = ["list", "all"]
 

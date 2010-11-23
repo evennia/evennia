@@ -3,7 +3,7 @@ The command template for the default MUX-style command set
 """
 
 from src.utils import utils 
-from game.gamesrc.commands.basecommand import Command
+from src.commands.command import Command
 
 class MuxCommand(Command):
     """

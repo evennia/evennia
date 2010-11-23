@@ -4,7 +4,7 @@
 #
 
 from django.contrib import admin
-from game.web.news.models import NewsTopic, NewsEntry
+from src.web.news.models import NewsTopic, NewsEntry
 
 class NewsTopicAdmin(admin.ModelAdmin):
     list_display = ('name', 'icon')

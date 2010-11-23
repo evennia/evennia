@@ -5,6 +5,6 @@ webpage 'application'.
 
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('game.web.website.views',
+urlpatterns = patterns('src.web.website.views',
      (r'^$', 'page_index'),
 )

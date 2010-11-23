@@ -47,10 +47,10 @@ ALLOW_MULTISESSION = True
 SECRET_KEY = 'changeme!(*#&*($&*(#*(&SDFKJJKLS*(@#KJAS'
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Path to the game directory (containing the database file if using sqlite).
-GAME_DIR = os.path.join(BASE_PATH, 'game')
 # Path to the src directory containing the bulk of the codebase's code.
 SRC_DIR = os.path.join(BASE_PATH, 'src')
+# Path to the game directory (containing the database file if using sqlite).
+GAME_DIR = os.path.join(BASE_PATH, 'game')
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'logs')
 DEFAULT_LOG_FILE = os.path.join(LOG_DIR, 'evennia.log')
@@ -136,9 +136,9 @@ ALTERNATE_OBJECT_SEARCH_MULTIMATCH_PARSER = ""
 ###################################################
 
 # Command set used before player has logged in
-CMDSET_UNLOGGEDIN = "game.gamesrc.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
+CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
 # Default set for logged in players (fallback)
-CMDSET_DEFAULT = "game.gamesrc.commands.default.cmdset_default.DefaultCmdSet"
+CMDSET_DEFAULT = "src.commands.default.cmdset_default.DefaultCmdSet"
 
 
 ###################################################
@@ -326,7 +326,7 @@ ADMINS = () #'Your Name', 'your_email@domain.com'),)
 MANAGERS = ADMINS
 # Absolute path to the directory that holds media (no trailing slash).
 # Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(GAME_DIR, 'web', 'media')
+MEDIA_ROOT = os.path.join(SRC_DIR, 'web', 'media')
 # It's safe to dis-regard this, as it's a Django feature we only half use as a
 # dependency, not actually what it's primarily meant for.
 SITE_ID = 1
@@ -354,7 +354,7 @@ SERVE_MEDIA = True
 
 # The master urlconf file that contains all of the sub-branches to the
 # applications.
-ROOT_URLCONF = 'game.web.urls'
+ROOT_URLCONF = 'src.web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
@@ -373,8 +373,8 @@ ADMIN_MEDIA_PREFIX = '/media/amedia/'
 ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
-    os.path.join(GAME_DIR, "web", "templates", ACTIVE_TEMPLATE),
-    os.path.join(GAME_DIR, "web", "templates"),)
+    os.path.join(SRC_DIR, "web", "templates", ACTIVE_TEMPLATE),
+    os.path.join(SRC_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
@@ -397,12 +397,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.media',
     'django.core.context_processors.debug',
-    'game.web.utils.general_context.general_context',)
-# Use a custom test runner that just tests Evennia-specific apps.
-TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
+    'src.web.utils.general_context.general_context',)
 
 ###################################################
-# Evennia components (django apps)
+# Evennia components
 ###################################################
 
 # Global and Evennia-specific apps. This ties everything together so we can
@@ -424,12 +422,13 @@ INSTALLED_APPS = (
     'src.help',
     'src.scripts',
     'src.permissions',
-    'game.web.news',
-    'game.web.website',)
-
+    'src.web.news',
+    'src.web.website',)
 # The user profile extends the User object with more functionality;
 # This should usually not be changed. 
 AUTH_PROFILE_MODULE = "players.PlayerDB"
+# Use a custom test runner that just tests Evennia-specific apps.
+TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
 
 ###################################################
 # Django extensions 
@@ -443,7 +442,7 @@ try:
 except ImportError:
     pass
 # South handles automatic database scheme migrations when evennia updates
-try: 
+try:
     import south
     INSTALLED_APPS = INSTALLED_APPS + ('south',)
 except ImportError:

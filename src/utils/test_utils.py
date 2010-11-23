@@ -1,3 +1,8 @@
+"""
+Test runner for Evennia test suite. Run with "game/manage.py test".  
+
+"""
+
 from django.conf import settings
 from django.test.simple import DjangoTestSuiteRunner
 

@@ -24,9 +24,8 @@ Example batch-code file: game/gamesrc/commands/examples/example_batch_code.py
 from traceback import format_exc
 from django.conf import settings
 from src.utils.batchprocessors import BATCHCMD, BATCHCODE
-from game.gamesrc.commands.default.muxcommand import MuxCommand
 from src.commands.cmdset import CmdSet
-
+from src.commands.default.muxcommand import MuxCommand
 
 HEADER_WIDTH = 70
 UTF8_ERROR = \

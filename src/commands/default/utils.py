@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from src.comms.models import Msg
 from src.permissions import permissions
 from src.utils import create, debug, utils
-from game.gamesrc.commands.default.muxcommand import MuxCommand
+from src.commands.default.muxcommand import MuxCommand
 
 from src.commands import cmdsethandler
 
@@ -225,5 +225,3 @@ class TestCom(MuxCommand):
             caller.msg(string)
             return 
         caller.msg("Usage: @testcom/create channel")
-
-

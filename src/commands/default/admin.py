@@ -7,12 +7,11 @@ Admin commands
 from django.conf import settings
 from django.contrib.auth.models import User
 from src.players.models import PlayerDB
-from game.gamesrc.commands.default.muxcommand import MuxCommand
 from src.server import sessionhandler
 from src.permissions.permissions import has_perm, has_perm_string
 from src.permissions.models import PermissionGroup
 from src.utils import utils
-
+from src.commands.default.muxcommand import MuxCommand
 
 class CmdBoot(MuxCommand):
     """

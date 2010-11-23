@@ -9,8 +9,7 @@ from src.permissions.models import PermissionGroup
 from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import HANDLE_SEARCH_ERRORS
 from src.utils import utils
-
-from game.gamesrc.commands.default.muxcommand import MuxCommand
+from src.commands.default.muxcommand import MuxCommand
 
 class CmdHome(MuxCommand):
     """

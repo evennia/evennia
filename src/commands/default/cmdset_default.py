@@ -2,9 +2,9 @@
 This module ties together all the commands of the default command set. 
 """
 from src.commands.cmdset import CmdSet
-from game.gamesrc.commands.default import general, help, admin, system
-from game.gamesrc.commands.default import tests, comms, building
-from game.gamesrc.commands.default import batchprocess
+from src.commands.default import general, help, admin, system
+from src.commands.default import utils, comms, building
+from src.commands.default import batchprocess
 
 class DefaultCmdSet(CmdSet):
     """
@@ -92,7 +92,7 @@ class DefaultCmdSet(CmdSet):
         self.add(batchprocess.CmdBatchCommands())
         self.add(batchprocess.CmdBatchCode())
 
-        # Testing commands 
-        self.add(tests.CmdTest())
-        self.add(tests.CmdTestPerms())
-        self.add(tests.TestCom())
+        # Testing/Utility commands 
+        self.add(utils.CmdTest())
+        self.add(utils.CmdTestPerms())
+        self.add(utils.TestCom())

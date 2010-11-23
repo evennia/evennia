@@ -4,7 +4,7 @@ The setting STATE_UNLOGGED should be set to the python path
 of the state instance in this module.
 """
 from src.commands.cmdset import CmdSet
-from game.gamesrc.commands.default import unloggedin
+from src.commands.default import unloggedin
 
 class UnloggedinCmdSet(CmdSet):
     """

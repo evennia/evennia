@@ -10,7 +10,7 @@ from src.objects.models import ObjectDB
 from src.config.models import ConfigValue 
 from src.comms.models import Channel
 from src.utils import create, logger, utils
-from game.gamesrc.commands.default.muxcommand import MuxCommand 
+from src.commands.default.muxcommand import MuxCommand
 
 class CmdConnect(MuxCommand):
     """

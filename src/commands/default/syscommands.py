@@ -17,7 +17,7 @@ to implement a line-editor where you don't have to start each
 line with a command (if there is no match to a known command,
 the line is just added to the editor buffer). 
 """
-from game.gamesrc.commands.default.muxcommand import MuxCommand
+
 from src.comms.models import Channel
 from src.utils import create
 from src.permissions.permissions import has_perm
@@ -31,6 +31,7 @@ from src.commands.cmdhandler import CMD_NOPERM
 from src.commands.cmdhandler import CMD_CHANNEL
 from src.commands.cmdhandler import CMD_EXIT
  
+from src.commands.default.muxcommand import MuxCommand
 
 # Command called when there is no input at line
 # (i.e. an lone return key)

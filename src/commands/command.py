@@ -145,5 +145,18 @@ class Command(object):
         of this module for which object properties are available
         (beyond those set in self.parse()) 
         """        
-        string = "Command '%s' was executed with arg string '%s'." 
-        self.caller.msg(string % (self.key, self.args))
+                # a simple test command to show the available properties
+        string = "-" * 50
+        string += "\n{w%s{n - Command variables from evennia:\n" % self.key 
+        string += "-" * 50
+        string += "\nname of cmd (self.key): {w%s{n\n" % self.key 
+        string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
+        string += "cmd perms (self.permissions): {w%s{n\n" % self.permissions
+        string += "help category (self.help_category): {w%s{n\n" % self.help_category
+        string += "object calling (self.caller): {w%s{n\n" % self.caller
+        string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
+        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring        
+        # show cmdset.key instead of cmdset to shorten output
+        string += utils.fill("current cmdset (self.cmdset): {w%s{n\n" % self.cmdset)
+        
+        self.caller.msg(string)

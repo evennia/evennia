@@ -204,13 +204,22 @@ class CmdSet(object):
         """
         Add a command to this cmdset.
 
-        Note that if cmd already has 
+        Note that if cmd already exists in set,
+        it will replace the old one (no priority checking etc 
+        at this point; this is often used to overload 
+        default commands). 
         """
         cmd = instantiate(cmd)
+
         if cmd:
             if not hasattr(cmd, 'obj'):
                 cmd.obj = self.cmdsetobj
-            self.commands.append(cmd)
+            try:
+                ic = self.commands.index(cmd)
+                self.commands[ic] = cmd # replace 
+            except ValueError:
+                self.commands.append(cmd) 
+            # extra run to make sure to avoid doublets
             self.commands = list(set(self.commands))
 
     def remove(self, cmd):

@@ -7,7 +7,7 @@ from src.config.models import ConfigValue
 from src.objects.models import ObjectDB
 from src.typeclasses.models import TypedObject
 from src.players.models import PlayerDB
-from game.web.news.models import NewsEntry
+from src.web.news.models import NewsEntry
 
 """
 This file contains the generic, assorted views that don't fall under one of

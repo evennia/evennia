@@ -3,10 +3,9 @@ Comsys command module.
 """
 
 from src.comms.models import Channel, Msg, ChannelConnection
-from game.gamesrc.commands.default.muxcommand import MuxCommand
 from src.utils import create, utils
 from src.permissions.permissions import has_perm
-            
+from src.commands.default.muxcommand import MuxCommand            
 
 def find_channel(caller, channelname):
     """
