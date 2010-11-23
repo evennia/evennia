@@ -111,7 +111,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             raise
         except KeyError:
             errstring = "Error in loading cmdset: No cmdset class '%s' in %s."
-            errstring = errstring % (modulepath, classname)
+            errstring = errstring % (classname, modulepath)
             raise
         except Exception:            
             errstring = "\n%s\nCompile/Run error when loading cmdset '%s'."

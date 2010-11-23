@@ -136,9 +136,9 @@ ALTERNATE_OBJECT_SEARCH_MULTIMATCH_PARSER = ""
 ###################################################
 
 # Command set used before player has logged in
-CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
+CMDSET_UNLOGGEDIN = "game.gamesrc.commands.basecmdset.UnloggedinCmdSet"
 # Default set for logged in players (fallback)
-CMDSET_DEFAULT = "src.commands.default.cmdset_default.DefaultCmdSet"
+CMDSET_DEFAULT = "game.gamesrc.commands.basecmdset.DefaultCmdSet"
 
 
 ###################################################
