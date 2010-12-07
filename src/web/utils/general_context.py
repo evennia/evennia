@@ -42,5 +42,6 @@ def general_context(request):
         'evennia_entityapps': GAME_ENTITIES,
         'evennia_setupapps': GAME_SETUP,
         'evennia_connectapps': CONNECTIONS,
-        'evennia_websiteapps':WEBSITE
+        'evennia_websiteapps':WEBSITE,
+        "webclient_enabled" : settings.WEBCLIENT_ENABLED
     }

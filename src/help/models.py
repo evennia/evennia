@@ -32,7 +32,6 @@ class HelpEntry(SharedMemoryModel):
       permissions - perm strings
 
     """
-    
 
     #
     # HelpEntry Database Model setup

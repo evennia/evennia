@@ -107,6 +107,15 @@ def cycle_logfile():
             os.remove(logfile_old)
         os.rename(logfile, logfile_old)
 
+    logfile = settings.HTTP_LOG_FILE.strip()
+    logfile_old = logfile + '.old'
+    if os.path.exists(logfile):
+        # Cycle the old logfiles to *.old
+        if os.path.exists(logfile_old):
+            # E.g. Windows don't support rename-replace
+            os.remove(logfile_old)
+        os.rename(logfile, logfile_old)    
+
 def start_daemon(parser, options, args):
     """
     Start the server in daemon mode. This means that all logging output will
@@ -136,6 +145,9 @@ def start_interactive(parser, options, args):
     print '\nStarting Evennia server in interactive mode (stop with keyboard interrupt) ...'
     print 'Logging to: Standard output.'
 
+    # we cycle logfiles (this will at most put all files to *.old)
+    # to handle html request logging files. 
+    cycle_logfile()
     try:
         call([TWISTED_BINARY, 
               '-n', 

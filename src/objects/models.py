@@ -111,9 +111,7 @@ class ObjectDB(TypedObject):
       has_player - bool if an active player is currently connected
       contents - other objects having this object as location
       
-      
     """
-
 
     #
     # ObjectDB Database model setup
@@ -354,8 +352,6 @@ class ObjectDB(TypedObject):
         return ObjectDB.objects.get_contents(self)
     contents = property(contents_get)
 
-        
-
     #
     # Nicks - custom nicknames
     #
@@ -378,7 +374,6 @@ class ObjectDB(TypedObject):
     #   a man or not. Such logics need to implemented for your particular 
     #   game). 
     #  
-
 
     def set_nick(self, nick, realname=None):
         """
@@ -514,33 +509,30 @@ class ObjectDB(TypedObject):
                 break
         cmdhandler.cmdhandler(self.typeclass(self), raw_string)
 
-    def msg(self, message, from_obj=None, markup=True):
+    def msg(self, message, from_obj=None, data=None):
         """
         Emits something to any sessions attached to the object.
         
         message (str): The message to send
         from_obj (obj): object that is sending.
-        markup (bool): Markup. Determines if the message is parsed
-                       for special markup, such as ansi colors. If
-                       false, all markup will be cleaned from the
-                       message in the session.msg() and message
-                       passed on as raw text. 
+        data (object): an optional data object that may or may not
+                       be used by the protocol.                       
         """
         # This is an important function that must always work. 
         # we use a different __getattribute__ to avoid recursive loops.
         
         if object.__getattribute__(self, 'player'):
-            object.__getattribute__(self, 'player').msg(message, markup)
+            object.__getattribute__(self, 'player').msg(message, data)
 
-    def emit_to(self, message, from_obj=None):
+    def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"
-        self.msg(message, from_obj)
+        self.msg(message, from_obj, data)
         
-    def msg_contents(self, message, exclude=None):
+    def msg_contents(self, message, exclude=None, from_obj=None, data=None):
         """
         Emits something to all objects inside an object.
 
-        exclude is a list of objects not to send to.
+        exclude is a list of objects not to send to. See self.msg() for more info.
         """
         contents = self.contents
         if exclude:
@@ -549,11 +541,11 @@ class ObjectDB(TypedObject):
             contents = [obj for obj in contents
                         if (obj not in exclude and obj not in exclude)]
         for obj in contents:
-            obj.msg(message)
+            obj.msg(message, from_obj=from_obj, data=data)
 
-    def emit_to_contents(self, message, exclude=None):
+    def emit_to_contents(self, message, exclude=None, from_obj=None, data=None):
         "Deprecated. Alias for msg_contents"
-        self.msg_contents(message, exclude)
+        self.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
             
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None):
@@ -736,12 +728,3 @@ class ObjectDB(TypedObject):
 
 # Deferred import to avoid circular import errors. 
 from src.commands import cmdhandler
-
-
-# from src.typeclasses import idmap
-# class CachedObj(models.Model):
-#     key = models.CharField(max_length=255, null=True, blank=True)
-#     test = models.BooleanField(default=False)
-#     objects = idmap.CachingManager()
-#     def id(self):
-#         return id(self)

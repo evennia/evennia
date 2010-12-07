@@ -1,3 +1,11 @@
+
+"""
+This file contains the generic, assorted views that don't fall under one of
+the other applications. Views are django's way of processing e.g. html 
+templates on the fly.
+
+"""
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.models import User
@@ -8,11 +16,6 @@ from src.objects.models import ObjectDB
 from src.typeclasses.models import TypedObject
 from src.players.models import PlayerDB
 from src.web.news.models import NewsEntry
-
-"""
-This file contains the generic, assorted views that don't fall under one of
-the other applications.
-"""
 
 def page_index(request):
     """
@@ -30,7 +33,7 @@ def page_index(request):
 
     exits = ObjectDB.objects.get_objs_with_attr('_destination')
     rooms = [room for room in ObjectDB.objects.filter(db_home=None) if room not in exits]
-    
+
     pagevars = {
         "page_title": "Front Page",
         "news_entries": news_entries,

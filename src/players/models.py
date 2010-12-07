@@ -44,7 +44,7 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
-from src.server import sessionhandler 
+from src.server import sessionhandler
 from src.players import manager 
 from src.typeclasses.models import Attribute, TypedObject
 from src.permissions import permissions
@@ -216,11 +216,11 @@ class PlayerDB(TypedObject):
     name = property(name_get, name_set, name_del)
     key = property(name_get, name_set, name_del)
 
-    # sessions property (wraps sessionhandler)
+    # sessions property
     #@property
     def sessions_get(self):
         "Getter. Retrieve sessions related to this player/user"
-        return sessionhandler.find_sessions_from_username(self.name)
+        return sessionhandler.SESSIONS.sessions_from_player(self)
     #@sessions.setter
     def sessions_set(self, value):
         "Setter. Protects the sessions property from adding things"
@@ -251,26 +251,20 @@ class PlayerDB(TypedObject):
     # PlayerDB class access methods 
     # 
     
-    def msg(self, message, from_obj=None, markup=True):
+    def msg(self, outgoing_string, from_obj=None, data=None):
         """
-        This is the main route for sending data to the user.
+        Evennia -> User 
+        This is the main route for sending data back to the user from the server.
         """
         if from_obj:
             try:
-                from_obj.at_msg_send(message, self)
+                from_obj.at_msg_send(outgoing_string, self)
             except Exception:
                 pass
         if self.character:
-            if self.character.at_msg_receive(message, from_obj):
+            if self.character.at_msg_receive(outgoing_string, from_obj):
                 for session in object.__getattribute__(self, 'sessions'):
-                    session.msg(message, markup)
-
-    def emit_to(self, message, from_obj=None):
-        """
-        Deprecated. Use msg instead.
-        """
-        self.msg(message, from_obj)
-
+                    session.msg(outgoing_string, data)
 
     def swap_character(self, new_character, delete_old_character=False):
         """

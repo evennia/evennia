@@ -26,7 +26,7 @@ class ConfigValueManager(models.Manager):
             new_conf.db_value = db_value
             new_conf.save()
 
-    def get_configvalue(self, config_key):
+    def get_configvalue(self, config_key, default=None):
         """
         Retrieve a configuration value.
         
@@ -35,7 +35,7 @@ class ConfigValueManager(models.Manager):
         try:
             return self.get(db_key__iexact=config_key).db_value
         except self.model.DoesNotExist:
-            return None 
+            return default
 
     # a simple wrapper for consistent naming in utils.search
     def config_search(self, ostring):
@@ -46,7 +46,7 @@ class ConfigValueManager(models.Manager):
         """
         return self.get_configvalue(ostring)
 
-    def conf(self, db_key=None, db_value=None, delete=False):
+    def conf(self, db_key=None, db_value=None, delete=False, default=None):
         """
         Wrapper to access the Config database.
         This will act as a get/setter, lister or deleter
@@ -64,7 +64,7 @@ class ConfigValueManager(models.Manager):
         elif db_value != None:
             self.set_configvalue(db_key, db_value)
         else:
-            return self.get_configvalue(db_key)
+            return self.get_configvalue(db_key, default=default)
 
 
 class ConnectScreenManager(models.Manager):

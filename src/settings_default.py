@@ -22,8 +22,21 @@ import os
 # This is the name of your server and/or site. 
 # Can be anything. 
 SERVERNAME = "Evennia" 
-# A list of ports the Evennia server listens on. Can be one or many.
-GAMEPORTS = [4000]
+# Activate telnet service
+TELNET_ENABLED = True 
+# A list of ports the Evennia telnet server listens on
+# Can be one or many.
+TELNET_PORTS = [4000]
+# Start the evennia django+twisted webserver so you can 
+# browse the evennia website and the admin interface
+# (Obs - further web configuration can be found below
+# in the section  'Config for Django web features')
+WEBSERVER_ENABLED = True
+# A list of ports the Evennia webserver listens on
+WEBSERVER_PORTS = [8020]
+# Start the evennia ajax client on /webclient
+# (the webserver must also be running)
+WEBCLIENT_ENABLED = True
 # Activate full persistence if you want everything in-game to be
 # stored to the database. With it set, you can do typeclass.attr=value
 # and value will be saved to the database under the name 'attr'.
@@ -54,6 +67,9 @@ GAME_DIR = os.path.join(BASE_PATH, 'game')
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'logs')
 DEFAULT_LOG_FILE = os.path.join(LOG_DIR, 'evennia.log')
+# Where to log server requests to the web server. This is VERY spammy, so this 
+# file should be removed at regular intervals. 
+HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'
@@ -70,11 +86,17 @@ IMPORT_MUX_HELP = False
 # thrown off by sending the empty system command 'idle' to the server
 # at regular intervals. Set <=0 to deactivate idle timout completely.
 IDLE_TIMEOUT = 3600
-# If the PlayerAttribute 'encoding' is not set, or wrong encoding is
-# given, this list is tried, in order, stopping on the first match.
-# Add sets for languages/regions your players are likely to use.  (see
-# http://en.wikipedia.org/wiki/Character_encoding).
+# The idle command can be sent to keep your session active without actually 
+# having to spam normal commands regularly. It gives no feedback, only updates
+# the idle timer.
+IDLE_COMMAND = "idle"
+# The set of encodings tried. A Player object may set an attribute "encoding" on 
+# itself to match the client used. If not set, or wrong encoding is
+# given, this list is tried, in order, aborting on the first match. 
+# Add sets for languages/regions your players are likely to use.
+# (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"] 
+
 
 ###################################################
 # Evennia Database config 
@@ -314,8 +336,8 @@ IRC_NICKNAME = ""
 # While DEBUG is False, show a regular server error page on the web
 # stuff, email the traceback to the people in the ADMINS tuple
 # below. If True, show a detailed traceback for the web
-# browser to display. Note however that this might leak memory when
-# active, so make sure turn it off for a production server!
+# browser to display. Note however that this will leak memory when
+# active, so make sure to turn it off for a production server!
 DEBUG = False
 # While true, show "pretty" error messages for template syntax errors.
 TEMPLATE_DEBUG = DEBUG
@@ -350,7 +372,7 @@ USE_I18N = False
 # you're running Django's built-in test server. Normally you want a webserver 
 # that is optimized for serving static content to handle media files (apache, 
 # lighttpd).
-SERVE_MEDIA = True
+SERVE_MEDIA = False
 
 # The master urlconf file that contains all of the sub-branches to the
 # applications.
@@ -367,7 +389,7 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/amedia/'
+ADMIN_MEDIA_PREFIX = '/media/admin/'
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'

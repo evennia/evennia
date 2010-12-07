@@ -1,0 +1,212 @@
+/*
+
+Evennia ajax webclient (javascript component)
+
+The client is composed of several parts:
+ templates/webclient.html - the main page
+ webclient/views.py - the django view serving the template (based on urls.py pattern)
+ src/server/webclient.py - the server component receiving requests from the client
+ this file - the javascript component handling dynamic ajax content
+
+This implements an ajax mud client for use with Evennia, using jQuery
+for simplicity. It communicates with the Twisted server on the address
+/webclientdata through POST requests. Each request must at least
+contain the 'mode' of the request to be handled by the protocol:
+ mode 'receive' - tell the server that we are ready to receive data. This is a 
+                  long-polling (comet-style) request since the server
+                  will not reply until it actually has data available.
+                  The returned data object has two variables 'msg' and 'data'
+                  where msg should be output and 'data' is an arbitrary piece 
+                  of data the server and client understands (not used in default
+                  client). 
+ mode 'input' - the user has input data on some form. The POST request
+                should also contain variables 'msg' and 'data' where
+                the 'msg' is a string and 'data' is an arbitrary piece
+                of data from the client that the server knows how to
+                deal with (not used in this example client).
+ mode 'init' -  starts the connection. All setup the server is requered to do
+                should happen at this point. The server returns a data object
+                with the 'msg' property containing the server address. 
+
+*/
+
+
+// jQuery must be imported by the calling html page before this script
+// (it comes with Evennia, in media/javascript/jquery-<version>.js)
+// There are plenty of help on using the jQuery library on http://jquery.com/
+
+// Server communications
+
+function webclient_receive(){
+    // This starts an asynchronous long-polling request. It will either timeout 
+    // or receive data from the 'receivedata' url. In both cases a new request will
+    // immediately be started. 
+
+    $.ajax({
+        type: "POST",
+        url: "/webclientdata",
+        async: true,             // Turns off browser loading indicator
+        cache: false,            // Forces browser reload independent of cache
+        timeout:30000,           // Timeout in ms. After this time a new long-poll will be started.
+        dataType:"json",
+        data: {mode:'receive'},
+
+        // callback methods 
+
+        success: function(data){       // called when request to waitreceive completes                 
+            msg_display("out", data.msg);  // Add response to the message area
+            webclient_receive();              // immediately start a new request
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){                
+            webclient_receive();              // A possible timeout. Resend request immediately
+        },
+    });
+};
+
+function webclient_input(){
+    // Send an input from the player to the server 
+
+    var outmsg = $("#inputfield").val() // get data from form
+
+    $.ajax({
+        type: "POST",
+        url: "/webclientdata",
+        async: true, 
+        cache: false,
+        timeout: 30000,
+        data: {mode:'input', msg:outmsg, data:'NoData'},
+        
+        //callback methods
+
+        success: function(data){               
+            //if (outmsg.length > 0 ) msg_display("inp", outmsg) // echo input on command line
+            history_add(outmsg);
+            HISTORY_POS = 0;
+            $('#inputform')[0].reset()                     // clear input field
+        }, 
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            msg_display("err", "Error: Server returned an error or timed out. Try resending."); 
+        },
+    })
+}
+
+function webclient_init(){
+    // Start the connection by making sure the server is ready
+
+    $.ajax({
+        type: "POST",
+        url: "/webclientdata",
+        async: true, 
+        cache: false,
+        timeout: 50000,
+        dataType:"json",
+        data: {mode:'init'},
+        
+        // callback methods
+
+        success: function(data){  // called when request to initdata completes
+            $("#connecting").remove() // remove the "connecting ..." message.
+
+            setTimeout(function () { // a small timeout to stop 'loading' indicator in Chrome
+                $("#playercount").fadeOut('slow');
+            }, 10000);        
+            
+            // Report success
+            msg_display('sys',"Connected to " + data.msg + ".")
+
+            // Wait for input
+            webclient_receive();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            msg_display("err", "Connection error ..." + " (" + errorThrown + ")");
+            setTimeout('webclient_receive()', 15000); // try again after 15 seconds             
+        },
+    });
+}
+
+// Display messages 
+
+function msg_display(type, msg){
+    // Add a div to the message window.
+    // type givews the class of div to use.        
+    $("#messagewindow").append(
+        "<div class='msg "+ type +"'>"+ msg +"</div>");
+    // scroll message window to bottom
+    $('#messagewindow').animate({scrollTop: $('#messagewindow')[0].scrollHeight});
+}
+
+// Input history mechanism
+
+var HISTORY_MAX_LENGTH = 21
+var HISTORY = new Array();
+HISTORY[0] = '';
+var HISTORY_POS = 0;
+
+function history_step_back() {
+    // step backwards in history stack
+    HISTORY_POS = Math.min(++HISTORY_POS, HISTORY.length-1);
+    return HISTORY[HISTORY.length-1 - HISTORY_POS];
+}
+function history_step_fwd() {
+    // step forward in history stack        
+    HISTORY_POS = Math.max(--HISTORY_POS, 0);
+    return HISTORY[HISTORY.length-1 - HISTORY_POS];
+}
+function history_add(input) {
+    // add an entry to history
+    if (input != HISTORY[HISTORY.length-1]) {
+        if (HISTORY.length >= HISTORY_MAX_LENGTH) {                
+            HISTORY.shift() // kill oldest history entry                
+        }
+        HISTORY[HISTORY.length-1] = input
+        HISTORY[HISTORY.length] = ''
+    }
+}
+
+// Catching keyboard shortcuts
+
+$(document).keypress( function(event) {
+    var code = event.keyCode ? event.keyCode : event.which
+
+    // always focus input field
+    $("#inputfield")[0].focus();
+    if (code == 13) { // Enter key             
+        webclient_input();  
+        event.preventDefault();
+        return false;          
+    }
+    else {    
+        if (code == 38) { // arrow up
+            $("#inputfield").val(function(index, value){
+                return history_step_back();
+            });
+        }
+        else if (code == 40) { // arrow down
+            $("#inputfield").val(function(index, value){
+                return history_step_fwd();
+            });
+        }
+    }        
+});
+
+// handler to avoid double-clicks until the ajax request finishes
+$("#inputsend").one("click", webclient_input)
+
+// Callback function - called when page has finished loading (gets things going)
+$(document).ready(function(){
+
+    // remove the "no javascript" warning, since we obviously have javascript
+    $('#noscript').remove()
+
+    // set sizes of elements and reposition them
+    var win_h = $(document).height();
+    var win_w = $('#wrapper').width();
+    var inp_h = $('#inputform').height();
+    var inp_w = $('#inputsend').width()
+    $("#messagewindow").css({'height':win_h-inp_h - 20});
+    $("#inputfield").css({'width':win_w-inp_w - 20});
+
+    setTimeout(function () { // a small timeout to stop 'loading' indicator in Chrome        
+        webclient_init();            
+    }, 500);        
+});

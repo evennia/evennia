@@ -10,19 +10,23 @@
 <div class="rowOfBoxes">
    <div class="twoThirds noBorderOnLeft">
       <h1>Welcome!</h1>
-      <p>Welcome to your new installation of Evennia, your friendly
+      <p>Welcome to your new installation of <a href="http://evennia.com">Evennia</a>, your friendly
       neighborhood next-generation MUD server. You are looking at Evennia's web
       presence, which can be expanded to a full-fledged site as
       needed. Through the <a href="/admin">admin interface</a> you can view and edit the
-      database without logging into the game. Also take your time to
+      database without logging into the game. 
+        {% if webclient_enabled %} 
+        You can also connect to the game directly from your browser using our
+        <a href='/webclient'>online client</a>!<br></br> 
+        {% endif %}
+      For more info, take your time to
       peruse our extensive online <a href="http://code.google.com/p/evennia/wiki/Index">documentation</a>.
       <p>
       Should you have any questions, concerns, bug reports, or
       if you want to help out, don't hesitate to come join the 
-      <a href="http://evennia.com">Evennia community</a> and get
+      <a href="http://evennia.com/discussions">Evennia community</a> and get
       your voice heard!
       </p>
-      <i>(To edit this file, go to game/web/templates/prosimii/index.html.)</i>
    </div>
 
    <div class="oneThird">

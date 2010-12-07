@@ -5,11 +5,13 @@ import traceback
 #from django.contrib.auth.models import User
 from django.conf import settings 
 from django.contrib.auth.models import User
+from src.server import sessionhandler
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
-from src.config.models import ConfigValue 
+from src.config.models import ConfigValue, ConnectScreen
 from src.comms.models import Channel
-from src.utils import create, logger, utils
+
+from src.utils import create, logger, utils, ansi
 from src.commands.default.muxcommand import MuxCommand
 
 class CmdConnect(MuxCommand):
@@ -94,7 +96,7 @@ class CmdConnect(MuxCommand):
         player.at_pre_login()        
         character.at_pre_login()
 
-        session.login(player)
+        session.session_login(player)
 
         player.at_post_login()
         character.at_post_login()
@@ -230,7 +232,7 @@ class CmdQuit(MuxCommand):
         "Simply close the connection."
         session = self.caller
         session.msg("Good bye! Disconnecting ...")
-        session.handle_close()
+        session.at_disconnect()
 
 class CmdUnconnectedLook(MuxCommand):
     """
@@ -243,8 +245,11 @@ class CmdUnconnectedLook(MuxCommand):
     def func(self):
         "Show the connect screen."
         try:
-            self.caller.game_connect_screen()
-        except Exception:
+            screen = ConnectScreen.objects.get_random_connect_screen()
+            string = ansi.parse_ansi(screen.text)
+            self.caller.msg(string)
+        except Exception, e:
+            self.caller.msg(e)
             self.caller.msg("Connect screen not found. Enter 'help' for aid.")
 
 class CmdUnconnectedHelp(MuxCommand):
@@ -271,23 +276,19 @@ Commands available at this point:
 To login to the system, you need to do one of the following:
 
 1) If you have no previous account, you need to use the 'create'
-   command followed by your desired character name (in quotes), your 
-   e-mail address and finally a password of your choice. Like 
-   this: 
+   command like this:
 
-   > create "Anna the Barbarian" anna@myemail.com tuK3221mP
+   > create "Anna the Barbarian" anna@myemail.com c67jHL8p
 
    It's always a good idea (not only here, but everywhere on the net)
    to not use a regular word for your password. Make it longer than 
    3 characters (ideally 6 or more) and mix numbers and capitalization 
-   into it. Now proceed to 2). 
+   into it. 
 
 2) If you have an account already, either because you just created 
-   one in 1) above, or you are returning, use the 'connect' command 
-   followed by the e-mail and password you previously set. 
-   Example: 
+   one in 1) above or you are returning, use the 'connect' command: 
 
-   > connect anna@myemail.com tuK3221mP
+   > connect anna@myemail.com c67jHL8p
 
    This should log you in. Run 'help' again once you're logged in 
    to get more aid. Hope you enjoy your stay! 

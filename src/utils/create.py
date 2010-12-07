@@ -22,11 +22,8 @@ Models covered:
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from src.players.models import PlayerDB
-from src.help.models import HelpEntry
-from src.comms.models import Msg, Channel 
-from src.comms import channelhandler 
-from src.comms.managers import to_object
+
+
 from src.permissions.permissions import set_perm
 from src.permissions.models import PermissionGroup
 from src.utils import logger
@@ -212,6 +209,8 @@ def create_help_entry(key, entrytext, category="General", permissions=None):
     general help on the game, more extensive info, in-game setting information
     and so on. 
     """
+
+    from src.help.models import HelpEntry
     try:
         new_help = HelpEntry()
         new_help.key = key
@@ -293,7 +292,9 @@ def create_message(senderobj, message, channels=None,
     at the same time, it's up to the command definitions to limit this as
     desired. 
     """
-    
+    from src.comms.models import Msg
+    from src.comms.managers import to_object
+
     def to_player(obj):
         "Make sure the object is a player object"
         if hasattr(obj, 'user'):
@@ -345,6 +346,9 @@ def create_channel(key, aliases=None, description=None,
     listen/send/admin permissions are strings if permissions separated
          by commas.
     """
+
+    from src.comms.models import Channel 
+    from src.comms import channelhandler 
     try:
         new_channel = Channel()
         new_channel.key = key 
@@ -407,6 +411,8 @@ def create_player(name, email, password,
     # The system should already have checked so the name/email
     # isn't already registered, and that the password is ok before
     # getting here. 
+
+    from src.players.models import PlayerDB
 
     if user:
         new_user = user

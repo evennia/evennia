@@ -318,7 +318,7 @@ class CmdQuit(MuxCommand):
         sessions = self.caller.sessions
         for session in sessions:
             session.msg("Quitting. Hope to see you soon again.")
-            session.handle_close()
+            session.at_disconnect()
 
 class CmdWho(MuxCommand):
     """

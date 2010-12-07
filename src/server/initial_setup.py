@@ -9,15 +9,9 @@ Everything starts at handle_setup()
 from django.contrib.auth.models import User
 from django.core import management
 from django.conf import settings
-
 from src.config.models import ConfigValue, ConnectScreen
-from src.objects.models import ObjectDB
-from src.comms.models import Channel, ChannelConnection
-from src.players.models import PlayerDB
 from src.help.models import HelpEntry
-from src.scripts import scripts
 from src.utils import create 
-from src.utils import gametime
 
 def create_config_values():
     """
@@ -34,14 +28,14 @@ def create_connect_screens():
     
     print " Creating startup screen(s) ..."
 
-    text = "%ch%cb==================================================================%cn"
-    text += "\r\n Welcome to %chEvennia%cn! Please type one of the following to begin:\r\n"
+    text = "{b=================================================================={n"
+    text += "\r\n Welcome to {wEvennia{n! Please type one of the following to begin:\r\n"
     text += "\r\n If you have an existing account, connect to it by typing:\r\n        "
-    text += "%chconnect <email> <password>%cn\r\n If you need to create an account, "
+    text += "{wconnect <email> <password>{n\r\n If you need to create an account, "
     text += "type (without the <>'s):\r\n        "
-    text += "%chcreate \"<username>\" <email> <password>%cn\r\n"
-    text += "\r\n Enter %chhelp%cn for more info. %chlook%cn will re-show this screen.\r\n"
-    text += "%ch%cb==================================================================%cn\r\n"
+    text += "{wcreate \"<username>\" <email> <password>{n\r\n"
+    text += "\r\n Enter {whelp{n for more info. {wlook{n will re-show this screen.\r\n"
+    text += "{b=================================================================={n\r\n"
     ConnectScreen(db_key="Default", db_text=text, db_is_active=True).save()
 
 def get_god_user():
@@ -116,6 +110,7 @@ def create_channels():
 
     # connect the god user to all these channels by default.
     goduser = get_god_user()
+    from src.comms.models import ChannelConnection
     ChannelConnection.objects.create_connection(goduser, pchan)
     ChannelConnection.objects.create_connection(goduser, ichan)
     ChannelConnection.objects.create_connection(goduser, cchan)
@@ -164,9 +159,10 @@ def create_system_scripts():
     Setup the system repeat scripts. They are automatically started
     by the create_script function. 
     """
+    from src.scripts import scripts
 
     print " Creating and starting global scripts ..."
-    
+
     # check so that all sessions are alive. 
     script1 = create.create_script(scripts.CheckSessions)
     # validate all scripts in script table.
@@ -184,7 +180,7 @@ def start_game_time():
     (the uptime can also be found directly from the server though).
     """
     print " Starting in-game time ..."
-
+    from src.utils import gametime
     gametime.init_gametime()
     
 def handle_setup(last_step):
@@ -230,11 +226,16 @@ def handle_setup(last_step):
             setup_func()
         except Exception:
             if last_step + num == 2:
+                from src.players.models import PlayerDB
+                from src.objects.models import ObjectDB
+
                 for obj in ObjectDB.objects.all():
                     obj.delete()
                 for profile in PlayerDB.objects.all():
                     profile.delete()
             elif last_step + num == 3:
+                from src.comms.models import Channel, ChannelConnection
+
                 for chan in Channel.objects.all():
                     chan.delete()
                 for conn in ChannelConnection.objects.all():

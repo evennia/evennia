@@ -18,14 +18,16 @@ def is_iter(iterable):
     they are actually iterable), since string iterations
     are usually not what we want to do with a string.
     """
-    if isinstance(iterable, basestring):
-        # skip all forms of strings (str, unicode etc)
-        return False     
-    try:
-        # check if object implements iter protocol
-        return iter(iterable)
-    except TypeError:
-        return False 
+    return hasattr(iterable, '__iter__')
+
+    # if isinstance(iterable, basestring):
+    #     # skip all forms of strings (str, unicode etc)
+    #     return False     
+    # try:
+    #     # check if object implements iter protocol
+    #     return iter(iterable)
+    # except TypeError:
+    #     return False 
 
 def fill(text, width=78):
     """

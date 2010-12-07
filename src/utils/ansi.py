@@ -72,7 +72,7 @@ class ANSIParser(object):
 
         # MUX-style mappings %cr %cn etc
 
-        mux_ansi_map = [
+        self.mux_ansi_map = [
             (r'%r',  ANSITable.ansi["return"]),
             (r'%t',  ANSITable.ansi["tab"]),
             (r'%b',  ANSITable.ansi["space"]),
@@ -102,7 +102,7 @@ class ANSIParser(object):
 
         hilite = ANSITable.ansi['hilite']
         normal = ANSITable.ansi['normal']
-        ext_ansi_map = [
+        self.ext_ansi_map = [
             (r'{r', hilite + ANSITable.ansi['red']),    
             (r'{R', normal + ANSITable.ansi['red']),    
             (r'{g', hilite + ANSITable.ansi['green']),
@@ -121,8 +121,8 @@ class ANSIParser(object):
             (r'{X', normal + ANSITable.ansi['black']), #pure black
             (r'{n', normal)                            #reset
             ] 
-
-        self.ansi_map = mux_ansi_map + ext_ansi_map
+        
+        self.ansi_map = self.mux_ansi_map + self.ext_ansi_map
 
         # prepare regex matching
         self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
@@ -141,13 +141,15 @@ class ANSIParser(object):
         if not string:
             return ''
         string = str(string)
-        for sub in self.ansi_sub:                
+        for sub in self.ansi_sub:
             # go through all available mappings and translate them
             string = sub[0].sub(sub[1], string)
         if strip_ansi:
             # remove all ANSI escape codes
             string = self.ansi_regex.sub("", string)
         return string 
+
+
             
 ANSI_PARSER = ANSIParser()
 
@@ -161,3 +163,5 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER):
 
     """
     return parser.parse_ansi(string, strip_ansi=strip_ansi)
+
+

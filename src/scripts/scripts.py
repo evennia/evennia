@@ -234,7 +234,7 @@ class CheckSessions(Script):
         "called every 60 seconds"
         #print "session check!"
         #print "ValidateSessions run"
-        sessionhandler.check_all_sessions()
+        sessionhandler.validate_sessions()
 
 class ValidateScripts(Script):
     "Check script validation regularly"    

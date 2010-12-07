@@ -3,7 +3,6 @@ These managers handles the
 """
 
 from django.db import models
-from src.players.models import PlayerDB
 from django.contrib.contenttypes.models import ContentType
 from src.utils.utils import is_iter
 
@@ -21,6 +20,7 @@ def to_object(inp, objtype='player'):
     inp - the input object/string 
     objtype - 'player' or 'channel'
     """
+    from src.players.models import PlayerDB
     if objtype == 'player':
         if type(inp) == PlayerDB:
             return inp

@@ -29,27 +29,20 @@ from src.server import session, sessionhandler
 # print all feedback from test commands (can become very verbose!)
 VERBOSE = False
 
-class FakeSession(session.SessionProtocol): 
+class FakeSession(session.Session): 
     """ 
     A fake session that
     implements dummy versions of the real thing; this is needed to
     mimic a logged-in player.  
     """ 
+    protocol_key = "TestProtocol"
     def connectionMade(self):
-        self.prep_session() 
-        sessionhandler.add_session(self)     
-    def prep_session(self): 
-        self.server, self.address = None, "0.0.0.0"
-        self.name, self.uid = None, None 
-        self.logged_in = False
-        self.encoding = "utf-8" 
-        self.cmd_last, self.cmd_last_visible, self.cmd_conn_time = time.time(), time.time(), time.time()
-        self.cmd_total = 0 
+        self.session_connect('0,0,0,0')     
     def disconnectClient(self): 
         pass 
     def lineReceived(self, raw_string): 
         pass 
-    def msg(self, message, markup=True): 
+    def msg(self, message, data=None): 
         if VERBOSE: 
             print message
 

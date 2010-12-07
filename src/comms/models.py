@@ -17,8 +17,8 @@ be able to delete connections on the fly).
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.players.models import PlayerDB
-from src.comms import managers 
 from src.server import sessionhandler
+from src.comms import managers 
 from src.permissions.permissions import has_perm
 from src.utils.utils import is_iter
 from src.utils.utils import dbref as is_dbref
@@ -81,7 +81,7 @@ class Msg(SharedMemoryModel):
       permissions - perm strings
         
     """
-    
+    from src.players.models import PlayerDB
     #
     # Msg database model setup
     #
@@ -509,7 +509,7 @@ class Channel(SharedMemoryModel):
         # send message to all connected players 
         for conn in conns:
             for session in \
-              sessionhandler.find_sessions_from_username(conn.player.name):
+                    sessionhandler.SESSIONS.sessions_from_player(conn.player):
                 session.msg(msg)
         return True 
             
@@ -539,6 +539,7 @@ class ChannelConnection(SharedMemoryModel):
     The advantage of making it like this is that one can easily
     break the connection just by deleting this object. 
     """
+    from src.players.models import PlayerDB
     # Player connected to a channel
     db_player = models.ForeignKey(PlayerDB)
     # Channel the player is connected to

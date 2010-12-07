@@ -57,7 +57,7 @@ class Player(TypeClass):
         them loose. 
         """
         pass
-    def at_disconnect(self):
+    def at_disconnect(self, reason=None):
         """
         Called just before user
         is disconnected.

@@ -33,10 +33,12 @@ urlpatterns = patterns('',
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    #url(r'^admin/(.*)', admin.site.root, name='admin'),
-
+    
     # favicon
     url(r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url':'/media/images/favicon.ico'}),
+
+    # ajax stuff
+    url(r'^webclient/',include('src.web.webclient.urls')),
 )
 
 # If you'd like to serve media files via Django (strongly not recommended!),

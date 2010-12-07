@@ -26,7 +26,6 @@ Common examples of uses of Scripts:
 """
 from django.conf import settings
 from django.db import models
-from src.objects.models import ObjectDB 
 from src.typeclasses.models import Attribute, TypedObject
 from src.scripts.manager import ScriptManager
 
@@ -91,7 +90,7 @@ class ScriptDB(TypedObject):
     # optional description. 
     db_desc = models.CharField(max_length=255, blank=True)
     # A reference to the database object affected by this Script, if any.
-    db_obj = models.ForeignKey(ObjectDB, null=True, blank=True)
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True)
     # how often to run Script (secs). -1 means there is no timer
     db_interval = models.IntegerField(default=-1)
     # start script right away or wait interval seconds first
