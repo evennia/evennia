@@ -13,7 +13,7 @@ import re
 import cgi
 from src.utils import ansi
 
-class ANSItoHTMLparser(object):
+class TextToHTMLparser(object):
     """
     This class describes a parser for converting from ansi to html.
     """    
@@ -124,7 +124,7 @@ class ANSItoHTMLparser(object):
     
         return result 
 
-HTML_PARSER = ANSItoHTMLparser()
+HTML_PARSER = TextToTMLparser()
 
 #
 # Access function

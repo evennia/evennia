@@ -1,15 +1,23 @@
 /*
 Style sheet for Evennia's web client. 
 
-Possibly this should somehow be incoorporated with the 
+This should possibly somehow be incoorporated with the 
 overall website theme in the future? 
 */
 
+/*Overall element look */
 body{ 
     background:#000;
     color:#fff;
-    font-size:.9em; 
+    font-size:.9em;    
 }
+a:link{
+    color:#fff;
+}
+a:visited{
+    color:#ccc;
+}
+
 /*Base style for new messages in the main message area.*/
 .msg{ 
     background:#000;

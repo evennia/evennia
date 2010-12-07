@@ -43,7 +43,7 @@ class LazyEncoder(simplejson.JSONEncoder):
             return force_unicode(obj)
         return super(LazyEncoder, self).default(obj)
 def jsonify(obj):
-    return simplejson.dumps(obj, ensure_ascii=False, cls=LazyEncoder)
+    return utils.to_str(simplejson.dumps(obj, ensure_ascii=False, cls=LazyEncoder))
 
 
 #

@@ -22,9 +22,6 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
     communication between game and player goes through here.
     """
 
-    # identifier in case one needs to easily separate protocols at run-time.
-    protocol_key = "telnet"
-
     # telnet-specific hooks 
 
     def connectionMade(self):
