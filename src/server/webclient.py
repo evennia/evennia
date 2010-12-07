@@ -25,7 +25,7 @@ from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings 
 from src.utils import utils
-from src.utils.ansi2html import parse_html
+from src.utils.text2html import parse_html
 from src.config.models import ConnectScreen
 from src.server import session, sessionhandler
 

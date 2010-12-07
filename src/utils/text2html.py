@@ -76,6 +76,11 @@ class TextToHTMLparser(object):
         "Extra method for cleaning linebreaks"
         return text.replace(r'\n', r'<br>')
 
+    def convert_urls(self, text):
+        "Replace urls (http://...) by valid HTML"
+        regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$]+))"
+        return re.sub(regexp, r'<a href="\1">\1</a>', text)
+
     def do_sub(self, m):
         "Helper method to be passed to re.sub."
         c = m.groupdict()
@@ -118,13 +123,14 @@ class TextToHTMLparser(object):
         result = self.remove_bells(result)
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
+        result = self.convert_urls(result)
 
         # clean out eventual ansi that was missed
         result = ansi.parse_ansi(result, strip_ansi=True)
     
         return result 
 
-HTML_PARSER = TextToTMLparser()
+HTML_PARSER = TextToHTMLparser()
 
 #
 # Access function
