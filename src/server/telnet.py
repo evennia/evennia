@@ -101,7 +101,7 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         """                
         if reason:
             self.lineSend(reason)
-        self.connectionLost(reasoon)
+        self.connectionLost(reason)
 
     def at_data_out(self, string, data=None):
         """
