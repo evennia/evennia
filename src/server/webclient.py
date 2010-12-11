@@ -127,7 +127,7 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
 
         remote_addr = request.getClientIP()
-        host_string = "%s (%s:%s)" % (SERVERNAME, request.getHost().host, request.getHost().port)
+        host_string = "%s (%s:%s)" % (SERVERNAME, request.getRequestHostname(), request.getHost().port)
         if suid == '0':
             # creating a unique id hash string
             suid = md5(str(time.time())).hexdigest()
