@@ -88,7 +88,7 @@ function webclient_input(){
             $('#inputform')[0].reset();                     // clear input field
         }, 
         error: function(XMLHttpRequest, textStatus, errorThrown){
-            msg_display("err", "Error: Server returned an error or timed out. Try resending."); 
+            msg_display("err", "Error: Server returned an error or timed out. Try resending or reloading the page."); 
         },
     })
 }
@@ -145,7 +145,6 @@ function webclient_close(){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             CLIENT_HASH = '0';
-            alert("There was an error disconnecting from the mud server.");
         }
 
     });

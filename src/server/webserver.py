@@ -45,7 +45,7 @@ class DjangoWebRoot(resource.Resource):
         pool = threadpool.ThreadPool()
         pool.start()
         # Set it up so the pool stops after e.g. Ctrl-C kills the server 
-        reactor.addSystemEventTrigger('after', 'shutdown', pool.stop)
+        reactor.addSystemEventTrigger('after', 'shutdown', pool.stop)        
         # combine twisted's wsgi resource with django's wsgi handler
         wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
         return wsgi_resource 

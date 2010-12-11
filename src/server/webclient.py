@@ -20,7 +20,7 @@ import time
 from hashlib import md5
 
 from twisted.web import server, resource
-from twisted.internet import defer
+from twisted.internet import defer, reactor
 
 from django.utils import simplejson
 from django.utils.functional import Promise
@@ -64,6 +64,7 @@ class WebClient(resource.Resource):
     def __init__(self):
         self.requests = {}
         self.databuffer = {}
+        reactor.addSystemEventTrigger('before', 'shutdown',self._forced_disconnect)
         
     def getChild(self, path, request):
         """
@@ -77,7 +78,15 @@ class WebClient(resource.Resource):
             self.requests.get(suid, []).remove(request)
         except ValueError:
             pass 
-        
+    
+    def _forced_disconnect(self):
+        """
+        Callback launched when webserver is closing forcefully (Ctrl-C, reboot etc)
+        All we do is make sure the connected clients are notitifed.
+        """
+        for suid in self.requests.keys():
+            self.lineSend(suid, parse_html("{rThe MUD server shut down. You were disconnected.{n"))
+    
     def lineSend(self, suid, string, data=None):
         """
         This adds the data to the buffer and/or sends it to
@@ -95,7 +104,7 @@ class WebClient(resource.Resource):
             dataentries = self.databuffer.get(suid, [])
             dataentries.append(jsonify({'msg':string, 'data':data}))
             self.databuffer[suid] = dataentries
-
+    
     def disconnect(self, suid):
         "Disconnect session with given suid."        
         sess = SESSIONS.session_from_suid(suid)
