@@ -28,14 +28,17 @@ contain the 'mode' of the request to be handled by the protocol:
                 should happen at this point. The server returns a data object
                 with the 'msg' property containing the server address. 
 
+ mode 'close' - closes the connection. The server closes the session and does
+                cleanup at this point. 
 */
-
 
 // jQuery must be imported by the calling html page before this script
 // (it comes with Evennia, in media/javascript/jquery-<version>.js)
 // There are plenty of help on using the jQuery library on http://jquery.com/
 
 // Server communications
+
+var CLIENT_HASH = '0'; // variable holding the client id
 
 function webclient_receive(){
     // This starts an asynchronous long-polling request. It will either timeout 
@@ -49,7 +52,7 @@ function webclient_receive(){
         cache: false,            // Forces browser reload independent of cache
         timeout:30000,           // Timeout in ms. After this time a new long-poll will be started.
         dataType:"json",
-        data: {mode:'receive'},
+        data: {mode:'receive', 'suid':CLIENT_HASH},
 
         // callback methods 
 
@@ -66,7 +69,7 @@ function webclient_receive(){
 function webclient_input(){
     // Send an input from the player to the server 
 
-    var outmsg = $("#inputfield").val() // get data from form
+    var outmsg = $("#inputfield").val(); // get data from form
 
     $.ajax({
         type: "POST",
@@ -74,7 +77,7 @@ function webclient_input(){
         async: true, 
         cache: false,
         timeout: 30000,
-        data: {mode:'input', msg:outmsg, data:'NoData'},
+        data: {mode:'input', msg:outmsg, data:'NoData', 'suid':CLIENT_HASH},
         
         //callback methods
 
@@ -82,7 +85,7 @@ function webclient_input(){
             //if (outmsg.length > 0 ) msg_display("inp", outmsg) // echo input on command line
             history_add(outmsg);
             HISTORY_POS = 0;
-            $('#inputform')[0].reset()                     // clear input field
+            $('#inputform')[0].reset();                     // clear input field
         }, 
         error: function(XMLHttpRequest, textStatus, errorThrown){
             msg_display("err", "Error: Server returned an error or timed out. Try resending."); 
@@ -100,19 +103,20 @@ function webclient_init(){
         cache: false,
         timeout: 50000,
         dataType:"json",
-        data: {mode:'init'},
+        data: {mode:'init', 'suid':CLIENT_HASH},
         
         // callback methods
 
         success: function(data){  // called when request to initdata completes
             $("#connecting").remove() // remove the "connecting ..." message.
+            CLIENT_HASH = data.suid // unique id hash given from server
 
             setTimeout(function () { // a small timeout to stop 'loading' indicator in Chrome
                 $("#playercount").fadeOut('slow');
             }, 10000);        
             
             // Report success
-            msg_display('sys',"Connected to " + data.msg + ".")
+            msg_display('sys',"Connected to " + data.msg + ".");
 
             // Wait for input
             webclient_receive();
@@ -121,6 +125,29 @@ function webclient_init(){
             msg_display("err", "Connection error ..." + " (" + errorThrown + ")");
             setTimeout('webclient_receive()', 15000); // try again after 15 seconds             
         },
+    });
+}
+
+function webclient_close(){
+    // Kill the connection and do house cleaning on the server. 
+    $.ajax({
+        type: "POST",
+        url: "/webclientdata",
+        async: false,
+        cache: false,
+        timeout: 50000,
+        dataType: "json",
+        data: {mode: 'close', 'suid': CLIENT_HASH},
+
+        success: function(data){
+            CLIENT_HASH = '0';
+            alert("Mud client connection was closed cleanly.");
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            CLIENT_HASH = '0';
+            alert("There was an error disconnecting from the mud server.");
+        }
+
     });
 }
 
@@ -156,17 +183,17 @@ function history_add(input) {
     // add an entry to history
     if (input != HISTORY[HISTORY.length-1]) {
         if (HISTORY.length >= HISTORY_MAX_LENGTH) {                
-            HISTORY.shift() // kill oldest history entry                
+            HISTORY.shift(); // kill oldest history entry                
         }
-        HISTORY[HISTORY.length-1] = input
-        HISTORY[HISTORY.length] = ''
+        HISTORY[HISTORY.length-1] = input;
+        HISTORY[HISTORY.length] = '';
     }
 }
 
 // Catching keyboard shortcuts
 
 $(document).keypress( function(event) {
-    var code = event.keyCode ? event.keyCode : event.which
+    var code = event.keyCode ? event.keyCode : event.which;
 
     // always focus input field
     $("#inputfield")[0].focus();
@@ -192,21 +219,34 @@ $(document).keypress( function(event) {
 // handler to avoid double-clicks until the ajax request finishes
 $("#inputsend").one("click", webclient_input)
 
-// Callback function - called when page has finished loading (gets things going)
-$(document).ready(function(){
-
-    // remove the "no javascript" warning, since we obviously have javascript
-    $('#noscript').remove()
-
-    // set sizes of elements and reposition them
+function webclient_set_sizes() {
+    // Sets the size of the message window
     var win_h = $(document).height();
     var win_w = $('#wrapper').width();
     var inp_h = $('#inputform').height();
     var inp_w = $('#inputsend').width()
     $("#messagewindow").css({'height':win_h-inp_h - 20});
     $("#inputfield").css({'width':win_w-inp_w - 20});
+}
 
-    setTimeout(function () { // a small timeout to stop 'loading' indicator in Chrome        
+// Callback function - called when page has finished loading (gets things going)
+$(document).ready(function(){
+    // remove the "no javascript" warning, since we obviously have javascript
+    $('#noscript').remove();
+    // set sizes of elements and reposition them
+    webclient_set_sizes();
+    // a small timeout to stop 'loading' indicator in Chrome        
+    setTimeout(function () { 
         webclient_init();            
     }, 500);        
+});
+
+// Callback function - called when the browser window resizes
+$(window).resize(function() {
+    webclient_set_sizes();
+});
+
+// Callback function - called when page is closed or moved away from.
+$(window).unload(function() {
+    webclient_close();
 });

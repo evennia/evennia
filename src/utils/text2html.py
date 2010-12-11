@@ -37,7 +37,7 @@ class TextToHTMLparser(object):
     normalcode = '\033[0m'                
     tabstop = 4
 
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)|(?P<protocal>(^|\s)((http|ftp)://.*?))(\s|$)', 
+    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)|(?P<protocol>(^|\s)((http|ftp)://.*?))(\s|$)', 
                            re.S|re.M|re.I)
 
     def re_color(self, text):
@@ -95,7 +95,7 @@ class TextToHTMLparser(object):
         elif c['space'] == '\t':
             return ' '*self.tabstop
         else:
-            url = m.group('protocal')
+            url = m.group('protocol')
             if url.startswith(' '):
                 prefix = ' '
                 url = url[1:]

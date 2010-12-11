@@ -7,7 +7,7 @@ Admin commands
 from django.conf import settings
 from django.contrib.auth.models import User
 from src.players.models import PlayerDB
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 from src.permissions.permissions import has_perm, has_perm_string
 from src.permissions.models import PermissionGroup
 from src.utils import utils
@@ -48,7 +48,7 @@ class CmdBoot(MuxCommand):
 
         if 'port' in self.switches:
             # Boot a particular port.
-            sessions = sessionhandler.get_session_list(True)
+            sessions = SESSIONS.get_session_list(True)
             for sess in sessions:
                 # Find the session with the matching port number.
                 if sess.getClientAddress()[1] == int(args):
@@ -66,7 +66,7 @@ class CmdBoot(MuxCommand):
                     pobj.msg(string)
                     return 
                 # we have a bootable object with a connected user
-                matches = sessionhandler.sessions_from_object(pobj)
+                matches = SESSIONS.sessions_from_object(pobj)
                 for match in matches:
                     boot_list.append(match)
             else:
@@ -90,7 +90,7 @@ class CmdBoot(MuxCommand):
             if feedback:
                 session.msg(feedback)
             session.disconnectClient()
-            sessionhandler.remove_session(session)
+            SESSIONS.remove_session(session)
             caller.msg("You booted %s." % name)
 
 
@@ -479,4 +479,4 @@ class CmdWall(MuxCommand):
             self.caller.msg("Usage: @wall <message>")
             return
         message = "%s shouts \"%s\"" % (self.caller.name, self.args)
-        sessionhandler.announce_all(message)
+        SESSIONS.announce_all(message)

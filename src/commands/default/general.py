@@ -4,7 +4,7 @@ now.
 """
 import time
 from django.conf import settings
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 from src.permissions.models import PermissionGroup
 from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import HANDLE_SEARCH_ERRORS
@@ -342,7 +342,7 @@ class CmdWho(MuxCommand):
         """
 
         caller = self.caller
-        session_list = sessionhandler.get_sessions()
+        session_list = SESSIONS.get_sessions()
 
         if self.cmdstring == "doing":
             show_session_data = False
@@ -350,44 +350,44 @@ class CmdWho(MuxCommand):
             show_session_data = has_perm_string(caller, "Immortals,Wizards")
 
         if show_session_data:
-            retval = "Player Name                        On For Idle   Room    Cmds   Host\n\r"
+            table = [["Player Name"], ["On for"], ["Idle"], ["Room"], ["Cmds"], ["Host"]]
         else:
-            retval = "Player Name                        On For Idle\n\r"
-
+            table = [["Player Name"], ["On for"], ["Idle"]]
+            
         for session in session_list:
             if not session.logged_in:
                 continue
             delta_cmd = time.time() - session.cmd_last_visible
             delta_conn = time.time() - session.conn_time
             plr_pobject = session.get_character()
-
             if show_session_data:
-                retval += '%-31s%9s %4s%-3s#%-6d%5d%3s%-25s\r\n' % \
-                    (plr_pobject.name[:25], \
-                    # On-time
-                    utils.time_format(delta_conn,0), \
-                    # Idle time
-                    utils.time_format(delta_cmd,1), \
-                    # Flags
-                    '', \
-                    # Location
-                    plr_pobject.location.id, \
-                    session.cmd_total, \
-                    # More flags?
-                    '', \
-                    session.address[0])
+                table[0].append(plr_pobject.name[:25])
+                table[1].append(utils.time_format(delta_conn,0))
+                table[2].append(utils.time_format(delta_cmd,1))                     
+                table[3].append(plr_pobject.location.id)
+                table[4].append(session.cmd_total)
+                table[5].append(session.address[0])
             else:
-                retval += '%-31s%9s %4s%-3s\r\n' % \
-                    (plr_pobject.name[:25], \
-                    # On-time
-                    utils.time_format(delta_conn,0), \
-                    # Idle time
-                    utils.time_format(delta_cmd,1), \
-                    # Flags
-                    '')
-        retval += '%d Players logged in.' % (len(session_list),)
+                table[0].append(plr_pobject.name[:25])
+                table[1].append(utils.time_format(delta_conn,0))
+                table[2].append(utils.time_format(delta_cmd,1))
+        stable = []
+        for row in table: # prettify values
+            stable.append([str(val).strip() for val in row])
+        ftable = utils.format_table(stable, 5)
+        string = ""
+        for ir, row in enumerate(ftable):
+            if ir == 0:
+                string += "\n" + "{w%s{n" % ("".join(row))
+            else:
+                string += "\n" + "".join(row)
+        nplayers = (SESSIONS.player_count())
+        if nplayers == 1:            
+            string += '\nOne player logged in.'
+        else:
+            string += '\n%d players logged in.' % nplayers
 
-        caller.msg(retval)
+        caller.msg(string)
 
 class CmdSay(MuxCommand):
     """

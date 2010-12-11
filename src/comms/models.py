@@ -17,7 +17,7 @@ be able to delete connections on the fly).
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.players.models import PlayerDB
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 from src.comms import managers 
 from src.permissions.permissions import has_perm
 from src.utils.utils import is_iter
@@ -509,7 +509,7 @@ class Channel(SharedMemoryModel):
         # send message to all connected players 
         for conn in conns:
             for session in \
-                    sessionhandler.SESSIONS.sessions_from_player(conn.player):
+                    SESSIONS.sessions_from_player(conn.player):
                 session.msg(msg)
         return True 
             

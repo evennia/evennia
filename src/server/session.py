@@ -12,7 +12,7 @@ from django.conf import settings
 from src.comms.models import Channel
 from src.utils import logger, reloads
 from src.commands import cmdhandler
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT 
 IDLE_COMMAND = settings.IDLE_COMMAND 
@@ -75,7 +75,7 @@ class SessionBase(object):
         # Total number of commands issued.
         self.cmd_total = 0
         #self.channels_subscribed = {}
-        sessionhandler.SESSIONS.add_unloggedin_session(self)
+        SESSIONS.add_unloggedin_session(self)
         # call hook method
         self.at_connect()
 
@@ -101,7 +101,7 @@ class SessionBase(object):
         reloads.reload_scripts(obj=self.player.character, init_mode=True)
         
         #add session to connected list
-        sessionhandler.SESSIONS.add_loggedin_session(self)
+        SESSIONS.add_loggedin_session(self)
 
         #call hook
         self.at_login()       
@@ -123,7 +123,7 @@ class SessionBase(object):
                 uaccount.last_login = datetime.now()
                 uaccount.save()            
                 self.logged_in = False                        
-        sessionhandler.SESSIONS.remove_session(self)                
+        SESSIONS.remove_session(self)                
 
     def session_validate(self):
         """

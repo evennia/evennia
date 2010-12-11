@@ -33,7 +33,7 @@ TELNET_PORTS = [4000]
 # in the section  'Config for Django web features')
 WEBSERVER_ENABLED = True
 # A list of ports the Evennia webserver listens on
-WEBSERVER_PORTS = [8020]
+WEBSERVER_PORTS = [8000]
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True

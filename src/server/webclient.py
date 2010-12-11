@@ -16,6 +16,8 @@ found on http://localhost:8020/webclient.)
                  handle these requests and act as a gateway 
                  to sessions connected over the webclient. 
 """
+import time
+from hashlib import md5
 
 from twisted.web import server, resource
 from twisted.internet import defer
@@ -27,7 +29,8 @@ from django.conf import settings
 from src.utils import utils
 from src.utils.text2html import parse_html
 from src.config.models import ConnectScreen
-from src.server import session, sessionhandler
+from src.server import session
+from src.server.sessionhandler import SESSIONS
 
 SERVERNAME = settings.SERVERNAME
 ENCODINGS = settings.ENCODINGS
@@ -94,8 +97,8 @@ class WebClient(resource.Resource):
             self.databuffer[suid] = dataentries
 
     def disconnect(self, suid):
-        "Disconnect session"        
-        sess = sessionhandler.SESSIONS.session_from_suid(suid)
+        "Disconnect session with given suid."        
+        sess = SESSIONS.session_from_suid(suid)
         if sess:
             sess[0].session_disconnect()
         if self.requests.has_key(suid):
@@ -110,32 +113,35 @@ class WebClient(resource.Resource):
         This is called by render_POST when the client
         requests an init mode operation (at startup)
         """
-        csess = request.getSession() # obs, this is a cookie, not an evennia session!
+        #csess = request.getSession() # obs, this is a cookie, not an evennia session!
         #csees.expireCallbacks.append(lambda : )
-        suid = csess.uid   
+        suid = request.args.get('suid', ['0'])[0]
+
         remote_addr = request.getClientIP()
         host_string = "%s (%s:%s)" % (SERVERNAME, request.getHost().host, request.getHost().port)
-        self.requests[suid] = []
-        self.databuffer[suid] = []
+        if suid == '0':
+            # creating a unique id hash string
+            suid = md5(str(time.time())).hexdigest()
+            self.requests[suid] = []
+            self.databuffer[suid] = []        
 
-        sess = sessionhandler.SESSIONS.session_from_suid(suid)
-        if not sess:
             sess = WebClientSession()
-            sess.client = self
-            sess.session_connect(remote_addr, suid)
-            sessionhandler.SESSIONS.add_unloggedin_session(sess)            
-        return jsonify({'msg':host_string})
+            sess.client = self        
+            sess.session_connect(remote_addr, suid)            
+        return jsonify({'msg':host_string, 'suid':suid})
 
     def mode_input(self, request):
         """
         This is called by render_POST when the client
         is sending data to the server.
         """
-        string = request.args.get('msg', [''])[0]
-        data = request.args.get('data', [None])[0]
-        suid = request.getSession().uid
-        sess = sessionhandler.SESSIONS.session_from_suid(suid)
+        suid = request.args.get('suid', ['0'])[0]
+        if suid == '0':
+            return ''
+        sess = SESSIONS.session_from_suid(suid)
         if sess:
+            string = request.args.get('msg', [''])[0]
+            data = request.args.get('data', [None])[0]
             sess[0].at_data_in(string, data)
         return ''
 
@@ -147,15 +153,28 @@ class WebClient(resource.Resource):
         mechanism: the server will wait to reply until data is
         available.
         """
-        suid = request.getSession().uid
+        suid = request.args.get('suid', ['0'])[0]
+        if suid == '0':            
+            return ''
+        
         dataentries = self.databuffer.get(suid, [])
         if dataentries:
-            return dataentries.pop(0)        
+            return dataentries.pop(0)
         reqlist = self.requests.get(suid, [])
         request.notifyFinish().addErrback(self._responseFailed, suid, request)
         reqlist.append(request)                
         self.requests[suid] = reqlist
         return server.NOT_DONE_YET
+
+    def mode_close(self, request):
+        """
+        This is called by render_POST when the client is signalling
+        that it is about to be closed. 
+        """
+        suid = request.args.get('suid', ['0'])[0]
+        if suid == '0':
+            self.disconnect(suid)
+        return ''
 
     def render_POST(self, request):
         """
@@ -176,6 +195,9 @@ class WebClient(resource.Resource):
         elif dmode == 'receive':
             # the client is waiting to receive data.
             return self.mode_receive(request)
+        elif dmode == 'close':
+            # the client is closing
+            return self.mode_close(request)
         else:
             # this should not happen if client sends valid data.
             return ''
@@ -234,8 +256,7 @@ class WebClientSession(session.Session):
         # string handling is similar to telnet
         if self.encoding:
             try:
-                string = utils.to_str(string, encoding=self.encoding)
-                #self.client.lineSend(self.suid, ansi.parse_ansi(string, strip_ansi=True))
+                string = utils.to_str(string, encoding=self.encoding)                
                 self.client.lineSend(self.suid, parse_html(string))
                 return 
             except Exception:
@@ -256,7 +277,7 @@ class WebClientSession(session.Session):
             self.client.lineSend(self.suid, parse_html(string))
     def at_data_in(self, string, data=None):
         """
-        Input from Player -> Evennia (called by client). 
+        Input from Player -> Evennia (called by client protocol). 
         Use of 'data' is up to the client - server implementation.
         """
         

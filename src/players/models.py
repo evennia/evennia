@@ -44,7 +44,7 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 from src.players import manager 
 from src.typeclasses.models import Attribute, TypedObject
 from src.permissions import permissions
@@ -220,7 +220,7 @@ class PlayerDB(TypedObject):
     #@property
     def sessions_get(self):
         "Getter. Retrieve sessions related to this player/user"
-        return sessionhandler.SESSIONS.sessions_from_player(self)
+        return SESSIONS.sessions_from_player(self)
     #@sessions.setter
     def sessions_set(self, value):
         "Setter. Protects the sessions property from adding things"

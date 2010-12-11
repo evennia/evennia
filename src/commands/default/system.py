@@ -9,12 +9,14 @@ import os, datetime
 import django, twisted
 
 from django.contrib.auth.models import User
-from src.server import sessionhandler
+from src.server.server import EVENNIA 
+from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.config.models import ConfigValue
 from src.utils import reloads, create, logger, utils, gametime
 from src.commands.default.muxcommand import MuxCommand
+
 
 class CmdReload(MuxCommand):
     """
@@ -429,13 +431,9 @@ class CmdShutdown(MuxCommand):
         announcement = "\nServer is being SHUT DOWN!\n"
         if self.args: 
             announcement += "%s\n" % self.args
-
-        sessionhandler.announce_all(announcement)          
         logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
-
-        # access server through session so we don't call server directly 
-        # (importing it directly would restart it...)
-        session.server.shutdown()
+        SESSIONS.announce_all(announcement)          
+        EVENNIA.shutdown()
 
 class CmdVersion(MuxCommand):
     """

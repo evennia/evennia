@@ -7,7 +7,7 @@ It also defines a few common scripts.
 
 from time import time 
 from twisted.internet import task 
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 from src.typeclasses.typeclass import TypeClass
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler 
@@ -234,7 +234,7 @@ class CheckSessions(Script):
         "called every 60 seconds"
         #print "session check!"
         #print "ValidateSessions run"
-        sessionhandler.validate_sessions()
+        SESSIONS.validate_sessions()
 
 class ValidateScripts(Script):
     "Check script validation regularly"    

@@ -320,12 +320,21 @@ def format_table(table, extra_space=1):
     collumns must have the same number of rows (some positions may be 
     empty though). 
 
-    The function formats the columns to be as wide as the wides member
+    The function formats the columns to be as wide as the widest member
     of each column.
     
     extra_space defines how much extra padding should minimum be left between
     collumns. 
-    first_row_ansi defines an evential colour string for the first row. 
+
+    print the resulting list e.g. with 
+
+    for ir, row in enumarate(ftable):
+        if ir == 0: 
+            # make first row white 
+            string += "\n{w" + ""join(row) + "{n"
+        else:
+            string += "\n" + "".join(row)
+    print string 
 
     """
     if not table:

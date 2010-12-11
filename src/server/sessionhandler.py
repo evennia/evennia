@@ -151,6 +151,14 @@ class SessionHandler(object):
             num = max(0, num + add)
             ConfigValue.objects.conf('nr_sessions', str(num))
 
+    def player_count(self):
+        """
+        Get the number of connected players (not sessions since a player
+        may have more than one session connected if ALLOW_MULTISESSION is True)
+        Only logged-in players are counted here.
+        """
+        return len(set(sess.uid for sess in self.get_sessions()))
+        
     def sessions_from_player(self, player):
         """
         Given a player, return any matching sessions.
@@ -178,6 +186,13 @@ class SessionHandler(object):
         intended to be called by web clients)
         """
         return [sess for sess in self.get_sessions(include_unloggedin=True) if sess.suid and sess.suid == suid]
+
+    def announce_all(self, message):
+        """
+        Send message to all connected sessions
+        """
+        for sess in self.get_sessions(include_unloggedin=True):
+            sess.msg(message)
 
 SESSIONS = SessionHandler()
 

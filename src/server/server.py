@@ -22,7 +22,7 @@ from django.db import connection
 from django.conf import settings
 from src.utils import reloads
 from src.config.models import ConfigValue
-from src.server import sessionhandler
+from src.server.sessionhandler import SESSIONS
 from src.server import initial_setup
 
 from src.utils.utils import get_evennia_version
@@ -77,7 +77,7 @@ class Evennia(object):
         self.run_initial_setup()
 
         # we have to null this here.
-        sessionhandler.SESSIONS.session_count(0)            
+        SESSIONS.session_count(0)            
 
         self.start_time = time.time()
 
@@ -152,7 +152,7 @@ class Evennia(object):
         """
         if not message:
             message = 'The server has been shutdown. Please check back soon.'
-        sessionhandler.SESSIONS.disconnect_all_sessions(reason=message)
+        SESSIONS.disconnect_all_sessions(reason=message)
         reactor.callLater(0, reactor.stop)
         
 
