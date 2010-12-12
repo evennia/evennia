@@ -32,16 +32,23 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         # initialize the session
         self.session_connect(self.getClientAddress())
         
-    def connectionLost(self, reason="Disconnecting. Goodbye for now."):
+    def connectionLost(self, reason=None, step=1):
         """
         This is executed when the connection is lost for 
-        whatever reason. It should also be called from 
-        self.at_disconnect() so one can close the connection
-        manually without having to know the name of this specific
-        method. 
+        whatever reason. 
+        
+        Closing the connection takes two steps
+        
+        step 1 - is the default and is used when this method is
+                 called automatically. The method should then call self.session_disconnect().
+        Step 2 - means this method is called from at_disconnect(). At this point 
+                 the sessions are assumed to have been handled, and so the transport can close
+                 without further ado. 
         """
-        self.session_disconnect(reason)
-        self.transport.loseConnection()
+        if step == 1:
+            self.session_disconnect()
+        else:
+            self.transport.loseConnection()
         
     def getClientAddress(self):
         """
@@ -81,7 +88,7 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         # show screen 
         screen = ConnectScreen.objects.get_random_connect_screen()
         string = ansi.parse_ansi(screen.text)        
-        self.lineSend(string)
+        self.at_data_out(string)
         
     def at_login(self):
         """
@@ -96,9 +103,8 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         """
         Disconnect from server
         """                
-        if reason:
-            self.lineSend(reason)
-        self.connectionLost(reason)
+        self.at_data_out(reason)
+        self.connectionLost(step=2)
 
     def at_data_out(self, string, data=None):
         """

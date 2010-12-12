@@ -64,7 +64,6 @@ class WebClient(resource.Resource):
     def __init__(self):
         self.requests = {}
         self.databuffer = {}
-        reactor.addSystemEventTrigger('before', 'shutdown',self._forced_disconnect)
         
     def getChild(self, path, request):
         """
@@ -78,15 +77,7 @@ class WebClient(resource.Resource):
             self.requests.get(suid, []).remove(request)
         except ValueError:
             pass 
-    
-    def _forced_disconnect(self):
-        """
-        Callback launched when webserver is closing forcefully (Ctrl-C, reboot etc)
-        All we do is make sure the connected clients are notitifed.
-        """
-        for suid in self.requests.keys():
-            self.lineSend(suid, parse_html("{rThe MUD server shut down. You were disconnected.{n"))
-    
+        
     def lineSend(self, suid, string, data=None):
         """
         This adds the data to the buffer and/or sends it to
@@ -105,17 +96,24 @@ class WebClient(resource.Resource):
             dataentries.append(jsonify({'msg':string, 'data':data}))
             self.databuffer[suid] = dataentries
     
-    def disconnect(self, suid):
-        "Disconnect session with given suid."        
-        sess = SESSIONS.session_from_suid(suid)
-        if sess:
+    def disconnect(self, suid, step=1):
+        """
+        Disconnect session with given suid.
+
+        step 1 : call session_disconnect()
+        step 2 : finalize disconnection        
+        """        
+
+        if step == 1:
+            sess = SESSIONS.session_from_suid(suid)
             sess[0].session_disconnect()
-        if self.requests.has_key(suid):
-            for request in self.requests.get(suid, []):
-                request.finish()
-            del self.requests[suid]
-        if self.databuffer.has_key(suid):
-            del self.databuffer[suid]                
+        else:
+            if self.requests.has_key(suid):
+                for request in self.requests.get(suid, []):
+                    request.finish()
+                    del self.requests[suid]
+            if self.databuffer.has_key(suid):
+                del self.databuffer[suid]                
 
     def mode_init(self, request):
         """
@@ -230,8 +228,8 @@ class WebClientSession(session.Session):
         """
         # show screen 
         screen = ConnectScreen.objects.get_random_connect_screen()
-        string = parse_html(screen.text)
-        self.client.lineSend(self.suid, string)
+        #string = parse_html(screen.text)
+        self.at_data_out(screen.text)
         
     def at_login(self):
         """
@@ -248,7 +246,7 @@ class WebClientSession(session.Session):
         """                        
         if reason:
             self.lineSend(self.suid, reason)
-        self.client.disconnect(self.suid)
+        self.client.disconnect(self.suid, step=2)
 
     def at_data_out(self, string='', data=None):
         """

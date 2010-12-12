@@ -16,7 +16,7 @@ if os.name == 'nt':
                 os.path.dirname(os.path.abspath(__file__)))))
 
 from twisted.application import internet, service
-from twisted.internet import protocol, reactor
+from twisted.internet import protocol, reactor, defer
 from twisted.web import server, static
 from django.db import connection
 from django.conf import settings
@@ -92,6 +92,10 @@ class Evennia(object):
 
         print '-'*50        
 
+        # set a callback if the server is killed abruptly, 
+        # by Ctrl-C, reboot etc.
+        reactor.addSystemEventTrigger('before', 'shutdown',self.shutdown, _abrupt=True)
+
         self.game_running = True
                 
     # Server startup methods
@@ -145,16 +149,21 @@ class Evennia(object):
             if WEBCLIENT_ENABLED:
                 clientstring = '/client'
             print "  webserver%s: " % clientstring + ", ".join([str(port) for port in WEBSERVER_PORTS])
-    
-    def shutdown(self, message=None):
+
+    def shutdown(self, message="{rThe server has been shutdown. Disconnecting.{n", _abrupt=False):
         """
-        Gracefully disconnect everyone and kill the reactor.
+        If called directly, this disconnects everyone cleanly and shuts down the
+        reactor. If the server is killed by other means (Ctrl-C, reboot etc), this
+        might be called as a callback, at which point the reactor is already dead
+        and should not be tried to stop again (_abrupt=True).
+
+        message - message to send to all connected sessions
+        _abrupt - only to be used by internal callback_mechanism.
         """
-        if not message:
-            message = 'The server has been shutdown. Please check back soon.'
         SESSIONS.disconnect_all_sessions(reason=message)
-        reactor.callLater(0, reactor.stop)
-        
+        if not _abrupt:
+            reactor.callLater(0, reactor.stop)
+
 
 #------------------------------------------------------------
 #
@@ -200,13 +209,14 @@ if WEBSERVER_ENABLED:
 
     if WEBCLIENT_ENABLED:    
         # create ajax client processes at /webclientdata
-        from src.server.webclient import WebClient                
+        from src.server.webclient import WebClient
         web_root.putChild("webclientdata", WebClient())
 
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
     for port in WEBSERVER_PORTS:
         # create the webserver
         webserver = internet.TCPServer(port, web_site)
+        #webserver = internet.SSLServer(port, web_site)
         webserver.setName('EvenniaWebServer%s' % port)
         EVENNIA.services.addService(webserver)
 

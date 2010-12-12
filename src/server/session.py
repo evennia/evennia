@@ -2,6 +2,35 @@
 This defines a generic session class.
 
 All protocols should implement this class and its hook methods.
+
+
+The process of first connect: 
+
+ - The custom connection-handler for the respective
+   protocol should be called by the transport connection itself.
+ - The connect-handler handles whatever internal settings are needed
+ - The connection-handler calls session_connect()
+ - session_connect() setups sessions then calls session.at_connect()
+
+Disconnecting is a bit more complex in order to avoid circular calls
+depending on if the disconnect happens automatically or manually from 
+a command.
+
+The process at automatic disconnect:
+ - The custom disconnect-handler for the respective protocol
+   should be called by the transport connection itself. This handler
+   should be defined with a keyword argument 'step' defaulting to 1.
+ - since step=1, the disconnect-handler calls session_disconnect()
+ - session_disconnect() removes session, then calls session.at_disconnect()
+ - session.at_disconnect() calls the custom disconnect-handler with
+   step=2 as argument
+ - since step=2, the disconnect-handler closes the connection and 
+   performs all needed protocol cleanup. 
+
+The process of manual disconnect:
+ - The command/outside function calls session.session_disconnect(). 
+ - from here the process proceeds as the automatic disconnect above.
+
 """
 
 import time 
@@ -76,9 +105,9 @@ class SessionBase(object):
         self.cmd_total = 0
         #self.channels_subscribed = {}
         SESSIONS.add_unloggedin_session(self)
-        # call hook method
+        # calling hook
         self.at_connect()
-
+        
     def session_login(self, player):
         """
         Private startup mechanisms that need to run at login
@@ -106,7 +135,7 @@ class SessionBase(object):
         #call hook
         self.at_login()       
 
-    def session_disconnect(self, reason=None):
+    def session_disconnect(self):
         """
         Clean up the session, removing it from the game and doing some
         accounting. This method is used also for non-loggedin
@@ -118,12 +147,12 @@ class SessionBase(object):
         if self.logged_in:            
             character = self.get_character()
             if character:
-                character.player.at_disconnect(reason)
                 uaccount = character.player.user
                 uaccount.last_login = datetime.now()
                 uaccount.save()            
-                self.logged_in = False                        
-        SESSIONS.remove_session(self)                
+                self.at_disconnect()
+                self.logged_in = False                                        
+        SESSIONS.remove_session(self)
 
     def session_validate(self):
         """
@@ -275,11 +304,19 @@ class Session(SessionBase):
         """
         pass
 
-    def at_disconnect(self, reason=None):
+    def at_disconnect(self):
         """
         This method is called just before cleaning up the session 
         (so still logged_in=True at this point).        
+        
+        This method should not be called from commands, instead it
+        is called automatically by session_disconnect() as part of 
+        the cleanup. 
+        
+        This method MUST call the protocol-dependant disconnect-handler
+        with step=2 to finalize the closing of the connection!
         """
+        # self.my-disconnect-handler(step=2)
         pass
 
     def at_data_in(self, string="", data=None):
@@ -302,9 +339,9 @@ class Session(SessionBase):
     def login(self, player):
         "alias for at_login"
         self.at_login(player)
-    def logout(self):
-        "alias for at_logout"
-        self.at_disconnect()
+    def disconnect(self):
+        "alias for session_disconnect"
+        self.session_disconnect()
     def msg(self, string='', data=None):
         "alias for at_data_out"
         self.at_data_out(string, data)

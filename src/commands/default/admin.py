@@ -58,15 +58,14 @@ class CmdBoot(MuxCommand):
             # Boot by player object
             pobj = caller.search("*%s" % args, global_search=True)
             if not pobj:
-                return
-            pobj = pobj
-            if pobj.has_player:
+                return            
+            if pobj.character.has_player:
                 if not has_perm(caller, pobj, 'can_boot'):
                     string = "You don't have the permission to boot %s."
                     pobj.msg(string)
                     return 
                 # we have a bootable object with a connected user
-                matches = SESSIONS.sessions_from_object(pobj)
+                matches = SESSIONS.sessions_from_player(pobj)
                 for match in matches:
                     boot_list.append(match)
             else:
@@ -87,10 +86,8 @@ class CmdBoot(MuxCommand):
 
         for session in boot_list:
             name = session.name
-            if feedback:
-                session.msg(feedback)
-            session.disconnectClient()
-            SESSIONS.remove_session(session)
+            session.msg(feedback)
+            session.disconnect()
             caller.msg("You booted %s." % name)
 
 
@@ -120,7 +117,7 @@ class CmdDelPlayer(MuxCommand):
         args = self.args 
 
         if not args:
-            caller.msg("Usage: @delplayer[/delobj] <player/user name or #id>")
+            caller.msg("Usage: @delplayer[/delobj] <player/user name or #id> [: reason]")
             return
 
         reason = ""
@@ -129,7 +126,7 @@ class CmdDelPlayer(MuxCommand):
 
         # We use player_search since we want to be sure to find also players
         # that lack characters.
-        players = PlayerDB.objects.filter(db_key=args)
+        players = caller.search("*%s" % args)
         if not players:
             try:
                 players = PlayerDB.objects.filter(id=args)
@@ -150,12 +147,13 @@ class CmdDelPlayer(MuxCommand):
             try:
                 player = user.get_profile()
             except Exception:
-                player = None
+                player = None 
                                 
             if not has_perm_string(caller, 'manage_players'):
                 string = "You don't have the permissions to delete this player."
                 caller.msg(string)
                 return 
+
             string = ""
             name = user.username
             user.delete()
@@ -164,7 +162,7 @@ class CmdDelPlayer(MuxCommand):
                 player.delete()
                 string = "Player %s was deleted." % name
             else:
-                string += "The User %s was deleted, but had no Player associated with it." % name
+                string += "The User %s was deleted. It had no Player associated with it." % name
             caller.msg(string)
             return 
     

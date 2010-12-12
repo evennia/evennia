@@ -97,13 +97,14 @@ class SessionHandler(object):
         else:
             return self.loggedin        
 
-    def disconnect_all_sessions(self, reason=None):
+    def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.
         """
-        sessions = self.get_sessions(include_unloggedin=True)
+        sessions = self.get_sessions(include_unloggedin=True)        
         for session in sessions:
-            session.session_disconnect(reason)
+            session.at_data_out(reason)
+            session.session_disconnect()
         self.session_count(0)
 
     def disconnect_duplicate_sessions(self, session):
