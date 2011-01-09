@@ -9,7 +9,6 @@ import os, datetime
 import django, twisted
 
 from django.contrib.auth.models import User
-from src.server.server import EVENNIA 
 from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
@@ -433,7 +432,7 @@ class CmdShutdown(MuxCommand):
             announcement += "%s\n" % self.args
         logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)          
-        EVENNIA.shutdown()
+        sessions.server.shutdown()
 
 class CmdVersion(MuxCommand):
     """
