@@ -25,7 +25,6 @@ try:
 except AttributeError:
     FULL_PERSISTENCE = True
 
-
 class MetaTypeClass(type):
     """
     This metaclass just makes sure the class object gets
@@ -116,13 +115,15 @@ class TypeClass(object):
                 return object.__getattribute__(self, propname)
             except AttributeError:
                 try:
-                    if FULL_PERSISTENCE and propname != 'ndb':       
-                        db = object.__getattribute__(dbobj, 'db')
-                        value = object.__getattribute__(db, propname)
+                    if FULL_PERSISTENCE and propname != 'ndb':
+                        if not dbobj.has_attribute(propname):
+                            raise AttributeError
+                        else:
+                            value = dbobj.get_attribute(propname)
                     else:
                         # Not FULL_PERSISTENCE
                         ndb = object.__getattribute__(dbobj, 'ndb')
-                        value = object.__getattribute__(ndb, propname) 
+                        value = getattr(ndb, propname)
                     return value
                 except AttributeError:
                     string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
@@ -157,17 +158,14 @@ class TypeClass(object):
             if dbobj: # and hasattr(dbobj, propname):        
                 #print "   ---> dbobj"
                 if hasattr(dbobj, propname):
-                    # if attr already exists on dbobj, assign to it.
+                    # only if attr already exists on dbobj, assign to it.
                     object.__setattr__(dbobj, propname, value)
                 elif FULL_PERSISTENCE:
-                    #print "full __setattr__1", propname
-                    db = object.__getattribute__(dbobj, 'db')
-                    #print "full __setattr__2", propname
-                    object.__setattr__(db, propname, value)
-                else:                    
+                    dbobj.set_attribute(propname, value)
+                else:                                        
                     # not FULL_PERSISTENCE
                     ndb = object.__getattribute__(dbobj, 'ndb')                    
-                    object.__setattr__(ndb, propname, value)
+                    setattr(ndb, propname, value)
             else:
                 object.__setattr__(self, propname, value)
 
@@ -179,7 +177,48 @@ class TypeClass(object):
                 return other == self or other == self.dbobj or other == self.dbobj.user
             else:
                 return other == self or other == self.dbobj
-     
+    
+
+    def __delattr__(self, propname):
+        """
+        Transparently deletes data from the typeclass or dbobj by first searching on the typeclass,
+        secondly on the dbobj.db or ndb depending on FULL_PERSISTENCE setting.
+        Will not allow deletion of properties stored directly on dbobj. 
+        """
+        try:
+            protected = object.__getattribute__(self, '_protected_attrs')
+        except AttributeError:
+            protected = PROTECTED
+            logger.log_trace("Thiis is probably due to an unsafe reload.")
+        if propname in protected:
+            string = "%s: '%s' is a protected attribute name." 
+            string += " (protected: [%s])" % (", ".join(protected))
+            logger.log_errmsg(string % (self.name, propname))
+        else:
+            try:
+                object.__delattr__(self, propname)
+            except AttributeError:
+                # not on typeclass, try to delete on db/ndb
+                try:
+                    dbobj = object.__getattribute__(self, 'dbobj')
+                except AttributeError:
+                    logger.log_trace("This is probably due to an unsafe reload.")            
+                    return # ignore delete                
+                try:
+                    if FULL_PERSISTENCE:
+                        if not dbobj.has_attribute(propname):
+                            raise AttributeError
+                        dbobj.del_attribute(propname)
+                    else:
+                        ndb = object.__getattribute__(dbobj, 'ndb')
+                        ndb.__delattr__(propname)
+                except AttributeError:
+                    string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
+                    raise AttributeError(string % (propname, dbobj,
+                                                   dbobj.dbref,
+                                                   dbobj.typeclass_path,))
+
+
     def __str__(self):
         "represent the object"
         return self.key

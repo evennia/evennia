@@ -43,7 +43,7 @@ class FakeSession(session.Session):
     def lineReceived(self, raw_string): 
         pass 
     def msg(self, message, data=None): 
-        if VERBOSE: 
+        if VERBOSE:
             print message
 
 class CommandTest(TestCase):
@@ -60,11 +60,11 @@ class CommandTest(TestCase):
 
         # create a faux player/character for testing.
         self.char1 = create.create_player("TestingPlayer", "testplayer@test.com", "testpassword", location=self.room1)
-        self.char1.player.user.is_superuser = True 
+        self.char1.player.user.is_superuser = True
         sess = FakeSession()
         sess.connectionMade()
-        sess.login(self.char1.player)
-        
+        sess.session_login(self.char1.player)
+        # create second player and some objects 
         self.char2 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="char2", location=self.room1)
         self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=self.room1)
         self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1)
@@ -90,12 +90,15 @@ class CommandTest(TestCase):
         This also mangles the input in various ways to test if the command
         will be fooled.
         """ 
-        test1 = re.sub(r'\s', '', raw_string) # remove all whitespace inside it
-        test2 = "%s/åäö öäö;-:$£@*~^' 'test" % raw_string # inserting weird characters in call
-        test3 = "%s %s" % (raw_string, raw_string) # multiple calls 
-        self.char1.execute_cmd(test1)
-        self.char1.execute_cmd(test2)
-        self.char1.execute_cmd(test3)
+        if not VERBOSE:
+            # only mangle if not VERBOSE, to make fewer return lines
+            test1 = re.sub(r'\s', '', raw_string) # remove all whitespace inside it
+            test2 = "%s/åäö öäö;-:$£@*~^' 'test" % raw_string # inserting weird characters in call
+            test3 = "%s %s" % (raw_string, raw_string) # multiple calls 
+            self.char1.execute_cmd(test1)
+            self.char1.execute_cmd(test2)
+            self.char1.execute_cmd(test3)
+        # actual call 
         self.char1.execute_cmd(raw_string)
 
 #------------------------------------------------------------
@@ -104,6 +107,7 @@ class CommandTest(TestCase):
 
 class TestHome(CommandTest):
     def test_call(self):
+        self.char1.location = self.room1
         self.char1.home = self.room2
         self.execute_cmd("home")
         self.assertEqual(self.char1.location, self.room2)

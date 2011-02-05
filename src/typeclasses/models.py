@@ -789,7 +789,7 @@ class TypedObject(SharedMemoryModel):
                 logger.log_trace()
                 return default            
             return attrib.value
-        else:            
+        else:
             return default
                 
     def del_attribute(self, attribute_name):
@@ -863,14 +863,14 @@ class TypedObject(SharedMemoryModel):
                 def __init__(self, obj):
                     object.__setattr__(self, 'obj', obj)
                 def __getattribute__(self, attrname):                   
-                    obj = object.__getattribute__(self, 'obj')
+                    obj = object.__getattribute__(self, 'obj')                    
                     if attrname == 'all':
                         # we allow for overwriting the all() method
                         # with an attribute named 'all'. 
                         attr = obj.get_attribute("all")
                         if attr:
                             return attr
-                        return object.__getattribute__(self, 'all')
+                        return object.__getattribute__(self, 'all')                    
                     return obj.get_attribute(attrname)
                 def __setattr__(self, attrname, value):                    
                     obj = object.__getattribute__(self, 'obj')

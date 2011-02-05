@@ -231,12 +231,12 @@ class WebClientSession(session.Session):
         #string = parse_html(screen.text)
         self.at_data_out(screen.text)
         
-    def at_login(self):
+    def at_login(self, player):
         """
         Called after authentication. self.logged_in=True at this point.
         """
-        if self.player.has_attribute('telnet_markup'):
-            self.telnet_markup = self.player.get_attribute("telnet_markup")
+        if player.has_attribute('telnet_markup'):
+            self.telnet_markup = player.get_attribute("telnet_markup")
         else:
             self.telnet_markup = True             
 

@@ -133,7 +133,7 @@ class SessionBase(object):
         SESSIONS.add_loggedin_session(self)
 
         #call hook
-        self.at_login()       
+        self.at_login(player)       
 
     def session_disconnect(self):
         """
