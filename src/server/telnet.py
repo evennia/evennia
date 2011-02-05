@@ -153,4 +153,4 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
             except Exception, e:
                 err = str(e)
                 continue         
-        self.execute_cmd(self, string)
+        self.execute_cmd(string)
