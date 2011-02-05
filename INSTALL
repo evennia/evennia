@@ -1,50 +1,55 @@
 
-Evennia install 
----------------
+--------------------
+Evennia Installation
+--------------------
 
 
-Requirements
-------------
+Pre-Requesites
+--------------
 
-* Python (www.python.org)
-   Version 2.5+ strongly recommended, although 2.3 or 2.4 *may* work.
-   + Python is available in all modern operating systems (Linux, Mac, etc.)
-   + ActivePython is recommended for Windows (www.activestate.com/activepython)
+As far as operating systems go, any system with Python support should work.
 
-* Twisted (http://twistedmatrix.com) 
-   Version 10.0+   
-   + ZopeInterface 3.0+ (www.zope.org/Products/ZopeInterface)
-   + (pywin32 (sourceforge.net/projects/pywin32) - needed for Windows only) 
+    * Linux/Unix
+    * Windows (2000, XP, Vista, Win7)
+    * Mac OSX (>=10.5 recommended) 
 
-* Django (www.djangoproject.com)
-   Version 1.2.1+ or latest subversion trunk highly recommended. 
-   + PIL library (www.pythonware.com/products/pil)
+Of these, only Linux/Unix, Windows XP, and Windows 7 have actually been run by devs and shown to work at this time. Let us know.
 
-* Apache2 (http://httpd.apache.org)
-   Optional. Other equivalent webservers with a Python interpreter module can 
-   also be used. Required for serving final production web interface 
-   (not needed for web development, django has a test server that's good 
-   enough for that).
+You'll need the following packages and minimum versions in order to run Evennia:
 
-* Subversion (subversion.apache.org) 
-   This is needed to download Evennia itself.
+    * Python (http://www.python.org)
+          o Version 2.5+ strongly recommended, although 2.3 or 2.4 may work. Obs- Python3.x is not supported yet.
+          o The default database system SQLite3 only comes as part of Python2.5 and later.
+          o Python is available in all modern operating systems (Linux, Mac, etc).
+          o Windows users are recommended to use ActivePython (http://www.activestate.com/activepython) 
+    * Twisted (http://twistedmatrix.com)
+          o Version 10.0+
+          o Twisted also requires:
+                + ZopeInterface 3.0+ (http://www.zope.org/Products/ZopeInterface)
+                + For Windows only: pywin32 (http://sourceforge.net/projects/pywin32) 
+    * Django (http://www.djangoproject.com)
+          o Version 1.2.1+ or latest subversion trunk highly recommended.
+          o PIL library (http://www.pythonware.com/products/pil) 
 
-Users of most decent Linux distros should be able to install all the above 
-through their normal package managers, or by using "easy_install"
-(See also http://packages.python.org/distribute/easy_install.html#downloading-and-installing-a-package).
-Example: easy_install django
- 
+To download/update Evennia:
 
-Windows users who installed ActivePython can use "pypm" on the Windows 
-command shell (cmd.exe) which is functionally equivalent to the "easy_install"
-method, above.  (See also: http://docs.activestate.com/activepython/2.6/pypm.html#what-is-pypm).
-Example: pypm install django
+    * Subversion (http://subversion.apache.org)
+          o This is needed to download and update Evennia itself.
+          o Windows users can use TortoiseSVN (http://tortoisesvn.tigris.org). 
 
-Windows users who do not have "pypm" (installed with ActivePython) will need to visit the various homepages and install the programs manually. 
+Optional packages:
+
+    * South (http://south.aeracode.org/)
+          o Version 0.7+
+          o Optional. Used for database migrations. 
+    * Apache2 (http://httpd.apache.org)
+          o Optional. Most likely you'll not need to bother with this since Evennia 
+            runs its own threaded web server based on Twisted. Other equivalent web servers with a Python interpreter 
+            module can also be used. 
 
 
-Installation
-------------
+Installation and Quickstart
+---------------------------
 
 * Make sure you have/install the prerequsites listed above. 
 
@@ -81,44 +86,20 @@ Installation
 
   > python evennia.py -i start
 
-  This will start the MU* server on port 4000 by default. You may change  
-  this in the settings.py file by changing the variable GAMEPORTS to one
-  or more port numbers you want to use. 
-
   Note: Using -i starts the server in 'interactive mode' - it will print 
   messages to standard output and you can shut it down with (on most systems) 
   Ctrl-C. To start the server as a background process (suitable for production 
   environments), just skip the -i flag. A server running as a process is 
-  stopped  with 'python evennia.py stop'.
+  instead stopped  with 'python evennia.py stop'.
 
 * Start up your MUD client of choice and point it to your server and port 4000.
   If you are just running locally the server name is most likely 'localhost'.
 
+* Alternatively, ou can find the web interface and webclient by
+  pointing your web browser to http://localhost:8000.
+
 * Login with the email address and password you provided to the syncdb script.
   Welcome to Evennia! 
 
-
-Web features (Optional)
------------------------
-  
-  If you want to test web features you can also start Django's 
-  test web server. You should start this as a separate process, e.g.
-  in a separate terminal. Go to Evennia's game/ directory and enter
-  
-  > python manage.py runserver 
-
-  (obs, not to be confused with 'testserver').
-
-  Django's test webserver starts up locally on port 8000. Point your webbrowser 
-  to 'localhost:8000' and you should see Evennia's nice default page, 
-  graphics and all). You cannot play the game from here, but you can
-  view and edit the database extensively using the powerful admin interface,    
-  courtesy of Django. 
-
-  Note: You should never use the django testserver for anything more than 
-  local tests. If you have a full-fledged web server (like Apache) running
-  you should use that for production environments. 
-
-  Set up your apache2.conf to point mod-python to your newly created 
-  settings.py file (see online documentation for details).
-
+See also "Getting Started" on www.evennia.com for more verbose instructions and
+the documentation wiki for further help.
