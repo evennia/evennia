@@ -1,37 +1,38 @@
-<html>
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
   <head>
-    
+    <meta charset="utf-8" />
+
     <title>Evennia web MUD client</title>
 
     <!--CSS style sheet -->
     <link rel='stylesheet' type="text/css" media="screen" href="/media/css/webclient.css">
-    
-    <!-- Importing the jQuery javascript library -->    
+
+    <!-- Importing the jQuery javascript library -->
     <!--script src="http://code.jquery.com/jquery-1.4.4.js" type="text/javascript" charset="utf-8"></script-->
-    <script src="/media/javascript/jquery-1.4.4.js" type="text/javascript" charset="utf-8"></script>  
-    
+    <script src="/media/javascript/jquery-1.4.4.js" type="text/javascript" charset="utf-8"></script>
+
     <!-- Importing the Evennia ajax webclient component (requires jQuery)  -->
-    <script src="/media/javascript/evennia_webclient.js" type="text/javascript" charset="utf-8"></script>  
-    
+    <script src="/media/javascript/evennia_webclient.js" type="text/javascript" charset="utf-8"></script>
+
   </head>
-  
   <body>
-    
+
     <div id="wrapper">
       <div id="messagewindow">
         <!--javascript kills this when page has finished loading: -->
-        <span id="connecting"> Connecting ...</span> 
+        <div id="connecting"> Connecting ...</div>
         <!--this is supplied by django view - webclient/views.py: -->
-        <span id="noscript"><h3>Javascript Error: The Evennia MUD client requires that you have Javascript activated.</h3>
+        <div id="noscript"><h3>Javascript Error: The Evennia MUD client requires that you have Javascript activated.</h3>
           <p>Turn off eventual script blockers and/or switch to a web
           browser supporting javascript.</p>
-        </span>
-      </div>  
-      <form id="inputform">    
-        <span id="playercount">Logged in Players: {{num_players_connected}}</span> <br>
-        <input type="text" id="inputfield" autocomplete='off'><input id="inputsend" type="button" value="send" onClick="sendMsg()">
+        </div>
+      </div>
+      <form id="inputform">
+        <div id="playercount">Logged in Players: {{num_players_connected}}</div>
+        <div id="inputcontrol"><input type="text" id="inputfield" autocomplete="off"><input id="inputsend" type="button" value="send" onClick="sendMsg()" /></div>
       </form>
     </div>
-    
+
   </body>
 </html>
