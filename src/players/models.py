@@ -258,11 +258,11 @@ class PlayerDB(TypedObject):
         """
         if from_obj:
             try:
-                from_obj.at_msg_send(outgoing_string, self)
+                from_obj.at_msg_send(outgoing_string, to_obj=self, data=data)
             except Exception:
                 pass
         if self.character:
-            if self.character.at_msg_receive(outgoing_string, from_obj):
+            if self.character.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
                 for session in object.__getattribute__(self, 'sessions'):
                     session.msg(outgoing_string, data)
 

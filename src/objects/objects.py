@@ -230,7 +230,7 @@ class Object(TypeClass):
                 string += ", ".join(things)            
         return string
 
-    def at_msg_receive(self, msg, from_obj=None):
+    def at_msg_receive(self, msg, from_obj=None, data=None):
         """
         This hook is called whenever someone 
         sends a message to this object.
@@ -249,7 +249,7 @@ class Object(TypeClass):
         """
         return True 
 
-    def at_msg_send(self, msg, to_obj):
+    def at_msg_send(self, msg, to_obj=None, data=None):
         """
         This is a hook that is called when /this/ object
         sends a message to another object with obj.msg()

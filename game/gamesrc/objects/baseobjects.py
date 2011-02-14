@@ -71,10 +71,24 @@ class Object(BaseObject):
      at_object_receive(obj, source_location) - called when this object receives another object
                                              (e.g. a room being entered, an object moved into inventory)
 
+
+
+
      return_appearance(looker) - by default, this is used by the 'look' command to
                                         request this object to describe itself. Looker
                                         is the object requesting to get the information. 
      at_desc(looker=None) - by default called whenever the appearance is requested.      
+
+     at_msg_receive(self, msg, from_obj=None, data=None) - called whenever someone sends a message to this object.
+                                                           message aborted if hook returns False. 
+     at_msg_send(self, msg, to_obj=None, data=None) - called when this objects sends a message. This can only be 
+                                                      called if from_obj is specified in the call to msg().
+     at_object_delete() - calleed when this object is to be deleted. If returns False, deletion is aborted.
+     
+     at_get(getter) - called after object has been picked up. Does not stop pickup.
+     at_drop(dropper) - called when this object has been dropped.
+     at_say(speaker, message) - by default, called if an object inside this object speaks
+     
      """
     pass
 
