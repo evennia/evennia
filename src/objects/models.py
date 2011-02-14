@@ -352,6 +352,16 @@ class ObjectDB(TypedObject):
         return ObjectDB.objects.get_contents(self)
     contents = property(contents_get)
 
+    #@property
+    def exits_get(self):
+        """
+        Returns all exits from this object, i.e. all objects
+        at this location having the property _destination.
+        """
+        return [exi for exi in self.contents
+                if exi.has_attribute('_destination')]
+    exits = property(exits_get)
+
     #
     # Nicks - custom nicknames
     #
@@ -552,7 +562,9 @@ class ObjectDB(TypedObject):
         """
         Moves this object to a new location.
         
-        destination: (Object) Reference to the object to move to.
+        destination: (Object) Reference to the object to move to. This
+                     can also be an exit object, in which case the _destination
+                     attribute is used as destination. 
         quiet:  (bool)    If true, don't emit left/arrived messages.
         emit_to_obj: (Object) object to receive error messages
         """
@@ -563,6 +575,9 @@ class ObjectDB(TypedObject):
         if not destination:
             emit_to_obj.msg("The destination doesn't exist.")
             return 
+        if destination.has_attribute('_destination'):
+            # traverse exits
+            destination = destination.get_attribute('_destination')
 
         # Before the move, call eventual pre-commands.
         try:
@@ -646,8 +661,7 @@ class ObjectDB(TypedObject):
         Destroys all of the exits and any exits pointing to this
         object as a destination.
         """
-        for out_exit in [obj for obj in self.contents 
-                            if obj.attr('_destination')]:
+        for out_exit in self.exits:                            
             out_exit.delete()
         for in_exit in \
                 ObjectDB.objects.get_objs_with_attr_match('_destination', self):

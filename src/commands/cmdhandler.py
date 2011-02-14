@@ -385,9 +385,15 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 # only return the command instance
                 return cmd
 
+            # pre-command hook
+            cmd.at_pre_cmd()
+
             # Parse and execute        
             cmd.parse()
             cmd.func()
+
+            # post-command hook
+            cmd.at_post_cmd()
             # Done! 
 
         except ExecSystemCommand, exc:             

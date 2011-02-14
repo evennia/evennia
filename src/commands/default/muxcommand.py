@@ -25,6 +25,19 @@ class MuxCommand(Command):
         are satisfied using the default check in Command. 
         """
         return super(MuxCommand, self).has_perm(srcobj)
+    
+    def at_pre_cmd(self):
+        """
+        This hook is called before self.parse() on all commands
+        """
+        pass
+
+    def at_post_cmd(self):
+        """
+        This hook is called after the command has finished executing 
+        (after self.func()).
+        """
+        pass
 
     def parse(self):
         """

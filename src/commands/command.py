@@ -126,6 +126,19 @@ class Command(object):
     
     # Common Command hooks         
 
+    def at_pre_cmd(self):
+        """
+        This hook is called before self.parse() on all commands
+        """
+        pass
+
+    def at_post_cmd(self):
+        """
+        This hook is called after the command has finished executing 
+        (after self.func()).
+        """
+        pass
+
     def parse(self):
         """
         Once the cmdhandler has identified this as the command we
