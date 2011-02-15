@@ -33,7 +33,6 @@ contain the 'mode' of the request to be handled by the protocol:
 */
 
 // jQuery must be imported by the calling html page before this script
-// (it comes with Evennia, in media/javascript/jquery-<version>.js)
 // There are plenty of help on using the jQuery library on http://jquery.com/
 
 // Server communications
