@@ -27,7 +27,13 @@
         <!--this is supplied by django view - webclient/views.py: -->
         <div id="noscript"><h3>Javascript Error: The Evennia MUD client requires that you have Javascript activated.</h3>
           <p>Turn off eventual script blockers and/or switch to a web
-          browser supporting javascript.</p>
+          browser supporting javascript.</p><p>For admins: The error
+          could also be due to not being able to access the online
+          jQuery javascript library. If you are testing the client
+          without an internet connection, you have to previously
+          download the jQuery library from http://code.jquery.com
+          (it's just one file) and then edit webclient.html to point
+          to the local copy.</p>
         </div>
       </div>
       <form id="inputform">
