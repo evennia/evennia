@@ -349,6 +349,11 @@ MANAGERS = ADMINS
 # Absolute path to the directory that holds media (no trailing slash).
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(SRC_DIR, 'web', 'media')
+# Absolute path to the directory that holds (usually links to) the
+# django admin media files. If the target directory does not exist, it
+# is created and linked by Evennia upon first start. Otherwise link it
+# manually to django/contrib/admin/media.
+ADMIN_MEDIA_ROOT = os.path.join(MEDIA_ROOT, 'admin')
 # It's safe to dis-regard this, as it's a Django feature we only half use as a
 # dependency, not actually what it's primarily meant for.
 SITE_ID = 1
@@ -367,13 +372,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
-# If you'd like to serve media files via Django (strongly not recommended!),
-# set SERVE_MEDIA to True. This is appropriate on a developing site, or if 
-# you're running Django's built-in test server. Normally you want a webserver 
-# that is optimized for serving static content to handle media files (apache, 
-# lighttpd).
+# This should be turned off unless you want to do tests with Django's 
+# development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
-
 # The master urlconf file that contains all of the sub-branches to the
 # applications.
 ROOT_URLCONF = 'src.web.urls'
@@ -386,9 +387,9 @@ LOGOUT_URL = '/accounts/login'
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure
+# to use a trailing slash. This should match the position defined 
+# by ADMIN_MEDIA_ROOT. 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.

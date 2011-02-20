@@ -41,11 +41,8 @@ urlpatterns = patterns('',
     url(r'^webclient/',include('src.web.webclient.urls')),
 )
 
-# If you'd like to serve media files via Django (strongly not recommended!),
-# open up your settings.py file and set SERVE_MEDIA to True. This is
-# appropriate on a developing site, or if you're running Django's built-in
-# test server. Normally you want a webserver that is optimized for serving
-# static content to handle media files (apache, lighttpd).
+# This sets up the server if the user want to run the Django
+# test server (this should normally not be needed).
 if settings.SERVE_MEDIA:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),

@@ -32,7 +32,7 @@ For more advanced migrations, there might be further instructions.
 
 import os, sys
 from subprocess import call             
-
+import south
 
 # Set the Python path up so we can get to settings.py from here.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -63,7 +63,7 @@ def run_south(mode):
     """
     if mode == "init":
         for appname in APPLIST:
-            print "Initializing %s ..." % appname
+            print "Initializing %s ... (ignore missing directory tracebacks)" % appname
             call([sys.executable, "manage.py", "convert_to_south", appname])
         print "\nInitialization complete. That's all you need to do for now."    
     elif mode == "update":        
@@ -71,8 +71,21 @@ def run_south(mode):
             print "Updating/migrating schema for %s ..." % appname                
             call([sys.executable, "manage.py", "schemamigration", appname, "--auto"])
             call([sys.executable, "manage.py", "migrate", appname])                        
-        print "\nUpdate complete."        
-    
+        print "\nUpdate complete."
+    elif mode == "remove":        
+        s = raw_input(" Warning, this cannot be undone. Continue? Y[N] > ")
+        if s.lower() == 'y':
+            from django.db.models import get_app
+            import shutil
+            for appname in APPLIST:
+                print "Removing migrations for %s ..." % appname
+                mod = get_app(appname)
+                path = os.path.join(os.path.dirname(mod.__file__), 'migrations')                
+                try:
+                    shutil.rmtree(path)
+                except OSError:
+                    print "%s didn't exist/could not be deleted. Ignored.." % path 
+                
 def south_ui():
     """
     Simple menu for handling migrations.
@@ -83,7 +96,7 @@ def south_ui():
 
     You usually don't need to use this tool unless a new version of Evennia
     tells you that the database scheme changed in some way, AND you don't want
-    to reset your database.
+    to reset your database. If you 
     
     This tool will help you to migrate an existing database without having to
     manually edit your tables and fields to match the new scheme. For that
@@ -104,6 +117,7 @@ def south_ui():
 
     i - Initialize an existing/new database with migration mappings (done once)
     u - Update an initialized database to the changed scheme
+    r - Remove the migration scheme (back to normal syncdb operation)
     q - Quit 
     """ 
     
@@ -111,11 +125,13 @@ def south_ui():
         print string 
         inp = str(raw_input(" Option > "))        
         inp = inp.lower()
-        if inp in ["q", "i", "u"]:            
+        if inp in ["q", "i", "u", "r"]:            
             if inp == 'i':
                 run_south("init")
             elif inp == 'u':
                 run_south("update")
+            elif inp == 'r':
+                run_south("remove")
             sys.exit()
             
 if __name__ == "__main__":
