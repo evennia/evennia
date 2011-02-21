@@ -21,6 +21,7 @@ except ImportError:
 from django.conf import settings
 from src.utils import create 
 from src.server import session, sessionhandler
+from src.config.models import ConfigValue
 
 #------------------------------------------------------------ 
 # Command testing 
@@ -42,9 +43,21 @@ class FakeSession(session.Session):
         pass 
     def lineReceived(self, raw_string): 
         pass 
-    def msg(self, message, data=None): 
+    def msg(self, message, data=None):             
         if message.startswith("Traceback (most recent call last):"):
+            #retval = "Traceback last line: %s" % message.split('\n')[-4:]
             raise AssertionError(message)
+        if self.player.character.ndb.return_string != None:
+            return_list = self.player.character.ndb.return_string
+            if hasattr(return_list, '__iter__'):
+                rstring = return_list.pop(0)
+                self.player.character.ndb.return_string = return_list
+            else:
+                rstring = return_list
+                self.player.character.ndb.return_string = None
+            if not message.startswith(rstring):
+                retval = "Returned message ('%s') != desired message ('%s')" % (message, rstring)
+                raise AssertionError(retval)
         if VERBOSE:
             print message
 
@@ -57,17 +70,22 @@ class CommandTest(TestCase):
     """
     def setUp(self):
         "sets up the testing environment"                
+        c = ConfigValue(db_key="default_home", db_value="2")
+        c.save()
+
         self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
         self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
 
         # create a faux player/character for testing.
         self.char1 = create.create_player("TestingPlayer", "testplayer@test.com", "testpassword", location=self.room1)
         self.char1.player.user.is_superuser = True
+        self.char1.ndb.return_string = None
         sess = FakeSession()
         sess.connectionMade()
         sess.session_login(self.char1.player)
         # create second player and some objects 
         self.char2 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="char2", location=self.room1)
+        self.char2.ndb.return_string = None
         self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=self.room1)
         self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1)
         self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
@@ -86,7 +104,7 @@ class CommandTest(TestCase):
         cmd.obj = self.char1
         return cmd
     
-    def execute_cmd(self, raw_string):
+    def execute_cmd(self, raw_string, wanted_return_string=None):
         """
         Creates the command through faking a normal command call; 
         This also mangles the input in various ways to test if the command
@@ -100,9 +118,13 @@ class CommandTest(TestCase):
             self.char1.execute_cmd(test1)
             self.char1.execute_cmd(test2)
             self.char1.execute_cmd(test3)
-        # actual call 
-        self.char1.execute_cmd(raw_string)
-
+        # actual call, we potentially check so return is ok. 
+        self.char1.ndb.return_string = wanted_return_string
+        try:
+            self.char1.execute_cmd(raw_string)
+        except AssertionError, e:
+            self.fail(e)
+        self.char1.ndb.return_string = None
 #------------------------------------------------------------
 # Default set Command testing
 #------------------------------------------------------------
@@ -123,7 +145,32 @@ class TestNick(CommandTest):
     def test_call(self):
         self.execute_cmd("nickname testalias = testaliasedstring")        
         self.assertEquals("testaliasedstring", self.char1.nicks.get("testalias", None))
-# system.py tests
+
+# system.py command tests
+class TestPy(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@py 1+2", [">>> 1+2", "<<< 3"])
+class TestListScripts(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@scripts")
+class TestListObjects(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@objects")
+class TestListService(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@service")
+class TestVersion(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@version")
+class TestTime(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@time")
+class TestList(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@list")
 class TestPs(CommandTest):
     def test_call(self):
-        self.execute_cmd("@ps")
+        self.execute_cmd("@ps","\n{wNon-timed scripts")
+class TestStats(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@stats")

@@ -126,7 +126,7 @@ def gametime(format=False):
     """
     try:
         script = ScriptDB.objects.get_all_scripts(GAME_TIME_SCRIPT)[0]
-    except KeyError:
+    except (KeyError, IndexError):
         logger.log_trace("GameTime script not found.")
         return
     # we return this as an integer (second-precision is good enough)
@@ -141,7 +141,7 @@ def runtime(format=False):
     """
     try:
         script = ScriptDB.objects.get_all_scripts(GAME_TIME_SCRIPT)[0]
-    except KeyError:
+    except (KeyError, IndexError):
         logger.log_trace("GameTime script not found.")
         return
     # we return this as an integer (second-precision is good enough)
@@ -156,7 +156,7 @@ def uptime(format=False):
     """
     try:
         script = ScriptDB.objects.get_all_scripts(GAME_TIME_SCRIPT)[0]
-    except KeyError:
+    except (KeyError, IndexError):
         logger.log_trace("GameTime script not found.")
         return
     # we return this as an integer (second-precision is good enough)
