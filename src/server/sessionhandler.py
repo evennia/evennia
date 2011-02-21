@@ -47,6 +47,9 @@ class SessionHandler(object):
         self.unloggedin = []
         self.loggedin = []
 
+        # we keep a link to the server here, for the rest of the game to access.
+        self.server = None 
+
     def add_unloggedin_session(self, session):
         """
         Call at first connect. This adds a not-yet authenticated session.

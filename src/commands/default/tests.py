@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
  ** OBS - this is not a normal command module! **
- ** You cannot import anythin in this module as a command! **
+ ** You cannot import anything in this module as a command! **
 
 This is part of the Evennia unittest framework, for testing the
 stability and integrity of the codebase during updates. This module
@@ -43,6 +43,8 @@ class FakeSession(session.Session):
     def lineReceived(self, raw_string): 
         pass 
     def msg(self, message, data=None): 
+        if message.startswith("Traceback (most recent call last):"):
+            raise AssertionError(message)
         if VERBOSE:
             print message
 
@@ -121,3 +123,7 @@ class TestNick(CommandTest):
     def test_call(self):
         self.execute_cmd("nickname testalias = testaliasedstring")        
         self.assertEquals("testaliasedstring", self.char1.nicks.get("testalias", None))
+# system.py tests
+class TestPs(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@ps")

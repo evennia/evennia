@@ -432,7 +432,7 @@ class CmdShutdown(MuxCommand):
             announcement += "%s\n" % self.args
         logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)          
-        sessions.server.shutdown()
+        SESSIONS.server.shutdown()
 
 class CmdVersion(MuxCommand):
     """
@@ -626,26 +626,29 @@ class CmdPs(MuxCommand):
     def func(self):
         "run the function."
  
-        string = "Processes Scheduled:\n-- PID [time/interval] [repeats] description --"
         all_scripts = ScriptDB.objects.get_all_scripts()
-        repeat_scripts = [script for script in all_scripts if script.interval]
-        nrepeat_scripts = [script for script in all_scripts if script not in repeat_scripts]
-        
-        string = "\nNon-timed scripts:"
-        for script in nrepeat_scripts:
-            string += "\n %i %s %s" % (script.id, script.key, script.desc)
+        repeat_scripts = [script for script in all_scripts if script.interval > 0]
+        nrepeat_scripts = [script for script in all_scripts if script.interval <= 0]
 
-        string += "\n\nTimed scripts:"
+        string = "\n{wNon-timed scripts:{n -- PID name desc --"
+        if not nrepeat_scripts:
+            string += "\n <None>"
+        for script in nrepeat_scripts:
+            string += "\n {w%i{n %s %s" % (script.id, script.key, script.desc)
+
+        string += "\n{wTimed scripts:{n -- PID name [time/interval][repeats] desc --"
+        if not repeat_scripts:
+            string += "\n <None>"
         for script in repeat_scripts:
             repeats = "[inf] "
             if script.repeats: 
                 repeats = "[%i] " % script.repeats            
-            string += "\n %i %s [%d/%d] %s%s" % (script.id, script.key, 
-                                                 script.time_until_next_repeat(),
-                                                 script.interval,
-                                                 repeats,
-                                                 script.desc)
-        string += "\nTotals: %d interval scripts" % len(all_scripts)
+            time_next = "[inf/inf]"
+            if script.time_until_next_repeat() != None:
+                time_next = "[%d/%d]" % (script.time_until_next_repeat(), script.interval)
+            string += "\n {w%i{n %s %s%s%s" % (script.id, script.key, 
+                                           time_next, repeats, script.desc)
+        string += "\n{wTotal{n: %d scripts." % len(all_scripts)
         self.caller.msg(string)
 
 class CmdStats(MuxCommand):

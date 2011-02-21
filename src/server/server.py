@@ -78,6 +78,9 @@ class Evennia(object):
 
         # we have to null this here.
         SESSIONS.session_count(0)            
+        # we link ourself to the sessionhandler so other modules don't have to 
+        # re-import the server module itself (which would re-initialize it).
+        SESSIONS.server = self
 
         self.start_time = time.time()
 
