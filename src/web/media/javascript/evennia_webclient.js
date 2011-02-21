@@ -65,10 +65,10 @@ function webclient_receive(){
     });
 };
 
-function webclient_input(){
+function webclient_input(arg){
     // Send an input from the player to the server
-
-    var outmsg = $("#inputfield").val(); // get data from form
+    
+    var outmsg = typeof(arg) != 'undefined' ? arg : $("#inputfield").val();
 
     $.ajax({
         type: "POST",
@@ -229,6 +229,7 @@ function webclient_set_sizes() {
     //$("#inputfield").css({'width': win_w - inp_w - 20});
 }
 
+
 // Callback function - called when page has finished loading (gets things going)
 $(document).ready(function(){
     // remove the "no javascript" warning, since we obviously have javascript
@@ -239,6 +240,10 @@ $(document).ready(function(){
     setTimeout(function () {
         webclient_init();
     }, 500);
+    // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
+    setInterval(function() {
+        webclient_input("idle");
+    }, 60000*3);
 });
 
 // Callback function - called when the browser window resizes
