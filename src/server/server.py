@@ -18,6 +18,7 @@ if os.name == 'nt':
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from twisted.web import server, static
+from twisted.python import threadpool
 from django.db import connection
 from django.conf import settings
 from src.utils import reloads
@@ -202,13 +203,14 @@ if WEBSERVER_ENABLED:
 
     # a django-compatible webserver.
 
-    from src.server.webserver import DjangoWebRoot
+    from src.server.webserver import DjangoWebRoot, WSGIWebServer#DjangoWebRoot
 
-    # define the root url (/) as a wsgi resource recognized by Django
-    web_root = DjangoWebRoot()
+    # start a thread pool and define the root url (/) as a wsgi resource 
+    # recognized by Django
+    threads = threadpool.ThreadPool()
+    web_root = DjangoWebRoot(threads)
     # point our media resources to url /media 
-    media_dir = os.path.join(settings.SRC_DIR, 'web', settings.MEDIA_URL.lstrip('/')) #TODO: Could be made cleaner?
-    web_root.putChild("media", static.File(media_dir))
+    web_root.putChild("media", static.File(settings.MEDIA_ROOT))    
 
     if WEBCLIENT_ENABLED:    
         # create ajax client processes at /webclientdata
@@ -218,7 +220,8 @@ if WEBSERVER_ENABLED:
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
     for port in WEBSERVER_PORTS:
         # create the webserver
-        webserver = internet.TCPServer(port, web_site)
+        webserver = WSGIWebServer(threads, port, web_site)
+        #webserver = internet.TCPServer(port, web_site)
         #webserver = internet.SSLServer(port, web_site)
         webserver.setName('EvenniaWebServer%s' % port)
         EVENNIA.services.addService(webserver)

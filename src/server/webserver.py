@@ -14,6 +14,7 @@ a great example/aid on how to do this.)
 from twisted.web import resource
 from twisted.python import threadpool
 from twisted.internet import reactor
+from twisted.application import service, internet 
 
 from twisted.web.wsgi import WSGIResource
 from django.core.handlers.wsgi import WSGIHandler
@@ -28,27 +29,12 @@ class DjangoWebRoot(resource.Resource):
     understands by tweaking the way the 
     child instancee are recognized. 
     """
-
-    def __init__(self):
+    def __init__(self, pool):
         """
         Setup the django+twisted resource
         """
-        resource.Resource.__init__(self)
-        self.wsgi_resource = self._wsgi_resource()
-
-    def _wsgi_resource(self):
-        """
-        Sets up a threaded webserver resource by tying
-        django and twisted together.        
-        """
-        # Start the threading
-        pool = threadpool.ThreadPool()
-        pool.start()
-        # Set it up so the pool stops after e.g. Ctrl-C kills the server 
-        reactor.addSystemEventTrigger('after', 'shutdown', pool.stop)        
-        # combine twisted's wsgi resource with django's wsgi handler
-        wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
-        return wsgi_resource 
+        resource.Resource.__init__(self)                
+        self.wsgi_resource = WSGIResource(reactor, pool , WSGIHandler())
 
     def getChild(self, path, request):
         """
@@ -58,3 +44,24 @@ class DjangoWebRoot(resource.Resource):
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
         return self.wsgi_resource
+
+class WSGIWebServer(internet.TCPServer):
+    """
+    This is a WSGI webserver. It makes sure to start
+    the threadpool after the service itself started,
+    so as to register correctly with the twisted daemon.
+
+    call with WSGIWebServer(threadpool, port, wsgi_resource)
+    """
+    def __init__(self, pool, *args, **kwargs ):
+        "This just stores the threadpool"
+        self.pool = pool
+        internet.TCPServer.__init__(self, *args, **kwargs)
+    def startService(self):
+        "Start the pool after the service"
+        internet.TCPServer.startService(self)    
+        self.pool.start()    
+    def stopService(self):        
+        "Safely stop the pool after service stop."
+        internet.TCPServer.stopService(self)       
+        self.pool.stop()

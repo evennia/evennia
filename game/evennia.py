@@ -133,13 +133,10 @@ def start_daemon(parser, options, args):
     cycle_logfile()
 
     # Start it up
-    # Popen([TWISTED_BINARY, 
-    #        '--logfile=%s' % settings.DEFAULT_LOG_FILE, 
-    #        '--python=%s' % SERVER_PY_FILE])
-    call([TWISTED_BINARY, 
-          '--logfile=%s' % settings.DEFAULT_LOG_FILE, 
-          '--python=%s' % SERVER_PY_FILE])
-
+    Popen([TWISTED_BINARY, 
+           '--logfile=%s' % settings.DEFAULT_LOG_FILE, 
+           '--python=%s' % SERVER_PY_FILE])
+    
 
 def start_interactive(parser, options, args):
     """
