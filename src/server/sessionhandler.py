@@ -110,20 +110,19 @@ class SessionHandler(object):
             session.session_disconnect()
         self.session_count(0)
 
-    def disconnect_duplicate_sessions(self, session):
+    def disconnect_duplicate_sessions(self, curr_session):
         """
-        Disconnects any existing sessions with the same game object. This is used in
-        connection recovery to help with record-keeping.
+        Disconnects any existing sessions with the same game object. 
         """
-        reason = "Your account has been logged in from elsewhere. Disconnecting."
-        sessions = self.get_sessions()
-        session_character = self.get_character(session)
+        reason = "Your account has been logged in from elsewhere. Disconnecting." 
+        curr_char = curr_session.get_character()
+        doublet_sessions = [sess for sess in self.get_sessions() 
+                            if sess.get_character() == curr_char and sess != curr_session]
         logged_out = 0
-        for other_session in sessions:
-            other_character = self.get_character(other_session)
-            if session_character == other_character and other_session != session:
-                self.remove_session(other_session, reason=reason)
-                logged_out += 1                
+        for session in doublet_sessions:
+            session.msg(reason)
+            self.remove_session(session)
+            logged_out += 1                
         self.session_count(-logged_out)
         return logged_out
 
