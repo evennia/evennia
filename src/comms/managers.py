@@ -232,13 +232,7 @@ class ChannelManager(models.Manager):
         from src.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
         return None 
-                
-    def has_connection(self, player, channel):
-        "Check so the player is really listening to this channel."
-        ChannelConnection = ContentType.objects.get(app_label="comms", 
-                                 model="channelconnection").model_class()
-        return ChannelConnection.objects.has_connection(player, channel)
-
+    
     def get_all_connections(self, channel):
         """
         Return the connections of all players listening

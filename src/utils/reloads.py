@@ -94,8 +94,8 @@ def reload_modules():
 
     # clean out cache dictionary of typeclasses, exits and channe    
     typeclassmodels.reset()
-    exithandler.EXITHANDLER.reset()
-    channelhandler.CHANNELHANDLER.reset()
+    exithandler.EXITHANDLER.clear()
+    channelhandler.CHANNELHANDLER.update()
      
 def reload_scripts(scripts=None, obj=None, key=None, 
                    dbref=None, init_mode=False):
@@ -129,14 +129,17 @@ def cemit_info(message):
     Sends the info to a pre-set channel. This channel is 
     set by CHANNEL_MUDINFO in settings.
     """
+
     logger.log_infomsg(message)
     try:
         infochan = settings.CHANNEL_MUDINFO
         infochan = Channel.objects.get_channel(infochan[0])
     except Exception:
-        return 
+        pass
     if infochan:        
         cname = infochan.key
         cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])        
         infochan.msg(cmessage)        
-
+    else:
+        cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])                        
+        logger.log_infomsg(cmessage)

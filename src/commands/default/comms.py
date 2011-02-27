@@ -3,38 +3,43 @@ Comsys command module.
 """
 
 from src.comms.models import Channel, Msg, ChannelConnection
+from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
 from src.permissions.permissions import has_perm
 from src.commands.default.muxcommand import MuxCommand            
 
-def find_channel(caller, channelname):
+def find_channel(caller, channelname, silent=False):
     """
     Helper function for searching for a single channel with
     some error handling.
     """
     channels = Channel.objects.channel_search(channelname)
     if not channels:
-        caller.msg("Channel '%s' not found." % channelname)
+        if not silent:
+            caller.msg("Channel '%s' not found." % channelname)
         return None
     elif len(channels) > 1:
         matches = ", ".join(["%s(%s)" % (chan.key, chan.id) for chan in channels])
-        caller.msg("Multiple channels match (be more specific): \n%s" % matches)
+        if not silent:
+            caller.msg("Multiple channels match (be more specific): \n%s" % matches)
         return None
     return channels[0]
         
 class CmdAddCom(MuxCommand):
     """
-    addcom - join a channel with alias
+    addcom - subscribe to a channel with optional alias
 
     Usage:
        addcom [alias=] <channel>
        
-    Allows adding an alias for a channel to make is easier and
-    faster to use. Subsequent calls of this command can
-    be used to add multiple aliases. 
+    Joins a given channel. If alias is given, this will allow you to
+    refer to the channel by this alias rather than the full channel
+    name. Subsequent calls of this command can be used to add multiple
+    aliases to an already joined channel.
     """
 
     key = "addcom"
+    aliases = ["aliaschan","chanalias"]
     help_category = "Comms"
 
     def func(self):
@@ -78,9 +83,7 @@ class CmdAddCom(MuxCommand):
             
         if alias:
             # create a nick and add it to the caller.
-            nicks = caller.nicks
-            nicks[alias.strip()] = channel.key
-            caller.nicks = nicks # nicks auto-save to database.
+            caller.nickhandler(alias, channel.key, nick_type="channel")
             string += "You can now refer to the channel %s with the alias '%s'." 
             caller.msg(string % (channel.key, alias))
         else:
@@ -90,106 +93,55 @@ class CmdAddCom(MuxCommand):
 
 class CmdDelCom(MuxCommand):
     """
-    delcom - remove a channel alias
+    delcom - unsubscribe from channel or remove channel alias
 
     Usage:
-       delcom <alias>
+       delcom <alias or channel>
 
-    Removes the specified alias to a channel. If this is the last alias,
-    the user is effectively removed from the channel.
+    If the full channel name is given, unsubscribe from the
+    channel. If an alias is given, remove the alias but don't
+    unsubscribe.
     """
 
     key = "delcom"
+    aliases = ["delaliaschan, delchanalias"]
     help_category = "Comms"
 
     def func(self):
         "Implementing the command. "
 
         caller = self.caller
+        player = caller.player
 
         if not self.args:
-            caller.msg("Usage: delcom <alias>")
+            caller.msg("Usage: delcom <alias or channel>")
             return        
-
-        #find all the nicks defining this channel
-        searchnick = self.args.lower()
-        nicks = caller.nicks
-        channicks = [nick for nick in nicks.keys() 
-                     if nick == searchnick]
-        if not channicks:
-            caller.msg("You don't have any such alias defined.")
-            return 
-        #if there are possible nick matches, look if they match a channel.
-        channel = None
-        for nick in channicks:
-            channel = find_channel(caller, nicks[nick])        
-            if channel:
-                break
-        if not channel:
-            caller.msg("No channel with alias '%s' found." % searchnick)
-            return
-        player = caller.player
+        ostring = self.args.lower()
         
-        if not channel.has_connection(player):
-            caller.msg("You are not on that channel.")
+        channel = find_channel(caller, ostring, silent=True)
+        if channel:
+            # we have given a channel name - unsubscribe
+            if not channel.has_connection(player):
+                caller.msg("You are listening to that channel.")
+                return 
+            chkey = channel.key.lower()
+            # find all nicks linked to this channel and delete them
+            for nick in [nick for nick in caller.nicks 
+                         if nick.db_type == "channel" and nick.db_real.lower() == chkey]:                
+                nick.delete()
+            channel.disconnect_from(player)
+            caller.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
+            return 
         else:
-            if len(channicks) > 1:
-                del nicks[searchnick]
-                caller.msg("Your alias '%s' for channel %s was cleared." % (searchnick, 
-                                                                                channel.key))
+            # we are removing a channel nick
+            channame = caller.nickhandler(ostring, nick_type="channel")            
+            channel = find_channel(caller, channame, silent=True)
+            if not channel:
+                caller.msg("No channel with alias '%s' was found." % ostring)
             else:
-                del nicks[searchnick]
-                channel.disconnect_from(player)
-                caller.msg("You stop listening to channel '%s'." % channel.key)
-        # have to save nicks back too
-        caller.nicks = nicks
-        
-class CmdComlist(MuxCommand):
-    """
-    comlist - list channel memberships
-
-    Usage:
-      comlist
-
-    Lists the channels a user is subscribed to.
-    """
-    
-    key = "comlist"
-    aliases = ["channels"]
-    help_category = "Comms"
-    
-    def func(self):
-        "Implement the command"
-
-        
-        caller = self.caller 
-        player = caller.player
-
-        connections = ChannelConnection.objects.get_all_player_connections(player)
-
-        if not connections:
-            caller.msg("You don't listen to any channels.")
-            return 
-        
-        # get aliases:
-        nicks = caller.nicks
-        channicks = {}
-        for connection in connections:
-            channame = connection.channel.key.lower()
-            channicks[channame] = ", ".join([nick for nick in nicks 
-                                                if nicks[nick].lower() == channame])
+                caller.nickhandler(ostring, nick_type="channel", delete=True)
+                caller.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
             
-        string = "Your subscribed channels (use @clist for full chan list)\n"
-        string += "** Alias          Channel               Status\n"
-       
-        for connection in connections:
-            string += " %s%s %-15.14s%-22.15s\n" %  ('-', '-', 
-                                                     channicks[connection.channel.key.lower()], 
-                                                     connection.channel.key)
-        string = string[:-1]
-        caller.msg(string)
-
-    
 # def cmd_allcom(command):
 #     """
 #     allcom - operate on all channels
@@ -282,43 +234,74 @@ class CmdComlist(MuxCommand):
 ## GLOBAL_CMD_TABLE.add_self("clearcom", cmd_clearcom)
         
 
-class CmdClist(MuxCommand):
+class CmdChannels(MuxCommand):
     """
     @clist
 
     Usage:
+      @channels
       @clist
-      list channels
-      all channels
+      comlist
 
-    Lists all available channels in the game.
+    Lists all available channels available to you, wether you listen to them or not. 
+    Use 'comlist" to only view your current channel subscriptions.
     """
-    key = "@clist"
-    aliases = ["channellist", "all channels"]
+    key = "@channels"
+    aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
 
     def func(self):
         "Implement function"
         
         caller = self.caller
-
-        string = "All channels (use comlist to see your subscriptions)\n"
-
-        string += "** Channel        Perms         Description\n"
-        channels = Channel.objects.get_all_channels()
+        
+        # all channels we have available to listen to
+        channels = [chan for chan in Channel.objects.get_all_channels() if has_perm(caller, chan, 'can_listen')]        
         if not channels:
-            string += "(No channels)  "
-        for chan in channels:
-            if has_perm(caller, chan, 'can_listen'):
-                string += " %s%s %-15.14s%-22.15s%s\n" % \
-                    ('-', 
-                     '-', 
-                     chan.key, 
-                     chan.permissions,
-                     #chan.get_owner().get_name(show_dbref=False), 
-                     chan.desc)
-        string = string[:-1]
-        #s += "** End of Channel List **"
+            caller.msg("No channels available")
+            return
+        # all channel we are already subscribed to
+        subs = [conn.channel for conn in ChannelConnection.objects.get_all_player_connections(caller.player)]
+
+        if self.cmdstring != "comlist":
+
+            string = "\nAll available channels:" 
+            cols = [[" "], ["Channel"], ["Aliases"], ["Perms"], ["Description"]]
+            for chan in channels:
+                if chan in subs:
+                    cols[0].append(">")
+                else:
+                    cols[0].append(" ")
+                cols[1].append(chan.key)
+                cols[2].append(",".join(chan.aliases))
+                cols[3].append(",".join(chan.permissions))
+                cols[4].append(chan.desc)
+            # put into table 
+            for ir, row in enumerate(utils.format_table(cols)):
+                if ir == 0:
+                    string += "\n{w" + "".join(row) + "{n"                    
+                else:
+                    string += "\n" + "".join(row)
+            self.caller.msg(string)
+
+        string = "\nYour channel subscriptions:"
+        if not subs:
+            string += "(None)"
+        else:
+            nicks = [nick for nick in caller.nicks if nick.db_type == 'channel']
+            print nicks
+            cols = [["Channel"], ["Aliases"], ["Description"]]
+            for chan in subs:
+                cols[0].append(chan.key)
+                cols[1].append(",".join([nick.db_nick for nick in nicks 
+                                         if nick.db_real.lower() == chan.key.lower()] + chan.aliases))
+                cols[2].append(chan.desc)
+            # put into table
+            for ir, row in enumerate(utils.format_table(cols)):
+                if ir == 0:
+                    string += "\n{w" + "".join(row) + "{n"                    
+                else:
+                    string += "\n" + "".join(row)
         caller.msg(string)
 
 class CmdCdestroy(MuxCommand):
@@ -349,11 +332,12 @@ class CmdCdestroy(MuxCommand):
             caller.msg("You are not allowed to do that.")
             return 
 
-        message = "Channel %s is being destroyed. Make sure to change your aliases." % channel.key
+        message = "%s is being destroyed. Make sure to change your aliases." % channel
         msgobj = create.create_message(caller, message, channel)
         channel.msg(msgobj)
         channel.delete()
-        caller.msg("Channel %s was destroyed." % channel)
+        CHANNELHANDLER.update()
+        caller.msg("%s was destroyed." % channel)
             
         
 ## def cmd_cset(self):
@@ -741,7 +725,7 @@ class CmdPage(MuxCommand):
         
         if 'list' in self.switches:
             pages = pages_we_sent + pages_we_got
-            pages.sort(lambda x,y: cmp(x.date_sent, y.date_sent))
+            pages.sort(lambda x, y: cmp(x.date_sent, y.date_sent))
 
             number = 10
             if self.args:

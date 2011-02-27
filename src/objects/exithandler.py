@@ -34,7 +34,7 @@ class ExitHandler(object):
         "Setup cache storage"
         self.cached_exit_cmds = {}
 
-    def reset(self, exitcmd=None):
+    def clear(self, exitcmd=None):
         """
         Reset cache storage. If obj is given, only remove
         that object from cache. 

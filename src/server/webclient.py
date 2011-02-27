@@ -4,8 +4,8 @@ Web client server resource.
 The Evennia web client consists of two components running
 on twisted and django. They are both a part of the Evennia
 website url tree (so the testing website might be located
-on http://localhost:8020/, whereas the webclient can be 
-found on http://localhost:8020/webclient.) 
+on http://localhost:8000/, whereas the webclient can be 
+found on http://localhost:8000/webclient.) 
 
 /webclient - this url is handled through django's template
              system and serves the html page for the client

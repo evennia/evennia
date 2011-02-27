@@ -9,6 +9,7 @@ from src.permissions.models import PermissionGroup
 from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import HANDLE_SEARCH_ERRORS
 from src.utils import utils
+from src.objects.models import Nick
 from src.commands.default.muxcommand import MuxCommand
 
 class CmdHome(MuxCommand):
@@ -41,8 +42,9 @@ class CmdLook(MuxCommand):
     Usage:
       look
       look <obj> 
+      look *<player>
 
-    Observes your location or objects in your vicinity. 
+    Observes your location or objects in your vicinity.
     """
     key = "look"
     aliases = ["l"]
@@ -56,7 +58,7 @@ class CmdLook(MuxCommand):
 
         if args:
             # Use search to handle duplicate/nonexistant results.
-            looking_at_obj = caller.search(args)
+            looking_at_obj = caller.search(args, use_nicks=True)
             if not looking_at_obj:
                 return
         else:
@@ -64,6 +66,9 @@ class CmdLook(MuxCommand):
             if not looking_at_obj:
                 caller.msg("Location: None")
                 return
+        if not hasattr(looking_at_obj, 'return_appearance'):
+            # this is likely due to us having a player instead
+            looking_at_obj = looking_at_obj.character    
         # get object's appearance
         caller.msg(looking_at_obj.return_appearance(caller))
         # the object's at_desc() method.
@@ -109,16 +114,18 @@ class CmdNick(MuxCommand):
     Define a personal alias/nick
 
     Usage:
-      alias[/switches] <alias> = [<string>]
-      nick             ''
+      nick[/switches] <nickname> = [<string>]
+      alias             ''
 
-    Switches:      obj      - alias an object
+    Switches:      
+      object   - alias an object
       player   - alias a player 
       clearall - clear all your aliases
       list     - show all defined aliases 
       
-    If no switch is given, a command/channel alias is created, used
-    to replace strings before sending the command. 
+    If no switch is given, a command alias is created, used
+    to replace strings before sending the command. Give an empty
+    right-hand side to clear the nick
       
     Creates a personal nick for some in-game object or
     string. When you enter that string, it will be replaced
@@ -129,8 +136,8 @@ class CmdNick(MuxCommand):
     if you want to change the inherent aliases of an object,
     use the @alias command instead. 
     """
-    key = "nickname"
-    aliases = ["nick, @nick, alias"]
+    key = "nick"
+    aliases = ["nickname", "nicks", "@nick", "alias"]
     
     def func(self):
         "Create the nickname"
@@ -138,55 +145,58 @@ class CmdNick(MuxCommand):
         caller = self.caller
         switches = self.switches
 
-        if 'list' in switches:
-            string = "{wAliases:{n \n"
-            string = string + "\n\r".join(["%s = %s" % (alias, replace)
-                                           for alias, replace
-                                           in caller.nicks.items()])
+        nicks = Nick.objects.filter(db_obj=caller.dbobj).exclude(db_type="channel")
+        if 'list' in switches or self.cmdstring == "nicks":
+            string = "{wDefined Nicks:{n"
+            cols = [["Type"],["Nickname"],["Translates-to"] ]
+            for nick in nicks:
+                cols[0].append(nick.db_type)
+                cols[1].append(nick.db_nick)
+                cols[2].append(nick.db_real)
+            for ir, row in enumerate(utils.format_table(cols)):
+                if ir == 0:
+                    string += "\n{w" + "".join(row) + "{n"
+                else:
+                    string += "\n" + "".join(row)
             caller.msg(string)
             return
         if 'clearall' in switches:
-            del caller.nicks
+            nicks.delete()
             caller.msg("Cleared all aliases.")
+            return         
+        if not self.args or not self.lhs:
+            caller.msg("Usage: nick[/switches] nickname = [realname]")
+            return                        
+        nick = self.lhs
+        real = self.rhs     
+
+        if real == nick:
+            caller.msg("No point in setting nick same as the string to replace...")
             return 
         
-        if not self.args or not self.lhs:
-            caller.msg("Usage: alias[/switches] string = [alias]")
-            return                        
-
-        alias = self.lhs
-        rstring = self.rhs 
-        err = None 
-        if rstring == alias:
-            err = "No point in setting alias same as the string to replace..."            
-            caller.msg(err)
-            return 
-        elif 'obj' in switches:
-            # object alias, for adressing objects
-            # (including user-controlled ones)  
-            err = caller.set_nick("_obj:%s" % alias, rstring)
-            atype = "Object"
-        elif 'player' in switches:
-            # player alias, used for messaging
-            err = caller.set_nick("_player:%s" % alias, rstring)            
-            atype = "Player "
-        else:
-            # a command/channel alias - these are replaced if
-            # they begin a command string.            
-            caller.msg(rstring)
-            caller.msg("going in: %s %s" % (alias, rstring))
-            err = caller.set_nick(alias, rstring)
-            atype = "Command/channel "
-        if err:
-            if rstring:                
-                err = "%salias %s changed from '%s' to '%s'." % (atype, alias, err, rstring)
+        # check so we have a suitable nick type
+        if not any(True for switch in switches if switch in ("object", "player", "inputline")):
+            switches = ["inputline"] 
+        string = ""
+        for switch in switches:
+            oldnick = Nick.objects.filter(db_obj=caller.dbobj, db_nick__iexact=nick, db_type__iexact=switch)
+            if not real:
+                # removal of nick
+                if oldnick:
+                    # clear the alias
+                    string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick[0].db_real)
+                    caller.nickhandler(nick, nick_type=switch, delete=True)
+                else:
+                    string += "\nNo nick '%s' found, so it could not be removed." % nick
             else:
-                err = "Cleared %salias '%s'(='%s')." % (atype, alias, err)
-        else:
-            err = "Set %salias '%s' = '%s'" % (atype, alias, rstring)
-        caller.msg(err.capitalize())
-
-
+                # creating new nick 
+                if oldnick:
+                    string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick[0].db_real, real)
+                else:
+                    string += "\nNick set: '%s' = '%s'." % (nick, real)
+                caller.nickhandler(nick, real, nick_type=switch)            
+        caller.msg(string)
+        
 class CmdInventory(MuxCommand):
     """
     inventory
@@ -362,8 +372,8 @@ class CmdWho(MuxCommand):
             plr_pobject = session.get_character()
             if show_session_data:
                 table[0].append(plr_pobject.name[:25])
-                table[1].append(utils.time_format(delta_conn,0))
-                table[2].append(utils.time_format(delta_cmd,1))                     
+                table[1].append(utils.time_format(delta_conn, 0))
+                table[2].append(utils.time_format(delta_cmd, 1))                     
                 table[3].append(plr_pobject.location.id)
                 table[4].append(session.cmd_total)
                 table[5].append(session.address[0])

@@ -109,8 +109,9 @@ def get_and_merge_cmdsets(caller):
         exit_cmdset = EXITHANDLER.get_cmdset(caller)
     location = caller.location 
     if location and not caller_cmdset.no_objs:
-        # Gather all cmdsets stored on objects in the room. 
-        local_objlist = location.contents
+        # Gather all cmdsets stored on objects in the room and
+        # also in the caller's inventory
+        local_objlist = location.contents + caller.contents
         local_objects_cmdsets = [obj.cmdset.current
                                  for obj in local_objlist
                                  if obj.cmdset.outside_access]
@@ -154,7 +155,7 @@ def match_command(cmd_candidates, cmdset, logged_caller=None):
     # Searching possible command matches in the given cmdset
     matches = []
     prev_found_cmds = [] # to avoid aliases clashing with themselves
-    for cmd_candidate in cmd_candidates:        
+    for cmd_candidate in cmd_candidates:
         cmdmatches = list(set([cmd for cmd in cmdset
                                if cmd == cmd_candidate.cmdname and 
                                cmd not in prev_found_cmds]))

@@ -18,7 +18,6 @@ if os.name == 'nt':
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from twisted.web import server, static
-from twisted.python import threadpool
 from django.db import connection
 from django.conf import settings
 from src.utils import reloads
@@ -203,7 +202,8 @@ if WEBSERVER_ENABLED:
 
     # a django-compatible webserver.
 
-    from src.server.webserver import DjangoWebRoot, WSGIWebServer#DjangoWebRoot
+    from twisted.python import threadpool
+    from src.server.webserver import DjangoWebRoot, WSGIWebServer
 
     # start a thread pool and define the root url (/) as a wsgi resource 
     # recognized by Django
@@ -221,7 +221,6 @@ if WEBSERVER_ENABLED:
     for port in WEBSERVER_PORTS:
         # create the webserver
         webserver = WSGIWebServer(threads, port, web_site)
-        #webserver = internet.TCPServer(port, web_site)
         #webserver = internet.SSLServer(port, web_site)
         webserver.setName('EvenniaWebServer%s' % port)
         EVENNIA.services.addService(webserver)

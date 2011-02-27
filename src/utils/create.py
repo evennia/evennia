@@ -331,7 +331,7 @@ def create_message(senderobj, message, channels=None,
     new_message.save()
     return new_message
 
-def create_channel(key, aliases=None, description=None,
+def create_channel(key, aliases=None, desc=None,
                    permissions=None, keep_log=True):
     """
     Create A communication Channel. A Channel serves as a central
@@ -356,7 +356,7 @@ def create_channel(key, aliases=None, description=None,
             if not is_iter(aliases):
                 aliases = [aliases]
             new_channel.aliases = ",".join([str(alias) for alias in aliases])
-        new_channel.description = description
+        new_channel.desc = desc
         new_channel.keep_log = keep_log
     except IntegrityError:
         string = "Could not add channel: key '%s' already exists." % key

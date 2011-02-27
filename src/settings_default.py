@@ -261,7 +261,7 @@ CHANNEL_PUBLIC = ("Public", 'ooc', 'Public discussion',
 CHANNEL_MUDINFO = ("MUDinfo", '', 'Informative messages',
                    '''chan_admin:has_id(1),
                       chan_listen:Immortals,
-                      chan_send:Immportals''')
+                      chan_send:Immortals''')
 # Channel showing when new people connecting
 CHANNEL_CONNECTINFO = ("MUDconnections", ('connections, mud_conns'),
                        'Connection log',

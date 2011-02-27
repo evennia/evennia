@@ -44,6 +44,9 @@ class DjangoWebRoot(resource.Resource):
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
         return self.wsgi_resource
+#
+# Threaded Webserver
+#
 
 class WSGIWebServer(internet.TCPServer):
     """

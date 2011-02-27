@@ -374,5 +374,5 @@ class Exit(Object):
         out of sync with the cache. You should do this also if
         overloading this function in a child class. 
         """
-        EXITHANDLER.reset(self.dbobj)
+        EXITHANDLER.clear(self.dbobj)
         return True 

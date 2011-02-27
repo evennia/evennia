@@ -474,7 +474,7 @@ class Channel(SharedMemoryModel):
         Checks so this player is actually listening
         to this channel. 
         """
-        return Channel.objects.has_connection(player, self)
+        return ChannelConnection.objects.has_connection(player, self)
 
     def msg(self, msgobj, from_obj=None):
         """

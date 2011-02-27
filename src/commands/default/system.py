@@ -54,10 +54,10 @@ class CmdReload(MuxCommand):
                 if attempt < max_attempts-1:
                     caller.msg("            Waiting for modules(s) to finish (%s) ..." % attempt)
                 else:
-                    string =  "            ... The module(s) took too long to reload, "
+                    string =  "{r            ... The module(s) took too long to reload, "
                     string += "\n            so the remaining reloads where skipped."
                     string += "\n            Re-run @reload again when modules have fully "
-                    string += "\n            re-initialized."
+                    string += "\n            re-initialized.{n"
                     caller.msg(string)
 
 class CmdPy(MuxCommand):

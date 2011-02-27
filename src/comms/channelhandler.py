@@ -34,14 +34,15 @@ class ChannelCommand(command.Command):
     Usage:
       <channel name or alias>  <message> 
 
-    This is a channel. You can send to it by entering 
-    its name or alias, followed by the text you want to send.
+    This is a channel. If you have subscribed to it, you can send to
+    it by entering its name or alias, followed by the text you want to
+    send.
     """
     # this flag is what identifies this cmd as a channel cmd
     # and branches off to the system send-to-channel command
     # (which is customizable by admin)
     key = "general"
-    help_category = "Channels"
+    help_category = "Channel Names"
     permissions = "cmd:use_channels"
     is_channel = True 
     obj = None     
@@ -64,6 +65,7 @@ class ChannelCommand(command.Command):
             caller.msg("Say what?")
             return 
         channel = Channel.objects.get_channel(channelkey)
+
         if not channel:
             caller.msg("Channel '%s' not found." % channelkey)
             return 
@@ -93,8 +95,8 @@ class ChannelHandler(object):
 
     def __str__(self):
         return ", ".join(str(cmd) for cmd in self.cached_channel_cmds)
-
-    def reset(self):
+    
+    def clear(self):
         """
         Reset the cache storage.
         """
