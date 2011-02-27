@@ -919,23 +919,21 @@ class CmdOpen(ObjManipCommand):
     def create_exit(self, exit_name, location, destination, exit_aliases=None, typeclass=None):
         """
         Helper function to avoid code duplication.
-        At this point we know destination is a valid location, but
-        all arguments are strings/lists. 
+        At this point we know destination is a valid location
 
         """
         caller = self.caller
         string = ""
-        # check if this exit object already exists. We need to 
-        # know what the result is before we can decide what to do;
-        # so we deactivate the automatic error handling. This
-        # always returns a list.
-        exit_obj = caller.search(exit_name, ignore_errors=True)
+        # check if this exit object already exists at the location.
+        # we need to ignore errors (so no automatic feedback)since we
+        # have to know the result of the search to decide what to do.
+        exit_obj = caller.search(exit_name, location=location, ignore_errors=True)
         if len(exit_obj) > 1:
             # give error message and return
-            caller.search(exit_name)
+            caller.search(exit_name, location=location)
             return
-        exit_obj = exit_obj
         if exit_obj:
+            exit_obj = exit_obj[0]
             if not exit_obj.db._destination:
                 # we are trying to link a non-exit
                 string = "'%s' already exists and is not an exit!\nIf you want to convert it "
@@ -946,12 +944,15 @@ class CmdOpen(ObjManipCommand):
             old_destination = exit_obj.db._destination
             if old_destination:
                 string = "Exit %s already exists." % exit_name
-                if old_destination != destination:
-                    # reroute the old exit.                     
+                if old_destination.id != destination.id:
+                    # reroute the old exit.
                     exit_obj.db._destination = destination
                     exit_obj.aliases = exit_aliases
                     string += " Rerouted its old destination '%s' to '%s' and changed aliases." % \
                         (old_destination.name, destination.name)                
+                else:
+                    string += " It already points to the correct place."
+
         else:
             # exit does not exist before. Create a new one.            
             exit_obj = create.create_object(typeclass, key=exit_name,

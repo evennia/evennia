@@ -167,7 +167,7 @@ class ObjectManager(TypedObjectManager):
     @returns_typeclass_list
     def object_search(self, character, ostring,
                       global_search=False, 
-                      attribute_name=None):
+                      attribute_name=None, location=None):
         """
         Search as an object and return results.
         
@@ -177,13 +177,15 @@ class ObjectManager(TypedObjectManager):
         global_search: Search all objects, not just the current location/inventory
         attribute_name: (string) Which attribute to search in each object.
                                  If None, the default 'key' attribute is used.        
+        location: If None, character.location will be used. 
         """
         #ostring = str(ostring).strip()
 
         if not ostring or not character:
             return None 
 
-        location = character.location        
+        if not location:
+            location = character.location        
 
         # Easiest case - dbref matching (always exact)        
         dbref = self.dbref(ostring)

@@ -434,7 +434,7 @@ class ObjectDB(TypedObject):
     def search(self, ostring,
                global_search=False,
                attribute_name=None,
-               use_nicks=False,
+               use_nicks=False, location=None,
                ignore_errors=False):
         """
         Perform a standard object search in the database, handling
@@ -451,6 +451,7 @@ class ObjectDB(TypedObject):
         attribute_name: (string) Which attribute to match
                         (if None, uses default 'name')
         use_nicks : Use nickname replace (off by default)              
+        location : If None, use caller's current location
         ignore_errors : Don't display any error messages even
                         if there are none/multiple matches - 
                         just return the result as a list. 
@@ -473,7 +474,8 @@ class ObjectDB(TypedObject):
 
         results = ObjectDB.objects.object_search(self, ostring, 
                                                  global_search=global_search,
-                                                 attribute_name=attribute_name)
+                                                 attribute_name=attribute_name,
+                                                 location=location)
     
         if ignore_errors:
             return results
