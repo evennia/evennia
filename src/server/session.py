@@ -237,6 +237,7 @@ class SessionBase(object):
             #print "unloggedin _execute_cmd: '%s' __ %s" % (command_string, character)
             # we are not logged in yet; call cmdhandler directly
             cmdhandler.cmdhandler(self, command_string, unloggedin=True)
+        self.update_session_counters()            
 
     def get_data_obj(self, **kwargs):
         """
