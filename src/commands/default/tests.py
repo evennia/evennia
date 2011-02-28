@@ -143,8 +143,12 @@ class TestPassword(CommandTest):
         self.execute_cmd("@password testpassword = newpassword")
 class TestNick(CommandTest):
     def test_call(self):
-        self.execute_cmd("nickname testalias = testaliasedstring")        
-        self.assertEquals("testaliasedstring", self.char1.nicks.get("testalias", None))
+        self.execute_cmd("nickname testalias = testaliasedstring1")        
+        self.execute_cmd("nickname/player testalias = testaliasedstring2")        
+        self.execute_cmd("nickname/object testalias = testaliasedstring3")        
+        self.assertEquals(u"testaliasedstring1", self.char1.nickhandler("testalias"))
+        self.assertEquals(u"testaliasedstring2", self.char1.nickhandler("testalias",nick_type="player"))
+        self.assertEquals(u"testaliasedstring3", self.char1.nickhandler("testalias",nick_type="object"))
 
 # system.py command tests
 class TestPy(CommandTest):

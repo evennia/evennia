@@ -269,11 +269,11 @@ class Attribute(SharedMemoryModel):
 
     def _convert_value(self, in_value):
         """
-        We have to be careful as to what we store. Some things,
-        such as dhango model instances, cannot be directly stored/pickled
-        in an attribute, so we have to be clever about it. 
-        Types of objects and how they are handled:        
-          *  str - s5Atored directly in field
+        We have to be careful as to what we store. Some things, such
+        as django model instances, cannot be directly stored/pickled
+        in an attribute, so we have to be clever about it.  Types of
+        objects and how they are handled:
+          *  str - stored directly in field
           *  django model object - store its dbref in field
           *  any other python structure - pickle in field
 
@@ -293,6 +293,13 @@ class Attribute(SharedMemoryModel):
             # (basestring matches both str and unicode)
             # strings we just store directly.
             return in_value, None
+
+        if is_iter(in_value):
+            # an iterable. This is normally something to pickle, 
+            # but we have to be careful so as to not find 
+            # django model instances nested in the iterable. 
+            pass #TODO!
+            
 
         if not has_parent('django.db.models.base.Model', in_value) \
                 and not has_parent(PARENTS['typeclass'], in_value):
