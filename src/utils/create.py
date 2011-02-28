@@ -23,11 +23,10 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 
-
 from src.permissions.permissions import set_perm
 from src.permissions.models import PermissionGroup
 from src.utils import logger
-from src.utils.utils import is_iter
+from src.utils.utils import is_iter, has_parent
 
 #
 # Game Object creation 

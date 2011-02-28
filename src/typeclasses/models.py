@@ -28,11 +28,12 @@ except ImportError:
     import pickle
 import traceback
 from django.db import models
+from django.conf import settings
 from django.utils.encoding import smart_str
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses import managers
 from src.utils import logger
-from src.utils.utils import is_iter
+from src.utils.utils import is_iter, has_parent
 
 # used by Attribute to efficiently identify stored object types.
 # Note that these have to be updated if directory structure changes.
@@ -279,16 +280,6 @@ class Attribute(SharedMemoryModel):
 
         """
     
-        def has_parent(basepath, obj):
-            "Checks if basepath is somewhere in objs parent tree."
-            try:
-                return any(cls for cls in obj.__class__.mro()
-                           if basepath == "%s.%s" % (cls.__module__, cls.__name__))
-            except (TypeError, AttributeError):
-                # this can occur if we tried to store a class object, not an
-                # instance. Not sure if one should defend against this. 
-                return False         
-
         if isinstance(in_value, basestring): 
             # (basestring matches both str and unicode)
             # strings we just store directly.
@@ -533,7 +524,7 @@ class TypedObject(SharedMemoryModel):
         """
         Getter. Allows for value = self.typeclass.
         The typeclass is a class object found at self.typeclass_path;
-        it allows for extending the ObjectDB for all different
+        it allows for extending the Typed object for all different
         types of objects that the game needs. This property
         handles loading and initialization of the typeclass on the fly.
         """
@@ -541,13 +532,23 @@ class TypedObject(SharedMemoryModel):
         def errmsg(message):            
             """
             Helper function to display error.
-            We cannot use self.msg() here since we cannot be sure
-            it's actually available when error occurs; so we have
-            to go to the sessionhandler and echo to all connections. 
             """
-            from src.server.sessionhandler import SESSIONS
-            for session in SESSIONS:
-                session.msg(message)
+            infochan = None
+            try:
+                from src.comms.models import Channel
+                infochan = settings.CHANNEL_MUDINFO
+                infochan = Channel.objects.get_channel(infochan[0])
+            except Exception, e:
+                print e
+                pass
+            if infochan:
+                cname = infochan.key
+                cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
+                infochan.msg(message)
+            else:
+                # no mudinfo channel is found. Log instead. 
+                cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
+                logger.log_errmsg(cmessage)
 
         path = self.db_typeclass_path        
 
@@ -570,7 +571,7 @@ class TypedObject(SharedMemoryModel):
                 if hasattr(typeclass, '__file__'):
                     errstring += "\nThis seems to be just the path to a module. You need"
                     errstring +=  " to specify the actual typeclass name inside the module too."
-                errstring += "\n  Typeclass '%s' failed to load." % path
+                errstring += "\n  Typeclass '%s' failed to load." % path                
                 defpath = self.default_typeclass_path
                 errstring += "  Using Default class '%s'." % defpath                
                 self.db_typeclass_path = defpath
@@ -593,6 +594,7 @@ class TypedObject(SharedMemoryModel):
         else:
             TYPECLASS_CACHE[path] = typeclass         
         return typeclass
+
     #@typeclass.deleter
     def typeclass_del(self):
         "Deleter. Allows for del self.typeclass (don't allow deletion)"

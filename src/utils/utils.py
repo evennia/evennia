@@ -432,3 +432,13 @@ def check_evennia_dependencies():
     if errstring:
         print "%s\n %s\n%s" % ("-"*78, errstring, '-'*78)
     return no_error
+
+def has_parent(basepath, obj):
+    "Checks if basepath is somewhere in objs parent tree."
+    try:
+        return any(cls for cls in obj.__class__.mro()
+                   if basepath == "%s.%s" % (cls.__module__, cls.__name__))
+    except (TypeError, AttributeError):
+        # this can occur if we tried to store a class object, not an
+        # instance. Not sure if one should defend against this. 
+        return False 

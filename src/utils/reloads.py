@@ -131,6 +131,7 @@ def cemit_info(message):
     """
 
     logger.log_infomsg(message)
+    infochan = None
     try:
         infochan = settings.CHANNEL_MUDINFO
         infochan = Channel.objects.get_channel(infochan[0])
