@@ -28,7 +28,7 @@ class CmdTest(MuxCommand):
 
     key = "@test"
     aliases = ["@te", "@test all"]
-    help_category = "Testing"
+    help_category = "Utils"
     permissions = "cmd:Immortals" #Wizards
 
     # the muxcommand class itself handles the display
@@ -82,7 +82,7 @@ class CmdTestPerms(MuxCommand):
     """
     key = "@testperm"
     permissions = "cmd:Immortals Wizards"
-    help_category = "Testing"
+    help_category = "Utils"
     def func(self):
         """
         Run tests
@@ -196,7 +196,7 @@ class TestCom(MuxCommand):
     """
     key = "@testcom"    
     permissions = "cmd:Immortals Wizards"
-    help_category = "Testing"
+    help_category = "Utils"
     def func(self):
         "Run the test program"
         caller = self.caller
