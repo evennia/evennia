@@ -187,7 +187,7 @@ class ObjectDB(TypedObject):
     #@property 
     def aliases_get(self):
         "Getter. Allows for value = self.aliases"
-        return list(Alias.objects.filter(db_obj=self))
+        return list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
     #@aliases.setter
     def aliases_set(self, aliases):
         "Setter. Allows for self.aliases = value"        
