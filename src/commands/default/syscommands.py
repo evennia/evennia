@@ -20,7 +20,6 @@ the line is just added to the editor buffer).
 
 from src.comms.models import Channel
 from src.utils import create
-from src.permissions.permissions import has_perm
 
 # The command keys the engine is calling
 # (the actual names all start with __)
@@ -41,6 +40,7 @@ class SystemNoInput(MuxCommand):
     This is called when there is no input given
     """
     key = CMD_NOINPUT
+    locks = "cmd:all()"
 
     def func(self):
         "Do nothing."
@@ -56,7 +56,8 @@ class SystemNoMatch(MuxCommand):
     No command was found matching the given input.
     """
     key = CMD_NOMATCH
-    
+    locks = "cmd:all()"
+
     def func(self):
         """
         This is given the failed raw string as input.
@@ -79,6 +80,7 @@ class SystemMultimatch(MuxCommand):
     and cmd is an an instantiated Command object matching the candidate. 
     """
     key = CMD_MULTIMATCH
+    locks = "cmd:all()"
 
     def format_multimatches(self, caller, matches):
         """
@@ -131,6 +133,7 @@ class SystemNoPerm(MuxCommand):
     correct permissions to use a particular command.
     """
     key = CMD_NOPERM
+    locks = "cmd:all()"
     
     def func(self):
         """
@@ -154,7 +157,7 @@ class SystemSendToChannel(MuxCommand):
     """
 
     key = CMD_CHANNEL
-    permissions = "cmd:use_channels"
+    locks = "cmd:all()"
 
     def parse(self):
         channelname, msg = self.args.split(':', 1)        
@@ -178,7 +181,7 @@ class SystemSendToChannel(MuxCommand):
             string = "You are not connected to channel '%s'."
             caller.msg(string % channelkey)
             return
-        if not has_perm(caller, channel, 'chan_send'):
+        if not channel.access(caller, 'send'):
             string = "You are not permitted to send to channel '%s'."
             caller.msg(string % channelkey)
             return
@@ -199,6 +202,7 @@ class SystemUseExit(MuxCommand):
     as a command. It receives the raw string as input.
     """
     key = CMD_EXIT
+    locks = "cmd:all()"
 
     def func(self):        
         """
@@ -214,7 +218,7 @@ class SystemUseExit(MuxCommand):
         destination = exi.attr('_destination')
         if not destination:
             return             
-        if has_perm(caller, exit, 'traverse'):
+        if exit.access(caller, 'traverse'):
             caller.move_to(destination)
         else:
             caller.msg("You cannot enter")

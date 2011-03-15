@@ -102,7 +102,10 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
     def at_disconnect(self, reason="Connection closed. Goodbye for now."):
         """
         Disconnect from server
-        """                
+        """                        
+        char = self.get_character()        
+        if char:
+            char.at_disconnect()
         self.at_data_out(reason)
         self.connectionLost(step=2)
 

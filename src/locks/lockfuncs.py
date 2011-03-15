@@ -3,16 +3,16 @@ This module provides a set of permission lock functions for use
 with Evennia's permissions system.
 
 To call these locks, make sure this module is included in the
-settings tuple PERMISSION_FUNC_MODULES then define a permission
-string of the form 'myfunction(myargs)' and store it in the
-'permissions' field or variable on your object/command/channel/whatever.
-As part of the permission check, such permission strings will be
-evaluated to call myfunction(checking_obj, checked_obj, *yourargs) in
-this module. A boolean value is expected back. 
+settings tuple PERMISSION_FUNC_MODULES then define a lock on the form 
+'<access_type>:func(args)' and add it to the object's lockhandler. 
+Run the check method of the handler to execute the lock check. 
 
-Note that checking_obj and checked_obj can be any object type
-with a permissions variable/field, so be careful to not expect
+Note that accessing_obj and accessed_obj can be any object type
+with a lock variable/field, so be careful to not expect
 a certain object type. 
+
+
+
 
 
 MUX locks
@@ -100,42 +100,64 @@ DefaultLock:   Exits:          controls who may traverse the exit to
 
 """
 
-from src.permissions.permissions import get_types, has_perm, has_perm_string
+from django.conf import settings
 from src.utils import search
 
+PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
-def noperm(checking_obj, checked_obj, *args):
-    """
-    Usage:
-       noperm(mypermstring)
-       noperm(perm1, perm2, perm3, ...)
-
-    A negative permission; this will return False only if 
-    the checking object *has any* of the given permission(s), True
-    otherwise. The searched permission cannot itself be a 
-    function-permission (i.e. you cannot wrap functions in
-    functions). 
-    """    
-    if not args:
-        # this is an always-false permission
-        return False
-    return not has_perm_string(checking_obj, args)
-
-def is_superuser(checking_obj, checked_obj, *args):
-    """
-    Usage:
-      is_superuser()
-
-    Determines if the checking object is superuser.
-    """
-    if hasattr(checking_obj, 'is_superuser'):
-        return checking_obj.is_superuser
+def true(*args, **kwargs):
+    "Always returns True."
+    return True
+def all(*args, **kwargs):
+    return True 
+def false(*args, **kwargs):
+    "Always returns False"
+    return False 
+def none(*args, **kwargs):
     return False 
 
-def has_id(checking_obj, checked_obj, *args):
+def perm(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    The basic permission-checker. Ignores case. 
+
+    Usage: 
+       perm(<permission>)
+    
+    where <permission> is the permission accessing_obj must
+    have in order to pass the lock. If the given permission 
+    is part of PERMISSION_HIERARCHY, permission is also granted
+    to all ranks higher up in the hierarchy. 
+    """
+    if not args:
+        return False 
+    perm = args[0].lower()
+    if hasattr(accessing_obj, 'permissions'):
+        if perm in [p.lower() for p in accessing_obj.permissions]:
+            # simplest case - we have a direct match
+            return True 
+        if perm in PERMISSION_HIERARCHY:
+            # check if we have a higher hierarchy position
+            ppos = PERMISSION_HIERARCHY.index(perm)
+            return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY) 
+                       if hperm in [p.lower() for p in accessing_obj.permissions] and hpos > ppos)
+    return False 
+
+def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Only allow objects with a permission *higher* in the permission
+    hierarchy than the one given. If there is no such higher rank, 
+    it's assumed we refer to superuser. If no hierarchy is defined,
+    this function has no meaning and returns False. 
+    """
+    if args and args[0].lower() in PERMISSION_HIERARCHY:
+        ppos = PERMISSION_HIERARCHY.index(args[0].lower())
+        return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY)
+                   if hperm in [p.lower() for p in accessing_obj.permissions] and hpos > ppos)
+
+def dbref(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
-      has_id(3)
+      dbref(3)
     
     This lock type checks if the checking object
     has a particular dbref. Note that this only
@@ -145,19 +167,29 @@ def has_id(checking_obj, checked_obj, *args):
     if not args:
         return False
     try:
-        dbref = int(args[0].strip())
+        dbref = int(args[0].strip().strip('#'))
     except ValueError:
         return False
-    if hasattr(checking_obj, 'id'):
-        return dbref == checking_obj.id
+    if hasattr(accessing_obj, 'id'):
+        return dbref == accessing_obj.id
     return False 
 
-def has_attr(checking_obj, checked_obj, *args):
+def id(accessing_obj, accessed_obj, *args, **kwargs):
+    "Alias to dbref"
+    return dbref(accessing_obj, accessed_obj, *args, **kwargs)
+
+def attr(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
       has_attr(attrname)
       has_attr(attrname, value)
+      has_attr(attrname, value, compare=type)
 
+    where compare's type is one of (eq,gt,lt,ge,le,ne) and signifies
+    how the value should be compared with one on accessing_obj (so
+    compare=gt means the accessing_obj must have a value greater than
+    the one given).
+    
     Searches attributes *and* properties stored on the checking
     object. The first form works like a flag - if the attribute/property
     exists on the object, it returns True. The second form also requires
@@ -171,18 +203,101 @@ def has_attr(checking_obj, checked_obj, *args):
     value = None 
     if len(args) > 1:
         value = args[1].strip()
-    # first, look for normal properties on the object trying to gain access
-    if hasattr(checking_obj, attrname):
+    compare = 'eq'
+    if kwargs:
+        compare = kwargs.get('compare', 'eq')
+
+    def valcompare(val1, val2, typ='eq'):
+        "compare based on type"
+        try:
+            if typ == 'eq':
+                return val1 == val2 or int(val1) == int(val2)
+            elif typ == 'gt':
+                return int(val1) > int(val2)
+            elif typ == 'lt':
+                return int(val1) < int(val2)
+            elif typ == 'ge':
+                return int(val1) >= int(val2)
+            elif typ == 'le':
+                return int(val1) <= int(val2)
+            elif typ == 'ne':
+                return int(val1) != int(val2)
+            else:
+                return False 
+        except Exception, e:
+            print e
+            # this might happen if we try to compare two things that cannot be compared
+            return False 
+
+    # first, look for normal properties on the object trying to gain access    
+    if hasattr(accessing_obj, attrname):
         if value:
-            return str(getattr(checking_obj, attrname)) == value
+            return valcompare(str(getattr(accessing_obj, attrname)), value, compare)
         return True 
-    # check attributes, if they exist
-    #print "lockfunc default: %s (%s)" % (checking_obj, attrname)
-    if hasattr(checking_obj, 'has_attribute') \
-           and checking_obj.has_attribute(attrname):
+    # check attributes, if they exist    
+    if (hasattr(accessing_obj, 'has_attribute') 
+        and accessing_obj.has_attribute(attrname)):
         if value:
-            return hasattr(checking_obj, 'attr') \
-                   and checking_obj.attr(attrname) == value
+            return (hasattr(accessing_obj, 'get_attribute') 
+                    and valcompare(accessing_obj.get_attribute(attrname), value, compare))
         return True 
     return False 
 
+def attr_eq(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: 
+       attr_gt(attrname, 54)
+    """
+    return attr(accessing_obj, accessed_obj, *args, **kwargs)
+
+def attr_gt(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: 
+       attr_gt(attrname, 54)
+
+    Only true if access_obj's attribute > the value given.
+    """
+    return attr(accessing_obj, accessed_obj, *args, **{'compare':'gt'})
+def attr_ge(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: 
+       attr_gt(attrname, 54)
+
+    Only true if access_obj's attribute >= the value given.
+    """
+    return attr(accessing_obj, accessed_obj, *args, **{'compare':'ge'})
+def attr_lt(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: 
+       attr_gt(attrname, 54)
+
+    Only true if access_obj's attribute < the value given.
+    """
+    return attr(accessing_obj, accessed_obj, *args, **{'compare':'lt'})
+def attr_le(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: 
+       attr_gt(attrname, 54)
+
+    Only true if access_obj's attribute <= the value given.
+    """
+    return attr(accessing_obj, accessed_obj, *args, **{'compare':'le'})
+def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: 
+       attr_gt(attrname, 54)
+
+    Only true if access_obj's attribute != the value given.
+    """
+    return attr(accessing_obj, accessed_obj, *args, **{'compare':'ne'})
+
+def superuser(*args, **kwargs):
+    """
+    Only accepts an accesing_obj that is superuser (e.g. user #1)
+    
+    Since a superuser would not ever reach this check (superusers
+    bypass the lock entirely), any user who gets this far cannot be a
+    superuser, hence we just return False. :)
+    """
+    return False 
+    

@@ -13,7 +13,6 @@ Models covered:
  Objects
  Scripts
  Help
- PermissionGroup
  Message
  Channel 
  Players
@@ -22,9 +21,6 @@ Models covered:
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-
-from src.permissions.permissions import set_perm
-from src.permissions.models import PermissionGroup
 from src.utils import logger
 from src.utils.utils import is_iter, has_parent
 
@@ -33,7 +29,7 @@ from src.utils.utils import is_iter, has_parent
 #
 
 def create_object(typeclass, key=None, location=None,
-                  home=None, player=None, permissions=None, aliases=None):
+                  home=None, player=None, permissions=None, locks=None, aliases=None):
     """
     Create a new in-game object. Any game object is a combination
     of a database object that stores data persistently to
@@ -94,17 +90,20 @@ def create_object(typeclass, key=None, location=None,
         new_object.player = player
         player.obj = new_object
     
-    if permissions:
-        set_perm(new_object, permissions)
-    if aliases:
-        if not is_iter(aliases):
-            aliases = [aliases]
-        new_object.aliases = ",".join([alias.strip() for alias in aliases])
-
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom
     # things on its database object.
     new_object.at_object_creation()
+
+    # custom-given variables override the hook
+    if permissions:
+        new_object.permissions = permissions
+    if aliases:
+        if not is_iter(aliases):
+            aliases = [aliases]
+        new_object.aliases = ",".join([alias.strip() for alias in aliases]) 
+    if locks:
+        new_object.locks.add(locks)
 
     # perform a move_to in order to display eventual messages.
     if home:
@@ -121,7 +120,7 @@ def create_object(typeclass, key=None, location=None,
 # Script creation 
 #
 
-def create_script(typeclass, key=None, obj=None, autostart=True):
+def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     """
     Create a new script. All scripts are a combination
     of a database object that communicates with the
@@ -177,15 +176,21 @@ def create_script(typeclass, key=None, obj=None, autostart=True):
             new_db_object.name = "%s" % typeclass.__name__
         else:
             new_db_object.name = "#%i" % new_db_object.id
+
+    # call the hook method. This is where all at_creation
+    # customization happens as the typeclass stores custom
+    # things on its database object.
+    new_script.at_script_creation()
+
+    # custom-given variables override the hook
+    if locks:
+        new_script.locks.add(locks)
+
     if obj:
         try:
             new_script.obj = obj
         except ValueError:
             new_script.obj = obj.dbobj
-    # call the hook method. This is where all at_creation
-    # customization happens as the typeclass stores custom
-    # things on its database object.
-    new_script.at_script_creation()
     
     new_script.save()
 
@@ -200,7 +205,7 @@ def create_script(typeclass, key=None, obj=None, autostart=True):
 # Help entry creation
 #
 
-def create_help_entry(key, entrytext, category="General", permissions=None):
+def create_help_entry(key, entrytext, category="General", locks=None):
     """
     Create a static help entry in the help database. Note that Command
     help entries are dynamic and directly taken from the __doc__ entries
@@ -215,8 +220,8 @@ def create_help_entry(key, entrytext, category="General", permissions=None):
         new_help.key = key
         new_help.entrytext = entrytext
         new_help.help_category = category
-        if permissions:
-            set_perm(new_help, permissions)
+        if locks:
+            new_help.locks.add(locks)
         new_help.save()
         return new_help 
     except IntegrityError:
@@ -227,51 +232,13 @@ def create_help_entry(key, entrytext, category="General", permissions=None):
         logger.log_trace()
         return None 
 
-#
-# Permission groups
-#
-
-def create_permission_group(group_name, desc=None, group_perms=None,
-                            permissions=None):
-    """
-    Adds a new group
-
-    group_name - case sensitive, unique key for group.
-    desc - description of permission group
-    group_perms - the permissions stored in this group - can be
-                  a list of permission strings, a single permission
-                  or a comma-separated string of permissions.
-    permissions - can be a list of permission strings, a single
-                  permission or a comma-separated string of permissions.
-                  OBS-these are the group's OWN permissions, for editing
-                  the group etc - NOT the permissions stored in it! 
-    """
-
-    new_group = PermissionGroup.objects.filter(db_key__exact=group_name)
-    if new_group:
-        new_group = new_group[0]
-    else:
-        new_group = PermissionGroup()
-    new_group.key = group_name
-    if desc:
-        new_group.desc = desc 
-    if group_perms:
-        if is_iter(group_perms):
-            group_perms = ",".join([str(perm) for perm in group_perms])
-        new_group.group_permissions = group_perms
-    if permissions:
-        set_perm(new_group, permissions)
-    new_group.save()
-    return new_group
-
-
 
 #
 # Comm system methods 
 #
 
 def create_message(senderobj, message, channels=None,
-                   receivers=None, permissions=None):
+                   receivers=None, locks=None):
     """
     Create a new communication message. Msgs are used for all
     player-to-player communication, both between individual players
@@ -284,7 +251,7 @@ def create_message(senderobj, message, channels=None,
              may be actual channel objects or their unique key strings.
     receivers - a player to send to, or a list of them. May be Player objects
                or playernames.
-    permissions - permission string, or a list of permission strings.     
+    locks - lock definition string
 
     The Comm system is created very open-ended, so it's fully possible
     to let a message both go to several channels and to several receivers
@@ -325,13 +292,13 @@ def create_message(senderobj, message, channels=None,
         new_message.receivers = [to_player(receiver) for receiver in
                                  [to_object(receiver) for receiver in receivers]
                                  if receiver] 
-    if permissions:
-        set_perm(new_message, permissions)
+    if locks:
+        new_message.locks.add(locks)
     new_message.save()
     return new_message
 
 def create_channel(key, aliases=None, desc=None,
-                   permissions=None, keep_log=True):
+                   locks=None, keep_log=True):
     """
     Create A communication Channel. A Channel serves as a central
     hub for distributing Msgs to groups of people without
@@ -342,8 +309,7 @@ def create_channel(key, aliases=None, desc=None,
 
     key - this must be unique. 
     aliases - list of alternative (likely shorter) keynames.
-    listen/send/admin permissions are strings if permissions separated
-         by commas.
+    locks - lock string definitions
     """
 
     from src.comms.models import Channel 
@@ -361,8 +327,8 @@ def create_channel(key, aliases=None, desc=None,
         string = "Could not add channel: key '%s' already exists." % key
         logger.log_errmsg(string)
         return None
-    if permissions:
-        set_perm(new_channel, permissions)
+    if locks:
+        new_channel.locks.add(locks)
     new_channel.save()
     channelhandler.CHANNELHANDLER.add_channel(new_channel)
     return new_channel 
@@ -375,7 +341,7 @@ def create_player(name, email, password,
                   permissions=None, 
                   create_character=True,
                   location=None, typeclass=None, home=None,
-                  is_superuser=False, user=None):
+                  is_superuser=False, user=None, locks=None):
     
     """
     This creates a new player, handling the creation of the User
@@ -425,11 +391,18 @@ def create_player(name, email, password,
     new_player = PlayerDB(db_key=name, user=new_user)        
     new_player.save()        
 
-    # assign mud permissions 
-    if not permissions:
-        permissions = settings.PERMISSION_PLAYER_DEFAULT
-    set_perm(new_player, permissions)
+    # call hook method (may override default permissions)
+    new_player.at_player_creation()
 
+    # custom given arguments potentially overrides the hook 
+    if permissions:
+        new_player.permissions = permissions
+    elif not new_player.permissions:
+        new_player.permissions = settings.PERMISSION_PLAYER_DEFAULT
+
+    if locks:
+        new_player.locks.add(locks)
+        
     # create *in-game* 'player' object 
     if create_character:
         if not typeclass:
@@ -437,8 +410,8 @@ def create_player(name, email, password,
         # creating the object automatically links the player
         # and object together by player.obj <-> obj.player
         new_character = create_object(typeclass, name,
-                                      location, home,
+                                      location, home, 
+                                      permissions=permissions,
                                       player=new_player)        
-        #set_perm(new_character, permissions)
         return new_character
     return new_player

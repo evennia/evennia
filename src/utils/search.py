@@ -32,7 +32,6 @@ from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.comms.models import Msg, Channel
 from src.help.models import HelpEntry
-from src.permissions.models import PermissionGroup
 from src.config.models import ConfigValue
 
 #
@@ -135,20 +134,6 @@ channels = Channel.objects.channel_search
 #     """
 
 helpentries = HelpEntry.objects.search_help 
-
-# 
-# Search for a permission group
-#  Note that the name is case sensitive.      
-#
-# def search_permissiongroup(self, ostring):
-#     """
-#     Find a permission group
-#
-#     ostring = permission group name (case sensitive)
-#               or database dbref
-#     """
-
-permgroups = PermissionGroup.objects.search_permgroup
 
 #
 # Get a configuration value

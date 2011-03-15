@@ -27,7 +27,13 @@ class Player(TypeClass):
         """        
         # the text encoding to use.
         self.db.encoding = "utf-8"
-        pass 
+        
+        # A basic security setup
+        self.locks.add("examine:perm(Wizards)")
+        self.locks.add("edit:perm(Wizards)")
+        self.locks.add("delete:perm(Wizards)")
+        self.locks.add("boot:perm(Wizards)")        
+        self.locks.add("msg:all()")
 
     # Note that the hooks below also exist
     # in the character object's typeclass. You

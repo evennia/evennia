@@ -6,7 +6,6 @@ This defines some test commands for use while testing the MUD and its components
 from django.conf import settings 
 from django.db import IntegrityError
 from src.comms.models import Msg
-from src.permissions import permissions
 from src.utils import create, debug, utils
 from src.commands.default.muxcommand import MuxCommand
 
@@ -29,7 +28,7 @@ class CmdTest(MuxCommand):
     key = "@test"
     aliases = ["@te", "@test all"]
     help_category = "Utils"
-    permissions = "cmd:Immortals" #Wizards
+    locks = "cmd:perm(Wizards)"
 
     # the muxcommand class itself handles the display
     # so we just defer to it by not adding any function.
@@ -62,131 +61,6 @@ class CmdTest(MuxCommand):
         #self.caller.msg("Imported %s" % cmdsetname)
         #self.caller.msg(cmdsethandler.CACHED_CMDSETS)
 
-
-
-
-class CmdTestPerms(MuxCommand):
-    """
-    Test command - test permissions 
-
-    Usage:
-      @testperm [[lockstring] [=permstring]]
-
-    With no arguments, runs a sequence of tests for the
-    permission system using the calling player's permissions. 
-    
-    If <lockstring> is given, match caller's permissions
-    against these locks. If also <permstring> is given,
-    match this against the given locks instead.
-
-    """
-    key = "@testperm"
-    permissions = "cmd:Immortals Wizards"
-    help_category = "Utils"
-    def func(self):
-        """
-        Run tests
-        """
-        caller = self.caller
-
-        if caller.user.is_superuser:
-            caller.msg("You are a superuser. Permission tests are pointless.")
-            return 
-        # create a test object
-        obj = create.create_object(None, "accessed_object") # this will use default typeclass
-        obj_id = obj.id 
-        caller.msg("obj_attr: %s" % obj.attr("testattr"))
-
-        # perms = ["has_permission", "has permission", "skey:has_permission",
-        #          "has_id(%s)" % obj_id, "has_attr(testattr)",
-        #          "has_attr(testattr, testattr_value)"]        
-            
-        # test setting permissions 
-        uprofile = caller.user.get_profile()
-        # do testing
-        caller.msg("----------------")
-
-        permissions.set_perm(obj, "has_permission")
-        permissions.add_perm(obj, "skey:has_permission")
-        caller.msg(" keys:[%s] locks:[%s]" % (uprofile.permissions, obj.permissions))        
-        caller.msg("normal permtest: %s" % permissions.has_perm(uprofile, obj))
-        caller.msg("skey permtest: %s" % permissions.has_perm(uprofile, obj, 'skey'))
-
-        permissions.set_perm(uprofile, "has_permission")
-        caller.msg(" keys:[%s] locks:[%s]" % (uprofile.permissions, obj.permissions))
-        caller.msg("normal permtest: %s" % permissions.has_perm(uprofile, obj))        
-        caller.msg("skey permtest: %s" % permissions.has_perm(uprofile, obj, 'skey'))        
-
-        # function tests 
-        permissions.set_perm(obj, "has_id(%s)" % (uprofile.id))
-        caller.msg(" keys:[%s] locks:[%s]" % (uprofile.permissions, obj.permissions))
-        caller.msg("functest: %s" % permissions.has_perm(uprofile, obj))
-
-        uprofile.attr("testattr", "testattr_value")
-        permissions.set_perm(obj, "has_attr(testattr, testattr_value)")
-        caller.msg(" keys:[%s] locks:[%s]" % (uprofile.permissions, obj.permissions))
-        caller.msg("functest: %s" % permissions.has_perm(uprofile, obj))
-              
-        # cleanup of test permissions
-        permissions.del_perm(uprofile, "has_permission")
-        caller.msg(" cleanup: keys:[%s] locks:[%s]" % (uprofile.permissions, obj.permissions))
-        obj.delete()
-        uprofile.attr("testattr", delete=True)
-        
-
-# # Add/remove states (removed; not valid.)
-
-# EXAMPLE_STATE="game.gamesrc.commands.examples.example.EXAMPLESTATE"
-
-# class CmdTestState(MuxCommand):
-#     """
-#     Test command - add a state.
-
-#     Usage:
-#       @teststate[/switch] [<python path to state instance>]      
-#     Switches:
-#       add   - add a state 
-#       clear - remove all added states.
-#       list - view current state stack 
-#       reload - reload current state stack
-      
-#     If no python path is given, an example state will be added.
-#     You will know it worked if you can use the commands '@testcommand'
-#     and 'smile'.
-#     """
-
-#     key = "@teststate"
-#     alias = "@testingstate"
-#     permissions = "cmd:Immortals Wizards"
-    
-#     def func(self):
-#         """
-#         inp is the dict returned from MuxCommand's parser. 
-#         """
-#         caller = self.caller
-#         switches = self.switches
-
-#         if not switches or switches[0] not in ["add", "clear", "list", "reload"]:
-#             string = "Usage: @teststate[/add|clear|list|reload] [<python path>]"
-#             caller.msg(string)
-#         elif "clear" in switches:            
-#             caller.cmdset.clear()
-#             caller.msg("All cmdset cleared.")
-#             return
-#         elif "list" in switches:
-#             string = "%s" % caller.cmdset
-#             caller.msg(string)
-#         elif "reload" in switches:
-#             caller.cmdset.load()
-#             caller.msg("Cmdset reloaded.")
-#         else: #add
-#             arg = inp["raw"]
-#             if not arg:
-#                 arg = EXAMPLE_STATE
-#             caller.cmdset.add(arg)
-#             string = "Added state '%s'." % caller.cmdset.state.key
-#             caller.msg(string)
-
 class TestCom(MuxCommand):
     """
     Test the command system
@@ -195,7 +69,7 @@ class TestCom(MuxCommand):
       @testcom/create/list [channel]
     """
     key = "@testcom"    
-    permissions = "cmd:Immortals Wizards"
+    locks = "cmd:perm(Wizards)"
     help_category = "Utils"
     def func(self):
         "Run the test program"

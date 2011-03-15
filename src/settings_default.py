@@ -224,50 +224,36 @@ TIME_MONTH_PER_YEAR = 12
 
 
 ###################################################
-# Game Permissions
+# In-Game access 
 ###################################################
-
-# The module where the base permissions and
-# groups are defined (read only once the very
-# first time the server starts). If not set,
-# src/permissions/permissions_setup.py is used.
-PERMISSION_SETUP_MODULE = ""
-# By defining a default player group to belong to,
-# all players may start with some permissions pre-set. 
-# Available groups are set either above, or in 
-# src/permissions/permissions_setup.py.
+# The access hiearchy, in climbing order. A higher
+# permission in the hierarchy includes access of all
+# levels below it. 
+PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immortals")
+# The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
-# Tuple of modules implementing permission lock methods
-# (see src/permissions/locks.py and
-#   src/permissions/permissions.py)
-PERMISSION_FUNC_MODULES = ("src.permissions.lockfunc_default",)
+# Tuple of modules implementing lock functions. All callable functions
+# inside these modules will be available as lock functions.
+LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 
 ###################################################
 # In-game Channels created from server start
 ###################################################
 # Defines a dict with one key for each from-start
 # channel. Each key points to a tuple containing
-# (name, aliases, description, permissions)
-# where aliases may be a tuple too, and permissions
-# is a comma-separated string of permissions
-# (see src/permissions/permissions.py)
-
+# (name, aliases, description, locks)
+# where aliases may be a tuple too, and locks is 
+# a valid lockstring definition.
 # Default user channel for communication
 CHANNEL_PUBLIC = ("Public", 'ooc', 'Public discussion',
-                  '''chan_admin:has_id(1),
-                     chan_listen:use_channels,
-                     chan_send:use_channels''')
+                  "admin:perm(Wizards);listen:all();send:all()")
 # General info about the server
 CHANNEL_MUDINFO = ("MUDinfo", '', 'Informative messages',
-                   '''chan_admin:has_id(1),
-                      chan_listen:Immortals,
-                      chan_send:Immortals''')
+                   "admin:perm(Immortals);listen:perm(Immortals);send:false()")
 # Channel showing when new people connecting
 CHANNEL_CONNECTINFO = ("MUDconnections", ('connections, mud_conns'),
                        'Connection log',
-                       '''chan_admin:has_id(1),
-                          chan_listen:Wizards,
-                          chan_send:Wizards''')
+                       "admin:perm(Immortals);listen:perm(Wizards);send:false()")
 
 ###################################################
 # IMC2 Configuration
@@ -444,7 +430,6 @@ INSTALLED_APPS = (
     'src.irc',
     'src.help',
     'src.scripts',
-    'src.permissions',
     'src.web.news',
     'src.web.website',)
 # The user profile extends the User object with more functionality;

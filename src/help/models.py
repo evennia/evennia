@@ -13,6 +13,7 @@ from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.help.manager import HelpEntryManager
 from src.utils import ansi
+from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter
 
 #------------------------------------------------------------
@@ -48,13 +49,18 @@ class HelpEntry(SharedMemoryModel):
     db_entrytext = models.TextField(blank=True)  
     # a string of permissionstrings, separated by commas. 
     db_permissions = models.CharField(max_length=255, blank=True)    
-
+    # lock string storage
+    db_lock_storage = models.TextField(blank=True)
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore. 
     db_staff_only = models.BooleanField(default=False) 
 
     # Database manager
     objects = HelpEntryManager()
+
+    def __init__(self, *args, **kwargs):
+        SharedMemoryModel.__init__(self, *args, **kwargs)
+        self.locks = LockHandler(self)
         
     class Meta:
         "Define Django meta options"
@@ -138,6 +144,23 @@ class HelpEntry(SharedMemoryModel):
         self.save()
     permissions = property(permissions_get, permissions_set, permissions_del)
 
+        # lock_storage property (wraps db_lock_storage)
+    #@property 
+    def lock_storage_get(self):
+        "Getter. Allows for value = self.lock_storage"
+        return self.db_lock_storage
+    #@nick.setter
+    def lock_storage_set(self, value):
+        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
+        self.db_lock_storage = value
+        self.save()
+    #@nick.deleter
+    def lock_storage_del(self):
+        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+
+    
     #
     #
     # HelpEntry main class methods
@@ -149,3 +172,12 @@ class HelpEntry(SharedMemoryModel):
 
     def __unicode__(self):
         return u'%s' % self.key
+
+    def access(self, accessing_obj, access_type='read', default=False):
+        """
+        Determines if another object has permission to access.
+        accessing_obj - object trying to access this one
+        access_type - type of access sought
+        default - what to return if no lock of access_type was found
+        """        
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)

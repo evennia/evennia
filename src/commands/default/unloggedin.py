@@ -25,6 +25,7 @@ class CmdConnect(MuxCommand):
     """  
     key = "connect"
     aliases = ["conn", "con", "co"]
+    locks = "cmd:all()" # not really needed
 
     def func(self):
         """
@@ -116,6 +117,7 @@ class CmdCreate(MuxCommand):
     """
     key = "create"
     aliases = ["cre", "cr"]
+    locks = "cmd:all()"
                    
     def parse(self):
         """
@@ -193,6 +195,9 @@ class CmdCreate(MuxCommand):
                                                      location=default_home,
                                                      typeclass=typeclass,
                                                      home=default_home)                
+                # character safety features
+                new_character.locks.delete("get")
+                new_character.locks.add("get:perm(Wizards)")
 
                 # set a default description
                 new_character.db.desc = "This is a Player."
@@ -227,6 +232,7 @@ class CmdQuit(MuxCommand):
     """
     key = "quit"
     aliases = ["q", "qu"]
+    locks = "cmd:all()"
 
     def func(self):
         "Simply close the connection."
@@ -241,6 +247,7 @@ class CmdUnconnectedLook(MuxCommand):
     """
     key = "look"
     aliases = "l"
+    locks = "cmd:all()"
     
     def func(self):
         "Show the connect screen."
@@ -259,6 +266,7 @@ class CmdUnconnectedHelp(MuxCommand):
     """
     key = "help"
     aliases = ["h", "?"]
+    locks = "cmd:all()"
 
     def func(self):
         "Shows help"

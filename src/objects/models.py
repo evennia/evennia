@@ -22,7 +22,7 @@ from src.typeclasses.models import Attribute, TypedObject
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
 from src.config.models import ConfigValue
-from src.permissions.permissions import has_perm
+
 from src.utils import logger
 from src.utils.utils import is_iter
 
@@ -30,7 +30,7 @@ FULL_PERSISTENCE = settings.FULL_PERSISTENCE
 
 try:
     HANDLE_SEARCH_ERRORS = __import__(
-        settings.ALTERNATE_OBJECT_SEARCH_ERROR_HANDLER).handle_search_errors
+        settings.ALTERNATE_OBJECT_SEARCH_ERROR_HANDLER).handle_search_errors, fromlist=[None]
 except Exception:
     from src.objects.object_search_funcs \
          import handle_search_errors as HANDLE_SEARCH_ERRORS
@@ -70,6 +70,12 @@ class Alias(SharedMemoryModel):
         "Define Django meta options"
         verbose_name = "Object alias"
         verbose_name_plural = "Object aliases"
+    def __unicode__(self):
+        return u"%s" % self.db_key
+    def __str__(self):
+        return str(self.db_key)
+    
+        
 
 #------------------------------------------------------------
 #
@@ -104,6 +110,47 @@ class Nick(SharedMemoryModel):
         verbose_name_plural = "Nicknames"
         unique_together = ("db_nick", "db_type", "db_obj")
 
+class NickHandler(object):
+    """
+    Handles nick access and setting. Accessed through ObjectDB.nicks
+    """    
+
+    def __init__(self, obj):
+        "Setup"
+        self.obj = obj
+
+    def add(self, nick, realname, nick_type="inputline"):
+        "We want to assign a new nick"
+        if not nick or not nick.strip():
+            return 
+        nick = nick.strip()        
+        real = realname.strip() 
+        query = Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type) 
+        if query.count():
+            old_nick = query[0]
+            old_nick.db_real = real
+            old_nick.save()
+        else:              
+            new_nick = Nick(db_nick=nick, db_real=real, db_type=nick_type, db_obj=self.obj)
+            new_nick.save()                
+    def delete(self, nick, nick_type="inputline"):        
+        "Removes a nick"
+        nick = nick.strip()        
+        query = Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
+        if query.count():
+            # remove the found nick(s)
+            query.delete()           
+    def get(self, nick=None, nick_type="inputline"):
+        if nick:
+            query = Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
+            query = query.values_list("db_real", flat=True)
+            if query.count():
+                return query[0]
+            else:
+                return nick
+        else:
+            return Nick.objects.filter(db_obj=self.obj)
+
 #------------------------------------------------------------
 #
 # ObjectDB
@@ -127,20 +174,24 @@ class ObjectDB(TypedObject):
       typeclass - auto-linked typeclass
       date_created - time stamp of object creation
       permissions - perm strings 
-      Dbref - #id of object 
+      locks - lock definitions (handler)
+      dbref - #id of object 
       db - persistent attribute storage
       ndb - non-persistent attribute storage 
 
     The ObjectDB adds the following properties:
-      aliases - alternative names for object
       player - optional connected player
       location - in-game location of object
-      home - safety location for object
-      nicks - this objects nicknames for *other* objects
+      home - safety location for object (handler)
+
+      scripts - scripts assigned to object (handler from typeclass)
+      cmdset - active cmdset on object (handler from typeclass)
+      aliases - aliases for this object (property)
+      nicks - nicknames for *other* things in Evennia (handler)      
       sessions - sessions connected to this object (see also player)
       has_player - bool if an active player is currently connected
       contents - other objects having this object as location
-      
+      exits - exits from this object
     """
 
     #
@@ -155,9 +206,6 @@ class ObjectDB(TypedObject):
     # using their corresponding properties, named same as the field,
     # but withtout the db_* prefix.
 
-    # comma-separated list of alias-names of this object. Note that default
-    # searches only search aliases in the same location as caller. 
-    db_aliases = models.ForeignKey(Alias, blank=True, null=True, db_index=True)
     # If this is a character object, the player is connected here.
     db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True)    
     # The location in the game world. Since this one is likely
@@ -168,12 +216,17 @@ class ObjectDB(TypedObject):
     # a safety location, this usually don't change much.
     db_home = models.ForeignKey('self', related_name="homes_set",
                                  blank=True, null=True)
-    # pickled dictionary storing the object's assigned nicknames
-    # (use the 'nicks' property to access)
-    db_nicks = models.ForeignKey(Nick, blank=True, null=True, db_index=True)
 
     # Database manager
     objects = ObjectManager()
+
+    # Add the object-specific handlers
+    # (scripts and cmdset must be added from
+    # typeclass, so not added here)    
+    def __init__(self, *args, **kwargs):
+        "Parent must be initialized first."
+        TypedObject.__init__(self, *args, **kwargs) 
+        self.nicks = NickHandler(self)    
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -304,22 +357,29 @@ class ObjectDB(TypedObject):
         self.db_home = None 
     home = property(home_get, home_set, home_del)
 
-    # nicks property (wraps db_nicks)
-    #@property 
-    def nicks_get(self):
-        "Getter. Allows for value = self.aliases"
-        return list(Nick.objects.filter(db_obj=self))
-    #@nick.setter
-    def nicks_set(self, nicks):
-        """Setter is disabled. Use the nickhandler instead."""
-        logger.log_errmsg("Nicks (%s) cannot be set through obj.nicks. Use obj.nickhandler instead." % nicks)
-    #@nick.deleter
-    def nicks_del(self):
-        "Deleter. Allows for del self.aliases"
-        for nick in Nick.objects.filter(db_obj=self):
-            nick.delete()
-    nicks = property(nicks_get, nicks_set, nicks_del)
-
+    #@property for consistent aliases access throughout Evennia
+    #@aliases.setter
+    def aliases_set(self, aliases):
+        "Adds an alias to object"
+        if not is_iter(aliases):
+            aliases = [aliases]
+        for alias in aliases:
+            query = Alias.objects.filter(db_obj=self, db_key__iexact=alias)
+            if query.count():
+                continue 
+            new_alias = Alias(db_key=alias, db_obj=self)
+            new_alias.save()
+    #@aliases.getter
+    def aliases_get(self):
+        "Return a list of all aliases defined on this object."
+        return list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
+    #@aliases.deleter
+    def aliases_del(self):
+        "Removes aliases from object"
+        query = Alias.objects.filter(db_obj=self)        
+        if query:
+            query.delete()
+    aliases = property(aliases_get, aliases_set, aliases_del)
 
     class Meta:
         "Define Django meta options"
@@ -378,55 +438,8 @@ class ObjectDB(TypedObject):
         return [exi for exi in self.contents
                 if exi.has_attribute('_destination')]
     exits = property(exits_get)
-    
-    def nickhandler(self, nick, realname=None, nick_type="inputline", startswith=False, delete=False):
-        """
-        This is a central method for getting and setting nicks
-        - mappings of nicks to strings, objects etc. This is the main
-        access method, use it in preference over the 'nicks' property. 
 
-        Map a nick to a realname. Be careful if mapping an
-        existing realname into a nick - you could make that
-        realname inaccessible until you deleted the alias. 
-        To delete - don't set realname.
-        
-        nick_types can be defined freely depending on implementation.
-        The default nick_types used in Evennia are: 
-        inputline (default) - match nick against all input
-        player - match nick against player searches
-        obj - match nick against object searches 
-        channel - match nick when checking for channel aliases
-
-        the delete keyword will delete the given nick.
-        """
-        if not nick or not nick.strip():
-            return 
-        nick = nick.strip()        
-        query = Nick.objects.filter(db_obj=self, db_nick__iexact=nick)        
-        if nick_type:
-            query = query.filter(db_type__iexact=nick_type)        
-        if delete:
-            # remove the found nick(s)
-            query.delete()           
-        elif realname == None:
-            # we want to get the real name for the nick. If none is
-            # found, we return the nick again
-            query = query.values_list("db_real", flat=True)
-            if query: 
-                return query[0]            
-            else:
-                return nick
-        else:
-            # we want to assign a new nick
-            real = realname.strip() 
-            if query:
-                old_nick = query[0]
-                old_nick.db_real = real
-                old_nick.save()
-            else:              
-                new_nick = Nick(db_nick=nick, db_real=real, db_type=nick_type, db_obj=self)
-                new_nick.save()                
-                
+            
     #
     # Main Search method
     #
@@ -467,10 +480,10 @@ class ObjectDB(TypedObject):
         if use_nicks:
             if ostring.startswith('*'):
                 # player nick replace 
-                ostring = "*%s" % self.nickhandler(ostring.lstrip('*'), nick_type="player")
+                ostring = "*%s" % self.nicks.get(ostring.lstrip('*'), nick_type="player")
             else:
                 # object nick replace 
-                ostring = self.nickhandler(ostring, nick_type="object")
+                ostring = self.nicks.get(ostring, nick_type="object")
 
         results = ObjectDB.objects.object_search(self, ostring, 
                                                  global_search=global_search,
@@ -485,25 +498,7 @@ class ObjectDB(TypedObject):
     #
     # Execution/action methods
     #
-    
-    def has_perm(self, accessing_obj, lock_type):
-        """
-        Determines if another object has permission to access 
-        this object.
-        accessing_obj - the object trying to gain access.
-        lock_type : type of access checked for
-        """
-        return has_perm(accessing_obj, self, lock_type)
-
-    def has_perm_on(self, accessed_obj, lock_type):
-        """
-        Determines if *this* object has permission to access
-        another object.
-        accessed_obj - the object being accessed by this one
-        lock_type : type of access checked for 
-        """
-        return has_perm(self, accessed_obj, lock_type)
-
+        
     def execute_cmd(self, raw_string):
         """
         Do something as this object. This command transparently
@@ -536,6 +531,7 @@ class ObjectDB(TypedObject):
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"
+        logger.log_depmsg("emit_to() is deprecated. Use msg() instead.")
         self.msg(message, from_obj, data)
         
     def msg_contents(self, message, exclude=None, from_obj=None, data=None):
@@ -555,6 +551,7 @@ class ObjectDB(TypedObject):
 
     def emit_to_contents(self, message, exclude=None, from_obj=None, data=None):
         "Deprecated. Alias for msg_contents"
+        logger.log_depmsg("emit_to_contents() is deprecated. Use msg_contents() instead.")
         self.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
             
     def move_to(self, destination, quiet=False,

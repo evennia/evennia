@@ -27,7 +27,7 @@ class DefaultCmdSet(CmdSet):
         self.add(general.CmdDrop())
         self.add(general.CmdWho())
         self.add(general.CmdSay())
-        self.add(general.CmdGroup())
+        self.add(general.CmdAccess())
         self.add(general.CmdEncoding())
 
         # The help system
@@ -37,16 +37,15 @@ class DefaultCmdSet(CmdSet):
         # System commands
         self.add(system.CmdReload())
         self.add(system.CmdPy())
-        self.add(system.CmdListScripts())        
-        self.add(system.CmdListObjects())
+        self.add(system.CmdScripts())        
+        self.add(system.CmdObjects())
         self.add(system.CmdService())
         self.add(system.CmdShutdown())
         self.add(system.CmdVersion())
         self.add(system.CmdTime())
-        self.add(system.CmdList())
+        self.add(system.CmdServerLoad())
         self.add(system.CmdPs())
-        self.add(system.CmdStats())
-
+        
         # Admin commands
         self.add(admin.CmdBoot())
         self.add(admin.CmdDelPlayer())
@@ -77,6 +76,7 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdDestroy())
         self.add(building.CmdExamine())
         self.add(building.CmdTypeclass())
+        self.add(building.CmdLock())
 
         # Comm commands
         self.add(comms.CmdAddCom())
@@ -93,5 +93,5 @@ class DefaultCmdSet(CmdSet):
 
         # Testing/Utility commands 
         self.add(utils.CmdTest())
-        self.add(utils.CmdTestPerms())
+        #self.add(utils.CmdTestPerms())
         self.add(utils.TestCom())

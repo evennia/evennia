@@ -5,8 +5,6 @@ now.
 import time
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
-from src.permissions.models import PermissionGroup
-from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import HANDLE_SEARCH_ERRORS
 from src.utils import utils
 from src.objects.models import Nick
@@ -23,7 +21,7 @@ class CmdHome(MuxCommand):
     """
     
     key = "home"
-    permissions = "cmd:home"
+    locks = "cmd:perm(home) or perm(Builders)"    
 
     def func(self):
         "Implement the command"
@@ -48,6 +46,7 @@ class CmdLook(MuxCommand):
     """
     key = "look"
     aliases = ["l"]
+    locks = "cmd:all()"
 
     def func(self):
         """
@@ -84,6 +83,7 @@ class CmdPassword(MuxCommand):
     Changes your password. Make sure to pick a safe one.
     """    
     key = "@password"    
+    locks = "cmd:all()"
 
     def func(self):
         "hook function."
@@ -138,7 +138,8 @@ class CmdNick(MuxCommand):
     """
     key = "nick"
     aliases = ["nickname", "nicks", "@nick", "alias"]
-    
+    locks = "cmd:all()"    
+
     def func(self):
         "Create the nickname"
         
@@ -185,7 +186,7 @@ class CmdNick(MuxCommand):
                 if oldnick:
                     # clear the alias
                     string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick[0].db_real)
-                    caller.nickhandler(nick, nick_type=switch, delete=True)
+                    caller.nicks.delete(nick, nick_type=switch)
                 else:
                     string += "\nNo nick '%s' found, so it could not be removed." % nick
             else:
@@ -194,7 +195,7 @@ class CmdNick(MuxCommand):
                     string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick[0].db_real, real)
                 else:
                     string += "\nNick set: '%s' = '%s'." % (nick, real)
-                caller.nickhandler(nick, real, nick_type=switch)            
+                caller.nicks.add(nick, real, nick_type=switch)            
         caller.msg(string)
         
 class CmdInventory(MuxCommand):
@@ -209,6 +210,7 @@ class CmdInventory(MuxCommand):
     """    
     key = "inventory"
     aliases = ["inv", "i"]
+    locks = "cmd:all()"
 
     def func(self):
         "hook function"
@@ -237,7 +239,8 @@ class CmdGet(MuxCommand):
     """
     key = "get"
     aliases = "grab"
-    
+    locks = "cmd:all()"    
+
     def func(self):
         "implements the command."
 
@@ -256,7 +259,7 @@ class CmdGet(MuxCommand):
             # don't allow picking up player objects, nor exits.
             caller.msg("You can't get that.")
             return
-        if not has_perm(caller, obj, 'get'):
+        if not obj.access(caller, 'get'):
             if obj.db.get_err_msg:
                 caller.msg(obj.db.get_err_msg)
             else:
@@ -285,6 +288,7 @@ class CmdDrop(MuxCommand):
     """
     
     key = "drop"
+    locks = "cmd:all()"
     
     def func(self):
         "Implement command"
@@ -322,14 +326,15 @@ class CmdQuit(MuxCommand):
     Gracefully disconnect from the game.
     """
     key = "@quit"
-    
+    locks = "cmd:all()"    
+
     def func(self):
         "hook function"  
         sessions = self.caller.sessions
         for session in sessions:
             session.msg("Quitting. Hope to see you soon again.")
-            session.at_disconnect()
-
+            session.session_disconnect()
+            
 class CmdWho(MuxCommand):
     """
     who
@@ -357,7 +362,7 @@ class CmdWho(MuxCommand):
         if self.cmdstring == "doing":
             show_session_data = False
         else:
-            show_session_data = has_perm_string(caller, "Immortals,Wizards")
+            show_session_data = caller.check_permstring("Immortals") or caller.check_permstring("Wizards")
 
         if show_session_data:
             table = [["Player Name"], ["On for"], ["Idle"], ["Room"], ["Cmds"], ["Host"]]
@@ -411,6 +416,7 @@ class CmdSay(MuxCommand):
     
     key = "say"
     aliases = ['"']
+    locks = "cmd:all()"
     
     def func(self):
         "Run the say command"
@@ -505,6 +511,7 @@ class CmdPose(MuxCommand):
     """
     key = "pose"
     aliases = [":", "emote"]    
+    locks = "cmd:all()"
 
     def parse(self):
         """
@@ -608,6 +615,7 @@ class CmdEncoding(MuxCommand):
 
     key = "@encoding"
     aliases = "@encode"
+    locks = "cmd:all()"
 
     def func(self):
         """
@@ -640,39 +648,31 @@ class CmdEncoding(MuxCommand):
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
         caller.msg(string)                    
 
-class CmdGroup(MuxCommand):
+class CmdAccess(MuxCommand):
     """
-    group - show your groups
+    access - show access groups
 
     Usage:
-      group
+      access
 
-    This command shows you which user permission groups
-    you are a member of, if any. 
+    This command shows you the permission hierarchy and 
+    which permission groups you are a member of.
     """
     key = "access"
-    aliases = "groups"    
+    aliases = ["groups", "hierarchy"]
+    locks = "cmd:all()"
 
     def func(self):
         "Load the permission groups"
 
         caller = self.caller
-
-        string = ""
-        if caller.player and caller.player.is_superuser:
-            string += "\n  This is a SUPERUSER account! Group membership does not matter."
-        else:            
-            # get permissions and determine if they are groups
-            perms = list(set(caller.permissions + caller.player.permissions))
-
-            for group in [group for group in PermissionGroup.objects.all() 
-                          if group.key in perms]:
-                string += "\n {w%s{n\n%s" % (group.key, ", ".join(group.group_permissions))
-            if string:        
-                string = "\nGroup memberships for you (Player %s + Character %s): %s" % (caller.player.name, 
-                                                                                         caller.name, string)     
-            else:
-                string = "\nYou are not not a member of any groups."
+        hierarchy_full = settings.PERMISSION_HIERARCHY
+        string = "\n{wPermission Hierarchy{n (climbing):\n %s" % ", ".join(hierarchy_full)        
+        hierarchy = [p.lower() for p in hierarchy_full]
+        string += "\n{wYour access{n:"
+        string += "\nCharacter %s: %s" % (caller.key, ", ".join(caller.permissions))
+        if hasattr(caller, 'player'):
+            string += "\nPlayer %s: %s" % (caller.player.key, ", ".join(caller.player.permissions))
         caller.msg(string)
 
 ## def cmd_apropos(command):

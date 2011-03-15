@@ -5,7 +5,6 @@ Comsys command module.
 from src.comms.models import Channel, Msg, ChannelConnection
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
-from src.permissions.permissions import has_perm
 from src.commands.default.muxcommand import MuxCommand            
 
 def find_channel(caller, channelname, silent=False):
@@ -41,6 +40,7 @@ class CmdAddCom(MuxCommand):
     key = "addcom"
     aliases = ["aliaschan","chanalias"]
     help_category = "Comms"
+    locks = "cmd:not perm(channel_banned)"
 
     def func(self):
         "Implement the command"
@@ -67,7 +67,7 @@ class CmdAddCom(MuxCommand):
             return 
 
         # check permissions
-        if not has_perm(player, channel, 'chan_listen'):
+        if not channel.access(player, 'listen'):
             caller.msg("You are not allowed to listen to this channel.")
             return 
 
@@ -83,7 +83,7 @@ class CmdAddCom(MuxCommand):
             
         if alias:
             # create a nick and add it to the caller.
-            caller.nickhandler(alias, channel.key, nick_type="channel")
+            caller.nicks.add(alias, channel.key, nick_type="channel")
             string += "You can now refer to the channel %s with the alias '%s'." 
             caller.msg(string % (channel.key, alias))
         else:
@@ -106,6 +106,7 @@ class CmdDelCom(MuxCommand):
     key = "delcom"
     aliases = ["delaliaschan, delchanalias"]
     help_category = "Comms"
+    locks = "cmd:not perm(channel_banned)"
 
     def func(self):
         "Implementing the command. "
@@ -126,20 +127,20 @@ class CmdDelCom(MuxCommand):
                 return 
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
-            for nick in [nick for nick in caller.nicks 
-                         if nick.db_type == "channel" and nick.db_real.lower() == chkey]:                
+            for nick in [nick for nick in caller.nicks.get(nick_type="channel") 
+                         if nick.db_real.lower() == chkey]:                
                 nick.delete()
             channel.disconnect_from(player)
             caller.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
             return 
         else:
             # we are removing a channel nick
-            channame = caller.nickhandler(ostring, nick_type="channel")            
+            channame = caller.nicks.get(ostring, nick_type="channel")            
             channel = find_channel(caller, channame, silent=True)
             if not channel:
                 caller.msg("No channel with alias '%s' was found." % ostring)
             else:
-                caller.nickhandler(ostring, nick_type="channel", delete=True)
+                caller.nicks.delete(ostring, nick_type="channel")
                 caller.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
             
 # def cmd_allcom(command):
@@ -249,6 +250,7 @@ class CmdChannels(MuxCommand):
     key = "@channels"
     aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
+    locks = "cmd:all()"
 
     def func(self):
         "Implement function"
@@ -256,7 +258,7 @@ class CmdChannels(MuxCommand):
         caller = self.caller
         
         # all channels we have available to listen to
-        channels = [chan for chan in Channel.objects.get_all_channels() if has_perm(caller, chan, 'can_listen')]        
+        channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]        
         if not channels:
             caller.msg("No channels available")
             return
@@ -265,7 +267,7 @@ class CmdChannels(MuxCommand):
 
         if self.cmdstring != "comlist":
 
-            string = "\nAll available channels:" 
+            string = "\nChannels available:" 
             cols = [[" "], ["Channel"], ["Aliases"], ["Perms"], ["Description"]]
             for chan in channels:
                 if chan in subs:
@@ -274,7 +276,7 @@ class CmdChannels(MuxCommand):
                     cols[0].append(" ")
                 cols[1].append(chan.key)
                 cols[2].append(",".join(chan.aliases))
-                cols[3].append(",".join(chan.permissions))
+                cols[3].append(str(chan.locks))
                 cols[4].append(chan.desc)
             # put into table 
             for ir, row in enumerate(utils.format_table(cols)):
@@ -284,18 +286,18 @@ class CmdChannels(MuxCommand):
                     string += "\n" + "".join(row)
             self.caller.msg(string)
 
-        string = "\nYour channel subscriptions:"
+        string = "\nChannel subscriptions:"
         if not subs:
             string += "(None)"
         else:
-            nicks = [nick for nick in caller.nicks if nick.db_type == 'channel']
-            print nicks
-            cols = [["Channel"], ["Aliases"], ["Description"]]
+            nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
+            cols = [[" "], ["Channel"], ["Aliases"], ["Description"]]
             for chan in subs:
-                cols[0].append(chan.key)
-                cols[1].append(",".join([nick.db_nick for nick in nicks 
+                cols[0].append(" ")
+                cols[1].append(chan.key)
+                cols[2].append(",".join([nick.db_nick for nick in nicks 
                                          if nick.db_real.lower() == chan.key.lower()] + chan.aliases))
-                cols[2].append(chan.desc)
+                cols[3].append(chan.desc)
             # put into table
             for ir, row in enumerate(utils.format_table(cols)):
                 if ir == 0:
@@ -316,6 +318,7 @@ class CmdCdestroy(MuxCommand):
 
     key = "@cdestroy"
     help_category = "Comms"
+    locks = "cmd:all()"
 
     def func(self):
         "Destroy objects cleanly."
@@ -328,7 +331,7 @@ class CmdCdestroy(MuxCommand):
         if not channel:
             caller.msg("Could not find channel %s." % self.args)
             return 
-        if not has_perm(caller, channel, 'chan_admin', default_deny=True):
+        if not channel.access(caller, 'admin'):
             caller.msg("You are not allowed to do that.")
             return 
 
@@ -572,7 +575,7 @@ class CmdChannelCreate(MuxCommand):
     
     key = "@ccreate"
     aliases = "channelcreate"
-    permissions = "cmd:ccreate"
+    locks = "cmd:not perm(channel_banned)"
     help_category = "Comms"
 
     def func(self):
@@ -601,9 +604,8 @@ class CmdChannelCreate(MuxCommand):
             caller.msg("A channel with that name already exists.")
             return        
         # Create and set the channel up
-        permissions = "chan_send:%s,chan_listen:%s,chan_admin:has_id(%s)"  % \
-            ("Players","Players",caller.id)
-        new_chan = create.create_channel(channame, aliases, description, permissions)
+        lockstring = "send:all();listen:all();admin:id(%s)" % caller.id
+        new_chan = create.create_channel(channame, aliases, description, locks=lockstring)
         new_chan.connect_to(caller)
         caller.msg("Created channel %s and connected to it." % new_chan.key)
     
@@ -663,7 +665,7 @@ class CmdCdesc(MuxCommand):
     """
 
     key = "@cdesc"
-    permissions = "cmd:cdesc"
+    locks = "cmd:not perm(channel_banned)"
     help_category = "Comms"
 
     def func(self):
@@ -679,7 +681,7 @@ class CmdCdesc(MuxCommand):
             caller.msg("Channel '%s' not found." % self.lhs)
             return
         #check permissions
-        if not has_perm(caller, channel, 'channel_admin'):
+        if not caller.access(caller, 'admin'):
             caller.msg("You cant admin this channel.")
             return
         # set the description
@@ -694,19 +696,19 @@ class CmdPage(MuxCommand):
     Usage:
       page[/switches] [<player>,<player>,... = <message>]
       tell        ''
-      page/list <number>
+      page <number>
 
     Switch:
-      list  - show your last <number> of tells/pages. 
+      last - shows who you last messaged
+      list - show your last <number> of tells/pages (default)
       
     Send a message to target user (if online). If no
-    argument is given, you will instead see who was the last
-    person you paged to. 
+    argument is given, you will get a list of your latest messages.
     """
 
     key = "page"
     aliases = ['tell']
-    permissions = "cmd:tell"
+    locks = "cmd:not perm(page_banned)"
     help_category = "Comms"
     
     def func(self):
@@ -722,17 +724,29 @@ class CmdPage(MuxCommand):
                          if msg.receivers]
         # get last messages we've got
         pages_we_got = list(Msg.objects.get_messages_by_receiver(player))        
-        
-        if 'list' in self.switches:
+            
+        if 'last' in self.switches:
+            if pages_we_sent:
+                string = "You last paged {c%s{n." % (", ".join([obj.name 
+                                                                for obj in pages_we_sent[-1].receivers]))
+                caller.msg(string)
+                return
+            else:
+                string = "You haven't paged anyone yet."
+                caller.msg(string)
+                return
+
+        if not self.args or not self.rhs:
             pages = pages_we_sent + pages_we_got
             pages.sort(lambda x, y: cmp(x.date_sent, y.date_sent))
 
-            number = 10
+            number = 5
             if self.args:
                 try:
                     number = int(self.args)
                 except ValueError:
-                    pass
+                    caller.msg("Usage: tell [<player> = msg]")
+                    return 
 
             if len(pages) > number:
                 lastpages = pages[-number:]
@@ -744,19 +758,14 @@ class CmdPage(MuxCommand):
                             "{n,{c ".join([obj.name for obj in page.receivers]),
                                                               page.message)
                                     for page in lastpages])
-            caller.msg("Your latest pages:\n %s" % lastpages )
-            return
 
-        if not self.args or not self.rhs:
-            if pages_we_sent:
-                string = "You last paged {c%s{n." % (", ".join([obj.name 
-                                                                for obj in pages_we_sent[-1].receivers]))
-                caller.msg(string)
-                return
+            if lastpages:
+                string = "Your latest pages:\n %s" % lastpages
             else:
                 string = "You haven't paged anyone yet."
-                caller.msg(string)
-                return
+            caller.msg(string)
+            return
+
 
         # We are sending. Build a list of targets
 
@@ -786,7 +795,7 @@ class CmdPage(MuxCommand):
         if not recobjs:
             caller.msg("No players matching your target were found.")
             return 
-
+        
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
         message = self.rhs
 
@@ -800,12 +809,17 @@ class CmdPage(MuxCommand):
 
         # tell the players they got a message.
         received = []
+        rstrings = []
         for pobj in recobjs:
-            pobj.msg("%s %s" % (header, message))
+            if not pobj.access(caller, 'msg'):
+                rstrings.append("You are not allowed to page %s." % pobj)
+                continue 
+            pobj.msg("%s %s" % (header, message))        
             if hasattr(pobj, 'has_player') and not pobj.has_player:
                 received.append("{C%s{n" % pobj.name)
-                caller.msg("%s is offline. They will see your message if they list their pages later." % received[-1])
+                rstrings.append("%s is offline. They will see your message if they list their pages later." % received[-1])
             else:
                 received.append("{c%s{n" % pobj.name)
-        received = ", ".join(received)
-        caller.msg("You paged %s with: '%s'." % (received, message))
+        if rstrings:
+            caller.msg(rstrings = "\n".join(rstrings))
+        caller.msg("You paged %s with: '%s'." % (", ".join(received), message))

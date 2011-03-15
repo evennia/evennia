@@ -32,8 +32,11 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses import managers
+from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import is_iter, has_parent
+
+PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 # used by Attribute to efficiently identify stored object types.
 # Note that these have to be updated if directory structure changes.
@@ -81,7 +84,6 @@ class Attribute(SharedMemoryModel):
 
     """
 
-
     #
     # Attribute Database Model setup
     #
@@ -94,8 +96,8 @@ class Attribute(SharedMemoryModel):
     db_value = models.TextField(blank=True, null=True)
     # tells us what type of data is stored in the attribute
     db_mode = models.CharField(max_length=20, null=True, blank=True)
-    # permissions to do things to this attribute 
-    db_permissions = models.CharField(max_length=255, blank=True)
+    # Lock storage 
+    db_lock_storage = models.TextField(blank=True)    
     # references the object the attribute is linked to (this is set 
     # by each child class to this abstact class)
     db_obj =  None # models.ForeignKey("RefencedObject")
@@ -104,6 +106,12 @@ class Attribute(SharedMemoryModel):
     
     # Database manager 
     objects = managers.AttributeManager()
+
+    # Lock handler self.locks
+    def __init__(self, *args, **kwargs):
+        "Initializes the parent first -important!"
+        SharedMemoryModel.__init__(self, *args, **kwargs)
+        self.locks = LockHandler(self)
 
     class Meta:
         "Define Django meta options"
@@ -151,27 +159,6 @@ class Attribute(SharedMemoryModel):
         self.db_mode = None
         self.save()
     mode = property(mode_get, mode_set, mode_del)
-
-    # permissions property
-    #@property
-    def permissions_get(self):
-        "Getter. Allows for value = self.permissions. Returns a list of permissions."
-        if self.db_permissions:
-            return [perm.strip() for perm in self.db_permissions.split(',')]
-        return []
-    #@permissions.setter
-    def permissions_set(self, value):
-        "Setter. Allows for self.permissions = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([str(val).strip().lower() for val in value])
-        self.db_permissions = value
-        self.save()        
-    #@permissions.deleter
-    def permissions_del(self):
-        "Deleter. Allows for del self.permissions"
-        self.db_permissions = ""
-        self.save()
-    permissions = property(permissions_get, permissions_set, permissions_del)
 
     # obj property (wraps db_obj)
     #@property
@@ -256,6 +243,23 @@ class Attribute(SharedMemoryModel):
         self.delete()
     value = property(value_get, value_set, value_del)
 
+    # lock_storage property (wraps db_lock_storage)
+    #@property 
+    def lock_storage_get(self):
+        "Getter. Allows for value = self.lock_storage"
+        return self.db_lock_storage
+    #@lock_storage.setter
+    def lock_storage_set(self, value):
+        """Saves the lock_storage. This is usually not called directly, but through self.lock()"""
+        self.db_lock_storage = value
+        self.save()
+    #@lock_storage.deleter
+    def lock_storage_del(self):
+        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+
+
     #
     #
     # Attribute methods
@@ -315,6 +319,15 @@ class Attribute(SharedMemoryModel):
         #print "type identified: %s" % db_type[0]
         return str(in_value.id), db_type[0]
                     
+    def access(self, accessing_obj, access_type='read', default=False):
+        """
+        Determines if another object has permission to access.
+        accessing_obj - object trying to access this one
+        access_type - type of access sought
+        default - what to return if no lock of access_type was found
+        """        
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+
 
 
 #------------------------------------------------------------
@@ -360,10 +373,18 @@ class TypedObject(SharedMemoryModel):
     db_date_created = models.DateTimeField(editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
     db_permissions = models.CharField(max_length=512, blank=True)
-    
+    # Lock storage 
+    db_lock_storage = models.TextField(blank=True)    
+
     # Database manager
     objects = managers.TypedObjectManager()
 
+    # lock handler self.locks
+    def __init__(self, *args, **kwargs):
+        "We must initialize the parent first - important!"
+        SharedMemoryModel.__init__(self, *args, **kwargs)
+        self.locks = LockHandler(self)
+    
     class Meta:
         """
         Django setup info.
@@ -466,6 +487,24 @@ class TypedObject(SharedMemoryModel):
         self.save()
     permissions = property(permissions_get, permissions_set, permissions_del)
 
+    # lock_storage property (wraps db_lock_storage)
+    #@property 
+    def lock_storage_get(self):
+        "Getter. Allows for value = self.lock_storage"
+        return self.db_lock_storage
+    #@lock_storage.setter
+    def lock_storage_set(self, value):
+        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
+        self.db_lock_storage = value
+        self.save()
+    #@lock_storage.deleter
+    def lock_storage_del(self):
+        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+
+
+
     #
     #
     # TypedObject main class methods and properties 
@@ -502,7 +541,6 @@ class TypedObject(SharedMemoryModel):
             # typeclass' __getattribute__, since that one would
             # try to look back to this very database object.)
             typeclass = object.__getattribute__(self, 'typeclass')                        
-            #typeclass = object.__getattribute__(self, 'typeclass')
             #print " '%s' not on db --> Checking typeclass %s instead." % (propname, typeclass)
             if typeclass:
                 return object.__getattribute__(typeclass(self), propname)
@@ -550,7 +588,8 @@ class TypedObject(SharedMemoryModel):
                 cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
                 logger.log_errmsg(cmessage)
 
-        path = self.db_typeclass_path        
+        #path = self.db_typeclass_path        
+        path = object.__getattribute__(self, 'db_typeclass_path')
 
         errstring = ""
         if not path:
@@ -967,3 +1006,38 @@ class TypedObject(SharedMemoryModel):
         "Stop accidental deletion."
         raise Exception("Cannot delete the ndb object!")
     ndb = property(ndb_get, ndb_set, ndb_del)
+
+
+    # Lock / permission methods
+
+    def access(self, accessing_obj, access_type='read', default=False):
+        """
+        Determines if another object has permission to access.
+        accessing_obj - object trying to access this one
+        access_type - type of access sought
+        default - what to return if no lock of access_type was found
+        """        
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+
+    def has_perm(self, accessing_obj, access_type):
+        "Alias to access"
+        logger.log_depmsg("has_perm() is deprecated. Use access() instead.")
+        return self.access(accessing_obj, access_type)
+
+    def check_permstring(self, permstring):
+        """
+        This explicitly checks for we hold particular permission without involving
+        any locks.
+        """
+        if not permstring:
+            return False             
+        perm = permstring.lower()
+        if perm in [p.lower() for p in self.permissions]:
+            # simplest case - we have a direct match
+            return True 
+        if perm in PERMISSION_HIERARCHY:
+            # check if we have a higher hierarchy position
+            ppos = PERMISSION_HIERARCHY.index(perm)
+            return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY) 
+                       if hperm in [p.lower() for p in self.permissions] and hpos > ppos)
+        return False 

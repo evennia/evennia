@@ -56,7 +56,7 @@ class MsgManager(models.Manager):
         try:
             idnum = int(idnum)
             return self.get(id=id)
-        except:
+        except Exception:
             return None
         
     def get_messages_by_sender(self, player):
@@ -259,7 +259,10 @@ class ChannelManager(models.Manager):
             pass
         if not channels:
             # no id match. Search on the key.
-            channels = self.filter(db_key=ostring)
+            channels = self.filter(db_key__iexact=ostring)
+        if not channels:
+            # still no match. Search by alias.
+            channels = [channel for channel in self.all() if ostring.lower in [a.lower for a in channel.aliases]]
         return channels 
 
 #

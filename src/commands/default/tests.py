@@ -19,8 +19,9 @@ try:
 except ImportError:
     from django.test import TestCase
 from django.conf import settings
-from src.utils import create 
+from src.utils import create, ansi
 from src.server import session, sessionhandler
+from src.locks.lockhandler import LockHandler
 from src.config.models import ConfigValue
 
 #------------------------------------------------------------ 
@@ -29,6 +30,7 @@ from src.config.models import ConfigValue
 
 # print all feedback from test commands (can become very verbose!)
 VERBOSE = False
+NOMANGLE = False
 
 class FakeSession(session.Session): 
     """ 
@@ -55,8 +57,13 @@ class FakeSession(session.Session):
             else:
                 rstring = return_list
                 self.player.character.ndb.return_string = None
-            if not message.startswith(rstring):
-                retval = "Returned message ('%s') != desired message ('%s')" % (message, rstring)
+            message_noansi = ansi.parse_ansi(message, strip_ansi=True).strip()
+            rstring = rstring.strip()
+            if not message_noansi.startswith(rstring):
+                sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
+                sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"                
+                sep3 = "\n" + "="*78
+                retval = sep1 + rstring + sep2 + message_noansi + sep3
                 raise AssertionError(retval)
         if VERBOSE:
             print message
@@ -77,17 +84,28 @@ class CommandTest(TestCase):
         self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
 
         # create a faux player/character for testing.
-        self.char1 = create.create_player("TestingPlayer", "testplayer@test.com", "testpassword", location=self.room1)
+        self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", location=self.room1)
         self.char1.player.user.is_superuser = True
+        self.char1.lock_storage = ""
+        self.char1.locks = LockHandler(self.char1)
         self.char1.ndb.return_string = None
         sess = FakeSession()
         sess.connectionMade()
         sess.session_login(self.char1.player)
-        # create second player and some objects 
-        self.char2 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="char2", location=self.room1)
+        # create second player
+        self.char2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", location=self.room1)
+        self.char2.player.user.is_superuser = False 
+        self.char2.lock_storage = ""
+        self.char2.locks = LockHandler(self.char2)
         self.char2.ndb.return_string = None
+        sess2 = FakeSession()
+        sess2.connectionMade()
+        sess2.session_login(self.char2.player)
+        # A non-player-controlled character 
+        self.char3 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="TestChar3", location=self.room1) 
+        # create some objects  
         self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=self.room1)
-        self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1)
+        self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1) 
         self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
         self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)        
         
@@ -110,7 +128,7 @@ class CommandTest(TestCase):
         This also mangles the input in various ways to test if the command
         will be fooled.
         """ 
-        if not VERBOSE:
+        if not VERBOSE and not NOMANGLE:
             # only mangle if not VERBOSE, to make fewer return lines
             test1 = re.sub(r'\s', '', raw_string) # remove all whitespace inside it
             test2 = "%s/åäö öäö;-:$£@*~^' 'test" % raw_string # inserting weird characters in call
@@ -129,52 +147,129 @@ class CommandTest(TestCase):
 # Default set Command testing
 #------------------------------------------------------------
 
+# general.py tests
+
+class TestLook(CommandTest):
+    def test_call(self):
+        self.execute_cmd("look here")
 class TestHome(CommandTest):
     def test_call(self):
         self.char1.location = self.room1
         self.char1.home = self.room2
         self.execute_cmd("home")
         self.assertEqual(self.char1.location, self.room2)
-class TestLook(CommandTest):
-    def test_call(self):
-        self.execute_cmd("look here")
 class TestPassword(CommandTest):
     def test_call(self):
         self.execute_cmd("@password testpassword = newpassword")
+class TestInventory(CommandTest):
+    def test_call(self):
+        self.execute_cmd("inv")
+class TestQuit(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@quit")
+class TestPose(CommandTest):
+    def test_call(self):
+        self.execute_cmd("pose is testing","TestChar is testing")
 class TestNick(CommandTest):
     def test_call(self):
+        self.char1.player.user.is_superuser = False 
         self.execute_cmd("nickname testalias = testaliasedstring1")        
         self.execute_cmd("nickname/player testalias = testaliasedstring2")        
         self.execute_cmd("nickname/object testalias = testaliasedstring3")        
-        self.assertEquals(u"testaliasedstring1", self.char1.nickhandler("testalias"))
-        self.assertEquals(u"testaliasedstring2", self.char1.nickhandler("testalias",nick_type="player"))
-        self.assertEquals(u"testaliasedstring3", self.char1.nickhandler("testalias",nick_type="object"))
+        self.assertEquals(u"testaliasedstring1", self.char1.nicks.get("testalias"))
+        self.assertEquals(u"testaliasedstring2", self.char1.nicks.get("testalias",nick_type="player"))
+        self.assertEquals(u"testaliasedstring3", self.char1.nicks.get("testalias",nick_type="object"))
+class TestGet(CommandTest):
+    def test_call(self):        
+        self.obj1.location = self.room1
+        self.execute_cmd("get obj1", "You pick up obj1.")
+class TestDrop(CommandTest):
+    def test_call(self):        
+        self.obj1.location = self.char1
+        self.execute_cmd("drop obj1", "You drop obj1.")
+class TestWho(CommandTest):
+    def test_call(self):                
+        self.execute_cmd("who")
+class TestSay(CommandTest):
+    def test_call(self):                
+        self.execute_cmd("say Hello", 'You say, "Hello')
+class TestAccess(CommandTest):
+    def test_call(self):                
+        self.execute_cmd("access")
+class TestEncoding(CommandTest):
+    def test_call(self):                
+        self.execute_cmd("@encoding", "Supported encodings")
+
+# help.py command tests
+
+class TestHelpSystem(CommandTest):
+    def test_call(self):                
+        global NOMANGLE
+        NOMANGLE = True 
+        sep = "-"*70 + "\n"
+        self.execute_cmd("@help/add TestTopic,TestCategory = Test1", )
+        self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1")
+        self.execute_cmd("@help/merge TestTopic = Test2", "Added the new text right after")
+        self.execute_cmd("help TestTopic", sep + "Help topic for Testtopic\nTest1 Test2")
+        self.execute_cmd("@help/append TestTopic = Test3", "Added the new text as a")
+        self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1 Test2\n\nTest3")
+        self.execute_cmd("@help/delete TestTopic","Deleted the help entry")
+        self.execute_cmd("help TestTopic","No help entry found for 'TestTopic'")
+        NOMANGLE = False 
 
 # system.py command tests
 class TestPy(CommandTest):
     def test_call(self):
         self.execute_cmd("@py 1+2", [">>> 1+2", "<<< 3"])
-class TestListScripts(CommandTest):
+class TestScripts(CommandTest):
     def test_call(self):
-        self.execute_cmd("@scripts")
-class TestListObjects(CommandTest):
+        self.execute_cmd("@scripts", "id")
+class TestObjects(CommandTest):
     def test_call(self):
-        self.execute_cmd("@objects")
-class TestListService(CommandTest):
-    def test_call(self):
-        self.execute_cmd("@service")
+        self.execute_cmd("@objects", "Database totals")
+# Cannot be tested since we don't have an active server running at this point.
+# class TestListService(CommandTest):
+#     def test_call(self):
+#         self.execute_cmd("@service/list", "---")
 class TestVersion(CommandTest):
     def test_call(self):
-        self.execute_cmd("@version")
+        self.execute_cmd("@version", '---')
 class TestTime(CommandTest):
     def test_call(self):
-        self.execute_cmd("@time")
-class TestList(CommandTest):
+        self.execute_cmd("@time", "Current server uptime")
+class TestServerLoad(CommandTest):
     def test_call(self):
-        self.execute_cmd("@list")
+        self.execute_cmd("@serverload", "Server load")
 class TestPs(CommandTest):
     def test_call(self):
-        self.execute_cmd("@ps","\n{wNon-timed scripts")
-class TestStats(CommandTest):
+        self.execute_cmd("@ps","Non-timed scripts")
+
+# admin.py command tests
+
+class TestBoot(CommandTest):
+   def test_call(self):
+       self.execute_cmd("@boot TestChar2","You booted TestChar2.")
+class TestDelPlayer(CommandTest):
+   def test_call(self):
+       self.execute_cmd("@delplayer TestChar2","Booting and informing player ...")
+class TestEmit(CommandTest):
     def test_call(self):
-        self.execute_cmd("@stats")
+        self.execute_cmd("@emit Test message", "Emitted to room1.")
+class TestUserPassword(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@userpassword TestChar2 = newpass", "TestChar2 - new password set to 'newpass'.")
+class TestPerm(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@perm TestChar2 = Builders", "Permission 'Builders' given to")
+# cannot test this at the moment, screws up the test suite
+#class TestPuppet(CommandTest):
+#   def test_call(self):
+#       self.execute_cmd("@puppet TestChar3", "You now control TestChar3.")       
+#       self.execute_cmd("@puppet TestChar", "You now control TestChar.")       
+class TestWall(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@wall = This is a test message", "TestChar shouts")
+        
+# building.py command tests
+
+#TODO

@@ -28,6 +28,7 @@ from django.conf import settings
 from src.objects import models, objects
 from src.utils import create
 from src.commands.default import tests as commandtests
+from src.locks import tests as locktests
 
 class TestObjAttrs(TestCase):
     """
@@ -55,4 +56,5 @@ def suite():
     tsuite = unittest.TestSuite()
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(commandtests))
+    tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(locktests))
     return tsuite

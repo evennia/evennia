@@ -67,3 +67,14 @@ def log_infomsg(infomsg):
         infomsg = str(e)
     for line in infomsg.splitlines():
         log.msg('[..] %s' % line)
+
+def log_depmsg(depmsg):
+    """
+    Prints a deprecation message
+    """
+    try:
+        depmsg = utils.to_str(depmsg)
+    except Exception, e:
+        depmsg = str(e)
+    for line in depmsg.splitlines():
+        log.msg('[DP] %s' % line)

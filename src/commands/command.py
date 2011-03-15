@@ -5,7 +5,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 
 """
 
-from src.permissions import permissions
+from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter
 
 class CommandMeta(type):
@@ -17,17 +17,25 @@ class CommandMeta(type):
         """
         Simply make sure all data are stored as lowercase and
         do checking on all properties that should be in list form.
+        Sets up locks to be more forgiving. 
         """
         mcs.key = mcs.key.lower()
         if mcs.aliases and not is_iter(mcs.aliases):
             mcs.aliases = mcs.aliases.split(',')
         mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases]
-        if mcs.permissions and not is_iter(mcs.permissions) :
-            mcs.permissions = mcs.permissions.split(',')    
-        mcs.permissions = [str(perm).strip().lower() for perm in mcs.permissions]
+
+        # pre-process locks as defined in class definition
+        temp = []
+        if hasattr(mcs, 'permissions'):
+            mcs.locks = mcs.permissions
+        for lockstring in mcs.locks.split(';'):
+            if lockstring and not ':' in lockstring:
+                lockstring = "cmd:%s" % lockstring
+            temp.append(lockstring)
+        mcs.lock_storage = ";".join(temp)
+
         mcs.help_category = mcs.help_category.lower()
         super(CommandMeta, mcs).__init__(*args, **kwargs)
-
 
 #    The Command class is the basic unit of an Evennia command; when
 #    defining new commands, the admin subclass this class and
@@ -69,15 +77,17 @@ class Command(object):
     key = "command"
     # alternative ways to call the command (e.g. 'l', 'glance', 'examine')
     aliases = []
-    # a list of permission strings or comma-separated string limiting 
-    # access to this command.
-    permissions = []
+    # a list of lock definitions on the form cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)
+    locks = ""
     # used by the help system to group commands in lists.
     help_category = "general"
     # There is also the property 'obj'. This gets set by the system 
     # on the fly to tie this particular command to a certain in-game entity.
     # self.obj should NOT be defined here since it will not be overwritten 
     # if it already exists. 
+
+    def __init__(self):
+        self.lockhandler = LockHandler(self)
     
     def __str__(self):
         "Print the command"
@@ -115,15 +125,15 @@ class Command(object):
         """
         return (cmdname == self.key) or (cmdname in self.aliases)
 
-    def has_perm(self, srcobj):
+    def access(self, srcobj, access_type="cmd", default=False):
         """
         This hook is called by the cmdhandler to determine if srcobj
         is allowed to execute this command. It should return a boolean
         value and is not normally something that need to be changed since
         it's using the Evennia permission system directly. 
         """
-        return permissions.has_perm(srcobj, self, 'cmd')
-    
+        return self.lockhandler.check(srcobj, access_type, default=default)
+
     # Common Command hooks         
 
     def at_pre_cmd(self):

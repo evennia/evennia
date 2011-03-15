@@ -47,7 +47,6 @@ from django.utils.encoding import smart_str
 from src.server.sessionhandler import SESSIONS
 from src.players import manager 
 from src.typeclasses.models import Attribute, TypedObject
-from src.permissions import permissions
 from src.utils import logger
 
 #------------------------------------------------------------
@@ -105,7 +104,6 @@ class PlayerDB(TypedObject):
       
     """
     
-
     #
     # PlayerDB Database model setup 
     # 
@@ -236,16 +234,6 @@ class PlayerDB(TypedObject):
         "Superusers have all permissions."
         return self.user.is_superuser
     is_superuser = property(is_superuser_get)
-
-    def set_perm(self, perm):
-        "Shortcuts to set permissions, replacing old ones"
-        return permissions.set_perm(self, perm)
-    def add_perm(self, perm):
-        "Add permissions to the old ones"
-        return permissions.add_perm(self, perm)
-    def del_perm(self, perm):
-        "Delete permission from old ones"
-        return permissions.del_perm(self, perm)
 
     #
     # PlayerDB class access methods 

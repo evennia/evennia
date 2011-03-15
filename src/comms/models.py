@@ -16,10 +16,9 @@ be able to delete connections on the fly).
 
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
-from src.players.models import PlayerDB
 from src.server.sessionhandler import SESSIONS
 from src.comms import managers 
-from src.permissions.permissions import has_perm
+from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter
 from src.utils.utils import dbref as is_dbref
 
@@ -81,7 +80,6 @@ class Msg(SharedMemoryModel):
       permissions - perm strings
         
     """
-    from src.players.models import PlayerDB
     #
     # Msg database model setup
     #
@@ -90,7 +88,7 @@ class Msg(SharedMemoryModel):
     # named same as the field, but withtout the db_* prefix.
 
     # There must always be one sender of the message.
-    db_sender = models.ForeignKey(PlayerDB, related_name='sender_set')
+    db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set')
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
@@ -103,6 +101,8 @@ class Msg(SharedMemoryModel):
     # should itself handle eventual headers etc. 
     db_message = models.TextField()
     db_date_sent = models.DateTimeField(editable=False, auto_now_add=True)
+    # lock storage
+    db_lock_storage = models.TextField(blank=True)
     # These are settable by senders/receivers/channels respectively.
     # Stored as a comma-separated string of dbrefs. Can be used by the
     # game to mask out messages from being visible in the archive (no
@@ -110,11 +110,15 @@ class Msg(SharedMemoryModel):
     db_hide_from_sender = models.BooleanField(default=False)
     db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
     db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
-    # permission strings, separated by commas
-    db_permissions = models.CharField(max_length=255, blank=True)
+    # Storage of lock strings
+    db_lock_storage = models.TextField(null=True)    
  
     # Database manager 
     objects = managers.MsgManager()
+
+    def __init__(self, *args, **kwargs):
+        SharedMemoryModel.__init__(self, *args, **kwargs)
+        self.locks = LockHandler(self)
 
     class Meta:
         "Define Django meta options"
@@ -278,29 +282,25 @@ class Msg(SharedMemoryModel):
         self.save()
     hide_from_channels = property(hide_from_channels_get, hide_from_channels_set, hide_from_channels_del)
 
-    # permissions property
-    #@property
-    def permissions_get(self):
-        "Getter. Allows for value = self.permissions. Returns a list of permissions."
-        if self.db_permissions:
-            return [perm.strip() for perm in self.db_permissions.split(',')]
-        return []
-    #@permissions.setter
-    def permissions_set(self, value):
-        "Setter. Allows for self.permissions = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([str(val).strip().lower() for val in value])
-        self.db_permissions = value
-        self.save()        
-    #@permissions.deleter
-    def permissions_del(self):
-        "Deleter. Allows for del self.permissions"
-        self.db_permissions = ""
+    # lock_storage property (wraps db_lock_storage)
+    #@property 
+    def lock_storage_get(self):
+        "Getter. Allows for value = self.lock_storage"
+        return self.db_lock_storage
+    #@nick.setter
+    def lock_storage_set(self, value):
+        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
+        self.db_lock_storage = value
         self.save()
-    permissions = property(permissions_get, permissions_set, permissions_del)
+    #@nick.deleter
+    def lock_storage_del(self):
+        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+
 
     # 
-    # Msg class method
+    # Msg class methods
     # 
 
     def __str__(self):
@@ -313,6 +313,15 @@ class Msg(SharedMemoryModel):
             return "%s -> %s: %s" % (self.sender.key,
                                        ", ".join([rec.key for rec in self.receivers]),
                                        self.message)
+    def access(self, accessing_obj, access_type='read', default=False):
+        """
+        Determines if another object has permission to access.
+        accessing_obj - object trying to access this one
+        access_type - type of access sought
+        default - what to return if no lock of access_type was found
+        """        
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+
 
 #------------------------------------------------------------
 #
@@ -351,12 +360,16 @@ class Channel(SharedMemoryModel):
     db_aliases = models.CharField(max_length=255) 
     # Whether this channel should remember its past messages
     db_keep_log = models.BooleanField(default=True)
-    # Permission strings, separated by commas
-    db_permissions = models.CharField(max_length=255, blank=True)
+    # Storage of lock definitions
+    db_lock_storage = models.TextField(blank=True)
  
     # Database manager
     objects = managers.ChannelManager()
 
+    def __init__(self, *args, **kwargs):
+        SharedMemoryModel.__init__(self, *args, **kwargs) 
+        self.locks = LockHandler(self)
+ 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
@@ -436,26 +449,21 @@ class Channel(SharedMemoryModel):
         self.save()
     keep_log = property(keep_log_get, keep_log_set, keep_log_del)
 
-    # permissions property
-    #@property
-    def permissions_get(self):
-        "Getter. Allows for value = self.permissions. Returns a list of permissions."
-        if self.db_permissions:            
-            return [perm.strip() for perm in self.db_permissions.split(',')]
-        return []
-    #@permissions.setter
-    def permissions_set(self, value):
-        "Setter. Allows for self.permissions = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([str(val).strip().lower() for val in value])
-        self.db_permissions = value
-        self.save()        
-    #@permissions.deleter
-    def permissions_del(self):
-        "Deleter. Allows for del self.permissions"
-        self.db_permissions = ""
+    # lock_storage property (wraps db_lock_storage)
+    #@property 
+    def lock_storage_get(self):
+        "Getter. Allows for value = self.lock_storage"
+        return self.db_lock_storage
+    #@nick.setter
+    def lock_storage_set(self, value):
+        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
+        self.db_lock_storage = value
         self.save()
-    permissions = property(permissions_get, permissions_set, permissions_del)
+    #@nick.deleter
+    def lock_storage_del(self):
+        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
 
     class Meta:
         "Define Django meta options"
@@ -515,7 +523,7 @@ class Channel(SharedMemoryModel):
             
     def connect_to(self, player):
         "Connect the user to this channel"
-        if not has_perm(player, self, 'chan_listen'):
+        if not self.access(player, 'listen'):
             return False
         conn = ChannelConnection.objects.create_connection(player, self)
         if conn:
@@ -531,7 +539,14 @@ class Channel(SharedMemoryModel):
         for connection in Channel.objects.get_all_connections(self):
             connection.delete()
         super(Channel, self).delete()
-            
+    def access(self, accessing_obj, access_type='listen', default=False):
+        """
+        Determines if another object has permission to access.
+        accessing_obj - object trying to access this one
+        access_type - type of access sought
+        default - what to return if no lock of access_type was found
+        """        
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
 class ChannelConnection(SharedMemoryModel):
     """
@@ -539,9 +554,8 @@ class ChannelConnection(SharedMemoryModel):
     The advantage of making it like this is that one can easily
     break the connection just by deleting this object. 
     """
-    from src.players.models import PlayerDB
     # Player connected to a channel
-    db_player = models.ForeignKey(PlayerDB)
+    db_player = models.ForeignKey("players.PlayerDB")
     # Channel the player is connected to
     db_channel = models.ForeignKey(Channel)
 

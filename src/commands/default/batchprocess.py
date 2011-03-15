@@ -193,7 +193,7 @@ class CmdBatchCommands(MuxCommand):
     """
     key = "@batchcommands"
     aliases = ["@batchcommand", "@batchcmd"]
-    permissions = "cmd:batchcommands"
+    locks = "cmd:perm(batchcommands)"
     help_category = "Building"
 
     def func(self):
@@ -277,7 +277,7 @@ class CmdBatchCode(MuxCommand):
     """
     key = "@batchcode"
     aliases = ["@batchcodes"]
-    permissions = "cmd:batchcodes"
+    locks = "cmd:perm(batchcommands)"    
     help_category = "Building"
 
     def func(self):
@@ -359,6 +359,7 @@ class CmdStateAbort(MuxCommand):
     """
     key = "@abort"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         "Exit back to default."
@@ -374,6 +375,7 @@ class CmdStateLL(MuxCommand):
     """
     key = "ll"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):        
         show_curr(self.caller, showall=True)
@@ -386,6 +388,7 @@ class CmdStatePP(MuxCommand):
     """
     key = "pp"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         """
@@ -407,6 +410,7 @@ class CmdStateRR(MuxCommand):
     """
     key = "rr"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -426,6 +430,7 @@ class CmdStateRRR(MuxCommand):
     """
     key = "rrr"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -445,6 +450,7 @@ class CmdStateNN(MuxCommand):
     """
     key = "nn"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -465,6 +471,7 @@ class CmdStateNL(MuxCommand):
     """
     key = "nl"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -485,6 +492,7 @@ class CmdStateBB(MuxCommand):
     """
     key = "bb"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -505,6 +513,7 @@ class CmdStateBL(MuxCommand):
     """
     key = "bl"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -526,6 +535,7 @@ class CmdStateSS(MuxCommand):
     """
     key = "ss"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -553,6 +563,7 @@ class CmdStateSL(MuxCommand):
     """
     key = "sl"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -579,6 +590,7 @@ class CmdStateCC(MuxCommand):
     """
     key = "cc"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -608,6 +620,7 @@ class CmdStateJJ(MuxCommand):
     """
     key = "j"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -630,6 +643,7 @@ class CmdStateJL(MuxCommand):
     """
     key = "jl"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         caller = self.caller
@@ -652,6 +666,7 @@ class CmdStateQQ(MuxCommand):
     """
     key = "qq"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         purge_processor(self.caller)
@@ -662,6 +677,7 @@ class CmdStateHH(MuxCommand):
 
     key = "hh"
     help_category = "BatchProcess"
+    locks = "cmd:perm(batchcommands)"    
 
     def func(self):
         string = """

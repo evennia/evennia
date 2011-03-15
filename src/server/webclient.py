@@ -246,6 +246,9 @@ class WebClientSession(session.Session):
         """                        
         if reason:
             self.lineSend(self.suid, reason)
+        char = self.get_character()
+        if char:
+            char.at_disconnect()
         self.client.disconnect(self.suid, step=2)
 
     def at_data_out(self, string='', data=None):

@@ -49,10 +49,10 @@ class Object(TypeClass):
             create_cmdset = True
         try: 
             dummy = object.__getattribute__(dbobj, 'scripts')
-            create_scripts = type(dbobj.scripts) != ScriptHandler            
-            
+            create_scripts = type(dbobj.scripts) != ScriptHandler                        
         except AttributeError:
             create_scripts = True 
+
         if create_cmdset:
             dbobj.cmdset = CmdSetHandler(dbobj)
             if utils.inherits_from(self, settings.BASE_CHARACTER_TYPECLASS):
@@ -79,8 +79,18 @@ class Object(TypeClass):
         """
         Called once, when this object is first
         created. 
-        """
-        pass
+        """ 
+
+        # the default security setup fallback for a generic
+        # object. Overload in child for a custom setup. Also creation
+        # commands may set this (create an item and you should its
+        # owner, for example)
+        dbref = self.dbobj.dbref
+        self.locks.add("owner:id(%s)" % dbref)        
+        self.locks.add("examine:perm(Builders)")
+        self.locks.add("edit:perm(Wizards)")
+        self.locks.add("delete:perm(Wizards)")
+        self.locks.add("get:all()")        
 
     def at_first_login(self):
         """
@@ -326,11 +336,16 @@ class Character(Object):
         """        
         from settings import CMDSET_DEFAULT
         self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
+        
+        # setup security 
+        super(Character, self).at_object_creation()
+        self.locks.add("puppet:id(%s) or perm(Immortals)" % self.dbobj.dbref)
 
     def at_after_move(self, source_location):
         "Default is to look around after a move."
         self.execute_cmd('look')
-            
+        
+    
 #
 # Base Room object 
 #
@@ -345,6 +360,7 @@ class Room(Object):
         Simple setup, shown as an example
         (since default is None anyway)
         """
+        super(Room, self).at_object_creation()
         self.location = None 
 
 class Exit(Object):
@@ -366,7 +382,13 @@ class Exit(Object):
         definition (unless you want an entire class of exits
         all leadning to the same hard-coded place ...)
         """
+        # this is what makes it an exit
         self.attr("_destination", "None")
+        
+        # the lock is open to all by default
+        super(Exit, self).at_object_creation()
+        self.locks.add("traverse:all()")
+
     def at_object_delete(self):
         """
         We have to make sure to clean the exithandler cache

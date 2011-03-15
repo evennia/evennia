@@ -4,18 +4,19 @@ an object's location for valid exit objects.
 """
 
 from src.commands import cmdset, command
-from src.permissions.permissions import has_perm
+
 
 class ExitCommand(command.Command):
     "Simple identifier command"
     is_exit = True
+    locks = "cmd:all()" # should always be set to this.
     destination = None 
     obj = None     
     
     def func(self):
         "Default exit traverse if no syscommand is defined."
 
-        if has_perm(self.caller, self.obj, 'traverse'):
+        if self.obj.access(self.caller, 'traverse'):
             self.caller.move_to(self.destination)
         else:
             self.caller.msg("You cannot enter.")

@@ -11,9 +11,6 @@ Both the replacing functions must have the same name and same input/output
 as the ones in this module. 
 """
 
-from src.permissions.permissions import has_perm_string
-
-
 def handle_search_errors(emit_to_obj, ostring, results, global_search=False):
     """
     Takes a search result (a list) and
@@ -35,7 +32,7 @@ def handle_search_errors(emit_to_obj, ostring, results, global_search=False):
 
         # check if the emit_to_object may se dbrefs
         show_dbref = global_search and \
-            has_perm_string(emit_to_obj, 'see_dbref')
+            emit_to_obj.check_permstring('Builders')
 
         string = "More than one match for '%s'" % ostring
         string += " (please narrow target):" 

@@ -4,7 +4,7 @@ General helper functions that don't fit neatly under any given category.
 They provide some useful string and conversion methods that might
 be of use when designing your own game. 
 """
-import os, sys
+import os, sys, imp
 import textwrap
 import datetime
 from twisted.internet import threads
@@ -188,7 +188,7 @@ def get_evennia_version():
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
     Converts a path on dot python form (e.g. 'src.objects.models') to
-    a system path (src/objects/models.py). Calculates all paths as
+    a system path ($BASE_PATH/src/objects/models.py). Calculates all paths as
     absoulte paths starting from the evennia main directory.
     """
     pathsplit = python_path.strip().split('.')
@@ -442,3 +442,48 @@ def has_parent(basepath, obj):
         # this can occur if we tried to store a class object, not an
         # instance. Not sure if one should defend against this. 
         return False 
+
+def mod_import(mod_path):
+    """
+    Takes filename of a module, converts it to a python path
+    and imports it.
+    """
+    
+    def log_trace(errmsg=None):
+        """
+        Log a traceback to the log. This should be called
+        from within an exception. errmsg is optional and
+        adds an extra line with added info. 
+        """
+        from traceback import format_exc
+        from twisted.python import log
+
+        tracestring = format_exc()
+        if tracestring:
+            for line in tracestring.splitlines():
+                log.msg('[::] %s' % line)    
+        if errmsg:
+            try:
+                errmsg = to_str(errmsg)
+            except Exception, e:
+                errmsg = str(e)
+            for line in errmsg.splitlines():
+                log.msg('[EE] %s' % line)
+
+    if not os.path.isabs(mod_path):
+        mod_path = os.path.abspath(mod_path)
+    path, filename = mod_path.rsplit(os.path.sep, 1)
+    modname = filename.rstrip('.py')
+
+    try:
+        result = imp.find_module(modname, [path])
+    except ImportError:
+        log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path)) 
+    try:
+        mod = imp.load_module(modname, *result)
+    except ImportError:
+        log_trace("Could not find or import module %s at path '%s'" % (modname, path))
+        mod = None         
+    # we have to close the file handle manually
+    result[0].close()
+    return mod 

@@ -9,7 +9,6 @@ creation of other help topics such as RP help or game-world aides.
 from src.utils.utils import fill, dedent
 from src.commands.command import Command
 from src.help.models import HelpEntry
-from src.permissions.permissions import has_perm
 from src.utils import create 
 from src.commands.default.muxcommand import MuxCommand
 
@@ -65,6 +64,8 @@ class CmdHelp(Command):
     topics related to the game. 
     """
     key = "help"
+    locks = "cmd:all()"
+
     # this is a special cmdhandler flag that makes the cmdhandler also pack
     # the current cmdset with the call to self.func(). 
     return_cmdset = True 
@@ -73,6 +74,7 @@ class CmdHelp(Command):
         """
         inp is a string containing the command or topic match.
         """
+        self.original_args = self.args.strip()
         self.args = self.args.strip().lower()
 
     def func(self):
@@ -94,7 +96,7 @@ class CmdHelp(Command):
         if query in LIST_ARGS:
             # we want to list all available help entries
             hdict_cmd = {}
-            for cmd in (cmd for cmd in cmdset if has_perm(caller, cmd, 'cmd')
+            for cmd in (cmd for cmd in cmdset if cmd.access(caller)
                         if not cmd.key.startswith('__')
                         and not (hasattr(cmd, 'is_exit') and cmd.is_exit)):
                 if hdict_cmd.has_key(cmd.help_category):
@@ -103,7 +105,7 @@ class CmdHelp(Command):
                     hdict_cmd[cmd.help_category] = [cmd.key]
             hdict_db = {}
             for topic in (topic for topic in HelpEntry.objects.get_all_topics()
-                          if has_perm(caller, topic, 'view')):
+                          if topic.access(caller, 'view', default=True)):
                 if hdict_db.has_key(topic.help_category):
                     hdict_db[topic.help_category].append(topic.key)
                 else:
@@ -116,7 +118,7 @@ class CmdHelp(Command):
         
         # Cmd auto-help dynamic entries 
         cmdmatches = [cmd for cmd in cmdset
-                      if query in cmd and has_perm(caller, cmd, 'cmd')]
+                      if query in cmd and cmd.access(caller)]
         if len(cmdmatches) > 1:
             # multiple matches. Try to limit it down to exact match
             exactmatches = [cmd for cmd in cmdmatches if cmd == query]
@@ -127,12 +129,12 @@ class CmdHelp(Command):
         dbmatches = \
                   [topic for topic in
                    HelpEntry.objects.find_topicmatch(query, exact=False)
-                   if has_perm(caller, topic, 'view')]
+                   if topic.access(caller, 'view', default=True)]
         if len(dbmatches) > 1:
             exactmatches = \
                   [topic for topic in
                    HelpEntry.objects.find_topicmatch(query, exact=True)
-                   if has_perm(caller, topic, 'view')]
+                   if topic.access(caller, 'view', default=True)]
             if exactmatches:
                 dbmatches = exactmatches
 
@@ -140,11 +142,11 @@ class CmdHelp(Command):
         if (not cmdmatches) and (not dbmatches):
             # no normal match. Check if this is a category match instead
             categ_cmdmatches = [cmd.key for cmd in cmdset
-                                if query == cmd.help_category and has_perm(caller, cmd, 'cmd')]
+                                if query == cmd.help_category and cmd.access(caller)]
             categ_dbmatches = \
                     [topic.key for topic in
                      HelpEntry.objects.find_topics_with_category(query)
-                     if has_perm(caller, topic, 'view')]
+                     if topic.access(caller, 'view', default=True)]
             cmddict = None
             dbdict = None
             if categ_cmdmatches:
@@ -154,7 +156,7 @@ class CmdHelp(Command):
             if cmddict or dbdict:
                 help_entry = format_help_list(cmddict, dbdict)                                              
             else:
-                help_entry = "No help entry found for '%s'" % query
+                help_entry = "No help entry found for '%s'" % self.original_args
 
         elif len(cmdmatches) == 1:
             # we matched against a command name or alias. Show its help entry.
@@ -184,7 +186,7 @@ class CmdSetHelp(MuxCommand):
     @help - edit the help database
 
     Usage:
-      @help[/switches] <topic>[,category[,permission,permission,...]] = <text>
+      @help[/switches] <topic>[,category[,locks]] = <text>
 
     Switches:
       add    - add or replace a new topic with text.
@@ -203,7 +205,7 @@ class CmdSetHelp(MuxCommand):
     """
     key = "@help"
     aliases = "@sethelp"
-    permissions = "cmd:sethelp"
+    locks = "cmd:perm(PlayerHelpers)"
     help_category = "Building"
     
     def func(self):
@@ -214,36 +216,33 @@ class CmdSetHelp(MuxCommand):
         lhslist = self.lhslist
         rhs = self.rhs
 
-        if not self.rhs:
-            caller.msg("Usage: @sethelp/[add|del|append|merge] <topic>[,category[,permission,..] = <text>]")
+        if not self.args:
+            caller.msg("Usage: @sethelp/[add|del|append|merge] <topic>[,category[,locks,..] = <text>]")
             return     
 
         topicstr = ""
         category = ""
-        permissions = ""
+        lockstring = ""
         try:
             topicstr = lhslist[0]
             category = lhslist[1]
-            permissions = ",".join(lhslist[2:])
+            lockstring = ",".join(lhslist[2:])
         except Exception:
             pass
         if not topicstr:
             caller.msg("You have to define a topic!")
             return         
         string = ""
-        print topicstr, category, permissions
+        #print topicstr, category, lockstring
 
         if switches and switches[0] in ('append', 'app','merge'):
             # add text to the end of a help topic        
             # find the topic to append to
-            old_entry = None 
-            try:
-                old_entry = HelpEntry.objects.get(key=topicstr)
-            except Exception:
-                pass
+            old_entry = HelpEntry.objects.filter(db_key__iexact=topicstr)
             if not old_entry:
                 string = "Could not find topic '%s'. You must give an exact name." % topicstr
             else:
+                old_entry = old_entry[0]
                 entrytext = old_entry.entrytext
                 if switches[0] == 'merge':
                     old_entry.entrytext = "%s %s" % (entrytext, self.rhs)
@@ -255,15 +254,11 @@ class CmdSetHelp(MuxCommand):
 
         elif switches and switches[0] in ('delete','del'):
             #delete a help entry
-            old_entry = None 
-            try:
-                old_entry = HelpEntry.objects.get(key=topicstr)
-            except Exception:
-                pass
+            old_entry = HelpEntry.objects.filter(db_key__iexact=topicstr)           
             if not old_entry:
-                string = "Could not find topic. You must give an exact name."
+                string = "Could not find topic '%s'." % topicstr
             else:
-                old_entry.delete()
+                old_entry[0].delete()
                 string = "Deleted the help entry '%s'." % topicstr
 
         else:
@@ -279,7 +274,8 @@ class CmdSetHelp(MuxCommand):
                     old_entry.key = topicstr
                     old_entry.entrytext = self.rhs
                     old_entry.help_category = category
-                    old_entry.permissions = permissions
+                    old_entry.locks.clear()
+                    old_entry.locks.add(lockstring)
                     old_entry.save()
                     string = "Overwrote the old topic '%s' with a new one." % topicstr
                 else:
@@ -287,7 +283,8 @@ class CmdSetHelp(MuxCommand):
             else:
                 # no old entry. Create a new one.
                 new_entry = create.create_help_entry(topicstr, 
-                                                     rhs, category, permissions)
+                                                     rhs, category, lockstring)
+
                 if new_entry:
                     string = "Topic '%s' was successfully created." % topicstr
                 else:

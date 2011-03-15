@@ -99,7 +99,6 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 module = __import__(modulepath, fromlist=[True])
                 cmdsetclass = module.__dict__[classname]                
                 CACHED_CMDSETS[wanted_cache_key] = cmdsetclass            
-            #print "cmdset %s found." % wanted_cache_key 
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj) 
@@ -361,4 +360,22 @@ class CmdSetHandler(object):
         """
         self.cmdset_stack = [self.cmdset_stack[0]]
         self.mergetype_stack = [self.cmdset_stack[0].mergetype]
+        self.update()
+        
+    def reset(self):
+        """
+        Force reload of all cmdsets in handler. This should be called 
+        after CACHED_CMDSETS have been cleared (normally by @reload). 
+        """
+        new_cmdset_stack = []
+        new_mergetype_stack = [] 
+        for cmdset in self.cmdset_stack:
+            if cmdset.key == "Empty":
+                new_cmdset_stack.append(cmdset)
+                new_mergetype_stack.append("Union")
+            else:                
+                new_cmdset_stack.append(self.import_cmdset(cmdset.path))
+                new_mergetype_stack.append(cmdset.mergetype)
+        self.cmdset_stack = new_cmdset_stack
+        self.mergetype_stack = new_mergetype_stack
         self.update()

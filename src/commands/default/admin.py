@@ -8,8 +8,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.server.sessionhandler import SESSIONS
-from src.permissions.permissions import has_perm, has_perm_string
-from src.permissions.models import PermissionGroup
 from src.utils import utils
 from src.commands.default.muxcommand import MuxCommand
 
@@ -29,7 +27,7 @@ class CmdBoot(MuxCommand):
     """
     
     key = "@boot"
-    permissions = "cmd:boot"
+    locks = "cmd:perm(boot) or perm(Wizard)"
     help_category = "Admin"
 
     def func(self):
@@ -60,7 +58,7 @@ class CmdBoot(MuxCommand):
             if not pobj:
                 return            
             if pobj.character.has_player:
-                if not has_perm(caller, pobj, 'can_boot'):
+                if not pobj.access(caller, 'boot'):
                     string = "You don't have the permission to boot %s."
                     pobj.msg(string)
                     return 
@@ -107,7 +105,7 @@ class CmdDelPlayer(MuxCommand):
     """
 
     key = "@delplayer"
-    permissions = "cmd:delplayer"
+    locks = "cmd:perm(delplayer) or perm(Immortals)"
     help_category = "Admin"
 
     def func(self):
@@ -149,7 +147,7 @@ class CmdDelPlayer(MuxCommand):
             except Exception:
                 player = None 
                                 
-            if not has_perm_string(caller, 'manage_players'):
+            if player and not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete this player."
                 caller.msg(string)
                 return 
@@ -166,20 +164,19 @@ class CmdDelPlayer(MuxCommand):
             caller.msg(string)
             return 
     
-        elif len(players) > 1:
-            string = "There where multiple matches:"
+        elif utils.is_iter(players):
+            string = "There were multiple matches:"
             for player in players:
                 string += "\n %s %s" % (player.id, player.key) 
             return 
-
         else:
             # one single match
 
-            player = players[0]
+            player = players
             user = player.user
             character = player.character
 
-            if not has_perm(caller, player, 'manage_players'):
+            if not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete that player."
                 caller.msg(string)
                 return 
@@ -209,7 +206,7 @@ class CmdEmit(MuxCommand):
       @pemit           [<obj>, <obj>, ... =] <message> 
 
     Switches:
-      room : limit emits to rooms only 
+      room : limit emits to rooms only (default)
       players : limit emits to players only 
       contents : send to the contents of matched objects too
       
@@ -221,7 +218,7 @@ class CmdEmit(MuxCommand):
     """
     key = "@emit"
     aliases = ["@pemit", "@remit"]
-    permissions = "cmd:emit"
+    locks = "cmd:perm(emit) or perm(Builders)"
     help_category = "Admin"
 
     def func(self):
@@ -266,7 +263,7 @@ class CmdEmit(MuxCommand):
             if players_only and not obj.has_player:
                 caller.msg("%s has no active player. Ignored." % objname)
                 continue
-            if has_perm(caller, obj, 'send_to'):
+            if obj.access(caller, 'tell'):
                 obj.msg(message)
                 if send_to_contents:
                     for content in obj.contents:
@@ -290,7 +287,7 @@ class CmdNewPassword(MuxCommand):
     """
     
     key = "@userpassword"
-    permissions = "cmd:newpassword"
+    locks = "cmd:perm(newpassword) or perm(Wizards)"
     help_category = "Admin"
 
     def func(self):
@@ -303,14 +300,13 @@ class CmdNewPassword(MuxCommand):
             return 
         
         # the player search also matches 'me' etc. 
-        character = caller.search("*%s" % self.lhs, global_search=True)            
-        if not character:
+        player = caller.search("*%s" % self.lhs, global_search=True)            
+        if not player:
             return     
-        player = character.player
         player.user.set_password(self.rhs)
         player.user.save()
         caller.msg("%s - new password set to '%s'." % (player.name, self.rhs))
-        if character != caller:
+        if player.character != caller:
             player.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
 
 
@@ -333,7 +329,7 @@ class CmdPerm(MuxCommand):
     """
     key = "@perm"
     aliases = "@setperm"
-    permissions = "cmd:perm"
+    locks = "cmd:perm(perm) or perm(Immortals)"
     help_category = "Admin"
 
     def func(self):
@@ -434,7 +430,7 @@ class CmdPuppet(MuxCommand):
     """
 
     key = "@puppet"
-    permissions = "cmd:puppet"
+    locks = "cmd:perm(puppet) or perm(Builders)"
     help_category = "Admin"
 
     def func(self):
@@ -453,6 +449,8 @@ class CmdPuppet(MuxCommand):
         if not utils.inherits_from(new_character, settings.BASE_CHARACTER_TYPECLASS):
             caller.msg("%s is not a Character." % self.args)
             return
+        if new_character.player:
+            caller.msg("This character is already under the control of a player.")
         if player.swap_character(new_character):
             new_character.msg("You now control %s." % new_character.name)
         else:
@@ -468,7 +466,7 @@ class CmdWall(MuxCommand):
     Announces a message to all connected players.
     """
     key = "@wall"
-    permissions = "cmd:wall"
+    locks = "cmd:perm(wall) or perm(Wizards)"
     help_category = "Admin"
 
     def func(self):

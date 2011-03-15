@@ -28,6 +28,7 @@ from django.conf import settings
 from django.db import models
 from src.typeclasses.models import Attribute, TypedObject
 from src.scripts.manager import ScriptManager
+#from src.locks.lockhandler import LockHandler
 
 #------------------------------------------------------------
 #
@@ -104,7 +105,7 @@ class ScriptDB(TypedObject):
 
     # Database manager
     objects = ScriptManager()
-
+    
     class Meta:
         "Define Django meta options"
         verbose_name = "Script"

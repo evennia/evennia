@@ -338,7 +338,7 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
             cmd_candidate, cmd = matches[0]
 
             # Check so we have permission to use this command.
-            if not cmd.has_perm(caller):                
+            if not cmd.access(caller):                
                 cmd = cmdset.get(CMD_NOPERM)
                 if cmd:
                     sysarg = raw_string

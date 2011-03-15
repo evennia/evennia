@@ -74,6 +74,8 @@ def create_objects():
                                          user=god_user)    
     god_character.id = 1
     god_character.db.desc = 'This is User #1.'
+    god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
+
     god_character.save()
    
     # Limbo is the initial starting room.
@@ -99,14 +101,14 @@ def create_channels():
     print " Creating default channels ..."
 
     # public channel
-    key, aliases, desc, perms = settings.CHANNEL_PUBLIC
-    pchan = create.create_channel(key, aliases, desc, perms)
+    key, aliases, desc, locks = settings.CHANNEL_PUBLIC
+    pchan = create.create_channel(key, aliases, desc, locks=locks)
     # mudinfo channel 
-    key, aliases, desc, perms = settings.CHANNEL_MUDINFO
-    ichan = create.create_channel(key, aliases, desc, perms)
+    key, aliases, desc, locks = settings.CHANNEL_MUDINFO
+    ichan = create.create_channel(key, aliases, desc, locks=locks)
     # connectinfo channel
-    key, aliases, desc, perms = settings.CHANNEL_CONNECTINFO
-    cchan = create.create_channel(key, aliases, desc, perms)
+    key, aliases, desc, locks = settings.CHANNEL_CONNECTINFO
+    cchan = create.create_channel(key, aliases, desc, locks=locks)
 
     # connect the god user to all these channels by default.
     goduser = get_god_user()
@@ -126,33 +128,6 @@ def import_MUX_help_files():
     print " Moving imported help db to help category '%s'." \
                                                    % default_category
     HelpEntry.objects.all_to_category(default_category)
-
-def create_permission_groups():
-    """
-    This sets up the default permissions groups
-    by parsing a permission config file.
-
-    Note that we don't catch any exceptions here,
-    this must be debugged until it works. 
-    """
-
-    print " Creating and setting up permissions/groups ..."
-    
-    # We try to get the data from config first. 
-    setup_path = settings.PERMISSION_SETUP_MODULE
-    if not setup_path:
-        # go with the default 
-        setup_path = "src.permissions.default_permissions"            
-    module = __import__(setup_path, fromlist=[True])
-    # We have a successful import. Get the dicts. 
-    groupdict = module.GROUPS
-    
-    # Create groups and populate them
-    for group in groupdict:
-        group = create.create_permission_group(group, desc=group,
-                                               group_perms=groupdict[group])
-        if not group:
-            print " Creation of Group '%s' failed." % group 
     
 def create_system_scripts():
     """
@@ -231,7 +206,6 @@ def handle_setup(last_step):
         create_connect_screens,  
         create_objects,          
         create_channels,
-        create_permission_groups, 
         create_system_scripts,
         import_MUX_help_files,
         start_game_time,
@@ -240,7 +214,7 @@ def handle_setup(last_step):
     if not settings.IMPORT_MUX_HELP:
         # skip importing of the MUX helpfiles, they are 
         # not interesting except for developers.
-        del setup_queue[6]
+        del setup_queue[5]
 
     #print " Initial setup: %s steps." % (len(setup_queue)) 
 

@@ -10,12 +10,16 @@ from django.db.models.loading import AppCache
 from django.utils.datastructures import SortedDict
 from django.conf import settings
 from src.scripts.models import ScriptDB
+from src.objects.models import ObjectDB
+from src.players.models import PlayerDB
+from src.comms.models import Channel, Msg
+from src.help.models import HelpEntry
+
 from src.typeclasses import models as typeclassmodels
 from src.objects import exithandler 
 from src.comms import channelhandler
 from src.comms.models import Channel
-from src.utils import reimport 
-from src.utils import logger
+from src.utils import reimport, utils, logger 
 
 def reload_modules():
     """
@@ -96,6 +100,21 @@ def reload_modules():
     typeclassmodels.reset()
     exithandler.EXITHANDLER.clear()
     channelhandler.CHANNELHANDLER.update()
+
+    # run through all objects in database, forcing re-caching.
+
+    cemit_info(" Starting asynchronous object reset loop ...")
+    def run_reset_loop():
+        # run a reset loop on all objects
+        [(o.cmdset.reset(), o.locks.reset()) for o in ObjectDB.objects.all()]
+        [s.locks.reset() for s in ScriptDB.objects.all()]
+        [p.locks.reset() for p in PlayerDB.objects.all()]
+        [h.locks.reset() for h in HelpEntry.objects.all()]
+        [m.locks.reset() for m in Msg.objects.all()]
+        [c.locks.reset() for c in Channel.objects.all()]
+    at_return = lambda r: cemit_info(" ... @reload: Asynchronous reset loop finished.")
+    at_err = lambda e: cemit_info("%s\n@reload: Asynchronous reset loop exited with an error." % e)
+    utils.run_async(run_reset_loop, at_return, at_err)
      
 def reload_scripts(scripts=None, obj=None, key=None, 
                    dbref=None, init_mode=False):

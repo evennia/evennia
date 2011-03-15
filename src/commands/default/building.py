@@ -5,7 +5,6 @@ Building and world design commands
 """
 
 from django.conf import settings 
-from src.permissions.permissions import has_perm, has_perm_string
 from src.objects.models import ObjectDB, ObjAttribute
 from src.utils import create, utils, debug 
 from src.commands.default.muxcommand import MuxCommand
@@ -121,7 +120,7 @@ class CmdSetObjAlias(MuxCommand):
 
     key  = "@alias"
     aliases = "@setobjalias"
-    permissions = "cmd:setobjalias"
+    locks = "cmd:perm(setobjalias) or perm(Builders)"
     help_category = "Building"
     
     def func(self):
@@ -143,7 +142,7 @@ class CmdSetObjAlias(MuxCommand):
             else:
                 caller.msg("No aliases exist for '%s'." % obj.key)
             return 
-        if not has_perm(caller, obj, 'modify_attributes'):
+        if not obj.access(caller, 'edit'):
             caller.msg("You don't have permission to do that.")
             return 
         if not aliases or not aliases[0]:
@@ -164,7 +163,7 @@ class CmdSetObjAlias(MuxCommand):
         aliases = list(set(old_aliases))        
         # save back to object.
         obj.aliases = aliases 
-        caller.msg("Aliases for '%s' are now set to %s." % (obj.key, obj.aliases))
+        caller.msg("Aliases for '%s' are now set to %s." % (obj.key, ", ".join(obj.aliases)))
 
 class CmdCopy(ObjManipCommand):    
     """
@@ -183,7 +182,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
-    permissions = "cmd:copy"
+    locks = "cmd:perm(copy) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -252,7 +251,7 @@ class CmdCpAttr(MuxCommand):
     Copy the attribute one object to one or more attributes on another object.
     """
     key = "@cpattr"
-    permissions = "cmd:cpattr"
+    locks = "cmd:perm(cpattr) or perm(Builders)"
     help_category = "Building"
     
     def func(self):
@@ -334,7 +333,7 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
-    permissions = "cmd:create"
+    locks = "cmd:perm(create) or perm(Builders)"
     help_category = "Building"
             
     def func(self):
@@ -366,8 +365,10 @@ class CmdCreate(ObjManipCommand):
                 
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
+
+            lockstring = "owner:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards);get:all()" % (caller.id, caller.id)
             obj = create.create_object(typeclass, name, caller, 
-                                       home=caller, aliases=aliases)
+                                       home=caller, aliases=aliases, locks=lockstring)
             if not obj:
                 string = "Error when creating object."
                 continue
@@ -412,7 +413,7 @@ class CmdDebug(MuxCommand):
     """
 
     key = "@debug"
-    permissions = "cmd:debug"
+    locks = "cmd:perm(debug) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -462,7 +463,7 @@ class CmdDesc(MuxCommand):
     """
     key = "@desc"
     aliases = "@describe"
-    permissions = "cmd:desc"
+    locks = "cmd:perm(desc) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -504,7 +505,7 @@ class CmdDestroy(MuxCommand):
 
     key = "@destroy"
     aliases = "@delete"
-    permissions = "cmd:destroy"
+    locks = "cmd:perm(destroy) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -525,7 +526,7 @@ class CmdDestroy(MuxCommand):
             if obj.player and not 'override' in self.switches:
                 string = "Object %s is a player object. Use /override to delete anyway." % objname
                 continue 
-            if not has_perm(caller, obj, 'create'):
+            if not obj.access(caller, 'delete'):
                 string = "You don't have permission to delete %s." % objname
                 continue
             # do the deletion
@@ -558,7 +559,7 @@ class CmdDig(ObjManipCommand):
     like to the name of the room and the exits in question; an example would be 'north;no;n'.
     """
     key = "@dig"
-    permissions = "cmd:dig"
+    locks = "cmd:perm(dig) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -681,7 +682,7 @@ class CmdLink(MuxCommand):
     """
 
     key = "@link"
-    permissions = "cmd:link"
+    locks = "cmd:perm(link) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -759,7 +760,7 @@ class CmdListCmdSets(MuxCommand):
     """
     key = "@cmdsets"
     aliases = "@listcmsets"
-    permissions = "cmd:listcmdsets"
+    locks = "cmd:perm(listcmdsets) or perm(Builders)"
     help_category = "Building"
     
     def func(self):
@@ -789,7 +790,7 @@ class CmdMvAttr(ObjManipCommand):
     and target are the same, in which case this is like a copy operation)
     """
     key = "@mvattr"
-    permissions = "cmd:mvattr"
+    locks = "cmd:perm(mvattr) or perm(Builders)"
     help_category = "Building"
     
     def func(self):
@@ -861,7 +862,7 @@ class CmdName(ObjManipCommand):
     
     key = "@name"
     aliases = ["@rename"]
-    permissions = "cmd:rename"
+    locks = "cmd:perm(rename) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -912,7 +913,7 @@ class CmdOpen(ObjManipCommand):
 
     """
     key = "@open"
-    permissions = "cmd:open"
+    locks = "cmd:perm(open) or perm(Builders)"
     help_category = "Building"
 
     # a custom member method to chug out exits and do checks 
@@ -1053,7 +1054,7 @@ class CmdSetAttribute(ObjManipCommand):
     """
 
     key = "@set"
-    permissions = "cmd:set"
+    locks = "cmd:perm(set) or perm(Builders)"
     help_category = "Building"
     
     def func(self):
@@ -1128,7 +1129,7 @@ class CmdTypeclass(MuxCommand):
 
     key = "@typeclass"
     aliases = "@type, @parent"
-    permissions = "cmd:typeclass"
+    locks = "cmd:perm(typeclass) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -1166,7 +1167,7 @@ class CmdTypeclass(MuxCommand):
             typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
                                    typeclass)
 
-        if not has_perm(caller, obj, 'change_typeclass'):
+        if not obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
             return 
 
@@ -1208,7 +1209,7 @@ class CmdWipe(ObjManipCommand):
     matching the given attribute-wildcard search string. 
     """
     key = "@wipe"
-    permissions = "cmd:wipe"
+    locks = "cmd:perm(wipe) or perm(Builders)"
     help_category = "Building"
                 
     def func(self):
@@ -1229,6 +1230,9 @@ class CmdWipe(ObjManipCommand):
         obj = caller.search(objname)
         if not obj:
             return
+        if not obj.access(caller, 'edit'):
+            caller.msg("You are not allowed to do that.")
+            return 
         if not attrs:
             # wipe everything 
             for attr in obj.get_all_attributes():
@@ -1241,7 +1245,90 @@ class CmdWipe(ObjManipCommand):
             string = string % (",".join(attrs), obj.name)
         caller.msg(string)
 
+class CmdLock(ObjManipCommand):
+    """
+    lock - assign a lock definition to an object
 
+    Usage:
+      @lock <object>[ = <lockstring>]
+      or 
+      @lock[/switch] object/<access_type>
+      
+    Switch:
+      del - delete given access type
+      view - view lock associated with given access type (default)
+    
+    If no lockstring is given, shows all locks on
+    object. 
+
+    Lockstring is on the form
+       'access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]
+    Where func1, func2 ... valid lockfuncs with or without arguments. 
+    Separator expressions need not be capitalized.
+
+    For example: 
+       'get: id(25) or perm(Wizards)'
+    The 'get' access_type is checked by the get command and will
+    an object locked with this string will only be possible to 
+    pick up by Wizards or by object with id 25.
+    
+    You can add several access_types after oneanother by separating
+    them by ';', i.e:
+       'get:id(25);delete:perm(Builders)'
+    """
+    key = "@lock"
+    aliases = ["@locks", "lock", "locks"]
+    locks = "cmd: perm(@locks) or perm(Builders)"
+    help_category = "Building"
+
+    def func(self):
+        "Sets up the command"
+
+        caller = self.caller
+        if not self.args: 
+            string = "@lock <object>[ = <lockstring>] or @lock[/switch] object/<access_type>"            
+            caller.msg(string)
+            return 
+        if '/' in self.lhs: 
+            # call on the form @lock obj/access_type
+            objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]            
+            obj = caller.search(objname)
+            if not obj:
+                return 
+            lockdef = obj.locks.get(access_type)
+            if lockdef: 
+                string = lockdef[2]
+                if 'del' in self.switches:
+                    if obj.access(caller, 'edit'):
+                        caller.msg("You are not allowed to do that.")
+                        return 
+                    obj.locks.delete(access_type)
+                    string = "deleted lock %s" % string 
+            else:
+                string = "%s has no lock of access type '%s'." % (obj, access_type)
+            caller.msg(string)
+            return 
+
+        if self.rhs: 
+            # we have a = separator, so we are assigning a new lock
+            objname, lockdef = self.lhs, self.rhs
+            obj = caller.search(objname)
+            if not obj:
+                return 
+            if obj.access(caller, 'edit'):
+                caller.msg("You are not allowed to do that.")
+                return 
+            ok = obj.locks.add(lockdef, caller)
+            if ok:
+                caller.msg("Added lock '%s' to %s." % (lockdef, obj))
+            return 
+
+        # if we get here, we are just viewing all locks
+        obj = caller.search(self.lhs)
+        if not obj:
+            return 
+        caller.msg(obj.locks)
+            
 class CmdExamine(ObjManipCommand):
     """    
     examine - detailed info on objects
@@ -1255,7 +1342,7 @@ class CmdExamine(ObjManipCommand):
     """
     key = "@examine"
     aliases = ["@ex","ex", "exam"]
-    permissions = "cmd:examine"
+    locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
 
     def crop_line(self, text, heading="", line_width=79):
@@ -1324,7 +1411,10 @@ class CmdExamine(ObjManipCommand):
         string += "\n{wLocation{n: %s" % obj.location
         perms = obj.permissions
         if perms:            
-            string += "\n{wObj Perms/Locks{n: %s" % (", ".join(perms)) 
+            string += "\n{wPermissions{n: %s" % (", ".join(perms)) 
+        locks = str(obj.locks)
+        if locks:
+            string += "\n{wLocks{n: %s" % ("; ".join([lock for lock in locks.split(';')]))
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
             string += "\n{wCurrent Cmdset (before permission checks){n:\n\r %s" % obj.cmdset
         if obj.scripts.all():
@@ -1360,7 +1450,7 @@ class CmdExamine(ObjManipCommand):
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
             obj = caller.location
-            if not has_perm(caller, obj, 'obj_info'):
+            if not obj.access(caller, 'examine'):
             #If we don't have special info access, just look at the object instead.
                 caller.exec_cmd('look %s' % obj.name)
                 return              
@@ -1379,7 +1469,7 @@ class CmdExamine(ObjManipCommand):
                 obj = caller.search(obj_name)                
                 if not obj:
                     continue
-                if not has_perm(caller, obj, 'obj_info'):
+                if not obj.access(caller, 'examine'):
                     #If we don't have special info access, just look at the object instead.
                     caller.exec_cmd('look %s' % obj_name)
                     continue
@@ -1407,7 +1497,7 @@ class CmdFind(MuxCommand):
     
     key = "@find"
     aliases = "@locate, find, locate"
-    permissions = "cmd:find"
+    locks = "cmd:perm(find) or perm(Builders)"
     help_category = "Building"
             
     def func(self):
@@ -1447,7 +1537,7 @@ class CmdTeleport(MuxCommand):
     """
     key = "@tel"
     aliases = "@teleport"
-    permissions = "cmd:teleport"
+    locks = "cmd:perm(teleport) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -1501,7 +1591,7 @@ class CmdUnLink(CmdLink):
     # this is just a child of CmdLink
 
     key = "@unlink"
-    permissions = "cmd:unlink"
+    locks = "cmd:perm(unlink) or perm(Builders)"
     help_key = "Building"    
 
     def func(self):

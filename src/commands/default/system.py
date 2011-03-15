@@ -9,9 +9,11 @@ import os, datetime
 import django, twisted
 
 from django.contrib.auth.models import User
+from django.conf import settings
 from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
+from src.players.models import PlayerDB
 from src.config.models import ConfigValue
 from src.utils import reloads, create, logger, utils, gametime
 from src.commands.default.muxcommand import MuxCommand
@@ -28,7 +30,7 @@ class CmdReload(MuxCommand):
     re-validates all scripts. 
     """
     key = "@reload"
-    permissions = "cmd:reload"
+    locks = "cmd:perm(reload) or perm(Immortals)"
     help_category = "System"
 
     def func(self):
@@ -84,7 +86,7 @@ class CmdPy(MuxCommand):
     """
     key = "@py"
     aliases = ["!"]
-    permissions = "cmd:py"
+    locks = "cmd:perm(py) or perm(Immortals)"
     help_category = "System"
     
     def func(self):
@@ -130,7 +132,7 @@ class CmdPy(MuxCommand):
         obj.delete()
         script.delete()
 
-class CmdListScripts(MuxCommand):
+class CmdScripts(MuxCommand):
     """
     Operate on scripts.
 
@@ -149,7 +151,7 @@ class CmdListScripts(MuxCommand):
     """
     key = "@scripts"
     aliases = "@listscripts"
-    permissions = "cmd:listscripts"
+    locks = "cmd:perm(listscripts) or perm(Wizards)"
     help_category = "System"
 
     def format_script_list(self, scripts):
@@ -255,7 +257,7 @@ class CmdListScripts(MuxCommand):
 
 
 
-class CmdListObjects(MuxCommand):
+class CmdObjects(MuxCommand):
     """
     Give a summary of object types in database
 
@@ -267,8 +269,8 @@ class CmdListObjects(MuxCommand):
     given, <nr> defaults to 10.
     """
     key = "@objects"
-    aliases = ["@listobjects", "@listobjs"]
-    permissions = "cmd:listobjects"
+    aliases = ["@listobjects", "@listobjs", '@stats', '@db']
+    locks = "cmd:perm(listobjects) or perm(Builders)"
     help_category = "System"
 
     def func(self):
@@ -280,9 +282,24 @@ class CmdListObjects(MuxCommand):
             nlim = int(self.args)
         else:
             nlim = 10
+
+        string = "\n{wDatabase totals:{n"
+
+        nplayers = PlayerDB.objects.count()
+        nobjs = ObjectDB.objects.count()
+        base_typeclass = settings.BASE_CHARACTER_TYPECLASS
+        nchars = ObjectDB.objects.filter(db_typeclass_path=base_typeclass).count()
+        nrooms = ObjectDB.objects.filter(db_location=None).exclude(db_typeclass_path=base_typeclass).count()
+        nexits = sum([1 for obj in ObjectDB.objects.filter(db_location=None) if obj.get_attribute('_destination')])
+
+        string += "\n{wPlayers:{n %i" % nplayers     
+        string += "\n{wObjects:{n %i" % nobjs
+        string += "\n{w Characters (base type):{n %i" % nchars 
+        string += "\n{w Rooms (location==None):{n %i" % nrooms
+        string += "\n{w Exits (.db._destination!=None):{n %i" % nexits
+        string += "\n{w Other:{n %i\n" % (nobjs - nchars - nrooms - nexits)
+        
         dbtotals = ObjectDB.objects.object_totals()
-        #print dbtotals 
-        string = "\n{wDatase Object totals:{n"
         table = [["Count"], ["Typeclass"]]
         for path, count in dbtotals.items():            
             table[0].append(count)
@@ -332,7 +349,7 @@ class CmdService(MuxCommand):
     """
 
     key = "@service"
-    permissions = "cmd:service"
+    locks = "cmd:perm(service) or perm(Immortals)"
     help_category = "System"
 
     def func(self):
@@ -351,7 +368,7 @@ class CmdService(MuxCommand):
         sessions = caller.sessions
         if not sessions:             
             return 
-        service_collection = sessions[0].server.service_collection
+        service_collection = SESSIONS.server.services
 
         if switch == "list":
             # Just display the list of installed services and their
@@ -417,7 +434,7 @@ class CmdShutdown(MuxCommand):
     Shut the game server down gracefully. 
     """    
     key = "@shutdown"
-    permissions = "cmd:shutdown"
+    locks = "cmd:perm(shutdown) or perm(Immortals)"
     help_category = "System"
     
     def func(self):
@@ -468,159 +485,124 @@ class CmdTime(MuxCommand):
     """        
     key = "@time"
     aliases = "@uptime"
-    permissions = "cmd:time"
+    locks = "cmd:perm(time) or perm(Players)"
     help_category = "System"
 
     def func(self):
         "Show times."
 
-        string1 = "\nCurrent server uptime:             \t"        
-        string1 += "{w%s{n" % (utils.time_format(gametime.uptime(format=False), 2))
-
-        string2 =  "\nTotal server running time:        \t"        
-        string2 += "{w%s{n" % (utils.time_format(gametime.runtime(format=False), 2))
-
-        string3 = "\nTotal in-game time (realtime x %g):\t" % (gametime.TIMEFACTOR)
-        string3 += "{w%s{n" % (utils.time_format(gametime.gametime(format=False), 2))
-
-        string4 = "\nServer time stamp:                 \t"
-        string4 += "{w%s{n" % (str(datetime.datetime.now()))
-        string5 = ""
-        if not utils.host_os_is('nt'):
-            # os.getloadavg() is not available on Windows.
+        table = [["Current server uptime:",
+                  "Total server running time:",
+                  "Total in-game time (realtime x %g):" % (gametime.TIMEFACTOR),
+                  "Server time stamp:"
+                  ],
+                 [utils.time_format(gametime.uptime(format=False), 2),
+                  utils.time_format(gametime.runtime(format=False), 2),
+                  utils.time_format(gametime.gametime(format=False), 2),
+                  datetime.datetime.now()
+                  ]]
+        if utils.host_os_is('posix'):
             loadavg = os.getloadavg()
-            string5 += "\nServer load (per minute):         \t"
-            string5 += "{w%g%%{n" % (100 * loadavg[0])
-        string = "%s%s%s%s%s" % (string1, string2, string3, string4, string5)
+            table[0].append("Server load (per minute):")
+            table[1].append("{w%g%%{n" % (100 * loadavg[0]))            
+        stable = []
+        for col in table:
+            stable.append([str(val).strip() for val in col])
+        ftable = utils.format_table(stable, 5)
+        string = ""
+        for row in ftable:
+            string += "\n " + "{w%s{n" % row[0] + "".join(row[1:])
         self.caller.msg(string)
 
-class CmdList(MuxCommand):
+class CmdServerLoad(MuxCommand):
     """ 
-    @list - list info
+    server load statistics
 
     Usage:
-      @list <option>
+       @serverload
 
-    Options:
-      process - list processes
-      objects - list objects
-      scripts - list scripts
-      perms   - list permission keys and groups    
-
-    Shows game related information depending
-    on which argument is given.
+    Show server load statistics in a table. 
     """
-    key = "@list"
-    permissions = "cmd:list"
+    key = "@serverload"
+    locks = "cmd:perm(list) or perm(Immortals)"
     help_category = "System"
 
     def func(self):
         "Show list."
 
         caller = self.caller        
-        if not self.args:
-            caller.msg("Usage: @list process|objects|scripts|perms")
-            return 
 
-        string = ""
-        if self.arglist[0] in ["proc","process"]:
+        # display active processes
 
-            # display active processes
-
-            if utils.host_os_is('nt'):
-                string = "Feature not available on Windows."              
-            else:
-                import resource                                
-                loadavg = os.getloadavg()                
-                psize = resource.getpagesize()
-                rusage = resource.getrusage(resource.RUSAGE_SELF)                                
-                table = [["Server load (1 min):", 
-                          "Process ID:",
-                          "Bytes per page:",
-                          "Time used:",
-                          "Integral memory:",
-                          "Max res memory:",
-                          "Page faults:",
-                          "Disk I/O:",
-                          "Network I/O",
-                          "Context switching:"
-                          ],
-                         ["%g%%" % (100 * loadavg[0]),
-                          "%10d" % os.getpid(),
-                          "%10d " % psize,
-                          "%10d" % rusage[0],
-                          "%10d shared" % rusage[3],
-                          "%10d pages" % rusage[2],
-                          "%10d hard" % rusage[7],
-                          "%10d reads" % rusage[9],
-                          "%10d in" % rusage[12],
-                          "%10d vol" % rusage[14]                          
-                        ],
-                         ["", "", "", 
-                          "(user: %g)" % rusage[1],
-                          "%10d private" % rusage[4],
-                          "%10d bytes" % (rusage[2] * psize),
-                          "%10d soft" % rusage[6],
-                          "%10d writes" % rusage[10],
-                          "%10d out" % rusage[11],
-                          "%10d forced" % rusage[15]
-                          ],
-                         ["", "", "", "", 
-                          "%10d stack" % rusage[5],
-                          "", 
-                          "%10d swapouts" % rusage[8],
-                          "", "",
-                          "%10d sigs" % rusage[13]
-                        ]                         
-                         ]
-                stable = []
-                for col in table:
-                    stable.append([str(val).strip() for val in col])
-                ftable = utils.format_table(stable, 5)
-                string = ""
-                for row in ftable:
-                    string += "\n " + "{w%s{n" % row[0] + "".join(row[1:]) 
-                                
-                # string = "\n Server load (1 min) : %.2f " % loadavg[0]
-                # string += "\n Process ID: %10d" % os.getpid()
-                # string += "\n Bytes per page: %10d" % psize
-                # string += "\n Time used: %10d, user: %g" % (rusage[0], rusage[1]) 
-                # string += "\n Integral mem: %10d shared,  %10d, private, %10d stack " % \
-                #     (rusage[3], rusage[4], rusage[5])
-                # string += "\n Max res mem: %10d pages %10d bytes" % \
-                #     (rusage[2],rusage[2] * psize)
-                # string += "\n Page faults: %10d hard    %10d soft   %10d swapouts " % \
-                #     (rusage[7], rusage[6], rusage[8])
-                # string += "\n Disk I/O: %10d reads   %10d writes " % \
-                #     (rusage[9], rusage[10])
-                # string += "\n Network I/O: %10d in      %10d out " % \
-                #     (rusage[12], rusage[11])
-                # string += "\n Context swi: %10d vol     %10d forced %10d sigs " % \
-                #     (rusage[14], rusage[15], rusage[13])
-
-        elif self.arglist[0] in ["obj", "objects"]:
-            caller.execute_cmd("@objects")
-        elif self.arglist[0] in ["scr", "scripts"]:
-            caller.execute_cmd("@scripts")
-        elif self.arglist[0] in ["perm", "perms","permissions"]:
-            caller.execute_cmd("@perm/list")
+        if not utils.host_os_is('posix'):
+            string = "Process listings are only available under Linux/Unix."
         else:
-            string = "'%s' is not a valid option." % self.arglist[0]
-        # send info
+            import resource                                
+            loadavg = os.getloadavg()                
+            psize = resource.getpagesize()
+            rusage = resource.getrusage(resource.RUSAGE_SELF)                                
+            table = [["Server load (1 min):", 
+                      "Process ID:",
+                      "Bytes per page:",
+                      "Time used:",
+                      "Integral memory:",
+                      "Max res memory:",
+                      "Page faults:",
+                      "Disk I/O:",
+                      "Network I/O",
+                      "Context switching:"
+                      ],
+                     ["%g%%" % (100 * loadavg[0]),
+                      "%10d" % os.getpid(),
+                      "%10d " % psize,
+                      "%10d" % rusage[0],
+                      "%10d shared" % rusage[3],
+                      "%10d pages" % rusage[2],
+                      "%10d hard" % rusage[7],
+                      "%10d reads" % rusage[9],
+                      "%10d in" % rusage[12],
+                      "%10d vol" % rusage[14]                          
+                    ],
+                     ["", "", "", 
+                      "(user: %g)" % rusage[1],
+                      "%10d private" % rusage[4],
+                      "%10d bytes" % (rusage[2] * psize),
+                      "%10d soft" % rusage[6],
+                      "%10d writes" % rusage[10],
+                      "%10d out" % rusage[11],
+                      "%10d forced" % rusage[15]
+                      ],
+                     ["", "", "", "", 
+                      "%10d stack" % rusage[5],
+                      "", 
+                      "%10d swapouts" % rusage[8],
+                      "", "",
+                      "%10d sigs" % rusage[13]
+                    ]                         
+                     ]
+            stable = []
+            for col in table:
+                stable.append([str(val).strip() for val in col])
+            ftable = utils.format_table(stable, 5)
+            string = ""
+            for row in ftable:
+                string += "\n " + "{w%s{n" % row[0] + "".join(row[1:]) 
+                                
         caller.msg(string)
             
 
 #TODO - expand @ps as we add irc/imc2 support. 
 class CmdPs(MuxCommand):
     """
-    @ps - list processes
+    list processes
+    
     Usage
       @ps 
 
     Shows the process/event table.
     """
     key = "@ps"
-    permissions = "cmd:ps"
+    locks = "cmd:perm(ps) or perm(Builders)"
     help_category = "System"
 
     def func(self):
@@ -651,36 +633,4 @@ class CmdPs(MuxCommand):
         string += "\n{wTotal{n: %d scripts." % len(all_scripts)
         self.caller.msg(string)
 
-class CmdStats(MuxCommand):
-    """
-    @stats - show object stats
-
-    Usage:
-      @stats
-
-    Shows stats about the database.
-    """
-    
-    key = "@stats"   
-    aliases = "@db"
-    permissions = "cmd:stats"
-    help_category = "System"
-
-    def func(self):
-        "Show all stats"
-
-        # get counts for all typeclasses 
-        stats_dict = ObjectDB.objects.object_totals()
-        # get all objects
-        stats_allobj = ObjectDB.objects.all().count()
-        # get all rooms 
-        stats_room = ObjectDB.objects.filter(db_location=None).count()
-        # get all players 
-        stats_users = User.objects.all().count()
-
-        string = "\n{wNumber of users:{n %i" % stats_users
-        string += "\n{wTotal number of objects:{n %i" % stats_allobj
-        string += "\n{wNumber of rooms (location==None):{n %i" % stats_room        
-        string += "\n (Use @objects for detailed info)"
-        self.caller.msg(string)
 

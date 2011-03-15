@@ -28,9 +28,11 @@ class CmdSetMeta(type):
         # by default we key the cmdset the same as the
         # name of its class. 
         mcs.key = mcs.__name__
+        mcs.path = "%s.%s" % (mcs.__module__, mcs.__name__)
 
         if not type(mcs.key_mergetypes) == dict:
             mcs.key_mergetypes = {}
+        
         super(CmdSetMeta, mcs).__init__(*args, **kwargs)
 
 

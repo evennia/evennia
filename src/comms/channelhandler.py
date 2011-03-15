@@ -25,14 +25,14 @@ does this for you.
 """
 from src.comms.models import Channel, Msg
 from src.commands import cmdset, command
-from src.permissions.permissions import has_perm
+from src.utils import utils
 
 class ChannelCommand(command.Command):
     """
     Channel
 
     Usage:
-      <channel name or alias>  <message> 
+       <channel name or alias>  <message> 
 
     This is a channel. If you have subscribed to it, you can send to
     it by entering its name or alias, followed by the text you want to
@@ -41,17 +41,17 @@ class ChannelCommand(command.Command):
     # this flag is what identifies this cmd as a channel cmd
     # and branches off to the system send-to-channel command
     # (which is customizable by admin)
+    is_channel = True 
     key = "general"
     help_category = "Channel Names"
-    permissions = "cmd:use_channels"
-    is_channel = True 
+    locks = "cmd:all()"
     obj = None     
     
     def parse(self):
         """
         Simple parser
         """
-        channelname, msg = self.args.split(":", 1)
+        channelname, msg = self.args.split(":", 1) # cmdhandler sends channame:msg here.
         self.args = (channelname.strip(), msg.strip())
 
     def func(self):
@@ -73,7 +73,7 @@ class ChannelCommand(command.Command):
             string = "You are not connected to channel '%s'."
             caller.msg(string % channelkey)
             return
-        if not has_perm(caller, channel, 'chan_send'):
+        if not channel.access(caller, 'send'):
             string = "You are not permitted to send to channel '%s'."
             caller.msg(string % channelkey)
             return
@@ -102,6 +102,25 @@ class ChannelHandler(object):
         """
         self.cached_channel_cmds = []
 
+    def _format_help(self, channel):
+        "builds a doc string"
+        key = channel.key
+        aliases = channel.aliases
+        if not utils.is_iter(aliases):
+            aliases = [aliases]
+        ustring = "%s <message>" % key.lower() + "".join(["\n           %s <message>" % alias.lower() for alias in aliases])
+        desc = channel.desc        
+        string = \
+        """
+        Channel '%s' 
+
+        Usage (not including your personal aliases):
+           %s
+
+        %s
+        """ % (key, ustring, desc)
+        return string 
+         
     def add_channel(self, channel):
         """
         Add an individual channel to the handler. This should be
@@ -113,8 +132,12 @@ class ChannelHandler(object):
         cmd = ChannelCommand()
         cmd.key = channel.key.strip().lower()
         cmd.obj = channel
+        cmd.__doc__= self._format_help(channel)
         if channel.aliases: 
             cmd.aliases = channel.aliases
+        cmd.lock_storage = "cmd:all();%s" % channel.locks
+        cmd.lockhandler.reset()
+
         self.cached_channel_cmds.append(cmd)
 
     def update(self):
@@ -133,8 +156,9 @@ class ChannelHandler(object):
         chan_cmdset.key = '_channelset'
         chan_cmdset.priority = 10
         chan_cmdset.duplicates = True 
-        for cmd in [cmd for cmd in self.cached_channel_cmds
-                    if has_perm(source_object, cmd, 'chan_send')]:
+
+        for cmd in [cmd for cmd in self.cached_channel_cmds            
+                    if cmd.access(source_object, 'listen')]:
             chan_cmdset.add(cmd)
         return chan_cmdset
 

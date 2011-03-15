@@ -91,7 +91,7 @@ class Object(BaseObject):
      
      """
     pass
-
+        
 class Character(BaseCharacter):
     """
     This is the default object created for a new user connecting - the
@@ -103,7 +103,6 @@ class Character(BaseCharacter):
     def at_object_creation(self):
         # This adds the default cmdset to the player every time they log
         # in. Don't change this unless you really know what you are doing.
-        #self.scripts.add(scripts.AddDefaultCmdSet)
         super(Character, self).at_object_creation()
 
         # expand with whatever customizations you want below...
@@ -147,6 +146,7 @@ class Exit(BaseExit):
     clean up a bit after themselves though, easiest accomplished
     by letting by_object_delete() call the object's parent. 
     """
+
     def at_object_delete(self):
         """
         The game needs to do some cache cleanups when deleting an exit,
@@ -157,7 +157,6 @@ class Exit(BaseExit):
         return super(Exit, self).at_object_delete()
         # custom modifications below.
         # ... 
-
 
 class Player(BasePlayer):
     """
