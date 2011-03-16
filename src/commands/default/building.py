@@ -1299,7 +1299,7 @@ class CmdLock(ObjManipCommand):
             if lockdef: 
                 string = lockdef[2]
                 if 'del' in self.switches:
-                    if obj.access(caller, 'edit'):
+                    if not obj.access(caller, 'edit'):
                         caller.msg("You are not allowed to do that.")
                         return 
                     obj.locks.delete(access_type)
@@ -1315,7 +1315,7 @@ class CmdLock(ObjManipCommand):
             obj = caller.search(objname)
             if not obj:
                 return 
-            if obj.access(caller, 'edit'):
+            if not obj.access(caller, 'edit'):
                 caller.msg("You are not allowed to do that.")
                 return 
             ok = obj.locks.add(lockdef, caller)
