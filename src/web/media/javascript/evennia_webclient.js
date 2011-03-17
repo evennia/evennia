@@ -192,7 +192,8 @@ function history_add(input) {
 // Catching keyboard shortcuts
 
 $(document).keypress( function(event) {
-    var code = event.keyCode ? event.keyCode : event.which;
+    var code = event.keyCode ? event.keyCode : event.which;    
+    wresult = event.which;
 
     // always focus input field
     $("#inputfield")[0].focus();
@@ -202,12 +203,17 @@ $(document).keypress( function(event) {
         return false;
     }
     else {
-        if (code == 38) { // arrow up
-            $("#inputfield").val(function(index, value){
+        if (wresult == 38 || wresult == 40) {
+            // this fixes a bug in firefox, those are on ASCII format
+            return false;
+        }
+
+        if (code == 38) { // arrow up 38
+            $("#inputfield").val(function(index, value){                
                 return history_step_back();
             });
         }
-        else if (code == 40) { // arrow down
+        else if (code == 40) { // arrow down 40
             $("#inputfield").val(function(index, value){
                 return history_step_fwd();
             });
