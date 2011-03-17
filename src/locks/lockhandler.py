@@ -319,7 +319,7 @@ class LockHandler(object):
         else:
             return default
 
-    def check_lockstring(self, accessing_obj, accessed_obj, lockstring):
+    def check_lockstring(self, accessing_obj, lockstring):
         """
         Do a direct check against a lockstring ('atype:func()..'), without any
         intermediary storage on the accessed object (this can be left

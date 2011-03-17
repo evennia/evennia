@@ -87,7 +87,7 @@ class Object(TypeClass):
 
         dbref = self.dbobj.dbref
 
-        self.locks.add("control:id(%s)" % dbref)
+        self.locks.add("control:id(%s) or perm(Immortals)" % dbref)
         self.locks.add("examine:perm(Builders)")
         self.locks.add("edit:perm(Wizards)")
         self.locks.add("delete:perm(Wizards)")

@@ -34,8 +34,8 @@ def reload_modules():
     # should never need to do that anyway). Updating src requires a server
     # reboot. Modules in except_dirs are considered ok to reload despite being
     # inside src/
-    protected_dirs = ('src.',)
-    except_dirs = ('src.commands.default.') 
+    protected_dirs = ('src.',)               # note that these MUST be tuples!
+    except_dirs = ('src.commands.default.',) #             "  
 
     # flag 'dangerous' typeclasses (those which retain a memory
     # reference, notably Scripts with a timer component) for
@@ -50,7 +50,7 @@ def reload_modules():
 
     def safe_dir_to_reload(modpath):
         "Check so modpath is not a subdir of a protected dir, and not an ok exception"
-        return not any(modpath.startswith(pdir) and not any(modpath.startswith(pdir) for pdir in except_dirs) for pdir in protected_dirs)
+        return not any(modpath.startswith(pdir) and not any(modpath.startswith(edir) for edir in except_dirs) for pdir in protected_dirs)
     def safe_mod_to_reload(modpath):
         "Check so modpath is not in an unsafe module"
         return not any(mpath.startswith(modpath) for mpath in unsafe_modules)

@@ -11,6 +11,8 @@ from src.server.sessionhandler import SESSIONS
 from src.utils import utils
 from src.commands.default.muxcommand import MuxCommand
 
+PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
+
 class CmdBoot(MuxCommand):
     """
     @boot 
@@ -386,9 +388,23 @@ class CmdPerm(MuxCommand):
         else:
             # add a new permission             
             permissions = obj.permissions
+
+            caller.permissions 
+            
+
+
             for perm in self.rhslist:
+
+                perm = perm.lower()
+                
+                # don't allow to set a permission higher in the hierarchy than the one the
+                # caller has (to prevent self-escalation)
+                if perm in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm):
+                    caller.msg("You cannot assign a permission higher than the one you have yourself.")
+                    return 
+
                 if perm in permissions:
-                    cstring += "\nPermission '%s' is already defined on %s%s." % (rhs, obj.name)
+                    cstring += "\nPermission '%s' is already defined on %s." % (rhs, obj.name)
                 else:
                     permissions.append(perm)
                     obj.permissions = permissions
