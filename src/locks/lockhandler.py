@@ -348,12 +348,13 @@ def test():
     obj1 = TestObj()
     obj2 = TestObj()
     
-    obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Wizards);examine:perm(Builders);delete:perm(Wizards);get:all()"
+    #obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Wizards);examine:perm(Builders);delete:perm(Wizards);get:all()"
     #obj1.lock_storage = "cmd:all();admin:id(1);listen:all();send:all()"   
+    obj1.lock_storage = "listen:perm(Immortals)"
 
     pdb.set_trace()
     obj1.locks = LockHandler(obj1)
-    obj2.permissions = ["Wizards"]
+    obj2.permissions = ["Immortals"]
     obj2.id = 4
 
     #obj1.locks.add("edit:attr(test)")

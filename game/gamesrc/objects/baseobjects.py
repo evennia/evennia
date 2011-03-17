@@ -43,6 +43,13 @@ class Object(BaseObject):
     of Evennia and messing with them might well break things for you.
     
     Hooks (these are class methods, so their arguments should also start with self): 
+
+     basetype_setup() - only called once, when object is first created, before
+                       at_object_creation(). Sets up semi-engine-specific details such as 
+                       the default lock policy, what defines a Room, Exit etc. 
+                       Usually not modified unless you want to overload the default
+                       security restriction policies.
+
      at_object_creation() - only called once, when object is first created.
                             Almost all object customizations go here. 
      at_first_login() - only called once, the very first time user logs in.
@@ -100,14 +107,7 @@ class Character(BaseCharacter):
     command set whenever the player logs in - otherwise they won't be
     able to use any commands! 
     """
-    def at_object_creation(self):
-        # This adds the default cmdset to the player every time they log
-        # in. Don't change this unless you really know what you are doing.
-        super(Character, self).at_object_creation()
-
-        # expand with whatever customizations you want below...
-        # ...
-
+        
     def at_disconnect(self):
         """
         We stove away the character when logging off, otherwise they will remain where 
@@ -145,23 +145,19 @@ class Exit(BaseExit):
     hard-coded in their typeclass. Exits do have to make sure they
     clean up a bit after themselves though, easiest accomplished
     by letting by_object_delete() call the object's parent. 
-    """
 
-    def at_object_delete(self):
-        """
-        The game needs to do some cache cleanups when deleting an exit,
-        so we make sure to call super() here. If this method returns
-        False, the deletion is aborted.
-        """
-        # handle some cleanups
-        return super(Exit, self).at_object_delete()
-        # custom modifications below.
-        # ... 
+    Note that exits need to do cache-cleanups after they are
+    deleted, so if you re-implement at_object_delete() for some
+    reason, make sure to call the parent class-method too!
+
+    """
+    pass
 
 class Player(BasePlayer):
     """
     This class describes the actual OOC player (i.e. the user connecting 
     to the MUD). It does NOT have visual appearance in the game world (that
+
     is handled by the character which is connected to this). Comm channels
     are attended/joined using this object. 
     

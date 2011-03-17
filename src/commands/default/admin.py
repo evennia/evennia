@@ -27,7 +27,7 @@ class CmdBoot(MuxCommand):
     """
     
     key = "@boot"
-    locks = "cmd:perm(boot) or perm(Wizard)"
+    locks = "cmd:perm(boot) or perm(Wizards)"
     help_category = "Admin"
 
     def func(self):
@@ -315,17 +315,13 @@ class CmdPerm(MuxCommand):
     @perm - set permissions
 
     Usage:
-      @perm[/switch] [<object>] = [<permission>]
-      @perm[/switch] [*<player>] = [<permission>]
-
+      @perm[/switch] <object> [= <permission>[,<permission>,...]]
+      
     Switches:
       del : delete the given permission from <object>.
-      list : list all permissions, or those set on <object>
             
-    Use * before the search string to add permissions to a player. 
     This command sets/clears individual permission strings on an object.
-    Use /list without any arguments to see all available permissions
-    or those defined on the <object>/<player> argument. 
+    If no permission is given, list all permissions on <object>
     """
     key = "@perm"
     aliases = "@setperm"
@@ -339,51 +335,38 @@ class CmdPerm(MuxCommand):
         switches = self.switches
         lhs, rhs = self.lhs, self.rhs
 
-        if not self.args:
-            
-            if "list" not in switches:
-                string = "Usage: @setperm[/switch] [object = permission]\n" 
-                string += "       @setperm[/switch] [*player = permission]"
-                caller.msg(string)
-                return
-            else:
-                #just print all available permissions
-                string = "\nAll defined permission groups and keys (i.e. not locks):"
-                pgroups = list(PermissionGroup.objects.all())
-                pgroups.sort(lambda x, y: cmp(x.key, y.key)) # sort by group key
+        if not self.args:            
+            string = "Usage: @perm[/switch] object [ = permission, permission, ...]\n" 
+            caller.msg(string)
+            return
 
-                for pgroup in pgroups:
-                    string += "\n\n - {w%s{n (%s):" % (pgroup.key, pgroup.desc)
-                    string += "\n%s" % \
-                        utils.fill(", ".join(sorted(pgroup.group_permissions)))                
-                caller.msg(string)
-                return 
-
-        # locate the object/player         
+        # locate the object
         obj = caller.search(lhs, global_search=True)
         if not obj:
             return         
-        
-        pstring = ""
-        if utils.inherits_from(obj, settings.BASE_PLAYER_TYPECLASS):
-            pstring = " Player "
-        
+                
         if not rhs: 
-            string = "Permission string on %s{w%s{n: " % (pstring, obj.key)
+
+            if not obj.access(caller, 'examine'):
+                caller.msg("You are not allowed to examine this object.")
+                return
+
+            string = "Permissions on {w%s{n: " % obj.key
             if not obj.permissions:
                 string += "<None>"
             else:
                 string += ", ".join(obj.permissions)
-            if pstring and obj.is_superuser:
-                string += "\n(... But this player is a SUPERUSER! "
-                string += "All access checked are passed automatically.)"
-            elif obj.player and obj.player.is_superuser:
-                string += "\n(... But this object's player is a SUPERUSER! "
-                string += "All access checked are passed automatically.)"
+                if hasattr(obj, 'player') and hasattr(obj.player, 'is_superuser') and obj.player.is_superuser:
+                    string += "\n(... but this object is currently controlled by a SUPERUSER! "
+                    string += "All access checks are passed automatically.)"            
             caller.msg(string)
             return 
             
         # we supplied an argument on the form obj = perm
+
+        if not obj.access(caller, 'control'):
+            caller.msg("You are not allowed to edit this object's permissions.")
+            return         
 
         cstring = ""
         tstring = ""
@@ -393,26 +376,24 @@ class CmdPerm(MuxCommand):
                 try:
                     index = obj.permissions.index(perm)
                 except ValueError:
-                    cstring += "\nPermission '%s' was not defined on %s%s." % (perm, pstring, lhs)
+                    cstring += "\nPermission '%s' was not defined on %s." % (perm, obj.name)
                     continue
                 permissions = obj.permissions
                 del permissions[index]
                 obj.permissions = permissions 
-                cstring += "\nPermission '%s' was removed from %s%s." % (perm, pstring, obj.name)
+                cstring += "\nPermission '%s' was removed from %s." % (perm, obj.name)
                 tstring += "\n%s revokes the permission '%s' from you." % (caller.name, perm)
         else:
-            # As an extra check, we warn the user if they customize the 
-            # permission string (which is okay, and is used by the lock system)            
+            # add a new permission             
             permissions = obj.permissions
             for perm in self.rhslist:
-
                 if perm in permissions:
-                    cstring += "\nPermission '%s' is already defined on %s%s." % (rhs, pstring, obj.name)
+                    cstring += "\nPermission '%s' is already defined on %s%s." % (rhs, obj.name)
                 else:
                     permissions.append(perm)
                     obj.permissions = permissions
-                    cstring += "\nPermission '%s' given to %s%s." % (rhs, pstring, obj.name)
-                    tstring += "\n%s granted you the permission '%s'." % (caller.name, rhs)        
+                    cstring += "\nPermission '%s' given to %s." % (rhs, obj.name)
+                    tstring += "\n%s gives you the permission '%s'." % (caller.name, rhs)        
         caller.msg(cstring.strip())
         if tstring:
             obj.msg(tstring.strip())

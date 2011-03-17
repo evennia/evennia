@@ -75,22 +75,30 @@ class Object(TypeClass):
 
     # hooks called by the game engine
 
+    def basetype_setup(self):
+        """
+        This sets up the default properties of an Object,
+        just before the more general at_object_creation.
+        """
+        # the default security setup fallback for a generic
+        # object. Overload in child for a custom setup. Also creation
+        # commands may set this (create an item and you should be its
+        # controller, for example)
+
+        dbref = self.dbobj.dbref
+
+        self.locks.add("control:id(%s)" % dbref)
+        self.locks.add("examine:perm(Builders)")
+        self.locks.add("edit:perm(Wizards)")
+        self.locks.add("delete:perm(Wizards)")
+        self.locks.add("get:all()")
+
     def at_object_creation(self):
         """
         Called once, when this object is first
         created. 
         """ 
-
-        # the default security setup fallback for a generic
-        # object. Overload in child for a custom setup. Also creation
-        # commands may set this (create an item and you should its
-        # owner, for example)
-        dbref = self.dbobj.dbref
-        self.locks.add("owner:id(%s)" % dbref)        
-        self.locks.add("examine:perm(Builders)")
-        self.locks.add("edit:perm(Wizards)")
-        self.locks.add("delete:perm(Wizards)")
-        self.locks.add("get:all()")        
+        pass
 
     def at_first_login(self):
         """
@@ -327,25 +335,31 @@ class Character(Object):
     version of the at_object_creation to set up the script
     that adds the default cmdset to the object.
     """    
+
+    def basetype_setup(self):
+        """
+        Setup character-specific security
+        """
+        super(Character, self).basetype_setup()
+        self.locks.add("puppet:id(%s) or perm(Immortals)" % self.dbobj.dbref)        
+
+        # add the default cmdset
+        from settings import CMDSET_DEFAULT
+        self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
+
     def at_object_creation(self):
         """
         All this does (for now) is to add the default cmdset. Since
         the script is permanently stored to this object (the permanent
         keyword creates a script to do this), we should never need to
         do this again for as long as this object exists.
+        pass
         """        
-        from settings import CMDSET_DEFAULT
-        self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
         
-        # setup security 
-        super(Character, self).at_object_creation()
-        self.locks.add("puppet:id(%s) or perm(Immortals)" % self.dbobj.dbref)
-
     def at_after_move(self, source_location):
         "Default is to look around after a move."
         self.execute_cmd('look')
-        
-    
+            
 #
 # Base Room object 
 #
@@ -355,12 +369,12 @@ class Room(Object):
     This is the base room object. It's basically
     like any Object except its location is None.
     """
-    def at_object_creation(self):
+    def basetype_setup(self):
         """
         Simple setup, shown as an example
         (since default is None anyway)
         """
-        super(Room, self).at_object_creation()
+        super(Room, self).basetype_setup()
         self.location = None 
 
 class Exit(Object):
@@ -375,6 +389,14 @@ class Exit(Object):
     the attribute _destination to a valid location
     ('Quack like a duck...' and so forth).
     """        
+    def basetype_setup(self):
+        """
+        Setup exit-security
+        """
+        # the lock is open to all by default
+        super(Exit, self).basetype_setup()
+        self.locks.add("traverse:all()")
+
     def at_object_creation(self):
         """
         Another example just for show; the _destination attribute
@@ -385,10 +407,6 @@ class Exit(Object):
         # this is what makes it an exit
         self.attr("_destination", "None")
         
-        # the lock is open to all by default
-        super(Exit, self).at_object_creation()
-        self.locks.add("traverse:all()")
-
     def at_object_delete(self):
         """
         We have to make sure to clean the exithandler cache

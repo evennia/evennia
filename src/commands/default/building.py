@@ -1299,7 +1299,7 @@ class CmdLock(ObjManipCommand):
             if lockdef: 
                 string = lockdef[2]
                 if 'del' in self.switches:
-                    if not obj.access(caller, 'edit'):
+                    if not obj.access(caller, 'control'):
                         caller.msg("You are not allowed to do that.")
                         return 
                     obj.locks.delete(access_type)
@@ -1315,7 +1315,7 @@ class CmdLock(ObjManipCommand):
             obj = caller.search(objname)
             if not obj:
                 return 
-            if not obj.access(caller, 'edit'):
+            if not obj.access(caller, 'control'):
                 caller.msg("You are not allowed to do that.")
                 return 
             ok = obj.locks.add(lockdef, caller)
@@ -1452,7 +1452,7 @@ class CmdExamine(ObjManipCommand):
             obj = caller.location
             if not obj.access(caller, 'examine'):
             #If we don't have special info access, just look at the object instead.
-                caller.exec_cmd('look %s' % obj.name)
+                caller.execute_cmd('look %s' % obj.name)
                 return              
             string = self.format_output(obj)
 
@@ -1471,7 +1471,7 @@ class CmdExamine(ObjManipCommand):
                     continue
                 if not obj.access(caller, 'examine'):
                     #If we don't have special info access, just look at the object instead.
-                    caller.exec_cmd('look %s' % obj_name)
+                    caller.execute_cmd('look %s' % obj_name)
                     continue
                 if obj_attrs:
                     for attrname in obj_attrs:

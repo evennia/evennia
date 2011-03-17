@@ -93,6 +93,7 @@ def create_object(typeclass, key=None, location=None,
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom
     # things on its database object.
+    new_object.basetype_setup() # setup the basics of Exits, Characters etc.
     new_object.at_object_creation()
 
     # custom-given variables override the hook

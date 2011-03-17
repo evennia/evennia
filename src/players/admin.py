@@ -7,10 +7,9 @@ from src.players.models import PlayerDB, PlayerAttribute
 from django.contrib import admin
 
 class PlayerAttributeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_value', 'db_mode', 'db_obj', 'db_permissions')
+    list_display = ('id', 'db_key', 'db_value', 'db_mode', 'db_obj')
     list_display_links = ("id", 'db_key')
     ordering = ["db_obj", 'db_key']
-    readonly_fields = ['db_permissions']
     search_fields = ['id', 'db_key', 'db_obj']
     save_as = True 
     save_on_top = True   
@@ -21,7 +20,6 @@ class PlayerDBAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'db_obj', 'db_typeclass_path')
     list_display_links = ('id', 'user')
     ordering = ['id', 'user']
-    readonly_fields = ['db_permissions']
     search_fields = ['^db_key', 'db_typeclass_path']
     save_as = True 
     save_on_top = True
