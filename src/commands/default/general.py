@@ -330,8 +330,7 @@ class CmdQuit(MuxCommand):
 
     def func(self):
         "hook function"  
-        sessions = self.caller.sessions
-        for session in sessions:
+        for session in self.caller.sessions:
             session.msg("Quitting. Hope to see you soon again.")
             session.session_disconnect()
             

@@ -113,9 +113,10 @@ class Character(BaseCharacter):
         We stove away the character when logging off, otherwise they will remain where 
         they are, 'headless', so to say.
         """
-        self.location.msg_contents("%s has left the game." % self.name)
-        self.db.prelogout_location = self.location
-        self.location = None 
+        if self.location: # have to check, in case of multiple connections            
+            self.location.msg_contents("%s has left the game." % self.name)
+            self.db.prelogout_location = self.location
+            self.location = None 
 
     def at_post_login(self):
         """

@@ -55,7 +55,7 @@ class Object(TypeClass):
 
         if create_cmdset:
             dbobj.cmdset = CmdSetHandler(dbobj)
-            if utils.inherits_from(self, settings.BASE_CHARACTER_TYPECLASS):
+            if utils.inherits_from(self, settings.BASE_CHARACTER_TYPECLASS) or utils.inherits_from(self, Character):
                 dbobj.cmdset.outside_access = False
         if create_scripts:
             dbobj.scripts = ScriptHandler(dbobj)

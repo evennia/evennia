@@ -16,17 +16,20 @@ def log_trace(errmsg=None):
     adds an extra line with added info. 
     """
     tracestring = format_exc()
-    if tracestring:
-        for line in tracestring.splitlines():
-            log.msg('[::] %s' % line)    
-    if errmsg:
-        try:
-            errmsg = utils.to_str(errmsg)
-        except Exception, e:
-            errmsg = str(e)
-        for line in errmsg.splitlines():
-            log.msg('[EE] %s' % line)
-            
+    try:
+        if tracestring:
+            for line in tracestring.splitlines():
+                log.msg('[::] %s' % line)    
+        if errmsg:
+            try:
+                errmsg = utils.to_str(errmsg)
+            except Exception, e:
+                errmsg = str(e)
+            for line in errmsg.splitlines():
+                log.msg('[EE] %s' % line)
+    except Exception:
+        log.msg('[EE] %s' % errmsg )
+               
 def log_errmsg(errmsg):
     """
     Prints/logs an error message to the server log.

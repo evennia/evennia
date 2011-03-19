@@ -15,9 +15,13 @@ from django.conf import settings
 
 # To ensure the sanity of the model, there are a
 # few property names we won't allow the admin to
-# set just like that. 
+# set just like that. Note that these are *not* related
+# to *in-game* safety (if you can edit typeclasses you have
+# full access anyway), so no protection against changing
+# e.g. 'locks' or 'permissions' should go here.
 PROTECTED = ['id', 'dbobj', 'db', 'objects', 'typeclass',
              'attr', 'save', 'delete']
+
 # If this is true, all non-protected property assignments
 # are directly stored to a database attribute
 try:

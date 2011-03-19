@@ -204,7 +204,7 @@ $(document).keypress( function(event) {
     }
     else {
         if (wresult == 38 || wresult == 40) {
-            // this fixes a bug in firefox, those are on ASCII format
+            // this fixes a bug in firefox, those are on ASCII format            
             return false;
         }
 
