@@ -113,7 +113,7 @@ def reload_modules():
         [m.locks.reset() for m in Msg.objects.all()]
         [c.locks.reset() for c in Channel.objects.all()]
     at_return = lambda r: cemit_info(" ... @reload: Asynchronous reset loop finished.")
-    at_err = lambda e: cemit_info("%s\n@reload: Asynchronous reset loop exited with an error." % e)
+    at_err = lambda e: cemit_info("%s\nreload: Asynchronous reset loop exited with an error. This might be harmless and just due to some modules or scripts not having had time to restart before being called by the reset loop. Wait a moment then reload again to see if the problem persists." % e)
     utils.run_async(run_reset_loop, at_return, at_err)
      
 def reload_scripts(scripts=None, obj=None, key=None, 

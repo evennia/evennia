@@ -1363,17 +1363,17 @@ class CmdExamine(ObjManipCommand):
         non-persistent data stored on object
         """
         if attrname:
-            db_attr = [obj.attr(attrname)]
+            db_attr = [(attrname, obj.attr(attrname))]
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:
-                ndb_attr = [(attrname, None)]                 
+                ndb_attr = None
         else:
             db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
             try:
                 ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items()]
             except Exception:
-                ndb_attr = [(None, None)]                                 
+                ndb_attr = None
         string = ""
         if db_attr and db_attr[0]:
             #self.caller.msg(db_attr)
