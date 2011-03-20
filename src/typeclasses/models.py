@@ -541,10 +541,10 @@ class TypedObject(SharedMemoryModel):
             # typeclass' __getattribute__, since that one would
             # try to look back to this very database object.)
             typeclass = object.__getattribute__(self, 'typeclass')                        
-            #print " '%s' not on db --> Checking typeclass %s instead." % (propname, typeclass)
             if typeclass:
-                return object.__getattribute__(typeclass(self), propname)
-            raise 
+                return object.__getattribute__(typeclass(self), propname)            
+            else:
+                raise AttributeError
 
     #@property
     def dbref_get(self):
@@ -595,15 +595,16 @@ class TypedObject(SharedMemoryModel):
         if not path:
             # this means we should get the default obj
             # without giving errors.
-            defpath = self.default_typeclass_path
-            typeclass = self._path_import(defpath)
+            defpath = object.__getattribute__(self, 'default_typeclass_path')
+            typeclass = object.__getattribute__(self, '_path_import')(defpath)
+            #typeclass = self._path_import(defpath)
         else:
             typeclass = TYPECLASS_CACHE.get(path, None)
             if typeclass:
                 # we've imported this before. We're done.
                 return typeclass                       
             # not in cache. Import anew.             
-            typeclass = self._path_import(path)                    
+            typeclass = object.__getattribute__(self, "_path_import")(path)
             if not callable(typeclass):
                 # given path failed to import, fallback to default.          
                 errstring = "  %s" % typeclass # this is an error message
@@ -611,12 +612,12 @@ class TypedObject(SharedMemoryModel):
                     errstring += "\nThis seems to be just the path to a module. You need"
                     errstring +=  " to specify the actual typeclass name inside the module too."
                 errstring += "\n  Typeclass '%s' failed to load." % path                
-                defpath = self.default_typeclass_path
+                defpath = object.__getattribute__(self, default_typeclass_path)
                 errstring += "  Using Default class '%s'." % defpath                
                 self.db_typeclass_path = defpath
                 self.save()
                 logger.log_errmsg(errstring)                
-                typeclass = self._path_import(defpath)
+                typeclass = object.__getattribute__(self, "_path_import")(defpath)
                 errmsg(errstring)
         if not callable(typeclass):
             # if typeclass still doesn't exist, we're in trouble.
@@ -628,7 +629,7 @@ class TypedObject(SharedMemoryModel):
             self.db_typeclass_path = defpath
             self.save()
             logger.log_errmsg(errstring)
-            typeclass = self._path_import(defpath)
+            typeclass = object.__getattribute__(self, "_path_import")(defpath)
             errmsg(errstring)
         else:
             TYPECLASS_CACHE[path] = typeclass         

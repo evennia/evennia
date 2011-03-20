@@ -15,7 +15,7 @@ from django.conf import settings
 
 # To ensure the sanity of the model, there are a
 # few property names we won't allow the admin to
-# set just like that. Note that these are *not* related
+# set on the typeclass just like that. Note that these are *not* related
 # to *in-game* safety (if you can edit typeclasses you have
 # full access anyway), so no protection against changing
 # e.g. 'locks' or 'permissions' should go here.
@@ -88,9 +88,9 @@ class TypeClass(object):
         cls = object.__getattribute__(self, '__class__')
         db_typeclass_path = "%s.%s" % (object.__getattribute__(cls, '__module__'),
                                        object.__getattribute__(cls, '__name__'))        
-        if not dbobj.db_typeclass_path == db_typeclass_path:
-            dbobj.db_typeclass_path = db_typeclass_path
-            dbobj.save()
+        if not object.__getattribute__(dbobj, "db_typeclass_path") == db_typeclass_path:
+            object.__setattr__(dbobj, "db_typeclass_path", db_typeclass_path)
+            object.__getattribute__(dbobj, "save")()
 
         # (The inheriting typed object classes often extend this __init__ to
         # add handlers etc.) 
@@ -118,12 +118,10 @@ class TypeClass(object):
             return object.__getattribute__(self, propname)
         #print "get %s (dbobj:%s)" % (propname, type(dbobj))        
         try:
-            #print "Typeclass: looking for %s on dbobj %s" % (propname, dbobj)
-            #print "  <-- dbobj"            
-            return object.__getattribute__(dbobj, propname)
+            return object.__getattribute__(self, propname)
         except AttributeError:
             try:
-                return object.__getattribute__(self, propname)
+                return object.__getattribute__(dbobj, propname)
             except AttributeError:
                 try:
                     if FULL_PERSISTENCE and propname != 'ndb':
