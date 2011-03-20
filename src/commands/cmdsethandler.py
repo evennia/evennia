@@ -288,10 +288,10 @@ class CmdSetHandler(object):
         if cmdset:
             if self.cmdset_stack:
                 self.cmdset_stack[0] = cmdset
-                self.mergetype_stack.insert[0] = cmdset.mergetype
+                self.mergetype_stack[0] = cmdset.mergetype
             else:
                 self.cmdset_stack = [cmdset]
-                self.mergetype_stack = cmdset.mergetype
+                self.mergetype_stack = [cmdset.mergetype]
             
             if permanent:
                 if self.permanent_paths:

@@ -223,6 +223,7 @@ class TestPy(CommandTest):
         self.execute_cmd("@py 1+2", [">>> 1+2", "<<< 3"])
 class TestScripts(CommandTest):
     def test_call(self):
+        script = create.create_script(None, "test")
         self.execute_cmd("@scripts", "id")
 class TestObjects(CommandTest):
     def test_call(self):
@@ -271,5 +272,9 @@ class TestWall(CommandTest):
         self.execute_cmd("@wall = This is a test message", "TestChar shouts")
         
 # building.py command tests
+
+class TestScript(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@script TestChar = examples.bodyfunctions.BodyFunctions", "Script successfully added")
 
 #TODO

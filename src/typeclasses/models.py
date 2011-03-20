@@ -612,7 +612,7 @@ class TypedObject(SharedMemoryModel):
                     errstring += "\nThis seems to be just the path to a module. You need"
                     errstring +=  " to specify the actual typeclass name inside the module too."
                 errstring += "\n  Typeclass '%s' failed to load." % path                
-                defpath = object.__getattribute__(self, default_typeclass_path)
+                defpath = object.__getattribute__(self, "default_typeclass_path")
                 errstring += "  Using Default class '%s'." % defpath                
                 self.db_typeclass_path = defpath
                 self.save()
