@@ -155,8 +155,8 @@ class CmdSetHandler(object):
 
         # the subset of the cmdset_paths that are to be stored in the database
         self.permanent_paths = [""]
-
-        # self.update(init_mode=True) is then called from the object __init__.
+        
+        #self.update(init_mode=True) is then called from the object __init__.
 
     def __str__(self):
         "Display current commands"                
@@ -196,18 +196,17 @@ class CmdSetHandler(object):
         created; it imports all permanent cmdsets from db. 
         """
         if init_mode:
-            self.cmdset_stack = []           
             # reimport all permanent cmdsets
             self.permanent_paths = self.obj.cmdset_storage
-            new_permanent_paths = []
-
-            for pos, path in enumerate(self.permanent_paths):
-                if pos == 0 and not path:
-                    self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
-                else:
-                    cmdset = self.import_cmdset(path)
-                    if cmdset:
-                        self.cmdset_stack.append(cmdset)
+            if self.permanent_paths:
+                self.cmdset_stack = []           
+                for pos, path in enumerate(self.permanent_paths):
+                    if pos == 0 and not path:
+                        self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
+                    else:
+                        cmdset = self.import_cmdset(path)
+                        if cmdset:
+                            self.cmdset_stack.append(cmdset)
 
         # merge the stack into a new merged cmdset
         new_current = None 

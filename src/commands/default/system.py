@@ -562,29 +562,29 @@ class CmdServerLoad(MuxCommand):
                      ["%g%%" % (100 * loadavg[0]),
                       "%10d" % os.getpid(),
                       "%10d " % psize,
-                      "%10d" % rusage[0],
-                      "%10d shared" % rusage[3],
-                      "%10d pages" % rusage[2],
-                      "%10d hard" % rusage[7],
-                      "%10d reads" % rusage[9],
-                      "%10d in" % rusage[12],
-                      "%10d vol" % rusage[14]                          
+                      "%10d" % rusage.ru_utime,
+                      "%10d shared" % rusage.ru_ixrss,
+                      "%10d pages" % rusage.ru_maxrss,
+                      "%10d hard" % rusage.ru_majflt,
+                      "%10d reads" % rusage.ru_inblock,
+                      "%10d in" % rusage.ru_msgrcv,
+                      "%10d vol" % rusage.ru_nvcsw                          
                     ],
                      ["", "", "", 
-                      "(user: %g)" % rusage[1],
-                      "%10d private" % rusage[4],
-                      "%10d bytes" % (rusage[2] * psize),
-                      "%10d soft" % rusage[6],
-                      "%10d writes" % rusage[10],
-                      "%10d out" % rusage[11],
-                      "%10d forced" % rusage[15]
+                      "(user: %g)" % rusage.ru_stime,
+                      "%10d private" % rusage.ru_idrss,
+                      "%10d bytes" % (rusage.ru_maxrss * psize),
+                      "%10d soft" % rusage.ru_minflt,
+                      "%10d writes" % rusage.ru_oublock,
+                      "%10d out" % rusage.ru_msgsnd,
+                      "%10d forced" % rusage.ru_nivcsw
                       ],
                      ["", "", "", "", 
-                      "%10d stack" % rusage[5],
+                      "%10d stack" % rusage.ru_isrss,
                       "", 
-                      "%10d swapouts" % rusage[8],
+                      "%10d swapouts" % rusage.ru_nswap,
                       "", "",
-                      "%10d sigs" % rusage[13]
+                      "%10d sigs" % rusage.ru_nsignals
                     ]                         
                      ]
             stable = []
