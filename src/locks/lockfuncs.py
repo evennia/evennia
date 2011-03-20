@@ -102,6 +102,7 @@ DefaultLock:   Exits:          controls who may traverse the exit to
 
 from django.conf import settings
 from src.utils import search
+from src.utils import utils
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
