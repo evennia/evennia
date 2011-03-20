@@ -15,12 +15,9 @@ That an object is controlled by a player/user is just defined by its
 they control by simply linking to a new object's user property.
 """
 
-from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
-from src.commands.cmdsethandler import CmdSetHandler
-from src.scripts.scripthandler import ScriptHandler
 from src.objects.exithandler import EXITHANDLER
-from src.utils import utils
+
 
 #
 # Base class to inherit from. 
@@ -32,33 +29,6 @@ class Object(TypeClass):
     Inherit from this to create different types of
     objects in the game. 
     """    
-
-    def __init__(self, dbobj):
-        """
-        Set up the Object-specific handlers. Note that we must
-        be careful to run the parent's init function too
-        or typeclasses won't work! 
-        """
-        # initialize typeclass system. This sets up self.dbobj.
-        super(Object, self).__init__(dbobj)
-        # create the command- and scripthandlers as needed
-        try:
-            dummy = object.__getattribute__(dbobj, 'cmdset')            
-            create_cmdset = type(dbobj.cmdset) != CmdSetHandler
-        except AttributeError:
-            create_cmdset = True
-        try: 
-            dummy = object.__getattribute__(dbobj, 'scripts')
-            create_scripts = type(dbobj.scripts) != ScriptHandler                        
-        except AttributeError:
-            create_scripts = True 
-
-        if create_cmdset:
-            dbobj.cmdset = CmdSetHandler(dbobj)
-            if utils.inherits_from(self, settings.BASE_CHARACTER_TYPECLASS) or utils.inherits_from(self, Character):
-                dbobj.cmdset.outside_access = False
-        if create_scripts:
-            dbobj.scripts = ScriptHandler(dbobj)
 
     def __eq__(self, other):
         """
@@ -87,11 +57,12 @@ class Object(TypeClass):
 
         dbref = self.dbobj.dbref
 
-        self.locks.add("control:id(%s) or perm(Immortals)" % dbref)
-        self.locks.add("examine:perm(Builders)")
-        self.locks.add("edit:perm(Wizards)")
-        self.locks.add("delete:perm(Wizards)")
-        self.locks.add("get:all()")
+        self.locks.add("control:id(%s) or perm(Immortals)" % dbref)  # edit locks/permissions, delete
+        self.locks.add("examine:perm(Builders)")  # examine properties 
+        self.locks.add("edit:perm(Wizards)")   # edit properties/attributes 
+        self.locks.add("delete:perm(Wizards)") # delete object 
+        self.locks.add("get:all()")   # pick up object
+        self.locks.add("call:true()") # allow to call commands on this object
 
     def at_object_creation(self):
         """
@@ -341,11 +312,15 @@ class Character(Object):
         Setup character-specific security
         """
         super(Character, self).basetype_setup()
-        self.locks.add("puppet:id(%s) or perm(Immortals); get:false()" % self.dbobj.dbref)        
+        self.locks.add("puppet:id(%s) or perm(Immortals)" % self.dbobj.dbref) # who may become this object's player
+        self.locks.add("get:false()") # noone can pick up the character
+        self.locks.add("call:false()") # no commands can be called on character        
 
         # add the default cmdset
-        from settings import CMDSET_DEFAULT
+        from settings import CMDSET_DEFAULT        
         self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
+        # no other character should be able to call commands on the Character. 
+        self.cmdset.outside_access = False 
 
     def at_object_creation(self):
         """
@@ -399,11 +374,12 @@ class Exit(Object):
         """
         # the lock is open to all by default
         super(Exit, self).basetype_setup()
-        self.locks.add("traverse:all(); get:false()")
+        self.locks.add("traverse:all()") # who can pass through exit
+        self.locks.add("get:false()")    # noone can pick up the exit 
 
     def at_object_creation(self):
         """
-        Another example just for show; the _destination attribute
+        An example just for show; the _destination attribute
         is usually set at creation time, not as part of the class
         definition (unless you want an entire class of exits
         all leadning to the same hard-coded place ...)

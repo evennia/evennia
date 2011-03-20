@@ -20,14 +20,14 @@ class ScriptManager(TypedObjectManager):
             return []
         scripts = self.filter(db_obj=obj)
         if key:           
-            return [script for script in scripts if script.key == key]
+            return scripts.filter(db_key=key)
         return scripts 
 
     @returns_typeclass_list
     def get_all_scripts(self, key=None):
         """
         Return all scripts, alternative only
-        scripts with a certain key/dbref. 
+        scripts with a certain key/dbref or path. 
         """
         if key:
             dbref = self.dbref(key)
@@ -39,7 +39,7 @@ class ScriptManager(TypedObjectManager):
             # not a dbref. Normal key search
             scripts = self.filter(db_key=key)
         else:
-            scripts = self.all()
+            scripts = list(self.all())
         return scripts
 
     def delete_script(self, dbref):
@@ -120,7 +120,7 @@ class ScriptManager(TypedObjectManager):
         elif obj:
             scripts = self.get_all_scripts_on_obj(obj, key=key)            
         else:
-            scripts = self.get_all_scripts(key=key)        
+            scripts = self.model.get_all_cached_instances()#get_all_scripts(key=key)        
         if not scripts:
             VALIDATE_ITERATION -= 1
             return None, None

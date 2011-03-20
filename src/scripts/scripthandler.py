@@ -24,22 +24,6 @@ class ScriptHandler(object):
         """
         self.obj = obj
 
-        # this is required to stop a nasty loop in some situations that
-        # has the handler infinitely recursively re-added to its object.
-        self.obj.scripts = self
-        
-        scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj)
-        #print "starting scripthandler. %s has scripts %s" % (self.obj, scripts)
-        if scripts:
-            okscripts = [script for script in scripts if script.persistent == True]
-            delscripts = [script for script in scripts if script not in okscripts]
-            for script in delscripts:
-                #print "stopping script %s" % script
-                script.stop()
-            for script in okscripts:
-                #print "starting script %s" % script
-                script.start()
-
     def __str__(self):
         "List the scripts tied to this object"
         scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj)
@@ -72,39 +56,51 @@ class ScriptHandler(object):
         script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=autostart)
         if not script:
             logger.log_errmsg("Script %s failed to be created/start." % scriptclass)
+            return False 
+        return True 
 
-    def start(self, scriptkey):
+    def start(self, scriptid):
         """
         Find an already added script and force-start it
         """
-        scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptkey)
+        scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+        num = 0
         for script in scripts:
-            script.start()            
+            num += script.start()            
+        return num 
 
-    def delete(self, scriptkey):
+    def delete(self, scriptid):
         """
         Forcibly delete a script from this object.
+        
+        scriptid can be a script key or the path to a script (in the 
+                 latter case all scripts with this path will be deleted!)
+
         """
-        delscripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptkey)
+        delscripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+        if not delscripts:
+            delscripts = [script for script in ScriptDB.objects.get_all_scripts_on_obj(self.obj) if script.path == scriptid]
+        num = 0
         for script in delscripts:
-            script.stop()
+            num += script.stop()
+        return num 
 
-    def stop(self, scriptkey):
+    def stop(self, scriptid):
         """
-        Alias for delete.
+        Alias for delete. scriptid can be a script key or a script path string.
         """
-        self.delete(scriptkey)
+        return self.delete(scriptid)
 
-    def all(self, scriptkey=None):
+    def all(self, scriptid=None):
         """
         Get all scripts stored in the handler, alternatively all matching a key.
         """
-        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptkey)
+        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
 
-    def validate(self):
+    def validate(self, init_mode=False):
         """
         Runs a validation on this object's scripts only.
         This should be called regularly to crank the wheels.
         """
-        ScriptDB.objects.validate(obj=self.obj)
+        ScriptDB.objects.validate(obj=self.obj, init_mode=init_mode)
         

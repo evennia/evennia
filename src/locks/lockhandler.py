@@ -287,7 +287,7 @@ class LockHandler(object):
         """
         self.reset_flag = True
         
-    def check(self, accessing_obj, access_type, default=False):
+    def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
         """
         Checks a lock of the correct type by passing execution
         off to the lock function(s).
@@ -295,14 +295,17 @@ class LockHandler(object):
         accessing_obj - the object seeking access
         access_type - the type of access wanted
         default - if no suitable lock type is found, use this
+        no_superuser_bypass - don't use this unless you really, really need to
+
         """
         if self.reset_flag:
             # rebuild cache 
             self._cache_locks(self.obj.lock_storage)
             self.reset_flag = False 
 
-        if (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser) \
-                or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser)):
+        if (not no_superuser_bypass and (hasattr(accessing_obj, 'player') 
+                                         and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser) 
+            or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser))):
             # we grant access to superusers and also to protocol instances that not yet has any player assigned to them (the
             # latter is a safety feature since superuser cannot be authenticated at some point during the connection).
             return True

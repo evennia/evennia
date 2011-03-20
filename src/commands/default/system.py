@@ -70,7 +70,9 @@ class CmdPy(MuxCommand):
     Usage:
       @py <cmd>
 
-    In this limited python environment.
+    In this limited python environment, there are a 
+    few variables made available to give access to 
+    the system. 
 
     available_vars: 'self','me'  : caller
                     'here'  : caller.location
@@ -82,7 +84,7 @@ class CmdPy(MuxCommand):
                     'ConfigValue' ConfigValue class
     only two
     variables are defined: 'self'/'me' which refers to one's
-    own object, and 'here' which refers to the current
+    own object, and 'here' which refers to self's current
     location. 
     """
     key = "@py"
@@ -102,10 +104,11 @@ class CmdPy(MuxCommand):
             return
         # create temporary test objects for playing with
         script = create.create_script("src.scripts.scripts.DoNothing",
-                                      'testscript')
+                                      key = 'testscript')
         obj = create.create_object("src.objects.objects.Object",
-                                   'testobject')        
+                                   key='testobject')        
         conf = ConfigValue() # used to access conf values
+
         available_vars = {'self':caller,
                           'me':caller,
                           'here':caller.location,
@@ -131,7 +134,10 @@ class CmdPy(MuxCommand):
                 ret = "\n".join("<<< %s" % line for line in errlist if line)
         caller.msg(ret)
         obj.delete()
-        script.delete()
+        try:
+            script.delete()
+        except AssertionError: # this is a strange thing; the script looses its id somehow..?
+            pass
 
 class CmdScripts(MuxCommand):
     """

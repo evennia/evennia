@@ -77,6 +77,7 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdExamine())
         self.add(building.CmdTypeclass())
         self.add(building.CmdLock())
+        self.add(building.CmdScript())
 
         # Comm commands
         self.add(comms.CmdAddCom())

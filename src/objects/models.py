@@ -22,7 +22,8 @@ from src.typeclasses.models import Attribute, TypedObject
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
 from src.config.models import ConfigValue
-
+from src.commands.cmdsethandler import CmdSetHandler
+from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
 from src.utils.utils import is_iter
 
@@ -216,18 +217,24 @@ class ObjectDB(TypedObject):
     # a safety location, this usually don't change much.
     db_home = models.ForeignKey('self', related_name="homes_set",
                                  blank=True, null=True)
+    # database storage of persistant cmdsets.
+    db_cmdset_storage = models.TextField(null=True)
 
     # Database manager
     objects = ObjectManager()
 
     # Add the object-specific handlers
-    # (scripts and cmdset must be added from
-    # typeclass, so not added here)    
+
     def __init__(self, *args, **kwargs):
         "Parent must be initialized first."
         TypedObject.__init__(self, *args, **kwargs) 
+        # handlers 
+        self.cmdset = CmdSetHandler(self)
+        self.cmdset.update(init_mode=True)
+        self.scripts = ScriptHandler(self)
+        self.scripts.validate(init_mode=True)
         self.nicks = NickHandler(self)    
-
+        
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
@@ -380,6 +387,28 @@ class ObjectDB(TypedObject):
         if query:
             query.delete()
     aliases = property(aliases_get, aliases_set, aliases_del)
+
+    # cmdset_storage property
+    #@property
+    def cmdset_storage_get(self):
+        "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
+        if self.db_cmdset_storage:
+            return [path.strip() for path  in self.db_cmdset_storage.split(',')]
+        return []
+    #@cmdset_storage.setter
+    def cmdset_storage_set(self, value):
+        "Setter. Allows for self.name = value. Stores as a comma-separated string."
+        if is_iter(value):
+            value = ",".join([str(val).strip() for val in value])
+        self.db_cmdset_storage = value
+        self.save()        
+    #@cmdset_storage.deleter
+    def cmdset_storage_del(self):
+        "Deleter. Allows for del self.name"
+        self.db_cmdset_storage = ""
+        self.save()
+    cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
+
 
     class Meta:
         "Define Django meta options"

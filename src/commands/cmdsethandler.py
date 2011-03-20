@@ -65,9 +65,7 @@ the 'Fishing' set. Fishing from a boat? No problem!
 """
 import traceback 
 from src.utils import logger
-from src.utils import create
 from src.commands.cmdset import CmdSet
-from src.scripts.scripts import AddCmdSet
 
 CACHED_CMDSETS = {}
 
@@ -128,7 +126,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
 class CmdSetHandler(object):
     """
-    The CmdSetHandler is always stored on an object, supplied as the argument.
+    The CmdSetHandler is always stored on an object, this object is supplied as an argument.
 
     The 'current' cmdset is the merged set currently active for this object.
     This is the set the game engine will retrieve when determining which
@@ -137,35 +135,29 @@ class CmdSetHandler(object):
     the 'current' cmdset. 
     """
 
-    def __init__(self, obj, outside_access=True):
+    def __init__(self, obj):
         """
         This method is called whenever an object is recreated. 
 
         obj - this is a reference to the game object this handler
               belongs to.
-        outside_access - if false, the cmdparser will only retrieve
-             this cmdset when it is its obj itself that is calling for it.
-             (this is is good to use for player objects, since they
-             should not have access to the cmdsets of other player
-             objects).
         """
         self.obj = obj                
-        # if false, only the object itself may use this handler
-        # (this should be set especially by character objects)
-        self.outside_access = outside_access
 
         # the id of the "merged" current cmdset for easy access. 
         self.key = None
         # this holds the "merged" current command set 
         self.current = None
-        # this holds a history of CommandSets 
+        # this holds a history of CommandSets
         self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
         # this tracks which mergetypes are actually in play in the stack
         self.mergetype_stack = ["Union"] 
-        self.update()
 
-        #print "cmdsethandler init. id:%s, obj:%s, cmdsetstack:%s " % (id(self), self.obj.key,  [cmdset.key for cmdset in self.cmdset_stack])
-                                                                
+        # the subset of the cmdset_paths that are to be stored in the database
+        self.permanent_paths = [""]
+
+        # self.update(init_mode=True) is then called from the object __init__.
+
     def __str__(self):
         "Display current commands"                
             
@@ -180,8 +172,8 @@ class CmdSetHandler(object):
                 if mergetype != cmdset.mergetype:
                     mergetype = "%s^" % (mergetype)            
                 string += "\n %i: <%s (%s, prio %i)>: %s" % \
-                          (snum, cmdset.key, mergetype,
-                           cmdset.priority, cmdset)
+                    (snum, cmdset.key, mergetype,
+                     cmdset.priority, cmdset)
             string += "\n (combining %i cmdsets):" % (num+1)    
         else:
             string += "\n "
@@ -195,22 +187,40 @@ class CmdSetHandler(object):
                                      mergetype, self.current)
         return string.strip() 
 
-    def update(self):        
+    def update(self, init_mode=False):        
         """
         Re-adds all sets in the handler to have an updated
         current set. 
+        
+        init_mode is used right after this handler was 
+        created; it imports all permanent cmdsets from db. 
         """
-        updated = None 
+        if init_mode:
+            self.cmdset_stack = []           
+            # reimport all permanent cmdsets
+            self.permanent_paths = self.obj.cmdset_storage
+            new_permanent_paths = []
+
+            for pos, path in enumerate(self.permanent_paths):
+                if pos == 0 and not path:
+                    self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
+                else:
+                    cmdset = self.import_cmdset(path)
+                    if cmdset:
+                        self.cmdset_stack.append(cmdset)
+
+        # merge the stack into a new merged cmdset
+        new_current = None 
         self.mergetype_stack = []
         for cmdset in self.cmdset_stack:                
             try:
                 # for cmdset's '+' operator, order matters.                 
-                updated = cmdset + updated 
+                new_current = cmdset + new_current 
             except TypeError:
                 continue
-            self.mergetype_stack.append(updated.actual_mergetype)
-        self.current = updated
-
+            self.mergetype_stack.append(new_current.actual_mergetype)
+        self.current = new_current
+        
     def import_cmdset(self, cmdset_path, emit_to_obj=None):
         """
         load a cmdset from a module.
@@ -247,23 +257,17 @@ class CmdSetHandler(object):
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
-            cmdset = self.import_cmdset(cmdset, emit_to_obj)
+            cmdset = self.import_cmdset(cmdset)#, emit_to_obj)
         if cmdset:
             self.cmdset_stack.append(cmdset)                
+            if permanent:
+                # store the path permanently
+                self.permanent_paths.append(cmdset.path)
+                self.obj.cmdset_storage = self.permanent_paths 
+            else:
+                # store an empty entry and don't save (this makes it easy to delete).
+                self.permanent_paths.append("")
             self.update()
-        if permanent:
-            # create a script to automatically add this cmdset at
-            # startup. We don't start it here since the cmdset was 
-            # already added above. 
-            try:
-                cmdset = "%s.%s" % (cmdset.__module__, cmdset.__name__)
-            except Exception:
-                logger.log_trace()
-                return
-            script = create.create_script(AddCmdSet)
-            script.db.cmdset = cmdset
-            script.db.add_default = False 
-            self.obj.scripts.add(script, autostart=False)
 
     def add_default(self, cmdset, emit_to_obj=None, permanent=False):
         """
@@ -281,70 +285,74 @@ class CmdSetHandler(object):
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
-            cmdset = self.import_cmdset(cmdset, emit_to_obj)            
+            cmdset = self.import_cmdset(cmdset)
         if cmdset:
-            self.cmdset_stack[0] = cmdset 
-            self.mergetype_stack[0] = cmdset.mergetype
-            self.update()
-        #print "add_default:", permanent
-        if permanent:
-            # create a script to automatically add this cmdset at
-            # startup. We don't start it here since the cmdset was
-            # already added above. 
-            try:
-                cmdset = "%s.%s" % (cmdset.__module__, cmdset.__class__.__name__)
-            except Exception:
-                #print traceback.format_exc()
-                logger.log_trace()
-                return
-            #print "cmdset to add:", cmdset
-            script = create.create_script(AddCmdSet)
-            script.db.cmdset = cmdset
-            script.db.add_default = True
-            self.obj.scripts.add(script, key="add_default_cmdset", autostart=False)
+            if self.cmdset_stack:
+                self.cmdset_stack[0] = cmdset
+                self.mergetype_stack.insert[0] = cmdset.mergetype
+            else:
+                self.cmdset_stack = [cmdset]
+                self.mergetype_stack = cmdset.mergetype
+            
+            if permanent:
+                if self.permanent_paths:
+                    self.permanent_paths[0] = cmdset.path
+                else:
+                    self.permanent_paths = [cmdset.path]
+                self.obj.cmdset_storage = self.permanent_paths
+            else:
+                if self.permanent_paths:
+                    self.permanent_paths[0] = ""                    
+                else:
+                    self.permanent_paths = [""]
+            self.update()        
         
-    def delete(self, key_or_class=None):
+    def delete(self, cmdset=None):
         """
-        Remove a cmdset from the  handler. If a key is supplied,
-        it attempts to remove this. If no key is given,
+        Remove a cmdset from the  handler. 
+
+        cmdset can be supplied either as a cmdset-key,
+        an instance of the CmdSet or a python path
+        to the cmdset. If no key is given,
         the last cmdset in the stack is removed. Whenever
         the cmdset_stack changes, the cmdset is updated.
         The default cmdset (first entry in stack) is never
         removed - remove it explicitly with delete_default.
 
-        key_or_class - a specific cmdset key or a cmdset class (in
-                       the latter case, *all* cmdsets of this class 
-                       will be removed from handler!) 
         """
         if len(self.cmdset_stack) < 2:
             # don't allow deleting default cmdsets here. 
             return
 
-        if not key_or_class:
+        if not cmdset:
             # remove the last one in the stack (except the default position)
             self.cmdset_stack.pop()
-        else:
-            # argument key is given, is it a key or a class?
-            
-            default_cmdset = self.cmdset_stack[0]
-
-            if callable(key_or_class) and hasattr(key_or_class, '__name__'):
-                # this is a callable with __name__ - we assume it's a class          
-                self.cmdset_stack = [cmdset for cmdset in self.cmdset_stack[1:]
-                                     if cmdset.__class__.__name__ != key_or_class.__name__]
+            self.permanent_paths.pop()
+        else:            
+            # try it as a callable
+            if callable(cmdset) and hasattr(cmdset, 'path'):
+                indices = [i+1 for i, cset in enumerate(self.cmdset_stack[1:]) if cset.path == cmdset.path]
             else:
-                # try it as a string
-                self.cmdset_stack = [cmdset for cmdset in self.cmdset_stack[1:]
-                                     if cmdset.key != key_or_class]  
-
-            self.cmdset_stack.insert(0, default_cmdset)
-
+                # try it as a path or key
+                indices = [i+1 for i, cset in enumerate(self.cmdset_stack[1:]) if cset.path == cmdset or cset.key == cmdset]
+                
+            for i in indices:
+                del self.cmdset_stack[i]
+                del self.permanent_paths[i]
+            self.obj.cmdset_storage = self.permanent_paths
+                
         # re-sync the cmdsethandler. 
         self.update()
 
     def delete_default(self):
         "This explicitly deletes the default cmdset. It's the only command that can."
-        self.cmdset_stack[0] = CmdSet(cmdsetobj=self.obj, key="Empty")
+        if self.cmdset_stack:
+            self.cmdset_stack[0] = CmdSet(cmdsetobj=self.obj, key="Empty")
+            self.permanent_paths[0] = ""
+        else:
+            self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
+            self.permanent_paths = [""]
+        self.obj.cmdset_storage = self.permanent_paths
         self.update()
 
     def all(self):
@@ -360,6 +368,8 @@ class CmdSetHandler(object):
         """
         self.cmdset_stack = [self.cmdset_stack[0]]
         self.mergetype_stack = [self.cmdset_stack[0].mergetype]
+        self.permanent_paths[0] = [self.permanent_paths[0]]
+        self.obj.cmdset_storage = self.permanent_paths
         self.update()
         
     def reset(self):

@@ -753,7 +753,8 @@ class TypedObject(SharedMemoryModel):
                 for nattr in self.ndb.all():                    
                     del nattr
 
-        # run hook for this new typeclass
+        # run hooks for this new typeclass
+        new_typeclass.basetype_setup()
         new_typeclass.at_object_creation()
             
         

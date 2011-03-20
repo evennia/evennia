@@ -750,6 +750,40 @@ class CmdLink(MuxCommand):
         # give feedback
         caller.msg(string)
 
+class CmdUnLink(CmdLink):
+    """
+    @unlink - unconnect objects
+
+    Usage:
+      @unlink <Object>
+
+    Unlinks an object, for example an exit, disconnecting
+    it from whatever it was connected to.
+    """
+    # this is just a child of CmdLink
+
+    key = "@unlink"
+    locks = "cmd:perm(unlink) or perm(Builders)"
+    help_key = "Building"    
+
+    def func(self):
+        """
+        All we need to do here is to set the right command
+        and call func in CmdLink
+        """
+        
+        caller = self.caller
+    
+        if not self.args:    
+            caller.msg("Usage: @unlink <object>")
+            return
+
+        # This mimics '@link <obj> = ' which is the same as @unlink
+        self.rhs = ""
+        
+        # call the @link functionality
+        super(CmdUnLink, self).func()
+
 
 class CmdListCmdSets(MuxCommand):
     """
@@ -1585,36 +1619,67 @@ class CmdTeleport(MuxCommand):
             caller.msg("Teleported.")
 
 
-class CmdUnLink(CmdLink):
+class CmdScript(MuxCommand):
     """
-    @unlink - unconnect objects
+    attach scripts
 
     Usage:
-      @unlink <Object>
+      @script[/switch] <obj> = <script.path or scriptkey>
+    
+    Switches:
+      start - start a previously added script
+      stop - stop a previously added script
 
-    Unlinks an object, for example an exit, disconnecting
-    it from whatever it was connected to.
+    Attaches the given script to the object and starts it. Script path can be given
+    from the base location for scripts as given in settings. 
+    If stopping/starting an already existing script, the script's key
+    can be given instead (if giving a path, *all* scripts with this path 
+    on <obj> will be affected).
     """
-    # this is just a child of CmdLink
+    
+    key = "@script"
+    aliases = "@addscript"
 
-    key = "@unlink"
-    locks = "cmd:perm(unlink) or perm(Builders)"
-    help_key = "Building"    
+    locks = "cmd:perm(script) or perm(Wizards)"
 
     def func(self):
-        """
-        All we need to do here is to set the right command
-        and call func in CmdLink
-        """
-        
-        caller = self.caller
-    
-        if not self.args:    
-            caller.msg("Usage: @unlink <object>")
-            return
+        "Do stuff"
 
-        # This mimics '@link <obj> = ' which is the same as @unlink
-        self.rhs = ""
+        caller = self.caller
+
+        if not self.rhs:
+            string = "Usage: @script[/switch] <obj> = <script.path or script key>"
+            caller.msg(string)
+            return 
         
-        # call the @link functionality
-        super(CmdUnLink, self).func()
+        inp = self.rhs
+        if not inp.startswith('src.') and not inp.startswith('game.'):
+            # append the default path.
+            inp = "%s.%s" % (settings.BASE_SCRIPT_PATH, inp)
+        
+        obj = caller.search(self.lhs)
+        if not obj:
+            return
+        string = ""
+        if "stop" in self.switches:
+            # we are stopping an already existing script
+            ok = obj.scripts.stop(inp)        
+            if not ok:
+                string = "Script %s could not be stopped. Does it exist?" % inp
+            else:
+                string = "Script stopped and removed from object."
+        if "start" in self.switches:
+            # we are starting an already existing script 
+            ok = obj.scripts.start(inp)
+            if not ok:
+                string = "Script %s could not be (re)started." % inp
+            else:
+                string = "Script started successfully."
+        if not self.switches:
+            # adding a new script, and starting it
+            ok = obj.scripts.add(inp, autostart=True)
+            if not ok:
+                string = "Script %s could not be added." % inp
+            else:
+                string = "Script successfully added and started."
+        caller.msg(string)

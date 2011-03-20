@@ -170,13 +170,13 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     new_script = typeclass(new_db_object)
     # store variables on the typeclass (which means
     # it's actually transparently stored on the db object)
-    if key:
-        new_db_object.name = key 
-    else:
+
+    
+    if not key:
         if typeclass and hasattr(typeclass, '__name__'):
-            new_db_object.name = "%s" % typeclass.__name__
+            new_script.key = "%s" % typeclass.__name__
         else:
-            new_db_object.name = "#%i" % new_db_object.id
+            new_script.key = "#%i" % new_db_object.id
 
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom
@@ -184,6 +184,9 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     new_script.at_script_creation()
 
     # custom-given variables override the hook
+    if key:
+        new_script.key = key 
+
     if locks:
         new_script.locks.add(locks)
 
@@ -191,12 +194,9 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
         try:
             new_script.obj = obj
         except ValueError:
-            new_script.obj = obj.dbobj
-    
-    new_script.save()
+            new_script.obj = obj.dbobj    
 
-    # a new created script should always be started, so 
-    # we do this now.
+    # a new created script should usually be started.
     if autostart:
         new_script.start()
 

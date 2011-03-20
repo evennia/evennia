@@ -142,7 +142,8 @@ class ScriptClass(TypeClass):
         try:
             self.delete()
         except AssertionError:
-            pass
+            return 0
+        return 1
 
     def is_valid(self):
         "placeholder"

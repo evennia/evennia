@@ -35,6 +35,13 @@ class MetaTypeClass(type):
     printed in a nicer way (it might end up having no name at all
     otherwise due to the magics being done with get/setattribute).
     """
+    def __init__(mcs, *args, **kwargs):
+        """
+        Adds some features to typeclassed objects
+        """
+        super(MetaTypeClass, mcs).__init__(*args, **kwargs)
+        mcs.path = "%s.%s" % (mcs.__module__, mcs.__name__)
+        
     def __str__(cls):
         return "%s" % cls.__name__
     

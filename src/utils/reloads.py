@@ -33,11 +33,11 @@ def start_reload_loop():
     def run_loop():
         ""
         cemit_info('-'*50)
-        cemit_info(" Starting asynchronous server reload ...")
+        cemit_info(" Starting asynchronous server reload.")
         reload_modules() # this must be given time to finish
         
         wait_time = 5
-        cemit_info(" Wait for %ss to give modules time to fully re-cache ..." % wait_time)
+        cemit_info(" Waiting %ss to give modules time to fully re-cache ..." % wait_time)
         time.sleep(wait_time)        
 
         reload_scripts()
@@ -90,7 +90,7 @@ def reload_modules():
         "Check so modpath is not in an unsafe module"
         return not any(mpath.startswith(modpath) for mpath in unsafe_modules)
                                                
-    cemit_info("\n Cleaning module caches ...")
+    cemit_info(" Cleaning module caches ...")
 
     # clean as much of the caches as we can
     cache = AppCache()
@@ -149,15 +149,15 @@ def reload_scripts(scripts=None, obj=None, key=None,
                 cleaned out. All persistent scripts are force-started.
 
     """
-    cemit_info(" Validating scripts ...")
+
     nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts, 
                                                        obj=obj, key=key, 
                                                        dbref=dbref, 
                                                        init_mode=init_mode)
-
-    string = " Started %s script(s). Stopped %s invalid script(s)." % \
-                                          (nr_started, nr_stopped)            
-    cemit_info(string)
+    if nr_started or nr_stopped:
+        string = " Started %s script(s). Stopped %s invalid script(s)." % \
+            (nr_started, nr_stopped)            
+        cemit_info(string)
     
 def reload_commands():
     from src.commands import cmdsethandler
@@ -170,12 +170,13 @@ def reset_loop():
     cemit_info(" Running resets on database entities ...")
     t1 = time.time()
 
-    [s.locks.reset() for s in ScriptDB.objects.all()]
-    [p.locks.reset() for p in PlayerDB.objects.all()]
     [h.locks.reset() for h in HelpEntry.objects.all()]
     [m.locks.reset() for m in Msg.objects.all()]
     [c.locks.reset() for c in Channel.objects.all()]    
+    [s.locks.reset() for s in ScriptDB.objects.all()]
+    [p.locks.reset() for p in PlayerDB.objects.all()]
     [(o.typeclass(o), o.cmdset.reset(), o.locks.reset()) for o in ObjectDB.get_all_cached_instances()]
+
     t2 = time.time()
     cemit_info(" ... Loop finished in %g seconds." % (t2-t1))
 
