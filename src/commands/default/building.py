@@ -1079,24 +1079,24 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs == None:
                 # no = means we inspect the attribute(s)
                 for attr in attrs:
-                    value = obj.attr(attr)
-                    if value:
-                        string += "\n%s.db.%s = %s" % (obj.name, attr, value)
+                    if obj.has_attribute(attr):
+                        string += "\nAttribute %s/%s = %s" % (obj.name, attr, obj.get_attribute(attr))
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)
             else:                
                 # deleting the attribute(s)            
                 for attr in attrs:
-                    if obj.attr(attr):
-                        obj.attr(attr, delete=True)
-                        string += "\nAttribute %s.db.%s deleted." % (obj.name, attr)                
+                    if obj.has_attribute(attr):
+                        val = obj.get_attribute(attr)
+                        obj.del_attribute(attr)                        
+                        string += "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)                
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)            
         else:
             # setting attribute(s)
             for attr in attrs:
-                obj.attr(attr, value)
-                string += "\nAttribute %s.%s created." % (obj.name, attr)
+                obj.set_attribute(attr, value)
+                string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
         # send feedback
         caller.msg(string.strip('\n')) 
 
