@@ -38,29 +38,30 @@ class CmdReload(MuxCommand):
         Reload the system. 
         """        
         caller = self.caller 
-        reloads.reload_modules()                 
+        reloads.start_reload_loop()
 
-        max_attempts = 4 
-        for attempt in range(max_attempts):            
-            # if reload modules take a long time,
-            # we might end up in a situation where
-            # the subsequent commands fail since they
-            # can't find the reloads module (due to it
-            # not yet fully loaded). So we retry a few 
-            # times before giving up. 
-            try:
-                reloads.reload_scripts()
-                reloads.reload_commands()
-                break
-            except AttributeError:
-                if attempt < max_attempts-1:
-                    caller.msg("            Waiting for modules(s) to finish (%s) ..." % attempt)
-                else:
-                    string =  "{r            ... The module(s) took too long to reload, "
-                    string += "\n            so the remaining reloads where skipped."
-                    string += "\n            Re-run @reload again when modules have fully "
-                    string += "\n            re-initialized.{n"
-                    caller.msg(string)
+        #reloads.reload_modules()                         
+        # max_attempts = 4 
+        # for attempt in range(max_attempts):            
+        #     # if reload modules take a long time,
+        #     # we might end up in a situation where
+        #     # the subsequent commands fail since they
+        #     # can't find the reloads module (due to it
+        #     # not yet fully loaded). So we retry a few 
+        #     # times before giving up. 
+        #     try:
+        #         reloads.reload_scripts()
+        #         reloads.reload_commands()
+        #         break
+        #     except AttributeError:
+        #         if attempt < max_attempts-1:
+        #             caller.msg("            Waiting for modules(s) to finish (%s) ..." % attempt)
+        #         else:
+        #             string =  "{r            ... The module(s) took too long to reload, "
+        #             string += "\n            so the remaining reloads where skipped."
+        #             string += "\n            Re-run @reload again when modules have fully "
+        #             string += "\n            re-initialized.{n"
+        #             caller.msg(string)
 
 class CmdPy(MuxCommand):
     """

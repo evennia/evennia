@@ -25,6 +25,9 @@ class SharedMemoryModelBase(ModelBase):
         """
         def new_instance():
             return super(SharedMemoryModelBase, cls).__call__(*args, **kwargs)
+
+        #if _get_full_cache:
+        #    return cls.__instance_cache__.values()
         
         instance_key = cls._get_cache_key(args, kwargs)
         # depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance
@@ -39,6 +42,7 @@ class SharedMemoryModelBase(ModelBase):
         return cached_instance
 
     def _prepare(cls):
+        # this is the core cache 
         cls.__instance_cache__ = {} #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
         
@@ -99,9 +103,14 @@ class SharedMemoryModel(Model):
             cls.__instance_cache__[instance._get_pk_val()] = instance        
             #key = "%s-%s" % (cls, instance.pk)            
             #TCACHE[key] = instance
-            #print "cached: %s (%s: %s) (total cached: %s)" % (instance, cls.__name__, len(cls.__instance_cache__), len(TCACHE))
-        
+            #print "cached: %s (%s: %s) (total cached: %s)" % (instance, cls.__name__, len(cls.__instance_cache__), len(TCACHE))        
     cache_instance = classmethod(cache_instance)
+
+    def get_all_cached_instances(cls):
+        "return the objects so far cached by idmapper for this class."
+        return cls.__instance_cache__.values()
+    get_all_cached_instances = classmethod(get_all_cached_instances)
+
 
     def _flush_cached_by_key(cls, key):
         del cls.__instance_cache__[key]

@@ -438,8 +438,8 @@ class CmdSay(MuxCommand):
         emit_string = '{c%s{n says, "%s{n"' % (caller.name, 
                                                speech)
         caller.location.msg_contents(emit_string, 
-                                         exclude=caller)
-
+                                     exclude=caller)
+        
 ## def cmd_fsay(command):
 ##     """
 ##     @fsay - make an object say something

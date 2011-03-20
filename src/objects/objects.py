@@ -341,7 +341,7 @@ class Character(Object):
         Setup character-specific security
         """
         super(Character, self).basetype_setup()
-        self.locks.add("puppet:id(%s) or perm(Immortals)" % self.dbobj.dbref)        
+        self.locks.add("puppet:id(%s) or perm(Immortals); get:false()" % self.dbobj.dbref)        
 
         # add the default cmdset
         from settings import CMDSET_DEFAULT
@@ -374,6 +374,10 @@ class Room(Object):
         Simple setup, shown as an example
         (since default is None anyway)
         """
+
+        super(Room, self).basetype_setup()
+        self.locks.add("get:false()")        
+
         super(Room, self).basetype_setup()
         self.location = None 
 
@@ -395,7 +399,7 @@ class Exit(Object):
         """
         # the lock is open to all by default
         super(Exit, self).basetype_setup()
-        self.locks.add("traverse:all()")
+        self.locks.add("traverse:all(); get:false()")
 
     def at_object_creation(self):
         """

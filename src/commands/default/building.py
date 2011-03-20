@@ -19,7 +19,7 @@ class ObjManipCommand(MuxCommand):
     some optional data, such as a typeclass or a location. A comma ',' 
     separates different objects. Like this:
     
-    name1;alias;alias;alias:option, name2 ;alias;alias ...
+    name1;alias;alias;alias:option, name2;alias;alias ...
 
     Spaces between all components are stripped. 
 
@@ -1360,7 +1360,7 @@ class CmdExamine(ObjManipCommand):
             text = "%s[...]" % text[:line_width - headlen - 5]                    
         return text
 
-    def format_attributes(self, obj, attrname=None):
+    def format_attributes(self, obj, attrname=None, crop=True):
         """
         Helper function that returns info about attributes and/or
         non-persistent data stored on object
@@ -1382,12 +1382,14 @@ class CmdExamine(ObjManipCommand):
             #self.caller.msg(db_attr)
             string += "\n{wPersistent attributes{n:"
             for attr, value in db_attr:
-                value = self.crop_line(value, attr)
+                if crop:
+                    value = self.crop_line(value, attr)
                 string += "\n %s = %s" % (attr, value)
         if ndb_attr and ndb_attr[0]:
             string += "\n{wNon-persistent attributes{n:"
             for attr, value in ndb_attr:
-                value = self.crop_line(value, attr)
+                if crop:
+                    value = self.crop_line(value, attr)
                 string += "\n %s = %s" % (attr, value)
         return string 
     
@@ -1472,14 +1474,16 @@ class CmdExamine(ObjManipCommand):
                 obj = caller.search(obj_name)                
                 if not obj:
                     continue
+
                 if not obj.access(caller, 'examine'):
                     #If we don't have special info access, just look at the object instead.
                     caller.execute_cmd('look %s' % obj_name)
                     continue
+
                 if obj_attrs:
                     for attrname in obj_attrs:
                         # we are only interested in specific attributes                    
-                        string += self.format_attributes(obj, attrname)                        
+                        string += self.format_attributes(obj, attrname, crop=False)                        
                 else:
                     string += self.format_output(obj)        
         string = string.strip()

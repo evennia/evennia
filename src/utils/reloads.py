@@ -6,6 +6,7 @@ also not good to tie such important functionality to a user-definable
 command class. 
 """
 
+import time 
 from django.db.models.loading import AppCache
 from django.utils.datastructures import SortedDict
 from django.conf import settings
@@ -20,6 +21,40 @@ from src.objects import exithandler
 from src.comms import channelhandler
 from src.comms.models import Channel
 from src.utils import reimport, utils, logger 
+
+def start_reload_loop():
+    """
+    This starts the asynchronous reset loop. While
+    important that it runs asynchronously (to not block the
+    mud while its running), the order at which things are 
+    updated does matter. 
+    """
+
+    def run_loop():
+        ""
+        cemit_info('-'*50)
+        cemit_info(" Starting asynchronous server reload ...")
+        reload_modules() # this must be given time to finish
+        
+        wait_time = 5
+        cemit_info(" Wait for %ss to give modules time to fully re-cache ..." % wait_time)
+        time.sleep(wait_time)        
+
+        reload_scripts()
+        reload_commands()
+        reset_loop()
+        
+    def at_return(r):
+        "default callback"
+        cemit_info(" Asynchronous server reload finished.\n" + '-'*50)
+    def at_err(e):
+        "error callback"
+        string = "%s\n reload: Asynchronous reset loop exited with an error." % e
+        string += "\n This might be harmless. Wait a moment then reload again to see if the problem persists."
+        cemit_info(string)
+        
+    utils.run_async(run_loop, at_return, at_err)
+
 
 def reload_modules():
     """
@@ -55,7 +90,7 @@ def reload_modules():
         "Check so modpath is not in an unsafe module"
         return not any(mpath.startswith(modpath) for mpath in unsafe_modules)
                                                
-    cemit_info('-'*50 +"\n Cleaning module caches ...")
+    cemit_info("\n Cleaning module caches ...")
 
     # clean as much of the caches as we can
     cache = AppCache()
@@ -74,17 +109,15 @@ def reload_modules():
 
     string = ""
     if unsafe_dir_modified or unsafe_mod_modified:
-        string += "\n WARNING: Some modules can not be reloaded"
-        string += "\n since it would not be safe to do so.\n"
         if unsafe_dir_modified:
-            string += "\n-The following module(s) is/are located in the src/ directory and"
-            string += "\n should not be reloaded without a server reboot:\n  %s\n" 
+            string += "\n-{rThe following changed module(s) can only be reloaded{n"
+            string += "\n {rby a server reboot:{n\n  %s\n" 
             string = string % unsafe_dir_modified
         if unsafe_mod_modified:
-            string += "\n-The following modules contains at least one Script class with a timer"
-            string += "\n component and which has already spawned instances - these cannot be "
-            string += "\n safely cleaned from memory on the fly. Stop all the affected scripts "
-            string += "\n or restart the server to safely reload:\n  %s\n"
+            string += "\n-{rThe following modules contains at least one Script class with a timer{n"
+            string += "\n {rcomponent and has already spawned instances - these cannot be{n "
+            string += "\n {rsafely cleaned from memory on the fly. Stop all the affected scripts{n "
+            string += "\n {ror restart the server to safely reload:{n\n  %s\n"
             string = string % unsafe_mod_modified
     if string:
         cemit_info(string) 
@@ -92,9 +125,9 @@ def reload_modules():
     if safe_modified:
         cemit_info(" Reloading module(s):\n  %s ..." % safe_modified)
         reimport.reimport(*safe_modified)
-        cemit_info(" ...all safe modules reloaded.") 
+        cemit_info(" ... all safe modules reloaded.") 
     else:
-        cemit_info(" Nothing was reloaded.")
+        cemit_info(" ... no modules could be (or needed to be) reloaded.")
 
     # clean out cache dictionary of typeclasses, exits and channe    
     typeclassmodels.reset()
@@ -103,18 +136,6 @@ def reload_modules():
 
     # run through all objects in database, forcing re-caching.
 
-    cemit_info(" Starting asynchronous object reset loop ...")
-    def run_reset_loop():
-        # run a reset loop on all objects
-        [(o.cmdset.reset(), o.locks.reset()) for o in ObjectDB.objects.all()]
-        [s.locks.reset() for s in ScriptDB.objects.all()]
-        [p.locks.reset() for p in PlayerDB.objects.all()]
-        [h.locks.reset() for h in HelpEntry.objects.all()]
-        [m.locks.reset() for m in Msg.objects.all()]
-        [c.locks.reset() for c in Channel.objects.all()]
-    at_return = lambda r: cemit_info(" ... @reload: Asynchronous reset loop finished.")
-    at_err = lambda e: cemit_info("%s\nreload: Asynchronous reset loop exited with an error. This might be harmless and just due to some modules or scripts not having had time to restart before being called by the reset loop. Wait a moment then reload again to see if the problem persists." % e)
-    utils.run_async(run_reset_loop, at_return, at_err)
      
 def reload_scripts(scripts=None, obj=None, key=None, 
                    dbref=None, init_mode=False):
@@ -141,7 +162,22 @@ def reload_scripts(scripts=None, obj=None, key=None,
 def reload_commands():
     from src.commands import cmdsethandler
     cmdsethandler.CACHED_CMDSETS = {}
-    cemit_info(" Cleaned cmdset cache.\n" + '-'*50)
+    cemit_info(" Cleaned cmdset cache.")
+
+def reset_loop():
+    "Reload and restart all entities that can be reloaded."    
+    # run the reset loop on all objects
+    cemit_info(" Running resets on database entities ...")
+    t1 = time.time()
+
+    [s.locks.reset() for s in ScriptDB.objects.all()]
+    [p.locks.reset() for p in PlayerDB.objects.all()]
+    [h.locks.reset() for h in HelpEntry.objects.all()]
+    [m.locks.reset() for m in Msg.objects.all()]
+    [c.locks.reset() for c in Channel.objects.all()]    
+    [(o.typeclass(o), o.cmdset.reset(), o.locks.reset()) for o in ObjectDB.get_all_cached_instances()]
+    t2 = time.time()
+    cemit_info(" ... Loop finished in %g seconds." % (t2-t1))
 
 def cemit_info(message):
     """
@@ -158,8 +194,8 @@ def cemit_info(message):
         pass
     if infochan:        
         cname = infochan.key
-        cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])        
+        cmessage = "\n".join(["[%s][reload]: %s" % (cname, line) for line in message.split('\n')])        
         infochan.msg(cmessage)        
     else:
-        cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])                        
+        cmessage = "\n".join(["[MUDINFO][reload] %s" % line for line in message.split('\n')])                        
         logger.log_infomsg(cmessage)
