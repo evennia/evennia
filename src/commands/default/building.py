@@ -551,8 +551,10 @@ class CmdDig(ObjManipCommand):
     Switches:
        teleport - move yourself to the new room
 
-    Example:
-       @dig kitchen = north; n, south;s : big_scary_door
+    Examples:
+       @dig kitchen = north;n, south;s
+       @dig house:myrooms.MyHouseTypeclass
+       @dig sheer cliff;cliff;sheer = climb up, climb down
 
     This command is a convenient way to build rooms quickly; it creates the new room and you can optionally
     set up exits back and forth between your current room and the new one. You can add as many aliases as you
@@ -585,7 +587,8 @@ class CmdDig(ObjManipCommand):
         typeclass = room['option']
         if not typeclass:
             typeclass = settings.BASE_ROOM_TYPECLASS
-        # analyze typeclass. If it starts at the evennia basedir,
+
+        # analyze typeclass path. If it starts at the evennia basedir,
         # (i.e. starts with game or src) we let it be, otherwise we 
         # add a base path as defined in settings
         if typeclass and not (typeclass.startswith('src.') or 
@@ -604,10 +607,10 @@ class CmdDig(ObjManipCommand):
             to_exit = self.rhs_objs[0]             
             if not to_exit["name"]:
                 exit_to_string = \
-                    "\n\rYou didn't give a name for the exit to the new room."
+                    "\nYou didn't give a name for the exit to the new room."
             elif not location:
                 exit_to_string = \
-                  "\n\rYou cannot create an exit from a None-location."    
+                  "\nYou cannot create an exit from a None-location."    
             else:
                 # Build the exit to the new room from the current one
                 typeclass = to_exit["option"]
@@ -624,7 +627,7 @@ class CmdDig(ObjManipCommand):
                                                    location,
                                                    aliases=to_exit["aliases"])
                 new_to_exit.db._destination = new_room
-                exit_to_string = "\n\rCreated new Exit to new room:  %s (aliases: %s)."
+                exit_to_string = "\nCreated new Exit to new room:  %s (aliases: %s)."
                 exit_to_string = exit_to_string % (new_to_exit.name,
                                                    new_to_exit.aliases)
                 
@@ -633,10 +636,10 @@ class CmdDig(ObjManipCommand):
             back_exit = self.rhs_objs[1]
             if not back_exit["name"]:
                 exit_back_string = \
-                    "\n\rYou didn't give a name for the exit back here."            
+                    "\nYou didn't give a name for the exit back here."            
             elif not location:
                 exit_back_string = \
-                   "\n\rYou cannot create an exit back to a None-location." 
+                   "\nYou cannot create an exit back to a None-location." 
             else:
                 typeclass = back_exit["option"]
                 if not typeclass:
@@ -652,7 +655,7 @@ class CmdDig(ObjManipCommand):
                                                      new_room,
                                                      aliases=back_exit["aliases"])
                 new_back_exit.db._destination = location
-                exit_back_string = "\n\rExit back from new room: %s (aliases: %s)." 
+                exit_back_string = "\nExit back from new room: %s (aliases: %s)." 
                 exit_back_string = exit_back_string % (new_back_exit.name,
                                                        new_back_exit.aliases)
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
@@ -1183,7 +1186,7 @@ class CmdTypeclass(MuxCommand):
         else:
             obj.swap_typeclass(typeclass, clean_attributes=reset)        
             new_typeclass = obj.typeclass
-            string = "%s's type is now %s (instead of %s).\n\r" % (obj.name, 
+            string = "%s's type is now %s (instead of %s).\n" % (obj.name, 
                                                                    new_typeclass, 
                                                                    old_typeclass)            
             if reset:
@@ -1416,9 +1419,9 @@ class CmdExamine(ObjManipCommand):
         if locks:
             string += "\n{wLocks{n: %s" % ("; ".join([lock for lock in locks.split(';')]))
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
-            string += "\n{wCurrent Cmdset (before permission checks){n:\n\r %s" % obj.cmdset
+            string += "\n{wCurrent Cmdset (before permission checks){n:\n %s" % obj.cmdset
         if obj.scripts.all():
-            string += "\n{wScripts{n:\n\r %s" % obj.scripts
+            string += "\n{wScripts{n:\n %s" % obj.scripts
         # add the attributes                    
         string += self.format_attributes(obj)
         # add the contents                     

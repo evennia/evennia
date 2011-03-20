@@ -291,6 +291,21 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return attr(accessing_obj, accessed_obj, *args, **{'compare':'ne'})
 
+def holds(accessing_obj, accessed_obj, objid, *args, **kwargs):
+    """
+    Usage: 
+       holds(object_id)
+
+    This is passed if accessing_obj 'contains' an object with the given
+    key name or dbref. 
+    """
+    dbref = utils.dbref(objid)
+    contains = accessing_obj.contains 
+    if dbref and any((True for obj in contains if obj.id == dbref)):
+        return True 
+    objid = objid.lower()
+    return any((True for obj in contains if obj.name.lower() == objid))
+
 def superuser(*args, **kwargs):
     """
     Only accepts an accesing_obj that is superuser (e.g. user #1)
