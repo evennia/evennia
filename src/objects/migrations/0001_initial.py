@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'ObjAttribute'
         db.create_table('objects_objattribute', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -49,7 +49,8 @@ class Migration(SchemaMigration):
             ('db_date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('db_permissions', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
             ('db_lock_storage', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('db_player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['players.PlayerDB'], null=True, blank=True)),
+            # Moved to player migration
+            #('db_player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['players.PlayerDB'], null=True, blank=True)),
             ('db_location', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='locations_set', null=True, to=orm['objects.ObjectDB'])),
             ('db_home', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='homes_set', null=True, to=orm['objects.ObjectDB'])),
             ('db_cmdset_storage', self.gf('django.db.models.fields.TextField')(null=True)),
@@ -58,7 +59,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Removing unique constraint on 'Nick', fields ['db_nick', 'db_type', 'db_obj']
         db.delete_unique('objects_nick', ['db_nick', 'db_type', 'db_obj_id'])
 

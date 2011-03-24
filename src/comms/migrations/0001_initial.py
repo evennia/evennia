@@ -6,8 +6,13 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    #depends_on = (
+    #    ("players", "0001_initial"),
+    #    ("comms", "0001_initial"),
+    #)
+
     def forwards(self, orm):
-        
+
         # Adding model 'Msg'
         db.create_table('comms_msg', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -44,7 +49,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'Msg'
         db.delete_table('comms_msg')
 

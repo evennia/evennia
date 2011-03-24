@@ -6,8 +6,12 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("objects", "0001_initial"),
+    )
+
     def forwards(self, orm):
-        
+
         # Adding model 'PlayerAttribute'
         db.create_table('players_playerattribute', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -33,9 +37,12 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('players', ['PlayerDB'])
 
+        # Hack to get around circular table creation.
+        db.add_column('objects_objectdb', 'db_player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['players.PlayerDB'], null=True, blank=True))
+
 
     def backwards(self, orm):
-        
+
         # Deleting model 'PlayerAttribute'
         db.delete_table('players_playerattribute')
 
