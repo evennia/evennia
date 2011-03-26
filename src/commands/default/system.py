@@ -511,7 +511,7 @@ class CmdTime(MuxCommand):
         if utils.host_os_is('posix'):
             loadavg = os.getloadavg()
             table[0].append("Server load (per minute):")
-            table[1].append("{w%g%%{n" % (100 * loadavg[0]))            
+            table[1].append("%g" % (loadavg[0]))            
         stable = []
         for col in table:
             stable.append([str(val).strip() for val in col])
@@ -547,40 +547,46 @@ class CmdServerLoad(MuxCommand):
             import resource                                
             loadavg = os.getloadavg()                
             psize = resource.getpagesize()
+            pid = os.getpid()
+            rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rsz")).read()) / 1024.0
+            vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0
+
             rusage = resource.getrusage(resource.RUSAGE_SELF)                                
             table = [["Server load (1 min):", 
                       "Process ID:",
                       "Bytes per page:",
-                      "Time used:",
-                      "Integral memory:",
-                      "Max res memory:",
+                      "CPU time used:",
+                      "Resident memory:",
+                      "Virtual memory:",
                       "Page faults:",
                       "Disk I/O:",
-                      "Network I/O",
+                      "Network I/O:",
                       "Context switching:"
                       ],
-                     ["%g%%" % (100 * loadavg[0]),
-                      "%10d" % os.getpid(),
+                     ["%g" % loadavg[0],
+                      "%10d" % pid,
                       "%10d " % psize,
-                      "%10d" % rusage.ru_utime,
-                      "%10d shared" % rusage.ru_ixrss,
-                      "%10d pages" % rusage.ru_maxrss,
+                      "%s (%gs)" % (utils.time_format(rusage.ru_utime),rusage.ru_utime),
+                      #"%10d shared" % rusage.ru_ixrss,
+                      #"%10d pages" % rusage.ru_maxrss,
+                      "%10d Mb" % rmem,
+                      "%10d Mb" % vmem,                      
                       "%10d hard" % rusage.ru_majflt,
                       "%10d reads" % rusage.ru_inblock,
                       "%10d in" % rusage.ru_msgrcv,
                       "%10d vol" % rusage.ru_nvcsw                          
                     ],
                      ["", "", "", 
-                      "(user: %g)" % rusage.ru_stime,
-                      "%10d private" % rusage.ru_idrss,
-                      "%10d bytes" % (rusage.ru_maxrss * psize),
+                      "(user: %gs)" % rusage.ru_stime,
+                      "",#"%10d private" % rusage.ru_idrss,
+                      "",#"%10d bytes" % (rusage.ru_maxrss * psize),
                       "%10d soft" % rusage.ru_minflt,
                       "%10d writes" % rusage.ru_oublock,
                       "%10d out" % rusage.ru_msgsnd,
                       "%10d forced" % rusage.ru_nivcsw
                       ],
                      ["", "", "", "", 
-                      "%10d stack" % rusage.ru_isrss,
+                      "",#"%10d stack" % rusage.ru_isrss,
                       "", 
                       "%10d swapouts" % rusage.ru_nswap,
                       "", "",
