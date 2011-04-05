@@ -44,7 +44,7 @@ PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 PARENTS = {
     "typeclass":"src.typeclasses.typeclass.TypeClass",
     "objectdb":"src.objects.models.ObjectDB",
-    "layerdb":"src.players.models.PlayerDB",
+    "playerdb":"src.players.models.PlayerDB",
     "scriptdb":"src.scripts.models.ScriptDB",
     "msg":"src.comms.models.Msg",
     "channel":"src.comms.models.Channel",
