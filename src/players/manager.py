@@ -5,7 +5,7 @@ The managers for the custom Player object and permissions.
 import datetime 
 from django.db import models
 from django.contrib.auth.models import User
-from src.typeclasses.managers import returns_typeclass_list, returns_typeclass
+from src.typeclasses.managers import returns_typeclass_list, returns_typeclass, TypedObjectManager
 from src.utils import logger
 
 #
@@ -59,7 +59,7 @@ def returns_player(method):
             return None 
     return func
 
-class PlayerManager(models.Manager):
+class PlayerManager(TypedObjectManager):
     """
     Custom manager for the player profile model. We use this
     to wrap users in general in evennia, and supply some useful

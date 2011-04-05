@@ -30,6 +30,7 @@ import traceback
 from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
+from django.contrib.contenttypes.models import ContentType
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
@@ -42,12 +43,12 @@ PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 # Note that these have to be updated if directory structure changes.
 PARENTS = {
     "typeclass":"src.typeclasses.typeclass.TypeClass",
-    "object":"src.objects.models.ObjectDB",
-    "player":"src.players.models.PlayerDB",
-    "script":"src.scripts.models.ScriptDB",
+    "objectdb":"src.objects.models.ObjectDB",
+    "layerdb":"src.players.models.PlayerDB",
+    "scriptdb":"src.scripts.models.ScriptDB",
     "msg":"src.comms.models.Msg",
     "channel":"src.comms.models.Channel",
-    "help":"src.help.models.HelpEntry"}
+    "helpentry":"src.help.models.HelpEntry"}
 
 # cached typeclasses for all typed models 
 TYPECLASS_CACHE = {}
@@ -62,6 +63,12 @@ def reset():
 #   Attributes 
 #
 #------------------------------------------------------------
+
+class PackedDBobject(object):
+    "Simple helper class for storing database object ids."
+    def __init__(self, ID, db_model):        
+        self.id = ID
+        self.db_model = db_model
 
 class Attribute(SharedMemoryModel):
     """
@@ -94,8 +101,6 @@ class Attribute(SharedMemoryModel):
     db_key = models.CharField(max_length=255)
     # access through the value property 
     db_value = models.TextField(blank=True, null=True)
-    # tells us what type of data is stored in the attribute
-    db_mode = models.CharField(max_length=20, null=True, blank=True)
     # Lock storage 
     db_lock_storage = models.TextField(blank=True)    
     # references the object the attribute is linked to (this is set 
@@ -106,7 +111,7 @@ class Attribute(SharedMemoryModel):
     
     # Database manager 
     objects = managers.AttributeManager()
-
+            
     # Lock handler self.locks
     def __init__(self, *args, **kwargs):
         "Initializes the parent first -important!"
@@ -142,23 +147,6 @@ class Attribute(SharedMemoryModel):
         "Deleter. Allows for del self.key"
         raise Exception("Cannot delete attribute key!")
     key = property(key_get, key_set, key_del)
-
-    # mode property (wraps db_mode)
-    #@property
-    def mode_get(self):
-        "Getter. Allows for value = self.mode"
-        return self.db_mode
-    #@mode.setter
-    def mode_set(self, value):
-        "Setter. Allows for self.mode = value"
-        self.db_mode = value
-        self.save()
-    #@mode.deleter
-    def mode_del(self):
-        "Deleter. Allows for del self.mode"
-        self.db_mode = None
-        self.save()
-    mode = property(mode_get, mode_set, mode_del)
 
     # obj property (wraps db_obj)
     #@property
@@ -198,44 +186,14 @@ class Attribute(SharedMemoryModel):
         """
         Getter. Allows for value = self.value.
         """        
-        db_value = self.db_value
-        db_mode = self.db_mode
         try:
-            if not db_mode:
-                # it's a string, just return plain db_value below
-                pass 
-            elif db_mode == 'pickle':
-                db_value = pickle.loads(str(db_value))
-            elif db_mode == 'object':
-                from src.objects.models import ObjectDB
-                db_value = ObjectDB.objects.dbref_search(db_value)
-            elif db_mode == 'script':
-                from src.scripts.models import ScriptDB
-                db_value = ScriptDB.objects.dbref_search(db_value)        
-            elif db_mode == 'player':
-                from src.players.models import PlayerDB
-                db_value = PlayerDB.objects.get(id=int(db_value))
-            elif db_mode == 'msg':
-                from src.comms.models import Msg
-                db_value = Msg.objects.objects.get(id=int(db_value))
-            elif db_mode == 'channel':
-                from src.comms.models import Channel
-                db_value = Channel.objects.get(id=int(db_value))
-            elif db_mode == 'help':
-                from src.help.models import HelpEntry
-                db_value = HelpEntry.objects.get(id=int(db_value))
-        except Exception: 
-            logger.log_trace() #TODO: Remove when stable?
-            db_value = None 
-        return db_value
+            return self.validate_data(pickle.loads(str(self.db_value)))
+        except pickle.UnpicklingError:
+            return self.db_value
     #@value.setter
     def value_set(self, new_value):
         "Setter. Allows for self.value = value"
-        new_value, mode = self._convert_value(new_value)
-        if mode == "pickle":
-            new_value = pickle.dumps(new_value) #,pickle.HIGHEST_PROTOCOL)            
-        self.db_value = new_value
-        self.db_mode = mode 
+        self.db_value = pickle.dumps(self.validate_data(new_value))
         self.save()
     #@value.deleter
     def value_del(self):
@@ -272,52 +230,55 @@ class Attribute(SharedMemoryModel):
     def __unicode__(self):
         return u"%s(%s)" % (self.key, self.id)
 
-    def _convert_value(self, in_value):
+    def validate_data(self, item):                
         """
-        We have to be careful as to what we store. Some things, such
-        as django model instances, cannot be directly stored/pickled
-        in an attribute, so we have to be clever about it.  Types of
-        objects and how they are handled:
-          *  str - stored directly in field
-          *  django model object - store its dbref in field
-          *  any other python structure - pickle in field
+        We have to make sure to not store database objects raw, since this will
+        crash the system. Instead we must store their IDs and make sure to convert
+        back when the attribute is read back later. 
 
-        """
-    
-        if isinstance(in_value, basestring): 
-            # (basestring matches both str and unicode)
-            # strings we just store directly.
-            return in_value, None
+        We handle only lists and dicts for iterables.
+        """        
+        if isinstance(item, basestring):
+            # a string is unmodified 
+            ret = item
+        elif type(item) == PackedDBobject:
+            # unpack a previously packed object
+            try:
+                mclass = ContentType.objects.get(model=item.db_model).model_class()
+                try:
+                    ret = mclass.objects.dbref_search(item.id)
+                except AttributeError:
+                    ret = mclass.objects.get(id=item.id)
+            except Exception:
+                logger.log_trace("Attribute error: %s, %s" % (item.db_model, item.id)) #TODO: Remove when stable?
+                ret = None
+        elif type(item) == dict:
+            # handle dictionaries
+            ret = {}
+            for key, it in item.items():
+                ret[key] = self.validate_data(it)
+        elif is_iter(item):
+            # Note: ALL other iterables are considered to be lists!
+            ret = []
+            for it in item:
+                ret.append(self.validate_data(it))
+        elif has_parent('django.db.models.base.Model', item) or has_parent(PARENTS['typeclass'], item):
+            # db models must be stored as dbrefs
+            db_model = [parent for parent, path in PARENTS.items() if has_parent(path, item)]
+            if db_model and db_model[0] == 'typeclass':
+                # the typeclass alone can't help us, we have to know the db object.
+                db_model = [parent for parent, path in PARENTS.items()
+                           if has_parent(path, item.dbobj)]
+            if db_model:
+                # store the object in an easily identifiable container 
+                ret = PackedDBobject(str(item.id), db_model[0])
+            else:
+                # not a valid object - some third-party class or primitive?
+                ret = item
+        else:
+            ret = item 
 
-        if is_iter(in_value):
-            # an iterable. This is normally something to pickle, 
-            # but we have to be careful so as to not find 
-            # django model instances nested in the iterable. 
-            pass #TODO!
-            
-
-        if not has_parent('django.db.models.base.Model', in_value) \
-                and not has_parent(PARENTS['typeclass'], in_value):
-            # non-django models that are not strings we pickle
-            #print "type identified: to_pickle"
-            #print "found a non-django parent."
-            return in_value, 'pickle'
-
-        # this is a db model. Try to determine what type of db object it is. 
-        db_type = [parent for parent, path in PARENTS.items()
-                    if has_parent(path, in_value)]
-        if db_type and db_type[0] == 'typeclass':
-            # the typeclass alone can't help us, we have to know the db object. 
-            db_type = [parent for parent, path in PARENTS.items()
-                       if has_parent(path, in_value.dbobj)]
-            
-        if not db_type:
-            # no match; maybe it's a non-model from inside django(?).
-            return in_value, "pickle"    
-
-        # it's a db model. Return its dbref as a string instead. 
-        #print "type identified: %s" % db_type[0]
-        return str(in_value.id), db_type[0]
+        return ret
                     
     def access(self, accessing_obj, access_type='read', default=False):
         """
@@ -327,7 +288,6 @@ class Attribute(SharedMemoryModel):
         default - what to return if no lock of access_type was found
         """        
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
-
 
 
 #------------------------------------------------------------

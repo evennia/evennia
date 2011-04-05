@@ -90,7 +90,7 @@ class RedButton(Object):
         # scripts that depend on the lid to be closed.
         self.scripts.validate()
         # now add new scripts that define the open-lid state
-        self.obj.scripts.add(scriptexamples.OpenLidState)
+        self.scripts.add(scriptexamples.OpenLidState)
         # we also add a scripted event that will close the lid after a while.
         # (this one cleans itself after being called once)
         self.scripts.add(scriptexamples.CloseLidEvent)
@@ -125,7 +125,7 @@ class RedButton(Object):
         
         """
         self.db.lamp_works = False 
-        self.obj.db.desc = "The big red button has stopped blinking for the time being."
+        self.db.desc = "The big red button has stopped blinking for the time being."
 
         if feedback and self.location:
             string = "The lamp flickers, the button going dark."
