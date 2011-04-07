@@ -191,7 +191,7 @@ class CmdCopy(ObjManipCommand):
         caller = self.caller
         args = self.args
         if not args:
-            caller.msg("Usage: @copy <obj> [=new_name[;alias;alias..]][:new_location]") 
+            caller.msg("Usage: @copy <obj> [=new_name[;alias;alias..]][:new_location] [, new_name2...]") 
             return
     
         if not self.rhs:
@@ -201,12 +201,11 @@ class CmdCopy(ObjManipCommand):
             if not from_obj:
                 return             
             to_obj_name = "%s_copy" % from_obj_name
-            to_obj_aliases = from_obj.aliases 
-            to_obj_location = from_obj.location            
-            copiedobj = ObjectDB.objects.copy_object(from_obj, to_obj_name, 
-                                                     to_obj_location, to_obj_aliases) 
+            to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases]
+            copiedobj = ObjectDB.objects.copy_object(from_obj, new_name=to_obj_name, 
+                                                     new_aliases=to_obj_aliases)
             if copiedobj:
-                string = "Identical copy of %s, named '%s' was created." % (to_obj_name, to_obj_name)
+                string = "Identical copy of %s, named '%s' was created." % (from_obj_name, to_obj_name)
             else:
                 string = "There was an error copying %s."
         else:
@@ -215,16 +214,22 @@ class CmdCopy(ObjManipCommand):
             from_obj = caller.search(from_obj_name)
             if not from_obj:
                 return             
-            for objdef in self.lhs_objs:                
+            for objdef in self.rhs_objs:
+                print objdef.items()
                 # loop through all possible copy-to targets                
                 to_obj_name = objdef['name']
                 to_obj_aliases = objdef['aliases']
                 to_obj_location = objdef['option']
-                copiedobj = ObjectDB.objects.copy_object(from_obj, to_obj_name, 
-                                                         to_obj_location, to_obj_aliases)                 
+                if to_obj_location:
+                    to_obj_location = caller.search(to_obj_location, global_search=True)
+                    if not to_obj_location:
+                        return
+
+                copiedobj = ObjectDB.objects.copy_object(from_obj, new_name=to_obj_name, 
+                                                         new_location=to_obj_location, new_aliases=to_obj_aliases)                 
                 if copiedobj:
                     string = "Copied %s to '%s' (aliases: %s)." % (from_obj_name, to_obj_name,
-                                                                 to_obj_aliases)
+                                                                   to_obj_aliases)
                 else:
                     string = "There was an error copying %s to '%s'." % (from_obj_name, 
                                                                          to_obj_name)
@@ -523,11 +528,11 @@ class CmdDestroy(MuxCommand):
             if not obj:                
                 continue
             objname = obj.name
-            if obj.player and not 'override' in self.switches:
-                string = "Object %s is a player object. Use /override to delete anyway." % objname
-                continue 
             if not obj.access(caller, 'delete'):
                 string = "You don't have permission to delete %s." % objname
+                continue
+            if obj.player and not 'override' in self.switches:
+                string = "Object %s is controlled by an active player. Use /override to delete anyway." % objname
                 continue
             # do the deletion
             okay = obj.delete()

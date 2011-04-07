@@ -748,12 +748,8 @@ class ObjectDB(TypedObject):
         # See if we need to kick the player off.
         for session in self.sessions:
             session.msg("Your character %s has been destroyed. Goodbye." % self.name)
-            session.handle_close()
-            
-        # # If the object is a player, set the player account
-        # # object to inactive. We generally avoid deleting a
-        # # player completely in case it messes with things
-        # # like sent-message memory etc in some games.
+            session.session_disconnect()
+        
         # if self.player:
         #     self.player.user.is_active = False 
         #     self.player.user.save()

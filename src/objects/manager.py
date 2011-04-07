@@ -269,7 +269,8 @@ class ObjectManager(TypedObjectManager):
     #
 
     def copy_object(self, original_object, new_name=None,
-                    new_location=None, new_home=None, new_aliases=None):
+                    new_location=None, new_player=None, new_home=None, 
+                    new_permissions=None, new_locks=None, new_aliases=None):
         """
         Create and return a new object as a copy of the source object. All will
         be identical to the original except for the arguments given specifically 
@@ -289,19 +290,38 @@ class ObjectManager(TypedObjectManager):
         if not new_location:
             new_location = original_object.location
         if not new_home:
-            new_home = original_object.new_home
+            new_home = original_object.home
+        if not new_player:
+            new_player = original_object.player
         if not new_aliases:
             new_aliases = original_object.aliases        
+        if not new_locks:
+            new_locks = original_object.db_lock_storage
+        if not new_permissions:
+            new_permissions = original_object.permissions 
         
         # create new object 
-        from src import create 
-        new_object = create.create_object(new_name, typeclass_path, new_location,
-                                        new_home, user=None, aliases=new_aliases)
+        from src.utils import create 
+        from src.scripts.models import ScriptDB
+        new_object = create.create_object(typeclass_path, new_name, new_location,
+                                          new_home, new_player, new_permissions, 
+                                          new_locks, new_aliases)
         if not new_object:
             return None        
 
-        for attr in original_object.attr():
-            # copy over all attributes from old to new. 
-            new_object.attr(attr.attr_name, attr.value)
+        # copy over all attributes from old to new. 
+        for attr in original_object.get_all_attributes():
+            new_object.set_attribute(attr.key, attr.value)
 
+        # copy over all cmdsets, if any 
+        for icmdset, cmdset in enumerate(original_object.cmdset.all()):
+            if icmdset == 0:
+                new_object.cmdset.add_default(cmdset)
+            else:
+                new_object.cmdset.add(cmdset)
+
+        # copy over all scripts, if any 
+        for script in original_object.scripts.all():
+            ScriptDB.objects.copy_script(script, new_obj=new_object.dbobj)
+            
         return new_object

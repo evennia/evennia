@@ -169,3 +169,20 @@ class ScriptManager(TypedObjectManager):
         if only_timed:
             scripts = scripts.exclude(interval=0)
         return scripts
+
+    def copy_script(self, original_script, new_key=None, new_obj=None, new_locks=None):
+        """
+        Make an identical copy of the original_script
+        """
+
+        typeclass = original_script.typeclass_path
+        if not new_key:
+            new_key = original_script.key
+        if not new_obj:
+            new_obj = original_script.obj
+        if not new_locks:
+            new_locks = original_script.db_lock_storage
+
+        from src.utils import create
+        new_script = create.create_script(typeclass, key=new_key, obj=new_obj, locks=new_locks, autostart=True)
+        return new_script

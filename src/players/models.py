@@ -161,7 +161,7 @@ class PlayerDB(TypedObject):
     #@property
     def character_get(self):
         "Getter. Allows for value = self.character"
-        return self.obj
+        return self.db_obj
     #@character.setter
     def character_set(self, value):
         "Setter. Allows for self.character = value"
@@ -169,7 +169,8 @@ class PlayerDB(TypedObject):
     #@character.deleter
     def character_del(self):
         "Deleter. Allows for del self.character"
-        del self.obj
+        self.db_obj = None
+        self.save()
     character = property(character_get, character_set, character_del)
 
     class Meta:

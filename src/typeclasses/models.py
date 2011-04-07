@@ -238,12 +238,14 @@ class Attribute(SharedMemoryModel):
 
         We handle only lists and dicts for iterables.
         """        
+        #print "in validate_data:", item
         if isinstance(item, basestring):
             # a string is unmodified 
-            ret = item
+            ret = item        
         elif type(item) == PackedDBobject:
             # unpack a previously packed object
             try:
+                #print "unpack:", item.id, item.db_model
                 mclass = ContentType.objects.get(model=item.db_model).model_class()
                 try:
                     ret = mclass.objects.dbref_search(item.id)
@@ -265,10 +267,12 @@ class Attribute(SharedMemoryModel):
         elif has_parent('django.db.models.base.Model', item) or has_parent(PARENTS['typeclass'], item):
             # db models must be stored as dbrefs
             db_model = [parent for parent, path in PARENTS.items() if has_parent(path, item)]
+            #print "db_model", db_model
             if db_model and db_model[0] == 'typeclass':
                 # the typeclass alone can't help us, we have to know the db object.
                 db_model = [parent for parent, path in PARENTS.items()
-                           if has_parent(path, item.dbobj)]
+                            if has_parent(path, item.dbobj)]
+            #print "db_model2", db_model 
             if db_model:
                 # store the object in an easily identifiable container 
                 ret = PackedDBobject(str(item.id), db_model[0])

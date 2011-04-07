@@ -370,7 +370,13 @@ class CmdSetHandler(object):
         self.permanent_paths[0] = [self.permanent_paths[0]]
         self.obj.cmdset_storage = self.permanent_paths
         self.update()
-        
+
+    def all(self):
+        """
+        Returns all cmdsets.
+        """
+        return self.cmdset_stack
+
     def reset(self):
         """
         Force reload of all cmdsets in handler. This should be called 
