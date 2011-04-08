@@ -255,7 +255,7 @@ class CmdGet(MuxCommand):
         if caller == obj:
             caller.msg("You can't get yourself.")
             return
-        if obj.player or obj.db._destination: 
+        if obj.player or obj.destination: 
             # don't allow picking up player objects, nor exits.
             caller.msg("You can't get that.")
             return

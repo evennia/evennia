@@ -128,7 +128,7 @@ class Object(TypeClass):
         loc_name = self.location.name 
         dest_name = destination.name
         string = "%s is leaving %s, heading for %s."
-        self.location.emit_to_contents(string % (name, loc_name, dest_name), exclude=self)
+        self.location.msg_contents(string % (name, loc_name, dest_name), exclude=self)
         
     def announce_move_to(self, source_location):
         """
@@ -143,7 +143,7 @@ class Object(TypeClass):
             # This was created from nowhere and added to a player's
             # inventory; it's probably the result of a create command.
             string = "You now have %s in your possession." % name
-            self.location.emit_to(string)
+            self.location.msg(string)
             return 
 
         src_name = "nowhere"
@@ -151,7 +151,7 @@ class Object(TypeClass):
         if source_location:
             src_name = source_location.name
         string = "%s arrives to %s from %s." 
-        self.location.emit_to_contents(string % (name, loc_name, src_name), exclude=self)
+        self.location.msg_contents(string % (name, loc_name, src_name), exclude=self)
 
 
     def at_after_move(self, source_location):
@@ -203,7 +203,7 @@ class Object(TypeClass):
             if content == pobject:
                 continue 
             name = content.name
-            if content.attr('_destination'):
+            if content.destination:
                 exits.append(name)
             elif content.has_player:
                 users.append(name)
@@ -360,12 +360,12 @@ class Exit(Object):
     """
     This is the base exit object - it connects a location
     to another. What separates it from other objects
-    is that it has the '_destination' attribute defined.    
-    Note that _destination is the only identifier to
-    separate an exit from normal objects, so if _destination
+    is that it has the 'destination' property defined.    
+    Note that property is the only identifier to
+    separate an exit from normal objects, so if the property
     is removed, it will be treated like any other object. This
     also means that any object can be made an exit by setting
-    the attribute _destination to a valid location
+    the property destination to a valid location
     ('Quack like a duck...' and so forth).
     """        
     def basetype_setup(self):
@@ -379,13 +379,17 @@ class Exit(Object):
 
     def at_object_creation(self):
         """
-        An example just for show; the _destination attribute
+        An example just for show; the destination property
         is usually set at creation time, not as part of the class
         definition (unless you want an entire class of exits
         all leadning to the same hard-coded place ...)
         """
-        # this is what makes it an exit
-        self.attr("_destination", "None")
+        # having destination != None is what makes it an exit 
+        # (what's set here won't last)
+        if self.location:
+            self.destination = self.location
+        else:
+            self.destination = 2 # use limbo as a failsafe
         
     def at_object_delete(self):
         """

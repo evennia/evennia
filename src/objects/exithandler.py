@@ -70,7 +70,7 @@ class ExitHandler(object):
 
         # use exits to create searchable "commands" for the cmdhandler
         for exi in (exi for exi in location.contents
-                    if exi.has_attribute('_destination')):
+                    if exi.destination):
             if exi.id in self.cached_exit_cmds:
                 # retrieve from cache 
                 exit_cmdset.add(self.cached_exit_cmds[exi.id])
@@ -81,7 +81,7 @@ class ExitHandler(object):
                 cmd.obj = exi
                 if exi.aliases:
                     cmd.aliases = exi.aliases
-                cmd.destination = exi.attr('_destination')
+                cmd.destination = exi.destination
                 exit_cmdset.add(cmd)
                 self.cached_exit_cmds[exi.id] = cmd 
         return exit_cmdset

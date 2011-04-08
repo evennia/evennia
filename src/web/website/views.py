@@ -31,8 +31,8 @@ def page_index(request):
     # A QuerySet of the most recently connected players.
     recent_users = PlayerDB.objects.get_recently_connected_players()[:fpage_player_limit]
 
-    exits = ObjectDB.objects.get_objs_with_attr('_destination')
-    rooms = [room for room in ObjectDB.objects.filter(db_home=None) if room not in exits]
+    exits = ObjectDB.objects.filter(db_destination__isnull=False)
+    rooms = [room for room in ObjectDB.objects.filter(db_home__isnull=True) if room not in exits]
 
     pagevars = {
         "page_title": "Front Page",

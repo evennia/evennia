@@ -215,7 +215,7 @@ class SystemUseExit(MuxCommand):
         exi = caller.search(exit_name)
         if not exi:
             return 
-        destination = exi.attr('_destination')
+        destination = exi.destination
         if not destination:
             return             
         if exit.access(caller, 'traverse'):

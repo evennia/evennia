@@ -217,6 +217,9 @@ class ObjectDB(TypedObject):
     # a safety location, this usually don't change much.
     db_home = models.ForeignKey('self', related_name="homes_set",
                                  blank=True, null=True)
+    # destination of this object - primarily used by exits.
+    db_destination = models.ForeignKey('self', related_name="destinations_set", 
+                                       blank=True, null=True)
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.TextField(null=True)
 
@@ -325,6 +328,7 @@ class ObjectDB(TypedObject):
     def location_del(self):
         "Deleter. Allows for del self.location"
         self.db_location = None 
+        self.save()
     location = property(location_get, location_set, location_del)
 
     # home property (wraps db_home)
@@ -362,7 +366,47 @@ class ObjectDB(TypedObject):
     def home_del(self):
         "Deleter. Allows for del self.home."
         self.db_home = None 
+        self.save()
     home = property(home_get, home_set, home_del)
+
+    # destination property (wraps db_destination)
+    #@property 
+    def destination_get(self):
+        "Getter. Allows for value = self.destination."
+        dest = self.db_destination
+        if dest:
+            return dest.typeclass(dest)
+        return None 
+    #@destination.setter
+    def destination_set(self, destination):
+        "Setter. Allows for self.destination = destination"
+        try:
+            if destination == None or type(destination) == ObjectDB:
+                # destination is None or a valid object
+                dest = destination                       
+            elif ObjectDB.objects.dbref(destination):
+                # destination is a dbref; search
+                dest = ObjectDB.objects.dbref_search(destination)
+                if dest and hasattr(dest,'dbobj'):
+                    dest = dest.dbobj
+                else:
+                    dest = destination.dbobj    
+            else:                
+                dest = destination.dbobj                        
+            self.db_destination = dest 
+            self.save()
+        except Exception:
+            string = "Cannot set destination: "
+            string += "%s is not a valid destination." 
+            self.msg(string % destination)
+            logger.log_trace(string)
+            raise         
+    #@destination.deleter
+    def destination_del(self):
+        "Deleter. Allows for del self.destination"
+        self.db_destination = None 
+        self.save()
+    destination = property(destination_get, destination_set, destination_del)
 
     #@property for consistent aliases access throughout Evennia
     #@aliases.setter
@@ -462,10 +506,10 @@ class ObjectDB(TypedObject):
     def exits_get(self):
         """
         Returns all exits from this object, i.e. all objects
-        at this location having the property _destination.
+        at this location having the property destination != None.
         """
         return [exi for exi in self.contents
-                if exi.has_attribute('_destination')]
+                if exi.destination]
     exits = property(exits_get)
 
             
@@ -589,8 +633,8 @@ class ObjectDB(TypedObject):
         Moves this object to a new location.
         
         destination: (Object) Reference to the object to move to. This
-                     can also be an exit object, in which case the _destination
-                     attribute is used as destination. 
+                     can also be an exit object, in which case the destination
+                     property is used as destination. 
         quiet:  (bool)    If true, don't emit left/arrived messages.
         emit_to_obj: (Object) object to receive error messages
         """
@@ -601,9 +645,9 @@ class ObjectDB(TypedObject):
         if not destination:
             emit_to_obj.msg("The destination doesn't exist.")
             return 
-        if destination.has_attribute('_destination'):
+        if destination.destination:
             # traverse exits
-            destination = destination.get_attribute('_destination')
+            destination = destination.destination
 
         # Before the move, call eventual pre-commands.
         try:
@@ -689,8 +733,7 @@ class ObjectDB(TypedObject):
         """
         for out_exit in self.exits:                            
             out_exit.delete()
-        for in_exit in \
-                ObjectDB.objects.get_objs_with_attr_match('_destination', self):
+        for in_exit in ObjectDB.objects.filter(db_destination=self):
             in_exit.delete()
 
     def clear_contents(self):

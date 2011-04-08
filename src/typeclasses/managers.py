@@ -143,7 +143,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         of database object having that typeclass set on themselves). 
         """
         dbtotals = {}
-        typeclass_paths = set(obj.db_typeclass_path for obj in self.all())
+        typeclass_paths = set(self.values_list('db_typeclass_path', flat=True))
         for typeclass_path in typeclass_paths: 
             dbtotals[typeclass_path] = \
                self.filter(db_typeclass_path=typeclass_path).count()

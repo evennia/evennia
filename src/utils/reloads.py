@@ -69,8 +69,8 @@ def reload_modules():
     # should never need to do that anyway). Updating src requires a server
     # reboot. Modules in except_dirs are considered ok to reload despite being
     # inside src/
-    protected_dirs = ('src.',)               # note that these MUST be tuples!
-    except_dirs = ('src.commands.default.',) #             "  
+    protected_dirs = ('src.', 'django.', 'twisted.')     # note that these MUST be tuples!
+    except_dirs = ('src.commands.default.',) #                          "  
 
     # flag 'dangerous' typeclasses (those which retain a memory
     # reference, notably Scripts with a timer component) for
@@ -95,7 +95,7 @@ def reload_modules():
     # clean as much of the caches as we can
     cache = AppCache()
     cache.app_store = SortedDict()
-    cache.app_models = SortedDict()
+    #cache.app_models = SortedDict() # cannot clean this, it resets ContentTypes!
     cache.app_errors = {} 
     cache.handled = {}
     cache.loaded = False
@@ -129,7 +129,7 @@ def reload_modules():
     else:
         cemit_info(" ... no modules could be (or needed to be) reloaded.")
 
-    # clean out cache dictionary of typeclasses, exits and channe    
+    # clean out cache dictionary of typeclasses, exits and channels    
     typeclassmodels.reset()
     exithandler.EXITHANDLER.clear()
     channelhandler.CHANNELHANDLER.update()

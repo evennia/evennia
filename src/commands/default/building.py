@@ -575,7 +575,7 @@ class CmdDig(ObjManipCommand):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage: @dig[/teleport] roomname[;alias;alias...][:parent] [= exit_there"
+            string = "Usage:@ dig[/teleport] roomname[;alias;alias...][:parent] [= exit_there"
             string += "[;alias;alias..][:parent]] "
             string += "[, exit_back_here[;alias;alias..][:parent]]"
             caller.msg(string)
@@ -586,7 +586,7 @@ class CmdDig(ObjManipCommand):
         if not room["name"]:
             caller.msg("You must supply a new room name.")            
             return
-        location = caller.location 
+        location = caller.location         
 
         # Create the new room 
         typeclass = room['option']
@@ -600,9 +600,13 @@ class CmdDig(ObjManipCommand):
                               typeclass.startswith('game.')):
             typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
                                    typeclass)
-          
+
+        lockstring = "control:id(%s) or perm(Immortal); delete:id(%s) or perm(Wizard); edit:id(%s) or perm(Wizard)" 
+        lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
+
         new_room = create.create_object(typeclass, room["name"],
                                         aliases=room["aliases"])
+        new_room.locks.add(lockstring)
         room_string = "Created room '%s' of type %s." % (new_room.name, typeclass)
 
         exit_to_string = ""
@@ -631,7 +635,8 @@ class CmdDig(ObjManipCommand):
                 new_to_exit = create.create_object(typeclass, to_exit["name"],
                                                    location,
                                                    aliases=to_exit["aliases"])
-                new_to_exit.db._destination = new_room
+                new_to_exit.destination = new_room
+                new_to_exit.locks.add(lockstring)
                 exit_to_string = "\nCreated new Exit to new room:  %s (aliases: %s)."
                 exit_to_string = exit_to_string % (new_to_exit.name,
                                                    new_to_exit.aliases)
@@ -659,7 +664,8 @@ class CmdDig(ObjManipCommand):
                 new_back_exit = create.create_object(typeclass, back_exit["name"],
                                                      new_room,
                                                      aliases=back_exit["aliases"])
-                new_back_exit.db._destination = location
+                new_back_exit.destination = location
+                new_back_exit.locks.add(lockstring)
                 exit_back_string = "\nExit back from new room: %s (aliases: %s)." 
                 exit_back_string = exit_back_string % (new_back_exit.name,
                                                        new_back_exit.aliases)
@@ -714,13 +720,13 @@ class CmdLink(MuxCommand):
             target = caller.search(self.rhs, global_search=True)
             if not target:
                 return 
-            # if obj is an exit (has db attribute _destination),
+            # if obj is an exit (has property destination),
             # set that, otherwise set home.
-            if obj.db._destination: 
-                obj.db._destination = target
+            if obj.destination: 
+                obj.destination = target
                 if "twoway" in self.switches:                    
-                    if target.db._destination:
-                        target.db._destination = obj                        
+                    if target.destination:
+                        target.destination = obj                        
                         string = "Link created %s <-> %s (two-way)." % (obj.name, target.name)
                     else:
                         string = "Cannot create two-way link to non-exit."
@@ -728,7 +734,7 @@ class CmdLink(MuxCommand):
                 else:
                     string = "Link created %s -> %s (one way)." % (obj.name, target.name)
             else:
-                # obj is not an exit (has not attribute _destination), 
+                # obj is not an exit (has not property destination), 
                 # so set home instead
                 obj.home = target 
                 string = "Set %s's home to %s." % (obj.name, target.name) 
@@ -737,20 +743,19 @@ class CmdLink(MuxCommand):
             # this means that no = was given (otherwise rhs 
             # would have been an empty string). So we inspect
             # the home/destination on object
-            dest = obj.db._destination
+            dest = obj.destination
             if dest:
                 "%s is an exit to %s." % (obj.name, dest.name)
             else:
                 string = "%s has home %s." % (obj.name, obj.home)
         else:
             # We gave the command @link 'obj = ' which means we want to
-            # clear _destination or set home to None.             
-            if obj.db._destination:
-                obj.db._destination = "None" # it can't be None, or _destination would 
-                                             # be deleted and obj cease being an exit!
+            # clear destination or set home to None.             
+            if obj.destination:
+                del obj.destination
                 string = "Exit %s no longer links anywhere." % obj.name
             else:
-                obj.home = None
+                del obj.home
                 string = "%s no longer has a home." % obj.name
         # give feedback
         caller.msg(string)
@@ -977,19 +982,19 @@ class CmdOpen(ObjManipCommand):
             return
         if exit_obj:
             exit_obj = exit_obj[0]
-            if not exit_obj.db._destination:
+            if not exit_obj.destination:
                 # we are trying to link a non-exit
                 string = "'%s' already exists and is not an exit!\nIf you want to convert it "
-                string += "to an exit, you must assign it an attribute '_destination' first."
+                string += "to an exit, you must assign an object to the 'destination' property first."
                 caller.msg(string % exit_name)
                 return None
             # we are re-linking an old exit.
-            old_destination = exit_obj.db._destination
+            old_destination = exit_obj.destination
             if old_destination:
                 string = "Exit %s already exists." % exit_name
                 if old_destination.id != destination.id:
                     # reroute the old exit.
-                    exit_obj.db._destination = destination
+                    exit_obj.destination = destination
                     exit_obj.aliases = exit_aliases
                     string += " Rerouted its old destination '%s' to '%s' and changed aliases." % \
                         (old_destination.name, destination.name)                
@@ -1002,8 +1007,8 @@ class CmdOpen(ObjManipCommand):
                                             location=location,
                                             aliases=exit_aliases)
             if exit_obj:  
-                # storing an attribute _destination is what makes it an exit!
-                exit_obj.db._destination = destination
+                # storing a destination is what makes it an exit!
+                exit_obj.destination = destination
                 string = "Created new Exit '%s' to %s (aliases: %s)." % (exit_name,
                                                                          destination.name,
                                                                          exit_aliases)
@@ -1453,6 +1458,8 @@ class CmdExamine(ObjManipCommand):
          
         string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass, obj.typeclass_path)
         string += "\n{wLocation{n: %s" % obj.location
+        if obj.destination:
+            string += "\n{wDestination{n: %s" % obj.destination
         perms = obj.permissions
         if perms:            
             string += "\n{wPermissions{n: %s" % (", ".join(perms)) 
@@ -1470,7 +1477,7 @@ class CmdExamine(ObjManipCommand):
         pobjs = []
         things = []
         for content in obj.contents:
-            if content.db._destination: 
+            if content.destination: 
                 # an exit
                 exits.append(content)
             elif content.player:

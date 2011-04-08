@@ -36,32 +36,8 @@ class CmdReload(MuxCommand):
     def func(self):
         """
         Reload the system. 
-        """        
-        caller = self.caller 
+        """                
         reloads.start_reload_loop()
-
-        #reloads.reload_modules()                         
-        # max_attempts = 4 
-        # for attempt in range(max_attempts):            
-        #     # if reload modules take a long time,
-        #     # we might end up in a situation where
-        #     # the subsequent commands fail since they
-        #     # can't find the reloads module (due to it
-        #     # not yet fully loaded). So we retry a few 
-        #     # times before giving up. 
-        #     try:
-        #         reloads.reload_scripts()
-        #         reloads.reload_commands()
-        #         break
-        #     except AttributeError:
-        #         if attempt < max_attempts-1:
-        #             caller.msg("            Waiting for modules(s) to finish (%s) ..." % attempt)
-        #         else:
-        #             string =  "{r            ... The module(s) took too long to reload, "
-        #             string += "\n            so the remaining reloads where skipped."
-        #             string += "\n            Re-run @reload again when modules have fully "
-        #             string += "\n            re-initialized.{n"
-        #             caller.msg(string)
 
 class CmdPy(MuxCommand):
     """
@@ -296,14 +272,14 @@ class CmdObjects(MuxCommand):
         nobjs = ObjectDB.objects.count()
         base_typeclass = settings.BASE_CHARACTER_TYPECLASS
         nchars = ObjectDB.objects.filter(db_typeclass_path=base_typeclass).count()
-        nrooms = ObjectDB.objects.filter(db_location=None).exclude(db_typeclass_path=base_typeclass).count()
-        nexits = sum([1 for obj in ObjectDB.objects.filter(db_location=None) if obj.get_attribute('_destination')])
+        nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=base_typeclass).count()
+        nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
 
         string += "\n{wPlayers:{n %i" % nplayers     
         string += "\n{wObjects:{n %i" % nobjs
         string += "\n{w Characters (base type):{n %i" % nchars 
         string += "\n{w Rooms (location==None):{n %i" % nrooms
-        string += "\n{w Exits (.db._destination!=None):{n %i" % nexits
+        string += "\n{w Exits (destination!=None):{n %i" % nexits
         string += "\n{w Other:{n %i\n" % (nobjs - nchars - nrooms - nexits)
         
         dbtotals = ObjectDB.objects.object_totals()
@@ -319,8 +295,8 @@ class CmdObjects(MuxCommand):
                 srow = "{w%s{n" % srow
             string += srow
 
-        string += "\n\n{wLast %s Objects created:{n" % nlim
-        objs = list(ObjectDB.objects.all())[-nlim:]               
+        string += "\n\n{wLast %s Objects created:{n" % nlim        
+        objs = ObjectDB.objects.all()[max(0, nobjs-nlim):]               
 
         table = [["Created"], ["dbref"], ["name"], ["typeclass"]]
         for i, obj in enumerate(objs):
