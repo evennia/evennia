@@ -178,6 +178,12 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
         else:
             new_script.key = "#%i" % new_db_object.id
 
+    if obj:
+        try:
+            new_script.obj = obj
+        except ValueError:
+            new_script.obj = obj.dbobj    
+
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom
     # things on its database object.
@@ -189,12 +195,6 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
 
     if locks:
         new_script.locks.add(locks)
-
-    if obj:
-        try:
-            new_script.obj = obj
-        except ValueError:
-            new_script.obj = obj.dbobj    
 
     # a new created script should usually be started.
     if autostart:
