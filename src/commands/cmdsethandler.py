@@ -367,7 +367,7 @@ class CmdSetHandler(object):
         """
         self.cmdset_stack = [self.cmdset_stack[0]]
         self.mergetype_stack = [self.cmdset_stack[0].mergetype]
-        self.permanent_paths[0] = [self.permanent_paths[0]]
+        self.permanent_paths = [self.permanent_paths[0]]
         self.obj.cmdset_storage = self.permanent_paths
         self.update()
 

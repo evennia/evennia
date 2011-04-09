@@ -246,12 +246,7 @@ class CmdBatchCommands(MuxCommand):
                 if not batch_cmd_exec(caller):
                     return 
                 step_pointer(caller, 1)
-            # clean out the safety cmdset and clean out all other temporary attrs.
-            caller.cmdset.delete(BatchSafeCmdSet)
-            del caller.ndb.batch_stack
-            del caller.ndb.batch_stackptr
-            del caller.ndb.batch_pythonpath
-            del caller.ndb.batch_batchmode
+            # clean out the safety cmdset and clean out all other temporary attrs.                
             string = "  Batchfile '%s' applied." % python_path 
             caller.msg("{G%s" % string)
             purge_processor(caller)
@@ -334,12 +329,6 @@ class CmdBatchCode(MuxCommand):
                 if not batch_code_exec(caller):
                     return 
                 step_pointer(caller, 1)
-            # clean out the safety cmdset and clean out all other temporary attrs.
-            caller.cmdset.delete(BatchSafeCmdSet)
-            del caller.ndb.batch_stack
-            del caller.ndb.batch_stackptr
-            del caller.ndb.batch_pythonpath
-            del caller.ndb.batch_batchmode
             string = "  Batchfile '%s' applied." % python_path 
             caller.msg("{G%s" % string)
             purge_processor(caller)
@@ -415,9 +404,9 @@ class CmdStateRR(MuxCommand):
     def func(self):
         caller = self.caller
         if caller.ndb.batch_batchmode == "batch_code":
-            BATCHCODE.read_file(caller.ndb.batch_pythonpath)
+            BATCHCODE.parse_file(caller.ndb.batch_pythonpath)
         else:
-            BATCHCMD.read_file(caller.ndb.batch_pythonpath)
+            BATCHCMD.parse_file(caller.ndb.batch_pythonpath)
         caller.msg(format_code("File reloaded. Staying on same command."))
         show_curr(caller)
 
@@ -435,9 +424,9 @@ class CmdStateRRR(MuxCommand):
     def func(self):
         caller = self.caller
         if caller.ndb.batch_batchmode == "batch_code":
-            BATCHCODE.read_file(caller.ndb.batch_pythonpath)
+            BATCHCODE.parse_file(caller.ndb.batch_pythonpath)
         else:
-            BATCHCMD.read_file(caller.ndb.batch_pythonpath)
+            BATCHCMD.parse_file(caller.ndb.batch_pythonpath)
         caller.ndb.batch_stackptr = 0
         caller.msg(format_code("File reloaded. Restarting from top."))
         show_curr(caller)
