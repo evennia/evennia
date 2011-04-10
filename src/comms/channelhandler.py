@@ -84,7 +84,7 @@ class ChannelCommand(command.Command):
         msgobj.save()
         msgobj.channels = channel
         # send new message object to channel        
-        channel.msg(msgobj)
+        channel.msg(msgobj, from_obj=caller.player)
 
 class ChannelHandler(object):
     """

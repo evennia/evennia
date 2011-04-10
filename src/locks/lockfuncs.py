@@ -317,3 +317,30 @@ def superuser(*args, **kwargs):
     """
     return False 
     
+def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Only returns true if the Evennia settings exists, alternatively has a certain value.
+    
+    Usage:
+      serversetting(IRC_ENABLED)
+      serversetting(BASE_SCRIPT_PATH, game.gamesrc.scripts)
+
+    A given True/False or integers will be converted properly.
+    """
+    if not args:
+        return False
+    if len(args) < 2:
+        setting = args[0]
+        val = "True" 
+    else:
+        setting, val = args[0], args[1]
+    # convert
+    if val == 'True':
+        val = True
+    elif val == 'False':
+        val = False 
+    elif val.isdigit():
+        val = int(val)
+    if setting in settings._wrapped.__dict__:
+        return settings._wrapped.__dict__[setting] == val
+    return False 

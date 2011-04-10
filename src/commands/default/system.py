@@ -323,15 +323,17 @@ class CmdService(MuxCommand):
       @service[/switch] <service>
 
     Switches:
+      list   - shows all available services (default)
       start  - activates a service
       stop   - stops a service
-      list   - shows all available services
       
     Service management system. Allows for the listing,
-    starting, and stopping of services.
+    starting, and stopping of services. If no switches
+    are given, services will be listed.
     """
 
     key = "@service"
+    aliases = ["@services"]
     locks = "cmd:perm(service) or perm(Immortals)"
     help_category = "System"
 
@@ -341,11 +343,9 @@ class CmdService(MuxCommand):
         caller = self.caller
         switches = self.switches
         
-        if not switches or \
-                switches[0] not in ["list","start","stop"]:
+        if switches and switches[0] not in ["list","start","stop"]:
             caller.msg("Usage: @service/<start|stop|list> [service]")
-            return             
-        switch = switches[0]
+            return
 
         # get all services
         sessions = caller.sessions
@@ -353,19 +353,20 @@ class CmdService(MuxCommand):
             return 
         service_collection = SESSIONS.server.services
 
-        if switch == "list":
+        if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
-            string = "-" * 40
-            string += "\nService Listing"     
+            string = "-" * 78
+            string += "\n{wServices{n (use @services/start|stop):"     
             
             for service in service_collection.services:
                 if service.running:
                     status = 'Running'
+                    string += '\n * {g%s{n (%s)' % (service.name, status)
                 else:
                     status = 'Inactive'
-                string += '\n * %s (%s)' % (service.name, status)
-            string += "\n" + "-" * 40
+                    string += '\n   {R%s{n (%s)' % (service.name, status)
+            string += "\n" + "-" * 78
             caller.msg(string)
             return
 
@@ -375,35 +376,34 @@ class CmdService(MuxCommand):
             service = service_collection.getServiceNamed(self.args)
         except Exception:
             string = 'Invalid service name. This command is case-sensitive. ' 
-            string += 'See @service/list.'
+            string += 'See @service/list for valid services.'
             caller.msg(string)
             return
 
-        if switch == "stop":
+        if switches[0] == "stop":
             # Stopping a service gracefully closes it and disconnects
             # any connections (if applicable).
 
             if not service.running:
                 caller.msg('That service is not currently running.')
-                return
-            # We don't want to kill the main Evennia TCPServer services
-            # here. If wanting to kill a listening port, one needs to
-            # do it through settings.py and a restart.
+                return            
             if service.name[:7] == 'Evennia':
-                string = "You can not stop Evennia TCPServer services this way."
-                string += "\nTo e.g. remove a listening port, change settings file and restart."
+                string =  "You seem to be shutting down a core Evennia* service. Note that"
+                string += "Stopping some TCP port services will *not* disconnect users *already*" 
+                string += "connected on those ports, but *may* instead cause spurious errors for them. To "
+                string += "safely and permanently remove ports, change settings file and restart the server." 
                 caller.msg(string)
-                return        
-            #comsys.cemit_mudinfo("%s is *Stopping* the service '%s'." % (sname, service.name)) #TODO!
+            
             service.stopService()
+            caller.msg("Stopping service '%s'." % self.args)
             return
 
-        if switch == "start":
+        if switches[0] == "start":
             #Starts a service.
             if service.running:
                 caller.msg('That service is already running.')
-                return
-            #comsys.cemit_mudinfo("%s is *Starting* the service '%s'." % (sname,service.name)) #TODO!
+                return            
+            caller.msg("Starting service '%s'." % self.args)
             service.startService()
 
 class CmdShutdown(MuxCommand):

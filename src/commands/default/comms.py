@@ -1,11 +1,13 @@
 """
 Comsys command module.
 """
-
-from src.comms.models import Channel, Msg, ChannelConnection
+from django.conf import settings
+from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
+from src.comms import irc 
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand            
+from src.server.sessionhandler import SESSIONS
 
 def find_channel(caller, channelname, silent=False):
     """
@@ -263,7 +265,7 @@ class CmdChannels(MuxCommand):
             caller.msg("No channels available")
             return
         # all channel we are already subscribed to
-        subs = [conn.channel for conn in ChannelConnection.objects.get_all_player_connections(caller.player)]
+        subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller.player)]
 
         if self.cmdstring != "comlist":
 
@@ -823,3 +825,88 @@ class CmdPage(MuxCommand):
         if rstrings:
             caller.msg(rstrings = "\n".join(rstrings))
         caller.msg("You paged %s with: '%s'." % (", ".join(received), message))
+
+
+class CmdIRC2Chan(MuxCommand):
+    """
+    @irc2chan - link evennia channel to an IRC channel
+
+    Usage:
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+
+    Switches:
+      /disconnect - this will delete the bot and remove the irc connection to the channel.
+      /remove     -                                 " 
+      /list       - show all irc<->evennia mappings
+
+    Example:
+      @irc2chan myircchan = irc.dalnet.net 6667 myevennia-channel evennia-bot
+
+    This creates an IRC bot that connects to a given IRC network and channel. It will 
+    relay everything said in the evennia channel to the IRC channel and vice versa. The 
+    bot will automatically connect at server start, so this comman need only be given once. 
+    The /disconnect switch will permanently delete the bot. To only temporarily deactivate it, 
+    use the @services command instead.      
+    """
+        
+    key = "@irc2chan"
+    locks = "cmd:serversetting(IRC_ENABLED) and perm(Wizards)"
+    help_category = "Comms"
+
+    def func(self):
+        "Setup the irc-channel mapping"
+
+        if 'list' in self.switches:
+            # show all connections
+            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='irc_')
+            if connections:
+                cols = [["Evennia channel"], ["IRC channel"]]
+                for conn in connections:
+                    cols[0].append(conn.channel.key)
+                    cols[1].append(" ".join(conn.external_config.split('|')))
+                ftable = utils.format_table(cols)
+                string = ""
+                for ir, row in enumerate(ftable):
+                    if ir == 0:
+                        string += "{w%s{n" % "".join(row)
+                    else:
+                        string += "\n" + "".join(row)
+                self.caller.msg(string)
+            else:
+                self.caller.msg("No connections found.")
+            return 
+
+        if not settings.IRC_ENABLED:
+            string = """IRC is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+        if not self.args or not self.rhs:
+            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
+            self.caller.msg(string)
+            return 
+        channel = self.lhs
+        self.rhs = self.rhs.replace('#', ' ') # to avoid Python comment issues
+        try:
+            irc_network, irc_port, irc_channel, irc_botname = [part.strip() for part in self.rhs.split(None, 3)]
+            irc_channel = "#%s" % irc_channel
+        except Exception:        
+            string = "IRC bot definition '%s' is not valid." % self.rhs
+            self.caller.msg(string)
+            return 
+
+        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+            ok = irc.delete_connection(irc_network, irc_port, irc_channel, irc_botname)
+            if not ok:
+                self.caller.msg("IRC connection/bot could not be removed, does it exist?")
+            else:
+                self.caller.msg("IRC connection destroyed.")
+            return 
+        
+        channel = find_channel(self.caller, channel)
+        if not channel:
+            return
+        ok = irc.create_connection(channel, irc_network, irc_port, irc_channel, irc_botname)
+        if not ok:
+            self.caller.msg("This IRC connection already exists.")
+            return 
+        self.caller.msg("Connection created. Starting IRC bot.")

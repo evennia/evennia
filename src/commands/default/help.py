@@ -19,7 +19,7 @@ def format_help_entry(title, help_text, aliases=None,
     """
     This visually formats the help entry.
     """            
-    string = "-"*70 + "\n"
+    string = "-"*78 + "\n"
     if title: 
         string += "Help topic for {w%s{n" % (title.capitalize()) 
     if aliases:
@@ -30,7 +30,7 @@ def format_help_entry(title, help_text, aliases=None,
         string += "\nSuggested:\n"
         string += fill(", ".join(suggested))    
     string.strip()
-    string += "\n" + "-"*70
+    string += "\n" + "-"*78
     return string 
 
 def format_help_list(hdict_cmds, hdict_db):

@@ -195,7 +195,7 @@ if TELNET_ENABLED:
         factory = protocol.ServerFactory()
         factory.protocol = telnet.TelnetProtocol
         telnet_service = internet.TCPServer(port, factory)
-        telnet_service.setName('Evennia%s' % port)
+        telnet_service.setName('EvenniaTelnet%s' % port)
         EVENNIA.services.addService(telnet_service)
 
 if WEBSERVER_ENABLED:
@@ -244,11 +244,5 @@ if IRC_ENABLED:
 
     # IRC channel connections
 
-    from src.irc.connection import IRC_BotFactory
-    irc = internet.TCPClient(settings.IRC_NETWORK, 
-                             settings.IRC_PORT, 
-                             IRC_BotFactory(settings.IRC_CHANNEL,
-                                            settings.IRC_NETWORK,
-                                            settings.IRC_NICKNAME))            
-    irc.setName("%s:%s" % ("IRC", settings.IRC_CHANNEL))
-    EVENNIA.services.addService(irc)
+    from src.comms import irc 
+    irc.connect_all()

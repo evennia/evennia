@@ -112,10 +112,10 @@ def create_channels():
 
     # connect the god user to all these channels by default.
     goduser = get_god_user()
-    from src.comms.models import ChannelConnection
-    ChannelConnection.objects.create_connection(goduser, pchan)
-    ChannelConnection.objects.create_connection(goduser, ichan)
-    ChannelConnection.objects.create_connection(goduser, cchan)
+    from src.comms.models import PlayerChannelConnection
+    PlayerChannelConnection.objects.create_connection(goduser, pchan)
+    PlayerChannelConnection.objects.create_connection(goduser, ichan)
+    PlayerChannelConnection.objects.create_connection(goduser, cchan)
          
 def import_MUX_help_files():
     """
@@ -237,11 +237,11 @@ def handle_setup(last_step):
                 for profile in PlayerDB.objects.all():
                     profile.delete()
             elif last_step + num == 3:
-                from src.comms.models import Channel, ChannelConnection
+                from src.comms.models import Channel, PlayerChannelConnection
 
                 for chan in Channel.objects.all():
                     chan.delete()
-                for conn in ChannelConnection.objects.all():
+                for conn in PlayerChannelConnection.objects.all():
                     conn.delete()
                 
 

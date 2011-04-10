@@ -162,10 +162,10 @@ CMDSET_UNLOGGEDIN = "game.gamesrc.commands.basecmdset.UnloggedinCmdSet"
 # Default set for logged in players (fallback)
 CMDSET_DEFAULT = "game.gamesrc.commands.basecmdset.DefaultCmdSet"
 
-
 ###################################################
 # Default Object typeclasses 
 ###################################################
+
 # Note that all typeclasses must originally
 # inherit from src.objects.objects.Object somewhere in
 # their path. 
@@ -256,8 +256,17 @@ CHANNEL_CONNECTINFO = ("MUDconnections", ('connections, mud_conns'),
                        "admin:perm(Immortals);listen:perm(Wizards);send:false()")
 
 ###################################################
-# IMC2 Configuration
+# External Channel connections 
 ###################################################
+
+# Evennia can connect to external IRC channels and 
+# echo what is said on the channel to IRC and vice 
+# versa. Obs - make sure the IRC network allows bots.
+# If disabled, the default @irc2chan command won't be 
+# available in-game. 
+IRC_ENABLED = True
+
+# OBS: IMC is not implemented at this point! 
 
 # IMC (Inter-MUD communication) allows for an evennia chat channel
 # that connects to people on other MUDs also using the IMC. Your
@@ -291,28 +300,6 @@ IMC2_SERVER_PW = None
 IMC2_DEBUG = False
 # This isn't something you should generally change.
 IMC2_PROTOCOL_VERSION = '2'
-
-###################################################
-# IRC config
-###################################################
-
-# This allows your evennia channels to connect to an external IRC
-# channel. Evennia will connect under a nickname that then echoes what is
-# said on the channel to IRC and vice versa.
-# Obs - make sure the IRC network allows bots. 
-
-# Activate the IRC bot. 
-IRC_ENABLED = False
-# Which channel to tie to the irc channel
-COMMCHAN_IRC_INFO = 'MUDInfo'
-# Which IRC network (e.g. irc.freenode.net)
-IRC_NETWORK = "irc.freenode.net"
-# Which IRC port to connect to (e.g. 6667)
-IRC_PORT = 6667
-# Which channel on the network to connect to (including the #)
-IRC_CHANNEL = ""
-# Under what nickname should Evennia connect to the channel
-IRC_NICKNAME = ""
 
 
 ###################################################
@@ -425,9 +412,7 @@ INSTALLED_APPS = (
     'src.config',
     'src.players',
     'src.objects',
-    'src.comms',
-    'src.imc2',
-    'src.irc',
+    'src.comms',    
     'src.help',
     'src.scripts',
     'src.web.news',

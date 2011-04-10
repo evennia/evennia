@@ -2,6 +2,7 @@
 These managers handles the 
 """
 
+import itertools
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from src.utils.utils import is_iter
@@ -30,6 +31,13 @@ def to_object(inp, objtype='player'):
             umatch = PlayerDB.objects.filter(user__username__iexact=inp)
             if umatch:
                 return umatch[0]    
+    elif objtype == 'external':
+        from src.comms.models import ExternalChannelConnection
+        if type (inp) == ExternalChannelConnection:
+            return inp
+        umatch = ExternalChannelConnection.objects.filter(db_key=inp)
+        if umatch:
+            return umatch[0]        
     else:
         # have to import this way to avoid circular imports
         from src.comms.models import Channel 
@@ -239,10 +247,13 @@ class ChannelManager(models.Manager):
         to this channel
         """
         # import here to avoid circular imports
-        from src.comms.models import ChannelConnection
-        #= ContentType.objects.get(app_label="comms", 
-        #                        model="channelconnection").model_class()
-        return ChannelConnection.objects.get_all_connections(channel)
+        #from src.comms.models import PlayerChannelConnection
+        PlayerChannelConnection = ContentType.objects.get(app_label="comms", 
+                                                          model="playerchannelconnection").model_class()
+        ExternalChannelConnection = ContentType.objects.get(app_label="comms", 
+                                                            model="externalchannelconnection").model_class()
+        return itertools.chain(PlayerChannelConnection.objects.get_all_connections(channel),
+                               ExternalChannelConnection.objects.get_all_connections(channel))
 
     def channel_search(self, ostring):
         """
@@ -266,9 +277,9 @@ class ChannelManager(models.Manager):
         return channels 
 
 #
-# ChannelConnection manager
+# PlayerChannelConnection manager
 #
-class ChannelConnectionManager(models.Manager):
+class PlayerChannelConnectionManager(models.Manager):
     """
     This handles all connections between a player and
     a channel. 
@@ -316,4 +327,51 @@ class ChannelConnectionManager(models.Manager):
         conns = self.filter(db_player=player).filter(db_channel=channel)
         for conn in conns:
             conn.delete()
-            
+
+class ExternalChannelConnectionManager(models.Manager):
+    """
+    This handles all connections between a external and
+    a channel. 
+    """
+    
+    def get_all_external_connections(self, external):
+        "Get all connections that the given external."
+        external = to_object(external, objtype='external')
+        return self.filter(db_external_key=external)
+
+    def has_connection(self, external, channel):
+        "Checks so a connection exists external<->channel"
+        external = to_object(external, objtype='external')
+        channel = to_object(channel, objtype="channel")
+        if external and channel:
+            return self.filter(db_external_key=external).filter(db_channel=channel).count() > 0
+        return False
+    
+    def get_all_connections(self, channel):
+        """
+        Get all connections for a channel
+        """
+        channel = to_object(channel, objtype='channel')
+        return self.filter(db_channel=channel)
+    
+    def create_connection(self, external, channel, config=""):
+        """
+        Connect a external to a channel. external and channel
+        can be actual objects or keystrings. 
+        """
+        channel = to_object(channel, objtype='channel')
+        if not channel:
+            raise CommError("NOTFOUND")
+        new_connection = self.model(db_external_key=external, db_channel=channel, db_external_config=config)
+        new_connection.save()
+        return new_connection
+
+    def break_connection(self, external, channel):
+        "Remove link between external and channel"
+        external = to_object(external)
+        channel = to_object(channel, objtype='channel')
+        if not external or not channel:
+            raise CommError("NOTFOUND")
+        conns = self.filter(db_external_key=external).filter(db_channel=channel)
+        for conn in conns:
+            conn.delete()

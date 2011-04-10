@@ -16,10 +16,11 @@ be able to delete connections on the fly).
 
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
-from src.server.sessionhandler import SESSIONS
+#from src.server.sessionhandler import SESSIONS
 from src.comms import managers 
 from src.locks.lockhandler import LockHandler
-from src.utils.utils import is_iter
+from src.utils import logger
+from src.utils.utils import is_iter, to_str
 from src.utils.utils import dbref as is_dbref
 
 
@@ -88,7 +89,9 @@ class Msg(SharedMemoryModel):
     # named same as the field, but withtout the db_* prefix.
 
     # There must always be one sender of the message.
-    db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set')
+    db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set', null=True)
+    # in the case of external senders, no Player object might be available
+    db_sender_external = models.CharField(max_length=255, null=True, blank=True)
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
@@ -148,6 +151,22 @@ class Msg(SharedMemoryModel):
         "Deleter. Allows for del self.sender"
         raise Exception("You cannot delete the sender of a message!")
     sender = property(sender_get, sender_set, sender_del)
+
+    # sender_external property (wraps db_sender_external)
+    #@property
+    def sender_external_get(self):
+        "Getter. Allows for value = self.sender_external"
+        return self.db_sender_external
+    #@sender_external.setter
+    def sender_external_set(self, value):
+        "Setter. Allows for self.sender_external = value"
+        self.db_sender_external = value
+        self.save()
+    #@sender_external.deleter
+    def sender_external_del(self):
+        "Deleter. Allows for del self.sender_external"
+        raise Exception("You cannot delete the sender_external of a message!")
+    sender_external = property(sender_external_get, sender_external_set, sender_external_del)
 
     # receivers property
     #@property
@@ -325,6 +344,29 @@ class Msg(SharedMemoryModel):
 
 #------------------------------------------------------------
 #
+# TempMsg
+#
+#------------------------------------------------------------
+
+class TempMsg(object):
+    """
+    This is a non-persistent object for sending 
+    temporary messages that will not be stored. 
+    It mimics the "real" Msg object, but don't require 
+    sender to be given. 
+    
+    """
+    def __init__(self, sender=None, receivers=[], channels=[], message="", permissions=[]):
+        self.sender = sender
+        self.receivers = receivers 
+        self.message = message
+        self.permissions = permissions
+        self.hide_from_sender = False
+        self.hide_from_sender = receivers = False
+        self.hide_from_channels = False 
+
+#------------------------------------------------------------
+#
 # Channel
 #
 #------------------------------------------------------------
@@ -482,7 +524,7 @@ class Channel(SharedMemoryModel):
         Checks so this player is actually listening
         to this channel. 
         """
-        return ChannelConnection.objects.has_connection(player, self)
+        return PlayerChannelConnection.objects.has_connection(player, self)
 
     def msg(self, msgobj, from_obj=None):
         """
@@ -490,49 +532,64 @@ class Channel(SharedMemoryModel):
         no permission-checking is done here; it is assumed to have been
         done before calling this method. 
 
-        msgobj - a Msg instance. May be a message string.
+        msgobj - a Msg instance or a message string. In the latter case a Msg will be created. 
         from_obj - if msgobj is not an Msg-instance, this is used to create
-                   a message on the fly. The advantage of this is that such
-                   messages are logged. 
-
-        """
-        if not type(msgobj) == Msg:            
-            # the given msgobj is not an Msg instance. If it is a string and from_obj
-            # was given, we create the message on the fly instead. 
-            if from_obj and isinstance(msgobj, basestring):
-                msgobj = Msg(db_sender=from_obj, db_message=msgobj)
+                   a message on the fly. If from_obj is None, no Msg object will
+                   be created and the message will be sent without being logged. 
+        """        
+        if isinstance(msgobj, basestring):
+            # given msgobj is a string
+            if from_obj:
+                if isinstance(from_obj, basestring):
+                    msgobj = Msg(db_sender_external=from_obj, db_message=msgobj)
+                else:
+                    msgobj = Msg(db_sender=from_obj, db_message=msgobj) 
+                # try to use 
                 msgobj.save()
                 msgobj.channels = [self]                                                
                 msg = msgobj.message 
             else:
                 # this just sends a message, without any sender 
                 # (and without storing it in a persistent Msg object)
-                msg = str(msgobj)
+                msg = to_str(msgobj)
         else:
             msg = msgobj.message
 
-        # get all players connected to this channel
-        conns = Channel.objects.get_all_connections(self)        
-
-        # send message to all connected players 
-        for conn in conns:
-            for session in \
-                    SESSIONS.sessions_from_player(conn.player):
-                session.msg(msg)
+        # get all players connected to this channel and send to them
+        for conn in Channel.objects.get_all_connections(self):            
+            try:
+                conn.player.msg(msg, from_obj)
+            except AttributeError:
+                try:                    
+                    conn.to_external(msg, from_obj)
+                except Exception:
+                    logger.log_trace("Cannot send msg to connection '%s'" % conn)
         return True 
+
+    def tempmsg(self, message):
+        """
+        A wrapper for sending non-persistent messages. Nothing
+        will be stored in the database. 
+
+        message - a Msg object or a text string. 
+        """
+        if type(msgobj) == Msg:      
+            # extract only the string 
+            message = message.message   
+        return self.msg(message)
             
     def connect_to(self, player):
         "Connect the user to this channel"
         if not self.access(player, 'listen'):
             return False
-        conn = ChannelConnection.objects.create_connection(player, self)
+        conn = PlayerChannelConnection.objects.create_connection(player, self)
         if conn:
             return True
         return False 
 
     def disconnect_from(self, player):
         "Disconnect user from this channel."
-        ChannelConnection.objects.break_connection(player, self)
+        PlayerChannelConnection.objects.break_connection(player, self)
 
     def delete(self):
         "Clean out all connections to this channel and delete it."
@@ -548,19 +605,20 @@ class Channel(SharedMemoryModel):
         """        
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
-class ChannelConnection(SharedMemoryModel):
+class PlayerChannelConnection(SharedMemoryModel):
     """
-    This connects a user object to a particular comm channel.
+    This connects a player object to a particular comm channel.
     The advantage of making it like this is that one can easily
     break the connection just by deleting this object. 
     """
+
     # Player connected to a channel
     db_player = models.ForeignKey("players.PlayerDB")
     # Channel the player is connected to
     db_channel = models.ForeignKey(Channel)
 
     # Database manager
-    objects = managers.ChannelConnectionManager()
+    objects = managers.PlayerChannelConnectionManager()
 
     # player property (wraps db_player)
     #@property
@@ -602,3 +660,140 @@ class ChannelConnection(SharedMemoryModel):
         verbose_name = "Channel<->Player link"
         verbose_name_plural = "Channel<->Player links"
 
+
+class ExternalChannelConnection(SharedMemoryModel):
+    """
+    This defines an external protocol connecting to 
+    a channel, while storing some critical info about
+    that connection. 
+    """
+    # evennia channel connecting to
+    db_channel = models.ForeignKey(Channel)
+    # external connection identifier
+    db_external_key = models.CharField(max_length=128)
+    # eval-code to use when the channel tries to send a message
+    # to the external protocol. 
+    db_external_send_code = models.TextField(blank=True)
+    # custom config for the connection
+    db_external_config = models.TextField(blank=True)
+    # activate the connection
+    db_is_enabled = models.BooleanField(default=True)
+
+    objects = managers.ExternalChannelConnectionManager()
+        
+    class Meta:
+        verbose_name = "External Channel Connection"
+        verbose_name_plural = "External Channel Connections"
+        
+    def __str__(self):
+        return "%s <-> external %s" % (self.channel.key, self.db_external_key)
+
+    # channel property (wraps db_channel)
+    #@property
+    def channel_get(self):
+        "Getter. Allows for value = self.channel"
+        return self.db_channel
+    #@channel.setter
+    def channel_set(self, value):
+        "Setter. Allows for self.channel = value"
+        self.db_channel = value
+        self.save()
+    #@channel.deleter
+    def channel_del(self):
+        "Deleter. Allows for del self.channel. Deletes connection."
+        self.delete()
+    channel = property(channel_get, channel_set, channel_del)
+
+    # external_key property (wraps db_external_key)
+    #@property
+    def external_key_get(self):
+        "Getter. Allows for value = self.external_key"
+        return self.db_external_key
+    #@external_key.setter
+    def external_key_set(self, value):
+        "Setter. Allows for self.external_key = value"
+        self.db_external_key = value
+        self.save()
+    #@external_key.deleter
+    def external_key_del(self):
+        "Deleter. Allows for del self.external_key. Deletes connection."
+        self.delete()
+    external_key = property(external_key_get, external_key_set, external_key_del)
+
+    # external_send_code property (wraps db_external_send_code)
+    #@property
+    def external_send_code_get(self):
+        "Getter. Allows for value = self.external_send_code"
+        return self.db_external_send_code
+    #@external_send_code.setter
+    def external_send_code_set(self, value):
+        "Setter. Allows for self.external_send_code = value"
+        self.db_external_send_code = value
+        self.save()
+    #@external_send_code.deleter
+    def external_send_code_del(self):
+        "Deleter. Allows for del self.external_send_code. Deletes connection."
+        self.db_external_send_code = ""
+        self.save()
+    external_send_code = property(external_send_code_get, external_send_code_set, external_send_code_del)
+
+    # external_config property (wraps db_external_config)
+    #@property
+    def external_config_get(self):
+        "Getter. Allows for value = self.external_config"
+        return self.db_external_config
+    #@external_config.setter
+    def external_config_set(self, value):
+        "Setter. Allows for self.external_config = value"
+        self.db_external_config = value
+        self.save()
+    #@external_config.deleter
+    def external_config_del(self):
+        "Deleter. Allows for del self.external_config. Deletes connection."
+        self.db_external_config = ""
+        self.save()
+    external_config = property(external_config_get, external_config_set, external_config_del)
+
+    # is_enabled property (wraps db_is_enabled)
+    #@property
+    def is_enabled_get(self):
+        "Getter. Allows for value = self.is_enabled"
+        return self.db_is_enabled
+    #@is_enabled.setter
+    def is_enabled_set(self, value):
+        "Setter. Allows for self.is_enabled = value"
+        self.db_is_enabled = value
+        self.save()
+    #@is_enabled.deleter
+    def is_enabled_del(self):
+        "Deleter. Allows for del self.is_enabled. Deletes connection."        
+        self.delete()
+    is_enabled = property(is_enabled_get, is_enabled_set, is_enabled_del)
+
+    #
+    # methods
+    #
+
+    def to_channel(self, message, from_obj=None):
+        "Send external -> channel"
+        if not from_obj:
+            from_obj = self.external_key        
+        self.channel.msg(message, from_obj=from_obj)
+
+    def to_external(self, message, from_obj=None):
+        "Send channel -> external"
+
+        # make sure we are not echoing back our own message to ourselves 
+        # (this would result in a nasty infinite loop)        
+        if from_obj == self.external_key:
+            return 
+        
+        try:
+            # we execute the code snippet that should make it possible for the 
+            # connection to contact the protocol correctly (as set by the protocol).
+            # Note that the code block has access to the variables here, such
+            # as message and from_obj. 
+            exec(to_str(self.external_send_code))
+        except Exception:
+            logger.log_trace("Channel %s could not send to External %s" % (self.channel, self.external_key))
+            
