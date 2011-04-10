@@ -9,7 +9,6 @@ sessions etc.
 
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.conf import settings 
-from src.config.models import ConnectScreen
 from src.server import session
 from src.utils import ansi, utils
 

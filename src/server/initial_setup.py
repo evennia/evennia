@@ -9,7 +9,7 @@ Everything starts at handle_setup()
 from django.contrib.auth.models import User
 from django.core import management
 from django.conf import settings
-from src.config.models import ConfigValue, ConnectScreen
+from src.config.models import ConfigValue
 from src.help.models import HelpEntry
 from src.utils import create 
 
