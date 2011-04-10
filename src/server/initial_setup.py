@@ -21,23 +21,6 @@ def create_config_values():
     ConfigValue.objects.conf("site_name", settings.SERVERNAME)
     ConfigValue.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
-def create_connect_screens():
-    """
-    Creates the default connect screen(s).
-    """
-    
-    print " Creating startup screen(s) ..."
-
-    text = "{b=================================================================={n"
-    text += "\r\n Welcome to {wEvennia{n! Please type one of the following to begin:\r\n"
-    text += "\r\n If you have an existing account, connect to it by typing:\r\n        "
-    text += "{wconnect <email> <password>{n\r\n If you need to create an account, "
-    text += "type (without the <>'s):\r\n        "
-    text += "{wcreate \"<username>\" <email> <password>{n\r\n"
-    text += "\r\n Enter {whelp{n for more info. {wlook{n will re-show this screen.\r\n"
-    text += "{b=================================================================={n\r\n"
-    ConnectScreen(db_key="Default", db_text=text, db_is_active=True).save()
-
 def get_god_user():
     """
     Returns the initially created 'god' User object.
@@ -203,7 +186,6 @@ def handle_setup(last_step):
     # setting up the list of functions to run    
     setup_queue = [
         create_config_values,    
-        create_connect_screens,  
         create_objects,          
         create_channels,
         create_system_scripts,

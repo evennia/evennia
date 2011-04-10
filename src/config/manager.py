@@ -65,27 +65,3 @@ class ConfigValueManager(models.Manager):
             self.set_configvalue(db_key, db_value)
         else:
             return self.get_configvalue(db_key, default=default)
-
-
-class ConnectScreenManager(models.Manager):
-    """
-    This handles the random initial login screen system. 
-    """
-    def get_random_connect_screen(self):
-        """
-        Returns a random active connect screen.
-        """
-        try:
-            return self.filter(db_is_active=True).order_by('?')[0]
-        except IndexError:
-            ConnectScreen = ContentType.objects.get(app_label="config", 
-                                                    model="connectscreen").model_class()            
-            text = "This is a placeholder connect screen. "
-            text += "Remind your admin to edit it."
-            new_screen = ConnectScreen(db_key='Default',
-                                       db_text=text,
-                                       db_is_active=True)
-            new_screen.save()
-            return new_screen
-
-

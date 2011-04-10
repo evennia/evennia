@@ -7,6 +7,7 @@ be of use when designing your own game.
 import os, sys, imp
 import textwrap
 import datetime
+import random
 from twisted.internet import threads
 from django.conf import settings
 from src.utils import ansi
@@ -479,6 +480,7 @@ def mod_import(mod_path):
         result = imp.find_module(modname, [path])
     except ImportError:
         log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path)) 
+        return 
     try:
         mod = imp.load_module(modname, *result)
     except ImportError:
@@ -487,3 +489,24 @@ def mod_import(mod_path):
     # we have to close the file handle manually
     result[0].close()
     return mod 
+
+def string_from_module(modpath, variable=None):
+    """
+    This obtains a string from a given module python path. 
+    The variable must be global within that module - that is, defined in
+    the outermost scope of the module. The value of the 
+    variable will be returned. If not found (or if it's not a string), 
+    None is returned. 
+
+    This is useful primarily for storing various game strings
+    in a module and extract them by name or randomly. 
+    """
+    mod = __import__(modpath, fromlist=[None])
+    if variable:
+        return mod.__dict__.get(variable, None)
+    else:
+        mvars = [val for key, val in mod.__dict__.items() 
+                 if not key.startswith('_') and isinstance(val, basestring)]    
+        if not mvars:
+            return None
+        return mvars[random.randint(0, len(mvars)-1)]

@@ -96,7 +96,10 @@ IDLE_COMMAND = "idle"
 # Add sets for languages/regions your players are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"] 
-
+# The module holding text strings for the connection screen. 
+# This module should contain one ore more variables 
+# with strings defining the look of the screen.
+CONNECTION_SCREEN_MODULE = "game.gamesrc.world.connection_screens"
 
 ###################################################
 # Evennia Database config 

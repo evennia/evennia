@@ -2,17 +2,18 @@
 Commands that are available from the connect screen.
 """
 import traceback
-#from django.contrib.auth.models import User
 from django.conf import settings 
 from django.contrib.auth.models import User
 from src.server import sessionhandler
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
-from src.config.models import ConfigValue, ConnectScreen
+from src.config.models import ConfigValue
 from src.comms.models import Channel
 
 from src.utils import create, logger, utils, ansi
 from src.commands.default.muxcommand import MuxCommand
+
+CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 class CmdConnect(MuxCommand):
     """
@@ -252,8 +253,8 @@ class CmdUnconnectedLook(MuxCommand):
     def func(self):
         "Show the connect screen."
         try:
-            screen = ConnectScreen.objects.get_random_connect_screen()
-            string = ansi.parse_ansi(screen.text)
+            screen = utils.string_from_module(CONNECTION_SCREEN_MODULE)
+            string = ansi.parse_ansi(screen)
             self.caller.msg(string)
         except Exception, e:
             self.caller.msg(e)
@@ -272,35 +273,30 @@ class CmdUnconnectedHelp(MuxCommand):
         "Shows help"
         
         string = \
-            """Welcome to Evennia! 
-
-Commands available at this point:
-  create - create a new account
-  connect - login with an existing account
-  look - re-show the connect screen
-  help - this help
-  quit - leave
+            """
+You are not yet logged into the game. Commands available at this point:
+  {wcreate, connect, look, help, quit{n
 
 To login to the system, you need to do one of the following:
 
-1) If you have no previous account, you need to use the 'create'
+{w1){n If you have no previous account, you need to use the 'create'
    command like this:
 
-   > create "Anna the Barbarian" anna@myemail.com c67jHL8p
+     {wcreate "Anna the Barbarian" anna@myemail.com c67jHL8p{n
 
    It's always a good idea (not only here, but everywhere on the net)
    to not use a regular word for your password. Make it longer than 
    3 characters (ideally 6 or more) and mix numbers and capitalization 
    into it. 
 
-2) If you have an account already, either because you just created 
-   one in 1) above or you are returning, use the 'connect' command: 
+{w2){n If you have an account already, either because you just created 
+   one in {w1){n above or you are returning, use the 'connect' command: 
 
-   > connect anna@myemail.com c67jHL8p
+     {wconnect anna@myemail.com c67jHL8p{n
 
-   This should log you in. Run 'help' again once you're logged in 
+   This should log you in. Run {whelp{n again once you're logged in 
    to get more aid. Hope you enjoy your stay! 
 
-You can use the 'look' command if you want to see the connect screen again. 
+You can use the {wlook{n command if you want to see the connect screen again. 
 """
         self.caller.msg(string)

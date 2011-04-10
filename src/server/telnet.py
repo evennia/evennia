@@ -79,16 +79,11 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
 
     def at_connect(self):
         """
-        Show the banner screen. Grab from the 'connect_screen'
-        config directive. If more than one connect screen is
-        defined in the ConnectScreen attribute, it will be
-        random which screen is used. 
+        Show the banner screen.
         """
         self.telnet_markup = True 
-        # show screen 
-        screen = ConnectScreen.objects.get_random_connect_screen()
-        string = ansi.parse_ansi(screen.text)        
-        self.at_data_out(string)
+        # show connection screen
+        self.execute_cmd('look')
         
     def at_login(self, player):
         """

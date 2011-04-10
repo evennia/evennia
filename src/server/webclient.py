@@ -221,15 +221,10 @@ class WebClientSession(session.Session):
     
     def at_connect(self):
         """
-        Show the banner screen. Grab from the 'connect_screen'
-        config directive. If more than one connect screen is
-        defined in the ConnectScreen attribute, it will be
-        random which screen is used. 
+        Show the banner screen. 
         """
         # show screen 
-        screen = ConnectScreen.objects.get_random_connect_screen()
-        #string = parse_html(screen.text)
-        self.at_data_out(screen.text)
+        self.execute_cmd('look')
         
     def at_login(self, player):
         """
