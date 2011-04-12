@@ -17,7 +17,7 @@ def create_config_values():
     """
     Creates the initial config values.
     """    
-    ServerConfig.objects.conf("default_home", "2")
+    ServerConfig.objects.conf("default_home", '2')
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
@@ -189,14 +189,14 @@ def handle_setup(last_step):
         create_objects,          
         create_channels,
         create_system_scripts,
-        import_MUX_help_files,
         start_game_time,
-        create_admin_media_links]
+        create_admin_media_links,
+        import_MUX_help_files]
 
     if not settings.IMPORT_MUX_HELP:
         # skip importing of the MUX helpfiles, they are 
         # not interesting except for developers.
-        del setup_queue[4]
+        del setup_queue[-1]
 
     #print " Initial setup: %s steps." % (len(setup_queue)) 
 

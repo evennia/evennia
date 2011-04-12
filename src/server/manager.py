@@ -21,8 +21,10 @@ class ServerConfigManager(models.Manager):
                 conf.delete()
         elif value != None:             
             conf = self.filter(db_key=key)
-            if not conf:                
-                conf = self.model(db_key=key)
+            if conf:
+                conf = conf[0]
+            else:
+                conf = self.model(db_key=key)            
             conf.value = value # this will pickle 
         else:
             conf = self.filter(db_key=key)
