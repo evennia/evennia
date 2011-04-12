@@ -22,7 +22,7 @@ from django.conf import settings
 from src.utils import create, ansi
 from src.server import session, sessionhandler
 from src.locks.lockhandler import LockHandler
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 
 #------------------------------------------------------------ 
 # Command testing 
@@ -77,7 +77,7 @@ class CommandTest(TestCase):
     """
     def setUp(self):
         "sets up the testing environment"                
-        c = ConfigValue(db_key="default_home", db_value="2")
+        c = ServerConfig.objects.conf("default_home", 2)
         c.save()
 
         self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")

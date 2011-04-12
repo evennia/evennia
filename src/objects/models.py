@@ -21,7 +21,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 from src.commands.cmdsethandler import CmdSetHandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
@@ -666,7 +666,7 @@ class ObjectDB(TypedObject):
             if self.home:
                 source_location = self.home
             else:
-                default_home_id = ConfigValue.objects.conf(db_key="default_home")            
+                default_home_id = ServerConfig.objects.conf("default_home")            
                 default_home = ObjectDB.objects.get_id(default_home_id)                
                 source_location = default_home
 
@@ -743,7 +743,7 @@ class ObjectDB(TypedObject):
         """
         # Gather up everything that thinks this is its location.
         objs = ObjectDB.objects.filter(db_location=self)
-        default_home_id = int(ConfigValue.objects.conf('default_home'))
+        default_home_id = int(ServerConfig.objects.conf('default_home'))
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
         except Exception:

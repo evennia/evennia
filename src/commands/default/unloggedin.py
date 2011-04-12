@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from src.server import sessionhandler
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 from src.comms.models import Channel
 
 from src.utils import create, logger, utils, ansi
@@ -67,7 +67,7 @@ class CmdConnect(MuxCommand):
             # Create a new character object to tie the player to. This should
             # usually not be needed unless the old character object was manually 
             # deleted.
-            default_home_id = ConfigValue.objects.conf(db_key="default_home")            
+            default_home_id = ServerConfig.objects.conf("default_home")            
             default_home = ObjectDB.objects.get_id(default_home_id)
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             character = create.create_object(typeclass=typeclass,
@@ -185,7 +185,7 @@ class CmdCreate(MuxCommand):
         else:
             # everything's ok. Create the new player account
             try:
-                default_home_id = ConfigValue.objects.conf(db_key="default_home")            
+                default_home_id = ServerConfig.objects.conf("default_home")            
                 default_home = ObjectDB.objects.get_id(default_home_id)                
                 
                 typeclass = settings.BASE_CHARACTER_TYPECLASS

@@ -17,7 +17,7 @@ registering themselves with this module.
 """
 from django.conf import settings
 from django.contrib.auth.models import User
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 
 ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
 
@@ -144,15 +144,15 @@ class SessionHandler(object):
         """
         if num == None:
             # show the current value. This also syncs it.                         
-            return int(ConfigValue.objects.conf('nr_sessions', default=0))            
+            return int(ServerConfig.objects.conf('nr_sessions', default=0))            
         elif num == 0:
             # reset value to 0
-            ConfigValue.objects.conf('nr_sessions', 0)
+            ServerConfig.objects.conf('nr_sessions', 0)
         else:
             # add/remove session count from value
-            add = int(ConfigValue.objects.conf('nr_sessions', default=0))
+            add = int(ServerConfig.objects.conf('nr_sessions', default=0))
             num = max(0, num + add)
-            ConfigValue.objects.conf('nr_sessions', str(num))
+            ServerConfig.objects.conf('nr_sessions', str(num))
 
     def player_count(self):
         """

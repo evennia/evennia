@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 from src.objects.models import ObjectDB
 from src.typeclasses.models import TypedObject
 from src.players.models import PlayerDB
@@ -38,7 +38,7 @@ def page_index(request):
         "page_title": "Front Page",
         "news_entries": news_entries,
         "players_connected_recent": recent_users,
-        "num_players_connected": ConfigValue.objects.conf('nr_sessions'),#len(PlayerDB.objects.get_connected_players()),
+        "num_players_connected": ServerConfig.objects.conf('nr_sessions'),#len(PlayerDB.objects.get_connected_players()),
         "num_players_registered": PlayerDB.objects.num_total_players(),
         "num_players_connected_recent": len(PlayerDB.objects.get_recently_connected_players()),
         "num_players_registered_recent": len(PlayerDB.objects.get_recently_created_players()),

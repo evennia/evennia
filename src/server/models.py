@@ -1,45 +1,52 @@
 """
-Configuration model - storing global flags on the fly, as
-                      opposed to what is set once and for all 
-                      in the settings file. 
 
-ConnectScreen model - cycling connect screens
+Server Configuration flags
+
+This holds persistent server configuration flags.
+
+Config values should usually be set through the 
+manager's conf() method. 
+
 """
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
-from src.config.manager import ConfigValueManager
+from src.utils import logger, utils
+from src.server.manager import ServerConfigManager
 
 #------------------------------------------------------------
 #
-# ConfigValue
+# ServerConfig
 #
 #------------------------------------------------------------
             
-class ConfigValue(SharedMemoryModel):
+class ServerConfig(SharedMemoryModel):
     """
     On-the fly storage of global settings. 
 
-    Properties defined on ConfigValue:
+    Properties defined on ServerConfig:
       key - main identifier
-      value - value stored in key
+      value - value stored in key. This is a pickled storage.
 
     """
 
     #
-    # ConfigValue database model setup
+    # ServerConfig database model setup
     #
     #
     # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
     # main name of the database entry
-    db_key = models.CharField(max_length=100)
+    db_key = models.CharField(max_length=64, unique=True)
     # config value
-    db_value = models.TextField()
+    db_value = models.TextField(blank=True)
 
-    # Database manager
-    objects = ConfigValueManager()
+    objects = ServerConfigManager()
         
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -69,15 +76,19 @@ class ConfigValue(SharedMemoryModel):
     #@property
     def value_get(self):
         "Getter. Allows for value = self.value"
-        return self.db_value
+        return pickle.loads(str(self.db_value))
     #@value.setter
     def value_set(self, value):
         "Setter. Allows for self.value = value"
-        self.db_value = value
+        if utils.has_parent('django.db.models.base.Model', value):
+            # we have to protect against storing db objects.
+            logger.log_errmsg("ServerConfig cannot store db objects! (%s)" % value)
+            return 
+        self.db_value = pickle.dumps(value)
         self.save()
     #@value.deleter
     def value_del(self):
-        "Deleter. Allows for del self.value. Deletes entry."
+        "Deleter. Allows for del self.value. Deletes entry."        
         self.delete()
     value = property(value_get, value_set, value_del)
 
@@ -87,8 +98,15 @@ class ConfigValue(SharedMemoryModel):
         verbose_name_plural = "Server Config values"
 
     # 
-    # ConfigValue other methods 
+    # ServerConfig other methods 
     #
 
     def __unicode__(self):
-        return "%s" % self.key
+        return "%s : %s" % (self.key, self.value)
+
+    def store(key, value):
+        """
+        Wrap the storage (handles pickling)
+        """
+        self.key = key
+        self.value = value

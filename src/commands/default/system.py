@@ -14,7 +14,7 @@ from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 from src.utils import reloads, create, logger, utils, gametime
 from src.commands.default.muxcommand import MuxCommand
 
@@ -57,7 +57,7 @@ class CmdPy(MuxCommand):
                     'config': dummy conf instance
                     'ObjectDB' : ObjectDB class
                     'ScriptDB' : ScriptDB class
-                    'ConfigValue' ConfigValue class
+                    'ServerConfig' ServerConfig class
     only two
     variables are defined: 'self'/'me' which refers to one's
     own object, and 'here' which refers to self's current
@@ -83,7 +83,7 @@ class CmdPy(MuxCommand):
                                       key = 'testscript')
         obj = create.create_object("src.objects.objects.Object",
                                    key='testobject')        
-        conf = ConfigValue() # used to access conf values
+        conf = ServerConfig() # used to access conf values
 
         available_vars = {'self':caller,
                           'me':caller,
@@ -93,7 +93,7 @@ class CmdPy(MuxCommand):
                           'config':conf,
                           'ObjectDB':ObjectDB,
                           'ScriptDB':ScriptDB,
-                          'ConfigValue':ConfigValue}
+                          'ServerConfig':ServerConfig}
 
         caller.msg(">>> %s" % pycode)
         try:

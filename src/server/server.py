@@ -21,7 +21,7 @@ from twisted.web import server, static
 from django.db import connection
 from django.conf import settings
 from src.utils import reloads
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
 from src.server import initial_setup
 
@@ -123,7 +123,7 @@ class Evennia(object):
         This attempts to run the initial_setup script of the server.
         It returns if this is not the first time the server starts.
         """
-        last_initial_setup_step = ConfigValue.objects.conf('last_initial_setup_step')
+        last_initial_setup_step = ServerConfig.objects.conf('last_initial_setup_step')
         if not last_initial_setup_step:
             # None is only returned if the config does not exist,
             # i.e. this is an empty DB that needs populating.

@@ -219,14 +219,6 @@ class CmdInventory(MuxCommand):
             string += "\n %s" % item.name
         self.caller.msg(string)
 
-    ## money = int(caller.MONEY)
-    ## if money == 1:
-    ##     money_name = ConfigValue.objects.get_configvalue("MONEY_NAME_SINGULAR")
-    ## else:
-    ##     money_name = ConfigValue.objects.get_configvalue("MONEY_NAME_PLURAL")
-    ##caller.msg("You have %d %s." % (money, money_name))
-
-
 class CmdGet(MuxCommand):            
     """
     get

@@ -9,17 +9,17 @@ Everything starts at handle_setup()
 from django.contrib.auth.models import User
 from django.core import management
 from django.conf import settings
-from src.config.models import ConfigValue
+from src.server.models import ServerConfig
 from src.help.models import HelpEntry
 from src.utils import create 
 
 def create_config_values():
     """
     Creates the initial config values.
-    """
-    ConfigValue.objects.conf("default_home", "2")
-    ConfigValue.objects.conf("site_name", settings.SERVERNAME)
-    ConfigValue.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
+    """    
+    ServerConfig.objects.conf("default_home", "2")
+    ServerConfig.objects.conf("site_name", settings.SERVERNAME)
+    ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
 def get_god_user():
     """
@@ -196,7 +196,7 @@ def handle_setup(last_step):
     if not settings.IMPORT_MUX_HELP:
         # skip importing of the MUX helpfiles, they are 
         # not interesting except for developers.
-        del setup_queue[5]
+        del setup_queue[4]
 
     #print " Initial setup: %s steps." % (len(setup_queue)) 
 
@@ -228,7 +228,7 @@ def handle_setup(last_step):
                 
 
             raise 
-        ConfigValue.objects.conf("last_initial_setup_step", last_step + num + 1) 
+        ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1) 
     # We got through the entire list. Set last_step to -1 so we don't
     # have to run this again.
-    ConfigValue.objects.conf("last_initial_setup_step", -1) 
+    ServerConfig.objects.conf("last_initial_setup_step", -1) 

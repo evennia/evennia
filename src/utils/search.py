@@ -32,7 +32,6 @@ from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.comms.models import Msg, Channel
 from src.help.models import HelpEntry
-from src.config.models import ConfigValue
 
 #
 # Search objects as a character
@@ -134,19 +133,3 @@ channels = Channel.objects.channel_search
 #     """
 
 helpentries = HelpEntry.objects.search_help 
-
-#
-# Get a configuration value
-# 
-# OBS - this returns a unique value (or None),
-#       not a list! 
-#
-# def config_search(self, ostring):
-#     """
-#     Retrieve a configuration value.
-
-#     ostring - a (unique) configuration key
-#     """
-
-configvalue = ConfigValue.objects.config_search
-
