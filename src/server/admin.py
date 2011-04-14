@@ -4,7 +4,7 @@
 #
 
 from django.contrib import admin
-from src.config.models import ServerConfig
+from src.server.models import ServerConfig
 
 class ServerConfigAdmin(admin.ModelAdmin):
     "Custom admin for server configs"
