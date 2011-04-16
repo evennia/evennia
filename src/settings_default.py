@@ -19,8 +19,7 @@ import os
 # Evennia base server config 
 ###################################################
 
-# This is the name of your server and/or site. 
-# Can be anything. 
+# This is the name of your game. Make it catchy!
 SERVERNAME = "Evennia" 
 # Activate telnet service
 TELNET_ENABLED = True 
@@ -95,11 +94,8 @@ IDLE_COMMAND = "idle"
 # given, this list is tried, in order, aborting on the first match. 
 # Add sets for languages/regions your players are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
-ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"] 
-# The module holding text strings for the connection screen. 
-# This module should contain one ore more variables 
-# with strings defining the look of the screen.
-CONNECTION_SCREEN_MODULE = "game.gamesrc.world.connection_screens"
+ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
+
 
 ###################################################
 # Evennia Database config 
@@ -155,6 +151,10 @@ ALTERNATE_OBJECT_SEARCH_ERROR_HANDLER = ""
 # objects without using dbrefs). (If not set, uses
 # src.objects.object_search_funcs.object_multimatch_parser).
 ALTERNATE_OBJECT_SEARCH_MULTIMATCH_PARSER = ""
+# The module holding text strings for the connection screen. 
+# This module should contain one or more variables 
+# with strings defining the look of the screen.
+CONNECTION_SCREEN_MODULE = "game.gamesrc.world.connection_screens"
 
 ###################################################
 # Default command sets 
@@ -209,9 +209,9 @@ BASE_BATCHPROCESS_PATH = 'game.gamesrc.world'
 ###################################################
 
 # You don't actually have to use this, but it affects the routines in
-# src.utils.gametime.py and allows for a convenient measure to determine the
-# current in-game time. You can of course read "week", "month" etc
-# as your own in-game time units as desired. 
+# src.utils.gametime.py and allows for a convenient measure to
+# determine the current in-game time. You can of course read "week",
+# "month" etc as your own in-game time units as desired.
 
 #The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
@@ -229,9 +229,9 @@ TIME_MONTH_PER_YEAR = 12
 ###################################################
 # In-Game access 
 ###################################################
-# The access hiearchy, in climbing order. A higher
-# permission in the hierarchy includes access of all
-# levels below it. 
+
+# The access hiearchy, in climbing order. A higher permission in the
+# hierarchy includes access of all levels below it.
 PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immortals")
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
@@ -242,6 +242,7 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 ###################################################
 # In-game Channels created from server start
 ###################################################
+
 # Defines a dict with one key for each from-start
 # channel. Each key points to a tuple containing
 # (name, aliases, description, locks)
@@ -262,47 +263,29 @@ CHANNEL_CONNECTINFO = ("MUDconnections", ('connections, mud_conns'),
 # External Channel connections 
 ###################################################
 
+# Note: You do *not* have to make your MUD open to
+# the public to use the external connections, they
+# operate as long as you have an internet connection,
+# just like stand-alone chat clients.
+
 # Evennia can connect to external IRC channels and 
 # echo what is said on the channel to IRC and vice 
 # versa. Obs - make sure the IRC network allows bots.
-# If disabled, the default @irc2chan command won't be 
-# available in-game. 
-IRC_ENABLED = True
-
-# OBS: IMC is not implemented at this point! 
-
-# IMC (Inter-MUD communication) allows for an evennia chat channel
-# that connects to people on other MUDs also using the IMC. Your
-# evennia server do *not* have to be open to the public to use IMC; it
-# works as a stand-alone chat client.  Evennia's IMC2 client was
-# developed against MudByte's network. You must register your MUD on
-# the network before you can use it, go to
-# http://www.mudbytes.net/imc2-intermud-join-network.  Choose 'Other
-# unsupported IMC2 version' from the choices and and enter your
-# information there. You have to enter the same 'short mud name',
-# 'client password' and 'server password' as you define in this file.
-# The Evennia discussion channel is on server02.mudbytes.net:9000.
-
-# Change to True if you want IMC active at all.
-IMC2_ENABLED = False
-# Which channel to tie to the imc2 connection
-COMMCHAN_IMC2_INFO = 'MUDInfo'
-# The hostname/ip address of your IMC2 server of choice.
-IMC2_SERVER_ADDRESS = 'server02.mudbytes.net' 
-#IMC2_SERVER_ADDRESS = None
-# The port to connect to on your IMC2 server.
-IMC2_SERVER_PORT = 9000
-#IMC2_SERVER_PORT = None
-# This is your game's IMC2 name on the network (e.g. "MyMUD").
-IMC2_MUDNAME = None 
-# Your IMC2 client-side password. Used to authenticate with your network. 
-IMC2_CLIENT_PW = None 
-# Your IMC2 server-side password. Used to verify your network's identity.
-IMC2_SERVER_PW = None 
-# Emit additional debugging info to log.
-IMC2_DEBUG = False
-# This isn't something you should generally change.
-IMC2_PROTOCOL_VERSION = '2'
+# When enabled, command @irc2chan will be available in-game
+IRC_ENABLED = False
+# IMC (Inter-MUD communication) allows to connect an Evennia channel
+# to an IMC2 server. This lets them talk to people on other MUDs also
+# using IMC.  Evennia's IMC2 client was developed against MudByte's
+# network. You must register your MUD on the network before you can
+# use it, go to http://www.mudbytes.net/imc2-intermud-join-network.
+# Choose 'Other unsupported IMC2 version' from the choices and and
+# enter your information there. You should enter the same 'short mud
+# name' as your SERVERNAME above. When enabled, the command @imc2chan
+# becomes available in-game. It will take 'client password' and
+# 'server password' as chosen when registering on mudbytes. The
+# Evennia discussion channel 'ievennia' is on
+# server02.mudbytes.net:9000.
+IMC2_ENABLED = False # OBS! DON'T CHANGE - IMC2 is not implemented yet! 
 
 
 ###################################################

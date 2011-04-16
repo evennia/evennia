@@ -1,12 +1,13 @@
 """
 ANSI parser - this adds colour to text according to
 special markup strings. 
+
+This is a IMC2 complacent version.
 """
 
-from src.utils import ansi
-from ansi import BaseParser, ANSITable
+from src.utils.ansi import ANSIParser, ANSITable
 
-class IMCANSIParser(BaseParser):
+class IMCANSIParser(ANSIParser):
     """
     This parser is per the IMC2 specification.
     """

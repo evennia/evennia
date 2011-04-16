@@ -371,7 +371,7 @@ class CmdCreate(ObjManipCommand):
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
 
-            lockstring = "owner:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards);get:all()" % (caller.id, caller.id)
+            lockstring = "control:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards);get:all()" % (caller.id, caller.id)
             obj = create.create_object(typeclass, name, caller, 
                                        home=caller, aliases=aliases, locks=lockstring)
             if not obj:
@@ -489,7 +489,7 @@ class CmdDesc(MuxCommand):
             obj = caller
             desc = self.args
         # storing the description
-        obj.db.desc = desc 
+        obj.db.desc = desc
         caller.msg("The description was set on %s." % obj.key)
 
 
@@ -607,7 +607,10 @@ class CmdDig(ObjManipCommand):
         new_room = create.create_object(typeclass, room["name"],
                                         aliases=room["aliases"])
         new_room.locks.add(lockstring)
-        room_string = "Created room '%s' of type %s." % (new_room.name, typeclass)
+        alias_string = ""
+        if new_room.aliases:
+            alias_string = " (%s)" % ", ".join(new_room_aliases)
+        room_string = "Created room %s(%s)%s of type %s." % (new_room, new_room.dbref, alias_string, typeclass)
 
         exit_to_string = ""
         exit_back_string = ""
@@ -637,9 +640,12 @@ class CmdDig(ObjManipCommand):
                                                    aliases=to_exit["aliases"])
                 new_to_exit.destination = new_room
                 new_to_exit.locks.add(lockstring)
-                exit_to_string = "\nCreated new Exit to new room:  %s (aliases: %s)."
-                exit_to_string = exit_to_string % (new_to_exit.name,
-                                                   new_to_exit.aliases)
+                alias_string = ""
+                if new_to_exit.aliases:
+                    alias_string = " (%s)" % ", ".join(new_to_exit.aliases)
+                exit_to_string = "\nCreated Exit from %s to %s: %s(%s)%s."
+                exit_to_string = exit_to_string % (location.name, new_room.name, new_to_exit, 
+                                                   new_to_exit.dbref, alias_string)
                 
         if len(self.rhs_objs) > 1:
             # Building the exit back to the current room 
@@ -666,9 +672,12 @@ class CmdDig(ObjManipCommand):
                                                      aliases=back_exit["aliases"])
                 new_back_exit.destination = location
                 new_back_exit.locks.add(lockstring)
-                exit_back_string = "\nExit back from new room: %s (aliases: %s)." 
-                exit_back_string = exit_back_string % (new_back_exit.name,
-                                                       new_back_exit.aliases)
+                alias_string = ""
+                if new_back_exit.aliases:
+                    alias_string = " (%s)" % ", ".join(new_back_exit.aliases)
+                exit_back_string = "\nCreated Exit back from %s to %s: %s(%s)%s." 
+                exit_back_string = exit_back_string % (new_room.name, location.name, 
+                                                       new_back_exit, new_back_exit.dbref, alias_string)
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
         if new_room and 'teleport' in self.switches:
             caller.move_to(new_room)
@@ -682,17 +691,16 @@ class CmdLink(MuxCommand):
       @link[/switches] <object> = <target>
       @link[/switches] <object> = 
       @link[/switches] <object> 
-      
-    Switches:
-      twoway  - this is only useful when both <object> 
-                and <target> are Exits. If so, a link back
-                from <target> to <object> will also be created.      
+     
+    Switch:
+      twoway - connect two exits. For this to, BOTH <object>
+               and <target> must be exit objects. 
 
-
-    If <object> is an exit, set its destination. For all other object types, this
-    command sets the object's Home. 
-    The second form sets the destination/home to None and the third form inspects
-    the current value of destination/home on <object>.
+    If <object> is an exit, set its destination to <target>. Two-way operation
+    instead sets the destination to the *locations* of the respective given
+    arguments. 
+    The second form (a lone =) sets the destination to None (same as the @unlink command)
+    and the third form (without =) just shows the currently set destination.
     """
 
     key = "@link"
@@ -719,25 +727,25 @@ class CmdLink(MuxCommand):
             # this means a target name was given
             target = caller.search(self.rhs, global_search=True)
             if not target:
-                return 
-            # if obj is an exit (has property destination),
-            # set that, otherwise set home.
-            if obj.destination: 
-                obj.destination = target
-                if "twoway" in self.switches:                    
-                    if target.destination:
-                        target.destination = obj                        
-                        string = "Link created %s <-> %s (two-way)." % (obj.name, target.name)
-                    else:
-                        string = "Cannot create two-way link to non-exit."
-                        string += " Link created %s -> %s (one way)." % (obj.name, target.name)
-                else:
-                    string = "Link created %s -> %s (one way)." % (obj.name, target.name)
+                return             
+
+            string = ""
+            if not obj.destination: 
+                string += "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (obj.name,obj.dbref)
+            if "twoway" in self.switches:                    
+                if not (target.location and obj.location): 
+                    string = "To create a two-way link, %s and %s must both have a location" % (obj, target)
+                    string += " (i.e. they cannot be rooms, but should be exits)." 
+                    self.caller.msg(string)
+                    return 
+                if not target.destination:
+                    string += "\nNote: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (target.name, target.dbref)
+                obj.destination = target.location     
+                target.destination = obj.location                
+                string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." % (obj.name, obj.location, target.name, target.location)
             else:
-                # obj is not an exit (has not property destination), 
-                # so set home instead
-                obj.home = target 
-                string = "Set %s's home to %s." % (obj.name, target.name) 
+                obj.destination = target
+                string += "\nLink created %s -> %s (one way)." % (obj.name, target)   
 
         elif self.rhs == None:
             # this means that no = was given (otherwise rhs 
@@ -745,20 +753,20 @@ class CmdLink(MuxCommand):
             # the home/destination on object
             dest = obj.destination
             if dest:
-                "%s is an exit to %s." % (obj.name, dest.name)
+                string = "%s is an exit to %s." % (obj.name, dest.name)
             else:
-                string = "%s has home %s." % (obj.name, obj.home)
+                string = "%s is not an exit. Its home location is %s." % obj.home
+
         else:
             # We gave the command @link 'obj = ' which means we want to
-            # clear destination or set home to None.             
+            # clear destination.
             if obj.destination:
-                del obj.destination
-                string = "Exit %s no longer links anywhere." % obj.name
+                obj.destination = None
+                string = "Former exit %s no longer links anywhere." % obj.name
             else:
-                del obj.home
-                string = "%s no longer has a home." % obj.name
+                string = "%s had no destination to unlink." % obj.name
         # give feedback
-        caller.msg(string)
+        caller.msg(string.strip())
 
 class CmdUnLink(CmdLink):
     """
@@ -794,6 +802,54 @@ class CmdUnLink(CmdLink):
         # call the @link functionality
         super(CmdUnLink, self).func()
 
+class CmdHome(CmdLink):
+    """
+    @home - control an object's home location
+
+    Usage:
+      @home <obj> [= home_location]
+
+    The "home" location is a "safety" location for objects; they
+    will be moved there if their current location ceases to exist. All
+    objects should always have a home location for this reason. 
+    It is also a convenient target of the "home" command. 
+
+    If no location is given, just view the object's home location. 
+    """
+
+    key = "@home"
+    locks = "cmd:perm(@home) or perm(Builders)"
+    help_category = "Building"
+    
+    def func(self):
+        "implement the command"
+        if not self.args:
+            string = "Usage: @home <obj> [= home_location]"
+            self.caller.msg(string)
+            return 
+
+        obj = self.caller.search(self.lhs, global_search=True)
+        if not obj:
+            return 
+        if not self.rhs: 
+            # just view 
+            home = obj.home 
+            if not home:
+                string = "This object has no home location set!"
+            else:
+                string = "%s's home is set to %s(%s)." % (obj, home, home.dbref)
+        else:
+            # set a home location 
+            new_home = self.caller.search(self.rhs, global_search=True)
+            if not new_home:
+                return 
+            old_home = obj.home
+            obj.home = new_home 
+            if old_home:
+                string = "%s's home location was changed from %s(%s) to %s(%s)." % (old_home, old_home.dbref, new_home, new_home.dbref)
+            else:
+                string = "%s' home location was set to %s(%s)." % (new_home, new_home.dbref)
+        self.caller.msg(string)
 
 class CmdListCmdSets(MuxCommand):
     """
@@ -1454,7 +1510,7 @@ class CmdExamine(ObjManipCommand):
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]                
-            string += "\n{wPlayer Perms/Locks{n: %s" % (", ".join(perms))
+            string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))
          
         string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass, obj.typeclass_path)
         string += "\n{wLocation{n: %s" % obj.location

@@ -34,7 +34,7 @@ from django.contrib.contenttypes.models import ContentType
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
-from src.utils import logger
+from src.utils import logger, utils
 from src.utils.utils import is_iter, has_parent
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
@@ -187,13 +187,13 @@ class Attribute(SharedMemoryModel):
         Getter. Allows for value = self.value.
         """        
         try:
-            return self.validate_data(pickle.loads(str(self.db_value)))
+            return utils.to_unicode(self.validate_data(pickle.loads(utils.to_str(self.db_value))))
         except pickle.UnpicklingError:
             return self.db_value
     #@value.setter
     def value_set(self, new_value):
         "Setter. Allows for self.value = value"
-        self.db_value = pickle.dumps(self.validate_data(new_value))
+        self.db_value = utils.to_unicode(pickle.dumps(utils.to_str(self.validate_data(new_value))))
         self.save()
     #@value.deleter
     def value_del(self):

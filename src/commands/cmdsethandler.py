@@ -66,6 +66,7 @@ the 'Fishing' set. Fishing from a boat? No problem!
 import traceback 
 from src.utils import logger
 from src.commands.cmdset import CmdSet
+from src.server.models import ServerConfig
 
 CACHED_CMDSETS = {}
 
@@ -118,8 +119,8 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
         if errstring and not no_logging:
             print errstring 
             logger.log_trace()    
-            if emit_to_obj:
-                emit_to_obj.msg(errstring)
+            if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
+                object.__getattribute__(emit_to_obj, "msg")(errstring)
         raise # have to raise, or we will not see any errors in some situations!
 
 # classes 

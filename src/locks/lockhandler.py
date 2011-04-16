@@ -169,7 +169,7 @@ class LockHandler(object):
         elif hasattr(self.obj, 'msg'):
             self.obj.msg(message)
         else:
-            logger.log_trace("%s: %s" % (self.obj, message))
+            logger.log_errmsg("%s: %s" % (self.obj, message))
 
     def _parse_lockstring(self, storage_lockstring):
         """
@@ -230,7 +230,8 @@ class LockHandler(object):
 
     def add(self, lockstring, log_obj=None):
         """
-        Add a new, single lockstring on the form '<access_type>:<functions>'
+        Add a new lockstring on the form '<access_type>:<functions>'. Multiple 
+        access types should be separated by semicolon (;). 
 
         If log_obj is given, it will be fed error information.
         """

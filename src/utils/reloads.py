@@ -48,9 +48,8 @@ def start_reload_loop():
         "default callback"
         cemit_info(" Asynchronous server reload finished.\n" + '-'*50)
     def at_err(e):
-        "error callback"
-        string = "%s\n reload: Asynchronous reset loop exited with an error." % e
-        string += "\n This might be harmless. Wait a moment then reload again to see if the problem persists."
+        "error callback"        
+        string = "Reload: Asynchronous reset exited with an error:\n{r%s{n" % e.getErrorMessage()
         cemit_info(string)
         
     utils.run_async(run_loop, at_return, at_err)

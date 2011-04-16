@@ -102,8 +102,3 @@ class IMC2ChanList(object):
         except KeyError:
             # No matching entry, no big deal.
             pass
-
-# Use this instance to keep track of the other games on the network.
-IMC2_MUDLIST = IMC2MudList()
-# Tracks the list of available channels on the network.
-IMC2_CHANLIST = IMC2ChanList()

@@ -174,6 +174,9 @@ class Evennia(object):
 #
 #------------------------------------------------------------
 
+# Tell the system the server is starting up; some things are not available yet
+ServerConfig.objects.conf("server_starting_mode", True) 
+
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.
 application = service.Application('Evennia')
@@ -225,24 +228,19 @@ if WEBSERVER_ENABLED:
         webserver.setName('EvenniaWebServer%s' % port)
         EVENNIA.services.addService(webserver)
 
-
-if IMC2_ENABLED:
-
-    # IMC2 channel connections
-
-    from src.imc2.connection import IMC2ClientFactory
-    from src.imc2 import events as imc2_events
-    imc2_factory = IMC2ClientFactory()
-    svc = internet.TCPClient(settings.IMC2_SERVER_ADDRESS, 
-                             settings.IMC2_SERVER_PORT, 
-                             imc2_factory)
-    svc.setName('IMC2')
-    EVENNIA.services.addService(svc)
-    imc2_events.add_events()
-
 if IRC_ENABLED:
 
     # IRC channel connections
 
     from src.comms import irc 
     irc.connect_all()
+
+if IMC2_ENABLED:
+
+    # IMC2 channel connections
+
+    from src.comms import imc2
+    imc2.connect_all()
+
+# clear server startup mode
+ServerConfig.objects.conf("server_starting_mode", delete=True)

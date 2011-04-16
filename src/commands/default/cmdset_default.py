@@ -78,6 +78,7 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdTypeclass())
         self.add(building.CmdLock())
         self.add(building.CmdScript())
+        self.add(building.CmdHome())
 
         # Comm commands
         self.add(comms.CmdAddCom())
@@ -88,6 +89,7 @@ class DefaultCmdSet(CmdSet):
         self.add(comms.CmdCdesc())
         self.add(comms.CmdPage())
         self.add(comms.CmdIRC2Chan())
+        self.add(comms.CmdIMC2Chan())
         
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())

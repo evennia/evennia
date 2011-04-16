@@ -3,7 +3,7 @@ Comsys command module.
 """
 from django.conf import settings
 from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
-from src.comms import irc 
+from src.comms import irc, imc2
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand            
@@ -892,16 +892,20 @@ class CmdIRC2Chan(MuxCommand):
         except Exception:        
             string = "IRC bot definition '%s' is not valid." % self.rhs
             self.caller.msg(string)
-            return 
+            return         
 
         if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+            chanmatch = find_channel(self.caller, channel, silent=True)
+            if chanmatch:
+                channel = chanmatch.key
+
             ok = irc.delete_connection(irc_network, irc_port, irc_channel, irc_botname)
             if not ok:
                 self.caller.msg("IRC connection/bot could not be removed, does it exist?")
             else:
                 self.caller.msg("IRC connection destroyed.")
             return 
-        
+
         channel = find_channel(self.caller, channel)
         if not channel:
             return
@@ -910,3 +914,92 @@ class CmdIRC2Chan(MuxCommand):
             self.caller.msg("This IRC connection already exists.")
             return 
         self.caller.msg("Connection created. Starting IRC bot.")
+
+class CmdIMC2Chan(MuxCommand):
+    """
+    imc2chan - link an evennia channel to imc2
+
+    Usage:
+      @imc2chan[/switches] <evennia_channel> = <imc2network> <port> <imc2channel> <imc2_client_pwd> <imc2_server_pwd>
+
+    Switches:
+      /disconnect - this will delete the bot and remove the imc2 connection to the channel.
+      /remove     -                                 " 
+      /list       - show all imc2<->evennia mappings
+
+    Example:
+      @imc2chan myimcchan = server02.mudbytes.net 9000 ievennia Gjds8372 LAKdf84e
+      
+    Connect an existing evennia channel to an IMC2 network and channel. You must have registered with the network
+    beforehand and obtained valid server- and client passwords. You will always connect using the name of your
+    mud, as defined by settings.SERVERNAME, so make sure this was the name you registered to the imc2 network. 
+
+    """
+
+    key = "@imc2chan"
+    locks = "cmd:serversetting(IMC2_ENABLED) and perm(Wizards)"
+    help_category = "Comms"
+
+    def func(self):
+        "Setup the imc-channel mapping"
+
+        if 'list' in self.switches:
+            # show all connections
+            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
+            if connections:
+                cols = [["Evennia channel"], ["IMC channel"]]
+                for conn in connections:
+                    cols[0].append(conn.channel.key)
+                    cols[1].append(" ".join(conn.external_config.split('|')))
+                ftable = utils.format_table(cols)
+                string = ""
+                for ir, row in enumerate(ftable):
+                    if ir == 0:
+                        string += "{w%s{n" % "".join(row)
+                    else:
+                        string += "\n" + "".join(row)
+                self.caller.msg(string)
+            else:
+                self.caller.msg("No connections found.")
+            return 
+
+        if not settings.IMC2_ENABLED:
+            string = """IMC2 is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+        if not self.args or not self.rhs:
+            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2network> <port> <imc2channel> <client_pwd> <server_pwd>"
+            self.caller.msg(string)
+            return 
+        channel = self.lhs
+        try:
+            imc2_network, imc2_port, imc2_channel, imc2_client_pwd, imc2_server_pwd = [part.strip() for part in self.rhs.split(None, 4)]
+        except Exception:        
+            string = "IMC2 connnection definition '%s' is not valid." % self.rhs
+            self.caller.msg(string)
+            return 
+        
+        # get the name to use for connecting 
+        mudname = settings.SERVERNAME
+        
+        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+            chanmatch = find_channel(self.caller, channel, silent=True)
+            if chanmatch:
+                channel = chanmatch.key
+
+            ok = imc2.delete_connection(channel, imc2_network, imc2_port, imc2_channel, mudname)
+            if not ok:
+                self.caller.msg("IMC2 connection could not be removed, does it exist?")
+            else:
+                self.caller.msg("IMC2 connection destroyed.")
+            return 
+
+        channel = find_channel(self.caller, channel)
+        if not channel:
+            return
+
+        ok = imc2.create_connection(channel, imc2_network, imc2_port, imc2_channel, mudname, imc2_client_pwd, imc2_server_pwd)
+        if not ok:
+            self.caller.msg("This IMC2 connection already exists.")
+            return 
+        self.caller.msg("Connection created. Connecting to IMC2 server.")

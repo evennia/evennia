@@ -1,13 +1,10 @@
 """
 IMC2 packets. These are pretty well documented at:
 http://www.mudbytes.net/index.php?a=articles&s=imc2_protocol
+
 """
 import shlex
-if __name__ == "__main__":
-    class settings:
-        IMC2_MUDNAME = "BLAH"
-else:
-    from django.conf import settings
+from django.conf import settings 
 
 class Lexxer(shlex.shlex):
     """
@@ -26,16 +23,18 @@ class IMC2Packet(object):
     Base IMC2 packet class. This is generally sub-classed, aside from using it
     to parse incoming packets from the IMC2 network server.
     """
-    def __init__(self, packet_str=None):
+    def __init__(self, mudname=None, packet_str=None):
         """
         Optionally, parse a packet and load it up.
         """
         # The following fields are all according to the basic packet format of:
         # <sender>@<origin> <sequence> <route> <packet-type> <target>@<destination> <data...> 
         self.sender = None
-        self.origin = settings.IMC2_MUDNAME
+        if not mudname:
+            mudname = settings.SERVERNAME
+        self.origin = mudname
         self.sequence = None
-        self.route = settings.IMC2_MUDNAME
+        self.route = mudname
         self.packet_type = None
         self.target = None
         self.destination = None
@@ -153,9 +152,11 @@ class IMC2Packet(object):
             # None value. Do something or other.
             return 'Unknown'
     
-    def assemble(self):
+    def assemble(self, mudname=None, client_pwd=None, server_pwd=None):
         """
         Assembles the packet and returns the ready-to-send string.
+        Note that the arguments are not used, they are there for 
+        consistency across all packets. 
         """
         self.sequence = self.imc2_protocol.sequence
         packet = "%s@%s %s %s %s %s@%s %s\n" % (
@@ -184,17 +185,13 @@ class IMC2PacketAuthPlaintext(object):
                 client will be expected in SHA256-AUTH format if the server 
                 supports it. 
     """    
-    def assemble(self):
+    def assemble(self, mudname=None, client_pwd=None, server_pwd=None):
         """
         This is one of two strange packets, just assemble the packet manually
         and go.
         """
-        return 'PW %s %s version=%s autosetup %s\n' %(
-                                                settings.IMC2_MUDNAME, 
-                                                settings.IMC2_CLIENT_PW, 
-                                                settings.IMC2_PROTOCOL_VERSION,
-                                                settings.IMC2_SERVER_PW)
-        
+        return 'PW %s %s version=2 autosetup %s\n' %(mudname, client_pwd, server_pwd)
+       
 class IMC2PacketKeepAliveRequest(IMC2Packet):
     """
     Description:
@@ -260,7 +257,7 @@ class IMC2PacketIsAlive(IMC2Packet):
         self.target = '*'
         self.destination = '*'
         self.optional_data = {'versionid': 'Evennia IMC2',
-                              'url': '"http://evennia.com"',
+                              'url': '"http://www.evennia.com"',
                               'host': 'test.com',
                               'port': '5555'}
         
@@ -755,3 +752,4 @@ if __name__ == "__main__":
     packstr = "Kayle@MW 1234567 MW!Server02!Server01 ice-msg-b *@* channel=Server01:ichat text=\"*they're going woot\" emote=0 echo=1"
     packstr = "*@Lythelian 1234567 Lythelian!Server01 is-alive *@* versionid=\"Tim's LPC IMC2 client 30-Jan-05 / Dead Souls integrated\" networkname=Mudbytes url=http://dead-souls.net host=70.32.76.142 port=6666 sha256=0"
     print IMC2Packet(packstr)
+    

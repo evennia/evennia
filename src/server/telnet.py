@@ -10,7 +10,7 @@ sessions etc.
 from twisted.conch.telnet import StatefulTelnetProtocol
 from django.conf import settings 
 from src.server import session
-from src.utils import ansi, utils
+from src.utils import ansi, utils, logger
 
 ENCODINGS = settings.ENCODINGS
 
@@ -107,47 +107,21 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         """
         Data Evennia -> Player access hook. 'data' argument is ignored.
         """
-        if self.encoding:
-            try:
-                string = utils.to_str(string, encoding=self.encoding)
-                self.lineSend(ansi.parse_ansi(string, strip_ansi=not self.telnet_markup))
-                return 
-            except Exception:
-                pass
-        # malformed/wrong encoding defined on player - try some defaults
-        for encoding in ENCODINGS:
-            try:
-                string = utils.to_str(string, encoding=encoding)
-                err = None
-                break 
-            except Exception, e:
-                err = str(e)                
-                continue
-        if err:
-            self.lineSend(err)
-        else:
-            self.lineSend(ansi.parse_ansi(string, strip_ansi=not self.telnet_markup))
+        try:
+            string = utils.to_str(string, encoding=self.encoding)
+        except Exception, e:
+            self.lineSend(str(e))
+            return 
+        self.lineSend(ansi.parse_ansi(string, strip_ansi=not self.telnet_markup))
 
     def at_data_in(self, string, data=None):
         """
         Line from Player -> Evennia. 'data' argument is not used.
         
         """        
-        if self.encoding:
-            try:            
-                string = utils.to_unicode(string, encoding=self.encoding)
-                self.execute_cmd(string)
-                return 
-            except Exception, e:
-                err = str(e)
-                print err
-        # malformed/wrong encoding defined on player - try some defaults 
-        for encoding in ENCODINGS:
-            try:
-                string = utils.to_unicode(string, encoding=encoding)
-                err = None
-                break             
-            except Exception, e:
-                err = str(e)
-                continue         
-        self.execute_cmd(string)
+        try:            
+            string = utils.to_unicode(string, encoding=self.encoding)
+            self.execute_cmd(string)
+            return 
+        except Exception, e:
+            logger.log_errmsg(str(e))

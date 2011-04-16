@@ -36,12 +36,12 @@ class IRC_Bot(irc.IRCClient):
     nickname = property(_get_nickname)
     
     def signedOn(self):        
-        global IRC_CHANNELS
-        self.join(self.factory.channel)
-
         # This is the first point the protocol is instantiated.
         # add this protocol instance to the global list so we
         # can access it later to send data. 
+        global IRC_CHANNELS
+        self.join(self.factory.channel)
+
         IRC_CHANNELS.append(self)        
         #msg_info("Client connecting to %s.'" % (self.factory.channel))
                  
@@ -78,7 +78,7 @@ class IRC_Bot(irc.IRCClient):
         """
         self.msg(utils.to_str(self.factory.channel), utils.to_str(msg))
         
-class Factory(protocol.ClientFactory):
+class IRCbotFactory(protocol.ClientFactory):
     protocol = IRC_Bot
     def __init__(self, key, channel, network, port, nickname, evennia_channel):
         self.key = key
@@ -101,9 +101,11 @@ class Factory(protocol.ClientFactory):
         msg_info(msg)
         logger.log_errmsg(msg)
 
-def build_connection_key(irc_network, irc_port, irc_channel, irc_bot_nick):
+def build_connection_key(channel, irc_network, irc_port, irc_channel, irc_bot_nick):
     "Build an id hash for the connection"
-    return "irc_%s:%s%s(%s)" % (irc_network, irc_port, irc_channel, irc_bot_nick)
+    if hasattr(channel, 'key'):
+        channel = channel.key
+    return "irc_%s:%s%s(%s)<>%s" % (irc_network, irc_port, irc_channel, irc_bot_nick, channel)
 
 def build_service_key(key):
     return "IRCbot:%s" % key
@@ -118,7 +120,7 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
             logger.log_errmsg("Cannot attach IRC<->Evennia: Evennia Channel '%s' not found" % channel)
             return False
         channel = new_channel[0]
-    key = build_connection_key(irc_network, irc_port, irc_channel, irc_bot_nick)
+    key = build_connection_key(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
 
     old_conns = ExternalChannelConnection.objects.filter(db_external_key=key)
     if old_conns:
@@ -136,9 +138,12 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
     connect_to_irc(conn)
     return True 
 
-def delete_connection(irc_network, irc_port, irc_channel, irc_bot_nick):
+def delete_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick):
     "Destroy a connection"
-    key = build_connection_key(irc_network, irc_port, irc_channel, irc_bot_nick)    
+    if hasattr(channel, 'key'):
+        channel = channel.key
+
+    key = build_connection_key(channel, irc_network, irc_port, irc_channel, irc_bot_nick)    
     service_key = build_service_key(key)
     try:
         conn = ExternalChannelConnection.objects.get(db_external_key=key)
@@ -161,7 +166,7 @@ def connect_to_irc(connection):
     service_key = build_service_key(key)
     irc_network, irc_port, irc_channel, irc_bot_nick = [utils.to_str(conf) for conf in connection.external_config.split('|')]
     # connect 
-    bot = internet.TCPClient(irc_network, int(irc_port), Factory(key, irc_channel, irc_network, irc_port, irc_bot_nick, 
+    bot = internet.TCPClient(irc_network, int(irc_port), IRCbotFactory(key, irc_channel, irc_network, irc_port, irc_bot_nick, 
                                                                      connection.channel.key))
     bot.setName(service_key)
     SESSIONS.server.services.addService(bot)

@@ -26,7 +26,7 @@ from django.utils import simplejson
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings 
-from src.utils import utils
+from src.utils import utils, logger
 from src.utils.text2html import parse_html
 from src.server import session
 from src.server.sessionhandler import SESSIONS
@@ -258,27 +258,13 @@ class WebClientSession(session.Session):
             pass
 
         # string handling is similar to telnet
-        if self.encoding:
-            try:
-                string = utils.to_str(string, encoding=self.encoding)                
-                self.client.lineSend(self.suid, parse_html(string))
-                return 
-            except Exception:
-                pass
-        # malformed/wrong encoding defined on player - try some defaults
-        for encoding in ENCODINGS:
-            try:
-                string = utils.to_str(string, encoding=encoding)
-                err = None
-                break 
-            except Exception, e:
-                err = str(e)                
-                continue
-        if err:
-            self.client.lineSend(self.suid, err)
-        else:
-            #self.client.lineSend(self.suid, ansi.parse_ansi(string, strip_ansi=True))
+        try:
+            string = utils.to_str(string, encoding=self.encoding)                
             self.client.lineSend(self.suid, parse_html(string))
+            return 
+        except Exception, e:            
+            logger.log_trace()
+            
     def at_data_in(self, string, data=None):
         """
         Input from Player -> Evennia (called by client protocol). 
@@ -290,22 +276,9 @@ class WebClientSession(session.Session):
             pass
 
         # the string part is identical to telnet
-        if self.encoding:
-            try:            
-                string = utils.to_unicode(string, encoding=self.encoding)
-                self.execute_cmd(string)
-                return 
-            except Exception, e:
-                err = str(e)
-                print err
-        # malformed/wrong encoding defined on player - try some defaults 
-        for encoding in ENCODINGS:
-            try:
-                string = utils.to_unicode(string, encoding=encoding)
-                err = None
-                break             
-            except Exception, e:
-                err = str(e)
-                continue         
-        self.execute_cmd(string)
-
+        try:            
+            string = utils.to_unicode(string, encoding=self.encoding)
+            self.execute_cmd(string)
+            return 
+        except Exception, e:
+            logger.log_trace()

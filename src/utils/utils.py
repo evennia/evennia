@@ -12,6 +12,8 @@ from twisted.internet import threads
 from django.conf import settings
 from src.utils import ansi
 
+ENCODINGS = settings.ENCODINGS
+
 def is_iter(iterable):
     """
     Checks if an object behaves iterably. However,
@@ -225,28 +227,38 @@ def to_unicode(obj, encoding='utf-8'):
     needs to encode it back to utf-8 
     before writing to disk or printing.
     """
-    if isinstance(obj, basestring) \
-            and not isinstance(obj, unicode):
+    if isinstance(obj, basestring) and not isinstance(obj, unicode):
         try:
             obj = unicode(obj, encoding)
+            return obj 
         except UnicodeDecodeError:
-            raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
-        return obj
+            for alt_encoding in ENCODINGS: 
+                try:
+                    obj = unicode(obj, alt_encoding)
+                    return obj
+                except UnicodeDecodeError:
+                    pass 
+        raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
+    return obj 
 
 def to_str(obj, encoding='utf-8'):
     """
-    This encodes a unicode string
-    back to byte-representation, 
+    This encodes a unicode string back to byte-representation, 
     for printing, writing to disk etc.
     """
-    if isinstance(obj, basestring) \
-            and isinstance(obj, unicode):
+    if isinstance(obj, basestring) and isinstance(obj, unicode):
         try:
             obj = obj.encode(encoding)
+            return obj
         except UnicodeEncodeError:
-            raise Exception("Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (obj, encoding))
+            for alt_encoding in ENCODINGS:
+                try:
+                    obj = obj.encode(encoding)
+                    return obj
+                except UnicodeEncodeError:
+                    pass
+        raise Exception("Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (obj, encoding))
     return obj
-
 
 def validate_email_address(emailaddress):
     """
