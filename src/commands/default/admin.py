@@ -43,8 +43,10 @@ class CmdBoot(MuxCommand):
 
         if ':' in args:
             args, reason = [a.strip() for a in args.split(':', 1)]
+        else:
+            args, reason = args, ""
+
         boot_list = []
-        reason = ""
 
         if 'port' in self.switches:
             # Boot a particular port.

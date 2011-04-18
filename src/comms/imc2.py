@@ -62,7 +62,7 @@ class Send_IsAlive(Script):
             channel.send_packet(pck.IMC2PacketIsAlive())
     def is_valid(self):
         "Is only valid as long as there are channels to update"
-        return IMC2_CHANNELS
+        return any(service for service in SESSIONS.server.services if service.name.startswith("IMC2:"))
 
 class Send_Keepalive_Request(Script):
     """
@@ -79,7 +79,7 @@ class Send_Keepalive_Request(Script):
             channel.send_packet(pck.IMC2PacketKeepAliveRequest())
     def is_valid(self):
         "Is only valid as long as there are channels to update"
-        return IMC2_CHANNELS
+        return any(service for service in SESSIONS.server.services if service.name.startswith("IMC2:"))
 
 class Prune_Inactive_Muds(Script):
     """
@@ -99,7 +99,7 @@ class Prune_Inactive_Muds(Script):
                 del IMC2_MUDLIST.mud_list[name]
     def is_valid(self):
         "Is only valid as long as there are channels to update"
-        return IMC2_CHANNELS
+        return any(service for service in SESSIONS.server.services if service.name.startswith("IMC2:"))
     
 class Sync_Server_Channel_List(Script):
     """
@@ -116,11 +116,12 @@ class Sync_Server_Channel_List(Script):
     def at_repeat(self):
         checked_networks = []
         for channel in self.IMC2_CHANNELS: 
-            network = channel.external_config.split['|'][0]
+            network = channel.factory.network
             if not network in checked_networks:
                 channel.send_packet(pkg.IMC2PacketIceRefresh())
                 checked_networks.append(network)
-
+    def is_valid(self):
+        return any(service for service in SESSIONS.server.services if service.name.startswith("IMC2:"))
 #
 # IMC2 protocol 
 #
@@ -420,6 +421,7 @@ def delete_connection(channel, imc2_network, imc2_port, imc2_channel, mudname):
 
 def connect_to_imc2(connection):
     "Create the imc instance and connect to the IMC2 network and channel."        
+
     # get config
     key = utils.to_str(connection.external_key)
     service_key = build_service_key(key)
@@ -427,8 +429,8 @@ def connect_to_imc2(connection):
         [utils.to_str(conf) for conf in connection.external_config.split('|')]
     # connect 
     imc = internet.TCPClient(imc2_network, int(imc2_port), IMC2Factory(key, imc2_channel, imc2_network, imc2_port, imc2_mudname, 
-                                                                       imc2_client_pwd, imc2_server_pwd, connection.channel.key))
-    imc.setName(service_key)
+                                                                       imc2_client_pwd, imc2_server_pwd, connection.channel.key))        
+    imc.setName(service_key)    
     SESSIONS.server.services.addService(imc)
 
 def connect_all():

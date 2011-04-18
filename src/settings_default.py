@@ -266,7 +266,8 @@ CHANNEL_CONNECTINFO = ("MUDconnections", ('connections, mud_conns'),
 # Note: You do *not* have to make your MUD open to
 # the public to use the external connections, they
 # operate as long as you have an internet connection,
-# just like stand-alone chat clients.
+# just like stand-alone chat clients. IRC and IMC2 
+# requires that you have twisted.words installed. 
 
 # Evennia can connect to external IRC channels and 
 # echo what is said on the channel to IRC and vice 

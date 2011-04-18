@@ -441,6 +441,15 @@ def check_evennia_dependencies():
             errstring += "\n WARNING: South version %s found. Evennia recommends version %s or higher." % (sversion, south_min)            
     except ImportError:
         pass
+    # IRC support 
+    if settings.IRC_ENABLED:
+        try:
+            import twisted.words
+        except ImportError:
+            errstring += "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it."
+            errstring += "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others"
+            errstring += "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
+            no_error = False 
     errstring = errstring.strip()
     if errstring:
         print "%s\n %s\n%s" % ("-"*78, errstring, '-'*78)

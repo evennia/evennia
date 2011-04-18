@@ -90,6 +90,7 @@ class DefaultCmdSet(CmdSet):
         self.add(comms.CmdPage())
         self.add(comms.CmdIRC2Chan())
         self.add(comms.CmdIMC2Chan())
+        self.add(comms.CmdIMCInfo())
         
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())

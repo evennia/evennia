@@ -112,11 +112,10 @@ except Exception:
     string += """\n
     Error: Couldn't import the file 'settings.py' in the directory 
     containing %r. There can be two reasons for this: 
-    1) You moved your settings.py elsewhere. In that case you need to run
-       django-admin.py, passing it the true location of your settings module.
-    2) The settings module is where it's supposed to be, but an exception
-       was raised when trying to load it. Review the traceback above to
-       resolve the problem, then try again. 
+    1) You moved your settings.py elsewhere. In that case move it back or 
+       create a link to it from this folder. 
+    2) The settings module is where it's supposed to be, but contains errors.
+       Review the traceback above to resolve the problem, then try again. 
     """ % __file__
     print string 
     sys.exit(1)

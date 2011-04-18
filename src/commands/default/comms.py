@@ -937,7 +937,7 @@ class CmdIMC2Chan(MuxCommand):
     """
 
     key = "@imc2chan"
-    locks = "cmd:serversetting(IMC2_ENABLED) and perm(Wizards)"
+    locks = "cmd:serversetting(IMC2_ENABLED) and perm(Immortals)"
     help_category = "Comms"
 
     def func(self):
@@ -1003,3 +1003,105 @@ class CmdIMC2Chan(MuxCommand):
             self.caller.msg("This IMC2 connection already exists.")
             return 
         self.caller.msg("Connection created. Connecting to IMC2 server.")
+
+class CmdIMCInfo(MuxCommand):
+    """
+    imcchanlist
+
+    Usage:
+      @imcinfo[/switches]
+      @imcchanlist - list imc2 channels
+      @imclist -     list connected muds 
+
+    Switches:
+      channels - as imcchanlist (default)
+      games - as imclist 
+      update - force an update of all lists
+
+     
+    Shows lists of games or channels on the IMC2 network.
+    """
+    
+    key = "@imcinfo"
+    aliases = ["@imcchanlist", "@imclist"]
+    locks = "cmd: serversetting(IMC2_ENABLED) or perm(Immortals)"
+    help_category = "Comms"
+
+    def func(self):
+        "Run the command"
+
+        if "update" in self.switches:
+            # update the lists 
+            import time
+            from src.comms.imc2lib import imc2_packets as pck
+            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CHANNELS
+            # update connected muds
+            for chan in IMC2_CHANNELS:
+                chan.send_packet(pck.IMC2PacketKeepAliveRequest())
+            # prune inactive muds 
+            for name, mudinfo in IMC2_MUDLIST.mud_list.items():
+                if time.time() - mudinfo.last_updated > 3599:
+                    del IMC2_MUDLIST.mud_list[name]
+            # update channel list
+            checked_networks = []
+            for channel in IMC2_CHANNELS: 
+                network = channel.factory.network
+                if not network in checked_networks:
+                    channel.send_packet(pck.IMC2PacketIceRefresh())
+                    checked_networks.append(network)
+            self.caller.msg("IMC2 lists were re-synced.")
+
+        elif "games" in self.switches or self.cmdstring == "@imclist":
+            # list muds
+            from src.comms.imc2 import IMC2_MUDLIST
+
+            muds = IMC2_MUDLIST.get_mud_list()
+            networks = set(mud.networkname for mud in muds)
+            string = ""
+            nmuds = 0
+            for network in networks:
+                string += "\n {GMuds registered on %s:{n" % network
+                cols = [["Name"], ["Url"], ["Host"], ["Port"]]
+                for mud in (mud for mud in muds if mud.networkname == network):
+                    nmuds += 1
+                    cols[0].append(mud.name)
+                    cols[1].append(mud.url)
+                    cols[2].append(mud.host)
+                    cols[3].append(mud.port)
+                ftable = utils.format_table(cols)
+                for ir, row in enumerate(ftable):
+                    if ir == 0: 
+                        string += "\n{w" + "".join(row) + "{n"
+                    else:
+                        string += "\n" + "".join(row)
+            string += "\n %i Muds found." % nmuds
+            self.caller.msg(string)    
+        elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
+            # show channels 
+            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CHANNELS
+
+            channels = IMC2_CHANLIST.get_channel_list()
+            string = ""
+            nchans = 0
+            string += "\n {GChannels on %s:{n" % (", ".join(conn.factory.network for conn in IMC2_CHANNELS))
+            cols = [["Full name"], ["Name"], ["Owner"], ["Perm"], ["Policy"]]
+            for channel in channels:
+                nchans += 1
+                cols[0].append(channel.name)
+                cols[1].append(channel.localname)
+                cols[2].append(channel.owner) 
+                cols[3].append(channel.level)
+                cols[4].append(channel.policy)
+            ftable = utils.format_table(cols)
+            for ir, row in enumerate(ftable):
+                if ir == 0: 
+                    string += "\n{w" + "".join(row) + "{n"
+                else:
+                    string += "\n" + "".join(row)
+            string += "\n %i Channels found." % nchans
+            self.caller.msg(string)
+
+        else:
+            # no valid inputs
+            string = "Usage: imcinfo|imcchanlist|imclist"
+            self.caller(string)
