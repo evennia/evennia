@@ -150,6 +150,13 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
         logger.log_infomsg("IMC2: Sending authentication packet.")
         self.send_packet(pck.IMC2PacketAuthPlaintext())
                                                               
+    def connectionLost(self, reason=None):
+        """
+        This is executed when the connection is lost for 
+        whatever reason. 
+        """
+        pass # we don't need to do anything, it's cleaned up automatically.
+
     def send_packet(self, packet):
         """
         Given a sub-class of IMC2Packet, assemble the packet and send it
@@ -395,7 +402,6 @@ def create_connection(channel, imc2_network, imc2_port, imc2_channel, imc2_mudna
 
     old_conns = ExternalChannelConnection.objects.filter(db_external_key=key)
     if old_conns:
-        return 
         # connection already exists. We try to only connect a new channel
         old_config = old_conns[0].db_external_config.split('|',5)
         old_chan_subs = old_config[2].split(',')
@@ -408,7 +414,7 @@ def create_connection(channel, imc2_network, imc2_port, imc2_channel, imc2_mudna
             old_config[2] = old_chan_subs # add a channel subscription to old config 
             old_conns[0].db_external_config = "|".join(old_config)
             old_conns[0].save()            
-            return True 
+            return True
 
     # new connection 
     config = "%s|%s|%s|%s|%s|%s" % (imc2_network, imc2_port, imc2_channel, imc2_mudname, imc2_client_pwd, imc2_server_pwd)

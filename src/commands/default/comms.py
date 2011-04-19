@@ -956,7 +956,7 @@ class CmdIMC2Chan(MuxCommand):
                 cols = [["Evennia channel"], ["IMC channel"]]
                 for conn in connections:
                     cols[0].append(conn.channel.key)
-                    cols[1].append(" ".join(conn.external_config.split('|')))
+                    cols[1].append(" ".join(conn.external_config.split('|')[:-3]))
                 ftable = utils.format_table(cols)
                 string = ""
                 for ir, row in enumerate(ftable):
