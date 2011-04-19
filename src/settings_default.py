@@ -286,7 +286,7 @@ IRC_ENABLED = False
 # 'server password' as chosen when registering on mudbytes. The
 # Evennia discussion channel 'ievennia' is on
 # server02.mudbytes.net:9000.
-IMC2_ENABLED = False # OBS! DON'T CHANGE - IMC2 is not implemented yet! 
+IMC2_ENABLED = False 
 
 
 ###################################################

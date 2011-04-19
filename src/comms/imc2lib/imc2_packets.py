@@ -93,24 +93,22 @@ class IMC2Packet(object):
                                    
     def __str__(self):
         retval =  """
-        -- Begin Packet Display --
-        Sender: %s
-        Origin: %s
+        --IMC2 package (%s)
+        Sender:   %s
+        Origin:   %s
         Sequence: %s
-        Route: %s
-        Type: %s
-        Target: %s
-        Destination: %s
-        Data: %s
-        - End Packet Display --""" % (self.sender,
-                                      self.origin,
-                                      self.sequence,
-                                      self.route,
-                                      self.packet_type,
-                                      self.target,
-                                      self.destination,
-                                      self.optional_data)
-        return retval
+        Route:    %s
+        Type:     %s
+        Target:   %s
+        Dest.:    %s
+        Data:     
+         %s                  
+       ------------------------""" % (self.packet_type, self.sender,
+                                      self.origin, self.sequence,
+                                      self.route, self.packet_type,
+                                      self.target, self.destination,
+                                      "\n         ".join(["%s: %s" % items for items in self.optional_data.items()]))
+        return retval.strip()
     
     def _get_optional_data_string(self):
         """
@@ -426,7 +424,7 @@ class IMC2PacketIceMsgBroadcasted(IMC2Packet):
     def __init__(self, server, channel, pobject, message):
         """
         Args:
-          server: (String) Server name the channel resides on.
+          server: (String) Server name the channel resides on (obs - this is e.g. Server01, not the full network name!)
           channel: (String) Name of the IMC2 channel.
           pobject: (Object) Object sending the message.
           message: (String) Message to send.
@@ -507,8 +505,22 @@ class IMC2PacketTell(IMC2Packet):
     Reply from Dude:
     Dude@SomeMUD 1234567890 SomeMUD!Hub1 tell You@YourMUD text="Yeah, this is cool!" isreply=1  
     """
-    pass
-
+    def __init__(self, pobject, target, destination, message):
+        super(IMC2PacketTell, self).__init__()
+        self.sender = pobject
+        self.packet_type = "tell"
+        self.target = target
+        self.destination = destination
+        self.optional_data = {"text": message, 
+                              "isreply":None}
+        
+    def assemble(self, mudname=None, client_pwd=None, server_pwd=None):
+        self.sequence = self.imc2_protocol.sequence
+        #self.route = "%s!%s" % (self.origin, self.imc2_protocol.factory.servername.capitalize())
+        return '''"%s@%s %s %s tell %s@%s text="%s"''' % (self.sender, self.origin, self.sequence, 
+                                                          self.route, self.target, self.destination, 
+                                                          self.optional_data.get("text","NO TEXT GIVEN"))
+    
 class IMC2PacketEmote(IMC2Packet):
     """
     Description:

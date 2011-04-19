@@ -856,6 +856,11 @@ class CmdIRC2Chan(MuxCommand):
     def func(self):
         "Setup the irc-channel mapping"
 
+        if not settings.IRC_ENABLED:
+            string = """IRC is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+
         if 'list' in self.switches:
             # show all connections
             connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='irc_')
@@ -876,10 +881,6 @@ class CmdIRC2Chan(MuxCommand):
                 self.caller.msg("No connections found.")
             return 
 
-        if not settings.IRC_ENABLED:
-            string = """IRC is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
-            return
         if not self.args or not self.rhs:
             string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
             self.caller.msg(string)
@@ -943,6 +944,11 @@ class CmdIMC2Chan(MuxCommand):
     def func(self):
         "Setup the imc-channel mapping"
 
+        if not settings.IMC2_ENABLED:
+            string = """IMC is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+
         if 'list' in self.switches:
             # show all connections
             connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
@@ -975,7 +981,8 @@ class CmdIMC2Chan(MuxCommand):
         try:
             imc2_network, imc2_port, imc2_channel, imc2_client_pwd, imc2_server_pwd = [part.strip() for part in self.rhs.split(None, 4)]
         except Exception:        
-            string = "IMC2 connnection definition '%s' is not valid." % self.rhs
+            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2network> <port> <imc2channel> <client_pwd> <server_pwd>"
+            string += "\nYou must supply a value in every position to define the IMC2 connnection.\nFor deletion, the tree last arguments (imc2channel and the two passwords) may be dummy values."
             self.caller.msg(string)
             return 
         
@@ -987,7 +994,7 @@ class CmdIMC2Chan(MuxCommand):
             if chanmatch:
                 channel = chanmatch.key
 
-            ok = imc2.delete_connection(channel, imc2_network, imc2_port, imc2_channel, mudname)
+            ok = imc2.delete_connection(channel, imc2_network, imc2_port, mudname)
             if not ok:
                 self.caller.msg("IMC2 connection could not be removed, does it exist?")
             else:
@@ -1014,8 +1021,8 @@ class CmdIMCInfo(MuxCommand):
       @imclist -     list connected muds 
 
     Switches:
-      channels - as imcchanlist (default)
-      games - as imclist 
+      channels - as @imcchanlist (default)
+      games or muds - as @imclist 
       update - force an update of all lists
 
      
@@ -1030,28 +1037,33 @@ class CmdIMCInfo(MuxCommand):
     def func(self):
         "Run the command"
 
+        if not settings.IMC2_ENABLED:
+            string = """IMC is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+
         if "update" in self.switches:
             # update the lists 
             import time
             from src.comms.imc2lib import imc2_packets as pck
-            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CHANNELS
+            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CONNECTIONS
             # update connected muds
-            for chan in IMC2_CHANNELS:
-                chan.send_packet(pck.IMC2PacketKeepAliveRequest())
+            for conn in IMC2_CONNECTIONS:
+                conn.send_packet(pck.IMC2PacketKeepAliveRequest())
             # prune inactive muds 
             for name, mudinfo in IMC2_MUDLIST.mud_list.items():
                 if time.time() - mudinfo.last_updated > 3599:
                     del IMC2_MUDLIST.mud_list[name]
             # update channel list
             checked_networks = []
-            for channel in IMC2_CHANNELS: 
-                network = channel.factory.network
+            for conn in IMC2_CONNECTIONS: 
+                network = conn.factory.network
                 if not network in checked_networks:
-                    channel.send_packet(pck.IMC2PacketIceRefresh())
+                    conn.send_packet(pck.IMC2PacketIceRefresh())
                     checked_networks.append(network)
             self.caller.msg("IMC2 lists were re-synced.")
 
-        elif "games" in self.switches or self.cmdstring == "@imclist":
+        elif "games" in self.switches or "muds" in self.switches or self.cmdstring == "@imclist":
             # list muds
             from src.comms.imc2 import IMC2_MUDLIST
 
@@ -1078,12 +1090,12 @@ class CmdIMCInfo(MuxCommand):
             self.caller.msg(string)    
         elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
             # show channels 
-            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CHANNELS
+            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CONNECTIONS
 
             channels = IMC2_CHANLIST.get_channel_list()
             string = ""
             nchans = 0
-            string += "\n {GChannels on %s:{n" % (", ".join(conn.factory.network for conn in IMC2_CHANNELS))
+            string += "\n {GChannels on %s:{n" % (", ".join(conn.factory.network for conn in IMC2_CONNECTIONS))
             cols = [["Full name"], ["Name"], ["Owner"], ["Perm"], ["Policy"]]
             for channel in channels:
                 nchans += 1
@@ -1104,4 +1116,46 @@ class CmdIMCInfo(MuxCommand):
         else:
             # no valid inputs
             string = "Usage: imcinfo|imcchanlist|imclist"
-            self.caller(string)
+            self.caller.msg(string)
+
+# unclear if this is working ...            
+class CmdIMCTell(MuxCommand):
+    """
+    imctell - send a page to a remote IMC player
+
+    Usage: 
+      imctell User@MUD = <msg> 
+      imcpage      " 
+
+    Sends a page to a user on a remote MUD, connected
+    over IMC2. 
+    """
+    
+    key = "imctell"
+    aliases = ["imcpage", "imc2tell", "imc2page"]
+    locks = "cmd: serversetting(IMC2_ENABLED) or perm(Immortals)"
+    help_category = "Comms"
+
+    def func(self):
+        "Send tell across IMC"
+
+        if not settings.IMC2_ENABLED:
+            string = """IMC is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+
+        from src.comms.imc2 import IMC2_CONNECTIONS 
+        
+        if not self.args or not '@' in self.lhs or not self.rhs:
+            string = "Usage: imctell User@Mud = <msg>"
+            self.caller.msg(string)
+            return 
+        target, destination = self.lhs.split("@", 1)
+        message = self.rhs.strip()
+        data = {"target":target, "destination":destination}
+
+        for comm in IMC2_CONNECTIONS:
+            # we don't know which connection we aim for, so we send to all.
+            comm.msg_imc2(message, from_obj=self.caller.player, packet_type="imctell", data=data)
+
+        self.caller.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))

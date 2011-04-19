@@ -31,83 +31,83 @@ def cmd_imcwhois(command):
         imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
 GLOBAL_CMD_TABLE.add_command("imcwhois", cmd_imcwhois, help_category="Comms")
 
-def cmd_imcansi(command):
-    """
-    imcansi
+# def cmd_imcansi(command):
+#     """
+#     imcansi
     
-    Usage:
-      imcansi <string>
+#     Usage:
+#       imcansi <string>
       
-    Test IMC ANSI conversion.
-    """
-    source_object = command.source_object
-    if not command.command_argument:    
-        source_object.emit_to("You must provide a string to convert.")
-        return
-    else:
-        retval = parse_ansi(command.command_argument, parser=IMCANSIParser())
-        source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imcansi", cmd_imcansi, help_category="Comms")
+#     Test IMC ANSI conversion.
+#     """
+#     source_object = command.source_object
+#     if not command.command_argument:    
+#         source_object.emit_to("You must provide a string to convert.")
+#         return
+#     else:
+#         retval = parse_ansi(command.command_argument, parser=IMCANSIParser())
+#         source_object.emit_to(retval)
+# GLOBAL_CMD_TABLE.add_command("imcansi", cmd_imcansi, help_category="Comms")
 
-def cmd_imcicerefresh(command):
-    """
-    imcicerefresh
+# def cmd_imcicerefresh(command):
+#     """
+#     imcicerefresh
 
-    Usage:
-      imcicerefresh
+#     Usage:
+#       imcicerefresh
 
-    IMC2: Semds an ice-refresh packet.
-    """
-    source_object = command.source_object
-    packet = IMC2PacketIceRefresh()
-    imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
-    source_object.emit_to("Sent")
-GLOBAL_CMD_TABLE.add_command("imcicerefresh", cmd_imcicerefresh, help_category="Comms")
+#     IMC2: Semds an ice-refresh packet.
+#     """
+#     source_object = command.source_object
+#     packet = IMC2PacketIceRefresh()
+#     imc2_conn.IMC2_PROTOCOL_INSTANCE.send_packet(packet)
+#     source_object.emit_to("Sent")
+# GLOBAL_CMD_TABLE.add_command("imcicerefresh", cmd_imcicerefresh, help_category="Comms")
 
-def cmd_imcchanlist(command):
-    """
-    imcchanlist
+# def cmd_imcchanlist(command):
+#     """
+#     imcchanlist
 
-    Usage:
-      imcchanlist
+#     Usage:
+#       imcchanlist
       
-    Shows the list of cached channels from the IMC2 Channel list.
-    """
-    source_object = command.source_object
+#     Shows the list of cached channels from the IMC2 Channel list.
+#     """
+#     source_object = command.source_object
     
-    retval = 'Channels on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
+#     retval = 'Channels on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
     
-    retval += ' Full Name          Name       Owner           Perm    Policy\n\r'
-    retval += ' ---------          ----       -----           ----    ------\n\r'
-    for channel in IMC2_CHANLIST.get_channel_list():
-        retval += ' %-18s %-10s %-15s %-7s %s\n\r' % (channel.name, 
-                                                      channel.localname,
-                                                      channel.owner, 
-                                                      channel.level,
-                                                      channel.policy)
-    retval += '%s channels found.' % len(IMC2_CHANLIST.chan_list)
-    source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imcchanlist", cmd_imcchanlist, help_category="Comms")
+#     retval += ' Full Name          Name       Owner           Perm    Policy\n\r'
+#     retval += ' ---------          ----       -----           ----    ------\n\r'
+#     for channel in IMC2_CHANLIST.get_channel_list():
+#         retval += ' %-18s %-10s %-15s %-7s %s\n\r' % (channel.name, 
+#                                                       channel.localname,
+#                                                       channel.owner, 
+#                                                       channel.level,
+#                                                       channel.policy)
+#     retval += '%s channels found.' % len(IMC2_CHANLIST.chan_list)
+#     source_object.emit_to(retval)
+# GLOBAL_CMD_TABLE.add_command("imcchanlist", cmd_imcchanlist, help_category="Comms")
 
-def cmd_imclist(command):
-    """
-    imclist
+# def cmd_imclist(command):
+#     """
+#     imclist
 
-    Usage:
-       imclist
+#     Usage:
+#        imclist
 
-    Shows the list of cached games from the IMC2 Mud list.
-    """
-    source_object = command.source_object
+#     Shows the list of cached games from the IMC2 Mud list.
+#     """
+#     source_object = command.source_object
     
-    retval = 'Active MUDs on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
+#     retval = 'Active MUDs on %s\n\r' % imc2_conn.IMC2_PROTOCOL_INSTANCE.network_name
     
-    for mudinfo in IMC2_MUDLIST.get_mud_list():
-        mudline = ' %-20s %s' % (mudinfo.name, mudinfo.versionid)
-        retval += '%s\n\r' % mudline[:78]
-    retval += '%s active MUDs found.' % len(IMC2_MUDLIST.mud_list)
-    source_object.emit_to(retval)
-GLOBAL_CMD_TABLE.add_command("imclist", cmd_imclist, help_category="Comms")
+#     for mudinfo in IMC2_MUDLIST.get_mud_list():
+#         mudline = ' %-20s %s' % (mudinfo.name, mudinfo.versionid)
+#         retval += '%s\n\r' % mudline[:78]
+#     retval += '%s active MUDs found.' % len(IMC2_MUDLIST.mud_list)
+#     source_object.emit_to(retval)
+# GLOBAL_CMD_TABLE.add_command("imclist", cmd_imclist, help_category="Comms")
 
 # def cmd_imcstatus(command):
 #     """
