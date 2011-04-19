@@ -228,16 +228,18 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
         # If the packet lacks the 'echo' key, don't bother with it.
         if not conn_name or not packet.optional_data.get('echo', None):        
             return 
-
         chan_name = conn_name.split(':', 1)[1]
-        if not chan_name in self.factory.channel:
-            # we are not listening to this channel.
-            return 
 
         key = "imc2_%s" % conn_name            
         # Look for matching IMC2 channel maps.
         conns = ExternalChannelConnection.objects.filter(db_external_key=self.factory.key)
         if not conns:
+            return 
+        
+        # get channel subscriptions 
+        chansubs = conns[0].db_external_config.split("|")[2].split(",")
+        if not chan_name in chansubs:
+            # we are not listening to this channel.
             return 
             
         # Format the message to send to local channel.
@@ -344,7 +346,7 @@ class IMC2Factory(protocol.ClientFactory):
     def __init__(self, key, channel, network, port, mudname, client_pwd, server_pwd, evennia_channel):
         self.key = key
         self.mudname = mudname
-        self.channel = channel
+        self.channel = channel # this is a list!
         self.pretty_key = "%s:%s/%s (%s)" % (network, port, channel, mudname)
         self.network = network
         sname, host = network.split(".", 1)
@@ -366,11 +368,9 @@ class IMC2Factory(protocol.ClientFactory):
         logger.log_errmsg('IMC2: %s' % message)
 
 
-def build_connection_key(channel, imc2_network, imc2_port, imc2_mudname):
+def build_connection_key(imc2_network, imc2_port, imc2_mudname):
     "Build an id hash for the connection"
-    if hasattr(channel, 'key'):
-        channel = channel.key
-    return "imc2_%s:%s(%s)<>%s" % (imc2_network, imc2_port, imc2_mudname, channel)
+    return "imc2_%s:%s(%s)<>Evennia" % (imc2_network, imc2_port, imc2_mudname)
 
 def build_service_key(key):
     return "IMC2:%s" % key
@@ -397,13 +397,16 @@ def create_connection(channel, imc2_network, imc2_port, imc2_channel, imc2_mudna
     """
     This will create a new IMC2<->channel connection.
     """
+
+    key = build_connection_key(imc2_network, imc2_port, imc2_mudname)
+
     if not type(channel) == Channel:
         new_channel = Channel.objects.filter(db_key=channel)
         if not new_channel:
             logger.log_errmsg("Cannot attach IMC2<->Evennia: Evennia Channel '%s' not found" % channel)
             return False
         channel = new_channel[0]
-    key = build_connection_key(channel, imc2_network, imc2_port, imc2_mudname)
+
 
     old_conns = ExternalChannelConnection.objects.filter(db_external_key=key)
     if old_conns:
@@ -437,12 +440,10 @@ def create_connection(channel, imc2_network, imc2_port, imc2_channel, imc2_mudna
     start_scripts()
     return True 
 
-def delete_connection(channel, imc2_network, imc2_port, mudname):
+def delete_connection(imc2_network, imc2_port, mudname):
     "Destroy a connection"
-    if hasattr(channel, 'key'):
-        channel = channel.key
 
-    key = build_connection_key(channel, imc2_network, imc2_port, mudname)    
+    key = build_connection_key(imc2_network, imc2_port, mudname)    
     service_key = build_service_key(key)
     try:
         conn = ExternalChannelConnection.objects.get(db_external_key=key)

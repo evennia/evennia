@@ -990,11 +990,8 @@ class CmdIMC2Chan(MuxCommand):
         mudname = settings.SERVERNAME
         
         if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
-            chanmatch = find_channel(self.caller, channel, silent=True)
-            if chanmatch:
-                channel = chanmatch.key
 
-            ok = imc2.delete_connection(channel, imc2_network, imc2_port, mudname)
+            ok = imc2.delete_connection(imc2_network, imc2_port, mudname)
             if not ok:
                 self.caller.msg("IMC2 connection could not be removed, does it exist?")
             else:
