@@ -19,20 +19,18 @@ class ObjManipCommand(MuxCommand):
     some optional data, such as a typeclass or a location. A comma ',' 
     separates different objects. Like this:
     
-    name1;alias;alias;alias:option, name2;alias;alias ...
+        name1;alias;alias;alias:option, name2;alias;alias ...
 
     Spaces between all components are stripped. 
 
     A second situation is attribute manipulation. Such commands
-    are simpler and appear in combinations
+    are simpler and offer combinations
 
         objname/attr/attr/attr, objname/attr, ...             
 
-    Stores four new attributes with the parsed data. 
-
     """
-    #OBS - this is just a parent - it's not intended to 
-    #actually be included in a commandset on its own!
+    # OBS - this is just a parent - it's not intended to actually be 
+    # included in a commandset on its own!
     
     def parse(self):
         """
@@ -42,65 +40,30 @@ class ObjManipCommand(MuxCommand):
         # get all the normal parsing done (switches etc)
         super(ObjManipCommand, self).parse()
 
-        lhs_objs = []
-        rhs_objs = []
-
-        #first, we deal with the left hand side of an eventual =
-        for objdef in self.lhslist:
-            #lhslist is already split by ','
-            aliases, option = [], None
-            if ':' in objdef:
-                objdef, option = [str(part).strip() 
-                                     for part in objdef.rsplit(':', 1)]
-            if ';' in objdef:
-                objdef, aliases = [str(part).strip() 
-                                   for part in objdef.split(';', 1)]
-                aliases = [str(alias).strip() 
-                           for alias in aliases.split(';') if alias.strip()]
-            lhs_objs.append({"name":objdef, 
-                             'option': option, 'aliases': aliases})
-
-        #next, the right hand side of =
-        for objdef in self.rhslist:
-            #rhslist is already split by ','
-            aliases, option = [], None
-            if ':' in objdef:
-                objdef, option = [str(part).strip() 
-                                     for part in objdef.rsplit(':', 1)]
-            if ';' in objdef:
-                objdef, aliases = [str(part).strip() 
-                                   for part in objdef.split(';', 1)]
-                aliases = [str(alias).strip() 
-                           for alias in aliases.split(';') if alias.strip()]
-            rhs_objs.append({"name":objdef, 'option': option, 'aliases': aliases})
+        obj_defs = ([],[])    # stores left- and right-hand side of '=' 
+        obj_attrs = ([], [])  #                   "
         
-        # We make a second sweep to handle attributes-on-objects 
-        lhs_objattr = []
-        rhs_objattr = []
-        
-        # first left hand side
-        for objdef in self.lhslist:
-            attrs = []
-            if '/' in objdef:
-                objdef, attrs = [str(part).strip() 
-                                 for part in objdef.split('/', 1)] 
-                attrs = [str(part).strip().lower() 
-                         for part in attrs.split('/') if part.strip()]
-            lhs_objattr.append({"name":objdef, 'attrs':attrs})
-        # right hand side
-        for objdef in self.rhslist:
-            attrs = []
-            if '/' in objdef:
-                objdef, attrs = [str(part).strip() 
-                                 for part in objdef.split('/', 1)] 
-                attrs = [str(part).strip().lower() 
-                         for part in attrs.split('/') if part.strip()]
-            rhs_objattr.append({"name":objdef, 'attrs':attrs})
-            
-        self.lhs_objs = lhs_objs
-        self.rhs_objs = rhs_objs
-        self.lhs_objattr = lhs_objattr
-        self.rhs_objattr = rhs_objattr 
+        for iside, arglist in enumerate((self.lhslist, self.rhslist)):
+            # lhslist/rhslist is already split by ',' at this point
+            for objdef in arglist:
+                aliases, option, attrs = [], None, []
+                if ':' in objdef:
+                    objdef, option = [part.strip() for part in objdef.rsplit(':', 1)]
+                if ';' in objdef:
+                    objdef, aliases = [part.strip() for part in objdef.split(';', 1)]
+                    aliases = [alias.strip() for alias in aliases.split(';') if alias.strip()]
+                if '/' in objdef:
+                    objdef, attrs = [part.strip() for part in objdef.split('/', 1)] 
+                    attrs = [part.strip().lower() for part in attrs.split('/') if part.strip()]
+                # store data 
+                obj_defs[iside].append({"name":objdef, 'option':option, 'aliases':aliases})
+                obj_attrs[iside].append({"name":objdef, 'attrs':attrs})
+
+        # store for future access
+        self.lhs_objs = obj_defs[0]
+        self.rhs_objs = obj_defs[1]
+        self.lhs_objattr = obj_attrs[0]
+        self.rhs_objattr = obj_attrs[1]
 
 
 class CmdSetObjAlias(MuxCommand):   
@@ -609,7 +572,7 @@ class CmdDig(ObjManipCommand):
         new_room.locks.add(lockstring)
         alias_string = ""
         if new_room.aliases:
-            alias_string = " (%s)" % ", ".join(new_room_aliases)
+            alias_string = " (%s)" % ", ".join(new_room.aliases)
         room_string = "Created room %s(%s)%s of type %s." % (new_room, new_room.dbref, alias_string, typeclass)
 
         exit_to_string = ""

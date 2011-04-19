@@ -94,7 +94,7 @@ class MuxCommand(Command):
 
         # split out switches        
         switches = []
-        if args and len(args) >1 and args[0] == "/":
+        if args and len(args) > 1 and args[0] == "/":
             # we have a switch, or a set of switches. These end with a space.
             #print "'%s'" % args            
             switches = args[1:].split(None, 1)
@@ -104,7 +104,7 @@ class MuxCommand(Command):
             else:
                 args = ""
                 switches = switches[0].split('/')
-        arglist = [arg.strip() for arg in args.split(None)]
+        arglist = [arg.strip() for arg in args.split()]
         
         # check for arg1, arg2, ... = argA, argB, ... constructs 
         lhs, rhs = args, None 

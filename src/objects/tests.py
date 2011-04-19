@@ -40,7 +40,7 @@ class TestObjAttrs(TestCase):
         self.obj1 = create.create_object(objects.Object, key="testobj1", location=None)
         self.obj2 = create.create_object(objects.Object, key="testobj2", location=self.obj1)
     def test_store_str(self):
-        hstring = "sdfv00=97sfjs842 ivfjlQKFos9GF^8dddsöäå-?%"
+        hstring = u"sdfv00=97sfjs842 ivfjlQKFos9GF^8dddsöäå-?%"
         self.obj1.db.testattr = hstring
         self.assertEqual(hstring, self.obj1.db.testattr)
     def test_store_obj(self):

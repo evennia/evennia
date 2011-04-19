@@ -623,21 +623,22 @@ class CmdEncoding(MuxCommand):
             del caller.player.db.encoding
         elif not self.args:
             # just list the encodings supported
-            encodings = []
-            encoding = caller.player.db.encoding            
-            string = "Supported encodings "
-            if encoding: 
-                encodings.append(encoding)
-                string += "(the first one you can change with {w@encoding <encoding>{n)"
-            encodings.extend(settings.ENCODINGS)
-            string += ":\n  " + ", ".join(encodings)
+            pencoding = caller.player.db.encoding                        
+            string = ""
+            if pencoding: 
+                string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding                
+            encodings = settings.ENCODINGS
+            if encodings:
+                string += "\nServer's alternative encodings (tested in this order):\n   {g%s{n" % ", ".join(encodings)            
+            if not string:
+                string = "No encodings found."
         else:            
             # change encoding 
             old_encoding = caller.player.db.encoding
             encoding = self.args
             caller.player.db.encoding = encoding
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
-        caller.msg(string)                    
+        caller.msg(string.strip())                    
 
 class CmdAccess(MuxCommand):
     """

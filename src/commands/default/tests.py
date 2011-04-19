@@ -77,9 +77,8 @@ class CommandTest(TestCase):
     """
     def setUp(self):
         "sets up the testing environment"                
-        c = ServerConfig.objects.conf("default_home", 2)
-        c.save()
-
+        ServerConfig.objects.conf("default_home", 2)
+        
         self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
         self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
 
@@ -197,8 +196,12 @@ class TestAccess(CommandTest):
     def test_call(self):                
         self.execute_cmd("access")
 class TestEncoding(CommandTest):
-    def test_call(self):                
-        self.execute_cmd("@encoding", "Supported encodings")
+    def test_call(self):        
+        global NOMANGLE
+        NOMANGLE = True 
+        self.char1.db.encoding="utf-8"
+        self.execute_cmd("@encoding", "Default encoding:")
+        NOMANGLE = False 
 
 # help.py command tests
 
@@ -206,9 +209,9 @@ class TestHelpSystem(CommandTest):
     def test_call(self):                
         global NOMANGLE
         NOMANGLE = True 
-        sep = "-"*70 + "\n"
+        sep = "-"*78 + "\n"
         self.execute_cmd("@help/add TestTopic,TestCategory = Test1", )
-        self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1")
+        self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1" + "\n" + sep)
         self.execute_cmd("@help/merge TestTopic = Test2", "Added the new text right after")
         self.execute_cmd("help TestTopic", sep + "Help topic for Testtopic\nTest1 Test2")
         self.execute_cmd("@help/append TestTopic = Test3", "Added the new text as a")
