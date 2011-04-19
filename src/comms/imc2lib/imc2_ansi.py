@@ -5,14 +5,15 @@ special markup strings.
 This is a IMC2 complacent version.
 """
 
-from src.utils.ansi import ANSIParser, ANSITable
+import re
+from src.utils.ansi import ANSIParser, ANSITable, parse_ansi
 
 class IMCANSIParser(ANSIParser):
     """
     This parser is per the IMC2 specification.
     """
     def __init__(self):
-        self.ansi_subs = [
+        self.ansi_map = [
             # Random
             (r'~Z', ANSITable.ansi["normal"]),
             # Dark Grey
@@ -58,9 +59,17 @@ class IMCANSIParser(ANSIParser):
             (r'\\r', ANSITable.ansi["normal"]),
             (r'\\n', ANSITable.ansi["return"]),
         ]
+        # prepare regex matching
+        self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
+                         for sub in self.ansi_map]
+        # prepare matching ansi codes overall
+        self.ansi_regex = re.compile("\033\[[0-9;]+m")
+
+
+ANSI_PARSER = IMCANSIParser()
         
-def parse_ansi(*args, **kwargs):
+def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER):
     """
     Shortcut to use the IMC2 ANSI parser.
     """
-    return ansi.parse_ansi(parser=IMCANSIParser(), *args, **kwargs)
+    return parser.parse_ansi(string, strip_ansi=strip_ansi)

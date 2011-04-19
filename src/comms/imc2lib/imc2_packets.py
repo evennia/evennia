@@ -653,10 +653,9 @@ class IMC2PacketWhois(IMC2Packet):
     Example:
     You@YourMUD 1234567890 YourMUD whois dude@* level=5  
     """
-    def __init__(self, pobject, whois_target):
+    def __init__(self, pobject_id, whois_target):
         super(IMC2PacketWhois, self).__init__()
-        # Use the dbref, it's easier to trace back for the whois-reply.
-        self.sender = pobject.id
+        self.sender = pobject_id  # Use the dbref, it's easier to trace back for the whois-reply.
         self.packet_type = 'whois'
         self.target = whois_target
         self.destination = '*'

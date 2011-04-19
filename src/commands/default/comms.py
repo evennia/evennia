@@ -850,7 +850,7 @@ class CmdIRC2Chan(MuxCommand):
     """
         
     key = "@irc2chan"
-    locks = "cmd:serversetting(IRC_ENABLED) and perm(Wizards)"
+    locks = "cmd:serversetting(IRC_ENABLED) and perm(Immortals)"
     help_category = "Comms"
 
     def func(self):
@@ -1011,18 +1011,21 @@ class CmdIMC2Chan(MuxCommand):
             return 
         self.caller.msg("Connection created. Connecting to IMC2 server.")
 
+
 class CmdIMCInfo(MuxCommand):
     """
-    imcchanlist
+    imcinfo - package of imc info commands
 
     Usage:
       @imcinfo[/switches]
       @imcchanlist - list imc2 channels
       @imclist -     list connected muds 
+      @imcwhois <playername> - whois info about a remote player
 
-    Switches:
+    Switches for @imcinfo:
       channels - as @imcchanlist (default)
       games or muds - as @imclist 
+      whois - as @imcwhois (requires an additional argument)
       update - force an update of all lists
 
      
@@ -1030,8 +1033,8 @@ class CmdIMCInfo(MuxCommand):
     """
     
     key = "@imcinfo"
-    aliases = ["@imcchanlist", "@imclist"]
-    locks = "cmd: serversetting(IMC2_ENABLED) or perm(Immortals)"
+    aliases = ["@imcchanlist", "@imclist", "@imcwhois"]
+    locks = "cmd: serversetting(IMC2_ENABLED) and perm(Wizards)"
     help_category = "Comms"
 
     def func(self):
@@ -1088,6 +1091,17 @@ class CmdIMCInfo(MuxCommand):
                         string += "\n" + "".join(row)
             string += "\n %i Muds found." % nmuds
             self.caller.msg(string)    
+
+        elif "whois" in self.switches or self.cmdstring == "@imcwhois":
+            # find out about a player
+            if not self.args: 
+                self.caller.msg("Usage: @imcwhois <playername>")
+                return
+            from src.comms.imc2 import IMC2_CONNECTIONS
+            self.caller.msg("Sending IMC whois request. If you receive no response, no matches were found.")
+            for comm in IMC2_CONNECTIONS:
+                comm.msg_imc2(None, from_obj=self.caller.player, packet_type="imcwhois", data={"target":self.args})
+
         elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
             # show channels 
             from src.comms.imc2 import IMC2_CHANLIST, IMC2_CONNECTIONS
@@ -1133,7 +1147,7 @@ class CmdIMCTell(MuxCommand):
     
     key = "imctell"
     aliases = ["imcpage", "imc2tell", "imc2page"]
-    locks = "cmd: serversetting(IMC2_ENABLED) or perm(Immortals)"
+    locks = "cmd: serversetting(IMC2_ENABLED)"
     help_category = "Comms"
 
     def func(self):

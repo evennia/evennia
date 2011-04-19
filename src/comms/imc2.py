@@ -328,6 +328,11 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
                 destination = data.get("destination", "Unknown")
                 self.send_packet(pck.IMC2PacketTell(from_name, target, destination, message))
             
+        elif packet_type == "imcwhois":
+            # send a whois request 
+            if type(data) == dict:
+                target = data.get("target", "Unknown")
+                self.send_packet(pck.IMC2PacketWhois(from_obj.id, target))
                          
 class IMC2Factory(protocol.ClientFactory):
     """
