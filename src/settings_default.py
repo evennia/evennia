@@ -281,13 +281,16 @@ IRC_ENABLED = False
 # use it, go to http://www.mudbytes.net/imc2-intermud-join-network.
 # Choose 'Other unsupported IMC2 version' from the choices and and
 # enter your information there. You should enter the same 'short mud
-# name' as your SERVERNAME above. When enabled, the command @imc2chan
-# becomes available in-game. It will take 'client password' and
-# 'server password' as chosen when registering on mudbytes. The
-# Evennia discussion channel 'ievennia' is on
-# server02.mudbytes.net:9000.
+# name' as your SERVERNAME above, then choose imc network server as
+# well as client/server passwords same as below. When enabled, the
+# command @imc2chan becomes available in-game and allows you to
+# connect Evennia channels to IMC channels on the network. The Evennia
+# discussion channel 'ievennia' is on server01.mudbytes.net:5000.
 IMC2_ENABLED = False 
-
+IMC2_NETWORK = "server01.mudbytes.net"
+IMC2_PORT = 5000
+IMC2_CLIENT_PWD = ""
+IMC2_SERVER_PWD = ""
 
 ###################################################
 # Config for Django web features

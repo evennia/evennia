@@ -921,19 +921,20 @@ class CmdIMC2Chan(MuxCommand):
     imc2chan - link an evennia channel to imc2
 
     Usage:
-      @imc2chan[/switches] <evennia_channel> = <imc2network> <port> <imc2channel> <imc2_client_pwd> <imc2_server_pwd>
+      @imc2chan[/switches] <evennia_channel> = <imc2_channel>
 
     Switches:
-      /disconnect - this will delete the bot and remove the imc2 connection to the channel.
-      /remove     -                                 " 
+      /disconnect - this clear the imc2 connection to the channel.
+      /remove     -                " 
       /list       - show all imc2<->evennia mappings
 
     Example:
-      @imc2chan myimcchan = server02.mudbytes.net 9000 ievennia Gjds8372 LAKdf84e
+      @imc2chan myimcchan = ievennia
       
-    Connect an existing evennia channel to an IMC2 network and channel. You must have registered with the network
-    beforehand and obtained valid server- and client passwords. You will always connect using the name of your
-    mud, as defined by settings.SERVERNAME, so make sure this was the name you registered to the imc2 network. 
+    Connect an existing evennia channel to a channel on an IMC2
+    network. The network contact information is defined in settings and
+    should already be accessed at this point. Use @imcchanlist to see
+    available IMC channels.
 
     """
 
@@ -953,10 +954,11 @@ class CmdIMC2Chan(MuxCommand):
             # show all connections
             connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
             if connections:
-                cols = [["Evennia channel"], ["IMC channel"]]
+                cols = [["Evennia channel"], ["<->"], ["IMC channel"]]
                 for conn in connections:
                     cols[0].append(conn.channel.key)
-                    cols[1].append(" ".join(conn.external_config.split('|')[:-3]))
+                    cols[1].append("")
+                    cols[2].append(conn.external_config)
                 ftable = utils.format_table(cols)
                 string = ""
                 for ir, row in enumerate(ftable):
@@ -969,44 +971,34 @@ class CmdIMC2Chan(MuxCommand):
                 self.caller.msg("No connections found.")
             return 
 
-        if not settings.IMC2_ENABLED:
-            string = """IMC2 is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
-            return
         if not self.args or not self.rhs:
-            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2network> <port> <imc2channel> <client_pwd> <server_pwd>"
+            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2_channel>"
             self.caller.msg(string)
             return 
-        channel = self.lhs
-        try:
-            imc2_network, imc2_port, imc2_channel, imc2_client_pwd, imc2_server_pwd = [part.strip() for part in self.rhs.split(None, 4)]
-        except Exception:        
-            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2network> <port> <imc2channel> <client_pwd> <server_pwd>"
-            string += "\nYou must supply a value in every position to define the IMC2 connnection.\nFor deletion, the tree last arguments (imc2channel and the two passwords) may be dummy values."
-            self.caller.msg(string)
-            return 
-        
-        # get the name to use for connecting 
-        mudname = settings.SERVERNAME
-        
-        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
 
-            ok = imc2.delete_connection(imc2_network, imc2_port, mudname)
+        channel = self.lhs
+        imc2_channel = self.rhs
+                
+        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+            # we don't search for channels before this since we want to clear the link
+            # also if the channel no longer exists. 
+            ok = imc2.delete_connection(channel, imc2_channel)
             if not ok:
                 self.caller.msg("IMC2 connection could not be removed, does it exist?")
             else:
                 self.caller.msg("IMC2 connection destroyed.")
             return 
 
+        # actually get the channel object 
         channel = find_channel(self.caller, channel)
         if not channel:
             return
 
-        ok = imc2.create_connection(channel, imc2_network, imc2_port, imc2_channel, mudname, imc2_client_pwd, imc2_server_pwd)
+        ok = imc2.create_connection(channel, imc2_channel)
         if not ok:
-            self.caller.msg("This IMC2 connection already exists.")
+            self.caller.msg("The connection %s <-> %s  already exists." % (channel.key, imc2_channel))
             return 
-        self.caller.msg("Connection created. Connecting to IMC2 server.")
+        self.caller.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
 
 
 class CmdIMCInfo(MuxCommand):
@@ -1024,7 +1016,6 @@ class CmdIMCInfo(MuxCommand):
       games or muds - as @imclist 
       whois - as @imcwhois (requires an additional argument)
       update - force an update of all lists
-
      
     Shows lists of games or channels on the IMC2 network.
     """
@@ -1046,21 +1037,15 @@ class CmdIMCInfo(MuxCommand):
             # update the lists 
             import time
             from src.comms.imc2lib import imc2_packets as pck
-            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CONNECTIONS
-            # update connected muds
-            for conn in IMC2_CONNECTIONS:
-                conn.send_packet(pck.IMC2PacketKeepAliveRequest())
+            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CLIENT
+            # update connected muds            
+            IMC2_CLIENT.send_packet(pck.IMC2PacketKeepAliveRequest())
             # prune inactive muds 
             for name, mudinfo in IMC2_MUDLIST.mud_list.items():
                 if time.time() - mudinfo.last_updated > 3599:
                     del IMC2_MUDLIST.mud_list[name]
-            # update channel list
-            checked_networks = []
-            for conn in IMC2_CONNECTIONS: 
-                network = conn.factory.network
-                if not network in checked_networks:
-                    conn.send_packet(pck.IMC2PacketIceRefresh())
-                    checked_networks.append(network)
+            # update channel list            
+            IMC2_CLIENT.send_packet(pck.IMC2PacketIceRefresh())            
             self.caller.msg("IMC2 lists were re-synced.")
 
         elif "games" in self.switches or "muds" in self.switches or self.cmdstring == "@imclist":
@@ -1094,19 +1079,18 @@ class CmdIMCInfo(MuxCommand):
             if not self.args: 
                 self.caller.msg("Usage: @imcwhois <playername>")
                 return
-            from src.comms.imc2 import IMC2_CONNECTIONS
-            self.caller.msg("Sending IMC whois request. If you receive no response, no matches were found.")
-            for comm in IMC2_CONNECTIONS:
-                comm.msg_imc2(None, from_obj=self.caller.player, packet_type="imcwhois", data={"target":self.args})
+            from src.comms.imc2 import IMC2_CLIENT
+            self.caller.msg("Sending IMC whois request. If you receive no response, no matches were found.")            
+            IMC2_CLIENT.msg_imc2(None, from_obj=self.caller.player, packet_type="imcwhois", data={"target":self.args})
 
         elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
             # show channels 
-            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CONNECTIONS
+            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CLIENT
 
             channels = IMC2_CHANLIST.get_channel_list()
             string = ""
             nchans = 0
-            string += "\n {GChannels on %s:{n" % (", ".join(conn.factory.network for conn in IMC2_CONNECTIONS))
+            string += "\n {GChannels on %s:{n" % IMC2_CLIENT.factory.network
             cols = [["Full name"], ["Name"], ["Owner"], ["Perm"], ["Policy"]]
             for channel in channels:
                 nchans += 1
@@ -1155,7 +1139,7 @@ class CmdIMCTell(MuxCommand):
             self.caller.msg(string)
             return
 
-        from src.comms.imc2 import IMC2_CONNECTIONS 
+        from src.comms.imc2 import IMC2_CLIENT
         
         if not self.args or not '@' in self.lhs or not self.rhs:
             string = "Usage: imctell User@Mud = <msg>"
@@ -1165,8 +1149,7 @@ class CmdIMCTell(MuxCommand):
         message = self.rhs.strip()
         data = {"target":target, "destination":destination}
 
-        for comm in IMC2_CONNECTIONS:
-            # we don't know which connection we aim for, so we send to all.
-            comm.msg_imc2(message, from_obj=self.caller.player, packet_type="imctell", data=data)
+        # send to imc2
+        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller.player, packet_type="imctell", data=data)
 
         self.caller.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))

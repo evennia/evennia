@@ -561,7 +561,7 @@ class Channel(SharedMemoryModel):
                 conn.player.msg(msg, from_obj)
             except AttributeError:
                 try:                    
-                    conn.to_external(msg, from_obj)
+                    conn.to_external(msg, from_obj, from_channel=self)
                 except Exception:
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
         return True 
@@ -780,7 +780,7 @@ class ExternalChannelConnection(SharedMemoryModel):
             from_obj = self.external_key        
         self.channel.msg(message, from_obj=from_obj)
 
-    def to_external(self, message, from_obj=None):
+    def to_external(self, message, from_obj=None, from_channel=None):
         "Send channel -> external"
 
         # make sure we are not echoing back our own message to ourselves 
@@ -792,7 +792,7 @@ class ExternalChannelConnection(SharedMemoryModel):
             # we execute the code snippet that should make it possible for the 
             # connection to contact the protocol correctly (as set by the protocol).
             # Note that the code block has access to the variables here, such
-            # as message and from_obj. 
+            # as message, from_obj and from_channel. 
             exec(to_str(self.external_send_code))
         except Exception:
             logger.log_trace("Channel %s could not send to External %s" % (self.channel, self.external_key))

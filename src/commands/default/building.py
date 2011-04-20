@@ -53,7 +53,7 @@ class ObjManipCommand(MuxCommand):
                     objdef, aliases = [part.strip() for part in objdef.split(';', 1)]
                     aliases = [alias.strip() for alias in aliases.split(';') if alias.strip()]
                 if '/' in objdef:
-                    objdef, attrs = [part.strip() for part in objdef.split('/', 1)] 
+                    objdef, attrs = [part.strip() for part in objdef.split('/', 1)]
                     attrs = [part.strip().lower() for part in attrs.split('/') if part.strip()]
                 # store data 
                 obj_defs[iside].append({"name":objdef, 'option':option, 'aliases':aliases})
