@@ -41,11 +41,11 @@ IMC2_CHANLIST = IMC2ChanList()
 def msg_info(message):
     """
     Send info to default info channel
-    """
-    message = '[%s][IMC2]: %s' % (INFOCHANNEL[0].key, message)
+    """    
     try:
         INFOCHANNEL[0].msg(message)
-    except AttributeError:
+        message = '[%s][IMC2]: %s' % (INFOCHANNEL[0].key, message)
+    except Exception:
         logger.log_infomsg("MUDinfo (imc2): %s" % message)
 
 #

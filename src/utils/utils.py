@@ -210,7 +210,7 @@ def dbref(dbref):
     (database reference number) are either a string '#N' or 
     an integer N.  Output is the integer part.
     """
-    if type(dbref) == str:
+    if isinstance(dbref, basestring):
         dbref = dbref.lstrip('#')
         try:
             dbref = int(dbref)

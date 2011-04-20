@@ -104,6 +104,14 @@ from django.conf import settings
 from src.utils import logger, utils 
 
 #
+# Exception class
+#
+
+class LockException(Exception):
+    pass
+
+
+#
 # Cached lock functions
 #
 
@@ -181,7 +189,8 @@ class LockHandler(object):
             return locks 
         nlocks = storage_lockstring.count(';') + 1
         duplicates = 0
-        elist = []
+        elist = [] # errors 
+        wlist = [] # warnings
         for raw_lockstring in storage_lockstring.split(';'):            
             lock_funcs = []
             access_type, rhs = (part.strip() for part in raw_lockstring.split(':', 1))
@@ -211,11 +220,13 @@ class LockHandler(object):
                 continue
             if access_type in locks:                
                 duplicates += 1
-                elist.append("Lock: access type '%s' changed from '%s' to '%s' " % \
-                    (access_type, locks[access_type][2], raw_lockstring))
+                wlist.append("Lock: access type '%s' changed from '%s' to '%s' " % \
+                                 (access_type, locks[access_type][2], raw_lockstring))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)            
+        if wlist:
+            self._log_error("\n".join(wlist))
         if elist:
-            self._log_error("\n".join(elist))
+            raise LockException("\n".join(elist))        
             self.no_errors = False
         
         return locks 
@@ -304,12 +315,14 @@ class LockHandler(object):
             self._cache_locks(self.obj.lock_storage)
             self.reset_flag = False 
 
-        if (not no_superuser_bypass and (hasattr(accessing_obj, 'player') 
-                                         and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser) 
-            or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser))):
+        if (not no_superuser_bypass 
+            and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
+                 or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
+                 or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser)))):
             # we grant access to superusers and also to protocol instances that not yet has any player assigned to them (the
             # latter is a safety feature since superuser cannot be authenticated at some point during the connection).
             return True
+
         if access_type in self.locks:
             # we have a lock, test it.            
             evalstring, func_tup, raw_string = self.locks[access_type]            

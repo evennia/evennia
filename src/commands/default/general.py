@@ -432,57 +432,6 @@ class CmdSay(MuxCommand):
         caller.location.msg_contents(emit_string, 
                                      exclude=caller)
         
-## def cmd_fsay(command):
-##     """
-##     @fsay - make an object say something
-
-##     Usage:
-##       @fsay <obj> = <text to say>
-      
-##     Make an object talk to its current location.
-##     """
-##     caller = command.caller
-##     args = command.command_argument
-
-##     if not args or not "=" in args: 
-##         caller.msg("Usage: @fsay <obj> = <text to say>")
-##         return
-##     target, speech = [arg.strip() for arg in args.split("=",1)]
-
-##     # find object
-##     if target in ['here']:
-##         results = [caller.location]
-##     elif target in ['me','my']:
-##         results = [caller]
-##     else:
-##         results = Object.objects.global_object_name_search(target)
-##     if not results:
-##         caller.msg("No matches found for '%s'." % target)
-##         return 
-##     if len(results) > 1:
-##         string = "There are multiple matches. Please use #dbref to be more specific."
-##         for result in results:
-##             string += "\n %s" % results.name
-##         caller.msg(string)
-##         return
-##     target = results[0]
-
-##     # permission check
-##     if not caller.controls_other(target):
-##         caller.msg("Cannot pose %s (you don's control it)" % target.name)
-##         return
-        
-##     # Feedback for the object doing the talking.
-##     caller.msg("%s says, '%s%s'" % (target.name,
-##                                                speech,
-##                                                ANSITable.ansi['normal']))
-    
-##     # Build the string to emit to neighbors.
-##     emit_string = "%s says, '%s'" % (target.name, 
-##                                      speech)    
-##     target.location.msg_contents(emit_string, 
-##                                                   exclude=caller)
-## GLOBAL_CMD_TABLE.add_command("@fsay", cmd_fsay)
 
 class CmdPose(MuxCommand):
     """
@@ -525,64 +474,6 @@ class CmdPose(MuxCommand):
             msg = "%s%s" % (self.caller.name, self.args)
         self.caller.location.msg_contents(msg)
         
-## def cmd_fpose(command):
-##     """
-##     @fpose - force an object to pose
-
-##     Usage:
-##       @fpose[/switches] <obj> = <pose text>
-      
-##     Switches:
-##       nospace : put no text between the object's name
-##                 and the start of the pose.
-
-##     Describe an action being taken as performed by obj.
-##     The pose text will automatically begin with the name
-##     of the object. 
-##     """
-##     caller = command.caller
-##     args = command.command_argument
-
-##     if not args or not "=" in args: 
-##         caller.msg("Usage: @fpose <obj> = <pose text>")
-##         return
-##     target, pose_string = [arg.strip() for arg in args.split("=",1)]
-##     # find object
-##     if target in ['here']:
-##         results = [caller.location]
-##     elif target in ['me','my']:
-##         results = [caller]
-##     else:
-##         results = Object.objects.global_object_name_search(target)
-##     if not results:
-##         caller.msg("No matches found for '%s'." % target)
-##         return 
-##     if len(results) > 1:
-##         string = "There are multiple matches. Please use #dbref to be more specific."
-##         for result in results:
-##             string += "\n %s" % results.name
-##         caller.msg(string)
-##         return
-##     target = results[0]
-
-##     # permission check
-##     if not caller.controls_other(target):
-##         caller.msg("Cannot pose %s (you don's control it)" % target.name)
-##         return
-    
-##     if "nospace" in command.command_switches:
-##         # Output without a space between the player name and the emote.
-##         sent_msg = "%s%s" % (target.name, 
-##                              pose_string)
-##     else:
-##         # No switches, default.
-##         sent_msg = "%s %s" % (target.name, 
-##                               pose_string)
-    
-##     caller.location.msg_contents(sent_msg)
-## GLOBAL_CMD_TABLE.add_command("@fpose", cmd_fpose)
-
-
 class CmdEncoding(MuxCommand):
     """
     encoding - set a custom text encoding
@@ -666,23 +557,3 @@ class CmdAccess(MuxCommand):
         if hasattr(caller, 'player'):
             string += "\nPlayer %s: %s" % (caller.player.key, ", ".join(caller.player.permissions))
         caller.msg(string)
-
-## def cmd_apropos(command):
-##     """    
-##     apropos - show rough help matches
-
-##     Usage:
-##       apropos <text>
-##       or
-##       suggest <text>
-    
-##     This presents a list of topics very loosely matching your
-##     search text. Use this command when you are searching for
-##     help on a certain concept but don't know any exact
-##     command names. You can also use the normal help command
-##     with the /apropos switch to get the same functionality. 
-##     """
-##     arg = command.command_argument    
-##     command.caller.execute_cmd("help/apropos %s" % arg)
-## GLOBAL_CMD_TABLE.add_command("apropos", cmd_apropos)
-## GLOBAL_CMD_TABLE.add_command("suggest", cmd_apropos)

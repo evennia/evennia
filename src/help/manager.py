@@ -2,7 +2,7 @@
 Custom manager for HelpEntry objects.
 """
 from django.db import models
-from src.utils import logger
+from src.utils import logger, utils
 
 class HelpEntryManager(models.Manager):
     """
@@ -12,8 +12,8 @@ class HelpEntryManager(models.Manager):
         """
         Searches for matching topics based on player's input.
         """        
-        if topicstr.isdigit():
-            return self.filter(id=topicstr)
+        if utils.dbref(topicstr):
+            return self.filter(id=utils.dbref(topicstr))
         topics = self.filter(db_key__iexact=topicstr)
         if not topics and not exact: 
             topics = self.filter(db_key__istartswith=topicstr)            

@@ -13,24 +13,25 @@ from src.utils import create
 from src.commands.default.muxcommand import MuxCommand
 
 LIST_ARGS = ["list", "all"]
-
+SEP = "{C" + "-"*78 + "{n"
+ 
 def format_help_entry(title, help_text, aliases=None,
                       suggested=None):
     """
     This visually formats the help entry.
     """            
-    string = "-"*78 + "\n"
+    string = SEP + "\n"
     if title: 
-        string += "Help topic for {w%s{n" % (title.capitalize()) 
+        string += "{CHelp topic for {w%s{n" % (title.capitalize()) 
     if aliases:
-        string += " (aliases: %s)" % (", ".join(aliases))
+        string += " {C(aliases: {w%s{n{C){n" % (", ".join(aliases))
     if help_text:
         string += "\n%s" % dedent(help_text.rstrip())
     if suggested:
-        string += "\nSuggested:\n"
-        string += fill(", ".join(suggested))    
+        string += "\n\n{CSuggested:{n "
+        string += "{w%s{n" % fill(", ".join(suggested))    
     string.strip()
-    string += "\n" + "-"*78
+    string += "\n" + SEP    
     return string 
 
 def format_help_list(hdict_cmds, hdict_db):
@@ -39,16 +40,15 @@ def format_help_list(hdict_cmds, hdict_db):
     """    
     string = ""
     if hdict_cmds and hdict_cmds.values():
-        string += "\n\r" + "-"*70 + "\n\r  {gCommand help entries{n\n" + "-"*70
+        string += "\n" + SEP + "\n   {CCommand help entries{n\n" + SEP
         for category in sorted(hdict_cmds.keys()):
-            string += "\n  {w%s{n:\n" % \
-                (str(category).capitalize()) 
-            string += fill(", ".join(sorted(hdict_cmds[category])))
+            string += "\n  {w%s{n:\n" % (str(category).capitalize()) 
+            string += "{G" + fill(", ".join(sorted(hdict_cmds[category]))) + "{n"
     if hdict_db and hdict_db.values():
-        string += "\n\r\n\r" + "-"*70 + "\n\r  {gOther help entries{n\n" + '-'*70 
+        string += "\n\n" + SEP + "\n\r  {COther help entries{n\n" + SEP 
         for category in sorted(hdict_db.keys()):
             string += "\n\r  {w%s{n:\n" % (str(category).capitalize()) 
-            string += fill(", ".join(sorted([str(topic) for topic in hdict_db[category]])))
+            string += "{G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "{n" 
     return string 
 
 class CmdHelp(Command):
@@ -72,7 +72,7 @@ class CmdHelp(Command):
     
     def parse(self):
         """
-        inp is a string containing the command or topic match.
+        input is a string containing the command or topic to match.
         """
         self.original_args = self.args.strip()
         self.args = self.args.strip().lower()

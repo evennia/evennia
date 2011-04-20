@@ -49,6 +49,7 @@ def debug_script(script_path, obj=None, auto_delete=True):
         try: scriptobj.delete()
         except: pass
         return string 
+
     string += "\nRunning syntax check ..."
     try:
         string += "\nTesting syntax of at_script_creation(self) ... "

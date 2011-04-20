@@ -95,8 +95,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if isinstance(dbref, basestring):
             dbref = dbref.lstrip('#')
         try:
-            dbref = int(dbref)
-            if dbref < 1:
+            if int(dbref) < 1:
                 return None 
         except Exception:
             return None

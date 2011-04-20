@@ -70,7 +70,7 @@ class CmdAddCom(MuxCommand):
 
         # check permissions
         if not channel.access(player, 'listen'):
-            caller.msg("You are not allowed to listen to this channel.")
+            caller.msg("%s: You are not allowed to listen to this channel." % channel.key)
             return 
 
         string = ""
@@ -78,18 +78,20 @@ class CmdAddCom(MuxCommand):
             # we want to connect as well.
             if not channel.connect_to(player):
                 # if this would have returned True, the player is connected
-                caller.msg("You are not allowed to join this channel.")
+                caller.msg("%s: You are not allowed to join this channel." % channel.key)
                 return 
             else:
                 string += "You now listen to the channel %s. " % channel.key
+        else:
+            string += "You are already connected to channel %s." % channel.key
             
         if alias:
             # create a nick and add it to the caller.
             caller.nicks.add(alias, channel.key, nick_type="channel")
-            string += "You can now refer to the channel %s with the alias '%s'." 
+            string += " You can now refer to the channel %s with the alias '%s'." 
             caller.msg(string % (channel.key, alias))
         else:
-            string += "No alias added."
+            string += " No alias added."
             caller.msg(string)
 
 
@@ -125,7 +127,7 @@ class CmdDelCom(MuxCommand):
         if channel:
             # we have given a channel name - unsubscribe
             if not channel.has_connection(player):
-                caller.msg("You are listening to that channel.")
+                caller.msg("You are not listening to that channel.")
                 return 
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
@@ -145,97 +147,66 @@ class CmdDelCom(MuxCommand):
                 caller.nicks.delete(ostring, nick_type="channel")
                 caller.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
             
-# def cmd_allcom(command):
-#     """
-#     allcom - operate on all channels
+class CmdAllCom(MuxCommand):
+    """
+    allcom - operate on all channels
 
-#     Usage:    
-#       allcom [on | off | who | clear]
+    Usage:    
+      allcom [on | off | who | destroy]      
 
-#     Allows the user to universally turn off or on all channels they are on,
-#     as well as perform a 'who' for all channels they are on. Clear deletes
-#     all channels.
+    Allows the user to universally turn off or on all channels they are on,
+    as well as perform a 'who' for all channels they are on. Destroy deletes
+    all channels that you control.
 
-#     Without argument, works like comlist.
-#     """
+    Without argument, works like comlist.
+    """
     
-#     caller = self.caller
-#     arg = self.args
-#     if not arg:
-#         cmd_comlist(command)
-#         caller.msg("(allcom arguments: 'on', 'off', 'who' and 'clear'.)")
-#         return
-#     arg = arg.strip()
-#     if arg == 'clear':
-#         cmd_clearcom(command)
-#         return 
+    key = "allcom"
+    locks = "cmd: not perm(channel_banned)"
+    help_category = "Comms"
     
-#     #get names and alias of all subscribed channels
-#     chandict = comsys.plr_get_cdict(self.session)
-#     aliaslist = chandict.keys()
-#     aliaslist.sort()
-#     if arg == "on":
-#         for alias in aliaslist:
-#             comsys.plr_chan_on(self.session, alias)
-#     elif arg == "off":
-#         for alias in aliaslist:
-#             comsys.plr_chan_off(self.session, alias)
-#     elif arg == "who":
-#         s = ""
-#         if not aliaslist:
-#             s += "  (No channels)  "
-#         for alias in aliaslist:
-#             s += "-- %s (alias: %s)\n" % (chandict[alias][0],alias)
-#             sess_list = comsys.get_cwho_list(chandict[alias][0])
-#             objlist = [sess.get_pobject() for sess in sess_list]
-#             plist = [p.get_name(show_dbref=caller.sees_dbrefs())
-#                       for p in filter(lambda o: o.is_player(), objlist)]
-#             olist = [o.get_name(show_dbref=caller.sees_dbrefs())
-#                      for o in filter(lambda o: not o.is_player(), objlist)]
-#             plist.sort()
-#             olist.sort()
-#             if plist:
-#                 s += "    Players:\n      "
-#                 for pname in plist: 
-#                     s += "%s, " % pname
-#                 s = s[:-2] + "\n"
-#             if olist:
-#                 s += "   Objects:\n       "
-#                 for oname in olist:
-#                     s += "%s, " % oname
-#                 s = s[:-2] + "\n"
-#         s = s[:-1]
-#         caller.msg(s)    
-# GLOBAL_CMD_TABLE.add_self("allcom", cmd_allcom, help_category="Comms")
-            
-## def cmd_clearcom(self):
-##     """
-##     clearcom - removes all channels
+    def func(self):
+        "Runs the function"
 
-##     Usage:
-##       clearcom
+        caller = self.caller
+        args = self.args
+        if not args:
+            caller.execute_cmd("@channels")
+            caller.msg("(Usage: allcom on | off | who | destroy)")
+            return
 
-##     Effectively runs delcom on all channels the user is on.  It will remove
-##     their aliases, remove them from the channel, and clear any titles they
-##     have set.
-##     """    
-##     caller = self.caller
-##     #get aall subscribed channel memberships
-##     memberships = caller.channel_membership_set.all()
-
-##     if not memberships:
-##         s = "No channels to delete.  "
-##     else:
-##         s = "Deleting all channels in your subscriptions ...\n"
-##     for membership in memberships:
-##         chan_name = membership.channel.get_name()
-##         s += "You have left %s.\n" % chan_name
-##         comsys.plr_del_channel(caller, membership.user_alias)
-##         comsys.send_cmessage(chan_name, "%s has left the channel." % caller.get_name(show_dbref=False))
-##     s = s[:-1]
-##     caller.msg(s)
-## GLOBAL_CMD_TABLE.add_self("clearcom", cmd_clearcom)
-        
+        if args == "on":
+            # get names of all channels available to listen to and activate them all
+            channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
+            for channel in channels:
+                caller.execute_cmd("addcom %s" % channel.key)
+        elif args == "off":
+             #get names all subscribed channels and disconnect from them all
+            channels = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller.player)]
+            for channel in channels:
+                caller.execute_cmd("delcom %s" % channel.key)
+        elif args == "destroy":
+            # destroy all channels you control 
+            channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'control')]
+            for channel in channels:
+                caller.execute_cmd("@cdestroy %s" % channel.key)
+        elif args == "who":
+            # run a who, listing the subscribers on visible channels. 
+            string = "\n{CChannel subscriptions{n"
+            channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
+            if not channels:
+                string += "No channels."
+            for channel in channels:
+                string += "\n{w%s:{n\n" % channel.key
+                conns = PlayerChannelConnection.objects.get_all_connections(channel)
+                if conns:
+                    string += "  " + ", ".join([conn.player.key for conn in conns])
+                else:
+                    string += "  <None>"
+            caller.msg(string.strip())
+        else:
+            # wrong input 
+            caller.msg("Usage: allcom on | off | who | clear")
 
 class CmdChannels(MuxCommand):
     """
@@ -246,7 +217,7 @@ class CmdChannels(MuxCommand):
       @clist
       comlist
 
-    Lists all available channels available to you, wether you listen to them or not. 
+    Lists all channels available to you, wether you listen to them or not. 
     Use 'comlist" to only view your current channel subscriptions.
     """
     key = "@channels"
@@ -262,7 +233,7 @@ class CmdChannels(MuxCommand):
         # all channels we have available to listen to
         channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]        
         if not channels:
-            caller.msg("No channels available")
+            caller.msg("No channels available.")
             return
         # all channel we are already subscribed to
         subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller.player)]
@@ -333,7 +304,7 @@ class CmdCdestroy(MuxCommand):
         if not channel:
             caller.msg("Could not find channel %s." % self.args)
             return 
-        if not channel.access(caller, 'admin'):
+        if not channel.access(caller, 'control'):
             caller.msg("You are not allowed to do that.")
             return 
 
@@ -606,7 +577,7 @@ class CmdChannelCreate(MuxCommand):
             caller.msg("A channel with that name already exists.")
             return        
         # Create and set the channel up
-        lockstring = "send:all();listen:all();admin:id(%s)" % caller.id
+        lockstring = "send:all();listen:all();control:id(%s)" % caller.id
         new_chan = create.create_channel(channame, aliases, description, locks=lockstring)
         new_chan.connect_to(caller)
         caller.msg("Created channel %s and connected to it." % new_chan.key)
@@ -683,7 +654,7 @@ class CmdCdesc(MuxCommand):
             caller.msg("Channel '%s' not found." % self.lhs)
             return
         #check permissions
-        if not caller.access(caller, 'admin'):
+        if not caller.access(caller, 'control'):
             caller.msg("You cant admin this channel.")
             return
         # set the description

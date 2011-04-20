@@ -249,15 +249,14 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # where aliases may be a tuple too, and locks is 
 # a valid lockstring definition.
 # Default user channel for communication
-CHANNEL_PUBLIC = ("Public", 'ooc', 'Public discussion',
-                  "admin:perm(Wizards);listen:all();send:all()")
+CHANNEL_PUBLIC = ("Public", ('ooc',), 'Public discussion',
+                  "control:perm(Wizards);listen:all();send:all()")
 # General info about the server
 CHANNEL_MUDINFO = ("MUDinfo", '', 'Informative messages',
-                   "admin:perm(Immortals);listen:perm(Immortals);send:false()")
+                   "control:perm(Immortals);listen:perm(Immortals);send:false()")
 # Channel showing when new people connecting
-CHANNEL_CONNECTINFO = ("MUDconnections", ('connections, mud_conns'),
-                       'Connection log',
-                       "admin:perm(Immortals);listen:perm(Wizards);send:false()")
+CHANNEL_CONNECTINFO = ("MUDconnections", '', 'Connection log',
+                       "control:perm(Immortals);listen:perm(Wizards);send:false()")
 
 ###################################################
 # External Channel connections 

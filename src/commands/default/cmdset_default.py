@@ -83,6 +83,7 @@ class DefaultCmdSet(CmdSet):
         # Comm commands
         self.add(comms.CmdAddCom())
         self.add(comms.CmdDelCom())
+        self.add(comms.CmdAllCom())
         self.add(comms.CmdChannels())
         self.add(comms.CmdCdestroy())
         self.add(comms.CmdChannelCreate())

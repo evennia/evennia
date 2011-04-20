@@ -295,8 +295,8 @@ class CmdObjects(MuxCommand):
                 srow = "{w%s{n" % srow
             string += srow
 
-        string += "\n\n{wLast %s Objects created:{n" % nlim        
-        objs = ObjectDB.objects.all()[max(0, nobjs-nlim):]               
+        string += "\n\n{wLast %s Objects created:{n" % min(nobjs, nlim)        
+        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs-nlim):]               
 
         table = [["Created"], ["dbref"], ["name"], ["typeclass"]]
         for i, obj in enumerate(objs):

@@ -9,6 +9,9 @@ from src.objects.models import ObjectDB, ObjAttribute
 from src.utils import create, utils, debug 
 from src.commands.default.muxcommand import MuxCommand
 
+# used by @find
+CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
+
 class ObjManipCommand(MuxCommand):
     """
     This is a parent class for some of the defining objmanip commands
@@ -1562,35 +1565,92 @@ class CmdFind(MuxCommand):
     find objects
 
     Usage:
-      @find <searchname>
+      @find[/switches] <name or dbref or *player> [= dbrefmin[ dbrefmax]]
 
-    Searches for an object of a particular name.
-    """
-    
+    Switches:
+      room - only look for rooms (location=None)
+      exit - only look for exits (destination!=None)
+      char - only look for characters (BASE_CHARACTER_TYPECLASS)
+
+    Searches the database for an object of a particular name or dbref.
+    Use *playername to search for a player. The switches allows for
+    limiting matches to certain game entities. Dbrefmin and dbrefmax 
+    limits matches to within the given dbrefs, or above/below if only one is given. 
+    """ 
+
     key = "@find"
-    aliases = "@locate, find, locate"
+    aliases = "find, @search, search, @locate, locate"
     locks = "cmd:perm(find) or perm(Builders)"
     help_category = "Building"
             
     def func(self):
         "Search functionality"            
         caller = self.caller
-        arglist = self.arglist
+        switches = self.switches
 
-        if not arglist:
-            caller.msg("Usage: @find <name>")# [,low [,high]]")
+        if not self.args:
+            caller.msg("Usage: @find <string> [= low [high]]")
             return        
-        searchstring = arglist[0]
-        if len(arglist) > 1:
-            low = arglist[1]
-        if len(arglist) > 2:
-            high = arglist[2]
-        #TODO: Implement efficient db search with limits
-        result = caller.search(searchstring, global_search=True)
-        if not result:
-            return
-        string = "%s(#%s) - %s" % (result.name, result.id, result)
-        caller.msg(string)
+
+        searchstring = self.lhs
+        low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
+        if self.rhs:
+            if "-" in self.rhs:
+                # also support low-high syntax
+                limlist = [part.strip() for part in self.rhs.split("-", 1)]
+            else:
+                # otherwise split by space 
+                limlist = self.rhs.split(None, 1)        
+            if limlist and limlist[0].isdigit():
+                low = max(low, int(limlist[0]))
+            if len(limlist) > 1 and limlist[1].isdigit():
+                high = min(high, int(limlist[1]))
+        low = min(low, high)
+        high = max(low, high)
+
+        if searchstring.startswith("*") or utils.dbref(searchstring):
+            # A player/dbref search.  
+            # run a normal player- or dbref search. This should be unique.
+
+            string = "{wMatch{n(#%i-#%i):" % (low, high)
+
+            result = caller.search(searchstring, global_search=True)
+            if not result:
+                return        
+            if not low <= int(result.id) <= high:
+                string += "\n   {RNo match found for '%s' within the given dbref limits.{n" % searchstring
+            else:
+                string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref, result.typeclass)                            
+        else:
+            # Not a player/dbref search but a wider search; build a queryset. 
+        
+            results = ObjectDB.objects.filter(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
+            if "room" in switches:
+                results = results.filter(db_location__isnull=True) 
+            if "exit" in switches:
+                results = results.filter(db_destination__isnull=False)
+            if "char" in switches:            
+                results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
+            nresults = results.count()
+            restrictions = ""
+            if self.switches:
+                restrictions = ", %s" % (",".join(self.switches))                
+            if nresults:
+                # convert result to typeclasses. Database is not hit until this point!
+                results = [result.typeclass(result) for result in results]                 
+                if nresults > 1:                    
+                    string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)
+                    for res in results:
+                        string += "\n   {g%s(%s) - %s{n" % (res.key, res.dbref, res.typeclass)
+                else:
+                    string = "{wOne Match{n(#%i-#%i%s):" % (low, high, restrictions)                    
+                    string += "\n   {g%s(%s) - %s{n" % (results[0].key, results[0].dbref, results[0].typeclass)            
+            else:
+                string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)                    
+                string += "\n   {RNo matches found for '%s'{n" % searchstring
+
+        # send result 
+        caller.msg(string.strip())
 
 
 class CmdTeleport(MuxCommand):
