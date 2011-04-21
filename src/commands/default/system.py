@@ -270,14 +270,14 @@ class CmdObjects(MuxCommand):
 
         nplayers = PlayerDB.objects.count()
         nobjs = ObjectDB.objects.count()
-        base_typeclass = settings.BASE_CHARACTER_TYPECLASS
-        nchars = ObjectDB.objects.filter(db_typeclass_path=base_typeclass).count()
-        nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=base_typeclass).count()
+        base_char_typeclass = settings.BASE_CHARACTER_TYPECLASS
+        nchars = ObjectDB.objects.filter(db_typeclass_path=base_char_typeclass).count()
+        nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=base_char_typeclass).count()
         nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
 
         string += "\n{wPlayers:{n %i" % nplayers     
         string += "\n{wObjects:{n %i" % nobjs
-        string += "\n{w Characters (base type):{n %i" % nchars 
+        string += "\n{w Characters (BASE_CHARACTER_TYPECLASS):{n %i" % nchars 
         string += "\n{w Rooms (location==None):{n %i" % nrooms
         string += "\n{w Exits (destination!=None):{n %i" % nexits
         string += "\n{w Other:{n %i\n" % (nobjs - nchars - nrooms - nexits)
@@ -579,8 +579,6 @@ class CmdServerLoad(MuxCommand):
                                 
         caller.msg(string)
             
-
-#TODO - expand @ps as we add irc/imc2 support. 
 class CmdPs(MuxCommand):
     """
     list processes

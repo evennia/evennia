@@ -213,10 +213,24 @@ class CmdInventory(MuxCommand):
     locks = "cmd:all()"
 
     def func(self):
-        "hook function"
-        string = "You are carrying:"
-        for item in self.caller.contents:
-            string += "\n %s" % item.name
+        "check inventory"
+        items = self.caller.contents
+        if not items:
+            string = "You are not carrying anything."
+        else:
+            # format item list into nice collumns
+            cols = [[],[]]
+            for item in items:
+                cols[0].append(item.name)
+                desc = utils.crop(item.db.desc)                
+                if not desc:
+                    desc = ""
+                cols[1].append(desc)
+            # auto-format the columns to make them evenly wide
+            ftable = utils.format_table(cols)
+            string = "You are carrying:"
+            for row in ftable:
+                string += "\n " + "{C%s{n - %s" % (row[0], row[1])
         self.caller.msg(string)
 
 class CmdGet(MuxCommand):            
@@ -552,8 +566,16 @@ class CmdAccess(MuxCommand):
         hierarchy_full = settings.PERMISSION_HIERARCHY
         string = "\n{wPermission Hierarchy{n (climbing):\n %s" % ", ".join(hierarchy_full)        
         hierarchy = [p.lower() for p in hierarchy_full]
+
+        if self.caller.player.is_superuser:
+            cperms = "<Superuser>"
+            pperms = "<Superuser>"
+        else:
+            cperms = ", ".join(caller.permissions)
+            pperms = ", ".join(caller.player.permissions)
+
         string += "\n{wYour access{n:"
-        string += "\nCharacter %s: %s" % (caller.key, ", ".join(caller.permissions))
+        string += "\nCharacter {c%s{n: %s" % (caller.key, cperms)
         if hasattr(caller, 'player'):
-            string += "\nPlayer %s: %s" % (caller.player.key, ", ".join(caller.player.permissions))
+            string += "\nPlayer {c%s{n: %s" % (caller.player.key, pperms)
         caller.msg(string)

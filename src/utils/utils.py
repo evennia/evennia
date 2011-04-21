@@ -10,7 +10,6 @@ import datetime
 import random
 from twisted.internet import threads
 from django.conf import settings
-from src.utils import ansi
 
 ENCODINGS = settings.ENCODINGS
 
@@ -32,16 +31,33 @@ def is_iter(iterable):
     # except TypeError:
     #     return False 
 
-def fill(text, width=78):
+def fill(text, width=78, indent=0):
     """
     Safely wrap text to a certain number of characters.
 
     text: (str) The text to wrap.
     width: (int) The number of characters to wrap to.
+    indent: (int) How much to indent new lines (the first line
+                  will not be indented)
     """
     if not text:
         return ""
-    return textwrap.fill(str(text), width)
+    indent = " " * indent
+    return textwrap.fill(str(text), width, subsequent_indent=indent)
+
+
+def crop(text, width=78, suffix="[...]"):
+    """
+    Crop text to a certain width, adding suffix to show the line
+    continues. Cropping will be done so that the suffix will also fit
+    within the given width.
+    """
+    ltext = len(str(text))
+    if ltext <= width:
+        return text
+    else: 
+        lsuffix = len(suffix)        
+        return text[:width-lsuffix] + suffix 
 
 def dedent(text):
     """
@@ -353,10 +369,9 @@ def format_table(table, extra_space=1):
     if not table:
         return [[]]
 
-    max_widths = [max([len(str(val))
-                       for val in col]) for col in table]
+    max_widths = [max([len(str(val)) for val in col]) for col in table]
     ftable = []    
-    for irow in range(len(table[0])): 
+    for irow in range(len(table[0])):         
         ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space 
                        for icol, col in enumerate(table)])
     return ftable

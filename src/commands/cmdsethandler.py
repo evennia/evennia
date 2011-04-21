@@ -163,6 +163,7 @@ class CmdSetHandler(object):
         "Display current commands"                
             
         string = ""
+        merged = False 
         if len(self.cmdset_stack) > 1:
             # We have more than one cmdset in stack; list them all
             num = 0
@@ -174,18 +175,19 @@ class CmdSetHandler(object):
                     mergetype = "%s^" % (mergetype)            
                 string += "\n %i: <%s (%s, prio %i)>: %s" % \
                     (snum, cmdset.key, mergetype,
-                     cmdset.priority, cmdset)
-            string += "\n (combining %i cmdsets):" % (num+1)    
-        else:
-            string += "\n "
+                     cmdset.priority, cmdset)                                
+            string += "\n"
+            merged = True 
 
         # Display the currently active cmdset 
         mergetype = self.mergetype_stack[-1]  
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
             mergetype = "custom %s on %s" % (mergetype, merged_on)        
-        string += " <%s (%s)> %s" % (self.current.key,
-                                     mergetype, self.current)
+        if merged:
+            string += " <Merged (%s)>: %s" % (mergetype, self.current)
+        else:
+            string += " <%s (%s)>: %s" % (self.current.key, mergetype, self.current)
         return string.strip() 
 
     def update(self, init_mode=False):        

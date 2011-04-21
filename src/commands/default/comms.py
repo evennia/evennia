@@ -16,6 +16,9 @@ def find_channel(caller, channelname, silent=False):
     """
     channels = Channel.objects.channel_search(channelname)
     if not channels:
+        channels = [chan for chan in Channel.objects.all() if channelname in chan.aliases]
+        if channels:
+            return channels[0]
         if not silent:
             caller.msg("Channel '%s' not found." % channelname)
         return None
@@ -223,7 +226,7 @@ class CmdChannels(MuxCommand):
     key = "@channels"
     aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
-    locks = "cmd:all()"
+    locks = "cmd: not perm(channel_banned)"
 
     def func(self):
         "Implement function"
@@ -291,7 +294,7 @@ class CmdCdestroy(MuxCommand):
 
     key = "@cdestroy"
     help_category = "Comms"
-    locks = "cmd:all()"
+    locks = "cmd: not perm(channel_banned)"
 
     def func(self):
         "Destroy objects cleanly."
@@ -315,226 +318,146 @@ class CmdCdestroy(MuxCommand):
         CHANNELHANDLER.update()
         caller.msg("%s was destroyed." % channel)
             
+class CmdCBoot(MuxCommand):
+    """
+    @cboot
+
+    Usage:
+       @cboot[/quiet] <channel> = <player> [:reason]
+
+    Switches:
+       quiet - don't notify the channel
+
+    Kicks a player or object from a channel you control.
+
+    """
+
+    key = "@cboot"
+    locks = "cmd: not perm(channel_banned)"
+    help_category = "Comms"
+    
+    def func(self):
+        "implement the function"
         
-## def cmd_cset(self):
-##     """
-##     @cset
-
-##     Sets various flags on a channel.
-##     """
-##     # TODO: Implement cmd_cset
-##     pass
-
-## def cmd_ccharge(self):
-##     """
-##     @ccharge
-
-##     Sets the cost to transmit over a channel.  Default is free.
-##     """
-##     # TODO: Implement cmd_ccharge
-##     pass
-
-## def cmd_cboot(self):
-##     """
-##     @cboot
-
-##     Usage:
-##       @cboot[/quiet] <channel> = <player or object>
-
-##     Kicks a player or object from a channel you control.
-##     """
-##     caller = self.caller
-##     args = self.args
-##     switches = self.self_switches
-
-##     if not args or not "=" in args:
-##         caller.msg("Usage: @cboot[/quiet] <channel> = <object>")
-##         return
-##     cname, objname = args.split("=",1)
-##     cname, objname = cname.strip(), objname.strip()    
-##     if not cname or not objname:
-##         caller.msg("You must supply both channel and object.")
-##         return
-##     try:
-##         channel = CommChannel.objects.get(name__iexact=cname)
-##     except CommChannel.DoesNotExist:
-##         caller.msg("Could not find channel %s." % cname)
-##         return 
-
-##     #do we have power over this channel?
-##     if not channel.controlled_by(caller) or caller.has_perm("channels.channel_admin"):
-##         caller.msg("You don't have that power in channel '%s'." % cname)
-##         return    
-
-##     #mux specification requires an * before player objects.
-##     player_boot = False
-##     if objname[0] == '*':        
-##         player_boot = True
-##         objname = objname[1:]
-##     bootobj = Object.objects.player_name_search(objname)
-##     if not bootobj:
-##         caller.msg("Object '%s' not found." % objname)
-##         return
-##     if bootobj.is_player() and not player_boot:
-##         caller.msg("To boot players you need to start their name with an '*'. ")
-##         return    
-
-##     #check so that this object really is on the channel in the first place
-##     membership = bootobj.channel_membership_set.filter(channel__name__iexact=cname)
-##     if not membership:
-##         caller.msg("'%s' is not on channel '%s'." % (objname,cname)) 
-##         return
-
-##     #announce to channel
-##     if not 'quiet' in switches:
-##         comsys.send_cmessage(cname, "%s boots %s from channel." % \
-##                              (caller.get_name(show_dbref=False), objname))
-
-##     #all is set, boot the object by removing all its aliases from the channel. 
-##     for mship in membership:
-##         comsys.plr_del_channel(bootobj, mship.user_alias)
-
-## GLOBAL_CMD_TABLE.add_self("@cboot", cmd_cboot, help_category="Comms")
-
-
-## def cmd_cemit(self):
-##     """
-##     @cemit - send a message to channel
-
-##     Usage:
-##       @cemit <channel>=<message>
-##       @cemit/noheader <channel>=<message>
-##       @cemit/sendername <channel>=<message>
-
-##     Allows the user to send a message over a channel as long as
-##     they own or control it. It does not show the user's name unless they
-##     provide the /sendername switch.
-    
-##     [[channel_selfs]]
-
-##     Useful channel selfs
-##     (see their help pages for detailed help and options)
-
-##     - Listing channels
-##       clist           - show all channels available to you
-##       comlist         - show channels you listen to  
-
-##     - Joining/parting channels
-##       addcom          - add your alias for a channel 
-##       delcom          - remove alias for channel
-##                         (leave channel if no more aliases)      
-##       allcom          - view, on/off or remove all your channels
-##       clearcom        - removes all channels
-
-##     - Other
-##       who             - list who's online
-##       <chanalias> off - silence channel temporarily
-##       <chanalias> on  - turn silenced channel back on
-##     """
-##     caller = self.caller
-
-##     if not self.args:
-##         caller.msg("@cemit[/switches] <channel> = <message>")
-##         return
-
-##     eq_args = self.args.split('=', 1)
-    
-##     if len(eq_args) != 2:
-##         caller.msg("You must provide a channel name and a message to emit.")
-##         return
-    
-##     cname = eq_args[0].strip()
-##     cmessage = eq_args[1].strip()
-##     final_cmessage = cmessage
-##     if len(cname) == 0:
-##         caller.msg("You must provide a channel name to emit to.")
-##         return
-##     if len(cmessage) == 0:
-##         caller.msg("You must provide a message to emit.")
-##         return
-
-##     name_matches = comsys.cname_search(cname, exact=True)
-##     if name_matches:
-##         cname_parsed = name_matches[0].get_name()
-##     else:
-##         caller.msg("Could not find channel %s." % (cname,))
-##         return
-    
-##     # If this is False, don't show the channel header before
-##     # the message. For example: [Public] Woohoo!
-##     show_channel_header = True
-##     if "noheader" in self.self_switches:
-##         if not caller.has_perm("objects.emit_commchannel"):
-##             caller.msg(defines_global.NOPERMS_MSG)
-##             return
-##         final_cmessage = cmessage
-##         show_channel_header = False
-##     else:
-##         if "sendername" in self.self_switches:
-##             if not comsys.plr_has_channel(self.session, cname_parsed, 
-##                                           return_muted=False):
-##                 caller.msg("You must be on %s to do that." % (cname_parsed,))
-##                 return
-##             final_cmessage = "%s: %s" % (caller.get_name(show_dbref=False), 
-##                                          cmessage)
-##         else:
-##             if not caller.has_perm("objects.emit_commchannel"):
-##                 caller.msg(defines_global.NOPERMS_MSG)
-##                 return
-##             final_cmessage = cmessage
-
-##     if not "quiet" in self.self_switches:
-##         caller.msg("Sent - %s" % (name_matches[0],))
-##     comsys.send_cmessage(cname_parsed, final_cmessage,
-##                          show_header=show_channel_header)
-    
-##     #pipe to external channels (IRC, IMC) eventually mapped to this channel
-##     comsys.send_cexternal(cname_parsed, cmessage, caller=caller)
-
-## GLOBAL_CMD_TABLE.add_self("@cemit", cmd_cemit,priv_tuple=("channels.emit_commchannel",),
-##                              help_category="Comms")
-
-## def cmd_cwho(self):
-##     """
-##     @cwho
-    
-##     Usage: 
-##        @cwho channel[/all]
-
-##     Displays the name, status and object type for a given channel.
-##     Adding /all after the channel name will list disconnected players
-##     as well.
-##     """
-##     session = self.session
-##     caller = self.caller
-
-##     if not self.args:
-##         cmd_clist(self)
-##         caller.msg("Usage: @cwho <channel>[/all]")
-##         return
-    
-##     channel_name = self.args
-    
-##     if channel_name.strip() == '':
-##         caller.msg("You must specify a channel name.")
-##         return
-
-##     name_matches = comsys.cname_search(channel_name, exact=True)
-
-##     if name_matches:
-##         # Check to make sure the user has permission to use @cwho.
-##         is_channel_admin = caller.has_perm("objects.channel_admin")
-##         is_controlled_by_plr = name_matches[0].controlled_by(caller)
+        if not self.args or not self.rhs:
+            string = "Usage: @cboot[/quiet] <channel> = <player> [:reason]"
+            self.caller.msg(string)
+            return 
         
-##         if is_controlled_by_plr or is_channel_admin:
-##             comsys.msg_cwho(caller, channel_name)
-##         else:
-##             caller.msg("Permission denied.")
-##             return
-##     else:
-##         caller.msg("No channel with that name was found.")
-##         return
-## GLOBAL_CMD_TABLE.add_self("@cwho", cmd_cwho, help_category="Comms")
+        channel = find_channel(self.caller, self.lhs)
+        if not channel:
+            return
+        reason = ""
+        player = None 
+        if ":" in self.rhs:
+            playername, reason = self.rhs.rsplit(":", 1)            
+            player = self.caller.search("*%s" % playername.lstrip('*'))
+        if not player:
+            player = self.caller.search("*%s" % self.rhs.lstrip('*'))            
+        if not player:
+            return
+        if reason:
+            reason = " (reason: %s)" % reason
+        if not channel.access(self.caller, "control"):
+            string = "You don't control this channel."
+            self.caller.msg(string)
+            return 
+        if not PlayerChannelConnection.objects.has_connection(player, channel):
+            string = "Player %s is not connected to channel %s." % (player.key, channel.key)
+            self.caller.msg(string)
+            return
+        if not "quiet" in self.switches:
+            string = "%s boots %s from channel.%s" % (self.caller, player.key, reason)
+            channel.msg(string)
+        # find all player's nicks linked to this channel and delete them
+        for nick in [nick for nick in player.character.nicks.get(nick_type="channel") 
+                     if nick.db_real.lower() == channel.key]:                
+            nick.delete()
+        # disconnect player 
+        channel.disconnect_from(player)
+
+class CmdCemit(MuxCommand):
+    """
+    @cemit - send a message to channel
+
+    Usage:
+      @cemit[/switches] <channel> = <message>
+
+    Switches:
+      noheader - don't show the [channel] header before the message
+      sendername - attach the sender's name before the message
+      quiet - don't echo the message back to sender
+
+    Allows the user to broadcast a message over a channel as long as
+    they control it. It does not show the user's name unless they
+    provide the /sendername switch.
+    
+    """
+    
+    key = "@cemit"
+    aliases = ["@cmsg"]
+    locks = "cmd: not perm(channel_banned)"
+    help_category = "Comms"
+
+    def func(self):
+        "Implement function"
+
+        if not self.args or not self.rhs:
+            string = "Usage: @cemit[/switches] <channel> = <message>"
+            self.caller.msg(string)
+            return 
+        channel = find_channel(self.caller, self.lhs)
+        if not channel:
+            return
+        if not channel.access(self.caller, "control"):
+            string = "You don't control this channel."
+            self.caller.msg(string)
+            return 
+        message = self.rhs
+        if "sendername" in self.switches:
+            message = "%s: %s" % (self.caller.key, message)
+        if not "noheader" in self.switches: 
+            message = "[%s] %s" % (channel.key, message)
+        channel.msg(message)
+        if not "quiet" in self.switches:
+            string = "Sent to channel %s: %s" % (channel.key, message)
+            self.caller.msg(string)
+
+class CmdCWho(MuxCommand):
+    """
+    @cwho
+    
+    Usage: 
+      @cwho <channel>
+
+    List who is connected to a given channel you have access to.
+    """
+    key = "@cwho"
+    locks = "cmd: not perm(channel_banned)"
+    help_category = "Comms"
+
+    def func(self):
+        "implement function"
+        
+        if not self.args:
+            string = "Usage: @cwho <channel>"
+            self.caller.msg(string)
+            return 
+
+        channel = find_channel(self.caller, self.lhs)
+        if not channel:
+            return         
+        if not channel.access(self.caller, "listen"):
+            string = "You can't access this channel."
+            self.caller.msg(string)        
+        string = "\n{CChannel subscriptions{n"
+        string += "\n{w%s:{n\n" % channel.key
+        conns = PlayerChannelConnection.objects.get_all_connections(channel)
+        if conns:
+            string += "  " + ", ".join([conn.player.key for conn in conns])
+        else:
+            string += "  <None>"
+        self.caller.msg(string.strip())
 
 class CmdChannelCreate(MuxCommand):
     """
@@ -583,47 +506,50 @@ class CmdChannelCreate(MuxCommand):
         caller.msg("Created channel %s and connected to it." % new_chan.key)
     
 
-## def cmd_cchown(self):
-##     """
-##     @cchown
+class CmdCset(MuxCommand):
+    """
+    @cset - changes channel access restrictions
+    
+    Usage:
+      @cset <channel> [= <lockstring>]
 
-##     Usage:
-##       @cchown <channel> = <player>
+    Changes the lock access restrictions of a channel. If no
+    lockstring was given, view the current lock definitions.
+    """
 
-##     Changes the owner of a channel.
-##     """
-##     caller = self.caller
-##     args = self.args
-##     if not args or "=" not in args:
-##         caller.msg("Usage: @cchown <channel> = <player>")
-##         return
-##     cname, pname = args.split("=",1)
-##     cname, pname = cname.strip(), pname.strip()
-##     #locate channel
-##     try:
-##         channel = CommChannel.objects.get(name__iexact=cname)
-##     except CommChannel.DoesNotExist:
-##         caller.msg("Channel '%s' not found." % cname)
-##         return
-##     #check so we have ownership to give away.
-##     if not channel.controlled_by(caller) and not caller.has_perm("channels.channel_admin"):
-##         caller.msg("You don't control this channel.")
-##         return
-##     #find the new owner
-##     new_owner = Object.objects.player_name_search(pname)
-##     if not new_owner:
-##         caller.msg("New owner '%s' not found." % pname)
-##         return
-##     old_owner = channel.get_owner()
-##     old_pname = old_owner.get_name(show_dbref=False)
-##     if old_owner == new_owner:
-##         caller.msg("Owner unchanged.")
-##         return
-##     #all is set, change owner
-##     channel.set_owner(new_owner)
-##     caller.msg("Owner of %s changed from %s to %s." % (cname, old_pname, pname))
-##     new_owner.msg("%s transfered ownership of channel '%s' to you." % (old_pname, cname))
-## GLOBAL_CMD_TABLE.add_self("@cchown", cmd_cchown, help_category="Comms")
+    key = "@cset"
+    locks = "cmd:not perm(channel_banned)"
+    aliases = ["@cclock"]
+    help_category = "Comms"
+
+    def func(self):
+        "run the function"
+         
+        if not self.args:
+            string = "Usage: @cset channel [= lockstring]"
+            self.caller.msg(string)
+            return 
+
+        channel = find_channel(self.caller, self.lhs)
+        if not channel:
+            return 
+        if not self.rhs:
+            # no =, so just view the current locks
+            string = "Current locks on %s:" % channel.key
+            string = "%s\n %s" % (string, channel.locks)
+            self.caller.msg(string)
+            return 
+        # we want to add/change a lock.    
+        if not channel.access(self.caller, "control"):
+            string = "You don't control this channel."
+            self.caller.msg(string)
+            return 
+        # Try to add the lock
+        channel.locks.add(self.rhs)
+        string = "Lock(s) applied. "
+        string += "Current locks on %s:" % channel.key
+        string = "%s\n %s" % (string, channel.locks)
+        self.caller.msg(string)
 
 
 class CmdCdesc(MuxCommand):

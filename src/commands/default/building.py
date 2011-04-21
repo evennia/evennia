@@ -1414,18 +1414,6 @@ class CmdExamine(ObjManipCommand):
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
 
-    def crop_line(self, text, heading="", line_width=79):
-        """
-        Crops a line of text, adding [...] if doing so.
-
-        heading + text + eventual [...] will not exceed line_width.
-        """
-        headlen = len(str(heading))
-        textlen = len(str(text))
-        if  textlen > (line_width - headlen):
-            text = "%s[...]" % text[:line_width - headlen - 5]                    
-        return text
-
     def format_attributes(self, obj, attrname=None, crop=True):
         """
         Helper function that returns info about attributes and/or
@@ -1447,15 +1435,15 @@ class CmdExamine(ObjManipCommand):
         if db_attr and db_attr[0]:
             #self.caller.msg(db_attr)
             string += "\n{wPersistent attributes{n:"
-            for attr, value in db_attr:
+            for attr, value in db_attr:         
                 if crop:
-                    value = self.crop_line(value, attr)
+                    value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
         if ndb_attr and ndb_attr[0]:
             string += "\n{wNon-persistent attributes{n:"
             for attr, value in ndb_attr:
                 if crop:
-                    value = self.crop_line(value, attr)
+                    value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
         return string 
     
@@ -1465,12 +1453,15 @@ class CmdExamine(ObjManipCommand):
 
         returns a string.
         """
-
-        string = "\n{wName/key{n: %s (#%i)" % (obj.name, obj.id)        
+        
+        if obj.has_player:
+            string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)        
+        else:
+            string = "\n{wName/key{n: {C%s{n (%s)" % (obj.name, obj.dbref)        
         if obj.aliases:
             string += "\n{wAliases{n: %s" % (", ".join(obj.aliases))
         if obj.has_player:
-            string += "\n{wPlayer{n: %s" % obj.player.name
+            string += "\n{wPlayer{n: {c%s{n" % obj.player.name
             perms = obj.player.permissions
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
@@ -1487,9 +1478,11 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wPermissions{n: %s" % (", ".join(perms)) 
         locks = str(obj.locks)
         if locks:
-            string += "\n{wLocks{n: %s" % ("; ".join([lock for lock in locks.split(';')]))
+            string += "\n{wLocks{n:" + utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
+
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
-            string += "\n{wCurrent Cmdset (before permission checks){n:\n %s" % obj.cmdset
+            cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])            
+            string += "\n{wCurrent Cmdset (before permission checks){n:\n %s" % cmdsetstr
         if obj.scripts.all():
             string += "\n{wScripts{n:\n %s" % obj.scripts
         # add the attributes                    
@@ -1514,7 +1507,7 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wContents{n: " + ", ".join([cont.name for cont in obj.contents 
                                                       if cont not in exits and cont not in pobjs])
         #output info
-        return "-"*50 + '\n' + string.strip() + "\n" + '-'*50 
+        return "-"*78 + '\n' + string.strip() + "\n" + '-'*78
     
     def func(self):
         "Process command"

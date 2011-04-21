@@ -3,7 +3,7 @@ This module ties together all the commands of the default command set.
 """
 from src.commands.cmdset import CmdSet
 from src.commands.default import general, help, admin, system
-from src.commands.default import utils, comms, building
+from src.commands.default import comms, building
 from src.commands.default import batchprocess
 
 class DefaultCmdSet(CmdSet):
@@ -87,6 +87,10 @@ class DefaultCmdSet(CmdSet):
         self.add(comms.CmdChannels())
         self.add(comms.CmdCdestroy())
         self.add(comms.CmdChannelCreate())
+        self.add(comms.CmdCset())
+        self.add(comms.CmdCBoot())
+        self.add(comms.CmdCemit())
+        self.add(comms.CmdCWho())
         self.add(comms.CmdCdesc())
         self.add(comms.CmdPage())
         self.add(comms.CmdIRC2Chan())
@@ -97,8 +101,3 @@ class DefaultCmdSet(CmdSet):
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())
         self.add(batchprocess.CmdBatchCode())
-
-        # Testing/Utility commands 
-        self.add(utils.CmdTest())
-        #self.add(utils.CmdTestPerms())
-        self.add(utils.TestCom())
