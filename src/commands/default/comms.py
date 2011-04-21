@@ -9,14 +9,15 @@ from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand            
 from src.server.sessionhandler import SESSIONS
 
-def find_channel(caller, channelname, silent=False):
+def find_channel(caller, channelname, silent=False, noaliases=False):
     """
     Helper function for searching for a single channel with
     some error handling.
     """
     channels = Channel.objects.channel_search(channelname)
     if not channels:
-        channels = [chan for chan in Channel.objects.all() if channelname in chan.aliases]
+        if not noaliases:
+            channels = [chan for chan in Channel.objects.all() if channelname in chan.aliases]
         if channels:
             return channels[0]
         if not silent:
@@ -126,7 +127,7 @@ class CmdDelCom(MuxCommand):
             return        
         ostring = self.args.lower()
         
-        channel = find_channel(caller, ostring, silent=True)
+        channel = find_channel(caller, ostring, silent=True, noaliases=True)
         if channel:
             # we have given a channel name - unsubscribe
             if not channel.has_connection(player):
@@ -147,9 +148,12 @@ class CmdDelCom(MuxCommand):
             if not channel:
                 caller.msg("No channel with alias '%s' was found." % ostring)
             else:
-                caller.nicks.delete(ostring, nick_type="channel")
-                caller.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
-            
+                if caller.nicks.has(ostring, nick_type="channel"):
+                    caller.nicks.delete(ostring, nick_type="channel")
+                    caller.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
+                else:
+                    caller.msg("You had no such alias defined for this channel.")
+                
 class CmdAllCom(MuxCommand):
     """
     allcom - operate on all channels

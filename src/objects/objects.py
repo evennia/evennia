@@ -195,7 +195,7 @@ class Object(TypeClass):
         string = "{c%s{n" % self.name
         desc = self.attr("desc")
         if desc:
-            string += ":\n %s" % desc
+            string += "\n %s" % desc
         exits = [] 
         users = []
         things = []

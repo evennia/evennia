@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models.fields import exceptions 
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
+from src.utils import utils
 
 # Try to use a custom way to parse id-tagged multimatches.
 IDPARSER_PATH = getattr(settings, 'ALTERNATE_OBJECT_SEARCH_MULTIMATCH_PARSER', 'src.objects.object_search_funcs')
@@ -60,7 +61,7 @@ class ObjectManager(TypedObjectManager):
         the search criterion (e.g. in local_and_global_search). 
         search_string:  (string) The name or dbref to search for.
         """
-        search_string = str(search_string).lstrip('*')        
+        search_string = utils.to_unicode(search_string).lstrip('*')        
         dbref = self.dbref(search_string)
         if not dbref:           
             # not a dbref. Search by name.
@@ -99,7 +100,7 @@ class ObjectManager(TypedObjectManager):
         if exact:            
             return [attr.obj for attr in attrs if attribute_value == attr.value]
         else:
-            return [attr.obj for attr in attrs if str(attribute_value) in str(attr.value)]
+            return [attr.obj for attr in attrs if utils.to_unicode(attribute_value) in str(attr.value)]
     
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, location=None):
@@ -144,10 +145,12 @@ class ObjectManager(TypedObjectManager):
             lstring_key = ", db_location=location"
             lstring_alias = ", db_obj__db_location=location"
         if exact:
-            estring = "iexact"
-        matches = eval("self.filter(db_key__%s=ostring%s)" % (estring, lstring_key))        
+            estring = "__iexact"
+        else:
+            estring = "__istartswith"
+        matches = eval("self.filter(db_key%s=ostring%s)" % (estring, lstring_key))        
         if not matches:
-            alias_matches = eval("self.model.alias_set.related.model.objects.filter(db_key__%s=ostring%s)" % (estring, lstring_alias))
+            alias_matches = eval("self.model.alias_set.related.model.objects.filter(db_key%s=ostring%s)" % (estring, lstring_alias))
             matches = [alias.db_obj for alias in alias_matches]
         return matches
 
@@ -205,7 +208,7 @@ class ObjectManager(TypedObjectManager):
         
         # Test if we are looking for a player object 
 
-        if str(ostring).startswith("*"):
+        if utils.to_unicode(ostring).startswith("*"):
             # Player search - try to find obj by its player's name
             player_match = self.get_object_with_player(ostring)
             if player_match is not None:

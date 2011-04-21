@@ -21,7 +21,7 @@ Models covered:
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from src.utils import logger
+from src.utils import logger, utils
 from src.utils.utils import is_iter, has_parent
 
 #
@@ -62,7 +62,7 @@ def create_object(typeclass, key=None, location=None,
         # the type mechanism will automatically assign
         # the BASE_OBJECT_TYPE from settings. 
         if typeclass:
-            typeclass = str(typeclass)
+            typeclass = utils.to_unicode(typeclass)
             new_db_object.typeclass_path = typeclass
         new_db_object.save()
         # this will either load the typeclass or the default one
@@ -100,9 +100,7 @@ def create_object(typeclass, key=None, location=None,
     if permissions:
         new_object.permissions = permissions
     if aliases:
-        if not is_iter(aliases):
-            aliases = [aliases]
-        new_object.aliases = ",".join([alias.strip() for alias in aliases]) 
+        new_object.aliases = aliases
     if locks:
         new_object.locks.add(locks)
 
@@ -160,7 +158,7 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     if not callable(typeclass):
         # try to load this in case it's a path
         if typeclass:
-            typeclass = str(typeclass)
+            typeclass = utils.to_unicode(typeclass)
             new_db_object.typeclass_path = typeclass
         new_db_object.save()
         # this will load either the typeclass or the default one
@@ -321,7 +319,7 @@ def create_channel(key, aliases=None, desc=None,
         if aliases:
             if not is_iter(aliases):
                 aliases = [aliases]
-            new_channel.aliases = ",".join([str(alias) for alias in aliases])
+            new_channel.aliases = ",".join([alias for alias in aliases])
         new_channel.desc = desc
         new_channel.keep_log = keep_log
     except IntegrityError:

@@ -441,7 +441,7 @@ class TypedObject(SharedMemoryModel):
     def permissions_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
         if is_iter(value):
-            value = ",".join([str(val).strip() for val in value])
+            value = ",".join([utils.to_unicode(val).strip() for val in value])
         self.db_permissions = value
         self.save()        
     #@permissions.deleter

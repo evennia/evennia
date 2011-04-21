@@ -23,6 +23,7 @@ from src.utils import create, ansi
 from src.server import session, sessionhandler
 from src.locks.lockhandler import LockHandler
 from src.server.models import ServerConfig
+from src.comms.models import Channel, Msg, PlayerChannelConnection
 
 #------------------------------------------------------------ 
 # Command testing 
@@ -30,7 +31,6 @@ from src.server.models import ServerConfig
 
 # print all feedback from test commands (can become very verbose!)
 VERBOSE = False
-NOMANGLE = False
 
 class FakeSession(session.Session): 
     """ 
@@ -75,6 +75,9 @@ class CommandTest(TestCase):
 
     Inherit new tests from this.
     """
+
+    NOMANGLE = False # mangle command input for extra testing
+
     def setUp(self):
         "sets up the testing environment"                
         ServerConfig.objects.conf("default_home", 2)
@@ -107,7 +110,7 @@ class CommandTest(TestCase):
         self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1) 
         self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
         self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)        
-        
+       
     def get_cmd(self, cmd_class, argument_string=""):
         """
         Obtain a cmd instance from a class and an input string
@@ -121,13 +124,13 @@ class CommandTest(TestCase):
         cmd.obj = self.char1
         return cmd
     
-    def execute_cmd(self, raw_string, wanted_return_string=None):
+    def execute_cmd(self, raw_string, wanted_return_string=None, nomangle=False):
         """
         Creates the command through faking a normal command call; 
         This also mangles the input in various ways to test if the command
         will be fooled.
         """ 
-        if not VERBOSE and not NOMANGLE:
+        if not nomangle and not VERBOSE and not self.NOMANGLE:
             # only mangle if not VERBOSE, to make fewer return lines
             test1 = re.sub(r'\s', '', raw_string) # remove all whitespace inside it
             test2 = "%s/åäö öäö;-:$£@*~^' 'test" % raw_string # inserting weird characters in call
@@ -142,11 +145,21 @@ class CommandTest(TestCase):
         except AssertionError, e:
             self.fail(e)
         self.char1.ndb.return_string = None
+
+class BuildTest(CommandTest):
+    """
+    We need to turn of mangling for build commands since
+    it creates arbitrary objects that mess up tests later. 
+    """
+    NOMANGLE = True 
+
+
+
 #------------------------------------------------------------
 # Default set Command testing
 #------------------------------------------------------------
 
-# general.py tests
+# # general.py tests
 
 class TestLook(CommandTest):
     def test_call(self):
@@ -175,9 +188,9 @@ class TestNick(CommandTest):
         self.execute_cmd("nickname testalias = testaliasedstring1")        
         self.execute_cmd("nickname/player testalias = testaliasedstring2")        
         self.execute_cmd("nickname/object testalias = testaliasedstring3")        
-        self.assertEquals(u"testaliasedstring1", self.char1.nicks.get("testalias"))
-        self.assertEquals(u"testaliasedstring2", self.char1.nicks.get("testalias",nick_type="player"))
-        self.assertEquals(u"testaliasedstring3", self.char1.nicks.get("testalias",nick_type="object"))
+        self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
+        self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias",nick_type="player"))
+        self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias",nick_type="object"))
 class TestGet(CommandTest):
     def test_call(self):        
         self.obj1.location = self.room1
@@ -207,8 +220,7 @@ class TestEncoding(CommandTest):
 
 class TestHelpSystem(CommandTest):
     def test_call(self):                
-        global NOMANGLE
-        NOMANGLE = True 
+        self.NOMANGLE = True 
         sep = "-"*78 + "\n"
         self.execute_cmd("@help/add TestTopic,TestCategory = Test1", )
         self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1" + "\n" + sep)
@@ -218,7 +230,6 @@ class TestHelpSystem(CommandTest):
         self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1 Test2\n\nTest3")
         self.execute_cmd("@help/delete TestTopic","Deleted the help entry")
         self.execute_cmd("help TestTopic","No help entry found for 'TestTopic'")
-        NOMANGLE = False 
 
 # system.py command tests
 class TestPy(CommandTest):
@@ -265,7 +276,7 @@ class TestUserPassword(CommandTest):
 class TestPerm(CommandTest):
     def test_call(self):
         self.execute_cmd("@perm TestChar2 = Builders", "Permission 'Builders' given to")
-# cannot test this at the moment, screws up the test suite
+# cannot test this here; screws up the test suite
 #class TestPuppet(CommandTest):
 #   def test_call(self):
 #       self.execute_cmd("@puppet TestChar3", "You now control TestChar3.")       
@@ -274,10 +285,161 @@ class TestWall(CommandTest):
     def test_call(self):
         self.execute_cmd("@wall = This is a test message", "TestChar shouts")
         
+
 # building.py command tests
 
-class TestScript(CommandTest):
+class TestObjAlias(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@alias obj1 = obj1alias, obj1alias2", "Aliases for")
+        self.execute_cmd("look obj1alias2", "obj1")
+class TestCopy(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@copy obj1 = obj1_copy;alias1;alias2", "Copied obj1 to 'obj1_copy'")
+        self.execute_cmd("look alias2","obj1_copy")
+class TestSet(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@set obj1/test = value", "Created attribute obj1/test = value")
+        self.execute_cmd("@set obj1/test", "Attribute obj1/test = value")
+        self.assertEqual(self.obj1.db.test, u"value")
+class TestCpAttr(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@set obj1/test = value")
+        self.execute_cmd("@set me/test2 = value2")
+        self.execute_cmd("@cpattr obj1/test = obj2/test")
+        self.execute_cmd("@cpattr test2 = obj2")
+        self.assertEqual(self.obj2.db.test, u"value")
+        self.assertEqual(self.obj2.db.test2, u"value2")
+class TestMvAttr(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@set obj1/test = value")
+        self.execute_cmd("@mvattr obj1/test = obj2")
+        self.assertEqual(self.obj2.db.test, u"value")
+        self.assertEqual(self.obj1.db.test, None)
+class TestCreate(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@create testobj;alias1;alias2")
+        self.execute_cmd("look alias1", "testobj")
+class TestDebug(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@debug/obj obj1")
+class TestDesc(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@desc obj1 = Test object", "The description was set on")
+        self.assertEqual(self.obj1.db.desc, u"Test object")
+class TestDestroy(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@destroy obj1, obj2", "obj1 was deleted.\nobj2 was deleted")
+class TestFind(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@find obj1", "One Match")
+class TestDig(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@dig room3;roomalias1;roomalias2 = north;n,south;s")
+        self.execute_cmd("@find room3", "One Match")
+        self.execute_cmd("@find roomalias1", "One Match")
+        self.execute_cmd("@find roomalias2", "One Match")
+        self.execute_cmd("@find/room roomalias2", "One Match")
+        self.execute_cmd("@find/exit south", "One Match")
+        self.execute_cmd("@find/exit n", "One Match")
+class TestUnLink(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@dig room3;roomalias1, north, south")
+        self.execute_cmd("@unlink north")
+class TestLink(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@dig room3;roomalias1, north, south")
+        self.execute_cmd("@unlink north")
+        self.execute_cmd("@link north = room3")
+class TestHome(BuildTest):
+    def test_call(self):
+        self.obj1.db_home = self.obj2.dbobj
+        self.obj1.save()
+        self.execute_cmd("@home obj1")
+        self.assertEqual(self.obj1.db_home, self.obj2.dbobj)
+class TestCmdSets(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@cmdsets")
+        self.execute_cmd("@cmdsets obj1")
+class TestDesc(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@name obj1 = Test object", "Object's name changed to 'Test object'.")
+        self.assertEqual(self.obj1.key, u"Test object")
+class TestOpen(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@dig room4;roomalias4")
+        self.execute_cmd("@open testexit4;aliasexit4 = roomalias4", "Created new Exit")
+class TestScript(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@typeclass obj1 = src.objects.objects.Character", "obj's type is now")
+        self.assertEqual(self.obj1.db_typeclass_path, u"src.objects.objects.Character")
+class TestScript(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@set box1/test = value")
+        self.execute_cmd("@wipe box1", "Wiped")
+        self.assertEqual(self.obj1.db.all(), [])
+class TestLock(BuildTest):
+    # lock functionality itseld is tested separately
+    def test_call(self):
+        self.char1.permissions = ["TestPerm"]
+        self.execute_cmd("@lock obj1 = test:perm(TestPerm)")
+        self.assertEqual(True, self.obj1.access(self.char1, u"test"))
+class TestExamine(BuildTest):
+    def test_call(self):
+        self.execute_cmd("examine obj1", "------------")
+class TestTeleport(BuildTest):
+    def test_call(self):
+        self.execute_cmd("@tel obj1 = obj2")
+        self.assertEqual(self.obj1.location, self.obj2.dbobj)
+class TestScript(BuildTest):
     def test_call(self):
         self.execute_cmd("@script TestChar = examples.bodyfunctions.BodyFunctions", "Script successfully added")
 
-#TODO
+# Comms commands 
+
+class TestChannelCreate(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("testchan1 Hello", "[testchannel1] TestChar: Hello")
+class TestAddCom(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("addcom chan1 = testchannel1")
+        self.execute_cmd("addcom chan2 = testchan1")
+        self.execute_cmd("delcom testchannel1")
+        self.execute_cmd("addcom testchannel1" "You now listen to the channel channel.")
+
+class TestDelCom(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("addcom chan1 = testchan1")
+        self.execute_cmd("addcom chan2 = testchan1b")
+        self.execute_cmd("addcom chan3 = testchannel1")
+        self.execute_cmd("delcom chan1", "Your alias 'chan1' for ")
+        self.execute_cmd("delcom chan2", "Your alias 'chan2' for ")
+        self.execute_cmd("delcom testchannel1" "You stop listening to")
+class TestAllCom(CommandTest):
+    def test_call(self):
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("allcom off")
+        self.execute_cmd("allcom on")
+        self.execute_cmd("allcom destroy")        
+class TestChannels(CommandTest):
+    def test_call(self):        
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
+class TestCBoot(CommandTest):
+    def test_call(self):        
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("@cboot testchannel1 = TestChar", "TestChar boots TestChar from channel.")
+class TestCemit(CommandTest):
+    def test_call(self):        
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("@cemit testchan1 = Testing!", "[testchannel1] Testing!")
+class TestCwho(CommandTest):
+    def test_call(self):        
+        self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("@cwho testchan1b", "Channel subscriptions")
+        
+# Unloggedin commands
+# these cannot be tested from here. 

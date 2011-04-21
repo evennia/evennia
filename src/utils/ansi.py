@@ -14,6 +14,7 @@ user.
 
 """
 import re
+from src.utils import utils
 
 class ANSITable(object):
     """
@@ -140,7 +141,7 @@ class ANSIParser(object):
         """
         if not string:
             return ''
-        string = str(string)
+        string = utils.to_str(string)
         for sub in self.ansi_sub:
             # go through all available mappings and translate them
             string = sub[0].sub(sub[1], string)

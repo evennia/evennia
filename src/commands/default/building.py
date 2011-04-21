@@ -74,7 +74,7 @@ class CmdSetObjAlias(MuxCommand):
     Adding permanent aliases
 
     Usage:
-      @alias <obj> = [alias[,alias,alias,...]]
+      @alias <obj> [= [alias[,alias,alias,...]]]
 
     Assigns aliases to an object so it can be referenced by more 
     than one name. Assign empty to remove all aliases from object.
@@ -91,11 +91,15 @@ class CmdSetObjAlias(MuxCommand):
     
     def func(self):
         "Set the aliases."
+
         caller = self.caller    
-        objname, aliases = self.lhs, self.rhslist
-        if not objname:
-            caller.msg("Usage: @alias <obj> = <alias>,<alias>,...")
-            return        
+
+        if not self.lhs:
+            string = "Usage: @alias <obj> [= [alias[,alias ...]]]"
+            self.caller.msg(string)
+            return 
+        objname = self.lhs
+
         # Find the object to receive aliases
         obj = caller.search(objname, global_search=True)
         if not obj:
@@ -108,10 +112,12 @@ class CmdSetObjAlias(MuxCommand):
             else:
                 caller.msg("No aliases exist for '%s'." % obj.key)
             return 
+        
         if not obj.access(caller, 'edit'):
             caller.msg("You don't have permission to do that.")
             return 
-        if not aliases or not aliases[0]:
+        
+        if not self.rhs:
             # we have given an empty =, so delete aliases
             old_aliases = obj.aliases
             if old_aliases:
@@ -120,10 +126,10 @@ class CmdSetObjAlias(MuxCommand):
             else:
                 caller.msg("No aliases to clear.")
             return 
+
         # merge the old and new aliases (if any)
         old_aliases = obj.aliases
-        new_aliases = [str(alias).strip().lower() 
-                       for alias in aliases if alias.strip()]
+        new_aliases = [alias.strip().lower() for alias in self.rhs.split(',') if alias.strip()]
         # make the aliases only appear once 
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))        
@@ -180,8 +186,7 @@ class CmdCopy(ObjManipCommand):
             from_obj = caller.search(from_obj_name)
             if not from_obj:
                 return             
-            for objdef in self.rhs_objs:
-                print objdef.items()
+            for objdef in self.rhs_objs:                
                 # loop through all possible copy-to targets                
                 to_obj_name = objdef['name']
                 to_obj_aliases = objdef['aliases']
@@ -202,16 +207,18 @@ class CmdCopy(ObjManipCommand):
         # we are done, echo to user
         caller.msg(string)
 
-# NOT YET INCLUDED IN SET.
-class CmdCpAttr(MuxCommand):
+class CmdCpAttr(ObjManipCommand):
     """
     @cpattr - copy attributes
 
     Usage:    
-      @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-      @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]
+      @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      @cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
+
+    Switches:
+      move - delete the attribute from the source object after copying. 
 
     Example:
       @cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety
@@ -219,7 +226,8 @@ class CmdCpAttr(MuxCommand):
       copies the coolness attribute (defined on yourself), to attributes
       on Anna and Tom. 
 
-    Copy the attribute one object to one or more attributes on another object.
+    Copy the attribute one object to one or more attributes on another object. If
+    you don't supply a source object, yourself is used. 
     """
     key = "@cpattr"
     locks = "cmd:perm(cpattr) or perm(Builders)"
@@ -233,10 +241,10 @@ class CmdCpAttr(MuxCommand):
     
         if not self.rhs:
             string = """Usage:
-            @cpattr <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-            @cpattr <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-            @cpattr <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-            @cpattr <attr> = <obj1>[,<obj2>,<obj3>,...]"""
+            @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+            @cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+            @cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+            @cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
             caller.msg(string)
             return
 
@@ -248,19 +256,26 @@ class CmdCpAttr(MuxCommand):
         if not from_obj_attrs:
             # this means the from_obj_name is actually an attribute name on self.
             from_obj_attrs = [from_obj_name]
-            from_obj = self
-            from_obj_name = self.name
+            from_obj = self.caller
+            from_obj_name = self.caller.name
         else:
             from_obj = caller.search(from_obj_name)
         if not from_obj or not to_objs:
-            caller.msg("Have to supply both source object and target(s).")
+            caller.msg("You have to supply both source object and target(s).")
             return 
-        srcvalue = from_obj.attr(from_obj_attrs[0])
+        if not from_obj.has_attribute(from_obj_attrs[0]):
+            caller.msg("%s doesn't have an attribute %s." % (from_obj_name, from_obj_attrs[0]))
+            return
+        srcvalue = from_obj.get_attribute(from_obj_attrs[0])
 
         #copy to all to_obj:ects
-        string = "Copying %s=%s (with value %s) ..." % (from_obj_name,
-                                                        from_obj_attrs[0], srcvalue)
-        for to_obj in to_objs:
+        if "move" in self.switches:
+            string = "Moving "
+        else:
+            string = "Copying "
+        string += "%s/%s (with value %s) ..." % (from_obj_name, from_obj_attrs[0], srcvalue)
+                   
+        for to_obj in to_objs:            
             to_obj_name = to_obj['name']
             to_obj_attrs = to_obj['attrs']            
             to_obj = caller.search(to_obj_name)
@@ -274,12 +289,54 @@ class CmdCpAttr(MuxCommand):
                     # if there are too few attributes given 
                     # on the to_obj, we copy the original name instead.
                     to_attr = from_attr
-                to_obj.attr(to_attr, srcvalue)            
-                string += "\nCopied %s.%s -> %s.%s." % (from_obj.name, from_attr,
-                                                        to_obj_name, to_attr)
+                to_obj.set_attribute(to_attr, srcvalue)
+                if "move" in self.switches and not (from_obj == to_obj and from_attr == to_attr):
+                    from_obj.del_attribute(from_attr)
+                    string += "\nMoved %s.%s -> %s.%s." % (from_obj.name, from_attr,
+                                                           to_obj_name, to_attr)
+                else:
+                    string += "\nCopied %s.%s -> %s.%s." % (from_obj.name, from_attr,
+                                                            to_obj_name, to_attr)
         caller.msg(string)
 
+class CmdMvAttr(ObjManipCommand):
+    """
+    @mvattr - move attributes
 
+    Usage:    
+      @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      @mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
+
+    Switches:
+      copy - Don't delete the original after moving. 
+
+    Move an attribute from one object to one or more attributes on another object. If
+    you don't supply a source object, yourself is used. 
+    """
+    key = "@mvattr"
+    locks = "cmd:perm(mvattr) or perm(Builders)"
+    help_category = "Building"
+    
+    def func(self):
+        """
+        Do the moving
+        """        
+        if not self.rhs:
+            string = """Usage:    
+      @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      @mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      @mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
+            self.caller.msg(string)
+            return 
+
+        # simply use @cpattr for all the functionality 
+        if "copy" in self.switches:
+            self.caller.execute_cmd("@cpattr %s" % self.args)
+        else:
+            self.caller.execute_cmd("@cpattr/move %s" % self.args)
 
 class CmdCreate(ObjManipCommand):
     """
@@ -492,20 +549,21 @@ class CmdDestroy(MuxCommand):
         for objname in self.lhslist:
             obj = caller.search(objname)
             if not obj:                
-                continue
+                self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
+                return 
             objname = obj.name
             if not obj.access(caller, 'delete'):
-                string = "You don't have permission to delete %s." % objname
+                string += "\nYou don't have permission to delete %s." % objname
                 continue
             if obj.player and not 'override' in self.switches:
-                string = "Object %s is controlled by an active player. Use /override to delete anyway." % objname
+                string += "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
                 continue
             # do the deletion
             okay = obj.delete()
             if not okay:
-                string = "ERROR: %s NOT deleted, probably because at_obj_delete() returned False." % objname
+                string += "\nERROR: %s not deleted, probably because at_obj_delete() returned False." % objname
             else:
-                string = "%s was deleted." % objname
+                string += "\n%s was deleted." % objname
         if string:
             caller.msg(string.strip())
 
@@ -659,7 +717,7 @@ class CmdLink(MuxCommand):
       @link[/switches] <object> 
      
     Switch:
-      twoway - connect two exits. For this to, BOTH <object>
+      twoway - connect two exits. For this to work, BOTH <object>
                and <target> must be exit objects. 
 
     If <object> is an exit, set its destination to <target>. Two-way operation
@@ -803,7 +861,7 @@ class CmdHome(CmdLink):
             if not home:
                 string = "This object has no home location set!"
             else:
-                string = "%s's home is set to %s(%s)." % (obj, home, home.dbref)
+                string = "%s's current home is %s(%s)." % (obj, home, home.dbref)
         else:
             # set a home location 
             new_home = self.caller.search(self.rhs, global_search=True)
@@ -844,79 +902,6 @@ class CmdListCmdSets(MuxCommand):
             obj = caller
         string = "%s" % obj.cmdset 
         caller.msg(string)
-
-
-class CmdMvAttr(ObjManipCommand):
-    """
-    @mvattr - move attributes
-
-    Usage:
-      @mvattr <srcobject>/attr[/attr/attr...] = <targetobject>[/attr/attr/...]
-
-    Moves attributes around. If the target object's attribute names are given,
-    the source attributes will be moved into those attributes instead. The
-    old attribute(s) will be deleted from the source object (unless source
-    and target are the same, in which case this is like a copy operation)
-    """
-    key = "@mvattr"
-    locks = "cmd:perm(mvattr) or perm(Builders)"
-    help_category = "Building"
-    
-    def func(self):
-        "We use the parsed values from ObjManipCommand.parse()."
-
-        caller = self.caller
-        
-        if not self.lhs or not self.rhs:
-            caller.msg("Usage: @mvattr <src>/attr[/attr/..] = <target>[/attr/attr..]")
-            return 
-
-        from_obj_name = self.lhs_objattr[0]['name']
-        from_obj_attrs = self.lhs_objattr[0]['attrs']
-        to_obj_name = self.rhs_objattr[0]['name']
-        to_obj_attrs = self.rhs_objattr[0]['name']
-        
-        # find from-object
-        from_obj = caller.search(from_obj_name)
-        if not from_obj:
-            return 
-        #find to-object
-        to_obj = caller.search_for_object(to_obj_name)
-        if not to_obj:
-            return
-
-        # if we copy on the same object, we have to 
-        # be more careful. 
-        same_object = to_obj == from_obj
-
-        #do the moving
-        string = ""
-        for inum, from_attr in enumerate(from_obj_attrs):
-            from_value = from_obj.attr(from_attr)
-            if not from_value:
-                string += "\nAttribute '%s' not found on source object %s." 
-                string = string % (from_attr, from_obj.name)
-            else:
-                try:
-                    to_attr = to_obj_attrs[inum]
-                except KeyError:
-                    # too few attributes on the target, so we add the
-                    # source attrname instead
-                    if same_object:
-                        # we can't do that on the same object though,
-                        # it would be just copying to itself.
-                        string += "\nToo few attribute names on target, and "
-                        string += "can't copy same-named attribute to itself."
-                        continue 
-                    to_attr = from_attr
-                # Do the move
-                to_obj.attr(to_attr, from_value)
-                from_obj.attr(from_attr, delete=True)
-                string += "\nMoved %s.%s -> %s.%s." % (from_obj_name, from_attr,
-                                                       to_obj_name, to_attr)
-        caller.msg(string)
-
-
 
 class CmdName(ObjManipCommand):
     """
@@ -1410,7 +1395,7 @@ class CmdExamine(ObjManipCommand):
     If object is not specified, the current location is examined. 
     """
     key = "@examine"
-    aliases = ["@ex","ex", "exam"]
+    aliases = ["@ex","ex", "exam", "examine"]
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
 
@@ -1617,7 +1602,7 @@ class CmdFind(MuxCommand):
         else:
             # Not a player/dbref search but a wider search; build a queryset. 
         
-            results = ObjectDB.objects.filter(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
+            results = ObjectDB.objects.filter(db_key__istartswith=searchstring, id__gte=low, id__lte=high)            
             if "room" in switches:
                 results = results.filter(db_location__isnull=True) 
             if "exit" in switches:
@@ -1625,11 +1610,24 @@ class CmdFind(MuxCommand):
             if "char" in switches:            
                 results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
             nresults = results.count()
+            if not nresults:
+                # no matches on the keys. Try aliases instead.
+                results = results = ObjectDB.alias_set.related.model.objects.filter(db_key=searchstring)
+                if "room" in switches:
+                    results = results.filter(db_obj__db_location__isnull=True)
+                if "exit" in switches:
+                    results = results.filter(db_obj__db_destination__isnull=False)
+                if "char" in switches:
+                    results = results.filter(db_obj__db_typeclass_path=CHAR_TYPECLASS)
+                # we have to parse alias -> real object here
+                results = [result.db_obj for result in results]
+                nresults = len(results)
+
             restrictions = ""
             if self.switches:
                 restrictions = ", %s" % (",".join(self.switches))                
             if nresults:
-                # convert result to typeclasses. Database is not hit until this point!
+                # convert result to typeclasses. 
                 results = [result.typeclass(result) for result in results]                 
                 if nresults > 1:                    
                     string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)

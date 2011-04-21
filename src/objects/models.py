@@ -25,7 +25,7 @@ from src.server.models import ServerConfig
 from src.commands.cmdsethandler import CmdSetHandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import is_iter
+from src.utils.utils import is_iter, to_unicode
 
 FULL_PERSISTENCE = settings.FULL_PERSISTENCE 
 
@@ -151,6 +151,9 @@ class NickHandler(object):
                 return nick
         else:
             return Nick.objects.filter(db_obj=self.obj)
+    def has(self, nick, nick_type="inputline"):
+        "Returns true/false if this nick is defined or not"
+        return Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type).count()
 
 #------------------------------------------------------------
 #
@@ -579,6 +582,10 @@ class ObjectDB(TypedObject):
         raw_string - raw command input coming from the command line. 
         """        
         # nick replacement - we require full-word matching.
+        
+        # do text encoding conversion 
+        raw_string = to_unicode(raw_string)
+
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
         for nick in Nick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):           

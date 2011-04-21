@@ -64,10 +64,10 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdSetAttribute())        
         self.add(building.CmdName())
         self.add(building.CmdDesc())
-        #self.add(building.CmdCpAttr()) #TODO - need testing/debugging
-        #self.add(building.CmdMvAttr()) #TODO - need testing/debugging
+        self.add(building.CmdCpAttr()) 
+        self.add(building.CmdMvAttr()) 
+        self.add(building.CmdCopy())
         self.add(building.CmdFind())
-        self.add(building.CmdCopy()) #TODO - need testing/debugging
         self.add(building.CmdOpen())
         self.add(building.CmdLink())
         self.add(building.CmdUnLink())
