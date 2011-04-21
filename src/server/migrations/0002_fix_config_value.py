@@ -2,8 +2,9 @@
 import datetime
 from south.db import db
 from south.v2 import DataMigration
-from django.db import models
+from django.db import models, utils
 import pickle 
+
 
 class Migration(DataMigration):
 
@@ -13,16 +14,20 @@ class Migration(DataMigration):
         # we are fixing a situation were the serverconfig value last_initial_setup_step was left at 1 instead of -1
         # as it should (due to a bug in the setter). This causes db errors as the initial_setup thinks it needs to 
         # run again. 
-
-        if orm['objects.ObjectDB'].objects.filter(id=1) and orm["objects.ObjectDB"].objects.filter(id=2):
-            # only an issue the critical objects have already been created
-            conf = orm.ServerConfig.objects.filter(db_key="last_initial_setup_step")
-            if conf:
-                conf = conf[0]
-                if pickle.loads(str(conf.db_value)) == 1:
-                    # this shouldn't be 1 if objects already exists. This is the bug. Fix the error.
-                    conf.db_value = pickle.dumps(-1)
-                    conf.save()
+        
+        try:
+            if orm['objects.ObjectDB'].objects.filter(id=1) and orm["objects.ObjectDB"].objects.filter(id=2):
+                # only an issue the critical objects have already been created
+                conf = orm.ServerConfig.objects.filter(db_key="last_initial_setup_step")
+                if conf:
+                    conf = conf[0]
+                    if pickle.loads(str(conf.db_value)) == 1:
+                        # this shouldn't be 1 if objects already exists. This is the bug. Fix the error.
+                        conf.db_value = pickle.dumps(-1)
+                        conf.save()
+        except utils.DatabaseError:
+            # this will happen if we start the db from scratch (in which case this migration fix is not needed)
+            pass
 
 
     def backwards(self, orm):
