@@ -36,7 +36,7 @@ class CmdReload(MuxCommand):
     def func(self):
         """
         Reload the system. 
-        """                
+        """
         reloads.start_reload_loop()
 
 class CmdPy(MuxCommand):
@@ -67,11 +67,11 @@ class CmdPy(MuxCommand):
     aliases = ["!"]
     locks = "cmd:perm(py) or perm(Immortals)"
     help_category = "System"
-    
+
     def func(self):
         "hook function"
-        
-        caller = self.caller        
+
+        caller = self.caller
         pycode = self.args
 
         if not pycode:
@@ -80,9 +80,9 @@ class CmdPy(MuxCommand):
             return
         # create temporary test objects for playing with
         script = create.create_script("src.scripts.scripts.DoNothing",
-                                      key = 'testscript')
+                                      key='testscript')
         obj = create.create_object("src.objects.objects.Object",
-                                   key='testobject')        
+                                   key='testobject')
         conf = ServerConfig() # used to access conf values
 
         available_vars = {'self':caller,
@@ -142,19 +142,19 @@ class CmdScripts(MuxCommand):
         if not scripts:
             return "<No scripts>"
 
-        table = [["id"], ["obj"], ["key"],["intval"],["next"],["rept"], ["db"],["typeclass"],["desc"]]
+        table = [["id"], ["obj"], ["key"], ["intval"], ["next"], ["rept"], ["db"], ["typeclass"], ["desc"]]
         for script in scripts:
 
-            table[0].append(script.id)            
+            table[0].append(script.id)
             if not hasattr(script, 'obj') or not script.obj:
                 table[1].append("<Global>")
             else:
-                table[1].append(script.obj.key)            
-            table[2].append(script.key)                
+                table[1].append(script.obj.key)
+            table[2].append(script.key)
             if not hasattr(script, 'interval') or script.interval < 0:
                 table[3].append("--")
             else:
-                table[3].append("%ss" % script.interval)                
+                table[3].append("%ss" % script.interval)
             next = script.time_until_next_repeat()
             if not next:
                 table[4].append("--")
@@ -168,7 +168,7 @@ class CmdScripts(MuxCommand):
             if script.persistent:
                 table[6].append("*")
             else:
-                table[6].append("-")           
+                table[6].append("-")
             typeclass_path = script.typeclass_path.rsplit('.', 1)
             table[7].append("%s" % typeclass_path[-1])
             table[8].append(script.desc)
@@ -189,7 +189,7 @@ class CmdScripts(MuxCommand):
 
         caller = self.caller
         args = self.args
-        
+
         string = ""
         if args:
 
@@ -197,14 +197,14 @@ class CmdScripts(MuxCommand):
             scripts = ScriptDB.objects.get_all_scripts(key=args)
             if not scripts:
                 # try to find an object instead.
-                objects = ObjectDB.objects.object_search(caller, 
-                                                         args, 
+                objects = ObjectDB.objects.object_search(caller,
+                                                         args,
                                                          global_search=True)
-                if objects:                    
+                if objects:
                     scripts = []
                     for obj in objects:
                         # get all scripts on the object(s)
-                        scripts.extend(ScriptDB.objects.get_all_scripts_on_obj(obj))   
+                        scripts.extend(ScriptDB.objects.get_all_scripts_on_obj(obj))
         else:
             # we want all scripts.
             scripts = ScriptDB.objects.get_all_scripts()
@@ -212,8 +212,8 @@ class CmdScripts(MuxCommand):
         if not scripts:
             string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
             caller.msg(string)
-            return         
-            
+            return
+
         if self.switches and self.switches[0] in ('stop', 'del', 'delete'):
             # we want to delete something
             if not scripts:
@@ -227,7 +227,7 @@ class CmdScripts(MuxCommand):
             else:
                 # multiple matches.
                 string = "Multiple script matches. Please refine your search:\n"
-                string += self.format_script_list(scripts)        
+                string += self.format_script_list(scripts)
         elif self.switches and self.switches[0] in ("validate", "valid", "val"):
             # run validation on all found scripts
             nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts)
@@ -235,7 +235,7 @@ class CmdScripts(MuxCommand):
             string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
         else:
             # No stopping or validation. We just want to view things.
-            string = self.format_script_list(scripts)        
+            string = self.format_script_list(scripts)
         caller.msg(string)
 
 
@@ -275,16 +275,16 @@ class CmdObjects(MuxCommand):
         nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=base_char_typeclass).count()
         nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
 
-        string += "\n{wPlayers:{n %i" % nplayers     
+        string += "\n{wPlayers:{n %i" % nplayers
         string += "\n{wObjects:{n %i" % nobjs
-        string += "\n{w Characters (BASE_CHARACTER_TYPECLASS):{n %i" % nchars 
+        string += "\n{w Characters (BASE_CHARACTER_TYPECLASS):{n %i" % nchars
         string += "\n{w Rooms (location==None):{n %i" % nrooms
         string += "\n{w Exits (destination!=None):{n %i" % nexits
         string += "\n{w Other:{n %i\n" % (nobjs - nchars - nrooms - nexits)
-        
+
         dbtotals = ObjectDB.objects.object_totals()
         table = [["Count"], ["Typeclass"]]
-        for path, count in dbtotals.items():            
+        for path, count in dbtotals.items():
             table[0].append(count)
             table[1].append(path)
         ftable = utils.format_table(table, 3)
@@ -295,8 +295,8 @@ class CmdObjects(MuxCommand):
                 srow = "{w%s{n" % srow
             string += srow
 
-        string += "\n\n{wLast %s Objects created:{n" % min(nobjs, nlim)        
-        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs-nlim):]               
+        string += "\n\n{wLast %s Objects created:{n" % min(nobjs, nlim)
+        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
 
         table = [["Created"], ["dbref"], ["name"], ["typeclass"]]
         for i, obj in enumerate(objs):
@@ -313,7 +313,7 @@ class CmdObjects(MuxCommand):
             string += srow
 
         caller.msg(string)
-           
+
 
 class CmdService(MuxCommand):
     """
@@ -339,26 +339,26 @@ class CmdService(MuxCommand):
 
     def func(self):
         "Implement command"
-        
+
         caller = self.caller
         switches = self.switches
-        
-        if switches and switches[0] not in ["list","start","stop"]:
+
+        if switches and switches[0] not in ["list", "start", "stop"]:
             caller.msg("Usage: @service/<start|stop|list> [service]")
             return
 
         # get all services
         sessions = caller.sessions
-        if not sessions:             
-            return 
+        if not sessions:
+            return
         service_collection = SESSIONS.server.services
 
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
             string = "-" * 78
-            string += "\n{wServices{n (use @services/start|stop):"     
-            
+            string += "\n{wServices{n (use @services/start|stop):"
+
             for service in service_collection.services:
                 if service.running:
                     status = 'Running'
@@ -371,11 +371,11 @@ class CmdService(MuxCommand):
             return
 
         # Get the service to start / stop
-        
+
         try:
             service = service_collection.getServiceNamed(self.args)
         except Exception:
-            string = 'Invalid service name. This command is case-sensitive. ' 
+            string = 'Invalid service name. This command is case-sensitive. '
             string += 'See @service/list for valid services.'
             caller.msg(string)
             return
@@ -386,14 +386,14 @@ class CmdService(MuxCommand):
 
             if not service.running:
                 caller.msg('That service is not currently running.')
-                return            
+                return
             if service.name[:7] == 'Evennia':
-                string =  "You seem to be shutting down a core Evennia* service. Note that"
-                string += "Stopping some TCP port services will *not* disconnect users *already*" 
+                string = "You seem to be shutting down a core Evennia* service. Note that"
+                string += "Stopping some TCP port services will *not* disconnect users *already*"
                 string += "connected on those ports, but *may* instead cause spurious errors for them. To "
-                string += "safely and permanently remove ports, change settings file and restart the server." 
+                string += "safely and permanently remove ports, change settings file and restart the server."
                 caller.msg(string)
-            
+
             service.stopService()
             caller.msg("Stopping service '%s'." % self.args)
             return
@@ -402,7 +402,7 @@ class CmdService(MuxCommand):
             #Starts a service.
             if service.running:
                 caller.msg('That service is already running.')
-                return            
+                return
             caller.msg("Starting service '%s'." % self.args)
             service.startService()
 
@@ -415,23 +415,23 @@ class CmdShutdown(MuxCommand):
       @shutdown [announcement]
 
     Shut the game server down gracefully. 
-    """    
+    """
     key = "@shutdown"
     locks = "cmd:perm(shutdown) or perm(Immortals)"
     help_category = "System"
-    
+
     def func(self):
         "Define function"
         try:
             session = self.caller.sessions[0]
         except Exception:
-            return         
+            return
         self.caller.msg('Shutting down server ...')
         announcement = "\nServer is being SHUT DOWN!\n"
-        if self.args: 
+        if self.args:
             announcement += "%s\n" % self.args
         logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
-        SESSIONS.announce_all(announcement)          
+        SESSIONS.announce_all(announcement)
         SESSIONS.server.shutdown()
 
 class CmdVersion(MuxCommand):
@@ -446,15 +446,15 @@ class CmdVersion(MuxCommand):
 
     key = "@version"
     help_category = "System"
-    
+
     def func(self):
         "Show the version"
         version = utils.get_evennia_version()
-        string = "-"*50 +"\n\r"
+        string = "-" * 50 + "\n\r"
         string += " {cEvennia{n %s\n\r" % version
         string += " (Django %s, " % (django.get_version())
         string += " Twisted %s)\n\r" % (twisted.version.short())
-        string += "-"*50
+        string += "-" * 50
         self.caller.msg(string)
 
 class CmdTime(MuxCommand):
@@ -465,7 +465,7 @@ class CmdTime(MuxCommand):
       @time 
     
     Server local time.
-    """        
+    """
     key = "@time"
     aliases = "@uptime"
     locks = "cmd:perm(time) or perm(Players)"
@@ -487,7 +487,7 @@ class CmdTime(MuxCommand):
         if utils.host_os_is('posix'):
             loadavg = os.getloadavg()
             table[0].append("Server load (per minute):")
-            table[1].append("%g" % (loadavg[0]))            
+            table[1].append("%g" % (loadavg[0]))
         stable = []
         for col in table:
             stable.append([str(val).strip() for val in col])
@@ -513,22 +513,22 @@ class CmdServerLoad(MuxCommand):
     def func(self):
         "Show list."
 
-        caller = self.caller        
+        caller = self.caller
 
         # display active processes
 
         if not utils.host_os_is('posix'):
             string = "Process listings are only available under Linux/Unix."
         else:
-            import resource                                
-            loadavg = os.getloadavg()                
+            import resource
+            loadavg = os.getloadavg()
             psize = resource.getpagesize()
             pid = os.getpid()
-            rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rsz")).read()) / 1024.0
+            rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1024.0
             vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0
 
-            rusage = resource.getrusage(resource.RUSAGE_SELF)                                
-            table = [["Server load (1 min):", 
+            rusage = resource.getrusage(resource.RUSAGE_SELF)
+            table = [["Server load (1 min):",
                       "Process ID:",
                       "Bytes per page:",
                       "CPU time used:",
@@ -542,32 +542,32 @@ class CmdServerLoad(MuxCommand):
                      ["%g" % loadavg[0],
                       "%10d" % pid,
                       "%10d " % psize,
-                      "%s (%gs)" % (utils.time_format(rusage.ru_utime),rusage.ru_utime),
+                      "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime),
                       #"%10d shared" % rusage.ru_ixrss,
                       #"%10d pages" % rusage.ru_maxrss,
                       "%10d Mb" % rmem,
-                      "%10d Mb" % vmem,                      
+                      "%10d Mb" % vmem,
                       "%10d hard" % rusage.ru_majflt,
                       "%10d reads" % rusage.ru_inblock,
                       "%10d in" % rusage.ru_msgrcv,
-                      "%10d vol" % rusage.ru_nvcsw                          
+                      "%10d vol" % rusage.ru_nvcsw
                     ],
-                     ["", "", "", 
+                     ["", "", "",
                       "(user: %gs)" % rusage.ru_stime,
-                      "",#"%10d private" % rusage.ru_idrss,
-                      "",#"%10d bytes" % (rusage.ru_maxrss * psize),
+                      "", #"%10d private" % rusage.ru_idrss,
+                      "", #"%10d bytes" % (rusage.ru_maxrss * psize),
                       "%10d soft" % rusage.ru_minflt,
                       "%10d writes" % rusage.ru_oublock,
                       "%10d out" % rusage.ru_msgsnd,
                       "%10d forced" % rusage.ru_nivcsw
                       ],
-                     ["", "", "", "", 
-                      "",#"%10d stack" % rusage.ru_isrss,
-                      "", 
+                     ["", "", "", "",
+                      "", #"%10d stack" % rusage.ru_isrss,
+                      "",
                       "%10d swapouts" % rusage.ru_nswap,
                       "", "",
                       "%10d sigs" % rusage.ru_nsignals
-                    ]                         
+                    ]
                      ]
             stable = []
             for col in table:
@@ -575,10 +575,10 @@ class CmdServerLoad(MuxCommand):
             ftable = utils.format_table(stable, 5)
             string = ""
             for row in ftable:
-                string += "\n " + "{w%s{n" % row[0] + "".join(row[1:]) 
-                                
+                string += "\n " + "{w%s{n" % row[0] + "".join(row[1:])
+
         caller.msg(string)
-            
+
 class CmdPs(MuxCommand):
     """
     list processes
@@ -594,7 +594,7 @@ class CmdPs(MuxCommand):
 
     def func(self):
         "run the function."
- 
+
         all_scripts = ScriptDB.objects.get_all_scripts()
         repeat_scripts = [script for script in all_scripts if script.interval > 0]
         nrepeat_scripts = [script for script in all_scripts if script.interval <= 0]
@@ -610,12 +610,12 @@ class CmdPs(MuxCommand):
             string += "\n <None>"
         for script in repeat_scripts:
             repeats = "[inf] "
-            if script.repeats: 
-                repeats = "[%i] " % script.repeats            
+            if script.repeats:
+                repeats = "[%i] " % script.repeats
             time_next = "[inf/inf]"
             if script.time_until_next_repeat() != None:
                 time_next = "[%d/%d]" % (script.time_until_next_repeat(), script.interval)
-            string += "\n {w%i{n %s %s%s%s" % (script.id, script.key, 
+            string += "\n {w%i{n %s %s%s%s" % (script.id, script.key,
                                            time_next, repeats, script.desc)
         string += "\n{wTotal{n: %d scripts." % len(all_scripts)
         self.caller.msg(string)
