@@ -173,8 +173,8 @@ def reset_loop():
     [m.locks.reset() for m in Msg.objects.all()]
     [c.locks.reset() for c in Channel.objects.all()]    
     [s.locks.reset() for s in ScriptDB.objects.all()]
-    [p.locks.reset() for p in PlayerDB.objects.all()]
     [(o.typeclass(o), o.cmdset.reset(), o.locks.reset()) for o in ObjectDB.get_all_cached_instances()]
+    [(p.typeclass(p), p.cmdset.reset(), p.locks.reset()) for p in PlayerDB.get_all_cached_instances()]
 
     t2 = time.time()
     cemit_info(" ... Loop finished in %g seconds." % (t2-t1))

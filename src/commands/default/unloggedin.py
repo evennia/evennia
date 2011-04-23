@@ -62,49 +62,81 @@ class CmdConnect(MuxCommand):
 
         # We are logging in, get/setup the player object controlled by player
 
-        character = player.character
-        if not character:
-            # Create a new character object to tie the player to. This should
-            # usually not be needed unless the old character object was manually 
-            # deleted.
-            default_home_id = ServerConfig.objects.conf("default_home")            
-            default_home = ObjectDB.objects.get_id(default_home_id)
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
-            character = create.create_object(typeclass=typeclass,
-                                             key=player.name,
-                                             location=default_home, 
-                                             home=default_home,
-                                             player=player)            
-            
-            character.db.FIRST_LOGIN = "True"
-            
-        # Getting ready to log the player in.
-
         # Check if this is the first time the 
         # *player* connects
         if player.db.FIRST_LOGIN:
             player.at_first_login()
             del player.db.FIRST_LOGIN
-
-        # check if this is the first time the *character*
-        # character (needs not be the first time the player
-        # does so, e.g. if the player has several characters)
-        if character.db.FIRST_LOGIN:
-            character.at_first_login()
-            del character.db.FIRST_LOGIN
-            
-        # actually do the login, calling
-        # customization hooks before and after. 
         player.at_pre_login()        
-        character.at_pre_login()
 
+        character = player.character
+        if character: 
+            # this player has a character. Check if it's the
+            # first time *this character* logs in
+            if character.db.FIRST_LOGIN:
+                character.at_first_login()
+                del character.db.FIRST_LOGIN            
+            # run character login hook
+            character.at_pre_login()
+
+        # actually do the login
         session.session_login(player)
+        
+        # post-login hooks 
+        player.at_post_login()        
+        if character:
+            character.at_post_login()
+            character.execute_cmd('look')
+        else:
+            player.execute_cmd('look')
 
-        player.at_post_login()
-        character.at_post_login()
         # run look
         #print "character:", character, character.scripts.all(), character.cmdset.current
-        character.execute_cmd('look')
+
+        # 
+        # character = player.character
+        # if not character:
+        #     # Create a new character object to tie the player to. This should
+        #     # usually not be needed unless the old character object was manually 
+        #     # deleted.
+        #     default_home_id = ServerConfig.objects.conf("default_home")            
+        #     default_home = ObjectDB.objects.get_id(default_home_id)
+        #     typeclass = settings.BASE_CHARACTER_TYPECLASS
+        #     character = create.create_object(typeclass=typeclass,
+        #                                      key=player.name,
+        #                                      location=default_home, 
+        #                                      home=default_home,
+        #                                      player=player)            
+            
+        #     character.db.FIRST_LOGIN = "True"
+            
+        # # Getting ready to log the player in.
+
+        # # Check if this is the first time the 
+        # # *player* connects
+        # if player.db.FIRST_LOGIN:
+        #     player.at_first_login()
+        #     del player.db.FIRST_LOGIN
+
+        # # check if this is the first time the *character*
+        # # character (needs not be the first time the player
+        # # does so, e.g. if the player has several characters)
+        # if character.db.FIRST_LOGIN:
+        #     character.at_first_login()
+        #     del character.db.FIRST_LOGIN
+            
+        # # actually do the login, calling
+        # # customization hooks before and after. 
+        # player.at_pre_login()        
+        # character.at_pre_login()
+
+        # session.session_login(player)
+
+        # player.at_post_login()
+        # character.at_post_login()
+        # # run look
+        # #print "character:", character, character.scripts.all(), character.cmdset.current
+        # character.execute_cmd('look')
 
 class CmdCreate(MuxCommand):
     """
@@ -169,61 +201,69 @@ class CmdCreate(MuxCommand):
             return             
 
         # Run sanity and security checks 
-
+        
         if PlayerDB.objects.get_player_from_name(playername) or User.objects.filter(username=playername):
             # player already exists
             session.msg("Sorry, there is already a player with the name '%s'." % playername)
-        elif PlayerDB.objects.get_player_from_email(email):
+            return         
+        if PlayerDB.objects.get_player_from_email(email):
             # email already set on a player
             session.msg("Sorry, there is already a player with that email address.")
-        elif len(password) < 3:
+            return 
+        if len(password) < 3:
             # too short password
             string = "Your password must be at least 3 characters or longer."
             string += "\n\rFor best security, make it at least 8 characters long, "
             string += "avoid making it a real word and mix numbers into it."
             session.msg(string)
-        else:
-            # everything's ok. Create the new player account
-            try:
-                default_home_id = ServerConfig.objects.conf("default_home")            
-                default_home = ObjectDB.objects.get_id(default_home_id)                
-                
-                typeclass = settings.BASE_CHARACTER_TYPECLASS
-                permissions = settings.PERMISSION_PLAYER_DEFAULT
+            return         
 
-                new_character = create.create_player(playername, email, password,
-                                                     permissions=permissions,
-                                                     location=default_home,
-                                                     typeclass=typeclass,
-                                                     home=default_home)                
-                # character safety features
-                new_character.locks.delete("get")
-                new_character.locks.add("get:perm(Wizards)")
+        # everything's ok. Create the new player account.
+        try:
+            default_home_id = ServerConfig.objects.conf("default_home")            
+            default_home = ObjectDB.objects.get_id(default_home_id)                
 
-                # set a default description
-                new_character.db.desc = "This is a Player."
+            typeclass = settings.BASE_CHARACTER_TYPECLASS
+            permissions = settings.PERMISSION_PLAYER_DEFAULT
 
-                new_character.db.FIRST_LOGIN = True                
-                new_player = new_character.player
-                new_player.db.FIRST_LOGIN = True 
-                                
-                # join the new player to the public channel                
-                pchanneldef = settings.CHANNEL_PUBLIC
-                if pchanneldef:
-                    pchannel = Channel.objects.get_channel(pchanneldef[0])
-                    if not pchannel.connect_to(new_player):
-                        string = "New player '%s' could not connect to public channel!" % new_player.key
-                        logger.log_errmsg(string)
+            new_character = create.create_player(playername, email, password,
+                                                 permissions=permissions,
+                                                 location=default_home,
+                                                 typeclass=typeclass,
+                                                 home=default_home)                                
+            new_player = new_character.player
+            
+            # character safety features
+            new_character.locks.delete("get")
+            new_character.locks.add("get:perm(Wizards)")
+            # allow the character itself and the player to puppet this character.
+            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" % 
+                                    (new_character.id, new_player.id))
 
-                string = "A new account '%s' was created with the email address %s. Welcome!"
-                string += "\n\nYou can now log with the command 'connect %s <your password>'."                
-                session.msg(string % (playername, email, email))
-            except Exception:
-                # we have to handle traceback ourselves at this point, if 
-                # we don't, errors will give no feedback.  
-                string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
-                session.msg(string % (traceback.format_exc()))
-                logger.log_errmsg(traceback.format_exc())            
+            # set a default description
+            new_character.db.desc = "This is a Player."
+
+            new_character.db.FIRST_LOGIN = True                
+            new_player = new_character.player
+            new_player.db.FIRST_LOGIN = True 
+
+            # join the new player to the public channel                
+            pchanneldef = settings.CHANNEL_PUBLIC
+            if pchanneldef:
+                pchannel = Channel.objects.get_channel(pchanneldef[0])
+                if not pchannel.connect_to(new_player):
+                    string = "New player '%s' could not connect to public channel!" % new_player.key
+                    logger.log_errmsg(string)
+
+            string = "A new account '%s' was created with the email address %s. Welcome!"
+            string += "\n\nYou can now log with the command 'connect %s <your password>'."                
+            session.msg(string % (playername, email, email))
+        except Exception:
+            # We are in the middle between logged in and -not, so we have to handle tracebacks 
+            # ourselves at this point. If we don't, we won't see any errors at all.
+            string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
+            session.msg(string % (traceback.format_exc()))
+            logger.log_errmsg(traceback.format_exc())            
 
 class CmdQuit(MuxCommand):
     """

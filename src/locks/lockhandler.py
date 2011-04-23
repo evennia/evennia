@@ -223,7 +223,8 @@ class LockHandler(object):
                 wlist.append("Lock: access type '%s' changed from '%s' to '%s' " % \
                                  (access_type, locks[access_type][2], raw_lockstring))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)            
-        if wlist:
+        if wlist and self.log_obj:
+            # not an error, so only report if log_obj is available.
             self._log_error("\n".join(wlist))
         if elist:
             raise LockException("\n".join(elist))        
@@ -343,10 +344,11 @@ class LockHandler(object):
         to None if the lock functions called don't access it). atype can also be 
         put to a dummy value since no lock selection is made.
         """
-        if (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'user') 
-            and hasattr(accessing_obj.player.user, 'is_superuser') 
-            and accessing_obj.player.user.is_superuser):
-            return True  # always grant access to the superuser.        
+        if ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
+            or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
+            or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser))):
+            return True 
+        
         locks = self. _parse_lockstring(lockstring)
         for access_type in locks:
             evalstring, func_tup, raw_string = locks[access_type]            

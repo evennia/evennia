@@ -390,6 +390,7 @@ def create_player(name, email, password,
     new_player = PlayerDB(db_key=name, user=new_user)        
     new_player.save()        
 
+    new_player.basetype_setup() # setup the basic locks and cmdset
     # call hook method (may override default permissions)
     new_player.at_player_creation()
 

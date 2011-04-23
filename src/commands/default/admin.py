@@ -58,7 +58,7 @@ class CmdBoot(MuxCommand):
                     break
         else:
             # Boot by player object
-            pobj = caller.search("*%s" % args, global_search=True)
+            pobj = caller.search("*%s" % args, global_search=True, player=True)
             if not pobj:
                 return            
             if pobj.character.has_player:
@@ -118,6 +118,9 @@ class CmdDelPlayer(MuxCommand):
         caller = self.caller
         args = self.args 
 
+        if hasattr(caller, 'player'):
+            caller = caller.player 
+
         if not args:
             caller.msg("Usage: @delplayer[/delobj] <player/user name or #id> [: reason]")
             return
@@ -128,7 +131,7 @@ class CmdDelPlayer(MuxCommand):
 
         # We use player_search since we want to be sure to find also players
         # that lack characters.
-        players = caller.search("*%s" % args)
+        players = caller.search("*%s" % args, player=True)
         if not players:
             try:
                 players = PlayerDB.objects.filter(id=args)
@@ -304,7 +307,7 @@ class CmdNewPassword(MuxCommand):
             return 
         
         # the player search also matches 'me' etc. 
-        player = caller.search("*%s" % self.lhs, global_search=True)            
+        player = caller.search("*%s" % self.lhs, global_search=True, player=True)            
         if not player:
             return     
         player.user.set_password(self.rhs)
@@ -320,12 +323,14 @@ class CmdPerm(MuxCommand):
 
     Usage:
       @perm[/switch] <object> [= <permission>[,<permission>,...]]
+      @perm[/switch] *<player> [= <permission>[,<permission>,...]]
       
     Switches:
-      del : delete the given permission from <object>.
-            
-    This command sets/clears individual permission strings on an object.
-    If no permission is given, list all permissions on <object>
+      del : delete the given permission from <object> or <player>.
+      player : set permission on a player (same as adding * to name)
+
+    This command sets/clears individual permission strings on an object 
+    or player. If no permission is given, list all permissions on <object>.
     """
     key = "@perm"
     aliases = "@setperm"
@@ -340,17 +345,18 @@ class CmdPerm(MuxCommand):
         lhs, rhs = self.lhs, self.rhs
 
         if not self.args:            
-            string = "Usage: @perm[/switch] object [ = permission, permission, ...]\n" 
+            string = "Usage: @perm[/switch] object [ = permission, permission, ...]" 
             caller.msg(string)
             return
-
-        # locate the object
-        obj = caller.search(lhs, global_search=True)
+        
+        playermode = 'player' in self.switches or lhs.startswith('*')
+        
+        # locate the object        
+        obj = caller.search(lhs, global_search=True, player=playermode)
         if not obj:
             return         
                 
         if not rhs: 
-
             if not obj.access(caller, 'examine'):
                 caller.msg("You are not allowed to examine this object.")
                 return
@@ -396,12 +402,10 @@ class CmdPerm(MuxCommand):
 
 
             for perm in self.rhslist:
-
-                perm = perm.lower()
                 
                 # don't allow to set a permission higher in the hierarchy than the one the
                 # caller has (to prevent self-escalation)
-                if perm in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm):
+                if perm.lower() in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm):
                     caller.msg("You cannot assign a permission higher than the one you have yourself.")
                     return 
 
@@ -415,45 +419,6 @@ class CmdPerm(MuxCommand):
         caller.msg(cstring.strip())
         if tstring:
             obj.msg(tstring.strip())
-
-
-class CmdPuppet(MuxCommand):
-    """
-    Switch control to an object
-    
-    Usage:
-      @puppet <character object>
-      
-    This will attempt to "become" a different character. Note that this command does not check so that
-    the target object has the appropriate cmdset. You cannot puppet a character that is already "taken".
-    """
-
-    key = "@puppet"
-    locks = "cmd:perm(puppet) or perm(Builders)"
-    help_category = "Admin"
-
-    def func(self):
-        """
-        Simple puppet method (does not check permissions)
-        """
-        caller = self.caller
-        if not self.args:
-            caller.msg("Usage: @puppet <character>")
-            return 
-
-        player = caller.player
-        new_character = caller.search(self.args)
-        if not new_character:
-            return 
-        if not utils.inherits_from(new_character, settings.BASE_CHARACTER_TYPECLASS):
-            caller.msg("%s is not a Character." % self.args)
-            return
-        if new_character.player:
-            caller.msg("This character is already under the control of a player.")
-        if player.swap_character(new_character):
-            new_character.msg("You now control %s." % new_character.name)
-        else:
-            caller.msg("You cannot control %s." % new_character.name)
 
 class CmdWall(MuxCommand):
     """

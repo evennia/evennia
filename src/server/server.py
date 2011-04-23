@@ -1,10 +1,12 @@
 """
 This module implements the main Evennia server process, the core of
-the game engine. Only import this once! 
+the game engine. Don't import this module! If you need to access the 
+server processes from code, instead import sessionhandler.SESSIONS
+and use its 'server' property. 
 
 This module should be started with the 'twistd' executable since it
-sets up all the networking features.  (this is done by
-game/evennia.py).
+sets up all the networking features.  (this is done by automatically
+by game/evennia.py).
 
 """
 import time

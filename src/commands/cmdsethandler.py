@@ -179,7 +179,7 @@ class CmdSetHandler(object):
             string += "\n"
             merged = True 
 
-        # Display the currently active cmdset 
+        # Display the currently active cmdset, limited by self.obj's permissions
         mergetype = self.mergetype_stack[-1]  
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
@@ -187,7 +187,8 @@ class CmdSetHandler(object):
         if merged:
             string += " <Merged (%s)>: %s" % (mergetype, self.current)
         else:
-            string += " <%s (%s)>: %s" % (self.current.key, mergetype, self.current)
+            string += " <%s (%s)>: %s" % (self.current.key, mergetype, 
+                                          ", ".join(cmd.key for cmd in self.current if cmd.access(self.obj, "cmd")))
         return string.strip() 
 
     def update(self, init_mode=False):        

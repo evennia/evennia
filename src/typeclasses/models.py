@@ -296,6 +296,87 @@ class Attribute(SharedMemoryModel):
 
 #------------------------------------------------------------
 #
+# Nicks
+#
+#------------------------------------------------------------
+
+class TypeNick(SharedMemoryModel):
+    """
+    This model holds whichever alternate names this object 
+    has for OTHER objects, but also for arbitrary strings,
+    channels, players etc. Setting a nick does not affect
+    the nicknamed object at all (as opposed to Aliases above), 
+    and only this object will be able to refer to the nicknamed
+    object by the given nick. 
+
+    The default nick types used by Evennia are: 
+    inputline (default) - match against all input
+    player - match against player searches
+    obj - match against object searches 
+    channel - used to store own names for channels
+
+    """
+    db_nick = models.CharField(max_length=255, db_index=True) # the nick
+    db_real = models.TextField() # the aliased string
+    db_type = models.CharField(default="inputline", max_length=16, null=True, blank=True) # the type of nick
+    db_obj = None #models.ForeignKey("ObjectDB")
+
+    class Meta:
+        "Define Django meta options"
+        abstract = True 
+        verbose_name = "Nickname"
+        verbose_name_plural = "Nicknames"
+        unique_together = ("db_nick", "db_type", "db_obj")
+
+class TypeNickHandler(object):
+    """
+    Handles nick access and setting. Accessed through ObjectDB.nicks
+    """    
+
+    NickClass = TypeNick 
+
+    def __init__(self, obj):
+        "Setup"
+        self.obj = obj
+
+    def add(self, nick, realname, nick_type="inputline"):
+        "We want to assign a new nick"
+        if not nick or not nick.strip():
+            return 
+        nick = nick.strip()        
+        real = realname.strip() 
+        query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type) 
+        if query.count():
+            old_nick = query[0]
+            old_nick.db_real = real
+            old_nick.save()
+        else:              
+            new_nick = self.NickClass(db_nick=nick, db_real=real, db_type=nick_type, db_obj=self.obj)
+            new_nick.save()                
+    def delete(self, nick, nick_type="inputline"):        
+        "Removes a nick"
+        nick = nick.strip()        
+        query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
+        if query.count():
+            # remove the found nick(s)
+            query.delete()           
+    def get(self, nick=None, nick_type="inputline"):
+        if nick:
+            query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
+            query = query.values_list("db_real", flat=True)
+            if query.count():
+                return query[0]
+            else:
+                return nick
+        else:
+            return self.NickClass.objects.filter(db_obj=self.obj)
+    def has(self, nick, nick_type="inputline"):
+        "Returns true/false if this nick is defined or not"
+        return self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type).count()
+
+
+#------------------------------------------------------------
+#
 # Typed Objects 
 #
 #------------------------------------------------------------        
@@ -992,9 +1073,12 @@ class TypedObject(SharedMemoryModel):
 
     def check_permstring(self, permstring):
         """
-        This explicitly checks for we hold particular permission without involving
+        This explicitly checks if we hold particular permission without involving
         any locks.
         """
+        if self.player and self.player.is_superuser:
+            return True 
+
         if not permstring:
             return False             
         perm = permstring.lower()

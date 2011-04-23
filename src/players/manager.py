@@ -146,17 +146,13 @@ class PlayerManager(TypedObjectManager):
         
         ostring = a string or database id.
         """
-        players = []
-        try:
-            # try dbref match
-            dbref = int(ostring.strip('#'))
-            players = self.filter(id=dbref)
-        except Exception:
-            pass
-        if not players:
-            players = self.filter(user__username=ostring)
-        return players
-
+        ostring = ostring.lstrip("*")
+        dbref = self.dbref(ostring)
+        if dbref:
+            matches = self.filter(id=dbref)
+            if matches:
+                return matches
+        return self.filter(user__username__iexact=ostring)            
 
     def swap_character(self, player, new_character, delete_old_character=False):
         """

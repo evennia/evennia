@@ -19,7 +19,7 @@ new cmdset class.
 """
 
 from src.commands.cmdset import CmdSet
-from src.commands.default import cmdset_default, cmdset_unloggedin
+from src.commands.default import cmdset_default, cmdset_unloggedin, cmdset_ooc
 
 from game.gamesrc.commands.basecommand import Command
 
@@ -40,7 +40,7 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         Populates the cmdset
         """
         super(DefaultCmdSet, self).at_cmdset_creation()
-        
+
         #
         # any commands you add below will overload the default ones.
         #
@@ -69,6 +69,24 @@ class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
         # any commands you add below will overload the default ones.
         #
 
+
+class OOCCmdSet(cmdset_ooc.OOCCmdSet):
+    """
+    This is set is available to the player when they have no 
+    character connected to them (i.e. they are out-of-character, ooc).
+    """
+    key = "OOC"
+    
+    def at_cmdset_creation(self):
+        """
+        Populates the cmdset
+        """
+        super(OOCCmdSet, self).at_cmdset_creation()
+        
+        #
+        # any commands you add below will overload the default ones.
+        #
+        
 
 class BaseCmdSet(CmdSet):
     """

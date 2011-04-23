@@ -49,6 +49,9 @@ class Object(TypeClass):
         """
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
+
+        Don't change this, instead edit at_object_creation() to
+        overload the defaults (it is called after this one). 
         """
         # the default security setup fallback for a generic
         # object. Overload in child for a custom setup. Also creation
@@ -63,6 +66,7 @@ class Object(TypeClass):
         self.locks.add("delete:perm(Wizards)") # delete object 
         self.locks.add("get:all()")   # pick up object
         self.locks.add("call:true()") # allow to call commands on this object
+        self.locks.add("puppet:id(%s) or perm(Immortals) or pperm(Immortals)" % dbref) # restricts puppeting of this object 
 
     def at_object_creation(self):
         """
@@ -310,9 +314,11 @@ class Character(Object):
     def basetype_setup(self):
         """
         Setup character-specific security
+
+        Don't change this, instead edit at_object_creation() to
+        overload the defaults (it is called after this one). 
         """
         super(Character, self).basetype_setup()
-        self.locks.add("puppet:id(%s) or perm(Immortals)" % self.dbobj.dbref) # who may become this object's player
         self.locks.add("get:false()") # noone can pick up the character
         self.locks.add("call:false()") # no commands can be called on character        
 
@@ -348,9 +354,13 @@ class Room(Object):
         """
         Simple setup, shown as an example
         (since default is None anyway)
+
+        Don't change this, instead edit at_object_creation() to
+        overload the defaults (it is called after this one). 
         """
 
         super(Room, self).basetype_setup()
+        self.locks.add("puppet:false()") # would be weird to puppet a room ...
         self.locks.add("get:false()")        
 
         super(Room, self).basetype_setup()
@@ -371,9 +381,13 @@ class Exit(Object):
     def basetype_setup(self):
         """
         Setup exit-security
+
+        Don't change this, instead edit at_object_creation() to
+        overload the defaults (it is called after this one). 
         """
         # the lock is open to all by default
         super(Exit, self).basetype_setup()
+        self.locks.add("puppet:false()") # would be weird to puppet an exit ...
         self.locks.add("traverse:all()") # who can pass through exit
         self.locks.add("get:false()")    # noone can pick up the exit 
 

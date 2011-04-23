@@ -106,6 +106,16 @@ from src.utils import utils
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
+def _to_player(accessing_obj):
+    "Helper function. Makes sure an accessing object is a player object"
+    if utils.inherits_from(accessing_obj, "src.objects.objects.Object"):
+        # an object. Convert to player.
+        accessing_obj = accessing_obj.player
+    return accessing_obj
+
+
+# lock functions 
+
 def true(*args, **kwargs):
     "Always returns True."
     return True
@@ -155,6 +165,29 @@ def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
         return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY)
                    if hperm in [p.lower() for p in accessing_obj.permissions] and hpos > ppos)
 
+def pperm(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    The basic permission-checker for Player objects. Ignores case. 
+
+    Usage: 
+       pperm(<permission>)
+    
+    where <permission> is the permission accessing_obj must
+    have in order to pass the lock. If the given permission 
+    is part of PERMISSION_HIERARCHY, permission is also granted
+    to all ranks higher up in the hierarchy. 
+    """
+    return perm(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+
+def pperm_above(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Only allow Player objects with a permission *higher* in the permission
+    hierarchy than the one given. If there is no such higher rank, 
+    it's assumed we refer to superuser. If no hierarchy is defined,
+    this function has no meaning and returns False. 
+    """
+    return perm_above(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+
 def dbref(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -175,9 +208,20 @@ def dbref(accessing_obj, accessed_obj, *args, **kwargs):
         return dbref == accessing_obj.id
     return False 
 
+def pdbref(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Same as dbref, but making sure accessing_obj is a player.
+    """
+    return dbref(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+
 def id(accessing_obj, accessed_obj, *args, **kwargs):
     "Alias to dbref"
     return dbref(accessing_obj, accessed_obj, *args, **kwargs)
+
+def pid(accessing_obj, accessed_obj, *args, **kwargs):
+    "Alias to dbref, for Players"
+    return dbref(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+
 
 def attr(accessing_obj, accessed_obj, *args, **kwargs):
     """

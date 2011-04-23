@@ -18,17 +18,14 @@ class DefaultCmdSet(CmdSet):
         # The general commands
         self.add(general.CmdLook())
         self.add(general.CmdHome())
-        self.add(general.CmdPassword())
+        self.add(general.CmdWho())
         self.add(general.CmdInventory())
-        self.add(general.CmdQuit())
         self.add(general.CmdPose())
         self.add(general.CmdNick())
         self.add(general.CmdGet())
         self.add(general.CmdDrop())
-        self.add(general.CmdWho())
         self.add(general.CmdSay())
         self.add(general.CmdAccess())
-        self.add(general.CmdEncoding())
 
         # The help system
         self.add(help.CmdHelp())
@@ -52,7 +49,6 @@ class DefaultCmdSet(CmdSet):
         self.add(admin.CmdEmit())
         self.add(admin.CmdNewPassword())
         self.add(admin.CmdPerm())
-        self.add(admin.CmdPuppet())
         self.add(admin.CmdWall())
 
         # Building and world manipulation
@@ -79,24 +75,6 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdLock())
         self.add(building.CmdScript())
         self.add(building.CmdHome())
-
-        # Comm commands
-        self.add(comms.CmdAddCom())
-        self.add(comms.CmdDelCom())
-        self.add(comms.CmdAllCom())
-        self.add(comms.CmdChannels())
-        self.add(comms.CmdCdestroy())
-        self.add(comms.CmdChannelCreate())
-        self.add(comms.CmdCset())
-        self.add(comms.CmdCBoot())
-        self.add(comms.CmdCemit())
-        self.add(comms.CmdCWho())
-        self.add(comms.CmdCdesc())
-        self.add(comms.CmdPage())
-        self.add(comms.CmdIRC2Chan())
-        self.add(comms.CmdIMC2Chan())
-        self.add(comms.CmdIMCInfo())
-        self.add(comms.CmdIMCTell())
         
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())

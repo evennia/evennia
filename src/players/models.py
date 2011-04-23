@@ -44,10 +44,16 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
+from django.contrib.contenttypes.models import ContentType
+
 from src.server.sessionhandler import SESSIONS
 from src.players import manager 
-from src.typeclasses.models import Attribute, TypedObject
-from src.utils import logger
+from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
+from src.utils import logger, utils
+from src.commands.cmdsethandler import CmdSetHandler
+from src.commands import cmdhandler
+
+AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 #------------------------------------------------------------
 #
@@ -67,6 +73,36 @@ class PlayerAttribute(Attribute):
         "Define Django meta options"
         verbose_name = "Player Attribute"
         verbose_name_plural = "Player Attributes"
+
+#------------------------------------------------------------
+#
+# Player Nicks
+#
+#------------------------------------------------------------
+
+class PlayerNick(TypeNick):
+    """
+    
+    The default nick types used by Evennia are: 
+    inputline (default) - match against all input
+    player - match against player searches
+    obj - match against object searches 
+    channel - used to store own names for channels
+    """
+    db_obj = models.ForeignKey("PlayerDB")
+
+    class Meta:
+        "Define Django meta options"
+        verbose_name = "Nickname for Players"
+        verbose_name_plural = "Nicknames Players"
+        unique_together = ("db_nick", "db_type", "db_obj")
+
+class PlayerNickHandler(TypeNickHandler):
+    """
+    Handles nick access and setting. Accessed through ObjectDB.nicks
+    """    
+    NickClass = PlayerNick
+
 
 #------------------------------------------------------------
 #
@@ -116,12 +152,23 @@ class PlayerDB(TypedObject):
     # the in-game object connected to this player (if any). 
     # Use the property 'obj' to access. 
     db_obj = models.ForeignKey("objects.ObjectDB", null=True)
+    
+    # database storage of persistant cmdsets.
+    db_cmdset_storage = models.TextField(null=True)
 
     # Database manager 
     objects = manager.PlayerManager()
 
     class Meta:
         app_label = 'players'
+
+    def __init__(self, *args, **kwargs):
+        "Parent must be initiated first"
+        TypedObject.__init__(self, *args, **kwargs) 
+        # handlers
+        self.cmdset = CmdSetHandler(self)
+        self.cmdset.update(init_mode=True)
+        self.nicks = PlayerNickHandler(self)    
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -172,6 +219,26 @@ class PlayerDB(TypedObject):
         self.db_obj = None
         self.save()
     character = property(character_get, character_set, character_del)
+    # cmdset_storage property
+    #@property
+    def cmdset_storage_get(self):
+        "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
+        if self.db_cmdset_storage:
+            return [path.strip() for path  in self.db_cmdset_storage.split(',')]
+        return []
+    #@cmdset_storage.setter
+    def cmdset_storage_set(self, value):
+        "Setter. Allows for self.name = value. Stores as a comma-separated string."
+        if utils.is_iter(value):
+            value = ",".join([str(val).strip() for val in value])
+        self.db_cmdset_storage = value
+        self.save()        
+    #@cmdset_storage.deleter
+    def cmdset_storage_del(self):
+        "Deleter. Allows for del self.name"
+        self.db_cmdset_storage = ""
+        self.save()
+    cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
     class Meta:
         "Define Django meta options"
@@ -245,15 +312,23 @@ class PlayerDB(TypedObject):
         Evennia -> User 
         This is the main route for sending data back to the user from the server.
         """
+
         if from_obj:
             try:
                 from_obj.at_msg_send(outgoing_string, to_obj=self, data=data)
             except Exception:
                 pass
-        if object.__getattribute__(self, "character"):
-            if self.character.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
-                for session in object.__getattribute__(self, 'sessions'):
-                    session.msg(outgoing_string, data)
+
+        if (object.__getattribute__(self, "character") 
+            and not self.character.at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
+            # the at_msg_receive() hook may block receiving of certain messages
+            return 
+
+        outgoing_string = utils.to_str(outgoing_string, force_string=True)
+
+        for session in object.__getattribute__(self, 'sessions'):
+            session.msg(outgoing_string, data)
+
 
     def swap_character(self, new_character, delete_old_character=False):
         """
@@ -261,3 +336,49 @@ class PlayerDB(TypedObject):
         """
         return self.__class__.objects.swap_character(self, new_character, delete_old_character=delete_old_character)
     
+
+    #
+    # Execution/action methods
+    #
+        
+    def execute_cmd(self, raw_string):
+        """
+        Do something as this playe. This command transparently
+        lets its typeclass execute the command. 
+        raw_string - raw command input coming from the command line. 
+        """        
+        # nick replacement - we require full-word matching.
+        
+        raw_string = utils.to_unicode(raw_string)
+
+        raw_list = raw_string.split(None)
+        raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
+        for nick in PlayerNick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):           
+            if nick.db_nick in raw_list:
+                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1) 
+                break        
+        cmdhandler.cmdhandler(self.typeclass(self), raw_string)
+
+    def search(self, ostring, global_search=False, attribute_name=None, use_nicks=False, 
+               location=None, ignore_errors=False, player=False):
+        """
+        A shell method mimicking the ObjectDB equivalent, for easy inclusion from
+        commands regardless of if the command is run by a Player or an Object.
+        """
+
+        if self.character:
+            # run the normal search
+            return self.character.search(ostring, global_search=global_search, attribute_name=attribute_name, 
+                                         use_nicks=use_nicks, location=location, 
+                                         ignore_errors=ignore_errors, player=player)
+        if player:
+            # seach for players
+            matches = self.__class__.objects.player_search(ostring)
+        else:
+            # more limited player-only search. Still returns an Object.
+            ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
+            matches = ObjectDB.objects.object_search(self, ostring, global_search=global_search)
+        # deal with results 
+        matches = AT_SEARCH_RESULT(self, ostring, matches, global_search=global_search)
+        return matches 
+

@@ -235,14 +235,28 @@ def dbref(dbref):
         except Exception:
             return None
         return dbref
+    return None 
 
-def to_unicode(obj, encoding='utf-8'):
+def to_unicode(obj, encoding='utf-8', force_string=False):
     """
-    This decodes a suitable object to 
-    the unicode format. Note that one
-    needs to encode it back to utf-8 
-    before writing to disk or printing.
+    This decodes a suitable object to the unicode format. Note that
+    one needs to encode it back to utf-8 before writing to disk or
+    printing. Note that non-string objects are let through without
+    conversion - this is important for e.g. Attributes. Use
+    force_string to enforce conversion of objects to string. . 
     """
+
+    if force_string and not isinstance(obj, basestring):
+        # some sort of other object. Try to
+        # convert it to a string representation.
+        if hasattr(obj, '__str__'):
+            obj = obj.__str__()
+        elif hasattr(obj, '__unicode__'):
+            obj = obj.__unicode__()
+        else:
+            # last resort 
+            obj = str(obj)
+
     if isinstance(obj, basestring) and not isinstance(obj, unicode):
         try:
             obj = unicode(obj, encoding)
@@ -257,11 +271,26 @@ def to_unicode(obj, encoding='utf-8'):
         raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
     return obj 
 
-def to_str(obj, encoding='utf-8'):
+def to_str(obj, encoding='utf-8', force_string=False):
     """
     This encodes a unicode string back to byte-representation, 
-    for printing, writing to disk etc.
+    for printing, writing to disk etc. Note that non-string
+    objects are let through without modification - this is 
+    required e.g. for Attributes. Use force_string to force
+    conversion of objects to strings.
     """
+
+    if force_string and not isinstance(obj, basestring):
+        # some sort of other object. Try to
+        # convert it to a string representation.
+        if hasattr(obj, '__str__'):
+            obj = obj.__str__()
+        elif hasattr(obj, '__unicode__'):
+            obj = obj.__unicode__()
+        else:
+            # last resort 
+            obj = str(obj)
+
     if isinstance(obj, basestring) and isinstance(obj, unicode):
         try:
             obj = obj.encode(encoding)
@@ -321,7 +350,7 @@ def inherits_from(obj, parent):
     Takes an object and tries to determine if it inherits at any distance 
     from parent. What differs this function from e.g. isinstance()
     is that obj may be both an instance and a class, and parent
-    may be an instance, a class, or the python path to a class (counting
+<    may be an instance, a class, or the python path to a class (counting
     from the evennia root directory). 
     """
 
@@ -480,10 +509,11 @@ def has_parent(basepath, obj):
         # instance. Not sure if one should defend against this. 
         return False 
 
-def mod_import(mod_path):
+def mod_import(mod_path, propname=None):
     """
     Takes filename of a module, converts it to a python path
-    and imports it.
+    and imports it. If property is given, return the named 
+    property from this module instead of the module itself. 
     """
     
     def log_trace(errmsg=None):
@@ -494,6 +524,7 @@ def mod_import(mod_path):
         """
         from traceback import format_exc
         from twisted.python import log
+        print errmsg
 
         tracestring = format_exc()
         if tracestring:
@@ -507,23 +538,39 @@ def mod_import(mod_path):
             for line in errmsg.splitlines():
                 log.msg('[EE] %s' % line)
 
-    if not os.path.isabs(mod_path):
-        mod_path = os.path.abspath(mod_path)
-    path, filename = mod_path.rsplit(os.path.sep, 1)
-    modname = filename.rstrip('.py')
+    # first try to import as a python path
+    try:        
+        mod = __import__(mod_path, fromlist=["None"])
+    except ImportError:
+        
+        # try absolute path import instead
 
-    try:
-        result = imp.find_module(modname, [path])
-    except ImportError:
-        log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path)) 
-        return 
-    try:
-        mod = imp.load_module(modname, *result)
-    except ImportError:
-        log_trace("Could not find or import module %s at path '%s'" % (modname, path))
-        mod = None         
-    # we have to close the file handle manually
-    result[0].close()
+        if not os.path.isabs(mod_path):
+            mod_path = os.path.abspath(mod_path)
+        path, filename = mod_path.rsplit(os.path.sep, 1)
+        modname = filename.rstrip('.py')
+
+        try:
+            result = imp.find_module(modname, [path])
+        except ImportError:
+            log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path)) 
+            return 
+        try:
+            mod = imp.load_module(modname, *result)
+        except ImportError:
+            log_trace("Could not find or import module %s at path '%s'" % (modname, path))
+            mod = None         
+        # we have to close the file handle manually
+        result[0].close()
+
+    if mod and propname:
+        # we have a module, extract the sought property from it.
+        try:
+            mod_prop = mod.__dict__[to_str(propname)]
+        except KeyError:
+            log_trace("Could not import property '%s' from module %s." % (propname, mod_path))            
+            return None 
+        return mod_prop
     return mod 
 
 def string_from_module(modpath, variable=None):

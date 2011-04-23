@@ -16,25 +16,24 @@ transparently through the decorating TypeClass.
 
 from django.db import models
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
-from src.typeclasses.models import Attribute, TypedObject
+from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
+from src.players.models import PlayerDB
 from src.server.models import ServerConfig
 from src.commands.cmdsethandler import CmdSetHandler
+from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import is_iter, to_unicode
+from src.utils.utils import is_iter, to_unicode, to_str, mod_import
+
+#PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
 
 FULL_PERSISTENCE = settings.FULL_PERSISTENCE 
-
-try:
-    HANDLE_SEARCH_ERRORS = __import__(
-        settings.ALTERNATE_OBJECT_SEARCH_ERROR_HANDLER).handle_search_errors, fromlist=[None]
-except Exception:
-    from src.objects.object_search_funcs \
-         import handle_search_errors as HANDLE_SEARCH_ERRORS
+AT_SEARCH_RESULT = mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 #------------------------------------------------------------
 #
@@ -80,80 +79,33 @@ class Alias(SharedMemoryModel):
 
 #------------------------------------------------------------
 #
-# Nick
+# Object Nicks
 #
 #------------------------------------------------------------
 
-class Nick(SharedMemoryModel):
+class ObjectNick(TypeNick):
     """
-    This model holds whichever alternate names this object 
-    has for OTHER objects, but also for arbitrary strings,
-    channels, players etc. Setting a nick does not affect
-    the nicknamed object at all (as opposed to Aliases above), 
-    and only this object will be able to refer to the nicknamed
-    object by the given nick. 
-
+    
     The default nick types used by Evennia are: 
     inputline (default) - match against all input
     player - match against player searches
     obj - match against object searches 
     channel - used to store own names for channels
-
     """
-    db_nick = models.CharField(max_length=255, db_index=True) # the nick
-    db_real = models.TextField() # the aliased string
-    db_type = models.CharField(default="inputline", max_length=16, null=True, blank=True) # the type of nick
     db_obj = models.ForeignKey("ObjectDB")
 
     class Meta:
         "Define Django meta options"
-        verbose_name = "Nickname"
-        verbose_name_plural = "Nicknames"
+        verbose_name = "Nickname for Objects"
+        verbose_name_plural = "Nicknames Objects"
         unique_together = ("db_nick", "db_type", "db_obj")
 
-class NickHandler(object):
+class ObjectNickHandler(TypeNickHandler):
     """
     Handles nick access and setting. Accessed through ObjectDB.nicks
     """    
+    NickClass = ObjectNick
 
-    def __init__(self, obj):
-        "Setup"
-        self.obj = obj
-
-    def add(self, nick, realname, nick_type="inputline"):
-        "We want to assign a new nick"
-        if not nick or not nick.strip():
-            return 
-        nick = nick.strip()        
-        real = realname.strip() 
-        query = Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type) 
-        if query.count():
-            old_nick = query[0]
-            old_nick.db_real = real
-            old_nick.save()
-        else:              
-            new_nick = Nick(db_nick=nick, db_real=real, db_type=nick_type, db_obj=self.obj)
-            new_nick.save()                
-    def delete(self, nick, nick_type="inputline"):        
-        "Removes a nick"
-        nick = nick.strip()        
-        query = Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
-        if query.count():
-            # remove the found nick(s)
-            query.delete()           
-    def get(self, nick=None, nick_type="inputline"):
-        if nick:
-            query = Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
-            query = query.values_list("db_real", flat=True)
-            if query.count():
-                return query[0]
-            else:
-                return nick
-        else:
-            return Nick.objects.filter(db_obj=self.obj)
-    def has(self, nick, nick_type="inputline"):
-        "Returns true/false if this nick is defined or not"
-        return Nick.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type).count()
 
 #------------------------------------------------------------
 #
@@ -239,7 +191,7 @@ class ObjectDB(TypedObject):
         self.cmdset.update(init_mode=True)
         self.scripts = ScriptHandler(self)
         self.scripts.validate(init_mode=True)
-        self.nicks = NickHandler(self)    
+        self.nicks = ObjectNickHandler(self)    
         
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -312,7 +264,7 @@ class ObjectDB(TypedObject):
                 loc = location                       
             elif ObjectDB.objects.dbref(location):
                 # location is a dbref; search
-                loc = ObjectDB.objects.dbref_search(location)
+                loc = ObjectDB.objects.dbref_search(ocation)
                 if loc and hasattr(loc,'dbobj'):
                     loc = loc.dbobj
                 else:
@@ -524,14 +476,11 @@ class ObjectDB(TypedObject):
                global_search=False,
                attribute_name=None,
                use_nicks=False, location=None,
-               ignore_errors=False):
+               ignore_errors=False, player=False):
         """
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully.
         
-        if local_only AND search_self are both false, a global
-         search is done instead. 
-
         ostring: (str) The string to match object names against.
                        Obs - To find a player, append * to the
                        start of ostring. 
@@ -544,7 +493,16 @@ class ObjectDB(TypedObject):
         ignore_errors : Don't display any error messages even
                         if there are none/multiple matches - 
                         just return the result as a list. 
+        player :        Don't search for an Object but a Player. 
+                        This will also find players that don't
+                        currently have a character.
 
+        Use *<string> to search for objects controlled by a specific
+        player. Note that the object controlled by the player will be
+        returned, not the player object itself. This also means that
+        this will not find Players without a character. Use the keyword
+        player=True to find player objects. 
+               
         Note - for multiple matches, the engine accepts a number
         linked to the key in order to separate the matches from
         each other without showing the dbref explicitly. Default
@@ -554,22 +512,30 @@ class ObjectDB(TypedObject):
         etc. 
         """
         if use_nicks:
-            if ostring.startswith('*'):
+            if ostring.startswith('*') or player:
                 # player nick replace 
-                ostring = "*%s" % self.nicks.get(ostring.lstrip('*'), nick_type="player")
+                ostring = self.nicks.get(ostring.lstrip('*'), nick_type="player")
+                if not player:
+                    ostring = "*%s" % ostring
             else:
                 # object nick replace 
                 ostring = self.nicks.get(ostring, nick_type="object")
 
-        results = ObjectDB.objects.object_search(self, ostring, 
-                                                 global_search=global_search,
-                                                 attribute_name=attribute_name,
-                                                 location=location)
+        if player:
+            if ostring in ("me", "self", "*me", "*self"):
+                results = [self.player]
+            else:
+                results = PlayerDB.objects.player_search(ostring.lstrip('*'))
+        else:
+            results = ObjectDB.objects.object_search(self, ostring, 
+                                                     global_search=global_search,
+                                                     attribute_name=attribute_name,
+                                                     location=location)
     
         if ignore_errors:
             return results
-        return HANDLE_SEARCH_ERRORS(self, ostring, results, global_search)
-
+        # this import is cache after the first call.
+        return AT_SEARCH_RESULT(self, ostring, results, global_search)
 
     #
     # Execution/action methods
@@ -588,7 +554,7 @@ class ObjectDB(TypedObject):
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        for nick in Nick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):           
+        for nick in ObjectNick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):           
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1) 
                 break        
@@ -605,7 +571,7 @@ class ObjectDB(TypedObject):
         """
         # This is an important function that must always work. 
         # we use a different __getattribute__ to avoid recursive loops.
-        
+                
         if object.__getattribute__(self, 'player'):
             object.__getattribute__(self, 'player').msg(message, from_obj, data)
 
@@ -796,9 +762,15 @@ class ObjectDB(TypedObject):
             return False
 
         # See if we need to kick the player off.
+
         for session in self.sessions:
-            session.msg("Your character %s has been destroyed. Goodbye." % self.name)
-            session.session_disconnect()
+            session.msg("Your character %s has been destroyed." % self.name)
+            #session.session_disconnect()
+
+        # sever the connection (important!)
+        if object.__getattribute__(self, 'player') and self.player:
+            self.player.character = None
+        self.player = None 
         
         # if self.player:
         #     self.player.user.is_active = False 
@@ -811,6 +783,3 @@ class ObjectDB(TypedObject):
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True 
-
-# Deferred import to avoid circular import errors. 
-from src.commands import cmdhandler

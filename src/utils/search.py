@@ -27,11 +27,15 @@ Example: To reach the search method 'get_object_with_user'
 
 # Import the manager methods to be wrapped
 
-from src.objects.models import ObjectDB
-from src.players.models import PlayerDB
-from src.scripts.models import ScriptDB
-from src.comms.models import Msg, Channel
-from src.help.models import HelpEntry
+from django.contrib.contenttypes.models import ContentType
+
+# import objects this way to avoid circular import problems
+ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
+PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
+ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
+Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
+Channel = ContentType.objects.get(app_label="comms", model="channel").model_class()
+HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
 
 #
 # Search objects as a character

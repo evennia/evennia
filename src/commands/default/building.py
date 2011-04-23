@@ -6,6 +6,7 @@ Building and world design commands
 
 from django.conf import settings 
 from src.objects.models import ObjectDB, ObjAttribute
+from src.players.models import PlayerAttribute
 from src.utils import create, utils, debug 
 from src.commands.default.muxcommand import MuxCommand
 
@@ -122,7 +123,7 @@ class CmdSetObjAlias(MuxCommand):
             old_aliases = obj.aliases
             if old_aliases:
                 caller.msg("Cleared aliases from %s: %s" % (obj.key, ", ".join(old_aliases)))
-                del obj.dbobj.aliases # TODO: del does not understand indirect typeclass reference!
+                del obj.dbobj.aliases 
             else:
                 caller.msg("No aliases to clear.")
             return 
@@ -1389,15 +1390,24 @@ class CmdExamine(ObjManipCommand):
 
     Usage: 
       examine [<object>[/attrname]]
+      examine [*<player>[/attrname]]
+
+    Switch:
+      player - examine a Player (same as adding *)
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it. 
     If object is not specified, the current location is examined. 
+
+    Append a * before the search string to examine a player. 
+
     """
     key = "@examine"
     aliases = ["@ex","ex", "exam", "examine"]
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
+
+    player_mode = False 
 
     def format_attributes(self, obj, attrname=None, crop=True):
         """
@@ -1411,7 +1421,10 @@ class CmdExamine(ObjManipCommand):
             except Exception:
                 ndb_attr = None
         else:
-            db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
+            if player_mode:
+                db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
+            else:
+                db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
             try:
                 ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items()]
             except Exception:
@@ -1439,24 +1452,25 @@ class CmdExamine(ObjManipCommand):
         returns a string.
         """
         
-        if obj.has_player:
+        if hasattr(obj, "has_player") and obj.has_player:
             string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)        
         else:
             string = "\n{wName/key{n: {C%s{n (%s)" % (obj.name, obj.dbref)        
-        if obj.aliases:
+        if hasattr(obj, "aliases") and obj.aliases:
             string += "\n{wAliases{n: %s" % (", ".join(obj.aliases))
-        if obj.has_player:
+        if hasattr(obj, "has_player") and obj.has_player:
             string += "\n{wPlayer{n: {c%s{n" % obj.player.name
             perms = obj.player.permissions
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]                
-            string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))
-         
+            string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))         
         string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass, obj.typeclass_path)
-        string += "\n{wLocation{n: %s" % obj.location
-        if obj.destination:
+
+        if hasattr(obj, "location"):
+            string += "\n{wLocation{n: %s" % obj.location
+        if hasattr(obj, "destination") and obj.destination:
             string += "\n{wDestination{n: %s" % obj.destination
         perms = obj.permissions
         if perms:            
@@ -1467,8 +1481,8 @@ class CmdExamine(ObjManipCommand):
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
             cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])            
-            string += "\n{wCurrent Cmdset (before permission checks){n:\n %s" % cmdsetstr
-        if obj.scripts.all():
+            string += "\n{wCurrent Cmdset (including permission checks){n:\n %s" % cmdsetstr
+        if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
             string += "\n{wScripts{n:\n %s" % obj.scripts
         # add the attributes                    
         string += self.format_attributes(obj)
@@ -1476,21 +1490,21 @@ class CmdExamine(ObjManipCommand):
         exits = []
         pobjs = []
         things = []
-        for content in obj.contents:
-            if content.destination: 
-                # an exit
-                exits.append(content)
-            elif content.player:
-                pobjs.append(content)
-            else:
-                things.append(content)
-        if exits:
-            string += "\n{wExits{n: " + ", ".join([exit.name for exit in exits]) 
-        if pobjs:
-            string += "\n{wCharacters{n: " + ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
-        if things:
-            string += "\n{wContents{n: " + ", ".join([cont.name for cont in obj.contents 
-                                                      if cont not in exits and cont not in pobjs])
+        if hasattr(obj, "contents"):
+            for content in obj.contents:
+                if content.destination: 
+                    exits.append(content)
+                elif content.player:
+                    pobjs.append(content)
+                else:
+                    things.append(content)
+            if exits:
+                string += "\n{wExits{n: " + ", ".join([exit.name for exit in exits]) 
+            if pobjs:
+                string += "\n{wCharacters{n: " + ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
+            if things:
+                string += "\n{wContents{n: " + ", ".join([cont.name for cont in obj.contents 
+                                                          if cont not in exits and cont not in pobjs])
         #output info
         return "-"*78 + '\n' + string.strip() + "\n" + '-'*78
     
@@ -1506,36 +1520,35 @@ class CmdExamine(ObjManipCommand):
                 caller.execute_cmd('look %s' % obj.name)
                 return              
             string = self.format_output(obj)
-
-        else:
-            # we have given a specific target object 
-
-            string = ""
-
-            for objdef in self.lhs_objattr:
-
-                obj_name = objdef['name']
-                obj_attrs = objdef['attrs']
-                
-                obj = caller.search(obj_name)                
-                if not obj:
-                    continue
-
-                if not obj.access(caller, 'examine'):
-                    #If we don't have special info access, just look at the object instead.
-                    caller.execute_cmd('look %s' % obj_name)
-                    continue
-
-                if obj_attrs:
-                    for attrname in obj_attrs:
-                        # we are only interested in specific attributes                    
-                        string += self.format_attributes(obj, attrname, crop=False)                        
-                else:
-                    string += self.format_output(obj)        
-        string = string.strip()
-        # Send it all
-        if string:
             caller.msg(string.strip())
+            return 
+
+        # we have given a specific target object 
+        string = ""
+        for objdef in self.lhs_objattr:
+
+            obj_name = objdef['name']
+            obj_attrs = objdef['attrs']
+
+            global player_mode 
+            player_mode = "player" in self.switches or obj_name.startswith('*')
+
+            obj = caller.search(obj_name, player=player_mode)                
+            if not obj:
+                continue
+
+            if not obj.access(caller, 'examine'):
+                #If we don't have special info access, just look at the object instead.
+                caller.execute_cmd('look %s' % obj_name)
+                continue
+
+            if obj_attrs:
+                for attrname in obj_attrs:
+                    # we are only interested in specific attributes                    
+                    string += self.format_attributes(obj, attrname, crop=False)                        
+            else:
+                string += self.format_output(obj)        
+        caller.msg(string.strip())
 
 
 class CmdFind(MuxCommand):

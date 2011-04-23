@@ -5,10 +5,12 @@ now.
 import time
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
-from src.objects.models import HANDLE_SEARCH_ERRORS
 from src.utils import utils
-from src.objects.models import Nick
+from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand
+
+AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 
 class CmdHome(MuxCommand):
     """
@@ -45,7 +47,7 @@ class CmdLook(MuxCommand):
     Observes your location or objects in your vicinity.
     """
     key = "look"
-    aliases = ["l"]
+    aliases = ["l", "ls"]
     locks = "cmd:all()"
 
     def func(self):
@@ -53,18 +55,19 @@ class CmdLook(MuxCommand):
         Handle the looking. 
         """
         caller = self.caller
-        args = self.args        # caller.msg(inp)
+        args = self.args        
 
         if args:
             # Use search to handle duplicate/nonexistant results.
             looking_at_obj = caller.search(args, use_nicks=True)
             if not looking_at_obj:
-                return
+                return        
         else:
             looking_at_obj = caller.location
             if not looking_at_obj:
-                caller.msg("Location: None")
+                caller.msg("You have no location to look at!")
                 return
+            
         if not hasattr(looking_at_obj, 'return_appearance'):
             # this is likely due to us having a player instead
             looking_at_obj = looking_at_obj.character    
@@ -89,6 +92,8 @@ class CmdPassword(MuxCommand):
         "hook function."
 
         caller = self.caller 
+        if hasattr(caller, "player"):
+            caller = caller.player 
 
         if not self.rhs:
             caller.msg("Usage: @password <oldpass> = <newpass>")
@@ -96,7 +101,7 @@ class CmdPassword(MuxCommand):
         oldpass = self.lhslist[0] # this is already stripped by parse()
         newpass = self.rhslist[0] #               ''
         try:
-            uaccount = caller.player.user
+            uaccount = caller.user
         except AttributeError:
             caller.msg("This is only applicable for players.")
             return
@@ -309,7 +314,7 @@ class CmdDrop(MuxCommand):
         # those in our inventory. 
         results = [obj for obj in results if obj in caller.contents]
         # now we send it into the handler.
-        obj = HANDLE_SEARCH_ERRORS(caller, self.args, results, False)
+        obj = AT_SEARCH_RESULT(caller, self.args, results, False)
         if not obj:
             return 
         
@@ -348,13 +353,13 @@ class CmdWho(MuxCommand):
       who 
       doing 
 
-    Shows who is currently online. Doing is an 
-    alias that limits info also for those with 
-    all permissions.
+    Shows who is currently online. Doing is an alias that limits info
+    also for those with all permissions.
     """
 
     key = "who"
     aliases = "doing" 
+    locks = "cmd:all()"
 
     def func(self):
         """
@@ -518,17 +523,20 @@ class CmdEncoding(MuxCommand):
         Sets the encoding.
         """
         caller = self.caller
+        if hasattr(caller, 'player'):
+            caller = caller.player 
+
         if 'clear' in self.switches:
             # remove customization
-            old_encoding = caller.player.db.encoding
+            old_encoding = caller.db.encoding
             if old_encoding:
                 string = "Your custom text encoding ('%s') was cleared." % old_encoding
             else:
                 string = "No custom encoding was set."
-            del caller.player.db.encoding
+            del caller.db.encoding
         elif not self.args:
             # just list the encodings supported
-            pencoding = caller.player.db.encoding                        
+            pencoding = caller.db.encoding                        
             string = ""
             if pencoding: 
                 string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding                
@@ -539,9 +547,9 @@ class CmdEncoding(MuxCommand):
                 string = "No encodings found."
         else:            
             # change encoding 
-            old_encoding = caller.player.db.encoding
+            old_encoding = caller.db.encoding
             encoding = self.args
-            caller.player.db.encoding = encoding
+            caller.db.encoding = encoding
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
         caller.msg(string.strip())                    
 
@@ -579,3 +587,141 @@ class CmdAccess(MuxCommand):
         if hasattr(caller, 'player'):
             string += "\nPlayer {c%s{n: %s" % (caller.player.key, pperms)
         caller.msg(string)
+
+# OOC commands 
+
+class CmdOOCLook(CmdLook):
+    """
+    ooc look
+
+    Usage:
+      look
+
+    This is an OOC version of the look command. Since a
+    Player doesn't have an in-game existence, there is no
+    concept of location or "self". If we are controlling 
+    a character, pass control over to normal look. 
+
+    """
+
+    key = "look"
+    aliases = ["l", "ls"]
+    locks = "cmd:all()"
+    help_cateogory = "General"
+
+    def func(self):
+        "implement the command"
+
+        self.character = None 
+        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+            # An object of some type is calling. Convert to player.
+            self.character = self.caller 
+            self.caller = self.caller.player
+
+        if not self.character:
+            string = "You are out-of-character (OOC). "
+            string += "Use {w@ic{n to get back to the game, {whelp{n for more info."
+            self.caller.msg(string)
+        else:
+            self.caller = self.character # we have to put this back for normal look to work.
+            super(CmdLook, self).func()
+            
+class CmdIC(MuxCommand):
+    """
+    Switch control to an object
+    
+    Usage:
+      @ic <character>
+      
+    Go in-character (IC) as a given Character. 
+
+    This will attempt to "become" a different object assuming you have
+    the right to do so.  You cannot become an object that is already
+    controlled by another player. In principle <character> can be
+    any in-game object as long as you have access right to puppet it. 
+    """
+
+    key = "@ic"
+    locks = "cmd:all()" # must be all() or different puppeted objects won't be able to access it.
+    aliases = "@puppet"
+    help_category = "General"
+
+    def func(self):
+        """
+        Simple puppet method
+        """
+        caller = self.caller
+        if utils.inherits_from(caller, "src.objects.objects.Object"):
+            caller = caller.player
+
+        new_character = None 
+        if not self.args:
+            new_character = caller.db.last_puppet
+            if not new_character:
+                caller.msg("Usage: @ic <character>")
+                return
+        if not new_character:
+            # search for a matching character
+            new_character = caller.search(self.args)
+        if not new_character:
+            # the search method handles error messages etc.
+            return 
+        if new_character.player:
+            if new_character.player == caller:
+                caller.msg("{RYou already are {c%s{n." % new_character.name)
+            else:
+                caller.msg("{c%s{r is already acted by another player.{n" % new_character.name)                
+            return 
+        if not new_character.access(caller, "puppet"):
+            caller.msg("{rYou may not become %s.{n" % new_character.name)
+            return
+        old_char = None 
+        if caller.character:
+            # save the old character. We only assign this to last_puppet if swap is successful. 
+            old_char = caller.character
+        if caller.swap_character(new_character):
+            new_character.msg("\n{gYou become {c%s{n.\n" % new_character.name)
+            caller.db.last_puppet = old_char
+            new_character.execute_cmd("look")
+        else:
+            caller.msg("{rYou cannot become {C%s{n." % new_character.name)
+
+class CmdOOC(MuxCommand):
+    """
+    @ooc - go ooc
+    
+    Usage:
+      @ooc
+      
+    Go out-of-character (OOC).
+
+    This will leave your current character and put you in a incorporeal OOC state.
+    """
+
+    key = "@ooc"
+    locks = "cmd:all()" # this must be all(), or different puppeted objects won't be able to access it.
+    aliases = "@unpuppet"
+    help_category = "General"
+
+    def func(self):
+        "Implement function"        
+        
+        caller = self.caller
+
+        if utils.inherits_from(caller, "src.objects.objects.Object"):
+            caller = self.caller.player
+
+        if not caller.character:
+            string = "You are already OOC."
+            caller.msg(string)
+            return 
+
+        caller.db.last_puppet = caller.character
+        
+        # disconnect         
+        caller.character.player = None
+        caller.character = None 
+        
+
+        caller.msg("\n{GYou go OOC.{n\n")
+        caller.execute_cmd("look")

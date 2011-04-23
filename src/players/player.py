@@ -12,19 +12,20 @@ instead for most things).
 """
 from src.typeclasses.typeclass import TypeClass
 
+from settings import CMDSET_OOC
+
 class Player(TypeClass):
     """
     Base typeclass for all Players.     
     """
     
-    def at_player_creation(self):
+    def basetype_setup(self):
         """
-        This is called once, the very first time
-        the player is created (i.e. first time they
-        register with the game). It's a good place
-        to store attributes all players should have,
-        like configuration values etc. 
-        """        
+        This sets up the basic properties for a player. 
+        Overload this with at_player_creation rather than
+        changing this method. 
+        
+        """
         # the text encoding to use.
         self.db.encoding = "utf-8"
         
@@ -34,6 +35,21 @@ class Player(TypeClass):
         self.locks.add("delete:perm(Wizards)")
         self.locks.add("boot:perm(Wizards)")        
         self.locks.add("msg:all()")
+
+        # The ooc player cmdset 
+        self.cmdset.add_default(CMDSET_OOC, permanent=True)
+        self.cmdset.outside_access = False 
+    
+    def at_player_creation(self):
+        """
+        This is called once, the very first time
+        the player is created (i.e. first time they
+        register with the game). It's a good place
+        to store attributes all players should have,
+        like configuration values etc. 
+        """        
+        pass
+ 
 
     # Note that the hooks below also exist
     # in the character object's typeclass. You

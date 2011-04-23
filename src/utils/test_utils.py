@@ -20,3 +20,5 @@ class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
             test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS 
                            if (applabel.startswith('src.') or applabel.startswith('game.'))]
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
+
+

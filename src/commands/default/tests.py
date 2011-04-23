@@ -441,5 +441,12 @@ class TestCwho(CommandTest):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("@cwho testchan1b", "Channel subscriptions")
         
+# OOC commands 
+
+#class TestOOC_and_IC(CommandTest): # can't be tested it seems, causes errors in other commands (?)
+#    def test_call(self):        
+#        self.execute_cmd("@ooc", "\nYou go OOC.")
+#        self.execute_cmd("@ic", "\nYou become TestChar")
+
 # Unloggedin commands
 # these cannot be tested from here. 

@@ -145,13 +145,12 @@ class SessionBase(object):
         and have to be done right after this function!
         """
         if self.logged_in:            
-            character = self.get_character()
-            if character:
-                uaccount = character.player.user
-                uaccount.last_login = datetime.now()
-                uaccount.save()            
-                self.at_disconnect()
-                self.logged_in = False                                        
+            player = self.get_player()
+            uaccount = player.user
+            uaccount.last_login = datetime.now()
+            uaccount.save()            
+            self.at_disconnect()
+            self.logged_in = False                                        
         SESSIONS.remove_session(self)
 
     def session_validate(self):
@@ -227,16 +226,18 @@ class SessionBase(object):
             return 
 
         # all other inputs, including empty inputs
-        character = self.get_character()
+        character = self.get_character()        
 
         if character:
-            #print "loggedin _execute_cmd: '%s' __ %s" % (command_string, character)
             # normal operation.            
             character.execute_cmd(command_string)
         else:
-            #print "unloggedin _execute_cmd: '%s' __ %s" % (command_string, character)
-            # we are not logged in yet; call cmdhandler directly
-            cmdhandler.cmdhandler(self, command_string, unloggedin=True)
+            if self.logged_in:
+                # there is no character, but we are logged in. Use player instead.
+                self.get_player().execute_cmd(command_string)                    
+            else:            
+                # we are not logged in. Use special unlogged-in call. 
+                cmdhandler.cmdhandler(self, command_string, unloggedin=True)
         self.update_session_counters()            
 
     def get_data_obj(self, **kwargs):

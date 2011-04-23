@@ -136,21 +136,18 @@ DATABASE_PORT = ''
 ###################################################
 
 # An alternate command parser module to use 
-# (if not set, uses 'src.commands.cmdparser')
-ALTERNATE_PARSER = ""
+COMMAND_PARSER = "src.commands.cmdparser.cmdparser"
 # How many space-separated words a command name may have
 # and still be identified as one single command 
 # (e.g. 'push button' instead of 'pushbutton')
 COMMAND_MAXLEN = 3
 # The handler that outputs errors when searching
-# objects using object.search(). (If not set, uses
-# src.objects.object_search_funcs.handle_search_errors)
-ALTERNATE_OBJECT_SEARCH_ERROR_HANDLER = ""
+# objects using object.search(). 
+SEARCH_AT_RESULT = "src.commands.cmdparser.at_search_result"
 # The parser used in order to separate multiple
 # object matches (so you can separate between same-named
-# objects without using dbrefs). (If not set, uses
-# src.objects.object_search_funcs.object_multimatch_parser).
-ALTERNATE_OBJECT_SEARCH_MULTIMATCH_PARSER = ""
+# objects without using dbrefs).
+SEARCH_AT_MULTIMATCH_INPUT = "src.commands.cmdparser.at_multimatch_input"
 # The module holding text strings for the connection screen. 
 # This module should contain one or more variables 
 # with strings defining the look of the screen.
@@ -162,8 +159,10 @@ CONNECTION_SCREEN_MODULE = "game.gamesrc.world.connection_screens"
 
 # Command set used before player has logged in
 CMDSET_UNLOGGEDIN = "game.gamesrc.commands.basecmdset.UnloggedinCmdSet"
-# Default set for logged in players (fallback)
+# Default set for logged in player with characters (fallback)
 CMDSET_DEFAULT = "game.gamesrc.commands.basecmdset.DefaultCmdSet"
+# Command set for players without a character (ooc)
+CMDSET_OOC = "game.gamesrc.commands.basecmdset.OOCCmdSet"
 
 ###################################################
 # Default Object typeclasses 

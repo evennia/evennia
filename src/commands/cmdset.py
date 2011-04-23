@@ -15,6 +15,9 @@ together to create interesting in-game effects.
 """
 
 import copy
+from src.utils.utils import inherits_from, is_iter 
+
+RECURSIVE_PROTECTION = False 
 
 class CmdSetMeta(type):
     """
@@ -204,16 +207,40 @@ class CmdSet(object):
 
     def add(self, cmd):
         """
-        Add a command to this cmdset.
+        Add a command, a list of commands or a cmdset to this cmdset.
 
         Note that if cmd already exists in set,
         it will replace the old one (no priority checking etc 
         at this point; this is often used to overload 
         default commands). 
-        """
-        cmd = instantiate(cmd)
 
-        if cmd:
+        If cmd is another cmdset class or -instance, the commands
+        of that command set is added to this one, as if they were part
+        of the original cmdset definition. No merging or priority checks
+        are made, rather later added commands will simply replace 
+        existing ones to make a unique set. 
+        """
+
+        if inherits_from(cmd, "src.commands.cmdset.CmdSet"):
+            # this is a command set so merge all commands in that set
+            # to this one. We are not protecting against recursive
+            # loops (adding a cmdset that itself adds this cmdset here
+            # since such an error will be very visible and lead to a
+            # traceback at startup anyway.
+            try:
+                cmd = instantiate(cmd)
+            except RuntimeError, e:
+                string = "Adding cmdset %s to %s lead to an infinite loop. When adding a cmdset to another, "
+                string += "make sure they are not themself cyclically added to the new cmdset somewhere in the chain."
+                raise RuntimeError(string % (cmd, self.__class__))
+            cmds = cmd.commands
+        elif not is_iter(cmd):
+            cmds = [instantiate(cmd)]
+        else:
+            cmds = instantiate(cmd)
+
+        for cmd in cmds:
+            # add all commands 
             if not hasattr(cmd, 'obj'):
                 cmd.obj = self.cmdsetobj
             try:

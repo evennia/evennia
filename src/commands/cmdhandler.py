@@ -54,14 +54,11 @@ from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.commands.cmdsethandler import import_cmdset
 from src.objects.exithandler import EXITHANDLER
-from src.utils import logger 
+from src.utils import logger, utils 
 
 #This switches the command parser to a user-defined one.
 # You have to restart the server for this to take effect. 
-try:
-    CMDPARSER = __import__(settings.ALTERNATE_PARSER, fromlist=[True]).cmdparser
-except Exception:
-    from src.commands.cmdparser import cmdparser as CMDPARSER
+COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
 
 # There are a few system-hardcoded command names. These
 # allow for custom behaviour when the command handler hits
@@ -101,13 +98,21 @@ def get_and_merge_cmdsets(caller):
     exit_cmdset = None
     local_objects_cmdsets = [None] 
     
+    # Player object's commandsets 
+    try:
+        player_cmdset = caller.player.cmdset.current
+    except AttributeError:
+        player_cmdset = None 
+    
     if not caller_cmdset.no_channels:
         # Make cmdsets out of all valid channels
         channel_cmdset = CHANNELHANDLER.get_cmdset(caller)
     if not caller_cmdset.no_exits:
         # Make cmdsets out of all valid exits in the room
         exit_cmdset = EXITHANDLER.get_cmdset(caller)
-    location = caller.location 
+    location = None
+    if hasattr(caller, "location"):
+        location = caller.location 
     if location and not caller_cmdset.no_objs:
         # Gather all cmdsets stored on objects in the room and
         # also in the caller's inventory
@@ -138,6 +143,12 @@ def get_and_merge_cmdsets(caller):
         cmdset = channel_cmdset + cmdset
     except TypeError:
         pass
+    # finally merge on the player cmdset. This should have a low priority
+    try:
+        cmdset = player_cmdset + cmdset
+    except TypeError:
+        pass
+
     return cmdset
 
 def match_command(cmd_candidates, cmdset, logged_caller=None):
@@ -295,7 +306,7 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 raise ExecSystemCommand(syscmd, sysarg)
 
             # Parse the input string into command candidates
-            cmd_candidates = CMDPARSER(raw_string)            
+            cmd_candidates = COMMAND_PARSER(raw_string)            
             
             #string ="Command candidates"
             #for cand in cmd_candidates:

@@ -80,11 +80,16 @@ class ChannelCommand(command.Command):
         msg = "[%s] %s: %s" % (channel.key, caller.name, msg)        
         # we can't use the utils.create function to make the Msg,
         # since that creates an import recursive loop.         
-        msgobj = Msg(db_sender=caller.player, db_message=msg)
+        try:
+            sender = caller.player
+        except AttributeError:
+            # this could happen if a player is calling directly.
+            sender = caller.dbobj
+        msgobj = Msg(db_sender=sender, db_message=msg)
         msgobj.save()
         msgobj.channels = channel
         # send new message object to channel        
-        channel.msg(msgobj, from_obj=caller.player)
+        channel.msg(msgobj, from_obj=sender)
 
 class ChannelHandler(object):
     """

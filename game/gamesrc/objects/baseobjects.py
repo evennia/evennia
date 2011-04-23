@@ -44,12 +44,6 @@ class Object(BaseObject):
     
     Hooks (these are class methods, so their arguments should also start with self): 
 
-     basetype_setup() - only called once, when object is first created, before
-                       at_object_creation(). Sets up semi-engine-specific details such as 
-                       the default lock policy, what defines a Room, Exit etc. 
-                       Usually not modified unless you want to overload the default
-                       security restriction policies.
-
      at_object_creation() - only called once, when object is first created.
                             Almost all object customizations go here. 
      at_first_login() - only called once, the very first time user logs in.

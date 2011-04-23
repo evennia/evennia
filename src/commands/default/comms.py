@@ -1,5 +1,11 @@
 """
-Comsys command module.
+Comsystem command module.
+
+Comm commands are OOC commands and intended to be made available to
+the Player at all times (they go into the PlayerCmdSet). So we 
+make sure to homogenize self.caller to always be the player object
+for easy handling. 
+
 """
 from django.conf import settings
 from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
@@ -29,6 +35,25 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
             caller.msg("Multiple channels match (be more specific): \n%s" % matches)
         return None
     return channels[0]
+
+class CommCommand(MuxCommand):
+    """
+    This is a parent for comm-commands. Since
+    These commands are to be available to the 
+    Player, we make sure to homogenize the caller 
+    here, so it's always seen as a player to the 
+    command body. 
+    """
+
+    def parse(self):
+        "overload parts of parse"
+
+        # run parent
+        super(CommCommand, self).parse()
+        # fix obj->player
+        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+            # an object. Convert it to its player.
+            self.caller = self.caller.player
         
 class CmdAddCom(MuxCommand):
     """
@@ -46,14 +71,14 @@ class CmdAddCom(MuxCommand):
     key = "addcom"
     aliases = ["aliaschan","chanalias"]
     help_category = "Comms"
-    locks = "cmd:not perm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned)"
 
     def func(self):
         "Implement the command"
                 
         caller = self.caller
         args = self.args
-        player = caller.player
+        player = caller
 
         if not args:
             caller.msg("Usage: addcom [alias =] channelname.")
@@ -120,7 +145,7 @@ class CmdDelCom(MuxCommand):
         "Implementing the command. "
 
         caller = self.caller
-        player = caller.player
+        player = caller
 
         if not self.args:
             caller.msg("Usage: delcom <alias or channel>")
@@ -169,7 +194,7 @@ class CmdAllCom(MuxCommand):
     """
     
     key = "allcom"
-    locks = "cmd: not perm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
     
     def func(self):
@@ -189,7 +214,7 @@ class CmdAllCom(MuxCommand):
                 caller.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
              #get names all subscribed channels and disconnect from them all
-            channels = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller.player)]
+            channels = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
             for channel in channels:
                 caller.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
@@ -230,7 +255,7 @@ class CmdChannels(MuxCommand):
     key = "@channels"
     aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
-    locks = "cmd: not perm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned)"
 
     def func(self):
         "Implement function"
@@ -243,7 +268,7 @@ class CmdChannels(MuxCommand):
             caller.msg("No channels available.")
             return
         # all channel we are already subscribed to
-        subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller.player)]
+        subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
 
         if self.cmdstring != "comlist":
 
@@ -298,7 +323,7 @@ class CmdCdestroy(MuxCommand):
 
     key = "@cdestroy"
     help_category = "Comms"
-    locks = "cmd: not perm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned)"
 
     def func(self):
         "Destroy objects cleanly."
@@ -337,7 +362,7 @@ class CmdCBoot(MuxCommand):
     """
 
     key = "@cboot"
-    locks = "cmd: not perm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
     
     def func(self):
@@ -352,12 +377,12 @@ class CmdCBoot(MuxCommand):
         if not channel:
             return
         reason = ""
-        player = None 
         if ":" in self.rhs:
             playername, reason = self.rhs.rsplit(":", 1)            
-            player = self.caller.search("*%s" % playername.lstrip('*'))
-        if not player:
-            player = self.caller.search("*%s" % self.rhs.lstrip('*'))            
+            searchstring = playername.lstrip('*')
+        else:
+            searchstring = self.rhs.lstrip('*')        
+        player = self.caller.search(searchstring, player=True)
         if not player:
             return
         if reason:
@@ -400,7 +425,7 @@ class CmdCemit(MuxCommand):
     
     key = "@cemit"
     aliases = ["@cmsg"]
-    locks = "cmd: not perm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
     def func(self):
@@ -437,7 +462,7 @@ class CmdCWho(MuxCommand):
     List who is connected to a given channel you have access to.
     """
     key = "@cwho"
-    locks = "cmd: not perm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
     def func(self):
@@ -475,7 +500,7 @@ class CmdChannelCreate(MuxCommand):
     
     key = "@ccreate"
     aliases = "channelcreate"
-    locks = "cmd:not perm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned)"
     help_category = "Comms"
 
     def func(self):
@@ -522,7 +547,7 @@ class CmdCset(MuxCommand):
     """
 
     key = "@cset"
-    locks = "cmd:not perm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned)"
     aliases = ["@cclock"]
     help_category = "Comms"
 
@@ -568,7 +593,7 @@ class CmdCdesc(MuxCommand):
     """
 
     key = "@cdesc"
-    locks = "cmd:not perm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned)"
     help_category = "Comms"
 
     def func(self):
@@ -611,7 +636,7 @@ class CmdPage(MuxCommand):
 
     key = "page"
     aliases = ['tell']
-    locks = "cmd:not perm(page_banned)"
+    locks = "cmd:not pperm(page_banned)"
     help_category = "Comms"
     
     def func(self):
@@ -619,7 +644,7 @@ class CmdPage(MuxCommand):
         "Implement function using the Msg methods"
 
         caller = self.caller
-        player = caller.player
+        player = caller
 
         # get the messages we've sent
         messages_we_sent = list(Msg.objects.get_messages_by_sender(player))        
@@ -751,7 +776,7 @@ class CmdIRC2Chan(MuxCommand):
     """
         
     key = "@irc2chan"
-    locks = "cmd:serversetting(IRC_ENABLED) and perm(Immortals)"
+    locks = "cmd:serversetting(IRC_ENABLED) and pperm(Immortals)"
     help_category = "Comms"
 
     def func(self):
@@ -840,7 +865,7 @@ class CmdIMC2Chan(MuxCommand):
     """
 
     key = "@imc2chan"
-    locks = "cmd:serversetting(IMC2_ENABLED) and perm(Immortals)"
+    locks = "cmd:serversetting(IMC2_ENABLED) and pperm(Immortals)"
     help_category = "Comms"
 
     def func(self):
@@ -923,7 +948,7 @@ class CmdIMCInfo(MuxCommand):
     
     key = "@imcinfo"
     aliases = ["@imcchanlist", "@imclist", "@imcwhois"]
-    locks = "cmd: serversetting(IMC2_ENABLED) and perm(Wizards)"
+    locks = "cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)"
     help_category = "Comms"
 
     def func(self):
@@ -982,7 +1007,7 @@ class CmdIMCInfo(MuxCommand):
                 return
             from src.comms.imc2 import IMC2_CLIENT
             self.caller.msg("Sending IMC whois request. If you receive no response, no matches were found.")            
-            IMC2_CLIENT.msg_imc2(None, from_obj=self.caller.player, packet_type="imcwhois", data={"target":self.args})
+            IMC2_CLIENT.msg_imc2(None, from_obj=self.caller, packet_type="imcwhois", data={"target":self.args})
 
         elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
             # show channels 
@@ -1051,6 +1076,6 @@ class CmdIMCTell(MuxCommand):
         data = {"target":target, "destination":destination}
 
         # send to imc2
-        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller.player, packet_type="imctell", data=data)
+        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", data=data)
 
         self.caller.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))

@@ -9,11 +9,8 @@ from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
 
 # Try to use a custom way to parse id-tagged multimatches.
-IDPARSER_PATH = getattr(settings, 'ALTERNATE_OBJECT_SEARCH_MULTIMATCH_PARSER', 'src.objects.object_search_funcs')
-if not IDPARSER_PATH:
-    # can happen if variable is set to "" in settings
-    IDPARSER_PATH = 'src.objects.object_search_funcs'
-exec("from %s import object_multimatch_parser as IDPARSER" % IDPARSER_PATH)
+
+AT_MULTIMATCH_INPUT = utils.mod_import(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
 
 class ObjectManager(TypedObjectManager):
     """
@@ -172,7 +169,10 @@ class ObjectManager(TypedObjectManager):
                       global_search=False, 
                       attribute_name=None, location=None):
         """
-        Search as an object and return results.
+        Search as an object and return results. The result is always an Object.
+        If * is appended (player search, a Character controlled by this Player
+        is looked for. The Character is returned, not the Player. Use player_search
+        to find Player objects. 
         
         character: (Object) The object performing the search.
         ostring: (string) The string to compare names against.
@@ -187,7 +187,7 @@ class ObjectManager(TypedObjectManager):
         if not ostring or not character:
             return None 
 
-        if not location:
+        if not location and hasattr(character, "location"):
             location = character.location        
 
         # Easiest case - dbref matching (always exact)        
@@ -204,16 +204,17 @@ class ObjectManager(TypedObjectManager):
         if character and ostring in ['me', 'self']:
             return [character]
         if character and ostring in ['*me', '*self']:            
-            return [character.player]                    
+            return [character]                    
         
-        # Test if we are looking for a player object 
+        # Test if we are looking for an object controlled by a
+        # specific player
 
         if utils.to_unicode(ostring).startswith("*"):
             # Player search - try to find obj by its player's name
             player_match = self.get_object_with_player(ostring)
             if player_match is not None:
-                return [player_match.player]
-
+                return [player_match]
+        
         # Search for keys, aliases or other attributes
                    
         search_locations = [None] # this means a global search
@@ -246,7 +247,7 @@ class ObjectManager(TypedObjectManager):
         matches = local_and_global_search(ostring, exact=True)        
         if not matches:
             # if we have no match, check if we are dealing with an "N-keyword" query - if so, strip it.
-            match_number, ostring = IDPARSER(ostring)
+            match_number, ostring = AT_MULTIMATCH_INPUT(ostring)
             if match_number != None and ostring:
                 # Run search again, without match number:
                 matches = local_and_global_search(ostring, exact=True)
