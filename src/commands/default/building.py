@@ -1112,7 +1112,10 @@ class CmdSetAttribute(ObjManipCommand):
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
     inspects the current value of the attribute 
-    (if any).
+    (if any). You can also set lists [...] and dicts {...}
+    on attributes with @set (but not nested combinations). Also
+    note that such lists/dicts will always hold strings (never numbers).
+    Use @py if you need to set arbitrary lists and dicts.
     """
 
     key = "@set"
@@ -1156,6 +1159,18 @@ class CmdSetAttribute(ObjManipCommand):
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)            
         else:
             # setting attribute(s)
+ 
+            # analyze if we are trying to set a list or a dict.
+            if value.startswith('[') and value.endswith(']'):
+                value = value.lstrip('[').rstrip(']').split(',')            
+                value = [utils.to_str(val) for val in value]
+            elif value.startswith('{') and value.endswith('}') and ':' in value:
+                dictpairs = value.lstrip('{').rstrip('}').split(',')            
+                try:
+                    value = dict([[utils.to_str(p.strip()) for p in pair.split(':')] for pair in dictpairs])
+                except Exception:
+                    pass 
+
             for attr in attrs:
                 obj.set_attribute(attr, value)
                 string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
