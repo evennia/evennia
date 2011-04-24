@@ -377,7 +377,7 @@ class PlayerDB(TypedObject):
         else:
             # more limited player-only search. Still returns an Object.
             ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
-            matches = ObjectDB.objects.object_search(self, ostring, global_search=global_search)
+            matches = ObjectDB.objects.object_search(ostring, caller=self, global_search=global_search)
         # deal with results 
         matches = AT_SEARCH_RESULT(self, ostring, matches, global_search=global_search)
         return matches 

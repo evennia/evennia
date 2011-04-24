@@ -11,15 +11,30 @@ class ExitCommand(command.Command):
     is_exit = True
     locks = "cmd:all()" # should always be set to this.
     destination = None 
-    obj = None     
+    obj = None
     
     def func(self):
         "Default exit traverse if no syscommand is defined."
 
         if self.obj.access(self.caller, 'traverse'):
-            self.caller.move_to(self.destination)
+            # we may traverse the exit. 
+
+            old_location = None 
+            if hasattr(self.caller, "location"):
+                old_location = self.caller.location                
+
+            # call pre/post hooks and move object.
+            self.obj.at_before_traverse(self.caller)
+            self.caller.move_to(self.destination)            
+            self.obj.at_after_traverse(self.caller, old_location)
+
         else:
-            self.caller.msg("You cannot enter.")
+            if self.obj.db.err_traverse:
+                # if exit has a better error message, let's use it.
+                self.caller.msg(self.obj.db.err_traverse)
+            else:
+                # No shorthand error message. Call hook.
+                self.obj.at_fail_traverse(self.caller)
             
 class ExitHandler(object):
     """

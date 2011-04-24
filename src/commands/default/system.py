@@ -197,10 +197,8 @@ class CmdScripts(MuxCommand):
             scripts = ScriptDB.objects.get_all_scripts(key=args)
             if not scripts:
                 # try to find an object instead.
-                objects = ObjectDB.objects.object_search(caller,
-                                                         args,
-                                                         global_search=True)
-                if objects:
+                objects = ObjectDB.objects.object_search(args, caller=caller, global_search=True)
+                if objects:                    
                     scripts = []
                     for obj in objects:
                         # get all scripts on the object(s)

@@ -71,6 +71,9 @@ class CmdLook(MuxCommand):
         if not hasattr(looking_at_obj, 'return_appearance'):
             # this is likely due to us having a player instead
             looking_at_obj = looking_at_obj.character    
+        if not looking_at_obj.access(caller, "view"):
+            caller.msg("Could not find '%s'." % args)
+            return 
         # get object's appearance
         caller.msg(looking_at_obj.return_appearance(caller))
         # the object's at_desc() method.

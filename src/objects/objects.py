@@ -62,6 +62,7 @@ class Object(TypeClass):
 
         self.locks.add("control:id(%s) or perm(Immortals)" % dbref)  # edit locks/permissions, delete
         self.locks.add("examine:perm(Builders)")  # examine properties 
+        self.locks.add("view:all()") # look at object (visibility)
         self.locks.add("edit:perm(Wizards)")   # edit properties/attributes 
         self.locks.add("delete:perm(Wizards)") # delete object 
         self.locks.add("get:all()")   # pick up object
@@ -185,7 +186,33 @@ class Object(TypeClass):
         source_location - where moved_object came from. 
         """
         pass
+
+
+    def at_before_traverse(self, traversing_object):
+        """
+        Called just before an object uses this object to 
+        traverse to another object (i.e. this object is a type of Exit)
         
+        The target location should normally be available as self.destination.
+        """
+        pass
+
+    def at_after_traverse(self, traversing_object, source_location):
+        """
+        Called just after an object successfully used this object to 
+        traverse to another object (i.e. this object is a type of Exit)
+        
+        The target location should normally be available as self.destination.
+        """
+        pass
+
+    def at_failed_traverse(self, traversing_object):
+        """
+        This is called if an object fails to traverse this object for some 
+        reason. It will not be called if the attribute err_traverse is defined,
+        that attribute will then be echoed back instead. 
+        """
+        pass 
 
     # hooks called by the default cmdset. 
     
@@ -414,3 +441,12 @@ class Exit(Object):
         """
         EXITHANDLER.clear(self.dbobj)
         return True 
+
+    def at_failed_traverse(self, traversing_object):
+        """
+        This is called if an object fails to traverse this object for some 
+        reason. It will not be called if the attribute "err_traverse" is defined,
+        that attribute will then be echoed back instead as a convenient shortcut. 
+        """
+        traversing_object.msg("You cannot enter %s." % self.key)
+        

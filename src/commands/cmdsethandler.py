@@ -272,7 +272,7 @@ class CmdSetHandler(object):
                 self.permanent_paths.append("")
             self.update()
 
-    def add_default(self, cmdset, emit_to_obj=None, permanent=False):
+    def add_default(self, cmdset, emit_to_obj=None, permanent=True):
         """
         Add a new default cmdset. If an old default existed,
         it is replaced. If permanent is set, a script will be created to 

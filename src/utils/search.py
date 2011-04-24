@@ -44,15 +44,15 @@ HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_c
 #  is reachable from within each command class
 #  by using self.caller.search()! 
 #
-#    def object_search(self, character, ostring,
+#    def object_search(self, ostring, caller=None,
 #                      global_search=False, 
 #                      attribute_name=None):
 #        """
 #        Search as an object and return results.
 #        
-#        character: (Object) The object performing the search.
 #        ostring: (string) The string to compare names against.
 #                  Can be a dbref. If name is appended by *, a player is searched for.         
+#        caller: (Object) The object performing the search.
 #        global_search: Search all objects, not just the current location/inventory
 #        attribute_name: (string) Which attribute to search in each object.
 #                                 If None, the default 'name' attribute is used.        

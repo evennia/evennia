@@ -527,7 +527,7 @@ class ObjectDB(TypedObject):
             else:
                 results = PlayerDB.objects.player_search(ostring.lstrip('*'))
         else:
-            results = ObjectDB.objects.object_search(self, ostring, 
+            results = ObjectDB.objects.object_search(ostring, caller=self, 
                                                      global_search=global_search,
                                                      attribute_name=attribute_name,
                                                      location=location)
@@ -658,8 +658,8 @@ class ObjectDB(TypedObject):
             except Exception:
                 emit_to_obj.msg(errtxt % "at_announce_move()" )
                 logger.log_trace()
-                return False       
-        
+                return False               
+
         # Perform move
         try:
             self.location = destination

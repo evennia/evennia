@@ -226,9 +226,9 @@ def pid(accessing_obj, accessed_obj, *args, **kwargs):
 def attr(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
-      has_attr(attrname)
-      has_attr(attrname, value)
-      has_attr(attrname, value, compare=type)
+      attr(attrname)
+      attr(attrname, value)
+      attr(attrname, value, compare=type)
 
     where compare's type is one of (eq,gt,lt,ge,le,ne) and signifies
     how the value should be compared with one on accessing_obj (so
@@ -287,6 +287,37 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
                     and valcompare(accessing_obj.get_attribute(attrname), value, compare))
         return True 
     return False 
+
+def objattr(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+      objattr(attrname)
+      objattr(attrname, value)
+      objattr(attrname, value, compare=type)
+
+    Works like attr, except it looks for an attribute on 
+    accessing_obj.obj, if such an entity exists. Suitable
+    for commands.
+
+    """
+    if hasattr(accessing_obj, "obj"):
+        return attr(accessing_obj.obj, accessed_obj, *args, **kwargs)
+
+def locattr(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+      locattr(attrname)
+      locattr(attrname, value)
+      locattr(attrname, value, compare=type)
+
+    Works like attr, except it looks for an attribute on 
+    accessing_obj.location, if such an entity exists. Suitable
+    for commands.
+
+    """
+    if hasattr(accessing_obj, "location"):
+        return attr(accessing_obj.location, accessed_obj, *args, **kwargs)
+
 
 def attr_eq(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -350,6 +381,28 @@ def holds(accessing_obj, accessed_obj, objid, *args, **kwargs):
         return True 
     objid = objid.lower()
     return any((True for obj in contains if obj.name.lower() == objid))
+
+def carried(accessing_obj, accessed_obj):
+    """
+    Usage: 
+      carried()
+
+    This is passed if accessed_obj is carried by accessing_obj (that is,
+    accessed_obj.location == accessing_obj)
+    """
+    return hasattr(accessed_obj, "location") and accessed_obj.location == accessing_obj
+
+def objcarried(accessing_obj, accessed_obj):
+    """
+    Usage:
+      objcarried()
+
+    Like carried, except this lock looks for a property "obj" on the accessed_obj
+    and tries to determing if *this* is carried by accessing_obj. This works well
+    for commands and scripts. 
+    """
+    return hasattr(accessed_obj, "obj") and accessed_obj.obj and \
+        hasattr(accessed_obj.obj, "location") and accessed_obj.obj.location == accessing_obj
 
 def superuser(*args, **kwargs):
     """

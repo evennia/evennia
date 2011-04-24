@@ -165,18 +165,18 @@ class ObjectManager(TypedObjectManager):
         return eval("self.filter(db_location__id=location.id)%s" % estring)
             
     @returns_typeclass_list
-    def object_search(self, character, ostring,
+    def object_search(self, ostring, caller=None,
                       global_search=False, 
                       attribute_name=None, location=None):
         """
         Search as an object and return results. The result is always an Object.
         If * is appended (player search, a Character controlled by this Player
         is looked for. The Character is returned, not the Player. Use player_search
-        to find Player objects. 
+        to find Player objects. Always returns a list.
         
-        character: (Object) The object performing the search.
         ostring: (string) The string to compare names against.
                   Can be a dbref. If name is appended by *, a player is searched for.         
+        caller: (Object) The object performing the search.
         global_search: Search all objects, not just the current location/inventory
         attribute_name: (string) Which attribute to search in each object.
                                  If None, the default 'key' attribute is used.        
@@ -184,11 +184,8 @@ class ObjectManager(TypedObjectManager):
         """
         #ostring = str(ostring).strip()
 
-        if not ostring or not character:
-            return None 
-
-        if not location and hasattr(character, "location"):
-            location = character.location        
+        if not ostring:
+            return [] 
 
         # Easiest case - dbref matching (always exact)        
         dbref = self.dbref(ostring)
@@ -197,14 +194,17 @@ class ObjectManager(TypedObjectManager):
             if dbref_match:
                 return [dbref_match]
 
+        if not location and caller and hasattr(caller, "location"):
+            location = caller.location
+
         # Test some common self-references
 
         if location and ostring == 'here':
             return [location]                        
-        if character and ostring in ['me', 'self']:
-            return [character]
-        if character and ostring in ['*me', '*self']:            
-            return [character]                    
+        if caller and ostring in ['me', 'self']:
+            return [caller]
+        if caller and ostring in ['*me', '*self']:            
+            return [caller]                    
         
         # Test if we are looking for an object controlled by a
         # specific player
@@ -224,8 +224,10 @@ class ObjectManager(TypedObjectManager):
                              or ostring.lower() in [alias.lower() for alias in location.aliases]):
                 return [location]
             # otherwise, setup the locations to search in 
-            search_locations = [character, location]
-
+            search_locations = [location]
+            if caller:
+                search_locations.append(caller)
+                
         def local_and_global_search(ostring, exact=False):
             "Helper method for searching objects" 
             matches = []            

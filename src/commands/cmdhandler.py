@@ -115,8 +115,8 @@ def get_and_merge_cmdsets(caller):
         location = caller.location 
     if location and not caller_cmdset.no_objs:
         # Gather all cmdsets stored on objects in the room and
-        # also in the caller's inventory
-        local_objlist = location.contents + caller.contents
+        # also in the caller's inventory and the location itself
+        local_objlist = location.contents + caller.contents + [location]
         local_objects_cmdsets = [obj.cmdset.current
                                  for obj in local_objlist
                                  if obj.locks.check(caller, 'call', no_superuser_bypass=True)]
