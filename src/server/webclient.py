@@ -26,7 +26,7 @@ from django.utils import simplejson
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings 
-from src.utils import utils, logger
+from src.utils import utils, logger, ansi
 from src.utils.text2html import parse_html
 from src.server import session
 from src.server.sessionhandler import SESSIONS
@@ -223,7 +223,9 @@ class WebClientSession(session.Session):
         Show the banner screen. 
         """
         # show screen 
+        self.telnet_markup = True 
         self.execute_cmd('look')
+
         
     def at_login(self, player):
         """
@@ -231,8 +233,6 @@ class WebClientSession(session.Session):
         """
         if player.has_attribute('telnet_markup'):
             self.telnet_markup = player.get_attribute("telnet_markup")
-        else:
-            self.telnet_markup = True             
 
     def at_disconnect(self, reason=None):
         """
@@ -260,7 +260,18 @@ class WebClientSession(session.Session):
         # string handling is similar to telnet
         try:
             string = utils.to_str(string, encoding=self.encoding)                
-            self.client.lineSend(self.suid, parse_html(string))
+            
+            nomarkup = not self.telnet_markup
+            raw = False 
+            if type(data) == dict:
+                # check if we want escape codes to go through unparsed.
+                raw = data.get("raw", self.telnet_markup)
+                # check if we want to remove all markup 
+                nomarkup = data.get("nomarkup", not self.telnet_markup)            
+            if raw:
+                self.client.lineSend(self.suid, string)
+            else:
+                self.client.lineSend(self.suid, parse_html(ansi.parse_ansi(string, strip_ansi=nomarkup)))
             return 
         except Exception, e:            
             logger.log_trace()

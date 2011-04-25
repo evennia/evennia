@@ -112,7 +112,17 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         except Exception, e:
             self.lineSend(str(e))
             return 
-        self.lineSend(ansi.parse_ansi(string, strip_ansi=not self.telnet_markup))
+        nomarkup = not self.telnet_markup
+        raw = False 
+        if type(data) == dict:
+            # check if we want escape codes to go through unparsed.
+            raw = data.get("raw", self.telnet_markup)
+            # check if we want to remove all markup
+            nomarkup = data.get("nomarkup", not self.telnet_markup)            
+        if raw:
+            self.lineSend(string)
+        else:
+            self.lineSend(ansi.parse_ansi(string, strip_ansi=nomarkup))
 
     def at_data_in(self, string, data=None):
         """

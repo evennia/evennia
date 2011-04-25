@@ -1416,6 +1416,7 @@ class CmdExamine(ObjManipCommand):
 
     Switch:
       player - examine a Player (same as adding *)
+      raw - don't parse escape codes for data. 
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it. 
@@ -1431,11 +1432,19 @@ class CmdExamine(ObjManipCommand):
 
     player_mode = False 
 
-    def format_attributes(self, obj, attrname=None, crop=True):
+    def format_attributes(self, obj, attrname=None, crop=True, raw=False):
         """
         Helper function that returns info about attributes and/or
         non-persistent data stored on object
         """
+
+        headers = {"persistent":"\n{wPersistent attributes{n:",
+                   "nonpersistent":"\n{wNon-persistent attributes{n:"}
+        headers_noansi = {"persistent":"\nPersistent attributes:",
+                          "nonpersistent":"\nNon-persistent attributes:"}
+        if raw:
+            headers = headers_noansi
+        
         if attrname:
             db_attr = [(attrname, obj.attr(attrname))]
             try:
@@ -1443,7 +1452,7 @@ class CmdExamine(ObjManipCommand):
             except Exception:
                 ndb_attr = None
         else:
-            if player_mode:
+            if self.player_mode:
                 db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
             else:
                 db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
@@ -1454,60 +1463,91 @@ class CmdExamine(ObjManipCommand):
         string = ""
         if db_attr and db_attr[0]:
             #self.caller.msg(db_attr)
-            string += "\n{wPersistent attributes{n:"
+            string += headers["persistent"]
             for attr, value in db_attr:         
                 if crop:
                     value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
         if ndb_attr and ndb_attr[0]:
-            string += "\n{wNon-persistent attributes{n:"
+            string += headers["nonpersistent"]
             for attr, value in ndb_attr:
                 if crop:
                     value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
         return string 
     
-    def format_output(self, obj):
+    def format_output(self, obj, raw=False):
         """
         Helper function that creates a nice report about an object.
 
         returns a string.
         """
+
+        headers = {"name":"\n{wName/key{n: {c%s{n (%s)",
+                   "aliases":"\n{wAliases{n: %s",
+                   "player":"\n{wPlayer{n: {c%s{n",
+                   "playerperms":"\n{wPlayer Perms{n: %s",
+                   "typeclass":"\n{wTypeclass{n: %s (%s)",
+                   "location":"\n{wLocation{n: %s",
+                   "destination":"\n{wDestination{n: %s",
+                   "perms":"\n{wPermissions{n: %s",
+                   "locks":"\n{wLocks{n:",
+                   "cmdset":"\n{wCurrent Cmdset (including permission checks){n:\n %s",
+                   "scripts":"\n{wScripts{n:\n %s",
+                   "exits":"\n{wExits{n: ",
+                   "characters":"\n{wCharacters{n: ",
+                   "contents":"\n{wContents{n: "}
+        headers_noansi = {"name":"\nName/key: %s (%s)",
+                   "aliases":"\nAliases: %s",
+                   "player":"\nPlayer: %s",
+                   "playerperms":"\nPlayer Perms: %s",
+                   "typeclass":"\nTypeclass: %s (%s)",
+                   "location":"\nLocation: %s",
+                   "destination":"\nDestination: %s",
+                   "perms":"\nPermissions: %s",
+                   "locks":"\nLocks:",
+                   "cmdset":"\nCurrent Cmdset (including permission checks):\n %s",
+                   "scripts":"\nScripts:\n %s",
+                   "exits":"\nExits: ",
+                   "characters":"\nCharacters: ",
+                   "contents":"\nContents: "}
+        if raw:
+            headers = headers_noansi
         
         if hasattr(obj, "has_player") and obj.has_player:
-            string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)        
+            string = headers["name"] % (obj.name, obj.dbref)        
         else:
-            string = "\n{wName/key{n: {C%s{n (%s)" % (obj.name, obj.dbref)        
+            string = headers["name"] % (obj.name, obj.dbref)        
         if hasattr(obj, "aliases") and obj.aliases:
-            string += "\n{wAliases{n: %s" % (", ".join(obj.aliases))
+            string += headers["aliases"] % (", ".join(obj.aliases))
         if hasattr(obj, "has_player") and obj.has_player:
-            string += "\n{wPlayer{n: {c%s{n" % obj.player.name
+            string += headers["player"] % obj.player.name
             perms = obj.player.permissions
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]                
-            string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))         
-        string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass, obj.typeclass_path)
+            string += headers["perms"] % (", ".join(perms))         
+        string += headers["typeclass"] % (obj.typeclass, obj.typeclass_path)
 
         if hasattr(obj, "location"):
-            string += "\n{wLocation{n: %s" % obj.location
+            string += headers["location"] % obj.location
         if hasattr(obj, "destination") and obj.destination:
-            string += "\n{wDestination{n: %s" % obj.destination
+            string += headers["destination"]  % obj.destination
         perms = obj.permissions
         if perms:            
-            string += "\n{wPermissions{n: %s" % (", ".join(perms)) 
+            string += headers["perms"] % (", ".join(perms)) 
         locks = str(obj.locks)
         if locks:
-            string += "\n{wLocks{n:" + utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
+            string += headers["locks"] + utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
             cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])            
-            string += "\n{wCurrent Cmdset (including permission checks){n:\n %s" % cmdsetstr
+            string += headers["cmdset"] % cmdsetstr
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            string += "\n{wScripts{n:\n %s" % obj.scripts
+            string += headers["scripts"] % obj.scripts
         # add the attributes                    
-        string += self.format_attributes(obj)
+        string += self.format_attributes(obj, raw=raw)
         # add the contents                     
         exits = []
         pobjs = []
@@ -1521,19 +1561,23 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n{wExits{n: " + ", ".join([exit.name for exit in exits]) 
+                string += headers["exits"] + ", ".join([exit.name for exit in exits]) 
             if pobjs:
-                string += "\n{wCharacters{n: " + ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
+                string += headers["characters"] + ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
             if things:
-                string += "\n{wContents{n: " + ", ".join([cont.name for cont in obj.contents 
-                                                          if cont not in exits and cont not in pobjs])
+                string += headers["contents"] + ", ".join([cont.name for cont in obj.contents 
+                                                           if cont not in exits and cont not in pobjs])
         #output info
         return "-"*78 + '\n' + string.strip() + "\n" + '-'*78
     
     def func(self):
         "Process command"
         caller = self.caller
-                                                        
+        
+        msgdata = None
+        if "raw" in self.switches:
+            msgdata = {"raw":True}
+            
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
             obj = caller.location
@@ -1541,8 +1585,8 @@ class CmdExamine(ObjManipCommand):
             #If we don't have special info access, just look at the object instead.
                 caller.execute_cmd('look %s' % obj.name)
                 return              
-            string = self.format_output(obj)
-            caller.msg(string.strip())
+            string = self.format_output(obj, raw=msgdata)
+            caller.msg(string.strip(), data=msgdata)
             return 
 
         # we have given a specific target object 
@@ -1552,10 +1596,10 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            global player_mode 
-            player_mode = "player" in self.switches or obj_name.startswith('*')
-
-            obj = caller.search(obj_name, player=player_mode)                
+            
+            self.player_mode = "player" in self.switches or obj_name.startswith('*')
+            
+            obj = caller.search(obj_name, player=self.player_mode)                
             if not obj:
                 continue
 
@@ -1567,10 +1611,10 @@ class CmdExamine(ObjManipCommand):
             if obj_attrs:
                 for attrname in obj_attrs:
                     # we are only interested in specific attributes                    
-                    string += self.format_attributes(obj, attrname, crop=False)                        
+                    string += self.format_attributes(obj, attrname, crop=False, raw=msgdata)                        
             else:
-                string += self.format_output(obj)        
-        caller.msg(string.strip())
+                string += self.format_output(obj, raw=msgdata)        
+        caller.msg(string.strip(), data=msgdata)
 
 
 class CmdFind(MuxCommand):

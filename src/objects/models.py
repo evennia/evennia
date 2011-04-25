@@ -573,7 +573,7 @@ class ObjectDB(TypedObject):
         # we use a different __getattribute__ to avoid recursive loops.
                 
         if object.__getattribute__(self, 'player'):
-            object.__getattribute__(self, 'player').msg(message, from_obj, data)
+            object.__getattribute__(self, 'player').msg(message, from_obj=from_obj, data=data)
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"

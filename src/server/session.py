@@ -346,4 +346,4 @@ class Session(SessionBase):
         self.session_disconnect()
     def msg(self, string='', data=None):
         "alias for at_data_out"
-        self.at_data_out(string, data)
+        self.at_data_out(string, data=data)
