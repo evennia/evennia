@@ -1143,11 +1143,16 @@ class CmdSetAttribute(ObjManipCommand):
         if not value:            
             if self.rhs == None:
                 # no = means we inspect the attribute(s)
+                if not attrs:
+                    attrs = [attr.key for attr in obj.get_all_attributes()]
                 for attr in attrs:
                     if obj.has_attribute(attr):
                         string += "\nAttribute %s/%s = %s" % (obj.name, attr, obj.get_attribute(attr))
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)
+                    # we view it without parsing markup. 
+                self.caller.msg(string.strip(), data={"raw":True})
+                return 
             else:                
                 # deleting the attribute(s)            
                 for attr in attrs:
