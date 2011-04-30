@@ -131,10 +131,9 @@ class CmdSet(object):
                            
         priority- All cmdsets are always merged in pairs of two so that
                   the higher set's mergetype is applied to the
-                  lower-priority cmdset. Evennia uses priorities from 0-10
-                  where 10 are used for high-priority things like comsys
-                  channel names and 9 for exit names in order to give
-                  these priority when the given command matches.
+                  lower-priority cmdset. Default commands have priority 0, 
+                  high-priority ones like Exits and Channels have 10 and 9. Priorities
+                  can be negative as well to give default commands preference. 
         
         duplicates - determines what happens when two sets of equal
                      priority merge. Default has the first of them in the

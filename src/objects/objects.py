@@ -16,6 +16,7 @@ they control by simply linking to a new object's user property.
 """
 
 from src.typeclasses.typeclass import TypeClass
+from src.commands import cmdset, command
 from src.objects.exithandler import EXITHANDLER
 
 
@@ -347,7 +348,7 @@ class Character(Object):
         """
         super(Character, self).basetype_setup()
         self.locks.add("get:false()") # noone can pick up the character
-        self.locks.add("call:false()") # no commands can be called on character        
+        self.locks.add("call:false()") # no commands can be called on character from outside       
 
         # add the default cmdset
         from settings import CMDSET_DEFAULT        
@@ -393,6 +394,11 @@ class Room(Object):
         super(Room, self).basetype_setup()
         self.location = None 
 
+
+#
+# Exits 
+#
+
 class Exit(Object):
     """
     This is the base exit object - it connects a location
@@ -414,23 +420,14 @@ class Exit(Object):
         """
         # the lock is open to all by default
         super(Exit, self).basetype_setup()
+
         self.locks.add("puppet:false()") # would be weird to puppet an exit ...
-        self.locks.add("traverse:all()") # who can pass through exit
+        self.locks.add("traverse:all()") # who can pass through exit by default
         self.locks.add("get:false()")    # noone can pick up the exit 
 
-    def at_object_creation(self):
-        """
-        An example just for show; the destination property
-        is usually set at creation time, not as part of the class
-        definition (unless you want an entire class of exits
-        all leadning to the same hard-coded place ...)
-        """
-        # having destination != None is what makes it an exit 
-        # (what's set here won't last)
-        if self.location:
-            self.destination = self.location
-        else:
-            self.destination = 2 # use limbo as a failsafe
+        # an exit should have a destination (this is replaced at creation time)
+        if self.dbobj.location:
+            self.destination = self.dbobj.location 
         
     def at_object_delete(self):
         """

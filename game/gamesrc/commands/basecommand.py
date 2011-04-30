@@ -104,7 +104,7 @@ class Command(BaseCommand):
     used by Evennia to create the automatic help entry for
     the command, so make sure to document consistently here. 
     """
-    def access(self, srcobj):
+    def access(self, srcobj, access_type="cmd", default=False):
         """
         This is called by the cmdhandler to determine
         if srcobj is allowed to execute this command. This
@@ -113,7 +113,7 @@ class Command(BaseCommand):
         By default, We use checks of the 'cmd' type of lock to determine
         if the command should be run. 
         """
-        return super(Command, self).access(srcobj)
+        return super(Command, self).access(srcobj, access_type=access_type, default=default)
 
     def at_pre_cmd(self):
         """

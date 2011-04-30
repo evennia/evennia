@@ -11,6 +11,7 @@ class DefaultCmdSet(CmdSet):
     Implements the default command set.
     """
     key = "DefaultMUX"
+    priority = 0
 
     def at_cmdset_creation(self):
         "Populates the cmdset"

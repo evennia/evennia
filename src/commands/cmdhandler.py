@@ -120,13 +120,12 @@ def get_and_merge_cmdsets(caller):
         local_objects_cmdsets = [obj.cmdset.current
                                  for obj in local_objlist
                                  if obj.locks.check(caller, 'call', no_superuser_bypass=True)]
-
     # Merge all command sets into one
     # (the order matters, the higher-prio cmdsets are merged last)
     cmdset = caller_cmdset
     for obj_cmdset in [obj_cmdset for obj_cmdset in local_objects_cmdsets if obj_cmdset]:
         # Here only, object cmdsets are merged with duplicates=True
-        # (or we would never be able to differentiate between objects)
+        # (or we would never be able to differentiate between same-prio objects)
         try:
             old_duplicate_flag = obj_cmdset.duplicates
             obj_cmdset.duplicates = True
@@ -306,7 +305,7 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 raise ExecSystemCommand(syscmd, sysarg)
 
             # Parse the input string into command candidates
-            cmd_candidates = COMMAND_PARSER(raw_string)            
+            cmd_candidates = COMMAND_PARSER(raw_string)
             
             #string ="Command candidates"
             #for cand in cmd_candidates:

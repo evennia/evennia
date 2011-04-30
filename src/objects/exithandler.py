@@ -76,7 +76,7 @@ class ExitHandler(object):
         exit_cmdset.priority = 9
         exit_cmdset.duplicates = True 
         try:
-            location = srcobj.location        
+            location = srcobj.location
         except Exception:
             location = None 
         if not location:
@@ -84,8 +84,7 @@ class ExitHandler(object):
             return exit_cmdset
 
         # use exits to create searchable "commands" for the cmdhandler
-        for exi in (exi for exi in location.contents
-                    if exi.destination):
+        for exi in location.exits:
             if exi.id in self.cached_exit_cmds:
                 # retrieve from cache 
                 exit_cmdset.add(self.cached_exit_cmds[exi.id])

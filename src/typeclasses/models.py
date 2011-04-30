@@ -32,6 +32,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 from src.utils.idmapper.models import SharedMemoryModel
+from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger, utils
@@ -617,21 +618,24 @@ class TypedObject(SharedMemoryModel):
             Helper function to display error.
             """
             infochan = None
+            cmessage = message 
             try:
                 from src.comms.models import Channel
                 infochan = settings.CHANNEL_MUDINFO
-                infochan = Channel.objects.get_channel(infochan[0])
-            except Exception, e:
-                print e
-                pass
-            if infochan:
-                cname = infochan.key
-                cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
-                infochan.msg(message)
-            else:
-                # no mudinfo channel is found. Log instead. 
-                cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
-                logger.log_errmsg(cmessage)
+                infochan = Channel.objects.get_channel(infochan[0])            
+                if infochan:
+                    cname = infochan.key
+                    cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
+                    infochan.msg(message)
+                else:
+                    # no mudinfo channel is found. Log instead. 
+                    cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
+                    logger.log_errmsg(cmessage)
+            except Exception, e:                
+                if ServerConfig.objects.conf("server_starting_mode"):
+                    print cmessage
+                else:
+                    logger.log_trace(cmessage)
 
         #path = self.db_typeclass_path        
         path = object.__getattribute__(self, 'db_typeclass_path')

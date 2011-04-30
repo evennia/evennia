@@ -1018,6 +1018,8 @@ class CmdOpen(ObjManipCommand):
 
         else:
             # exit does not exist before. Create a new one.            
+            if not typeclass:
+                typeclass = settings.BASE_EXIT_TYPECLASS
             exit_obj = create.create_object(typeclass, key=exit_name,
                                             location=location,
                                             aliases=exit_aliases)
