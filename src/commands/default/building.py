@@ -199,7 +199,7 @@ class CmdCopy(ObjManipCommand):
                     if not to_obj_location:
                         return
 
-                copiedobj = ObjectDB.objects.copy_object(from_obj, new_name=to_obj_name, 
+                copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name, 
                                                          new_location=to_obj_location, new_aliases=to_obj_aliases)                 
                 if copiedobj:
                     string = "Copied %s to '%s' (aliases: %s)." % (from_obj_name, to_obj_name,
@@ -535,7 +535,7 @@ class CmdDestroy(MuxCommand):
     """
 
     key = "@destroy"
-    aliases = "@delete"
+    aliases = ["@delete", "@del"]
     locks = "cmd:perm(destroy) or perm(Builders)"
     help_category = "Building"
 

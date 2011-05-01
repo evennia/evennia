@@ -328,7 +328,7 @@ class TestDesc(BuildTest):
         self.assertEqual(self.obj1.db.desc, u"Test object")
 class TestDestroy(BuildTest):
     def test_call(self):
-        self.execute_cmd("@destroy obj1, obj2", "obj1 was deleted.\nobj2 was deleted")
+        self.execute_cmd("@destroy obj1, obj2", "obj1 was destroyed.\nobj2 was destroyed.")
 class TestFind(BuildTest):
     def test_call(self):
         self.execute_cmd("@find obj1", "One Match")
