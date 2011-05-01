@@ -185,10 +185,10 @@ class CmdSetHandler(object):
             merged_on = self.cmdset_stack[-2].key
             mergetype = "custom %s on %s" % (mergetype, merged_on)        
         if merged:
-            string += " <Merged (%s)>: %s" % (mergetype, self.current)
+            string += " <Merged (%s, prio %i)>: %s" % (mergetype, self.current.priority, self.current)
         else:
-            string += " <%s (%s)>: %s" % (self.current.key, mergetype, 
-                                          ", ".join(cmd.key for cmd in self.current if cmd.access(self.obj, "cmd")))
+            string += " <%s (%s, prio %i)>: %s" % (self.current.key, mergetype, self.current.priority,
+                                                   ", ".join(cmd.key for cmd in self.current if cmd.access(self.obj, "cmd")))
         return string.strip() 
 
     def update(self, init_mode=False):        
