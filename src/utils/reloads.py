@@ -17,7 +17,6 @@ from src.comms.models import Channel, Msg
 from src.help.models import HelpEntry
 
 from src.typeclasses import models as typeclassmodels
-from src.objects import exithandler 
 from src.comms import channelhandler
 from src.comms.models import Channel
 from src.utils import reimport, utils, logger 
@@ -34,12 +33,7 @@ def start_reload_loop():
         ""
         cemit_info('-'*50)
         cemit_info(" Starting asynchronous server reload.")
-        reload_modules() # this must be given time to finish
-        
-        wait_time = 5
-        cemit_info(" Waiting %ss to give modules time to fully re-cache ..." % wait_time)
-        time.sleep(wait_time)        
-
+        reload_modules()         
         reload_scripts()
         reload_commands()
         reset_loop()
@@ -49,7 +43,7 @@ def start_reload_loop():
         cemit_info(" Asynchronous server reload finished.\n" + '-'*50)
     def at_err(e):
         "error callback"        
-        string = "Reload: Asynchronous reset exited with an error:\n{r%s{n" % e.getErrorMessage()
+        string = " Reload: Asynchronous reset exited with an error:\n {r%s{n" % e.getErrorMessage()
         cemit_info(string)
         
     utils.run_async(run_loop, at_return, at_err)
@@ -89,13 +83,13 @@ def reload_modules():
         "Check so modpath is not in an unsafe module"
         return not any(mpath.startswith(modpath) for mpath in unsafe_modules)
                                                
-    cemit_info(" Cleaning module caches ...")
+    #cemit_info(" Cleaning module caches ...")
 
     # clean as much of the caches as we can
     cache = AppCache()
     cache.app_store = SortedDict()
     #cache.app_models = SortedDict() # cannot clean this, it resets ContentTypes!
-    cache.app_errors = {} 
+    cache.app_errors = {}
     cache.handled = {}
     cache.loaded = False
  
@@ -108,29 +102,28 @@ def reload_modules():
 
     string = ""
     if unsafe_dir_modified or unsafe_mod_modified:
-        if unsafe_dir_modified:
-            string += "\n-{rThe following changed module(s) can only be reloaded{n"
-            string += "\n {rby a server reboot:{n\n  %s\n" 
-            string = string % unsafe_dir_modified
+
         if unsafe_mod_modified:
-            string += "\n-{rThe following modules contains at least one Script class with a timer{n"
-            string += "\n {rcomponent and has already spawned instances - these cannot be{n "
-            string += "\n {rsafely cleaned from memory on the fly. Stop all the affected scripts{n "
-            string += "\n {ror restart the server to safely reload:{n\n  %s\n"
-            string = string % unsafe_mod_modified
+            string += "\n {rModules containing Script classes with a timer component" 
+            string += "\n and which has already spawned instances cannot be reloaded safely.{n"             
+        string += "\n {rThese module(s) can only be reloaded by server reboot:{n\n  %s\n"
+        string = string % ", ".join(unsafe_dir_modified + unsafe_mod_modified)
+
     if string:
         cemit_info(string) 
 
     if safe_modified:
-        cemit_info(" Reloading module(s):\n  %s ..." % safe_modified)
+        cemit_info(" Reloading safe module(s):{n\n  %s" % "\n  ".join(safe_modified))
         reimport.reimport(*safe_modified)
+        wait_time = 5
+        cemit_info(" Waiting %s secs to give modules time to re-cache ..." % wait_time)
+        time.sleep(wait_time)        
         cemit_info(" ... all safe modules reloaded.") 
     else:
-        cemit_info(" ... no modules could be (or needed to be) reloaded.")
+        cemit_info(" No modules reloaded.")
 
     # clean out cache dictionary of typeclasses, exits and channels    
-    typeclassmodels.reset()
-    exithandler.EXITHANDLER.clear()
+    typeclassmodels.reset()    
     channelhandler.CHANNELHANDLER.update()
 
     # run through all objects in database, forcing re-caching.
@@ -161,23 +154,22 @@ def reload_scripts(scripts=None, obj=None, key=None,
 def reload_commands():
     from src.commands import cmdsethandler
     cmdsethandler.CACHED_CMDSETS = {}
-    cemit_info(" Cleaned cmdset cache.")
+    #cemit_info(" Cleaned cmdset cache.")
 
 def reset_loop():
     "Reload and restart all entities that can be reloaded."    
     # run the reset loop on all objects
-    cemit_info(" Running resets on database entities ...")
+    cemit_info(" Resetting all cached database entities ...")
     t1 = time.time()
-
     [h.locks.reset() for h in HelpEntry.objects.all()]
     [m.locks.reset() for m in Msg.objects.all()]
     [c.locks.reset() for c in Channel.objects.all()]    
     [s.locks.reset() for s in ScriptDB.objects.all()]
-    [(o.typeclass(o), o.cmdset.reset(), o.locks.reset()) for o in ObjectDB.get_all_cached_instances()]
+    [(o.typeclass(o), o.cmdset.reset(), o.locks.reset(), o.at_cache()) for o in ObjectDB.get_all_cached_instances()]    
     [(p.typeclass(p), p.cmdset.reset(), p.locks.reset()) for p in PlayerDB.get_all_cached_instances()]
 
     t2 = time.time()
-    cemit_info(" ... Loop finished in %g seconds." % (t2-t1))
+    cemit_info(" ... Reset finished in %g seconds." % (t2-t1))
 
 def cemit_info(message):
     """

@@ -57,7 +57,7 @@ def create_objects():
                                          user=god_user)    
     god_character.id = 1
     god_character.db.desc = 'This is User #1.'
-    god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
+    god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
 
     god_character.save()
    

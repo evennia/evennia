@@ -136,6 +136,8 @@ class CmdSetObjAlias(MuxCommand):
         aliases = list(set(old_aliases))        
         # save back to object.
         obj.aliases = aliases 
+        # we treat this as a re-caching (relevant for exits to re-build their exit commands with the correct aliases)
+        obj.at_cache() 
         caller.msg("Aliases for '%s' are now set to %s." % (obj.key, ", ".join(obj.aliases)))
 
 class CmdCopy(ObjManipCommand):    
@@ -175,7 +177,7 @@ class CmdCopy(ObjManipCommand):
                 return             
             to_obj_name = "%s_copy" % from_obj_name
             to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases]
-            copiedobj = ObjectDB.objects.copy_object(from_obj, new_name=to_obj_name, 
+            copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name, 
                                                      new_aliases=to_obj_aliases)
             if copiedobj:
                 string = "Identical copy of %s, named '%s' was created." % (from_obj_name, to_obj_name)
@@ -633,6 +635,8 @@ class CmdDig(ObjManipCommand):
             typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
                                    typeclass)
 
+        # create room 
+
         lockstring = "control:id(%s) or perm(Immortal); delete:id(%s) or perm(Wizard); edit:id(%s) or perm(Wizard)" 
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
 
@@ -643,6 +647,9 @@ class CmdDig(ObjManipCommand):
         if new_room.aliases:
             alias_string = " (%s)" % ", ".join(new_room.aliases)
         room_string = "Created room %s(%s)%s of type %s." % (new_room, new_room.dbref, alias_string, typeclass)
+
+        
+        # create exit to room 
 
         exit_to_string = ""
         exit_back_string = ""
@@ -667,17 +674,17 @@ class CmdDig(ObjManipCommand):
                                       typeclass.startswith('game.')):
                     typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
                                            typeclass)
-                new_to_exit = create.create_object(typeclass, to_exit["name"],
-                                                   location,
-                                                   aliases=to_exit["aliases"])
-                new_to_exit.destination = new_room
-                new_to_exit.locks.add(lockstring)
+                new_to_exit = create.create_object(typeclass, to_exit["name"], location,
+                                                   aliases=to_exit["aliases"], 
+                                                   locks=lockstring, destination=new_room)
                 alias_string = ""
                 if new_to_exit.aliases:
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases)
                 exit_to_string = "\nCreated Exit from %s to %s: %s(%s)%s."
                 exit_to_string = exit_to_string % (location.name, new_room.name, new_to_exit, 
                                                    new_to_exit.dbref, alias_string)
+
+        # Create exit back from new room 
                 
         if len(self.rhs_objs) > 1:
             # Building the exit back to the current room 
@@ -700,10 +707,8 @@ class CmdDig(ObjManipCommand):
                     typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
                                            typeclass)
                 new_back_exit = create.create_object(typeclass, back_exit["name"],
-                                                     new_room,
-                                                     aliases=back_exit["aliases"])
-                new_back_exit.destination = location
-                new_back_exit.locks.add(lockstring)
+                                                     new_room, aliases=back_exit["aliases"], 
+                                                     locks=lockstring, destination=location)
                 alias_string = ""
                 if new_back_exit.aliases:
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases)
@@ -1534,7 +1539,7 @@ class CmdExamine(ObjManipCommand):
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]                
-            string += headers["perms"] % (", ".join(perms))         
+            string += headers["playerperms"] % (", ".join(perms))         
         string += headers["typeclass"] % (obj.typeclass, obj.typeclass_path)
 
         if hasattr(obj, "location"):

@@ -613,13 +613,15 @@ class CmdOOCLook(CmdLook):
     help_cateogory = "General"
 
     def func(self):
-        "implement the command"
+        "implement the ooc look command"
 
-        self.character = None 
+        self.character = None
         if utils.inherits_from(self.caller, "src.objects.objects.Object"):
             # An object of some type is calling. Convert to player.
+            print self.caller, self.caller.__class__
             self.character = self.caller 
-            self.caller = self.caller.player
+            if hasattr(self.caller, "player"):
+                self.caller = self.caller.player
 
         if not self.character:
             string = "You are out-of-character (OOC). "
@@ -627,7 +629,7 @@ class CmdOOCLook(CmdLook):
             self.caller.msg(string)
         else:
             self.caller = self.character # we have to put this back for normal look to work.
-            super(CmdLook, self).func()
+            super(CmdOOCLook, self).func()
             
 class CmdIC(MuxCommand):
     """

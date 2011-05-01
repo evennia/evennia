@@ -133,18 +133,18 @@ class Room(BaseRoom):
 
 class Exit(BaseExit):
     """
-    Exits are connectors between rooms. They are identified by the 
-    engine by having an attribute "_destination" defined on themselves,
-    pointing to a valid room object. That is usually defined when
-    the exit is created (in, say, @dig or @link-type commands), not 
-    hard-coded in their typeclass. Exits do have to make sure they
-    clean up a bit after themselves though, easiest accomplished
-    by letting by_object_delete() call the object's parent. 
+    Exits are connectors between rooms. Exits defines the
+    'destination' property and sets up a command on itself with the
+    same name as the Exit object - this command allows the player to
+    traverse the exit to the destination just by writing the name of
+    the object on the command line.
 
-    Note that exits need to do cache-cleanups after they are
-    deleted, so if you re-implement at_object_delete() for some
-    reason, make sure to call the parent class-method too!
-
+    Relevant hooks: 
+    at_before_traverse(traveller) - called just before traversing
+    at_after_traverse(traveller, source_loc) - called just after traversing
+    at_failed_traverse(traveller) - called if traversal failed for some reason. Will
+                                    not be called if the attribute 'err_traverse' is 
+                                    defined, in which case that will simply be echoed.
     """
     pass
 

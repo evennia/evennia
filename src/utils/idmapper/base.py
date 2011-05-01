@@ -101,6 +101,8 @@ class SharedMemoryModel(Model):
         """
         if instance._get_pk_val() is not None:
             cls.__instance_cache__[instance._get_pk_val()] = instance        
+            if hasattr(instance, 'at_cache') and callable(instance.at_cache):
+                instance.at_cache()
             #key = "%s-%s" % (cls, instance.pk)            
             #TCACHE[key] = instance
             #print "cached: %s (%s: %s) (total cached: %s)" % (instance, cls.__name__, len(cls.__instance_cache__), len(TCACHE))        

@@ -53,7 +53,6 @@ from traceback import format_exc
 from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.commands.cmdsethandler import import_cmdset
-from src.objects.exithandler import EXITHANDLER
 from src.utils import logger, utils 
 
 #This switches the command parser to a user-defined one.
@@ -70,7 +69,6 @@ CMD_NOMATCH = "__nomatch_command"
 CMD_MULTIMATCH = "__multimatch_command"
 CMD_NOPERM = "__noperm_command"
 CMD_CHANNEL = "__send_to_channel"
-CMD_EXIT = "__move_to_exit"
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
@@ -92,63 +90,45 @@ def get_and_merge_cmdsets(caller):
         caller_cmdset = caller.cmdset.current
     except AttributeError:
         caller_cmdset = None
-
-    # All surrounding cmdsets
+        
+    # Create cmdset for all player's available channels
     channel_cmdset = None
-    exit_cmdset = None
-    local_objects_cmdsets = [None] 
-    
-    # Player object's commandsets 
-    try:
-        player_cmdset = caller.player.cmdset.current
-    except AttributeError:
-        player_cmdset = None 
-    
     if not caller_cmdset.no_channels:
-        # Make cmdsets out of all valid channels
         channel_cmdset = CHANNELHANDLER.get_cmdset(caller)
-    if not caller_cmdset.no_exits:
-        # Make cmdsets out of all valid exits in the room
-        exit_cmdset = EXITHANDLER.get_cmdset(caller)
+
+    # Gather cmdsets from location, objects in location or carried        
+    local_objects_cmdsets = [None] 
     location = None
     if hasattr(caller, "location"):
         location = caller.location 
     if location and not caller_cmdset.no_objs:
         # Gather all cmdsets stored on objects in the room and
         # also in the caller's inventory and the location itself
-        local_objlist = location.contents + caller.contents + [location]
-        local_objects_cmdsets = [obj.cmdset.current
-                                 for obj in local_objlist
+        local_objlist = location.contents_get(exclude=caller.dbobj) + caller.contents + [location]
+        local_objects_cmdsets = [obj.cmdset.current for obj in local_objlist
                                  if obj.locks.check(caller, 'call', no_superuser_bypass=True)]
-    # Merge all command sets into one
-    # (the order matters, the higher-prio cmdsets are merged last)
-    cmdset = caller_cmdset
-    for obj_cmdset in [obj_cmdset for obj_cmdset in local_objects_cmdsets if obj_cmdset]:
-        # Here only, object cmdsets are merged with duplicates=True
-        # (or we would never be able to differentiate between same-prio objects)
-        try:
-            old_duplicate_flag = obj_cmdset.duplicates
-            obj_cmdset.duplicates = True
-            cmdset = obj_cmdset + cmdset
-            obj_cmdset.duplicates = old_duplicate_flag
-        except TypeError:
-            pass
-    # Exits and channels automatically has duplicates=True.
-    try:
-        cmdset = exit_cmdset + cmdset
-    except TypeError:
-        pass
-    try:
-        cmdset = channel_cmdset + cmdset
-    except TypeError:
-        pass
-    # finally merge on the player cmdset. This should have a low priority
-    try:
-        cmdset = player_cmdset + cmdset
-    except TypeError:
-        pass
 
-    return cmdset
+    # Player object's commandsets 
+    try:
+        player_cmdset = caller.player.cmdset.current
+    except AttributeError:
+        player_cmdset = None 
+
+    cmdsets = [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_objects_cmdsets
+    # weed out all non-found sets 
+    cmdsets = [cmdset for cmdset in cmdsets if cmdset]
+    # sort cmdsets after reverse priority (highest prio are merged in last)
+    cmdsets = sorted(cmdsets, key=lambda x: x.priority)
+    if cmdsets:
+        # Merge all command sets into one, beginning with the lowest-prio one
+        cmdset = cmdsets.pop(0)
+        for merging_cmdset in cmdsets:
+            #print "<%s(%s,%s)> onto <%s(%s,%s)>" % (merging_cmdset.key, merging_cmdset.priority, merging_cmdset.mergetype, 
+            #                                        cmdset.key, cmdset.priority, cmdset.mergetype)        
+            cmdset = merging_cmdset + cmdset 
+    else:
+        cmdset = None
+    return cmdset 
 
 def match_command(cmd_candidates, cmdset, logged_caller=None):
     """
@@ -363,17 +343,6 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                     cmd = syscmd           
                 sysarg = "%s:%s" % (cmd_candidate.cmdname,
                                     cmd_candidate.args)
-                raise ExecSystemCommand(cmd, sysarg)
-
-            # Check if this is an Exit match.
-            if hasattr(cmd, 'is_exit') and cmd.is_exit:
-                # even if a user-defined syscmd is not defined, the 
-                # found cmd is already a system command in its own right. 
-                syscmd = cmdset.get(CMD_EXIT)
-                if syscmd:
-                    # replace system command with custom version
-                    cmd = syscmd
-                sysarg = raw_string 
                 raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.

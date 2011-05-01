@@ -274,25 +274,26 @@ class ObjectManager(TypedObjectManager):
     # ObjectManager Copy method
     #
 
-    def copy_object(self, original_object, new_name=None,
+    def copy_object(self, original_object, new_key=None,
                     new_location=None, new_player=None, new_home=None, 
-                    new_permissions=None, new_locks=None, new_aliases=None):
+                    new_permissions=None, new_locks=None, new_aliases=None, new_destination=None):
         """
-        Create and return a new object as a copy of the source object. All will
+        Create and return a new object as a copy of the original object. All will
         be identical to the original except for the arguments given specifically 
         to this method.
 
         original_object (obj) - the object to make a copy from
-        new_name (str) - name the copy differently from the original. 
+        new_key (str) - name the copy differently from the original. 
         new_location (obj) - if not None, change the location
         new_home (obj) - if not None, change the Home
         new_aliases (list of strings) - if not None, change object aliases.
+        new_destination (obj) - if not None, change destination
         """
 
         # get all the object's stats
         typeclass_path = original_object.typeclass_path
-        if not new_name:            
-            new_name = original_object.key
+        if not new_key:            
+            new_key = original_object.key
         if not new_location:
             new_location = original_object.location
         if not new_home:
@@ -305,13 +306,15 @@ class ObjectManager(TypedObjectManager):
             new_locks = original_object.db_lock_storage
         if not new_permissions:
             new_permissions = original_object.permissions 
-        
+        if not new_destination:
+            new_destination = original_object.destination
+                
         # create new object 
         from src.utils import create 
         from src.scripts.models import ScriptDB
-        new_object = create.create_object(typeclass_path, new_name, new_location,
-                                          new_home, new_player, new_permissions, 
-                                          new_locks, new_aliases)
+        new_object = create.create_object(typeclass_path, key=new_key, location=new_location,
+                                          home=new_home, player=new_player, permissions=new_permissions, 
+                                          locks=new_locks, aliases=new_aliases, destination=new_destination)
         if not new_object:
             return None        
 

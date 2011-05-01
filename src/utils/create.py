@@ -29,7 +29,8 @@ from src.utils.utils import is_iter, has_parent
 #
 
 def create_object(typeclass, key=None, location=None,
-                  home=None, player=None, permissions=None, locks=None, aliases=None):
+                  home=None, player=None, permissions=None, locks=None, 
+                  aliases=None, destination=None):
     """
     Create a new in-game object. Any game object is a combination
     of a database object that stores data persistently to
@@ -89,6 +90,8 @@ def create_object(typeclass, key=None, location=None,
         # link a player and the object together
         new_object.player = player
         player.obj = new_object
+
+    new_object.destination = destination 
     
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom

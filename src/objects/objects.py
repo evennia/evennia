@@ -17,8 +17,6 @@ they control by simply linking to a new object's user property.
 
 from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
-from src.objects.exithandler import EXITHANDLER
-
 
 #
 # Base class to inherit from. 
@@ -76,6 +74,12 @@ class Object(TypeClass):
         created. 
         """ 
         pass
+
+    def at_cache(self):
+        """
+        Called whenever this object is cached or reloaded.
+        """
+        pass 
 
     def at_first_login(self):
         """
@@ -401,49 +405,113 @@ class Room(Object):
 
 class Exit(Object):
     """
-    This is the base exit object - it connects a location
-    to another. What separates it from other objects
-    is that it has the 'destination' property defined.    
-    Note that property is the only identifier to
-    separate an exit from normal objects, so if the property
-    is removed, it will be treated like any other object. This
-    also means that any object can be made an exit by setting
-    the property destination to a valid location
-    ('Quack like a duck...' and so forth).
+    This is the base exit object - it connects a location to
+    another. This is done by the exit assigning a "command" on itself
+    with the same name as the exit object (to do this we need to
+    remember to re-create the command when the object is cached since it must be 
+    created dynamically depending on what the exit is called). This
+    command (which has a high priority) will thus allow us to traverse exits
+    simply by giving the exit-object's name on its own.
+
     """        
+    
+    # Helper classes and methods to implement the Exit. These need not
+    # be overloaded unless one want to change the foundation for how
+    # Exits work. See the end of the class for hook methods to overload. 
+
+    def create_exit_cmdset(self, exidbobj):
+        """
+        Helper function for creating an exit command set + command.
+
+        Note that exitdbobj is an ObjectDB instance. This is necessary for
+        handling reloads and avoid tracebacks while the typeclass system
+        is rebooting.
+        """
+        
+        class ExitCommand(command.Command):
+            """
+            This is a command that simply cause the caller
+            to traverse the object it is attached to. 
+            """
+            locks = "cmd:all()" # should always be set to this.            
+            obj = None
+
+            def func(self):
+                "Default exit traverse if no syscommand is defined."
+
+                if self.obj.access(self.caller, 'traverse'):
+                    # we may traverse the exit. 
+
+                    old_location = None 
+                    if hasattr(self.caller, "location"):
+                        old_location = self.caller.location                
+
+                    # call pre/post hooks and move object.
+                    self.obj.at_before_traverse(self.caller)
+                    self.caller.move_to(self.obj.destination)            
+                    self.obj.at_after_traverse(self.caller, old_location)
+
+                else:
+                    if self.obj.db.err_traverse:
+                        # if exit has a better error message, let's use it.
+                        self.caller.msg(self.obj.db.err_traverse)
+                    else:
+                        # No shorthand error message. Call hook.
+                        self.obj.at_failed_traverse(self.caller)
+
+        # create an exit command.
+        cmd = ExitCommand()
+        cmd.key = exidbobj.db_key.strip().lower()
+        cmd.obj = exidbobj 
+        cmd.aliases = exidbobj.aliases
+        cmd.destination = exidbobj.db_destination
+        # create a cmdset
+        exit_cmdset = cmdset.CmdSet(None)
+        exit_cmdset.key = '_exitset'
+        exit_cmdset.priority = 9
+        exit_cmdset.duplicates = True 
+        # add command to cmdset 
+        exit_cmdset.add(cmd)  
+        return exit_cmdset
+
+    # Command hooks 
+
     def basetype_setup(self):
         """
         Setup exit-security
 
         Don't change this, instead edit at_object_creation() to
-        overload the defaults (it is called after this one). 
+        overload the default locks (it is called after this one). 
         """
-        # the lock is open to all by default
         super(Exit, self).basetype_setup()
-
-        self.locks.add("puppet:false()") # would be weird to puppet an exit ...
-        self.locks.add("traverse:all()") # who can pass through exit by default
-        self.locks.add("get:false()")    # noone can pick up the exit 
-
+        
+        # this is the fundamental thing for making the Exit work: 
+        self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)
         # an exit should have a destination (this is replaced at creation time)
         if self.dbobj.location:
             self.destination = self.dbobj.location 
+
+        # setting default locks (overload these in at_object_creation()
+        self.locks.add("puppet:false()") # would be weird to puppet an exit ...
+        self.locks.add("traverse:all()") # who can pass through exit by default
+        self.locks.add("get:false()")    # noone can pick up the exit 
         
-    def at_object_delete(self):
-        """
-        We have to make sure to clean the exithandler cache
-        when deleting the exit, or a new exit could be created
-        out of sync with the cache. You should do this also if
-        overloading this function in a child class. 
-        """
-        EXITHANDLER.clear(self.dbobj)
-        return True 
+    def at_cache(self):
+        "Called when the typeclass is re-cached or reloaded. Should usually not be edited."
+        self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)                
+
+    # this and other hooks are what usually can be modified safely. 
+
+    def at_object_creation(self):
+        "Called once, when object is first created (after basetype_setup)."
+        pass 
 
     def at_failed_traverse(self, traversing_object):
         """
         This is called if an object fails to traverse this object for some 
         reason. It will not be called if the attribute "err_traverse" is defined,
         that attribute will then be echoed back instead as a convenient shortcut. 
+
+        (See also hooks at_before_traverse and at_after_traverse). 
         """
-        traversing_object.msg("You cannot enter %s." % self.key)
-        
+        traversing_object.msg("You cannot go there.")

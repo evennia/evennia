@@ -28,7 +28,6 @@ from src.commands.cmdhandler import CMD_NOMATCH
 from src.commands.cmdhandler import CMD_MULTIMATCH
 from src.commands.cmdhandler import CMD_NOPERM
 from src.commands.cmdhandler import CMD_CHANNEL
-from src.commands.cmdhandler import CMD_EXIT
  
 from src.commands.default.muxcommand import MuxCommand
 
@@ -188,37 +187,3 @@ class SystemSendToChannel(MuxCommand):
         msg = "[%s] %s: %s" % (channel.key, caller.name, msg)        
         msgobj = create.create_message(caller, msg, channels=[channel])
         channel.msg(msgobj)
-
-#
-# Command called when the system recognizes the command given
-# as matching an exit from the room. E.g. if there is an exit called 'door'
-# and the user gives the command
-#  > door 
-# the exit 'door' should be traversed to its destination.
-
-class SystemUseExit(MuxCommand):
-    """
-    Handles what happens when user gives a valid exit
-    as a command. It receives the raw string as input.
-    """
-    key = CMD_EXIT
-    locks = "cmd:all()"
-
-    def func(self):        
-        """
-        Handle traversing an exit
-        """
-        caller = self.caller
-        if not self.args:
-            return
-        exit_name = self.args
-        exi = caller.search(exit_name)
-        if not exi:
-            return 
-        destination = exi.destination
-        if not destination:
-            return             
-        if exit.access(caller, 'traverse'):
-            caller.move_to(destination)
-        else:
-            caller.msg("You cannot enter")

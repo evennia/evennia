@@ -237,7 +237,6 @@ class CmdSet(object):
             cmds = [instantiate(cmd)]
         else:
             cmds = instantiate(cmd)
-
         for cmd in cmds:
             # add all commands 
             if not hasattr(cmd, 'obj'):
@@ -247,8 +246,9 @@ class CmdSet(object):
                 self.commands[ic] = cmd # replace 
             except ValueError:
                 self.commands.append(cmd) 
-            # extra run to make sure to avoid doublets
+            # extra run to make sure to avoid doublets            
             self.commands = list(set(self.commands))
+            #print "In cmdset.add(cmd):", self.key, cmd
 
     def remove(self, cmd):
         """

@@ -136,7 +136,7 @@ class MuxCommand(Command):
         string += "-" * 50
         string += "\nname of cmd (self.key): {w%s{n\n" % self.key 
         string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
-        string += "cmd perms (self.permissions): {w%s{n\n" % self.permissions
+        string += "cmd locks (self.locks): {w%s{n\n" % self.locks
         string += "help category (self.help_category): {w%s{n\n" % self.help_category
         string += "object calling (self.caller): {w%s{n\n" % self.caller
         string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj

@@ -449,12 +449,12 @@ class ObjectDB(TypedObject):
     has_player = property(has_player_get)
 
     #@property 
-    def contents_get(self):
+    def contents_get(self, exclude=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
         """
-        return ObjectDB.objects.get_contents(self)
+        return ObjectDB.objects.get_contents(self, excludeobj=exclude)
     contents = property(contents_get)
 
     #@property
@@ -747,6 +747,17 @@ class ObjectDB(TypedObject):
                     string = "This place should not exist ... contact an admin."
                     obj.msg(string)
             obj.move_to(home)
+
+    def copy(self, new_key=None):
+        """ 
+        Makes an identical copy of this object and returns
+        it. The copy will be named <key>_copy by default. If you
+        want to customize the copy by changing some settings, use
+        the manager method copy_object directly.  
+        """
+        if not new_key:
+            new_key = "%s_copy" % self.key
+        return ObjectDB.objects.copy_object(self, new_key=new_key)
 
     def delete(self):    
         """
