@@ -30,7 +30,8 @@ class CmdSetMeta(type):
         """
         # by default we key the cmdset the same as the
         # name of its class. 
-        mcs.key = mcs.__name__
+        if not hasattr(mcs, 'key') or not mcs.key:
+            mcs.key = mcs.__name__
         mcs.path = "%s.%s" % (mcs.__module__, mcs.__name__)
 
         if not type(mcs.key_mergetypes) == dict:
@@ -178,7 +179,7 @@ class CmdSet(object):
     key_mergetypes = {}
     no_exits = False
     no_objs = False
-    no_channels = False 
+    no_channels = False
 
     def __init__(self, cmdsetobj=None, key=None):
         """ 

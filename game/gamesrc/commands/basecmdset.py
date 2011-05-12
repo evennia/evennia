@@ -20,8 +20,9 @@ new cmdset class.
 
 from src.commands.cmdset import CmdSet
 from src.commands.default import cmdset_default, cmdset_unloggedin, cmdset_ooc
-
 from game.gamesrc.commands.basecommand import Command
+
+from contrib import menusystem, lineeditor
 
 class DefaultCmdSet(cmdset_default.DefaultCmdSet):
     """
@@ -44,7 +45,8 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-        
+        #self.add(menusystem.CmdMenuTest())
+        #self.add(lineeditor.CmdEditor())
 
 class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
     """

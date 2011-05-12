@@ -390,7 +390,9 @@ class CmdCreate(ObjManipCommand):
             # (i.e. starts with game or src) we let it be, otherwise we 
             # add a base path as defined in settings
             if typeclass and not (typeclass.startswith('src.') or 
-                                  typeclass.startswith('game.')):
+                                  typeclass.startswith('game.') or
+                                  typeclass.startswith('contrib')):
+
                 typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
                                        typeclass)
                 
@@ -1477,13 +1479,13 @@ class CmdExamine(ObjManipCommand):
             #self.caller.msg(db_attr)
             string += headers["persistent"]
             for attr, value in db_attr:         
-                if crop:
+                if crop and isinstance(value, basestring):
                     value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
         if ndb_attr and ndb_attr[0]:
             string += headers["nonpersistent"]
             for attr, value in ndb_attr:
-                if crop:
+                if crop and isinstance(value, basestring):
                     value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
         return string 

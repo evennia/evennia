@@ -23,7 +23,10 @@ from src.utils import create, ansi
 from src.server import session, sessionhandler
 from src.locks.lockhandler import LockHandler
 from src.server.models import ServerConfig
-from src.comms.models import Channel, Msg, PlayerChannelConnection
+from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
+from django.contrib.auth.models import User
+from src.players.models import PlayerDB
+from src.objects.models import ObjectDB
 
 #------------------------------------------------------------ 
 # Command testing 
@@ -31,6 +34,17 @@ from src.comms.models import Channel, Msg, PlayerChannelConnection
 
 # print all feedback from test commands (can become very verbose!)
 VERBOSE = False
+
+
+def cleanup():
+    User.objects.all().delete()
+    PlayerDB.objects.all().delete() 
+    ObjectDB.objects.all().delete()
+    Channel.objects.all().delete()
+    Msg.objects.all().delete() 
+    PlayerChannelConnection.objects.all().delete()
+    ExternalChannelConnection.objects.all().delete()
+    ServerConfig.objects.all().delete()
 
 class FakeSession(session.Session): 
     """ 
@@ -76,15 +90,16 @@ class CommandTest(TestCase):
     Inherit new tests from this.
     """
 
-    NOMANGLE = False # mangle command input for extra testing
+    NOMANGLE = True # mangle command input for extra testing
 
     def setUp(self):
         "sets up the testing environment"                
         ServerConfig.objects.conf("default_home", 2)
+
+        self.addCleanup(cleanup)
         
         self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
-        self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
-
+        self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")        
         # create a faux player/character for testing.
         self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", location=self.room1)
         self.char1.player.user.is_superuser = True
@@ -111,6 +126,17 @@ class CommandTest(TestCase):
         self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
         self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)        
        
+    def tearDown(self):
+        "Cleans up testing environment after test has run."
+        User.objects.all().delete()
+        PlayerDB.objects.all().delete() 
+        ObjectDB.objects.all().delete()
+        Channel.objects.all().delete()
+        Msg.objects.all().delete() 
+        PlayerChannelConnection.objects.all().delete()
+        ExternalChannelConnection.objects.all().delete()
+        ServerConfig.objects.all().delete()
+
     def get_cmd(self, cmd_class, argument_string=""):
         """
         Obtain a cmd instance from a class and an input string
@@ -401,15 +427,16 @@ class TestChannelCreate(CommandTest):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("testchan1 Hello", "[testchannel1] TestChar: Hello")
 class TestAddCom(CommandTest):
-    def test_call(self):
+    def test_call(self):        
+        self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("addcom chan1 = testchannel1")
         self.execute_cmd("addcom chan2 = testchan1")
         self.execute_cmd("delcom testchannel1")
         self.execute_cmd("addcom testchannel1" "You now listen to the channel channel.")
-
 class TestDelCom(CommandTest):
     def test_call(self):
+        self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("addcom chan1 = testchan1")
         self.execute_cmd("addcom chan2 = testchan1b")
@@ -430,7 +457,9 @@ class TestChannels(CommandTest):
         self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
 class TestCBoot(CommandTest):
     def test_call(self):        
+        self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
+        self.execute_cmd("addcom testchan = testchannel1")
         self.execute_cmd("@cboot testchannel1 = TestChar", "TestChar boots TestChar from channel.")
 class TestCemit(CommandTest):
     def test_call(self):        

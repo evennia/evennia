@@ -485,7 +485,7 @@ class CmdPose(MuxCommand):
         """
         args = self.args
         if args and not args[0] in ["'", ",", ":"]:
-            args = " %s" % args
+            args = " %s" % args.strip()
         self.args = args
 
     def func(self):

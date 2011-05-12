@@ -21,8 +21,11 @@ class CommandMeta(type):
         """
         mcs.key = mcs.key.lower()
         if mcs.aliases and not is_iter(mcs.aliases):
-            mcs.aliases = mcs.aliases.split(',')
-        mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases]
+            try:
+                mcs.aliases = mcs.aliases.split(',')
+            except Exception: 
+                mcs.aliases = []
+        mcs.aliases = [str(alias).strip() for alias in mcs.aliases]
 
         # pre-process locks as defined in class definition
         temp = []

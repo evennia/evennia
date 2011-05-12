@@ -92,7 +92,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
             if not cmdsetclass:
-                #print "cmdset %s not in cache. Reloading." % wanted_cache_key
+                #print "cmdset '%s' not in cache. Reloading %s on %s." % (wanted_cache_key, python_path, cmdsetobj)
                 # Not in cache. Reload from disk.
                 modulepath, classname = python_path.rsplit('.', 1)
                 module = __import__(modulepath, fromlist=[True])
@@ -120,8 +120,8 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             print errstring 
             logger.log_trace()    
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
-                object.__getattribute__(emit_to_obj, "msg")(errstring)
-        raise # have to raise, or we will not see any errors in some situations!
+                object.__getattribute__(emit_to_obj, "msg")(errstring)            
+        #raise # have to raise, or we will not see any errors in some situations!
 
 # classes 
 
@@ -201,17 +201,19 @@ class CmdSetHandler(object):
         """
         if init_mode:
             # reimport all permanent cmdsets
-            self.permanent_paths = self.obj.cmdset_storage
-            if self.permanent_paths:
+            storage = self.obj.cmdset_storage
+            #print "cmdset_storage:", self.obj.cmdset_storage            
+            if storage:
                 self.cmdset_stack = []           
-                for pos, path in enumerate(self.permanent_paths):
+                for pos, path in enumerate(storage):
                     if pos == 0 and not path:
                         self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
-                    else:
-                        cmdset = self.import_cmdset(path)
+                    elif path:
+                        cmdset = self.import_cmdset(path)                    
                         if cmdset:
+                            cmdset.permanent = True
                             self.cmdset_stack.append(cmdset)
-
+                            
         # merge the stack into a new merged cmdset
         new_current = None 
         self.mergetype_stack = []
@@ -226,6 +228,7 @@ class CmdSetHandler(object):
         
     def import_cmdset(self, cmdset_path, emit_to_obj=None):
         """
+        Method wrapper for import_cmdset. 
         load a cmdset from a module.
         cmdset_path - the python path to an cmdset object. 
         emit_to_obj - object to send error messages to
@@ -243,8 +246,7 @@ class CmdSetHandler(object):
         cmdset - can be a cmdset object or the python path to
                  such an object.
         emit_to_obj - an object to receive error messages. 
-        permanent - create a script to automatically add the cmdset
-                    every time the server starts/the object logins. 
+        permanent - this cmdset will remain across a server reboot
 
         Note: An interesting feature of this method is if you were to
         send it an *already instantiated cmdset* (i.e. not a class),
@@ -260,16 +262,17 @@ class CmdSetHandler(object):
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
-            cmdset = self.import_cmdset(cmdset)#, emit_to_obj)
+            cmdset = self.import_cmdset(cmdset)
         if cmdset:
-            self.cmdset_stack.append(cmdset)                
             if permanent:
                 # store the path permanently
-                self.permanent_paths.append(cmdset.path)
-                self.obj.cmdset_storage = self.permanent_paths 
+                cmdset.permanent = True
+                storage = self.obj.cmdset_storage
+                storage.append(cmdset.path)
+                self.obj.cmdset_storage = storage
             else:
-                # store an empty entry and don't save (this makes it easy to delete).
-                self.permanent_paths.append("")
+                cmdset.permanent = False 
+            self.cmdset_stack.append(cmdset)                
             self.update()
 
     def add_default(self, cmdset, emit_to_obj=None, permanent=True):
@@ -298,16 +301,15 @@ class CmdSetHandler(object):
                 self.mergetype_stack = [cmdset.mergetype]
             
             if permanent:
-                if self.permanent_paths:
-                    self.permanent_paths[0] = cmdset.path
+                cmdset.permanent = True 
+                storage = self.obj.cmdset_storage
+                if storage:
+                    storage[0] = cmdset.path
                 else:
-                    self.permanent_paths = [cmdset.path]
-                self.obj.cmdset_storage = self.permanent_paths
+                    storage = [cmdset.path]
+                self.obj.cmdset_storage = storage
             else:
-                if self.permanent_paths:
-                    self.permanent_paths[0] = ""                    
-                else:
-                    self.permanent_paths = [""]
+                cmdset.permanent = False 
             self.update()        
         
     def delete(self, cmdset=None):
@@ -328,34 +330,53 @@ class CmdSetHandler(object):
             return
 
         if not cmdset:
-            # remove the last one in the stack (except the default position)
-            self.cmdset_stack.pop()
-            self.permanent_paths.pop()
+            # remove the last one in the stack 
+            cmdset = self.cmdset_stack.pop()
+            if cmdset.permanent:
+                storage = self.obj.cmdset_storage
+                storage.pop()
+                self.obj.cmdset_storage = storage
         else:            
             # try it as a callable
             if callable(cmdset) and hasattr(cmdset, 'path'):
-                indices = [i+1 for i, cset in enumerate(self.cmdset_stack[1:]) if cset.path == cmdset.path]
+                delcmdsets = [cset for cset in self.cmdset_stack[1:] if cset.path == cmdset.path]
             else:
                 # try it as a path or key
-                indices = [i+1 for i, cset in enumerate(self.cmdset_stack[1:]) if cset.path == cmdset or cset.key == cmdset]
-                
-            for i in indices:
-                del self.cmdset_stack[i]
-                del self.permanent_paths[i]
-            self.obj.cmdset_storage = self.permanent_paths
-                
+                delcmdsets = [cset for cset in self.cmdset_stack[1:] if cset.path == cmdset or cset.key == cmdset]
+            storage = []
+
+            if any(cset.permanent for cset in delcmdsets):
+                # only hit database if there's need to 
+                storage = self.obj.cmdset_storage                                
+                for cset in delcmdsets:                
+                    if cset.permanent:
+                        try:
+                            storage.remove(cset.path) 
+                        except ValueError:
+                            pass
+            for cset in delcmdsets:
+                # clean the in-memory stack 
+                try:
+                    self.cmdset_stack.remove(cset)
+                except ValueError:
+                    pass                
         # re-sync the cmdsethandler. 
         self.update()
 
     def delete_default(self):
         "This explicitly deletes the default cmdset. It's the only command that can."
         if self.cmdset_stack:
+            cmdset = self.cmdet_stack[0]
+            if cmdset.permanent:
+                storage = self.obj.cmdset_storage
+                if storage:
+                    storage[0] = ""
+                else:
+                    storage = [""]
+                self.cmdset_storage = storage                
             self.cmdset_stack[0] = CmdSet(cmdsetobj=self.obj, key="Empty")
-            self.permanent_paths[0] = ""
-        else:
+        else:            
             self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
-            self.permanent_paths = [""]
-        self.obj.cmdset_storage = self.permanent_paths
         self.update()
 
     def all(self):
@@ -371,8 +392,10 @@ class CmdSetHandler(object):
         """
         self.cmdset_stack = [self.cmdset_stack[0]]
         self.mergetype_stack = [self.cmdset_stack[0].mergetype]
-        self.permanent_paths = [self.permanent_paths[0]]
-        self.obj.cmdset_storage = self.permanent_paths
+        storage = self.obj.cmdset_storage
+        if storage: 
+            storage = storage[0]
+            self.obj.cmdset_storage = storage 
         self.update()
 
     def all(self):

@@ -137,12 +137,8 @@ DATABASE_PORT = ''
 
 # An alternate command parser module to use 
 COMMAND_PARSER = "src.commands.cmdparser.cmdparser"
-# How many space-separated words a command name may have
-# and still be identified as one single command 
-# (e.g. 'push button' instead of 'pushbutton')
-COMMAND_MAXLEN = 3
 # The handler that outputs errors when searching
-# objects using object.search(). 
+# objects using object.search().
 SEARCH_AT_RESULT = "src.commands.cmdparser.at_search_result"
 # The parser used in order to separate multiple
 # object matches (so you can separate between same-named

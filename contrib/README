@@ -1,0 +1,34 @@
+
+'Contrib' folder
+----------------
+
+This folder contains 'contributions': extra snippets of code that are
+potentially very useful for the game coder but which are considered
+too game-specific to be a part of the main Evennia game server.  These
+modules are not used unless you explicitly import them.
+
+If you want to edit, tweak or expand on this code you should copy the
+things you want from here into game/gamesrc and change them there.
+
+* Evennia MenuSystem (Griatch 2011) - A base set of classes and
+      cmdsets for creating in-game multiple-choice menus in
+      Evennia. The menu tree can be of any depth.  Menu options can be
+      numbered or given custom keys, and each option can execute
+      code. Also contains a yes/no question generator function. This
+      is intended to be used by commands and presents a y/n question
+      to the user for accepting an action. Includes a simple new
+      command 'menu' for testing and debugging.
+
+* Evennia Lineeditor (Griatch 2011) - A powerful line-by-line editor
+      for editing text in-game. Mimics the command names of the famous
+      VI text editor. Supports undo/redo, search/replace,
+      regex-searches, buffer formatting, indenting etc. It comes with
+      its own help system. (Makes minute use of the MenuSystem module
+      to show a y/n question if quitting without having
+      saved). Includes a basic command '@edit' for activating the
+      editor.
+
+* Talking_NPC (Griatch 2011) - An example of a simple NPC object that
+     you can strike up a menu-driven converstaion with. Uses the
+     MenuSystem to allow conversation options. The npc object defines
+     a command 'talk' for starting the (brief) conversation.

@@ -52,12 +52,12 @@ def crop(text, width=78, suffix="[...]"):
     continues. Cropping will be done so that the suffix will also fit
     within the given width.
     """
-    ltext = len(str(text))
+    ltext = len(to_str(text))
     if ltext <= width:
         return text
     else: 
         lsuffix = len(suffix)        
-        return text[:width-lsuffix] + suffix 
+        return "%s%s" % (text[:width-lsuffix], suffix)
 
 def dedent(text):
     """

@@ -54,6 +54,7 @@ from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.commands.cmdsethandler import import_cmdset
 from src.utils import logger, utils 
+from src.commands.cmdparser import at_multimatch_cmd
 
 #This switches the command parser to a user-defined one.
 # You have to restart the server for this to take effect. 
@@ -106,7 +107,12 @@ def get_and_merge_cmdsets(caller):
         # also in the caller's inventory and the location itself
         local_objlist = location.contents_get(exclude=caller.dbobj) + caller.contents + [location]
         local_objects_cmdsets = [obj.cmdset.current for obj in local_objlist
-                                 if obj.locks.check(caller, 'call', no_superuser_bypass=True)]
+                                 if (obj.cmdset.current and obj.locks.check(caller, 'call', no_superuser_bypass=True))]
+        for cset in local_objects_cmdsets:
+            #This is necessary for object sets, or we won't be able to separate 
+            #the command sets from each other in a busy room.
+            cset.old_duplicates = cset.duplicates
+            cset.duplicates = True
 
     # Player object's commandsets 
     try:
@@ -128,127 +134,12 @@ def get_and_merge_cmdsets(caller):
             cmdset = merging_cmdset + cmdset 
     else:
         cmdset = None
+    
+    for cset in (cset for cset in local_objects_cmdsets if cset):
+        cset.duplicates = cset.old_duplicates
+
     return cmdset 
 
-def match_command(cmd_candidates, cmdset, logged_caller=None):
-    """
-    Try to match the command against one of the
-    cmd_candidates. 
-
-    logged_caller - a logged-in object, if any.
-
-    """
-    
-    # Searching possible command matches in the given cmdset
-    matches = []
-    prev_found_cmds = [] # to avoid aliases clashing with themselves
-    for cmd_candidate in cmd_candidates:
-        cmdmatches = list(set([cmd for cmd in cmdset
-                               if cmd == cmd_candidate.cmdname and 
-                               cmd not in prev_found_cmds]))
-        matches.extend([(cmd_candidate, cmd) for cmd in cmdmatches])
-        prev_found_cmds.extend(cmdmatches)
-
-    if not matches or len(matches) == 1:        
-        return matches
-
-    # Do our damndest to resolve multiple matches ...
-    
-    # At this point we might still have several cmd candidates,
-    # each with a cmd match. We try to use candidate priority to 
-    # separate them (for example this will give precedences to 
-    # multi-word matches rather than one-word ones).                  
-
-    top_ranked = []
-    top_priority = None
-    for match in matches:
-        prio = match[0].priority
-        if top_priority == None or prio > top_priority:
-            top_ranked = [match]
-            top_priority = prio
-        elif top_priority == prio:
-            top_ranked.append(match)            
-            
-    matches = top_ranked
-    if not matches or len(matches) == 1:       
-        return matches
-
-    # Still multiplies. At this point we should have sorted out
-    # all candidate multiples; the multiple comes from one candidate
-    # matching more than one command. 
-
-    # Check if player supplied
-    # an obj name on the command line (e.g. 'clock's open' would
-    # with the default parser tell us we want the open command
-    # associated with the clock and not, say, the open command on 
-    # the door in the same location). It's up to the cmdparser to
-    # interpret and store this reference in candidate.obj_key if given. 
-
-    if logged_caller:
-        try:
-            local_objlist = logged_caller.location.contents            
-            top_ranked = []
-            candidate = matches[0][0] # all candidates should be the same
-            top_ranked.extend([(candidate, obj.cmdset.current.get(candidate.cmdname))
-                               for obj in local_objlist
-                               if candidate.obj_key == obj.name
-                               and any(cmd == candidate.cmdname 
-                                       for cmd in obj.cmdset.current)])
-            if top_ranked:
-                matches = top_ranked
-        except Exception:
-            logger.log_trace()
-        if not matches or len(matches) == 1:            
-            return matches 
-
-    # We should still have only one candidate type, but matching 
-    # several same-named commands.
-
-    # Maybe the player tried to supply a separator in the form
-    # of a number (e.g. 1-door, 2-door for two different door exits)? If so,
-    # we pick the Nth-1 multiple as our result. It is up to the cmdparser
-    # to read and store this number in candidate.obj_key if given. 
-
-    candidate = matches[0][0] # all candidates should be the same
-    if candidate.obj_key and candidate.obj_key.isdigit():
-        num = int(candidate.obj_key) - 1
-        if 0 <= num < len(matches):            
-            matches = [matches[num]]
-            
-    # regardless what we have at this point, we have to be content    
-    return matches
-
-def format_multimatches(caller, matches):
-    """
-    Format multiple command matches to a useful error.
-    """
-    string = "There where multiple matches:"
-    for num, match in enumerate(matches): 
-        # each match is a tuple (candidate, cmd)
-        candidate, cmd = match        
-
-        is_channel = hasattr(cmd, "is_channel") and cmd.is_channel
-        if is_channel:
-            is_channel = " (channel)"
-        else:
-            is_channel = ""
-        is_exit = hasattr(cmd, "is_exit") and cmd.is_exit 
-        if is_exit and cmd.destination:
-            is_exit =  " (exit to %s)" % cmd.destination
-        else:
-            is_exit = ""
-
-        id1 = ""
-        id2 = ""
-        if not (is_channel or is_exit) and (hasattr(cmd, 'obj') and cmd.obj != caller):
-            # the command is defined on some other object
-            id1 = "%s-" % cmd.obj.name
-            id2 = " (%s-%s)" % (num + 1, candidate.cmdname)
-        else:
-            id1 = "%s-" % (num + 1)
-            id2 = ""
-        string += "\n  %s%s%s%s%s" % (id1, candidate.cmdname, id2, is_channel, is_exit)
-    return string
 
 # Main command-handler function 
 
@@ -284,9 +175,9 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 sysarg = ""
                 raise ExecSystemCommand(syscmd, sysarg)
 
-            # Parse the input string into command candidates
-            cmd_candidates = COMMAND_PARSER(raw_string)
-            
+            # Parse the input string and match to available cmdset.
+            matches = COMMAND_PARSER(raw_string, cmdset)
+
             #string ="Command candidates"
             #for cand in cmd_candidates:
             #    string += "\n %s || %s" % (cand.cmdname, cand.args)                
@@ -294,10 +185,10 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
 
             # Try to produce a unique match between the merged 
             # cmdset and the candidates.
-            if unloggedin:
-                matches = match_command(cmd_candidates, cmdset)
-            else:
-                matches = match_command(cmd_candidates, cmdset, caller)
+            # if unloggedin:
+            #     matches = match_command(cmd_candidates, cmdset)
+            # else:
+            #     matches = match_command(cmd_candidates, cmdset, caller)
     
             #print "matches: ", matches
 
@@ -318,11 +209,12 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 if syscmd:
                     syscmd.matches = matches
                 else:
-                    sysarg = format_multimatches(caller, matches)
+                    sysarg = at_multimatch_cmd(caller, matches)
                 raise ExecSystemCommand(syscmd, sysarg)
             
             # At this point, we have a unique command match. 
-            cmd_candidate, cmd = matches[0]
+            match = matches[0]
+            cmdname, args, cmd = match[0], match[1], match[2]
 
             # Check so we have permission to use this command.
             if not cmd.access(caller):                
@@ -341,16 +233,15 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 if syscmd:
                     # replace system command with custom version
                     cmd = syscmd           
-                sysarg = "%s:%s" % (cmd_candidate.cmdname,
-                                    cmd_candidate.args)
+                sysarg = "%s:%s" % (cmdname, args)
                 raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
 
             # Assign useful variables to the instance
             cmd.caller = caller 
-            cmd.cmdstring = cmd_candidate.cmdname
-            cmd.args = cmd_candidate.args
+            cmd.cmdstring = cmdname
+            cmd.args = args
             cmd.cmdset = cmdset
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
@@ -384,10 +275,10 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 syscmd.args = sysarg
                 syscmd.cmdset = cmdset
 
-                if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
+                if hasattr(syscmd, 'obj') and hasattr(syscmd.obj, 'scripts'):
                     # cmd.obj is automatically made available.
                     # we make sure to validate its scripts. 
-                    cmd.obj.scripts.validate()
+                    syscmd.obj.scripts.validate()
                     
                 if testing:
                     # only return the command instance
