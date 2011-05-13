@@ -418,9 +418,10 @@ class ObjectDB(TypedObject):
     # ObjectDB class access methods/properties
     # 
 
-    # this is required to properly handle attributes
+    # this is required to properly handle attributes and typeclass loading.
     attribute_model_path = "src.objects.models"
     attribute_model_name = "ObjAttribute"
+    typeclass_paths = settings.OBJECT_TYPECLASS_PATHS 
 
     # this is used by all typedobjects as a fallback
     try:

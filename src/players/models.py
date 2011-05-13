@@ -261,9 +261,10 @@ class PlayerDB(TypedObject):
     except Exception:
         default_typeclass_path = "src.players.player.Player"
 
-    # this is required to properly handle attributes
+    # this is required to properly handle attributes and typeclass loading
     attribute_model_path = "src.players.models"
     attribute_model_name = "PlayerAttribute"
+    typeclass_paths = settings.PLAYER_TYPECLASS_PATHS 
 
         # name property (wraps self.user.username)
     #@property

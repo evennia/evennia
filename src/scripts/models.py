@@ -243,9 +243,10 @@ class ScriptDB(TypedObject):
     #
     #
 
-    # this is required to properly handle typeclass-dependent attributes
+    # this is required to properly handle attrubutes and typeclass loading
     attribute_model_path = "src.scripts.models"
     attribute_model_name = "ScriptAttribute"
+    typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS 
 
     # this is used by all typedobjects as a fallback
     try:

@@ -386,19 +386,8 @@ class CmdCreate(ObjManipCommand):
             aliases = objdef['aliases']
             typeclass = objdef['option']            
             
-            # analyze typeclass. If it starts at the evennia basedir,
-            # (i.e. starts with game or src) we let it be, otherwise we 
-            # add a base path as defined in settings
-            if typeclass and not (typeclass.startswith('src.') or 
-                                  typeclass.startswith('game.') or
-                                  typeclass.startswith('contrib')):
-
-                typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                       typeclass)
-                
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
-
             lockstring = "control:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards);get:all()" % (caller.id, caller.id)
             obj = create.create_object(typeclass, name, caller, 
                                        home=caller, aliases=aliases, locks=lockstring)
@@ -420,7 +409,6 @@ class CmdCreate(ObjManipCommand):
         caller.msg(string)
 
 
-#TODO: make @debug more clever with arbitrary hooks? 
 class CmdDebug(MuxCommand):
     """
     Debug game entities
@@ -438,11 +426,7 @@ class CmdDebug(MuxCommand):
       @debug/obj examples.red_button.RedButton
 
     This command helps when debugging the codes of objects and scripts.
-    It creates the given object and runs tests on its hooks. You can 
-    supply both full paths (starting from the evennia base directory),
-    otherwise the system will start from the defined root directory
-    for scripts and objects respectively (defined in settings file). 
-
+    It creates the given object and runs tests on its hooks. 
     """
 
     key = "@debug"
@@ -459,27 +443,11 @@ class CmdDebug(MuxCommand):
         path = self.args
 
         if 'obj' in self.switches or 'object' in self.switches:
-            # analyze path. If it starts at the evennia basedir,
-            # (i.e. starts with game or src) we let it be, otherwise we 
-            # add a base path as defined in settings
-            if path and not (path.startswith('src.') or 
-                                  path.startswith('game.')):
-                path = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                       path)
-
             # create and debug the object
             self.caller.msg(debug.debug_object(path, self.caller))
             self.caller.msg(debug.debug_object_scripts(path, self.caller))
 
         elif 'script' in self.switches:
-            # analyze path. If it starts at the evennia basedir,
-            # (i.e. starts with game or src) we let it be, otherwise we 
-            # add a base path as defined in settings
-            if path and not (path.startswith('src.') or 
-                                  path.startswith('game.')):
-                path = "%s.%s" % (settings.BASE_SCRIPT_PATH, 
-                                       path)
-            
             self.caller.msg(debug.debug_syntax_script(path))
 
 
@@ -629,16 +597,7 @@ class CmdDig(ObjManipCommand):
         if not typeclass:
             typeclass = settings.BASE_ROOM_TYPECLASS
 
-        # analyze typeclass path. If it starts at the evennia basedir,
-        # (i.e. starts with game or src) we let it be, otherwise we 
-        # add a base path as defined in settings
-        if typeclass and not (typeclass.startswith('src.') or 
-                              typeclass.startswith('game.')):
-            typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                   typeclass)
-
         # create room 
-
         lockstring = "control:id(%s) or perm(Immortal); delete:id(%s) or perm(Wizard); edit:id(%s) or perm(Wizard)" 
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
 
@@ -669,13 +628,7 @@ class CmdDig(ObjManipCommand):
                 typeclass = to_exit["option"]
                 if not typeclass:
                     typeclass = settings.BASE_EXIT_TYPECLASS                            
-                # analyze typeclass. If it starts at the evennia basedir,
-                # (i.e. starts with game or src) we let it be, otherwise we 
-                # add a base path as defined in settings
-                if typeclass and not (typeclass.startswith('src.') or 
-                                      typeclass.startswith('game.')):
-                    typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                           typeclass)
+
                 new_to_exit = create.create_object(typeclass, to_exit["name"], location,
                                                    aliases=to_exit["aliases"], 
                                                    locks=lockstring, destination=new_room)
@@ -701,13 +654,6 @@ class CmdDig(ObjManipCommand):
                 typeclass = back_exit["option"]
                 if not typeclass:
                     typeclass = settings.BASE_EXIT_TYPECLASS
-                # analyze typeclass. If it starts at the evennia basedir,
-                # (i.e. starts with game or src) we let it be, otherwise we 
-                # add a base path as defined in settings
-                if typeclass and not (typeclass.startswith('src.') or 
-                                      typeclass.startswith('game.')):
-                    typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                           typeclass)
                 new_back_exit = create.create_object(typeclass, back_exit["name"],
                                                      new_room, aliases=back_exit["aliases"], 
                                                      locks=lockstring, destination=location)
@@ -1068,14 +1014,6 @@ class CmdOpen(ObjManipCommand):
         exit_aliases = self.lhs_objs[0]['aliases']
         exit_typeclass = self.lhs_objs[0]['option']
 
-        # analyze typeclass. If it starts at the evennia basedir,
-        # (i.e. starts with game or src) we let it be, otherwise we 
-        # add a base path as defined in settings
-        if exit_typeclass and not (exit_typeclass.startswith('src.') or 
-                                   exit_typeclass.startswith('game.')):
-            exit_typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                        exit_typeclass)
- 
         dest_name = self.rhs_objs[0]['name']
         
         # first, check so the destination exists.
@@ -1097,13 +1035,6 @@ class CmdOpen(ObjManipCommand):
             back_exit_aliases = self.rhs_objs[1]['name']
             back_exit_typeclass = self.rhs_objs[1]['option']
 
-            # analyze typeclass. If it starts at the evennia basedir,
-            # (i.e. starts with game or src) we let it be, otherwise we 
-            # add a base path as defined in settings
-            if back_exit_typeclass and not (back_exit_typeclass.startswith('src.') or 
-                                            back_exit_typeclass.startswith('game.')):
-                back_exit_typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                                 back_exit_typeclass)            
             # Create the back-exit
             self.create_exit(back_exit_name, destination, location, 
                              back_exit_aliases, back_exit_typeclass)
@@ -1249,14 +1180,6 @@ class CmdTypeclass(MuxCommand):
 
         # we have an =, a typeclass was supplied.
         typeclass = self.rhs
-
-        # analyze typeclass. If it starts at the evennia basedir,
-        # (i.e. starts with game or src) we let it be, otherwise we 
-        # add a base path as defined in settings
-        if typeclass and not (typeclass.startswith('src.') or 
-                              typeclass.startswith('game.')):
-            typeclass = "%s.%s" % (settings.BASE_TYPECLASS_PATH, 
-                                   typeclass)
 
         if not obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
@@ -1827,34 +1750,38 @@ class CmdScript(MuxCommand):
             caller.msg(string)
             return 
         
-        inp = self.rhs
-        if not inp.startswith('src.') and not inp.startswith('game.'):
-            # append the default path.
-            inp = "%s.%s" % (settings.BASE_SCRIPT_PATH, inp)
-        
         obj = caller.search(self.lhs)
         if not obj:
             return
+
         string = ""
-        if "stop" in self.switches:
-            # we are stopping an already existing script
-            ok = obj.scripts.stop(inp)        
-            if not ok:
-                string = "Script %s could not be stopped. Does it exist?" % inp
-            else:
-                string = "Script stopped and removed from object."
-        if "start" in self.switches:
-            # we are starting an already existing script 
-            ok = obj.scripts.start(inp)
-            if not ok:
-                string = "Script %s could not be (re)started." % inp
-            else:
-                string = "Script started successfully."
         if not self.switches:
             # adding a new script, and starting it
-            ok = obj.scripts.add(inp, autostart=True)
+            ok = obj.scripts.add(self.rhs, autostart=True)
             if not ok:
-                string = "Script %s could not be added." % inp
+                string += "\nScript %s could not be added." % self.rhs
             else:
                 string = "Script successfully added and started."
-        caller.msg(string)
+                
+        else:
+            paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs) 
+                                  for prefix in settings.SCRIPT_TYPECLASS_PATHS]            
+            if "stop" in self.switches:
+                # we are stopping an already existing script            
+                for path in paths:
+                    ok = obj.scripts.stop(path)                        
+                    if not ok:
+                        string += "\nScript %s could not be stopped. Does it exist?" % path
+                    else:
+                        string = "Script stopped and removed from object."
+                        break 
+            if "start" in self.switches:
+                # we are starting an already existing script 
+                for path in paths:
+                    ok = obj.scripts.start(path)
+                    if not ok:
+                        string += "\nScript %s could not be (re)started." % path
+                    else:
+                        string = "Script started successfully."
+                        break
+        caller.msg(string.strip())

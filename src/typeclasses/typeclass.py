@@ -45,7 +45,6 @@ class MetaTypeClass(type):
     def __str__(cls):
         return "%s" % cls.__name__
     
-
 class TypeClass(object):
     """
     This class implements a 'typeclass' object. This is connected

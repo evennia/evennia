@@ -40,7 +40,7 @@ if not os.path.exists('settings.py'):
 # this file. Try to *only* copy over things you really need to customize
 # and do *not* make any changes to src/settings_default.py directly.
 # This way you'll always have a sane default to fall back on
-# (also, the master file may change with server updates).
+# (also, the master config file may change with server updates).
 #
 
 from src.settings_default import * 
@@ -62,7 +62,7 @@ from src.settings_default import *
 ###################################################
 
 ###################################################
-# Default Object typeclasses 
+# Typeclasses 
 ###################################################
 
 ###################################################
@@ -90,7 +90,7 @@ from src.settings_default import *
 ###################################################
 
 ###################################################
-# Evennia components (django apps)
+# Evennia components
 ###################################################
 """
 

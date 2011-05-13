@@ -561,6 +561,7 @@ class TypedObject(SharedMemoryModel):
     # attribute model (ObjAttribute, PlayerAttribute etc).
     attribute_model_path = "src.typeclasses.models"
     attribute_model_name = "Attribute"
+    typeclass_paths = settings.OBJECT_TYPECLASS_PATHS 
 
     def __eq__(self, other):        
         return other and hasattr(other, 'id') and self.id == other.id
@@ -647,20 +648,31 @@ class TypedObject(SharedMemoryModel):
             defpath = object.__getattribute__(self, 'default_typeclass_path')
             typeclass = object.__getattribute__(self, '_path_import')(defpath)
             #typeclass = self._path_import(defpath)
-        else:
-            typeclass = TYPECLASS_CACHE.get(path, None)
-            if typeclass:
-                # we've imported this before. We're done.
-                return typeclass                       
-            # not in cache. Import anew.             
-            typeclass = object.__getattribute__(self, "_path_import")(path)
-            if not callable(typeclass):
-                # given path failed to import, fallback to default.          
-                errstring = "  %s" % typeclass # this is an error message
-                if hasattr(typeclass, '__file__'):
-                    errstring += "\nThis seems to be just the path to a module. You need"
+        else:                                   
+            # handle loading/importing of typeclasses, searching all paths.
+            # (self.typeclss_paths is a shortcut to settings.TYPECLASS_*_PATH
+            # where '*' is either OBJECT, SCRIPT or PLAYER depending on the typed
+            # object). 
+            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in self.typeclass_paths]
+            for tpath in typeclass_paths: 
+                # try to find any matches to the typeclass path, in all possible permutations.. 
+                typeclass = TYPECLASS_CACHE.get(tpath, None)
+                if typeclass:
+                    # we've imported this before. We're done.
+                    return typeclass
+                # not in cache. Try to import anew. 
+                typeclass = object.__getattribute__(self, "_path_import")(tpath)
+                if callable(typeclass):
+                    # don't return yet, we must cache this further down. 
+                    break
+                elif hasattr(typeclass, '__file__'):
+                    errstring += "\n%s seems to be just the path to a module. You need" % tpath
                     errstring +=  " to specify the actual typeclass name inside the module too."
-                errstring += "\n  Typeclass '%s' failed to load." % path                
+                else: 
+                    errstring += "\n%s" % typeclass # this will hold an error message.
+
+            if not callable(typeclass):                
+                # Still not a valid import. Fallback to default.                          
                 defpath = object.__getattribute__(self, "default_typeclass_path")
                 errstring += "  Using Default class '%s'." % defpath                
                 self.db_typeclass_path = defpath
@@ -669,7 +681,7 @@ class TypedObject(SharedMemoryModel):
                 typeclass = object.__getattribute__(self, "_path_import")(defpath)
                 errmsg(errstring)
         if not callable(typeclass):
-            # if typeclass still doesn't exist, we're in trouble.
+            # if typeclass still doesn't exist at this point, we're in trouble.
             # fall back to hardcoded core class. 
             errstring = "  %s\n%s" % (typeclass, errstring)
             errstring += "  Default class '%s' failed to load." % defpath

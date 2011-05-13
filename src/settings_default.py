@@ -161,20 +161,19 @@ CMDSET_DEFAULT = "game.gamesrc.commands.basecmdset.DefaultCmdSet"
 CMDSET_OOC = "game.gamesrc.commands.basecmdset.OOCCmdSet"
 
 ###################################################
-# Default Object typeclasses 
+# Typeclasses
 ###################################################
 
-# Note that all typeclasses must originally
-# inherit from src.objects.objects.Object somewhere in
-# their path. 
+# Base paths for typeclassed object classes. These paths must be
+# defined relative evennia's root directory. They will be searched in
+# order to find relative typeclass paths.
+OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects", "game.gamesrc.objects.examples"]
+SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples"]
+PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects"]
 
-# This sets the default base dir to search when importing 
-# things, so one doesn't have to write the entire 
-# path in-game.
-BASE_TYPECLASS_PATH = "game.gamesrc.objects"
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "game.gamesrc.objects.baseobjects.Player"
-# Typeclass and base for all following objects (fallback)
+# Typeclass and base for all objects (fallback)
 BASE_OBJECT_TYPECLASS = "game.gamesrc.objects.baseobjects.Object"
 # Typeclass for character objects linked to a player (fallback)
 BASE_CHARACTER_TYPECLASS = "game.gamesrc.objects.baseobjects.Character"
@@ -182,14 +181,6 @@ BASE_CHARACTER_TYPECLASS = "game.gamesrc.objects.baseobjects.Character"
 BASE_ROOM_TYPECLASS = "game.gamesrc.objects.baseobjects.Room"
 # Typeclass for Exit objects (fallback)
 BASE_EXIT_TYPECLASS = "game.gamesrc.objects.baseobjects.Exit"
-
-###################################################
-# Scripts
-###################################################
-
-# Python path to a directory to start searching 
-# for scripts. 
-BASE_SCRIPT_PATH = "game.gamesrc.scripts"
 
 ###################################################
 # Batch processors 

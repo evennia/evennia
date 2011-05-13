@@ -420,7 +420,7 @@ def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
     
     Usage:
       serversetting(IRC_ENABLED)
-      serversetting(BASE_SCRIPT_PATH, game.gamesrc.scripts)
+      serversetting(BASE_SCRIPT_PATH, [game.gamesrc.scripts])
 
     A given True/False or integers will be converted properly.
     """

@@ -5,6 +5,7 @@ Evennia README http://evennia.com
 - < 2010 (earlier revisions)
 - May 2010 - merged ABOUT and README. Added Current status /Griatch
 - Aug 2010 - evennia devel merged into trunk /Griatch
+- May 2011 - all commands implemented, web client, contribs /Griatch
 
 Contents:
 ---------
@@ -23,21 +24,17 @@ Evennia Alpha SVN version
 
 About Evennia
 -------------
-Evennia is a proof-of-concept MU* server that aims to provide a functional
-bare-bones base for developers. While there are quite a few codebases that do the same
-(and very well in many cases), we are taking a unique spin on the problem.
-Some of our flagship features include (or will one day include):
 
-* Coded fully in Python using Django and Twisted
-* Extensive web integration.
-* The ability to build/administer through a web browser.
-* Shared accounts between the website and the game.
-* Optional web-based character creation.
+Evennia is a MUD/MUX/MU* server that aims to provide a functional
+bare-bones base for developers. Some of our main features are: 
+
+* Coded and extended using normal Python modules.
+* Extensive web integration due to our use of Django. 
+* Runs its own Twisted webserver. Comes with game website and ajax web-browser mud client. 
+* Extensive current and potential connectivity and protocol-support through Twisted.
 * Extremely easy-to-manipulate SQL database back-end via Django 
   (djangoproject.com)
-* Simple and easily extensible design.
-* Very granular permissions. Individual and group based.
-* Powerful an extremely extendable base system 
+* Powerful an extremely extendable bare-bones base system 
 
 The essential points here are the web integration and the SQL backing via
 Django. The Django framework has database abstraction abilities that give us
@@ -60,6 +57,14 @@ See the INSTALL file for help on setting up and running Evennia.
 
 Current Status
 --------------
+
+May 2011: 
+The new version of Evennia, originally hitting trunk in Aug2010, is
+maturing. All commands from the pre-Aug version, including IRC/IMC2
+support works again. An ajax web-client was added earlier in the year,
+including moving Evennia to be its own webserver (no more need for 
+Apache or django-testserver). Contrib-folder added. 
+
 Aug 2010:
 Evennia-griatch-branch is ready for merging with trunk. This marks
 a rather big change in the inner workings of the server, but should
@@ -77,17 +82,16 @@ to Events, Commands and Permissions.
 
 Contact, Support and Development
 -----------------------
-We are early in development, but we try to give support best we can
-if you feel daring enough to play with the codebase. Make a post to
-the mailing list or chat us up on IRC if you have questions. We also
-have a bug tracker if you want to report bugs. Finally, if 
-you are willing to help with the code work, we much appreciate all help!
-Visit either of the following resources:
+This is still alpha software, but we try to give support best we can
+if you have questions. Make a post to the mailing list or chat us up
+on IRC. We also have a bug tracker if you want to report
+bugs. Finally, if you are willing to help with the code work, we much
+appreciate all help!  Visit either of the following resources:
 
 * Evennia Webpage
   http://evennia.com
   
-* Evennia wiki (documentation)
+* Evennia manual (wiki)
   http://code.google.com/p/evennia/wiki/Index
 
 * Evennia Code Page (See INSTALL text for installation)
@@ -107,8 +111,10 @@ evennia
  |        |___(engine-related dirs)
  |        
  |_______game (start the server)
-          |___gamesrc
-                |___(game-related dirs)
+ |        |___gamesrc
+ |              |___(game-related dirs)
+ | 
+ |_______contrib 
 
 The two main directories you will spend most of your time in
 are src/ and game/ (probably mostly game/). 
@@ -129,6 +135,11 @@ to make your dream game. game/ contains the main server settings
 and the actual evennia executable to start things. game/gamesrc/
 holds all the templates for creating objects in your virtual world. 
 
+contrib/ contains optional code snippets. These are potentially useful
+but deemed to be too game-specific to be part of the server itself.
+Modules in contrib are not used unless you yourself decide to import
+and use them.
+
 With this little first orientation, you should head into the online 
 Evennia wiki documentation to get going with the codebase. 
 
@@ -140,18 +151,15 @@ for capable admins to craft their own respective games. It is not the
 intention to provide a full-fledged, ready-to-run base, rather Evennia
 is offering the means to make such games.
 
-2) Development of games on Evennia must be easy for anyone with some degree
-of Python experience. Building needs to be easy, and per-room, per-object,
-and environmental customizations need to be simple to do.
+2) Development of games on Evennia must be easy for anyone with some
+degree of Python experience. Building needs to be easy, and per-room,
+per-object, and environmental customizations need to be simple to
+do. This is handled by use of normal Python classes transparently
+abstracting and wrapping the SQL backend. The user should not need to 
+use SQL or even know Django to any greater extent. 
 
 3) The server must utilize SQL as a storage back-end to allow for web->game
-integration. See the details on Django later on in the document for more
-details.
-
-4) Any and all game-specific configuration must reside in SQL, not
-external configuration files. The only exception is the settings.py file
-containing the SQL information.
-
+integration through Django. 
 
 The Components
 --------------

@@ -14,7 +14,6 @@ or you won't see any messages!
 import random 
 from game.gamesrc.scripts.basescript import Script
 
-
 class BodyFunctions(Script):
     """
     This class defines the script itself
@@ -24,7 +23,7 @@ class BodyFunctions(Script):
         self.key = "bodyfunction"
         self.desc = "Adds various timed events to a character."
         self.interval = 20 # seconds
-        self.start_delay # wait self.interval until first call
+        self.start_delay = True # wait self.interval until first call
         self.persistent = False 
     
     def at_repeat(self):
