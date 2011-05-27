@@ -39,9 +39,11 @@ SERVERNAME = settings.SERVERNAME
 VERSION = get_evennia_version()
 
 TELNET_PORTS = settings.TELNET_PORTS
+SSH_PORTS = settings.SSH_PORTS
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 
 TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS
+SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED 
 IMC2_ENABLED = settings.IMC2_ENABLED
@@ -149,6 +151,8 @@ class Evennia(object):
         print ' %s (%s) started on port(s):' % (SERVERNAME, VERSION)        
         if TELNET_ENABLED:
             print "  telnet: " + ", ".join([str(port) for port in TELNET_PORTS])        
+        if SSH_ENABLED:
+            print "  ssh: " + ", ".join([str(port) for port in SSH_PORTS])
         if WEBSERVER_ENABLED:
             clientstring = ""
             if WEBCLIENT_ENABLED:
@@ -202,6 +206,18 @@ if TELNET_ENABLED:
         telnet_service = internet.TCPServer(port, factory)
         telnet_service.setName('EvenniaTelnet%s' % port)
         EVENNIA.services.addService(telnet_service)
+
+if SSH_ENABLED:
+
+    from src.server import ssh
+
+    for port in SSH_PORTS:
+        factory = ssh.makeFactory({'protocolFactory':ssh.SshProtocol,
+                                   'protocolArgs':()})
+        
+        ssh_service = internet.TCPServer(port, factory)
+        ssh_service.setName('EvenniaSSH%s' % port)
+        EVENNIA.services.addService(ssh_service)
 
 if WEBSERVER_ENABLED:
 

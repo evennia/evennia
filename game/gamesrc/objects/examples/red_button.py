@@ -1,21 +1,14 @@
 """
-An example script parent for a nice red button object. It has
-custom commands defined on itself that are only useful in relation to this
-particular object. See example.py in gamesrc/commands for more info
-on the pluggable command system. 
 
-Assuming this script remains in gamesrc/parents/examples, create an object
-of this type using @create button:examples.red_button
+This is a more advanced example object. It combines functions from
+script.examples as well as commands.examples to make an interactive
+button typeclass.
 
-This file also shows the use of the Event system to make the button
-send a message to the players at regular intervals. To show the use of
-Events, we are tying two types of events to the red button, one which cause ALL
-red buttons in the game to blink in sync (gamesrc/events/example.py) and one
-event which cause the protective glass lid over the button to close
-again some time after it was opened. 
+Create this button with 
 
-Note that if you create a test button you must drop it before you can
-see its messages!
+ @create/drop examples.red_button.RedButton 
+
+Note that if you must drop the button before you can see its messages! 
 """
 import random 
 from game.gamesrc.objects.baseobjects import Object
@@ -28,19 +21,17 @@ from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
     
 class RedButton(Object):
     """
-    This class describes an evil red button.
-    It will use the script definition in
-    game/gamesrc/events/example.py to blink
-    at regular intervals until the lightbulb
-    breaks. It also use the EventCloselid script to
-    close the lid and do nasty stuff when pressed. 
+    This class describes an evil red button.  It will use the script
+    definition in game/gamesrc/events/example.py to blink at regular
+    intervals.  It also uses a series of script and commands to handle
+    pushing the button and causing effects when doing so.
     """
     def at_object_creation(self):
         """
         This function is called when object is created. Use this
         instead of e.g. __init__.
         """        
-        # store desc
+        # store desc (default, you can change this at creation time)
         desc = "This is a large red button, inviting yet evil-looking. "
         desc += "A closed glass lid protects it." 
         self.db.desc = desc 
@@ -52,9 +43,9 @@ class RedButton(Object):
         self.db.lamp_works = True 
         self.db.lid_locked = False
 
-        # set the default cmdset to the object, permanent=True means a 
-        # script will automatically be created to always add this. 
-        self.cmdset.add_default(cmdsetexamples.DefaultCmdSet, permanent=True)        
+        # set the default cmdset to the object. This will by default surivive
+        # a server reboot (otherwise we could have used permanent=False).
+        self.cmdset.add_default(cmdsetexamples.DefaultCmdSet)        
 
         # since the other cmdsets relevant to the button are added 'on the fly',
         # we need to setup custom scripts to do this for us (also, these scripts
@@ -68,7 +59,7 @@ class RedButton(Object):
 
     def open_lid(self, feedback=True):
         """
-        Open the glass lid and start the timer so it will soon close
+        Opens the glass lid and start the timer so it will soon close
         again.
         """
 

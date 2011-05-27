@@ -5,99 +5,80 @@ with Evennia's permissions system.
 To call these locks, make sure this module is included in the
 settings tuple PERMISSION_FUNC_MODULES then define a lock on the form 
 '<access_type>:func(args)' and add it to the object's lockhandler. 
-Run the check method of the handler to execute the lock check. 
+Run the access() method of the handler to execute the lock check. 
 
 Note that accessing_obj and accessed_obj can be any object type
 with a lock variable/field, so be careful to not expect
 a certain object type. 
 
 
+Appendix: MUX locks
 
+Below is a list nicked from the MUX help file on the locks available
+in standard MUX. Most of these are not relevant to core Evennia since
+locks in Evennia are considerably more flexible and can be implemented
+on an individual command/typeclass basis rather than as globally
+available like the MUX ones. So many of these are not available in
+basic Evennia, but could all be implemented easily if needed for the
+individual game.
 
-
-MUX locks
-
-Below is a list nicked from the MUX docs on the locks available
-in MUX. These are not all necessarily relevant to an Evennia game
-but to show they are all possible with Evennia, each entry is a
-suggestion on how one could implement similar functionality in Evennia. 
-
-Name:          Affects:        Effect:                                   
--------------------------------------------------------------------------
+MUX Name:      Affects:        Effect:                                         
+-------------------------------------------------------------------------------
 DefaultLock:   Exits:          controls who may traverse the exit to
                                its destination.
-                               Evennia: specialized permission key
-                               'traverse' checked in move method
+                                 Evennia: "traverse:<lockfunc()>"
                Rooms:          controls whether the player sees the SUCC
                                or FAIL message for the room following the
                                room description when looking at the room.
-                               Evennia: This is better done by implementing
-                               a clever room class ...
+                                 Evennia: Custom typeclass
                Players/Things: controls who may GET the object.
-                               Evennia: specialized permission key 'get'
-                               defined on object, checked by get command
+                                 Evennia: "get:<lockfunc()"
  EnterLock:    Players/Things: controls who may ENTER the object
-                               Evennia: specialized permission key 'enter'
-                               defined on object, checked by move command 
+                                 Evennia: 
  GetFromLock:  All but Exits:  controls who may gets things from a given
                                location.
-                               Evennia: Probably done best with a lock function
-                               that searches the database for permitted users
+                                 Evennia: 
  GiveLock:     Players/Things: controls who may give the object.
-                               Evennia: specialized permission key 'give'
-                               checked by the give command 
+                                 Evennia:  
  LeaveLock:    Players/Things: controls who may LEAVE the object.
-                               Evennia: specialized permission key 'leave'
-                               checked by move command 
+                                 Evennia: 
  LinkLock:     All but Exits:  controls who may link to the location if the
                                location is LINK_OK (for linking exits or
                                setting drop-tos) or ABODE (for setting
                                homes)
-                               Evennia: specialized permission key 'link'
-                               set on obj and checked by link command 
+                                 Evennia: 
  MailLock:     Players:        controls who may @mail the player.
-                               Evennia: Lock function that pulls the
-                               config from the player to see if the
-                               calling player is on the blacklist/whitelist
+                               Evennia: 
  OpenLock:     All but Exits:  controls who may open an exit.
-                               Evennia: specialized permission key 'open'
-                               set on exit, checked by open command 
+                                 Evennia:  
  PageLock:     Players:        controls who may page the player.
-                               Evennia: see Maillock 
+                                 Evennia: "send:<lockfunc()>"
  ParentLock:   All:            controls who may make @parent links to the
                                object.
-                               Evennia: This is handled with typeclasses
-                               and typeclass switching instead. 
+                                 Evennia: Typeclasses and "puppet:<lockstring()>"
  ReceiveLock:  Players/Things: controls who may give things to the object.
-                               Evennia: See GiveLock
+                                 Evennia: 
  SpeechLock:   All but Exits:  controls who may speak in that location
-                               Evennia: Lock function checking if there
-                               is some special restrictions on the room
-                               (game dependent)
+                                 Evennia: 
  TeloutLock:   All but Exits:  controls who may teleport out of the
                                location.
-                               Evennia: See LeaveLock
+                                 Evennia: 
  TportLock:    Rooms/Things:   controls who may teleport there
-                               Evennia: See EnterLock 
+                                 Evennia:  
  UseLock:      All but Exits:  controls who may USE the object, GIVE the
                                object money and have the PAY attributes
                                run, have their messages heard and possibly
                                acted on by LISTEN and AxHEAR, and invoke
                                $-commands stored on the object.
-                               Evennia: Implemented per game 
+                                 Evennia: Commands and Cmdsets. 
  DropLock:     All but rooms:  controls who may drop that object.
-                               Evennia: specialized permission key 'drop'
-                               set on room, checked by drop command.
+                                 Evennia:
  VisibleLock:  All:            Controls object visibility when the object
                                is not dark and the looker passes the lock.
                                In DARK locations, the object must also be
                                set LIGHT and the viewer must pass the
                                VisibleLock.
-                               Evennia: Better done with Scripts implementing
-                               a dark state/cmdset. For a single object,
-                               use a specialized permission key 'visible'
-                               set on object and checked by look command. 
-
+                                 Evennia: Room typeclass with Dark/light script
 """
 
 from django.conf import settings

@@ -1,7 +1,7 @@
 """
 This defines the cmdset for the red_button. Here we have defined
 the commands and the cmdset in the same module, but if you
-have many different commands to merge it if often better 
+have many different commands to merge it is often better 
 to define the cmdset separately, picking and choosing from
 among the available commands as to what should be included in the 
 cmdset - this way you can often re-use the commands too.
@@ -10,11 +10,13 @@ cmdset - this way you can often re-use the commands too.
 import random 
 from src.commands.cmdset import CmdSet
 from game.gamesrc.commands.basecommand import Command
+from game.gamesrc.scripts.examples import red_button_scripts as scriptexamples
+
 
 # Some simple commands for the red button
 
 #------------------------------------------------------------
-# Commands defined for the red button
+# Commands defined on the red button
 #------------------------------------------------------------
 
 class CmdNudge(Command):
@@ -33,24 +35,17 @@ class CmdNudge(Command):
 
     def func(self):
         """
-        nudge the lid.
+        nudge the lid. Random chance of success to open it.
         """
         rand = random.random()
-        open_ok = False
-
         if rand < 0.5:
-            string = "You nudge at the lid. It seems stuck."
+            self.caller.msg("You nudge at the lid. It seems stuck.")
         elif 0.5 <= rand < 0.7:
-            string = "You move the lid back and forth. It won't budge."
+            self.caller.msg("You move the lid back and forth. It won't budge.")
         else:
-            string = "You manage to get a nail under the lid. It pops open."
-            open_ok = True
-        self.caller.msg(string)
-        
-        if open_ok:
-            """open_lid() does its own emits, so defer it until we speak"""
-            self.obj.open_lid()
-
+            self.caller.msg("You manage to get a nail under the lid.")
+            self.caller.execute_cmd("open lid")
+    
 class CmdPush(Command):
     """
     Push the red button 
@@ -66,7 +61,7 @@ class CmdPush(Command):
         """
         Note that we choose to implement this with checking for
         if the lid is open/closed. This is because this command
-        is likely to be tries regardless of the state of the lid.
+        is likely to be tried regardless of the state of the lid.
 
         An alternative would be to make two versions of this command
         and tuck them into the cmdset linked to the Open and Closed
@@ -75,11 +70,17 @@ class CmdPush(Command):
         """
 
         if self.obj.db.lid_open:
+
+            # assign the blind state script to the caller.
+            # this will assign the restricted BlindCmdset to
+            # the caller at startup, and remove it again
+            # once the time has run out
+            self.caller.scripts.add(scriptexamples.BlindedState)
+
             string = "You reach out to press the big red button ..."
             string += "\n\nA BOOM! A bright light blinds you!"
             string += "\nThe world goes dark ..."
-            self.caller.msg(string)
-            self.obj.press_button(self.caller)
+            self.caller.msg(string) 
             self.caller.location.msg_contents("%s presses the button. BOOM! %s is blinded by a flash!" % 
                                               (self.caller.name, self.caller.name), exclude=self.caller)
         else:
@@ -111,10 +112,8 @@ class CmdSmashGlass(Command):
             string = "You smash your hand against the glass"
             string += " with all your might. The lid won't budge"
             string += " but you cause quite the tremor through the button's mount."
-            self.caller.msg(string) # have to be called before breakage since that
-                                    # also gives a return feedback to the room.
-            self.obj.break_lamp()
-            return 
+            string += "\nIt looks like the button's lamp stopped working for the time being."
+            self.obj.lamp_works = False 
         elif rand < 0.6:
             string = "You hit the lid hard. It doesn't move an inch."
         else:
@@ -143,7 +142,20 @@ class CmdOpenLid(Command):
         if self.obj.db.lid_locked:
             self.caller.msg("This lid seems locked in place for the moment.")
             return 
-
+        string += "\nA ticking sound is heard, like a winding mechanism. Seems "
+        string += "the lid will soon close again."
+        self.db.lid_open = False
+        # add the relevant cmdsets to button 
+        self.obj.cmdset.add(LidClosedCmdsSet)
+        # add the lid-close ticker script 
+        self.obj.scripts.add(scriptexamples.LidCloseTimer)
+            
+        # add more info to the button description 
+        desc = self.obj.db.closed_desc 
+        self.obj.db.temp_desc = desc 
+        self.obj.db.desc = "%s\n%s" % (desc, "Its glass cover is open and the button exposed.")
+        self.caller.msg(string)
+        
         self.caller.location.msg_contents("%s opens the lid of the button." % 
                                           (self.caller.name), exclude=self.caller)
         self.obj.open_lid()
@@ -163,10 +175,17 @@ class CmdCloseLid(Command):
     
     def func(self):
         "Close the lid"
-        self.obj.close_lid()
+
+        if self.db.closed_desc:
+            self.obj.desc = self.db.closed_desc 
+        self.obj.db.lid_open = False 
+
+        # this will clean out scripts dependent on lid being open.
+        self.obj.scripts.validate() 
+        self.caller.msg("You close the button's lid. It clicks back into place.")
         self.caller.location.msg_contents("%s closes the button's lid." % 
                                           (self.caller.name), exclude=self.caller)
-
+        
 class CmdBlindLook(Command):
     """
     Looking around in darkness
@@ -253,7 +272,7 @@ class LidClosedCmdSet(CmdSet):
     """
     key = "LidClosedCmdSet"
     # default Union is used *except* if we are adding to a 
-    # cmdset named RedButtonOpen - this one we replace 
+    # cmdset named LidOpenCmdSet - this one we replace 
     # completely.
     key_mergetype = {"LidOpenCmdSet": "Replace"}    
 
@@ -269,7 +288,7 @@ class LidOpenCmdSet(CmdSet):
     """
     key = "LidOpenCmdSet"
     # default Union is used *except* if we are adding to a 
-    # cmdset named RedButtonClose - this one we replace 
+    # cmdset named LidClosedCmdSet - this one we replace 
     # completely.
     key_mergetype = {"LidClosedCmdSet": "Replace"}
     
