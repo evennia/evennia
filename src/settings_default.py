@@ -36,10 +36,14 @@ WEBSERVER_PORTS = [8000]
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True
-# Activate SSH protocol
+# Activate SSH protocol (SecureShell)
 SSH_ENABLED = False
-# Ports to use for SSH
+# Ports to use for SSH 
 SSH_PORTS = [8022]
+# Actiave SSL protocol (SecureSocketLibrary)
+SSL_ENABLED = False
+# Ports to use for SSL 
+SSL_PORTS = [4001]
 # Activate full persistence if you want everything in-game to be
 # stored to the database. With it set, you can do typeclass.attr=value
 # and value will be saved to the database under the name 'attr'.

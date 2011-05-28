@@ -1,11 +1,11 @@
 """
 This module implements the main Evennia server process, the core of
-the game engine. Don't import this module! If you need to access the 
-server processes from code, instead import sessionhandler.SESSIONS
-and use its 'server' property. 
+the game engine. Don't import this module directly! If you need to
+access the server processes from code, instead go via the session-
+handler: src.sessionhandler.SESSIONS.server
 
 This module should be started with the 'twistd' executable since it
-sets up all the networking features.  (this is done by automatically
+sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
@@ -39,10 +39,12 @@ SERVERNAME = settings.SERVERNAME
 VERSION = get_evennia_version()
 
 TELNET_PORTS = settings.TELNET_PORTS
+SSL_PORTS = settings.SSL_PORTS
 SSH_PORTS = settings.SSH_PORTS
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 
 TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS
+SSL_ENABLED = settings.SSL_ENABLED and SSL_PORTS
 SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED 
@@ -101,7 +103,7 @@ class Evennia(object):
 
         # set a callback if the server is killed abruptly, 
         # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown',self.shutdown, _abrupt=True)
+        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _abrupt=True)
 
         self.game_running = True
                 
@@ -153,6 +155,8 @@ class Evennia(object):
             print "  telnet: " + ", ".join([str(port) for port in TELNET_PORTS])        
         if SSH_ENABLED:
             print "  ssh: " + ", ".join([str(port) for port in SSH_PORTS])
+        if SSL_ENABLED:
+            print "  ssl: " + ", ".join([str(port) for port in SSL_PORTS])
         if WEBSERVER_ENABLED:
             clientstring = ""
             if WEBCLIENT_ENABLED:
@@ -196,32 +200,46 @@ EVENNIA = Evennia(application)
 
 if TELNET_ENABLED:
 
-    # start telnet game connections
+    # Start telnet game connections
 
     from src.server import telnet
 
-    for port in TELNET_PORTS:
+    for port in TELNET_PORTS:        
         factory = protocol.ServerFactory()
         factory.protocol = telnet.TelnetProtocol
         telnet_service = internet.TCPServer(port, factory)
         telnet_service.setName('EvenniaTelnet%s' % port)
         EVENNIA.services.addService(telnet_service)
 
+if SSL_ENABLED:
+
+    # Start SSL game connection (requires PyOpenSSL).
+
+    from src.server import ssl
+    
+    for port in SSL_PORTS: 
+        factory = protocol.ServerFactory()
+        factory.protocol = ssl.SSLProtocol
+        ssl_service = internet.SSLServer(port, factory, ssl.getSSLContext())
+        ssl_service.setName('EvenniaSSL%s' % port)
+        EVENNIA.services.addService(ssl_service)
+
 if SSH_ENABLED:
 
+    # Start SSH game connections. Will create a keypair in evennia/game if necessary.
+    
     from src.server import ssh
 
     for port in SSH_PORTS:
         factory = ssh.makeFactory({'protocolFactory':ssh.SshProtocol,
-                                   'protocolArgs':()})
-        
+                                   'protocolArgs':()})        
         ssh_service = internet.TCPServer(port, factory)
         ssh_service.setName('EvenniaSSH%s' % port)
         EVENNIA.services.addService(ssh_service)
 
 if WEBSERVER_ENABLED:
 
-    # a django-compatible webserver.
+    # Start a django-compatible webserver.
 
     from twisted.python import threadpool
     from src.server.webserver import DjangoWebRoot, WSGIWebServer
