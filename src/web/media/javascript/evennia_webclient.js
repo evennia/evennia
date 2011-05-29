@@ -154,7 +154,7 @@ function webclient_close(){
 
 function msg_display(type, msg){
     // Add a div to the message window.
-    // type givews the class of div to use.
+    // type gives the class of div to use.
     $("#messagewindow").append(
         "<div class='msg "+ type +"'>"+ msg +"</div>");
     // scroll message window to bottom
@@ -191,23 +191,22 @@ function history_add(input) {
 
 // Catching keyboard shortcuts
 
-$(document).keypress( function(event) {
+$(document).keydown( function(event) {
+    // Get the pressed key 
     var code = event.keyCode ? event.keyCode : event.which;    
-    wresult = event.which;
-
-    // always focus input field
+    // always focus input field no matter which key is pressed
     $("#inputfield")[0].focus();
-    if (code == 13) { // Enter key
+
+    // Special keys recognized by client
+
+    //msg_display("out", "key code pressed: " + code); // debug
+
+    if (code == 13) { // Enter Key
         webclient_input();
         event.preventDefault();
         return false;
     }
     else {
-        if (wresult == 38 || wresult == 40) {
-            // this fixes a bug in firefox, those are on ASCII format            
-            return false;
-        }
-
         if (code == 38) { // arrow up 38
             $("#inputfield").val(function(index, value){                
                 return history_step_back();
