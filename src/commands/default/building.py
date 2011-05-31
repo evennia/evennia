@@ -669,7 +669,7 @@ class CmdDig(ObjManipCommand):
 
 class CmdTunnel(MuxCommand):
     """
-    tunnel in often-used directions
+    dig in often-used directions
 
     Usage: 
       @tunnel[/switch] <direction> [= roomname[;alias;alias;...][:typeclass]]

@@ -276,15 +276,15 @@ class TerminalSessionTransport_getPeer:
 
         self.chainedProtocol.terminalProtocol.terminalSize(width, height)
 
-def getKeyPair():
+def getKeyPair(pubkeyfile, privkeyfile):
     """
     This function looks for RSA keypair files in the current directory. If they
     do not exist, the keypair is created. 
     """
 
-    if not (os.path.exists('ssh-public.key') and os.path.exists('ssh-private.key')):
+    if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
-        print "  Generating SSH RSA keypair (only done once) ...",
+        print "  Generating SSH RSA keypair ...",
         from Crypto.PublicKey import RSA        
 
         KEY_LENGTH = 1024
@@ -293,12 +293,12 @@ def getKeyPair():
         privateKeyString = rsaKey.toString(type="OPENSSH")
 
         # save keys for the future.
-        file('ssh-public.key', 'w+b').write(publicKeyString)
-        file('ssh-private.key', 'w+b').write(privateKeyString)
+        file(pubkeyfile, 'w+b').write(publicKeyString)
+        file(privkeyfile, 'w+b').write(privateKeyString)
         print " done."
     else:
-        publicKeyString = file('ssh-public.key').read()
-        privateKeyString = file('ssh-private.key').read()
+        publicKeyString = file(pubkeyfile).read()
+        privateKeyString = file(privkeyfile).read()
 
     return Key.fromString(publicKeyString), Key.fromString(privateKeyString)
 
@@ -306,6 +306,9 @@ def makeFactory(configdict):
     """
     Creates the ssh server factory.
     """
+
+    pubkeyfile = "ssh-public.key"
+    privkeyfile = "ssh-private.key"
 
     def chainProtocolFactory():
         return insults.ServerProtocol(
@@ -318,11 +321,14 @@ def makeFactory(configdict):
     rlm.chainedProtocolFactory = chainProtocolFactory
     factory = ConchFactory(Portal(rlm))
     
-    # create/get RSA keypair
-    publicKey, privateKey = getKeyPair()
-
-    factory.publicKeys = {'ssh-rsa': publicKey}    
-    factory.privateKeys = {'ssh-rsa': privateKey}
+    try:
+        # create/get RSA keypair    
+        publicKey, privateKey = getKeyPair(pubkeyfile, privkeyfile)
+        factory.publicKeys = {'ssh-rsa': publicKey}    
+        factory.privateKeys = {'ssh-rsa': privateKey}
+    except Exception, e:
+        print " getKeyPair error: %s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % e
+        print " If this error persists, create game/%s and game/%s yourself using third-party tools." % (pubkeyfile, privkeyfile)
 
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer
