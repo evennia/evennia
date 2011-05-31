@@ -70,6 +70,7 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdUnLink())
         self.add(building.CmdCreate())        
         self.add(building.CmdDig())
+        self.add(building.CmdTunnel())
         self.add(building.CmdDestroy())
         self.add(building.CmdExamine())
         self.add(building.CmdTypeclass())

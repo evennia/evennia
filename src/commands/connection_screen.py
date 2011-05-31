@@ -14,5 +14,5 @@ DEFAULT_SCREEN = \
  If you need to create an account, type (without the <>'s):
       {wcreate \"<username>\" <email> <password>{n
 
- Enter {whelp{n for more info. {wlook{n will re-load this screen.
+ Enter {whelp{n for more info. {wlook{n will re-show this screen.
 {b=============================================================={n""" % utils.get_evennia_version()
