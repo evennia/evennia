@@ -33,14 +33,19 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         from Crypto.PublicKey import RSA        
         from twisted.conch.ssh.keys import Key
 
-        print "  Creating SSL key and certificate (this need only be done once)."
+        print "  Creating SSL key and certificate ... ",
 
-        # create the RSA key and store it.
-        KEY_LENGTH = 1024
-        rsaKey = Key(RSA.generate(KEY_LENGTH))
-        keyString = rsaKey.toString(type="OPENSSH")    
-        file(keyfile, 'w+b').write(keyString)
-
+        try:
+            # create the RSA key and store it.
+            KEY_LENGTH = 1024
+            rsaKey = Key(RSA.generate(KEY_LENGTH))
+            keyString = rsaKey.toString(type="OPENSSH")    
+            file(keyfile, 'w+b').write(keyString)
+        except Exception,e: 
+            print "rsaKey error: %s\n WARNING: Evennia could not auto-generate SSL private key." % e
+            print "If this error persists, create game/%s yourself using third-party tools." % keyfile
+            sys.exit()
+            
         # try to create the certificate
         CERT_EXPIRE = 365 * 20 # twenty years validity        
         # default: 
@@ -57,6 +62,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
             print "  Example (linux, using the openssl program): "
             print "    %s" % exestring
             sys.exit()
+        print "done."
 
 def getSSLContext():
     """
