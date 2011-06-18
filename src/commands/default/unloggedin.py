@@ -60,83 +60,17 @@ class CmdConnect(MuxCommand):
             session.msg("Incorrect password.")
             return 
 
-        # We are logging in, get/setup the player object controlled by player
-
-        # Check if this is the first time the 
-        # *player* connects
-        if player.db.FIRST_LOGIN:
-            player.at_first_login()
-            del player.db.FIRST_LOGIN
-        player.at_pre_login()        
-
-        character = player.character
-        if character: 
-            # this player has a character. Check if it's the
-            # first time *this character* logs in
-            if character.db.FIRST_LOGIN:
-                character.at_first_login()
-                del character.db.FIRST_LOGIN            
-            # run character login hook
-            character.at_pre_login()
-
-        # actually do the login
+        # actually do the login. This will call all hooks. 
         session.session_login(player)
-        
-        # post-login hooks 
-        player.at_post_login()        
+
+        # we are logged in. Look around.
+        character = player.character
         if character:
-            character.at_post_login()
-            character.execute_cmd('look')
+            character.execute_cmd("look")
         else:
-            player.execute_cmd('look')
+            # we have no character yet; use player's look, if it exists
+            player.execute_cmd("look")
 
-        # run look
-        #print "character:", character, character.scripts.all(), character.cmdset.current
-
-        # 
-        # character = player.character
-        # if not character:
-        #     # Create a new character object to tie the player to. This should
-        #     # usually not be needed unless the old character object was manually 
-        #     # deleted.
-        #     default_home_id = ServerConfig.objects.conf("default_home")            
-        #     default_home = ObjectDB.objects.get_id(default_home_id)
-        #     typeclass = settings.BASE_CHARACTER_TYPECLASS
-        #     character = create.create_object(typeclass=typeclass,
-        #                                      key=player.name,
-        #                                      location=default_home, 
-        #                                      home=default_home,
-        #                                      player=player)            
-            
-        #     character.db.FIRST_LOGIN = "True"
-            
-        # # Getting ready to log the player in.
-
-        # # Check if this is the first time the 
-        # # *player* connects
-        # if player.db.FIRST_LOGIN:
-        #     player.at_first_login()
-        #     del player.db.FIRST_LOGIN
-
-        # # check if this is the first time the *character*
-        # # character (needs not be the first time the player
-        # # does so, e.g. if the player has several characters)
-        # if character.db.FIRST_LOGIN:
-        #     character.at_first_login()
-        #     del character.db.FIRST_LOGIN
-            
-        # # actually do the login, calling
-        # # customization hooks before and after. 
-        # player.at_pre_login()        
-        # character.at_pre_login()
-
-        # session.session_login(player)
-
-        # player.at_post_login()
-        # character.at_post_login()
-        # # run look
-        # #print "character:", character, character.scripts.all(), character.cmdset.current
-        # character.execute_cmd('look')
 
 class CmdCreate(MuxCommand):
     """

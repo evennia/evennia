@@ -19,10 +19,13 @@ from twisted.conch.insults import insults
 from twisted.conch.manhole_ssh import TerminalRealm, _Glue, ConchFactory
 from twisted.conch.manhole import Manhole, recvline
 from twisted.internet import defer
+from twisted.conch import interfaces as iconch
+from twisted.python import components
 from django.conf import settings
 from src.server import session
+from src.players.models import PlayerDB
 from src.utils import ansi, utils, logger
-
+#from src.commands.default.unloggedin import _login
 
 ENCODINGS = settings.ENCODINGS
 
@@ -37,6 +40,13 @@ class SshProtocol(Manhole, session.Session):
     them.  All communication between game and player goes through
     here.
     """
+    def __init__(self, player):
+        """
+        For setting up the player.  If player is not None then we'll
+        login automatically.
+        """
+        self.player = player
+
 
     def terminalSize(self, width, height):
         """
@@ -48,9 +58,12 @@ class SshProtocol(Manhole, session.Session):
         self.terminal.cursorHome()
         self.width = width
         self.height = height
+
         # initialize the session
         self.session_connect(self.getClientAddress())
-
+        if self.player is not None:
+            self.session_login(self.player)
+        self.execute_cmd('look')        
 
     def connectionMade(self):
         """
@@ -161,7 +174,6 @@ class SshProtocol(Manhole, session.Session):
         """
         self.telnet_markup = True
         # show connection screen
-        self.execute_cmd('look')
 
     def at_login(self, player):
         """
@@ -184,7 +196,7 @@ class SshProtocol(Manhole, session.Session):
 
     def at_data_out(self, string, data=None):
         """
-        Data Evennia -> Player access hook. 'data' argument is ignored.
+        Data Evennia -> Player access hook. 'data' argument is a dict parsed for string settings.
         """
         try:
             string = utils.to_str(string, encoding=self.encoding)
@@ -216,6 +228,7 @@ class SshProtocol(Manhole, session.Session):
             logger.log_errmsg(str(e))
 
 
+
 class ExtraInfoAuthServer(SSHUserAuthServer):
     def auth_password(self, packet):
         """
@@ -230,10 +243,11 @@ class ExtraInfoAuthServer(SSHUserAuthServer):
         return self.portal.login(c, None, IConchUser).addErrback(
                                                         self._ebPassword)
 
-
-class AnyAuth(object):
+class PlayerDBPasswordChecker(object):
     """
-    Special auth method that accepts any credentials.
+    Checks the django db for the correct credentials for
+    username/password otherwise it returns the player or None which is
+    useful for the Realm.
     """
     credentialInterfaces = (credentials.IUsernamePassword,)
 
@@ -242,8 +256,31 @@ class AnyAuth(object):
         up = credentials.IUsernamePassword(c, None)
         username = up.username
         password = up.password
-        src_ip = str(up.transport.transport.getPeer().host)
-        return defer.succeed(username)
+        player = PlayerDB.objects.get_player_from_name(username)
+        res = None
+        if player and player.user.check_password(password):
+            res = player
+        return defer.succeed(res)
+
+class PassAvatarIdTerminalRealm(TerminalRealm):
+    """
+    Returns an avatar that passes the avatarId through to the
+    protocol.  This is probably not the best way to do it.
+    """
+
+    def _getAvatar(self, avatarId):
+        comp = components.Componentized()
+        user = self.userFactory(comp, avatarId)
+        sess = self.sessionFactory(comp)
+
+        sess.transportFactory = self.transportFactory
+        sess.chainedProtocolFactory = lambda : self.chainedProtocolFactory(avatarId)
+
+        comp.setComponent(iconch.IConchUser, user)
+        comp.setComponent(iconch.ISession, sess)
+
+        return user
+
 
 
 class TerminalSessionTransport_getPeer:
@@ -276,6 +313,7 @@ class TerminalSessionTransport_getPeer:
 
         self.chainedProtocol.terminalProtocol.terminalSize(width, height)
 
+
 def getKeyPair(pubkeyfile, privkeyfile):
     """
     This function looks for RSA keypair files in the current directory. If they
@@ -302,6 +340,7 @@ def getKeyPair(pubkeyfile, privkeyfile):
 
     return Key.fromString(publicKeyString), Key.fromString(privateKeyString)
 
+
 def makeFactory(configdict):
     """
     Creates the ssh server factory.
@@ -310,21 +349,21 @@ def makeFactory(configdict):
     pubkeyfile = "ssh-public.key"
     privkeyfile = "ssh-private.key"
 
-    def chainProtocolFactory():
+    def chainProtocolFactory(username=None):
         return insults.ServerProtocol(
             configdict['protocolFactory'],
-            *configdict.get('protocolConfigdict', ()),
+            *configdict.get('protocolConfigdict', (username,)),
             **configdict.get('protocolKwArgs', {}))
 
-    rlm = TerminalRealm()
+    rlm = PassAvatarIdTerminalRealm()
     rlm.transportFactory = TerminalSessionTransport_getPeer
     rlm.chainedProtocolFactory = chainProtocolFactory
     factory = ConchFactory(Portal(rlm))
-    
+
     try:
-        # create/get RSA keypair    
+        # create/get RSA keypair
         publicKey, privateKey = getKeyPair(pubkeyfile, privkeyfile)
-        factory.publicKeys = {'ssh-rsa': publicKey}    
+        factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
     except Exception, e:
         print " getKeyPair error: %s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % e
@@ -333,6 +372,6 @@ def makeFactory(configdict):
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer
 
-    factory.portal.registerChecker(AnyAuth())
+    factory.portal.registerChecker(PlayerDBPasswordChecker())
 
     return factory

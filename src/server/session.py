@@ -58,6 +58,43 @@ class IOdata(object):
         self.__dict__.update(**kwargs)
         
 
+def _login(session, player):
+    """
+    For logging a player in.  Removed this from CmdConnect because ssh
+    wanted to call it for autologin.
+    """
+    # We are logging in, get/setup the player object controlled by player
+
+    # Check if this is the first time the 
+    # *player* connects (should be set by the 
+    if player.db.FIRST_LOGIN:
+        player.at_first_login()
+        del player.db.FIRST_LOGIN
+    player.at_pre_login()        
+
+    character = player.character
+    if character: 
+        # this player has a character. Check if it's the
+        # first time *this character* logs in (this should be 
+        # set by the initial create command)
+        if character.db.FIRST_LOGIN:
+            character.at_first_login()
+            del character.db.FIRST_LOGIN            
+        # run character login hook
+        character.at_pre_login()
+
+    # actually do the login
+    session.session_login(player)
+
+    # post-login hooks 
+    player.at_post_login()        
+    if character:
+        character.at_post_login()
+        character.execute_cmd('look')
+    else:
+        player.execute_cmd('look')
+
+
 #------------------------------------------------------------
 # SessionBase class
 #------------------------------------------------------------
@@ -110,10 +147,28 @@ class SessionBase(object):
         
     def session_login(self, player):
         """
-        Private startup mechanisms that need to run at login
+        Startup mechanisms that need to run at login
 
         player - the connected player
         """
+        # Check if this is the first time the *player* logs in 
+        if player.db.FIRST_LOGIN:
+            player.at_first_login()
+            del player.db.FIRST_LOGIN
+        player.at_pre_login()        
+
+        character = player.character
+        if character: 
+            # this player has a character. Check if it's the
+            # first time *this character* logs in
+            if character.db.FIRST_LOGIN:
+                character.at_first_login()
+                del character.db.FIRST_LOGIN            
+            # run character login hook
+            character.at_pre_login()
+
+        # actually do the login by assigning session data
+
         self.player = player
         self.user = player.user
         self.uid = self.user.id
@@ -132,8 +187,13 @@ class SessionBase(object):
         #add session to connected list
         SESSIONS.add_loggedin_session(self)
 
-        #call hook
+        #call login hook
         self.at_login(player)       
+
+        # post-login hooks 
+        player.at_post_login()        
+        if character:
+            character.at_post_login()
 
     def session_disconnect(self):
         """

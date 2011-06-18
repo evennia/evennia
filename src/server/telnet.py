@@ -105,7 +105,7 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
 
     def at_data_out(self, string, data=None):
         """
-        Data Evennia -> Player access hook. 'data' argument is ignored.
+        Data Evennia -> Player access hook. 'data' argument is a dict parsed for string settings.
         """
         try:
             string = utils.to_str(string, encoding=self.encoding)
