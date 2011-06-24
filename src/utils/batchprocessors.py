@@ -163,29 +163,30 @@ def read_batchfile(pythonpath, file_ending='.py'):
     """    
 
     # open the file
-
-    if pythonpath and not (pythonpath.startswith('src.') or 
-                           pythonpath.startswith('game.')):
-        pythonpath = "%s.%s" % (settings.BASE_BATCHPROCESS_PATH, 
-                                pythonpath)
-    abspath = utils.pypath_to_realpath(pythonpath, file_ending)
-
+    if pythonpath and not (pythonpath.startswith('src.') or pythonpath.startswith('game.')):
+        abspaths = []
+        for basepath in settings.BASE_BATCHPROCESS_PATHS:
+            abspaths.append(utils.pypath_to_realpath("%s.%s" % (basepath, pythonpath), file_ending))
+    else:
+        abspaths = [pythonpath]
+    fobj = None 
     for file_encoding in ENCODINGS:
         # try different encodings, in order 
-        err = None 
-        try:        
-            # we read the file directly into unicode.
-            fobj = codecs.open(abspath, 'r', encoding=file_encoding)
-        except IOError:
-            # try again without the appended file ending
-            abspath2 = utils.pypath_to_realpath(pythonpath, None)
-            try:
+        load_errors = []
+        for abspath in abspaths:
+            # try different paths, until we get a match 
+            try:        
+                # we read the file directly into unicode.
                 fobj = codecs.open(abspath, 'r', encoding=file_encoding)
-            except IOError:            
-                string = "Could not open batchfile '%s', nor '%s'."
-                logger.log_errmsg(string % (abspath2, abspath))
-            return None
-    
+            except IOError:
+                load_errors.append("Could not open batchfile '%s'." % abspath)
+                continue 
+            break
+        if not fobj:
+            continue 
+
+        load_errors = []
+        err =None 
         # We have successfully found and opened the file. Now actually
         # try to decode it using the given protocol. 
         try:
@@ -208,6 +209,8 @@ def read_batchfile(pythonpath, file_ending='.py'):
             continue 
         # if we get here, the encoding worked. Stop iteration.
         break 
+    if load_errors: 
+        logger.log_errmsg("\n".join(load_errors))
     if err: 
         return err
     else:

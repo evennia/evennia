@@ -251,7 +251,7 @@ class DeactivateButtonEvent(Script):
         (that just controls when at_repeat() is called)
         """
         # closing the lid will also add the ClosedState script
-        self.obj.close_lid(feedback=False)        
+        self.obj.close_lid()
         # lock the lid so other players can't access it until the 
         # first one's effect has worn off.
         self.obj.db.lid_locked = True 

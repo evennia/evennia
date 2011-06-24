@@ -175,9 +175,9 @@ CMDSET_OOC = "game.gamesrc.commands.basecmdset.OOCCmdSet"
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects", "game.gamesrc.objects.examples"]
-SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples"]
-PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects"]
+OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects", "game.gamesrc.objects.examples", "contrib"]
+SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples", "contrib"]
+PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "game.gamesrc.objects.baseobjects.Player"
@@ -196,7 +196,7 @@ BASE_EXIT_TYPECLASS = "game.gamesrc.objects.baseobjects.Exit"
 
 # Python path to a directory to be searched for batch scripts 
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATH = 'game.gamesrc.world'
+BASE_BATCHPROCESS_PATHS = ['game.gamesrc.world', 'contrib']
 
 ###################################################
 # Game Time setup

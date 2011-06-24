@@ -278,13 +278,11 @@ class CmdSetHandler(object):
     def add_default(self, cmdset, emit_to_obj=None, permanent=True):
         """
         Add a new default cmdset. If an old default existed,
-        it is replaced. If permanent is set, a script will be created to 
-                        add the cmdset to the object.
+        it is replaced. If permanent is set, the set will survive a reboot.
         cmdset - can be a cmdset object or the python path to
                  an instance of such an object. 
         emit_to_obj - an object to receive error messages. 
-        permanent - create a script that assigns this script every
-                    startup/login.
+        permanent - save cmdset across reboots
         See also the notes for self.add(), which applies here too.
         """       
         if callable(cmdset):

@@ -10,8 +10,6 @@ cmdset - this way you can often re-use the commands too.
 import random 
 from src.commands.cmdset import CmdSet
 from game.gamesrc.commands.basecommand import Command
-from game.gamesrc.scripts.examples import red_button_scripts as scriptexamples
-
 
 # Some simple commands for the red button
 
@@ -70,23 +68,19 @@ class CmdPush(Command):
         """
 
         if self.obj.db.lid_open:
-
-            # assign the blind state script to the caller.
-            # this will assign the restricted BlindCmdset to
-            # the caller at startup, and remove it again
-            # once the time has run out
-            self.caller.scripts.add(scriptexamples.BlindedState)
-
             string = "You reach out to press the big red button ..."
             string += "\n\nA BOOM! A bright light blinds you!"
             string += "\nThe world goes dark ..."
             self.caller.msg(string) 
             self.caller.location.msg_contents("%s presses the button. BOOM! %s is blinded by a flash!" % 
                                               (self.caller.name, self.caller.name), exclude=self.caller)
+            # the button's method will handle all setup of scripts etc.
+            self.obj.press_button(self.caller)            
         else:
             string = "You cannot push the button - there is a glass lid covering it."
             self.caller.msg(string)
         
+
 
 class CmdSmashGlass(Command):
     """
@@ -142,22 +136,15 @@ class CmdOpenLid(Command):
         if self.obj.db.lid_locked:
             self.caller.msg("This lid seems locked in place for the moment.")
             return 
-        string += "\nA ticking sound is heard, like a winding mechanism. Seems "
+
+        string = "\nA ticking sound is heard, like a winding mechanism. Seems "
         string += "the lid will soon close again."
-        self.db.lid_open = False
-        # add the relevant cmdsets to button 
-        self.obj.cmdset.add(LidClosedCmdsSet)
-        # add the lid-close ticker script 
-        self.obj.scripts.add(scriptexamples.LidCloseTimer)
-            
-        # add more info to the button description 
-        desc = self.obj.db.closed_desc 
-        self.obj.db.temp_desc = desc 
-        self.obj.db.desc = "%s\n%s" % (desc, "Its glass cover is open and the button exposed.")
         self.caller.msg(string)
-        
         self.caller.location.msg_contents("%s opens the lid of the button." % 
                                           (self.caller.name), exclude=self.caller)
+        # add the relevant cmdsets to button 
+        self.obj.cmdset.add(LidClosedCmdSet)
+        # call object method
         self.obj.open_lid()
         
 class CmdCloseLid(Command):
@@ -176,12 +163,9 @@ class CmdCloseLid(Command):
     def func(self):
         "Close the lid"
 
-        if self.db.closed_desc:
-            self.obj.desc = self.db.closed_desc 
-        self.obj.db.lid_open = False 
+        self.obj.close_lid()
 
         # this will clean out scripts dependent on lid being open.
-        self.obj.scripts.validate() 
         self.caller.msg("You close the button's lid. It clicks back into place.")
         self.caller.location.msg_contents("%s closes the button's lid." % 
                                           (self.caller.name), exclude=self.caller)
@@ -313,8 +297,8 @@ class BlindCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         "Setup the blind cmdset"
-        from game.gamesrc.commands.default.general import CmdSay
-        from game.gamesrc.commands.default.general import CmdPose
+        from src.commands.default.general import CmdSay
+        from src.commands.default.general import CmdPose
         self.add(CmdSay())
         self.add(CmdPose())
         self.add(CmdBlindLook())

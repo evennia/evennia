@@ -361,7 +361,8 @@ def holds(accessing_obj, accessed_obj, objid, *args, **kwargs):
     if dbref and any((True for obj in contains if obj.id == dbref)):
         return True 
     objid = objid.lower()
-    return any((True for obj in contains if obj.name.lower() == objid))
+    return any((True for obj in contains 
+                if obj.name.lower() == objid or objid in [al.lower() for al in obj.aliases]))
 
 def carried(accessing_obj, accessed_obj):
     """
@@ -379,8 +380,8 @@ def objcarried(accessing_obj, accessed_obj):
       objcarried()
 
     Like carried, except this lock looks for a property "obj" on the accessed_obj
-    and tries to determing if *this* is carried by accessing_obj. This works well
-    for commands and scripts. 
+    and tries to determine if *this* is carried by accessing_obj. This works well
+    for accessing commands and scripts. 
     """
     return hasattr(accessed_obj, "obj") and accessed_obj.obj and \
         hasattr(accessed_obj.obj, "location") and accessed_obj.obj.location == accessing_obj

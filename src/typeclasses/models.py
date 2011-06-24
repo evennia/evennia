@@ -22,6 +22,7 @@ these to create custom managers.
   
 """
 
+import sys
 try:
     import cPickle as pickle
 except ImportError:
@@ -664,6 +665,7 @@ class TypedObject(SharedMemoryModel):
                 typeclass = object.__getattribute__(self, "_path_import")(tpath)
                 if callable(typeclass):
                     # don't return yet, we must cache this further down. 
+                    errstring = ""
                     break
                 elif hasattr(typeclass, '__file__'):
                     errstring += "\n%s seems to be just the path to a module. You need" % tpath
@@ -674,7 +676,7 @@ class TypedObject(SharedMemoryModel):
             if not callable(typeclass):                
                 # Still not a valid import. Fallback to default.                          
                 defpath = object.__getattribute__(self, "default_typeclass_path")
-                errstring += "  Using Default class '%s'." % defpath                
+                errstring += "\n\nUsing Default class '%s'." % defpath                
                 self.db_typeclass_path = defpath
                 self.save()
                 logger.log_errmsg(errstring)                
@@ -716,16 +718,22 @@ class TypedObject(SharedMemoryModel):
         try:            
             modpath, class_name = path.rsplit('.', 1)
             module =  __import__(modpath, fromlist=[class_name])
-            return module.__dict__[class_name]    
-        except ImportError:
-            trc = traceback.format_exc()
-            errstring = "\n%s\nError importing '%s'." % (trc, path)
+            return module.__dict__[class_name]
+        except ImportError:            
+            trc = sys.exc_traceback            
+            if not trc.tb_next:
+                # we separate between not finding the module, and finding a buggy one.
+                errstring += "(Tried path '%s')." % path
+            else:
+                # a bug in the module is reported normally.
+                trc = traceback.format_exc()           
+                errstring += "\n%sError importing '%s'." % (trc, path)
         except KeyError:
             errstring = "No class '%s' was found in module '%s'." 
             errstring = errstring % (class_name, modpath)
         except Exception:
             trc = traceback.format_exc()
-            errstring = "\n%s\nImporting '%s' failed." % (trc, path)
+            errstring = "\n%sException importing '%s'." % (trc, path)
         # return the error.
         return errstring
         

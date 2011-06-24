@@ -25,6 +25,12 @@ class RedButton(Object):
     definition in game/gamesrc/events/example.py to blink at regular
     intervals.  It also uses a series of script and commands to handle
     pushing the button and causing effects when doing so.
+
+    The following attributes can be set on the button:
+     desc_lid_open - description when lid is open
+     desc_lid_closed - description when lid is closed
+     desc_lamp_broken - description when lamp is broken
+
     """
     def at_object_creation(self):
         """
@@ -43,11 +49,9 @@ class RedButton(Object):
         self.db.lamp_works = True 
         self.db.lid_locked = False
 
-        # set the default cmdset to the object. This will by default surivive
-        # a server reboot (otherwise we could have used permanent=False).
-        self.cmdset.add_default(cmdsetexamples.DefaultCmdSet)        
+        self.cmdset.add_default(cmdsetexamples.DefaultCmdSet, permanent=True)
 
-        # since the other cmdsets relevant to the button are added 'on the fly',
+        # since the cmdsets relevant to the button are added 'on the fly',
         # we need to setup custom scripts to do this for us (also, these scripts
         # check so they are valid (i.e. the lid is actually still closed)). 
         # The AddClosedCmdSet script makes sure to add the Closed-cmdset. 
@@ -57,7 +61,7 @@ class RedButton(Object):
 
     # state-changing methods 
 
-    def open_lid(self, feedback=True):
+    def open_lid(self):
         """
         Opens the glass lid and start the timer so it will soon close
         again.
@@ -65,18 +69,13 @@ class RedButton(Object):
 
         if self.db.lid_open:
             return 
-
-        desc = "This is a large red button, inviting yet evil-looking. "
-        desc += "Its glass cover is open and the button exposed."
+        desc = self.db.desc_lid_open
+        if not desc:
+            desc = "This is a large red button, inviting yet evil-looking. "
+            desc += "Its glass cover is open and the button exposed."
         self.db.desc = desc 
         self.db.lid_open = True
-        
-        if feedback and self.location:
-            string =  "The lid slides clear of the button with a click."
-            string += "\nA ticking sound is heard, suggesting the lid might have"
-            string += " some sort of timed locking mechanism."
-            self.location.msg_contents(string)
- 
+
         # with the lid open, we validate scripts; this will clean out
         # scripts that depend on the lid to be closed.
         self.scripts.validate()
@@ -86,7 +85,7 @@ class RedButton(Object):
         # (this one cleans itself after being called once)
         self.scripts.add(scriptexamples.CloseLidEvent)
 
-    def close_lid(self, feedback=True):
+    def close_lid(self):
         """
         Close the glass lid. This validates all scripts on the button,
         which means that scripts only being valid when the lid is open
@@ -95,15 +94,12 @@ class RedButton(Object):
 
         if not self.db.lid_open:
             return         
-
-        desc = "This is a large red button, inviting yet evil-looking. "
-        desc += "Its glass cover is closed, protecting it." 
+        desc = self.db.desc_lid_closed
+        if not desc:
+            desc = "This is a large red button, inviting yet evil-looking. "
+            desc += "Its glass cover is closed, protecting it." 
         self.db.desc = desc 
         self.db.lid_open = False        
-
-        if feedback and self.location:
-            string = "With a click the lid slides back, securing the button once again."
-            self.location.msg_contents(string)
 
         # clean out scripts depending on lid to be open
         self.scripts.validate()
@@ -116,11 +112,14 @@ class RedButton(Object):
         
         """
         self.db.lamp_works = False 
-        self.db.desc = "The big red button has stopped blinking for the time being."
+        desc = self.db.desc_lamp_broken
+        if not desc:            
+            self.db.desc += "\nThe big red button has stopped blinking for the time being."
+        else:
+            self.db.desc = desc
 
         if feedback and self.location:
-            string = "The lamp flickers, the button going dark."
-            self.location.msg_contents(string)        
+            self.location.msg_contents("The lamp flickers, the button going dark.")        
         self.scripts.validate()
 
     def press_button(self, pobject):

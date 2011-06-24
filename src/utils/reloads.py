@@ -104,8 +104,8 @@ def reload_modules():
     if unsafe_dir_modified or unsafe_mod_modified:
 
         if unsafe_mod_modified:
-            string += "\n {rModules containing Script classes with a timer component" 
-            string += "\n and which has already spawned instances cannot be reloaded safely.{n"             
+            string += "\n {rModules containing Script classes with a timer component{n" 
+            string += "\n {rand which has already spawned instances cannot be reloaded safely.{n"             
         string += "\n {rThese module(s) can only be reloaded by server reboot:{n\n  %s\n"
         string = string % ", ".join(unsafe_dir_modified + unsafe_mod_modified)
 

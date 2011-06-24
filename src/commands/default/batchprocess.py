@@ -181,7 +181,7 @@ class CmdBatchCommands(MuxCommand):
     Build from batch-command file
 
     Usage:
-     @batchcommands[/interactive] <python path to file>
+     @batchcommands[/interactive] <python.path.to.file>
 
     Switch:
        interactive - this mode will offer more control when
