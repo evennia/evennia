@@ -171,11 +171,14 @@ class CmdSetHandler(object):
             for snum, cmdset in enumerate(self.cmdset_stack):
                 num = snum
                 mergetype = self.mergetype_stack[snum]
+                permstring = "non-perm"
+                if cmdset.permanent:
+                    permstring = "perm"
                 if mergetype != cmdset.mergetype:
                     mergetype = "%s^" % (mergetype)            
-                string += "\n %i: <%s (%s, prio %i)>: %s" % \
+                string += "\n %i: <%s (%s, prio %i, %s)>: %s" % \
                     (snum, cmdset.key, mergetype,
-                     cmdset.priority, cmdset)                                
+                     cmdset.priority, permstring, cmdset)                                
                 mergelist.append(str(snum))
             string += "\n"
  
@@ -183,11 +186,14 @@ class CmdSetHandler(object):
         mergetype = self.mergetype_stack[-1]  
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
-            mergetype = "custom %s on %s" % (mergetype, merged_on)        
+            mergetype = "custom %s on cmdset '%s'" % (mergetype, merged_on)        
         if mergelist:
             string += " <Merged %s (%s, prio %i)>: %s" % ("+".join(mergelist), mergetype, self.current.priority, self.current)
         else:
-            string += " <%s (%s, prio %i)>: %s" % (self.current.key, mergetype, self.current.priority,
+            permstring = "non-perm"
+            if self.current.permanent:
+                permstring = "perm"
+            string += " <%s (%s, prio %i, %s)>: %s" % (self.current.key, mergetype, self.current.priority, permstring,
                                                    ", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key)))
         return string.strip() 
 
@@ -270,7 +276,10 @@ class CmdSetHandler(object):
                 # store the path permanently
                 cmdset.permanent = True
                 storage = self.obj.cmdset_storage
-                storage.append(cmdset.path)
+                if not storage:
+                    storage = ["", cmdset.path] 
+                else:
+                    storage.append(cmdset.path)
                 self.obj.cmdset_storage = storage
             else:
                 cmdset.permanent = False 

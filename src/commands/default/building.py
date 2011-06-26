@@ -559,6 +559,8 @@ class CmdDestroy(MuxCommand):
                 if dmin and dmax:
                     for dbref in range(int(dmin),int(dmax+1)):
                         string += delobj(str(dbref))
+                else:
+                    string += delobj(objname)
             else:
                 string += delobj(objname)
         if string:
