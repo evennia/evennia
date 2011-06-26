@@ -715,7 +715,7 @@ class ObjectDB(TypedObject):
             #emit_to_obj.msg(errtxt % "at_after_move()")
             #logger.log_trace()
             return False                    
-
+        return True 
 
     #
     # Object Swap, Delete and Cleanup methods 

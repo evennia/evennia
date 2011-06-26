@@ -1014,7 +1014,7 @@ class CmdOpen(ObjManipCommand):
     @open - create new exit
     
     Usage:
-      @open <new exit>[;alias;alias..][:typeclass] = <destination> [,<return exit>[;alias;..][:typeclass]]]  
+      @open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination> 
 
     Handles the creation of exits. If a destination is given, the exit
     will point there. The <return exit> argument sets up an exit at the
@@ -1075,9 +1075,9 @@ class CmdOpen(ObjManipCommand):
             if exit_obj:  
                 # storing a destination is what makes it an exit!
                 exit_obj.destination = destination
-                string = "Created new Exit '%s' to %s (aliases: %s)." % (exit_name,
-                                                                         destination.name,
-                                                                         exit_aliases)
+                string = "Created new Exit '%s' from %s to %s (aliases: %s)." % (exit_name,location.name,
+                                                                                 destination.name,
+                                                                                 exit_aliases)
             else:
                 string = "Error: Exit '%s' not created." % (exit_name)
         # emit results 
@@ -1093,8 +1093,8 @@ class CmdOpen(ObjManipCommand):
         caller = self.caller    
         
         if not self.args or not self.rhs:
-            string = "Usage: @open <new exit>[;alias;alias...][:typeclass] "
-            string += "= <destination [,<return exit>[;alias..][:typeclass]]]"
+            string = "Usage: @open <new exit>[;alias...][:typeclass][,<return exit>[;alias..][:typeclass]]] "
+            string += "= <destination>"
             caller.msg(string)
             return
         
@@ -1109,33 +1109,25 @@ class CmdOpen(ObjManipCommand):
         exit_name = self.lhs_objs[0]['name']
         exit_aliases = self.lhs_objs[0]['aliases']
         exit_typeclass = self.lhs_objs[0]['option']
-
-        dest_name = self.rhs_objs[0]['name']
+        dest_name = self.rhs
         
         # first, check so the destination exists.
         destination = caller.search(dest_name, global_search=True)
         if not destination:
             return 
 
-        # Create exit
-        
+        # Create exit        
         ok = self.create_exit(exit_name, location, destination, exit_aliases, exit_typeclass)
         if not ok:
             # an error; the exit was not created, so we quit.
             return 
-
-        # We are done with exit creation. Check if we want a return-exit too.
-
-        if len(self.rhs_objs) > 1:            
-            back_exit_name = self.rhs_objs[1]['name']
-            back_exit_aliases = self.rhs_objs[1]['name']
-            back_exit_typeclass = self.rhs_objs[1]['option']
-
-            # Create the back-exit
-            self.create_exit(back_exit_name, destination, location, 
-                             back_exit_aliases, back_exit_typeclass)
-
-
+        # Create back exit, if any
+        if len(self.lhs_objs) > 1:
+            back_exit_name = self.lhs_objs[1]['name']
+            back_exit_aliases = self.lhs_objs[1]['aliases']
+            back_exit_typeclass = self.lhs_objs[1]['option']        
+            ok = self.create_exit(back_exit_name, destination, location, back_exit_aliases, back_exit_typeclass)
+        
 class CmdSetAttribute(ObjManipCommand):
     """
     @set - set attributes
@@ -1820,9 +1812,11 @@ class CmdTeleport(MuxCommand):
             caller.msg("You can't teleport an object inside of itself!")
             return
         # try the teleport 
-        if obj_to_teleport.move_to(destination, quiet=tel_quietly,
-                                   emit_to_obj=caller):
-            caller.msg("Teleported.")
+        if obj_to_teleport.move_to(destination, quiet=tel_quietly, emit_to_obj=caller):            
+            if obj_to_teleport == caller:
+                caller.msg("Teleported to %s." % destination.key)
+            else:
+                caller.msg("Teleported %s -> %s." % (obj_to_teleport, destination.key))
 
 
 class CmdScript(MuxCommand):

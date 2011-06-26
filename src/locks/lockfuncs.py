@@ -252,7 +252,7 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
             else:
                 return False 
         except Exception, e:
-            print e
+            #print e
             # this might happen if we try to compare two things that cannot be compared
             return False 
 
@@ -260,14 +260,13 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     if hasattr(accessing_obj, attrname):
         if value:
             return valcompare(str(getattr(accessing_obj, attrname)), value, compare)        
-        return getattr(accessing_obj, attrname) # will return Fail on False value etc
+        return bool(getattr(accessing_obj, attrname)) # will return Fail on False value etc
     # check attributes, if they exist    
-    if (hasattr(accessing_obj, 'has_attribute') 
-        and accessing_obj.has_attribute(attrname)):
+    if (hasattr(accessing_obj, 'has_attribute') and accessing_obj.has_attribute(attrname)):
         if value:
             return (hasattr(accessing_obj, 'get_attribute') 
                     and valcompare(accessing_obj.get_attribute(attrname), value, compare))
-        return accessing_obj.get_attribute(attrname) # fails on False/None values
+        return bool(accessing_obj.get_attribute(attrname)) # fails on False/None values
     return False 
 
 def objattr(accessing_obj, accessed_obj, *args, **kwargs):
@@ -358,7 +357,6 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     accessed_obj.location == accessing_obj), or if accessing_obj itself holds an
     object matching the given key.
     """
-    print "holds ..."
     try:
         # commands and scripts don't have contents, so we are usually looking
         # for the contents of their .obj property instead (i.e. the object the
@@ -369,7 +367,6 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             contents = accessing_obj.obj.contents
         except AttributeError:
             return False            
-    print "holds", contents, accessing_obj, accessed_obj
 
     def check_holds(objid):
         # helper function. Compares both dbrefs and keys/aliases.
@@ -386,11 +383,11 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     else:        
         try:
             if check_holds(accessed_obj.id):
-                print "holds: accessed_obj.id - True"
+                #print "holds: accessed_obj.id - True"
                 return True
         except Exception:
             pass 
-        print "holds: accessed_obj.obj.id -", hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
+        #print "holds: accessed_obj.obj.id -", hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
         return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
   
 def superuser(*args, **kwargs):

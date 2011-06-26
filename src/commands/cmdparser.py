@@ -59,7 +59,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             if mindex.isdigit():
                 mindex = int(mindex) - 1 
                 # feed result back to parser iteratively
-                return cmdparser(new_raw_string, cmdset, match_index=mindex)
+                return cmdparser(new_raw_string, cmdset, caller, match_index=mindex)
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, 'cmd')]

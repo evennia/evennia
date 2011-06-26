@@ -330,9 +330,11 @@ class LockHandler(object):
             # we have previously stored the function object and all the args/kwargs as list/dict,
             # now we just execute them all in sequence. The result will be a list of True/False 
             # statements. Note that there is no eval here, these are normal command calls!
-            true_false = (tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
+            true_false = (bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
             # we now input these True/False list into the evalstring, which combines them with 
             # AND/OR/NOT in order to get the final result
+            #true_false = tuple(true_false)
+            #print accessing_obj, self.obj, access_type, true_false, evalstring, func_tup, raw_string
             return eval(evalstring % tuple(true_false))
         else:
             return default

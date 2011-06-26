@@ -145,7 +145,7 @@ class ObjectManager(TypedObjectManager):
             estring = "__iexact"
         else:
             estring = "__istartswith"
-        matches = eval("self.filter(db_key%s=ostring%s)" % (estring, lstring_key))        
+        matches = eval("self.filter(db_key%s=ostring%s)" % (estring, lstring_key))
         if not matches:
             alias_matches = eval("self.model.alias_set.related.model.objects.filter(db_key%s=ostring%s)" % (estring, lstring_alias))
             matches = [alias.db_obj for alias in alias_matches]

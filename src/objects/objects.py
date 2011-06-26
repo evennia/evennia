@@ -464,6 +464,7 @@ class Exit(Object):
         cmd.key = exidbobj.db_key.strip().lower()
         cmd.obj = exidbobj 
         cmd.aliases = exidbobj.aliases
+        cmd.locks = str(exidbobj.locks)
         cmd.destination = exidbobj.db_destination
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
