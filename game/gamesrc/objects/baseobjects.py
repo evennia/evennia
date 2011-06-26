@@ -121,7 +121,8 @@ class Character(BaseCharacter):
         else:
             self.db.prelogout_location = self.location
         self.location.msg_contents("%s has entered the game." % self.name)
-    
+        self.location.at_object_receive(self, self.location)
+
 class Room(BaseRoom):
     """
     Rooms are like any object, except their location is None

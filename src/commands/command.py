@@ -31,6 +31,9 @@ class CommandMeta(type):
         temp = []
         if hasattr(mcs, 'permissions'):
             mcs.locks = mcs.permissions
+        if not hasattr(mcs, 'locks'):
+            # default if one forgets to define completely
+            mcs.locks = "cmd:all()"
         for lockstring in mcs.locks.split(';'):
             if lockstring and not ':' in lockstring:
                 lockstring = "cmd:%s" % lockstring

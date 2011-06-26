@@ -163,13 +163,14 @@ def read_batchfile(pythonpath, file_ending='.py'):
     """    
 
     # open the file
-    if pythonpath and not (pythonpath.startswith('src.') or pythonpath.startswith('game.')):
+    if pythonpath and not (pythonpath.startswith('src.') or pythonpath.startswith('game.') 
+                           or pythonpath.startswith('contrib.')):
         abspaths = []
         for basepath in settings.BASE_BATCHPROCESS_PATHS:
             abspaths.append(utils.pypath_to_realpath("%s.%s" % (basepath, pythonpath), file_ending))
     else:
-        abspaths = [pythonpath]
-    fobj = None 
+        abspaths = [utils.pypath_to_realpath(pythonpath, file_ending)]
+    fobj, lines, err = None, [], None
     for file_encoding in ENCODINGS:
         # try different encodings, in order 
         load_errors = []

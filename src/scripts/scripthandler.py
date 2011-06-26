@@ -47,11 +47,13 @@ class ScriptHandler(object):
 
     def add(self, scriptclass, key=None, autostart=True):
         """
-        Add an script to this object. The scriptclass
-        argument can be either a class object
-        inheriting from Script, an instantiated script object
-        or a python path to such a class object.
-
+        Add an script to this object. 
+        
+        scriptclass - either a class object
+             inheriting from Script, an instantiated script object
+             or a python path to such a class object.
+        key - optional identifier for the script (often set in script definition)
+        autostart - start the script upon adding it
         """            
         script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=autostart)
         if not script:

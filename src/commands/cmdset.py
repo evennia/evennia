@@ -180,7 +180,8 @@ class CmdSet(object):
     no_exits = False
     no_objs = False
     no_channels = False
-
+    permanent = False 
+    
     def __init__(self, cmdsetobj=None, key=None):
         """ 
         Creates a new CmdSet instance.
@@ -272,6 +273,10 @@ class CmdSet(object):
                 if thiscmd == cmd:
                     return thiscmd 
 
+    def count(self):
+        "Return number of commands in set"
+        return len(self.commands)
+    
     def get_system_cmds(self):
         """
         Return system commands in the cmdset, defined as
@@ -323,7 +328,7 @@ class CmdSet(object):
         """
         Show all commands in cmdset when printing it. 
         """
-        return ", ".join([str(cmd) for cmd in self.commands])
+        return ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o:o.key)])
         
     def __iter__(self):
         """

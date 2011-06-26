@@ -5,7 +5,7 @@ replacing cmdparser function. The replacement parser must
 return a CommandCandidates object.
 """
 
-def cmdparser(raw_string, cmdset, match_index=None):
+def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
     This function is called by the cmdhandler once it has 
     gathered all valid cmdsets for the calling player. raw_string
@@ -61,6 +61,9 @@ def cmdparser(raw_string, cmdset, match_index=None):
                 # feed result back to parser iteratively
                 return cmdparser(new_raw_string, cmdset, match_index=mindex)
 
+    # only select command matches we are actually allowed to call.
+    matches = [match for match in matches if match[2].access(caller, 'cmd')]
+
     if len(matches) > 1:
         # see if it helps to analyze the match with preserved case.
         matches = [match for match in matches if raw_string.startswith(match[0])]
@@ -82,7 +85,7 @@ def cmdparser(raw_string, cmdset, match_index=None):
     if len(matches) > 1 and match_index != None and 0 <= match_index < len(matches):
         # We couldn't separate match by quality, but we have an index argument to
         # tell us which match to use.
-        matches = [matches[match_index]]
+        matches = [matches[match_index]]    
 
     # no matter what we have at this point, we have to return it.
     return matches 

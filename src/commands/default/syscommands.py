@@ -26,7 +26,6 @@ from src.utils import create
 from src.commands.cmdhandler import CMD_NOINPUT
 from src.commands.cmdhandler import CMD_NOMATCH
 from src.commands.cmdhandler import CMD_MULTIMATCH
-from src.commands.cmdhandler import CMD_NOPERM
 from src.commands.cmdhandler import CMD_CHANNEL
  
 from src.commands.default.muxcommand import MuxCommand
@@ -124,26 +123,8 @@ class SystemMultimatch(MuxCommand):
         """
         string = self.format_multimatches(self.caller, self.matches)
         self.caller.msg(string)
-        
 
-class SystemNoPerm(MuxCommand):
-    """
-    This is called when the user does not have the
-    correct permissions to use a particular command.
-    """
-    key = CMD_NOPERM
-    locks = "cmd:all()"
-    
-    def func(self):
-        """
-        This receives the original raw 
-        input string (the one whose command failed to validate)
-        as argument. 
-        """
-        self.caller.msg("You are not allowed to do that.")    
-
-
-# Command called when the comman given at the command line
+# Command called when the command given at the command line
 # was identified as a channel name, like there existing a
 # channel named 'ooc' and the user wrote 
 #  > ooc Hello! 

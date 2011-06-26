@@ -14,6 +14,7 @@ the database object. Like everything else, they can be accessed
 transparently through the decorating TypeClass.
 """
 
+import traceback
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -448,6 +449,13 @@ class ObjectDB(TypedObject):
         """
         return any(self.sessions)
     has_player = property(has_player_get)
+    is_player = property(has_player_get)
+
+    #@property 
+    def is_superuser_get(self):
+        "Check if user has a player, and if so, if it is a superuser."
+        return any(self.sessions) and self.player.is_superuser
+    is_superuser = property(is_superuser_get)
 
     #@property 
     def contents_get(self, exclude=None):
@@ -612,6 +620,12 @@ class ObjectDB(TypedObject):
         quiet:  (bool)    If true, don't emit left/arrived messages.
         emit_to_obj: (Object) object to receive error messages
         """
+        def logerr(string=""):
+            trc = traceback.format_exc()
+            errstring = "%s%s" % (trc, string)
+            logger.log_trace()
+            self.msg(errstring)
+
         errtxt = "Couldn't perform move ('%s'). Contact an admin."
         if not emit_to_obj:
             emit_to_obj = self
@@ -628,8 +642,9 @@ class ObjectDB(TypedObject):
             if not self.at_before_move(destination):
                 return
         except Exception:
-            emit_to_obj.msg(errtxt % "at_before_move()")
-            logger.log_trace()
+            logerr(errtxt % "at_before_move()")
+            #emit_to_obj.msg(errtxt % "at_before_move()")
+            #logger.log_trace()
             return False
        
         # Save the old location 
@@ -648,8 +663,9 @@ class ObjectDB(TypedObject):
         try:
             source_location.at_object_leave(self, destination)
         except Exception:
-            emit_to_obj.msg(errtxt % "at_object_leave()")
-            logger.log_trace()
+            logerr(errtxt % "at_object_leave()")
+            #emit_to_obj.msg(errtxt % "at_object_leave()")
+            #logger.log_trace()
             return False
         
         if not quiet:
@@ -657,8 +673,9 @@ class ObjectDB(TypedObject):
             try:
                 self.announce_move_from(destination)            
             except Exception:
-                emit_to_obj.msg(errtxt % "at_announce_move()" )
-                logger.log_trace()
+                logerr(errtxt % "at_announce_move()") 
+                #emit_to_obj.msg(errtxt % "at_announce_move()" )
+                #logger.log_trace()
                 return False               
 
         # Perform move
@@ -674,26 +691,30 @@ class ObjectDB(TypedObject):
             try:
                 self.announce_move_to(source_location)
             except Exception:
-                emit_to_obj.msg(errtxt % "announce_move_to()")
-                logger.log_trace()
+                logerr(errtxt % "announce_move_to()")
+                #emit_to_obj.msg(errtxt % "announce_move_to()")
+                #logger.log_trace()
                 return  False                   
         
+        # Perform eventual extra commands on the receiving location
+        # (the object has already arrived at this point)
+        try:
+            destination.at_object_receive(self, source_location)
+        except Exception:
+            logerr(errtxt % "at_object_receive()")
+            #emit_to_obj.msg(errtxt % "at_object_receive()")
+            #logger.log_trace()
+            return False                              
+
         # Execute eventual extra commands on this object after moving it
         # (usually calling 'look')
         try:
             self.at_after_move(source_location)
         except Exception:
-            emit_to_obj.msg(errtxt % "at_after_move()")
-            logger.log_trace()
+            logerr(errtxt % "at_after_move")
+            #emit_to_obj.msg(errtxt % "at_after_move()")
+            #logger.log_trace()
             return False                    
-
-        # Perform eventual extra commands on the receiving location
-        try:
-            destination.at_object_receive(self, source_location)
-        except Exception:
-            emit_to_obj.msg(errtxt % "at_obj_receive()")
-            logger.log_trace()
-            return False                              
 
 
     #

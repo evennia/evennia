@@ -350,6 +350,7 @@ class CmdCreate(ObjManipCommand):
 
     switch:
        drop - automatically drop the new object into your current location (this is not echoed)
+              this also sets the new object's home to the current location rather than to you.
 
     Creates one or more new objects. If typeclass is given, the object
     is created as a child of this typeclass. The typeclass script is
@@ -405,6 +406,7 @@ class CmdCreate(ObjManipCommand):
                 obj.db.desc = "You see nothing special."
             if 'drop' in self.switches:    
                 if caller.location:
+                    obj.home = caller.location 
                     obj.move_to(caller.location, quiet=True)
         caller.msg(string)
 
@@ -482,7 +484,7 @@ class CmdDesc(MuxCommand):
                 return 
             desc = self.rhs
         else:
-            obj = caller
+            obj = caller.location
             desc = self.args
         # storing the description
         obj.db.desc = desc
@@ -494,14 +496,17 @@ class CmdDestroy(MuxCommand):
     @destroy - remove objects from the game
     
     Usage: 
-       @destroy[/<switches>] obj [,obj2, obj3, ...]
-       @delete             '' 
-
+       @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
+              
     switches:
        override - The @destroy command will usually avoid accidentally destroying
                   player objects. This switch overrides this safety.            
+    examples:
+       @destroy house, roof, door, 44-78
+       @destroy 5-10, flower, 45
 
-    Destroys one or many objects. 
+    Destroys one or many objects. If dbrefs are used, a range to delete can be
+    given, e.g. 4-10. Also the end points will be deleted. 
     """
 
     key = "@destroy"
@@ -515,22 +520,22 @@ class CmdDestroy(MuxCommand):
         caller = self.caller
 
         if not self.args or not self.lhslist:
-            caller.msg("Usage: @destroy[/switches] obj [,obj2, obj3, ...]")
-            return    
+            caller.msg("Usage: @destroy[/switches] [obj, obj2, obj3, [dbref-dbref],...]")
+            return ""
 
-        string = ""
-        for objname in self.lhslist:
+        def delobj(objname):
+            # helper function for deleting a single object
+            string = ""
             obj = caller.search(objname)
             if not obj:                
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
-                return 
+                return ""
             objname = obj.name
             if not obj.access(caller, 'delete'):
-                string += "\nYou don't have permission to delete %s." % objname
-                continue
+                return "\nYou don't have permission to delete %s." % objname
             if obj.player and not 'override' in self.switches:
-                string += "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
-                continue
+                return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
+
             had_exits = hasattr(obj, "exits") and obj.exits 
             had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents 
                                                         if not (hasattr(obj, "exits") and obj not in obj.exits))
@@ -544,9 +549,21 @@ class CmdDestroy(MuxCommand):
                     string += " Exits to and from %s were destroyed as well." % objname
                 if had_objs:
                     string += " Objects inside %s were moved to their homes." % objname
+            return string 
+    
+        string = ""
+        for objname in self.lhslist:            
+            if '-' in objname:
+                # might be a range of dbrefs
+                dmin, dmax = [utils.dbref(part) for part in objname.split('-', 1)]
+                if dmin and dmax:
+                    for dbref in range(int(dmin),int(dmax+1)):
+                        string += delobj(str(dbref))
+            else:
+                string += delobj(objname)
         if string:
             caller.msg(string.strip())
-
+                    
 
 class CmdDig(ObjManipCommand):
     """
@@ -619,7 +636,7 @@ class CmdDig(ObjManipCommand):
             to_exit = self.rhs_objs[0]             
             if not to_exit["name"]:
                 exit_to_string = \
-                    "\nYou didn't give a name for the exit to the new room."
+                    "\nNo exit created to new room."
             elif not location:
                 exit_to_string = \
                   "\nYou cannot create an exit from a None-location."    
@@ -646,7 +663,7 @@ class CmdDig(ObjManipCommand):
             back_exit = self.rhs_objs[1]
             if not back_exit["name"]:
                 exit_back_string = \
-                    "\nYou didn't give a name for the exit back here."            
+                    "\nNo back exit created."            
             elif not location:
                 exit_back_string = \
                    "\nYou cannot create an exit back to a None-location." 
@@ -1506,7 +1523,8 @@ class CmdExamine(ObjManipCommand):
                    "destination":"\n{wDestination{n: %s",
                    "perms":"\n{wPermissions{n: %s",
                    "locks":"\n{wLocks{n:",
-                   "cmdset":"\n{wCurrent Cmdset (including permission checks){n:\n %s",
+                   "cmdset":"\n{wCurrent Cmdset(s){n:\n %s",
+                   "cmdset_avail":"\n{wActual commands available to %s (incl. lock-checks, external cmds etc){n:\n %s",
                    "scripts":"\n{wScripts{n:\n %s",
                    "exits":"\n{wExits{n: ",
                    "characters":"\n{wCharacters{n: ",
@@ -1520,7 +1538,8 @@ class CmdExamine(ObjManipCommand):
                    "destination":"\nDestination: %s",
                    "perms":"\nPermissions: %s",
                    "locks":"\nLocks:",
-                   "cmdset":"\nCurrent Cmdset (including permission checks):\n %s",
+                   "cmdset":"\nCurrent Cmdset(s):\n %s",
+                   "cmdset_avail":"\nActual commands available to %s (incl. lock-checks, external cmds, etc):\n %s",
                    "scripts":"\nScripts:\n %s",
                    "exits":"\nExits: ",
                    "characters":"\nCharacters: ",
@@ -1556,8 +1575,18 @@ class CmdExamine(ObjManipCommand):
             string += headers["locks"] + utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
-            cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])            
+            # list the current cmdsets 
+            cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])
             string += headers["cmdset"] % cmdsetstr
+    
+            # list the actually available commands
+            from src.commands.cmdhandler import get_and_merge_cmdsets
+            avail_cmdset = get_and_merge_cmdsets(obj)
+            avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
+            
+            cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)                            
+            string += headers["cmdset_avail"] % (obj.key, cmdsetstr)
+
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
             string += headers["scripts"] % obj.scripts
         # add the attributes                    

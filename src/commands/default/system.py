@@ -124,6 +124,7 @@ class CmdScripts(MuxCommand):
       
     Switches:
       stop - stops an existing script
+      kill - kills a script - without running its cleanup hooks
       validate - run a validation on the script(s)
 
     If no switches are given, this command just views all active
@@ -212,15 +213,19 @@ class CmdScripts(MuxCommand):
             caller.msg(string)
             return
 
-        if self.switches and self.switches[0] in ('stop', 'del', 'delete'):
+        if self.switches and self.switches[0] in ('stop', 'del', 'delete', 'kill'):
             # we want to delete something
             if not scripts:
                 string = "No scripts/objects matching '%s'. " % args
                 string += "Be more specific."
             elif len(scripts) == 1:
                 # we have a unique match! 
-                string = "Stopping script '%s'." % scripts[0].key
-                scripts[0].stop()
+                if 'kill' in self.switches:
+                    string = "Killing script '%s'" % scripts[0].key
+                    scripts[0].stop(kill=True)
+                else:
+                    string = "Stopping script '%s'." % scripts[0].key
+                    scripts[0].stop()
                 ScriptDB.objects.validate() #just to be sure all is synced
             else:
                 # multiple matches.

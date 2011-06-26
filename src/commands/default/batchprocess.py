@@ -218,8 +218,8 @@ class CmdBatchCommands(MuxCommand):
 
         if not commands:
             string = "'%s' not found.\nYou have to supply the python path "
-            string += "of the file relative to \nyour batch-file directory (%s)."
-            caller.msg(string % (python_path, settings.BASE_BATCHPROCESS_PATH))
+            string += "of the file relative to \none of your batch-file directories (%s)."
+            caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         switches = self.switches
 
@@ -404,9 +404,10 @@ class CmdStateRR(MuxCommand):
     def func(self):
         caller = self.caller
         if caller.ndb.batch_batchmode == "batch_code":
-            BATCHCODE.parse_file(caller.ndb.batch_pythonpath)
+            new_data = BATCHCODE.parse_file(caller.ndb.batch_pythonpath)
         else:
-            BATCHCMD.parse_file(caller.ndb.batch_pythonpath)
+            new_data = BATCHCMD.parse_file(caller.ndb.batch_pythonpath)
+        caller.ndb.batch_stack = new_data        
         caller.msg(format_code("File reloaded. Staying on same command."))
         show_curr(caller)
 

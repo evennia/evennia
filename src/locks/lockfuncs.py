@@ -217,10 +217,11 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     the one given).
     
     Searches attributes *and* properties stored on the checking
-    object. The first form works like a flag - if the attribute/property
-    exists on the object, it returns True. The second form also requires
-    that the value of the attribute/property matches. Note that all
-    retrieved values will be converted to strings before doing the comparison.     
+    object. The first form works like a flag - if the
+    attribute/property exists on the object, the value is checked for
+    True/False. The second form also requires that the value of the
+    attribute/property matches. Note that all retrieved values will be
+    converted to strings before doing the comparison.
     """
     # deal with arguments 
     if not args:
@@ -258,15 +259,15 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     # first, look for normal properties on the object trying to gain access    
     if hasattr(accessing_obj, attrname):
         if value:
-            return valcompare(str(getattr(accessing_obj, attrname)), value, compare)
-        return True 
+            return valcompare(str(getattr(accessing_obj, attrname)), value, compare)        
+        return getattr(accessing_obj, attrname) # will return Fail on False value etc
     # check attributes, if they exist    
     if (hasattr(accessing_obj, 'has_attribute') 
         and accessing_obj.has_attribute(attrname)):
         if value:
             return (hasattr(accessing_obj, 'get_attribute') 
                     and valcompare(accessing_obj.get_attribute(attrname), value, compare))
-        return True 
+        return accessing_obj.get_attribute(attrname) # fails on False/None values
     return False 
 
 def objattr(accessing_obj, accessed_obj, *args, **kwargs):
@@ -292,8 +293,7 @@ def locattr(accessing_obj, accessed_obj, *args, **kwargs):
       locattr(attrname, value, compare=type)
 
     Works like attr, except it looks for an attribute on 
-    accessing_obj.location, if such an entity exists. Suitable
-    for commands.
+    accessing_obj.location, if such an entity exists. 
 
     """
     if hasattr(accessing_obj, "location"):
@@ -348,44 +348,51 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return attr(accessing_obj, accessed_obj, *args, **{'compare':'ne'})
 
-def holds(accessing_obj, accessed_obj, objid, *args, **kwargs):
+def holds(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage: 
-       holds(object_id)
-
-    This is passed if accessing_obj 'contains' an object with the given
-    key name or dbref. 
-    """
-    dbref = utils.dbref(objid)
-    contains = accessing_obj.contains 
-    if dbref and any((True for obj in contains if obj.id == dbref)):
-        return True 
-    objid = objid.lower()
-    return any((True for obj in contains 
-                if obj.name.lower() == objid or objid in [al.lower() for al in obj.aliases]))
-
-def carried(accessing_obj, accessed_obj):
-    """
-    Usage: 
-      carried()
+      holds()          # checks if accessed_obj or accessed_obj.obj is held by accessing_obj
+      holds(key/dbref) # checks if accessing_obj holds an object with given key/dbref
 
     This is passed if accessed_obj is carried by accessing_obj (that is,
-    accessed_obj.location == accessing_obj)
+    accessed_obj.location == accessing_obj), or if accessing_obj itself holds an
+    object matching the given key.
     """
-    return hasattr(accessed_obj, "location") and accessed_obj.location == accessing_obj
+    print "holds ..."
+    try:
+        # commands and scripts don't have contents, so we are usually looking
+        # for the contents of their .obj property instead (i.e. the object the
+        # command/script is attached to). 
+        contents = accessing_obj.contents
+    except AttributeError:
+        try:            
+            contents = accessing_obj.obj.contents
+        except AttributeError:
+            return False            
+    print "holds", contents, accessing_obj, accessed_obj
 
-def objcarried(accessing_obj, accessed_obj):
-    """
-    Usage:
-      objcarried()
+    def check_holds(objid):
+        # helper function. Compares both dbrefs and keys/aliases.
+        objid = str(objid)
+        dbref = utils.dbref(objid)                    
+        if dbref and any((True for obj in contents if obj.id == dbref)):
+            return True     
+        objid = objid.lower()
+        return any((True for obj in contents 
+                    if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases]))
 
-    Like carried, except this lock looks for a property "obj" on the accessed_obj
-    and tries to determine if *this* is carried by accessing_obj. This works well
-    for accessing commands and scripts. 
-    """
-    return hasattr(accessed_obj, "obj") and accessed_obj.obj and \
-        hasattr(accessed_obj.obj, "location") and accessed_obj.obj.location == accessing_obj
-
+    if args and args[0]:
+        return check_holds(args[0])
+    else:        
+        try:
+            if check_holds(accessed_obj.id):
+                print "holds: accessed_obj.id - True"
+                return True
+        except Exception:
+            pass 
+        print "holds: accessed_obj.obj.id -", hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
+        return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
+  
 def superuser(*args, **kwargs):
     """
     Only accepts an accesing_obj that is superuser (e.g. user #1)
@@ -406,7 +413,7 @@ def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
 
     A given True/False or integers will be converted properly.
     """
-    if not args:
+    if not args or not args[0]:
         return False
     if len(args) < 2:
         setting = args[0]

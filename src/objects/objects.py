@@ -235,7 +235,7 @@ class Object(TypeClass):
         exits = [] 
         users = []
         things = []
-        for content in self.contents:
+        for content in [con for con in self.contents if con.access(pobject, 'view')]:
             if content == pobject:
                 continue 
             name = content.name

@@ -123,16 +123,19 @@ class ScriptClass(TypeClass):
             #print "... Start cancelled (invalid start or already running)."
             return 0 # this is used by validate() for counting started scripts        
             
-    def stop(self):
+    def stop(self, kill=False):
         """
         Called to stop the script from running.
         This also deletes the script. 
+
+        kill - don't call finishing hooks. 
         """
         #print "stopping script %s" % self.key
-        try:
-            self.at_stop()
-        except Exception:
-            logger.log_trace()
+        if not kill:
+            try:
+                self.at_stop()
+            except Exception:
+                logger.log_trace()
         if self.interval:
             try:
                 self._stop_task()

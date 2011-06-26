@@ -64,7 +64,7 @@ example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
 import traceback 
-from src.utils import logger
+from src.utils import logger, utils
 from src.commands.cmdset import CmdSet
 from src.server.models import ServerConfig
 
@@ -163,7 +163,7 @@ class CmdSetHandler(object):
         "Display current commands"                
             
         string = ""
-        merged = False 
+        mergelist = []
         if len(self.cmdset_stack) > 1:
             # We have more than one cmdset in stack; list them all
             num = 0
@@ -176,19 +176,19 @@ class CmdSetHandler(object):
                 string += "\n %i: <%s (%s, prio %i)>: %s" % \
                     (snum, cmdset.key, mergetype,
                      cmdset.priority, cmdset)                                
+                mergelist.append(str(snum))
             string += "\n"
-            merged = True 
-
+ 
         # Display the currently active cmdset, limited by self.obj's permissions
         mergetype = self.mergetype_stack[-1]  
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
             mergetype = "custom %s on %s" % (mergetype, merged_on)        
-        if merged:
-            string += " <Merged (%s, prio %i)>: %s" % (mergetype, self.current.priority, self.current)
+        if mergelist:
+            string += " <Merged %s (%s, prio %i)>: %s" % ("+".join(mergelist), mergetype, self.current.priority, self.current)
         else:
             string += " <%s (%s, prio %i)>: %s" % (self.current.key, mergetype, self.current.priority,
-                                                   ", ".join(cmd.key for cmd in self.current if cmd.access(self.obj, "cmd")))
+                                                   ", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key)))
         return string.strip() 
 
     def update(self, init_mode=False):        
@@ -259,6 +259,8 @@ class CmdSetHandler(object):
         that has to be documented. 
         """
         if callable(cmdset):
+            if not utils.inherits_from(cmdset, CmdSet):
+                raise Exception("Only CmdSets can be added to the cmdsethandler!")
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
@@ -286,6 +288,8 @@ class CmdSetHandler(object):
         See also the notes for self.add(), which applies here too.
         """       
         if callable(cmdset):
+            if not utils.inherits_from(cmdset, CmdSet):
+                raise Exception("Only CmdSets can be added to the cmdsethandler!")
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.

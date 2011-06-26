@@ -31,16 +31,14 @@ command line. The process is as follows:
    by the parser. The result is a list of command matches tied to their respective match object. 
 9) If we found no matches, branch to system command CMD_NOMATCH --> Finished
 10) If we were unable to weed out multiple matches, branch CMD_MULTIMATCH --> Finished
-11) If we have a single match, we now check user permissions. 
-       not permissions: branch to system command CMD_NOPERM --> Finished
-12) We analyze the matched command to determine if it is a channel-type command, that is
+11) We analyze the matched command to determine if it is a channel-type command, that is
     a command auto-created to represent a valid comm channel. If so, we see if CMD_CHANNEL is 
     custom-defined in the merged cmdset, or we launch the auto-created command 
     direclty --> Finished
-13 We next check if this is an exit-type command, that is, a command auto-created to represent
+12 We next check if this is an exit-type command, that is, a command auto-created to represent
     an exit from this room. If so we check for custom CMD_EXIT in cmdset or launch
     the auto-generated command directly --> Finished
-14) At this point we have found a normal command. We assign useful variables to it, that
+13) At this point we have found a normal command. We assign useful variables to it, that
     will be available to the command coder at run-time. 
 
 When launching the command (normal, or system command both), two hook functions are called
@@ -68,7 +66,6 @@ COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
 CMD_NOINPUT = "__noinput_command"
 CMD_NOMATCH = "__nomatch_command"
 CMD_MULTIMATCH = "__multimatch_command"
-CMD_NOPERM = "__noperm_command"
 CMD_CHANNEL = "__send_to_channel"
 
 class NoCmdSets(Exception):
@@ -176,21 +173,9 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 raise ExecSystemCommand(syscmd, sysarg)
 
             # Parse the input string and match to available cmdset.
-            matches = COMMAND_PARSER(raw_string, cmdset)
-
-            #string ="Command candidates"
-            #for cand in cmd_candidates:
-            #    string += "\n %s || %s" % (cand.cmdname, cand.args)                
-            #caller.msg(string)
-
-            # Try to produce a unique match between the merged 
-            # cmdset and the candidates.
-            # if unloggedin:
-            #     matches = match_command(cmd_candidates, cmdset)
-            # else:
-            #     matches = match_command(cmd_candidates, cmdset, caller)
-    
-            #print "matches: ", matches
+            # This also checks for permissions, so all commands in match
+            # are commands the caller is allowed to call.
+            matches = COMMAND_PARSER(raw_string, cmdset, caller)
 
             # Deal with matches
             if not matches:
@@ -215,15 +200,6 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
             # At this point, we have a unique command match. 
             match = matches[0]
             cmdname, args, cmd = match[0], match[1], match[2]
-
-            # Check so we have permission to use this command.
-            if not cmd.access(caller):                
-                cmd = cmdset.get(CMD_NOPERM)
-                if cmd:
-                    sysarg = raw_string
-                else:
-                    sysarg = "Huh? (type 'help' for help)"
-                raise ExecSystemCommand(cmd, sysarg)
 
             # Check if this is a Channel match.
             if hasattr(cmd, 'is_channel') and cmd.is_channel:

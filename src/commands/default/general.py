@@ -229,11 +229,11 @@ class CmdInventory(MuxCommand):
             # format item list into nice collumns
             cols = [[],[]]
             for item in items:
-                cols[0].append(item.name)
-                desc = utils.crop(item.db.desc)                
+                cols[0].append(item.name)                
+                desc = item.db.desc
                 if not desc:
                     desc = ""
-                cols[1].append(desc)
+                cols[1].append(utils.crop(str(desc)))
             # auto-format the columns to make them evenly wide
             ftable = utils.format_table(cols)
             string = "You are carrying:"
