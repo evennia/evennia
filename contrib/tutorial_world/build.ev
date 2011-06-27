@@ -784,7 +784,7 @@ door opening shows the a wide courtyard to the west.
 The stairs are worn by the age-old passage of feet.
 #
 # Lock the antechamber so the ghost cannot get in there.
-@lock stairs down = traverse:not is_mob
+@lock stairs down = traverse:not attr(is_mob)
 #
 stairs down
 #
