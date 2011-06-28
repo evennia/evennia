@@ -94,16 +94,21 @@ class AttackTimer(Script):
         self.interval = random.randint(10, 15) # how fast the Enemy acts 
         self.start_delay = True # wait self.interval before first call
         self.persistent = True 
+
     def at_repeat(self):
         "Called every self.interval seconds."        
         if self.obj.db.inactive:
             return 
+
         if self.obj.db.roam_mode:
             self.obj.roam()
+            return
         elif self.obj.db.battle_mode:
             self.obj.attack()
+            return 
         elif self.obj.db.pursue_mode:
             self.obj.pursue()
+            return
         else:
             #dead mode. Wait for respawn. 
             dead_at = self.db.dead_at
@@ -172,9 +177,10 @@ class Enemy(Mob):
                    if utils.inherits_from(obj, BASE_CHARACTER_TYPECLASS) and not obj.is_superuser]
         if players: 
             # we found players in the room. Attack. 
-            self.roam_mode = False 
+            self.db.roam_mode = False 
+            self.db.pursue_mode = False
             self.db.battle_mode = True 
-            self.attack()
+
         elif random.random() < 0.2:
             # no players to attack, move about randomly.
             exits = [ex.destination for ex in self.location.exits if ex.access(self, "traverse")]
@@ -251,7 +257,7 @@ class Enemy(Mob):
             self.battle_mode = True
             self.roam_mode = False
             self.pursue_mode = False
-            self.attack()
+            #self.attack()
         else:
             # find all possible destinations.
             destinations = [ex.destination for ex in self.location.exits if ex.access(self, "traverse")]
@@ -287,7 +293,7 @@ class Enemy(Mob):
         """
 
         self.db.last_attacker = attacker 
-        if not self.battle_mode:
+        if not self.db.battle_mode:
             # we were attacked, so switch to battle mode.
             self.db.roam_mode = False
             self.db.pursue_mode = False 
@@ -323,13 +329,15 @@ class Enemy(Mob):
                     string += "You fear it's only a matter of time before it materializes somewhere again."
                 self.location.msg_contents(string, exclude=[attacker])
                 
-                # put enemy in dead mode and hide it from view. IrregularEvent(or a world reset) will bring it back later. 
+                # put enemy in dead mode and hide it from view. IrregularEvent will bring it back later. 
                 self.db.roam_mode = False
                 self.db.pursue_mode = False 
                 self.db.battle_mode = False 
                 self.db.dead_mode = True 
                 self.db.dead_at = time.time()
                 self.location = None                 
+            else:
+                self.location.msg_contents("%s wails, shudders and writhes." % self.key)
         return False 
 
     def reset(self):
