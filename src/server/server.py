@@ -43,10 +43,15 @@ SSL_PORTS = settings.SSL_PORTS
 SSH_PORTS = settings.SSH_PORTS
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 
-TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS
-SSL_ENABLED = settings.SSL_ENABLED and SSL_PORTS
-SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS
-WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS
+TELNET_INTERFACES = settings.TELNET_INTERFACES
+SSL_INTERFACES = settings.SSL_INTERFACES
+SSH_INTERFACES = settings.SSH_INTERFACES
+WEBSERVER_INTERFACES = settings.WEBSERVER_INTERFACES
+
+TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS and TELNET_INTERFACES
+SSL_ENABLED = settings.SSL_ENABLED and SSL_PORTS and SSL_INTERFACES
+SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS and SSH_INTERFACES
+WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED 
 IMC2_ENABLED = settings.IMC2_ENABLED
 IRC_ENABLED = settings.IRC_ENABLED
@@ -151,17 +156,25 @@ class Evennia(object):
         Outputs server startup info to the terminal.
         """
         print ' %s (%s) started on port(s):' % (SERVERNAME, VERSION)        
-        if TELNET_ENABLED:
-            print "  telnet: " + ", ".join([str(port) for port in TELNET_PORTS])        
+        if TELNET_ENABLED:            
+            ports = ", ".join([str(port) for port in TELNET_PORTS])
+            ifaces = ",".join([" %s" % iface for iface in TELNET_INTERFACES if iface != '0.0.0.0'])
+            print "  telnet%s: %s" % (ifaces, ports)
         if SSH_ENABLED:
-            print "  ssh: " + ", ".join([str(port) for port in SSH_PORTS])
+            ports = ", ".join([str(port) for port in SSH_PORTS])
+            ifaces = ",".join([" %s" % iface for iface in SSH_INTERFACES if iface != '0.0.0.0'])
+            print "  ssh%s: %s" % (ifaces, ports)
         if SSL_ENABLED:
-            print "  ssl: " + ", ".join([str(port) for port in SSL_PORTS])
+            ports = ", ".join([str(port) for port in SSL_PORTS])
+            ifaces = ",".join([" %s" % iface for iface in SSL_INTERFACES if iface != '0.0.0.0'])
+            print "  ssl%s: %s" % (ifaces, ports)
         if WEBSERVER_ENABLED:
             clientstring = ""
             if WEBCLIENT_ENABLED:
                 clientstring = '/client'
-            print "  webserver%s: " % clientstring + ", ".join([str(port) for port in WEBSERVER_PORTS])
+            ports = ", ".join([str(port) for port in WEBSERVER_PORTS])
+            ifaces = ",".join([" %s" % iface for iface in WEBSERVER_INTERFACES if iface != '0.0.0.0'])
+            print "  webserver%s%s: %s" % (clientstring, ifaces, ports)
 
     def shutdown(self, message="{rThe server has been shutdown. Disconnecting.{n", _abrupt=False):
         """
@@ -204,25 +217,35 @@ if TELNET_ENABLED:
 
     from src.server import telnet
 
-    for port in TELNET_PORTS:        
-        factory = protocol.ServerFactory()
-        factory.protocol = telnet.TelnetProtocol
-        telnet_service = internet.TCPServer(port, factory)
-        telnet_service.setName('EvenniaTelnet%s' % port)
-        EVENNIA.services.addService(telnet_service)
+    for interface in TELNET_INTERFACES:
+        ifacestr = ""
+        if interface != '0.0.0.0' or len(TELNET_INTERFACES) > 1:
+            ifacestr = "-%s" % interface
+        for port in TELNET_PORTS:        
+            pstring = "%s:%s" % (ifacestr, port)
+            factory = protocol.ServerFactory()
+            factory.protocol = telnet.TelnetProtocol
+            telnet_service = internet.TCPServer(port, factory, interface=interface)
+            telnet_service.setName('EvenniaTelnet%s' % pstring)
+            EVENNIA.services.addService(telnet_service)
 
 if SSL_ENABLED:
 
     # Start SSL game connection (requires PyOpenSSL).
 
     from src.server import ssl
-    
-    for port in SSL_PORTS: 
-        factory = protocol.ServerFactory()
-        factory.protocol = ssl.SSLProtocol
-        ssl_service = internet.SSLServer(port, factory, ssl.getSSLContext())
-        ssl_service.setName('EvenniaSSL%s' % port)
-        EVENNIA.services.addService(ssl_service)
+
+    for interface in SSL_INTERFACES:
+        ifacestr = ""
+        if interface != '0.0.0.0' or len(SSL_INTERFACES) > 1:
+            ifacestr = "-%s" % interface
+        for port in SSL_PORTS: 
+            pstring = "%s:%s" % (ifacestr, port)
+            factory = protocol.ServerFactory()
+            factory.protocol = ssl.SSLProtocol
+            ssl_service = internet.SSLServer(port, factory, ssl.getSSLContext(), interface=interface)
+            ssl_service.setName('EvenniaSSL%s' % pstring)
+            EVENNIA.services.addService(ssl_service)
 
 if SSH_ENABLED:
 
@@ -230,12 +253,17 @@ if SSH_ENABLED:
     
     from src.server import ssh
 
-    for port in SSH_PORTS:
-        factory = ssh.makeFactory({'protocolFactory':ssh.SshProtocol,
-                                   'protocolArgs':()})        
-        ssh_service = internet.TCPServer(port, factory)
-        ssh_service.setName('EvenniaSSH%s' % port)
-        EVENNIA.services.addService(ssh_service)
+    for interface in SSH_INTERFACES:
+        ifacestr = ""
+        if interface != '0.0.0.0' or len(SSH_INTERFACES) > 1:
+            ifacestr = "-%s" % interface
+        for port in SSH_PORTS:
+            pstring = "%s:%s" % (ifacestr, port)
+            factory = ssh.makeFactory({'protocolFactory':ssh.SshProtocol,
+                                       'protocolArgs':()})        
+            ssh_service = internet.TCPServer(port, factory, interface=interface)
+            ssh_service.setName('EvenniaSSH%s' % pstring)
+            EVENNIA.services.addService(ssh_service)
 
 if WEBSERVER_ENABLED:
 
@@ -257,12 +285,17 @@ if WEBSERVER_ENABLED:
         web_root.putChild("webclientdata", WebClient())
 
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
-    for port in WEBSERVER_PORTS:
-        # create the webserver
-        webserver = WSGIWebServer(threads, port, web_site)
-        #webserver = internet.SSLServer(port, web_site)
-        webserver.setName('EvenniaWebServer%s' % port)
-        EVENNIA.services.addService(webserver)
+
+    for interface in WEBSERVER_INTERFACES:
+        ifacestr = ""
+        if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
+            ifacestr = "-%s" % interface
+        for port in WEBSERVER_PORTS:
+            pstring = "%s:%s" % (ifacestr, port)
+            # create the webserver
+            webserver = WSGIWebServer(threads, port, web_site, interface=interface)
+            webserver.setName('EvenniaWebServer%s' % pstring)
+            EVENNIA.services.addService(webserver)
 
 if IRC_ENABLED:
 

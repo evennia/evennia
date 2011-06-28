@@ -26,6 +26,8 @@ TELNET_ENABLED = True
 # A list of ports the Evennia telnet server listens on
 # Can be one or many.
 TELNET_PORTS = [4000]
+# Interface addresses to listen to. If 0.0.0.0, listen to all.
+TELNET_INTERFACES = ['0.0.0.0']
 # Start the evennia django+twisted webserver so you can 
 # browse the evennia website and the admin interface
 # (Obs - further web configuration can be found below
@@ -33,6 +35,8 @@ TELNET_PORTS = [4000]
 WEBSERVER_ENABLED = True
 # A list of ports the Evennia webserver listens on
 WEBSERVER_PORTS = [8000]
+# Interface addresses to listen to. If 0.0.0.0, listen to all.
+WEBSERVER_INTERFACES = ['0.0.0.0']
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True
@@ -40,10 +44,14 @@ WEBCLIENT_ENABLED = True
 SSH_ENABLED = False
 # Ports to use for SSH 
 SSH_PORTS = [8022]
+# Interface addresses to listen to. If 0.0.0.0, listen to all.
+SSH_INTERFACES = ['0.0.0.0']
 # Actiave SSL protocol (SecureSocketLibrary)
 SSL_ENABLED = False
 # Ports to use for SSL 
 SSL_PORTS = [4001]
+# Interface addresses to listen to. If 0.0.0.0, listen to all.
+SSL_INTERFACES = ['0.0.0.0']
 # Activate full persistence if you want everything in-game to be
 # stored to the database. With it set, you can do typeclass.attr=value
 # and value will be saved to the database under the name 'attr'.
