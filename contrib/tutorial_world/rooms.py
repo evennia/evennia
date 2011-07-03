@@ -466,7 +466,7 @@ class CmdLookBridge(Command):
     def func(self):
         "Looking around, including a chance to fall."
         bridge_position = self.caller.db.tutorial_bridge_position
-
+        
         
         messages =("You are standing {wvery close to the the bridge's western foundation{n. If you go west you will be back on solid ground ...",
                    "The bridge slopes precariously where it extends eastwards towards the lowest point - the center point of the hang bridge.",
@@ -486,8 +486,8 @@ class CmdLookBridge(Command):
         self.caller.msg(message)
         
         # there is a chance that we fall if we are on the western or central part of the bridge.  
-        if bridge_position < 3 and random.random() < 0.2 and not self.caller.is_superuser:
-            # we fall on 20% of the times. 
+        if bridge_position < 3 and random.random() < 0.05 and not self.caller.is_superuser:
+            # we fall on 5% of the times. 
             fexit = ObjectDB.objects.object_search(self.obj.db.fall_exit)
             if fexit:            
                 string = "\n Suddenly the plank you stand on gives way under your feet! You fall!"
@@ -500,7 +500,8 @@ class CmdLookBridge(Command):
                 # at_object_leave hook manually (otherwise this is done by move_to()). 
                 self.caller.msg("{r%s{n" % string)
                 self.obj.at_object_leave(self.caller, fexit)
-                self.caller.location = fexit[0] # stealth move, without any other hook calls. 
+                self.caller.location = fexit[0] # stealth move, without any other hook calls.                 
+                self.obj.msg_contents("A plank gives way under %s's feet and they fall from the bridge!" % self.caller.key)
 
 # custom help command
 class CmdBridgeHelp(Command):

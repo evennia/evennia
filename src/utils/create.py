@@ -47,7 +47,7 @@ def create_object(typeclass, key=None, location=None,
     from src.objects.models import ObjectDB
     #print "in create_object", typeclass
     if isinstance(typeclass, ObjectDB):
-        # this is already an object instance!
+        # this is already an objectdb instance!
         new_db_object = typeclass            
         typeclass = new_db_object.typeclass
     elif isinstance(typeclass, Object):
@@ -147,11 +147,11 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     #print "in create_script", typeclass    
     from src.scripts.models import ScriptDB    
     if isinstance(typeclass, ScriptDB):
-        #print "this is already a script instance!", typeclass, typeclass.__class__
+        #print "this is already a scriptdb instance!"
         new_db_object = typeclass            
         typeclass = new_db_object.typeclass
     elif isinstance(typeclass, Script):
-        #print "this is already an object typeclass!"
+        #print "this is already an object typeclass!", typeclass, typeclass.__class__
         new_db_object = typeclass.dbobj
         typeclass = typeclass.__class__
     else:
@@ -159,19 +159,18 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
         new_db_object = ScriptDB()
     #new_db_object = ScriptDB()
     if not callable(typeclass):
-        # try to load this in case it's a path
+        # try to load this in case it's a path        
         if typeclass:
-            typeclass = utils.to_unicode(typeclass)
-            new_db_object.typeclass_path = typeclass
+            typeclass = utils.to_unicode(typeclass)         
+            new_db_object.db_typeclass_path = typeclass                    
         new_db_object.save()
         # this will load either the typeclass or the default one
         typeclass = new_db_object.typeclass
-    new_db_object.save()    
+    new_db_object.save()
     # the typeclass is initialized
     new_script = typeclass(new_db_object)
     # store variables on the typeclass (which means
     # it's actually transparently stored on the db object)
-
     
     if not key:
         if typeclass and hasattr(typeclass, '__name__'):
@@ -200,7 +199,6 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     # a new created script should usually be started.
     if autostart:
         new_script.start()
-
     return new_script 
 
 #

@@ -629,6 +629,7 @@ class TypedObject(SharedMemoryModel):
                     cname = infochan.key
                     cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
                     infochan.msg(message)
+                    logger.log_errmsg(cmessage)
                 else:
                     # no mudinfo channel is found. Log instead. 
                     cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
@@ -639,8 +640,8 @@ class TypedObject(SharedMemoryModel):
                 else:
                     logger.log_trace(cmessage)
 
-        #path = self.db_typeclass_path        
         path = object.__getattribute__(self, 'db_typeclass_path')
+        #print "typeclass_loading:", id(self), path
 
         errstring = ""
         if not path:
@@ -666,7 +667,7 @@ class TypedObject(SharedMemoryModel):
                 if callable(typeclass):
                     # don't return yet, we must cache this further down. 
                     errstring = ""
-                    break
+                    break # leave test loop
                 elif hasattr(typeclass, '__file__'):
                     errstring += "\n%s seems to be just the path to a module. You need" % tpath
                     errstring +=  " to specify the actual typeclass name inside the module too."
@@ -674,34 +675,32 @@ class TypedObject(SharedMemoryModel):
                     errstring += "\n%s" % typeclass # this will hold an error message.
 
             if not callable(typeclass):                
-                # Still not a valid import. Fallback to default.                          
+                # Still not a valid import. Fallback to default. 
+                # Note that we don't save to this changed path! Fix the typeclass 
+                # definition instead. 
                 defpath = object.__getattribute__(self, "default_typeclass_path")
                 errstring += "\n\nUsing Default class '%s'." % defpath                
-                self.db_typeclass_path = defpath
-                self.save()
-                logger.log_errmsg(errstring)                
                 typeclass = object.__getattribute__(self, "_path_import")(defpath)
                 errmsg(errstring)
         if not callable(typeclass):
             # if typeclass still doesn't exist at this point, we're in trouble.
-            # fall back to hardcoded core class. 
+            # fall back to hardcoded core class which is wrong for e.g. scripts/players etc. 
             errstring = "  %s\n%s" % (typeclass, errstring)
             errstring += "  Default class '%s' failed to load." % defpath
             defpath = "src.objects.objects.Object"
-            errstring += "\n  Using Evennia's default class '%s'." % defpath
-            self.db_typeclass_path = defpath
-            self.save()
-            logger.log_errmsg(errstring)
+            errstring += "\n  Using Evennia's default class '%s'." % defpath            
             typeclass = object.__getattribute__(self, "_path_import")(defpath)
             errmsg(errstring)
         else:
-            TYPECLASS_CACHE[path] = typeclass         
+            TYPECLASS_CACHE[path] = typeclass                 
         return typeclass
 
     #@typeclass.deleter
     def typeclass_del(self):
         "Deleter. Allows for del self.typeclass (don't allow deletion)"
         raise Exception("The typeclass property should never be deleted!")
+
+    # typeclass property 
     typeclass = property(typeclass_get, fdel=typeclass_del)
 
    

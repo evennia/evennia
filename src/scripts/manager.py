@@ -53,18 +53,22 @@ class ScriptManager(TypedObjectManager):
         for script in scripts:
             script.stop()
 
-    def remove_non_persistent(self):
+    def remove_non_persistent(self, obj=None):
         """
         This cleans up the script database of all non-persistent
-        scripts. It is called every time the server restarts. 
+        scripts, or only those on obj. It is called every time the server restarts
+        and 
         """
-        nr_deleted = 0
-        for script in [script for script in self.get_all_scripts()
-                       if not script.persistent]:
+        if obj:
+            to_stop = self.filter(db_persistent=False, db_obj=obj)
+        else:
+            to_stop = self.filter(db_persistent=False)
+        nr_deleted = to_stop.count()
+        for script in to_stop.filter(db_is_active=True):
             script.stop()
-            nr_deleted += 1 
-        return nr_deleted 
-
+        for script in to_stop.filter(db_is_active=False):
+            script.delete() 
+        return nr_deleted
 
     def validate(self, scripts=None, obj=None, key=None, dbref=None, 
                  init_mode=False):
@@ -111,7 +115,7 @@ class ScriptManager(TypedObjectManager):
         if init_mode:
             # special mode when server starts or object logs in. 
             # This deletes all non-persistent scripts from database
-            nr_stopped += self.remove_non_persistent()
+            nr_stopped += self.remove_non_persistent(obj=obj)
 
         if dbref and self.dbref(dbref):
             scripts = self.get_id(dbref)

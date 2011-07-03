@@ -291,6 +291,9 @@ class SessionBase(object):
         if character:
             # normal operation.            
             character.execute_cmd(command_string)
+            #import cProfile
+            #cProfile.runctx("character.execute_cmd(command_string)", 
+            #             {"command_string":command_string,"character":character}, {}, "execute_cmd.profile")
         else:
             if self.logged_in:
                 # there is no character, but we are logged in. Use player instead.

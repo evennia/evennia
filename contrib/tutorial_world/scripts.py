@@ -42,6 +42,7 @@ class IrregularEvent(Script):
         rand = random.random()
         if rand <= self.db.random_chance:
             try:
+                #self.obj.msg_contents("irregular event for %s(#%i)" % (self.obj, self.obj.id))
                 self.obj.update_irregular()
             except Exception:
                 pass

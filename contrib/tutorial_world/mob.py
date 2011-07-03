@@ -99,16 +99,18 @@ class AttackTimer(Script):
         "Called every self.interval seconds."        
         if self.obj.db.inactive:
             return 
-
-        if self.obj.db.roam_mode:
+        #print "attack timer: at_repeat", self.dbobj.id, self.ndb.twisted_task, id(self.ndb.twisted_task)
+        if self.obj.db.roam_mode:                        
             self.obj.roam()
-            return
+            #return
         elif self.obj.db.battle_mode:
+            #print "attack"
             self.obj.attack()
             return 
         elif self.obj.db.pursue_mode:
+            #print "pursue"
             self.obj.pursue()
-            return
+            #return
         else:
             #dead mode. Wait for respawn. 
             dead_at = self.db.dead_at
@@ -250,14 +252,13 @@ class Enemy(Mob):
         those that previously attacked it.         
         """
         last_attacker = self.db.last_attacker
-        players = [obj for obj in self.location.contents if utils.inherits_from(obj, BASE_CHARACTER_TYPECLASS)]        
+        players = [obj for obj in self.location.contents if utils.inherits_from(obj, BASE_CHARACTER_TYPECLASS) and not obj.is_superuser]        
         if players:
             # we found players in the room. Maybe we caught up with some, or some walked in on us
             # before we had time to pursue them. Switch to battle mode. 
             self.battle_mode = True
             self.roam_mode = False
             self.pursue_mode = False
-            #self.attack()
         else:
             # find all possible destinations.
             destinations = [ex.destination for ex in self.location.exits if ex.access(self, "traverse")]

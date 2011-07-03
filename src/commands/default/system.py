@@ -165,7 +165,7 @@ class CmdScripts(MuxCommand):
             if not hasattr(script, 'repeats') or not script.repeats:
                 table[5].append("--")
             else:
-                table[5].append("%ss" % script.repeats)
+                table[5].append("%s" % script.repeats)
             if script.persistent:
                 table[6].append("*")
             else:

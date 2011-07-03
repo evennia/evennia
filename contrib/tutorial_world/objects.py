@@ -242,7 +242,12 @@ class StateLightSourceOn(Script):
         prematurely, this hook will also be called in that case. 
         """
         # calculate remaining burntime 
-        time_burnt = time.time() - self.db.script_started
+        try:
+            time_burnt = time.time() - self.db.script_started
+        except TypeError:
+            # can happen if script_started is not defined
+            time_burnt = self.interval
+
         burntime = self.interval - time_burnt
         self.obj.db.burntime = burntime 
         if burntime <= 0:
@@ -732,12 +737,7 @@ class CmdAttack(Command):
                 # should return True if target is defeated, False otherwise.
                 return target.at_hit(self.obj, self.caller, damage)
             elif target.db.health:
-                target.db.health -= damage 
-                if target.db.health <= 0:
-                    # enemy is down!
-                    return True 
-                else:
-                    return False 
+                target.db.health -= damage            
             else:
                 # sorry, impossible to fight this enemy ...
                 self.caller.msg("The enemy seems unaffacted.")

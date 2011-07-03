@@ -1861,7 +1861,7 @@ class CmdScript(MuxCommand):
             # adding a new script, and starting it
             ok = obj.scripts.add(self.rhs, autostart=True)
             if not ok:
-                string += "\nScript %s could not be added." % self.rhs
+                string += "\nScript %s could not be added and/or started." % self.rhs
             else:
                 string = "Script successfully added and started."
                 
