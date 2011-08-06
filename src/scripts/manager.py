@@ -114,8 +114,11 @@ class ScriptManager(TypedObjectManager):
 
         if init_mode:
             # special mode when server starts or object logs in. 
-            # This deletes all non-persistent scripts from database
+            # This deletes all non-persistent scripts from database            
             nr_stopped += self.remove_non_persistent(obj=obj)
+            # turn off the activity flag for all remaining scripts
+            for script in self.all():
+                script.is_active = False 
 
         if dbref and self.dbref(dbref):
             scripts = self.get_id(dbref)

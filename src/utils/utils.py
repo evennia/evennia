@@ -138,7 +138,6 @@ def time_format(seconds, style=0):
             return '%im' % (minutes,)
         else:
             return '%is' % (seconds,)
-            
     elif style is 2:
         """
         Full-detailed, long-winded format. We ignore seconds.
@@ -158,10 +157,37 @@ def time_format(seconds, style=0):
             if minutes == 1:
                 minutes_str = '%i minute ' % minutes
             else:
-                minutes_str = '%i minutes ' % minutes        
-        retval = '%s%s%s' % (days_str, hours_str, minutes_str)
-        return retval  
+                minutes_str = '%i minutes ' % minutes       
+        retval = '%s%s%s' % (days_str, hours_str, minutes_str)          
+    elif style is 3:
+        """
+        Full-detailed, long-winded format. Includes seconds.
+        """
+        days_str = hours_str = minutes_str = seconds_str = ''
+        if days > 0:
+            if days == 1:
+                days_str = '%i day, ' % days
+            else:
+                days_str = '%i days, ' % days
+        if days or hours > 0:
+            if hours == 1:
+                hours_str = '%i hour, ' % hours
+            else:
+                hours_str = '%i hours, ' % hours
+        if hours or minutes > 0:
+            if minutes == 1:
+                minutes_str = '%i minute ' % minutes
+            else:
+                minutes_str = '%i minutes ' % minutes       
+        if minutes or seconds > 0: 
+            if seconds == 1:
+                seconds_str = '%i second ' % seconds
+            else:
+                seconds_str = '%i seconds ' % seconds
+        retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str)
 
+    return retval  
+    
 def datetime_format(dtobj):
     """
     Takes a datetime object instance (e.g. from django's DateTimeField)

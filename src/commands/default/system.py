@@ -5,7 +5,7 @@ System commands
 """
 
 import traceback
-import os, datetime
+import os, datetime, time
 import django, twisted
 
 from django.contrib.auth.models import User
@@ -476,13 +476,13 @@ class CmdTime(MuxCommand):
 
     def func(self):
         "Show times."
-
+        
         table = [["Current server uptime:",
                   "Total server running time:",
                   "Total in-game time (realtime x %g):" % (gametime.TIMEFACTOR),
                   "Server time stamp:"
-                  ],
-                 [utils.time_format(gametime.uptime(format=False), 2),
+                  ],                 
+                 [utils.time_format(time.time() - SESSIONS.server.start_time, 3),
                   utils.time_format(gametime.runtime(format=False), 2),
                   utils.time_format(gametime.gametime(format=False), 2),
                   datetime.datetime.now()
