@@ -21,8 +21,9 @@ Models covered:
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from src.utils import logger, utils
-from src.utils.utils import is_iter, has_parent
+from src.utils.idmapper.models import SharedMemoryModel
+from src.utils import logger, utils, idmapper
+from src.utils.utils import is_iter, has_parent, inherits_from
 
 #
 # Game Object creation 
@@ -45,30 +46,28 @@ def create_object(typeclass, key=None, location=None,
     # deferred import to avoid loops
     from src.objects.objects import Object
     from src.objects.models import ObjectDB
-    #print "in create_object", typeclass
+
     if isinstance(typeclass, ObjectDB):
-        # this is already an objectdb instance!
-        new_db_object = typeclass            
-        typeclass = new_db_object.typeclass
-    elif isinstance(typeclass, Object):
-        # this is already an object typeclass!        
-        new_db_object = typeclass.dbobj
-        typeclass = typeclass.__class__
-    else:
-        # create database object 
-        new_db_object = ObjectDB()
-    #new_db_object = ObjectDB()
-    if not callable(typeclass):
-        # this means typeclass might be a path. If not,
-        # the type mechanism will automatically assign
-        # the BASE_OBJECT_TYPE from settings. 
-        if typeclass:
-            typeclass = utils.to_unicode(typeclass)
-            new_db_object.typeclass_path = typeclass
-        new_db_object.save()
-        # this will either load the typeclass or the default one
-        typeclass = new_db_object.typeclass        
-    new_db_object.save()
+        # this is already an objectdb instance, extract its typeclass
+        typeclass = new_db_object.typeclass.path
+    elif isinstance(typeclass, Object) or utils.inherits_from(typeclass, Object):
+        # this is already an object typeclass, extract its path
+        typeclass = typeclass.path         
+
+    # create new database object 
+    new_db_object = ObjectDB()
+    
+    # assign the typeclass 
+    typeclass = utils.to_unicode(typeclass)
+    new_db_object.typeclass_path = typeclass
+    # this will either load the typeclass or the default one
+    typeclass = new_db_object.typeclass
+
+    if not object.__getattribute__(new_db_object, "is_typeclass")(typeclass, exact=True):
+        # this will fail if we gave a typeclass as input and it still gave us a default
+        SharedMemoryModel.delete(new_db_object)
+        return None 
+
     # the name/key is often set later in the typeclass. This
     # is set here as a failsafe. 
     if key:
@@ -142,33 +141,37 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     See src.scripts.manager for methods to manipulate existing
     scripts in the database.
     """
+
     # deferred import to avoid loops.
     from src.scripts.scripts import Script
     #print "in create_script", typeclass    
     from src.scripts.models import ScriptDB    
+
     if isinstance(typeclass, ScriptDB):
-        #print "this is already a scriptdb instance!"
-        new_db_object = typeclass            
-        typeclass = new_db_object.typeclass
-    elif isinstance(typeclass, Script):
-        #print "this is already an object typeclass!", typeclass, typeclass.__class__
-        new_db_object = typeclass.dbobj
-        typeclass = typeclass.__class__
-    else:
-        # create a new instance.
-        new_db_object = ScriptDB()
-    #new_db_object = ScriptDB()
-    if not callable(typeclass):
-        # try to load this in case it's a path        
-        if typeclass:
-            typeclass = utils.to_unicode(typeclass)         
-            new_db_object.db_typeclass_path = typeclass                    
-        new_db_object.save()
-        # this will load either the typeclass or the default one
-        typeclass = new_db_object.typeclass
-    new_db_object.save()
+        # this is already an objectdb instance, extract its typeclass
+        typeclass = new_db_object.typeclass.path
+    elif isinstance(typeclass, Script) or utils.inherits_from(typeclass, Script):
+        # this is already an object typeclass, extract its path
+        typeclass = typeclass.path 
+    # create new database object 
+    new_db_object = ScriptDB()
+    
+    # assign the typeclass 
+    typeclass = utils.to_unicode(typeclass)
+    new_db_object.typeclass_path = typeclass
+    # this will either load the typeclass or the default one
+    typeclass = new_db_object.typeclass
+
+    if not object.__getattribute__(new_db_object, "is_typeclass")(typeclass, exact=True):
+        # this can happen if the default was loaded (due to 
+        # inability to load given typeclass), which we
+        # don't accept during creation.                         
+        SharedMemoryModel.delete(new_db_object)
+        return None 
+    
     # the typeclass is initialized
     new_script = typeclass(new_db_object)
+
     # store variables on the typeclass (which means
     # it's actually transparently stored on the db object)
     
@@ -388,8 +391,8 @@ def create_player(name, email, password,
             new_user = User.objects.create_user(name, email, password) 
 
     # create the associated Player for this User, and tie them together
-    new_player = PlayerDB(db_key=name, user=new_user)        
-    new_player.save()        
+    new_player = PlayerDB(db_key=name, user=new_user)
+    new_player.save()
 
     new_player.basetype_setup() # setup the basic locks and cmdset
     # call hook method (may override default permissions)

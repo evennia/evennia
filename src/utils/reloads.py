@@ -122,8 +122,7 @@ def reload_modules():
     else:
         cemit_info(" No modules reloaded.")
 
-    # clean out cache dictionary of typeclasses, exits and channels    
-    typeclassmodels.reset()    
+    # clean out cache dictionary of typeclasses, exits and channels        
     channelhandler.CHANNELHANDLER.update()
 
     # run through all objects in database, forcing re-caching.

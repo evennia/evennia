@@ -19,7 +19,7 @@ from django.conf import settings
 # to *in-game* safety (if you can edit typeclasses you have
 # full access anyway), so no protection against changing
 # e.g. 'locks' or 'permissions' should go here.
-PROTECTED = ['id', 'dbobj', 'db', 'objects', 'typeclass',
+PROTECTED = ['id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass',
              'attr', 'save', 'delete']
 
 # If this is true, all non-protected property assignments
@@ -70,8 +70,8 @@ class TypeClass(object):
         o = dbobj.object_class(dbobj) : this is used when dbobj.object_class is already set. 
         
         """
-        # typecheck of dbobj - we can't allow it to be added here unless 
-        # unless it's really a TypedObject. 
+        # typecheck of dbobj - we can't allow it to be added here
+        # unless it's really a TypedObject.
         dbobj_cls = object.__getattribute__(dbobj, '__class__')
         dbobj_mro = object.__getattribute__(dbobj_cls, '__mro__')
         if not any('src.typeclasses.models.TypedObject' 
@@ -83,16 +83,13 @@ class TypeClass(object):
         # store the needed things on the typeclass
         object.__setattr__(self, '_protected_attrs', PROTECTED)
 
-        # sync the database object to this typeclass. 
-        cls = object.__getattribute__(self, '__class__')
-        db_typeclass_path = "%s.%s" % (object.__getattribute__(cls, '__module__'),
-                                       object.__getattribute__(cls, '__name__'))        
-        if not object.__getattribute__(dbobj, "db_typeclass_path") == db_typeclass_path:
-            object.__setattr__(dbobj, "db_typeclass_path", db_typeclass_path)
-            object.__getattribute__(dbobj, "save")()
-
-        # (The inheriting typed object classes often extend this __init__ to
-        # add handlers etc.) 
+        # # sync the database object to this typeclass. 
+        # cls = object.__getattribute__(self, '__class__')
+        # db_typeclass_path = "%s.%s" % (object.__getattribute__(cls, '__module__'),
+        #                                object.__getattribute__(cls, '__name__'))        
+        # if not object.__getattribute__(dbobj, "db_typeclass_path") == db_typeclass_path:
+        #     object.__setattr__(dbobj, "db_typeclass_path", db_typeclass_path)
+        #     object.__getattribute__(dbobj, "save")()
 
     def __getattribute__(self, propname):
         """

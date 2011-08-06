@@ -19,21 +19,20 @@ class BodyFunctions(Script):
     This class defines the script itself
     """
 
-    def at_script_creation(self):
+    def at_script_creation(self):                
         self.key = "bodyfunction"
         self.desc = "Adds various timed events to a character."
         self.interval = 20 # seconds
         #self.repeats = 5  # repeat only a certain number of times
         self.start_delay = True # wait self.interval until first call
-        self.persistent = False
+        self.persistent = True
     
     def at_repeat(self):
         """
         This gets called every self.interval seconds. We make 
         a random check here so as to only return 33% of the time. 
         """
-        #)
-        if random.random() < 0.33:
+        if random.random() < 0.66:
             # no message this time
             return 
         rand = random.random()

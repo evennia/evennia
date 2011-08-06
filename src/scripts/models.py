@@ -253,3 +253,15 @@ class ScriptDB(TypedObject):
         default_typeclass_path = settings.DEFAULT_SCRIPT_TYPECLASS
     except:
         default_typeclass_path = "src.scripts.scripts.DoNothing"
+
+    def at_typeclass_error(self):
+        """
+        If this is called, it means the typeclass has a critical 
+        error and cannot even be loaded. We don't allow a script
+        to be created under those circumstances. Already created,
+        permanent scripts are set to already be active so they
+        won't get activated now (next reboot the bug might be fixed)
+        """
+        # By setting is_active=True, we trick the script not to run "again".
+        self.is_active = True 
+        return super(ScriptDB, self).at_typeclass_error()

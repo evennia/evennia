@@ -788,6 +788,7 @@ class ObjectDB(TypedObject):
         objects to their respective home locations, as well as clean
         up all exits to/from the object.
         """
+
         if not self.at_object_delete():
             # this is an extra pre-check
             # run before deletion mechanism

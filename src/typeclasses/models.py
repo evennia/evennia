@@ -52,14 +52,6 @@ PARENTS = {
     "channel":"src.comms.models.Channel",
     "helpentry":"src.help.models.HelpEntry"}
 
-# cached typeclasses for all typed models 
-TYPECLASS_CACHE = {}
-
-def reset():
-    "Clean out the typeclass cache"
-    global TYPECLASS_CACHE
-    TYPECLASS_CACHE = {}
-
 #------------------------------------------------------------
 #
 #   Attributes 
@@ -426,6 +418,10 @@ class TypedObject(SharedMemoryModel):
     # Database manager
     objects = managers.TypedObjectManager()
 
+    # object cache and flags 
+    cached_typeclass_path = ""
+    cached_typeclass = None 
+
     # lock handler self.locks
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
@@ -485,17 +481,22 @@ class TypedObject(SharedMemoryModel):
     #@property
     def typeclass_path_get(self):
         "Getter. Allows for value = self.typeclass_path"
+        typeclass_path = object.__getattribute__(self, 'cached_typeclass_path')
+        if typeclass_path: 
+            return typeclass_path 
         return self.db_typeclass_path
     #@typeclass_path.setter
     def typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
         self.db_typeclass_path = value
         self.save()
+        object.__setattr__(self, "cached_typeclass_path", value)
     #@typeclass_path.deleter
     def typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
-        self.db_typeclass_path = None
+        self.db_typeclass_path = ""
         self.save()
+        self.cached_typeclass_path = ""
     typeclass_path = property(typeclass_path_get, typeclass_path_set, typeclass_path_del)
 
     # date_created property
@@ -613,96 +614,61 @@ class TypedObject(SharedMemoryModel):
         it allows for extending the Typed object for all different
         types of objects that the game needs. This property
         handles loading and initialization of the typeclass on the fly.
-        """
-        
-        def errmsg(message):            
-            """
-            Helper function to display error.
-            """
-            infochan = None
-            cmessage = message 
-            try:
-                from src.comms.models import Channel
-                infochan = settings.CHANNEL_MUDINFO
-                infochan = Channel.objects.get_channel(infochan[0])            
-                if infochan:
-                    cname = infochan.key
-                    cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
-                    infochan.msg(message)
-                    logger.log_errmsg(cmessage)
-                else:
-                    # no mudinfo channel is found. Log instead. 
-                    cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
-                    logger.log_errmsg(cmessage)
-            except Exception, e:                
-                if ServerConfig.objects.conf("server_starting_mode"):
-                    print cmessage
-                else:
-                    logger.log_trace(cmessage)
 
-        path = object.__getattribute__(self, 'db_typeclass_path')
-        #print "typeclass_loading:", id(self), path
+        Note: The liberal use of object.__getattribute__ and __setattr__ (instead
+              of normal dot notation) is due to optimization: it avoids calling 
+              the custom self.__getattribute__ more than necessary. 
+        """        
+
+        path = object.__getattribute__(self, "cached_typeclass_path")
+        if not path: 
+            path = object.__getattribute__(self, 'db_typeclass_path')        
+        typeclass = object.__getattribute__(self, "cached_typeclass")
+        try:
+            if typeclass and object.__getattribute__(typeclass, "path") == path:
+                return typeclass
+        except AttributeError:
+            pass 
 
         errstring = ""
         if not path:
-            # this means we should get the default obj
-            # without giving errors.
-            defpath = object.__getattribute__(self, 'default_typeclass_path')
-            typeclass = object.__getattribute__(self, '_path_import')(defpath)
-            #typeclass = self._path_import(defpath)
+            # this means we should get the default obj without giving errors.
+            return object.__getattribute__(self, "get_default_typeclass")(cache=True, silent=True, save=True)
         else:                                   
             # handle loading/importing of typeclasses, searching all paths.
-            # (self.typeclss_paths is a shortcut to settings.TYPECLASS_*_PATH
+            # (self.typeclass_paths is a shortcut to settings.TYPECLASS_*_PATHS
             # where '*' is either OBJECT, SCRIPT or PLAYER depending on the typed
-            # object). 
-            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in self.typeclass_paths]
+            # entities). 
+            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in object.__getattribute__(self, 'typeclass_paths')]
+           
             for tpath in typeclass_paths: 
-                # try to find any matches to the typeclass path, in all possible permutations.. 
-                typeclass = TYPECLASS_CACHE.get(tpath, None)
-                if typeclass:
-                    # we've imported this before. We're done.
-                    return typeclass
-                # not in cache. Try to import anew. 
+
+                # try to import and analyze the result
                 typeclass = object.__getattribute__(self, "_path_import")(tpath)
                 if callable(typeclass):
-                    # don't return yet, we must cache this further down. 
-                    errstring = ""
-                    break # leave test loop
+                    # we succeeded to import. Cache and return.   
+                    object.__setattr__(self, 'db_typeclass_path', tpath)
+                    object.__getattribute__(self, 'save')()
+                    object.__setattr__(self, "cached_typeclass_path", tpath)
+                    object.__setattr__(self, "cached_typeclass", typeclass) 
+                    return typeclass
                 elif hasattr(typeclass, '__file__'):
                     errstring += "\n%s seems to be just the path to a module. You need" % tpath
                     errstring +=  " to specify the actual typeclass name inside the module too."
                 else: 
-                    errstring += "\n%s" % typeclass # this will hold an error message.
-
-            if not callable(typeclass):                
-                # Still not a valid import. Fallback to default. 
-                # Note that we don't save to this changed path! Fix the typeclass 
-                # definition instead. 
-                defpath = object.__getattribute__(self, "default_typeclass_path")
-                errstring += "\n\nUsing Default class '%s'." % defpath                
-                typeclass = object.__getattribute__(self, "_path_import")(defpath)
-                errmsg(errstring)
-        if not callable(typeclass):
-            # if typeclass still doesn't exist at this point, we're in trouble.
-            # fall back to hardcoded core class which is wrong for e.g. scripts/players etc. 
-            errstring = "  %s\n%s" % (typeclass, errstring)
-            errstring += "  Default class '%s' failed to load." % defpath
-            defpath = "src.objects.objects.Object"
-            errstring += "\n  Using Evennia's default class '%s'." % defpath            
-            typeclass = object.__getattribute__(self, "_path_import")(defpath)
-            errmsg(errstring)
-        else:
-            TYPECLASS_CACHE[path] = typeclass                 
-        return typeclass
+                    errstring += "\n%s" % typeclass # this will hold a growing error message. 
+        # If we reach this point we couldn't import any typeclasses. Return default. It's up to the calling
+        # method to use e.g. self.is_typeclass() to detect that the result is not the one asked for. 
+        object.__getattribute__(self, "_display_errmsg")(errstring)
+        return object.__getattribute__(self, "get_default_typeclass")(cache=False, silent=False, save=False)
 
     #@typeclass.deleter
     def typeclass_del(self):
-        "Deleter. Allows for del self.typeclass (don't allow deletion)"
-        raise Exception("The typeclass property should never be deleted!")
+        "Deleter. Disallow 'del self.typeclass'"
+        raise Exception("The typeclass property should never be deleted, only changed in-place!")
 
     # typeclass property 
     typeclass = property(typeclass_get, fdel=typeclass_del)
-
    
     def _path_import(self, path):
         """
@@ -731,38 +697,95 @@ class TypedObject(SharedMemoryModel):
             errstring = "No class '%s' was found in module '%s'." 
             errstring = errstring % (class_name, modpath)
         except Exception:
-            trc = traceback.format_exc()
-            errstring = "\n%sException importing '%s'." % (trc, path)
+            trc = traceback.format_exc()            
+            errstring = "\n%sException importing '%s'." % (trc, path)            
         # return the error.
         return errstring
+
+    def _display_errmsg(self, message):            
+        """
+        Helper function to display error.
+        """
+        infochan = None
+        cmessage = message 
+        try:
+            from src.comms.models import Channel
+            infochan = settings.CHANNEL_MUDINFO
+            infochan = Channel.objects.get_channel(infochan[0])            
+            if infochan:
+                cname = infochan.key
+                cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
+                infochan.msg(message)
+            else:
+                # no mudinfo channel is found. Log instead. 
+                cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
+            logger.log_errmsg(cmessage)
+        except Exception, e:                
+            if ServerConfig.objects.conf("server_starting_mode"):
+                print cmessage
+            else:
+                logger.log_trace(cmessage)
         
-    def is_typeclass(self, other_typeclass, exact=False):
+    def get_default_typeclass(self, cache=False, silent=False, save=False):
+        """
+        This is called when a typeclass fails to 
+        load for whatever reason. 
+        Overload this in different entities. 
+
+        Default operation is to load a default typeclass.
+        """
+        defpath = object.__getattribute__(self, "default_typeclass_path")                
+        typeclass = object.__getattribute__(self, "_path_import")(defpath)
+        # if not silent:
+        #     #errstring = "\n\nUsing Default class '%s'." % defpath                
+        #     object.__getattribute__(self, "_display_errmsg")(errstring)
+
+        if not callable(typeclass):
+            # if typeclass still doesn't exist at this point, we're in trouble.
+            # fall back to hardcoded core class which is wrong for e.g. scripts/players etc. 
+            failpath = defpath
+            defpath = "src.objects.objects.Object"
+            typeclass = object.__getattribute__(self, "_path_import")(defpath)
+            if not silent:
+                errstring += "  %s\n%s" % (typeclass, errstring)
+                errstring += "  Default class '%s' failed to load." % failpath
+                errstring += "\n  Using Evennia's default class '%s'." % defpath            
+                object.__getattribute__(self, "_display_errmsg")(errstring)
+        if not callable(typeclass):
+            # if this is still giving an error, Evennia is wrongly configured or buggy
+            raise Exception("CRITICAL ERROR: The final fallback typeclass %s cannot load!!" % defpath)
+        if save:
+            object.__setattr__(self, 'db_typeclass_path', defpath)
+            object.__getattribute__(self, 'save')()
+        if cache:
+            object.__setattr__(self, "cached_typeclass_path", defpath)
+            object.__setattr__(self, "cached_typeclass", typeclass)
+        return typeclass             
+
+    def is_typeclass(self, typeclass, exact=False):
         """
         Returns true if this object has this type
           OR has a typeclass which is an subclass of
           the given typeclass.
         
-        other_typeclass - can be a class object or the
-                python path to such an object. 
+        typeclass - can be a class object or the
+                python path to such an object to match against. 
+                
         exact - returns true only if the object's
                type is exactly this typeclass, ignoring
                parents.
-        """
-        if callable(other_typeclass):
-            # this is an actual class object. Get the path to it.            
-            cls = other_typeclass.__class__
-            other_typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        if not other_typeclass:
-            return False
-        if self.db_typeclass_path == other_typeclass:
-            return True
-        if not exact:
-            # check the parent chain. 
+        """    
+        try:
+            typeclass = typeclass.path
+        except AttributeError:
+            pass 
+        if exact:
+            current_path = object.__getattribute__(self, "cached_typeclass_path")            
+            return typeclass and current_path == typeclass
+        else:
+            # check parent chain
             return any([cls for cls in self.typeclass.mro()
-                        if other_typeclass == "%s.%s" % (cls.__module__,
-                                                         cls.__name__)])
-        return False
-            
+                        if "%s.%s" % (cls.__module__, cls.__name__) == typeclass])
 
     #
     # Object manipulation methods
@@ -826,8 +849,6 @@ class TypedObject(SharedMemoryModel):
         new_typeclass.basetype_setup()
         new_typeclass.at_object_creation()
             
-        
-
     #
     # Attribute handler methods 
     #

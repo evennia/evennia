@@ -378,11 +378,11 @@ class Script(ScriptClass):
 # Some useful default Script types used by Evennia. 
 
 class DoNothing(Script):
-    "An script that does nothing. Used as default."    
+    "An script that does nothing. Used as default fallback."    
     def at_script_creation(self):    
          "Setup the script"
          self.key = "sys_do_nothing"
-         self.desc = "This does nothing."
+         self.desc = "This is a placeholder script."         
     
 class CheckSessions(Script):
     "Check sessions regularly."

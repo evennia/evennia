@@ -54,10 +54,10 @@ class ScriptHandler(object):
              or a python path to such a class object.
         key - optional identifier for the script (often set in script definition)
         autostart - start the script upon adding it
-        """            
+        """                    
         script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=autostart)
         if not script:
-            logger.log_errmsg("Script %s failed to be created/start." % scriptclass)
+            logger.log_errmsg("Script %s could not be created and/or started." % scriptclass)
             return False 
         return True 
 
