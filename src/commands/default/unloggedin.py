@@ -154,8 +154,7 @@ class CmdCreate(MuxCommand):
 
         # everything's ok. Create the new player account.
         try:
-            default_home_id = ServerConfig.objects.conf("default_home")            
-            default_home = ObjectDB.objects.get_id(default_home_id)                
+            default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)                
 
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             permissions = settings.PERMISSION_PLAYER_DEFAULT

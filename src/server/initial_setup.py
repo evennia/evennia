@@ -17,7 +17,6 @@ def create_config_values():
     """
     Creates the initial config values.
     """    
-    ServerConfig.objects.conf("default_home", '2')
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 

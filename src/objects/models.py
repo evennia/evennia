@@ -655,8 +655,7 @@ class ObjectDB(TypedObject):
             if self.home:
                 source_location = self.home
             else:
-                default_home_id = ServerConfig.objects.conf("default_home")            
-                default_home = ObjectDB.objects.get_id(default_home_id)                
+                default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
                 source_location = default_home
 
         # Call hook on source location
@@ -738,7 +737,7 @@ class ObjectDB(TypedObject):
         """
         # Gather up everything that thinks this is its location.
         objs = ObjectDB.objects.filter(db_location=self)
-        default_home_id = int(ServerConfig.objects.conf('default_home'))
+        default_home_id = int(settings.CHARACTER_DEFAULT_HOME)
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
         except Exception:

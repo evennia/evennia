@@ -94,7 +94,7 @@ class CommandTest(TestCase):
 
     def setUp(self):
         "sets up the testing environment"                
-        ServerConfig.objects.conf("default_home", 2)
+        #ServerConfig.objects.conf("default_home", 2)
 
         self.addCleanup(cleanup)
         
