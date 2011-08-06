@@ -826,7 +826,7 @@ class CmdIRC2Chan(MuxCommand):
             if chanmatch:
                 channel = chanmatch.key
 
-            ok = irc.delete_connection(irc_network, irc_port, irc_channel, irc_botname)
+            ok = irc.delete_connection(channel, irc_network, irc_port, irc_channel, irc_botname)
             if not ok:
                 self.caller.msg("IRC connection/bot could not be removed, does it exist?")
             else:

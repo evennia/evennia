@@ -32,6 +32,7 @@ class BodyFunctions(Script):
         This gets called every self.interval seconds. We make 
         a random check here so as to only return 33% of the time. 
         """
+        
         if random.random() < 0.66:
             # no message this time
             return 
