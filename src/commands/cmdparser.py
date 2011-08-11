@@ -241,10 +241,10 @@ def at_multimatch_cmd(caller, matches):
         id2 = ""
         if not (is_channel or is_exit) and (hasattr(cmd, 'obj') and cmd.obj != caller):
             # the command is defined on some other object
-            id1 = "%s-" % cmd.obj.key
-            id2 = " (%s-%s)" % (num + 1, cmdname)
+            id1 = "%s-%s" % (num + 1, cmdname)
+            id2 = " (%s)" % (cmd.obj.key)
         else:
-            id1 = "%s-" % (num + 1)
+            id1 = "%s-%s" % (num + 1, cmdname)
             id2 = ""
-        string += "\n  %s%s%s%s%s" % (id1, cmdname, id2, is_channel, is_exit)
+        string += "\n  %s%s%s%s" % (id1, id2, is_channel, is_exit)
     return string
