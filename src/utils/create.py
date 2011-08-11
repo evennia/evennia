@@ -91,20 +91,20 @@ def create_object(typeclass, key=None, location=None,
         player.obj = new_object
 
     new_object.destination = destination 
-    
+
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom
-    # things on its database object.
+    # things on its database object. 
     new_object.basetype_setup() # setup the basics of Exits, Characters etc.
     new_object.at_object_creation()
-
-    # custom-given variables override the hook
+    
+    # custom-given perms/locks overwrite hooks
     if permissions:
         new_object.permissions = permissions
-    if aliases:
-        new_object.aliases = aliases
     if locks:
         new_object.locks.add(locks)
+    if aliases:
+        new_object.aliases = aliases
 
     # perform a move_to in order to display eventual messages.
     if home:
@@ -114,6 +114,10 @@ def create_object(typeclass, key=None, location=None,
     else:
         # rooms would have location=None.
         new_object.location = None                             
+
+    # post-hook setup (mainly used by Exits)
+    new_object.basetype_posthook_setup()    
+
     new_object.save()
     return new_object
 

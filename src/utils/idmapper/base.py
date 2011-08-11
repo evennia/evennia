@@ -102,8 +102,9 @@ class SharedMemoryModel(Model):
         if instance._get_pk_val() is not None:
             cls.__instance_cache__[instance._get_pk_val()] = instance        
             try:
-                object.__getattribute__(instance, "at_cache")()
-            except (TypeError, AttributeError):
+                object.__getattribute__(instance, "at_cache")()                
+            except (TypeError, AttributeError), e:
+                #print e, instance._get_pk_val()
                 pass                 
 
             #key = "%s-%s" % (cls, instance.pk)            
@@ -118,7 +119,7 @@ class SharedMemoryModel(Model):
 
 
     def _flush_cached_by_key(cls, key):
-        del cls.__instance_cache__[key]
+        del cls.__instance_cache__[key]        
     _flush_cached_by_key = classmethod(_flush_cached_by_key)
         
     def flush_cached_instance(cls, instance):

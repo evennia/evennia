@@ -226,6 +226,8 @@ class CmdScripts(MuxCommand):
                 else:
                     string = "Stopping script '%s'." % scripts[0].key
                     scripts[0].stop()
+                #import pdb
+                #pdb.set_trace()
                 ScriptDB.objects.validate() #just to be sure all is synced
             else:
                 # multiple matches.

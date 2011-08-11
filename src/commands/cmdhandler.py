@@ -85,6 +85,10 @@ def get_and_merge_cmdsets(caller):
     """
     # The calling object's cmdset 
     try:
+        caller.at_cmdset_get()
+    except Exception:
+        logger.log_trace()
+    try:
         caller_cmdset = caller.cmdset.current
     except AttributeError:
         caller_cmdset = None
@@ -103,6 +107,12 @@ def get_and_merge_cmdsets(caller):
         # Gather all cmdsets stored on objects in the room and
         # also in the caller's inventory and the location itself
         local_objlist = location.contents_get(exclude=caller.dbobj) + caller.contents + [location]
+        for obj in local_objlist:
+            try:
+                # call hook in case we need to do dynamic changing to cmdset
+                obj.at_cmdset_get()
+            except Exception:
+                logger.log_trace()
         local_objects_cmdsets = [obj.cmdset.current for obj in local_objlist
                                  if (obj.cmdset.current and obj.locks.check(caller, 'call', no_superuser_bypass=True))]
         for cset in local_objects_cmdsets:

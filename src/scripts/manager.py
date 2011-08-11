@@ -88,8 +88,8 @@ class ScriptManager(TypedObjectManager):
         key = validate only scripts with a particular key
         dbref = validate only the single script with this particular id. 
 
-        init_mode - When this mode is active, non-persistent scripts
-                    will be removed and persistent scripts will be
+        init_mode - This is used during server upstart. It causes non-persistent 
+                    scripts to be removed and persistent scripts to be
                     force-restarted.
 
         This method also makes sure start any scripts it validates,
@@ -117,26 +117,30 @@ class ScriptManager(TypedObjectManager):
             # This deletes all non-persistent scripts from database            
             nr_stopped += self.remove_non_persistent(obj=obj)
             # turn off the activity flag for all remaining scripts
-            for script in self.all():
-                script.is_active = False 
+            scripts = self.get_all_scripts()
+            for script in scripts:
+                script.dbobj.is_active = False 
+       
+        elif not scripts:
+            # normal operation 
+            if dbref and self.dbref(dbref):
+                scripts = self.get_id(dbref)
+            elif obj:
+                scripts = self.get_all_scripts_on_obj(obj, key=key)            
+            else:
+                scripts = self.get_all_scripts(key=key) #self.model.get_all_cached_instances()
 
-        if dbref and self.dbref(dbref):
-            scripts = self.get_id(dbref)
-        elif scripts:
-            pass
-        elif obj:
-            scripts = self.get_all_scripts_on_obj(obj, key=key)            
-        else:
-            scripts = self.model.get_all_cached_instances()#get_all_scripts(key=key)        
         if not scripts:
+            # no scripts available to validate
             VALIDATE_ITERATION -= 1
             return None, None
+
         #print "scripts to validate: [%s]" % (", ".join(script.key for script in scripts))        
         for script in scripts:
             if script.is_valid():
-                #print "validating %s (%i)" % (script.key, id(script.dbobj)) 
+                #print "validating %s (%i) (init_mode=%s)" % (script.key, id(script.dbobj), init_mode)                                
                 nr_started += script.start(force_restart=init_mode) 
-                #print "back from start."
+                #print "back from start. nr_started=", nr_started
             else:
                 script.stop()
                 nr_stopped += 1

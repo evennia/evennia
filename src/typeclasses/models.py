@@ -210,7 +210,7 @@ class Attribute(SharedMemoryModel):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
     lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
-
+        
 
     #
     #
@@ -747,8 +747,8 @@ class TypedObject(SharedMemoryModel):
             defpath = "src.objects.objects.Object"
             typeclass = object.__getattribute__(self, "_path_import")(defpath)
             if not silent:
-                errstring += "  %s\n%s" % (typeclass, errstring)
-                errstring += "  Default class '%s' failed to load." % failpath
+                #errstring = "  %s\n%s" % (typeclass, errstring)
+                errstring = "  Default class '%s' failed to load." % failpath
                 errstring += "\n  Using Evennia's default class '%s'." % defpath            
                 object.__getattribute__(self, "_display_errmsg")(errstring)
         if not callable(typeclass):
@@ -1083,7 +1083,12 @@ class TypedObject(SharedMemoryModel):
                 def all(self):
                     return [val for val in self.__dict__.keys() 
                             if not val.startswith['_']]                    
-                pass             
+                def __getattribute__(self, key):
+                    # return None if no matching attribute was found. 
+                    try:
+                        return object.__getattribute__(self, key)
+                    except AttributeError:
+                        return None 
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
     #@ndb.setter

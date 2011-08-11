@@ -75,11 +75,29 @@ class Object(TypeClass):
         """ 
         pass
 
+    def basetype_posthook_setup(self):
+        """
+        Called once, after basetype_setup and at_object_creation. This should generally not be overloaded unless
+        you are redefining how a room/exit/object works. It allows for basetype-like setup
+        after the object is created. An example of this is EXITs, who need to know keys, aliases, locks
+        etc to set up their exit-cmdsets.
+        """
+        pass
+
     def at_cache(self):
         """
-        Called whenever this object is cached or reloaded.
+        Called whenever this object is cached to the idmapper backend. 
         """
         pass 
+
+    def at_cmdset_get(self):
+        """
+        Called just before cmdsets on this object are requested by the
+        command handler. If changes need to be done on the fly to the cmdset
+        before passing them on to the cmdhandler, this is the place to do it.
+        This is called also if the object currently have no cmdsets.
+        """
+        pass
 
     def at_first_login(self):
         """
@@ -423,11 +441,15 @@ class Exit(Object):
         """
         Helper function for creating an exit command set + command.
 
-        Note that exitdbobj is an ObjectDB instance. This is necessary for
-        handling reloads and avoid tracebacks while the typeclass system
-        is rebooting.
-        """
+        The command of this cmdset has the same name as the Exit object
+        and allows the exit to react when the player enter the exit's name,
+        triggering the movement between rooms. 
         
+        Note that exitdbobj is an ObjectDB instance. This is necessary
+        for handling reloads and avoid tracebacks if this is called while
+        the typeclass system is rebooting.
+        """
+        #print "Exit:create_exit_cmdset "
         class ExitCommand(command.Command):
             """
             This is a command that simply cause the caller
@@ -476,7 +498,6 @@ class Exit(Object):
         return exit_cmdset
 
     # Command hooks 
-
     def basetype_setup(self):
         """
         Setup exit-security
@@ -485,21 +506,26 @@ class Exit(Object):
         overload the default locks (it is called after this one). 
         """
         super(Exit, self).basetype_setup()
-        
-        # this is the fundamental thing for making the Exit work: 
-        self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)
-        # an exit should have a destination (this is replaced at creation time)
-        if self.dbobj.location:
-            self.destination = self.dbobj.location 
 
         # setting default locks (overload these in at_object_creation()
         self.locks.add("puppet:false()") # would be weird to puppet an exit ...
         self.locks.add("traverse:all()") # who can pass through exit by default
-        self.locks.add("get:false()")    # noone can pick up the exit 
-        
-    def at_cache(self):
-        "Called when the typeclass is re-cached or reloaded. Should usually not be edited."
-        self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)                
+        self.locks.add("get:false()")    # noone can pick up the exit
+ 
+       # an exit should have a destination (this is replaced at creation time)
+        if self.dbobj.location:
+            self.destination = self.dbobj.location  
+
+    def at_cmdset_get(self):
+        """
+        Called when the cmdset is requested from this object, just before the cmdset is 
+        actually extracted. If no Exit-cmdset is cached, create it now.
+        """ 
+
+        if self.ndb.exit_reset or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
+            # we are resetting, or no exit-cmdset was set. Create one dynamically.
+            self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)                
+            self.ndb.exit_reset = False 
 
     # this and other hooks are what usually can be modified safely. 
 

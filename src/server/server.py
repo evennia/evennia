@@ -22,7 +22,7 @@ from twisted.internet import protocol, reactor, defer
 from twisted.web import server, static
 from django.db import connection
 from django.conf import settings
-from src.utils import reloads
+from src.scripts.models import ScriptDB
 from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
 from src.server import initial_setup
@@ -99,7 +99,7 @@ class Evennia(object):
         channelhandler.CHANNELHANDLER.update()
         
         # init all global scripts
-        reloads.reload_scripts(init_mode=True)
+        ScriptDB.objects.validate(init_mode=True)
 
         # Make info output to the terminal.         
         self.terminal_output()

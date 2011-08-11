@@ -409,6 +409,17 @@ class CmdSetHandler(object):
             self.obj.cmdset_storage = storage 
         self.update()
 
+    def has_cmdset(self, cmdset_key, must_be_default=False):
+        """
+        checks so the cmdsethandler contains a cmdset with the given key.
+        must_be_default - only match against the default cmdset. 
+        """
+        if must_be_default:
+            return self.cmdset_stack and self.cmdset_stack[0].key == cmdset_key
+        else:
+            return any([cmdset.key == cmdset_key for cmdset in self.cmdset_stack])
+        
+
     def all(self):
         """
         Returns all cmdsets.

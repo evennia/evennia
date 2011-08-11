@@ -128,23 +128,20 @@ def reload_modules():
     # run through all objects in database, forcing re-caching.
 
      
-def reload_scripts(scripts=None, obj=None, key=None, 
-                   dbref=None, init_mode=False):
+def reload_scripts(scripts=None, obj=None, key=None, dbref=None):
     """
     Run a validation of the script database.
     obj - only validate scripts on this object
     key - only validate scripts with this key
     dbref - only validate the script with this unique idref    
     emit_to_obj - which object to receive error message
-    init_mode - during init-mode, non-persistent scripts are 
-                cleaned out. All persistent scripts are force-started.
 
     """
 
     nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts, 
                                                        obj=obj, key=key, 
                                                        dbref=dbref, 
-                                                       init_mode=init_mode)
+                                                       init_mode=False)
     if nr_started or nr_stopped:
         string = " Started %s script(s). Stopped %s invalid script(s)." % \
             (nr_started, nr_stopped)            

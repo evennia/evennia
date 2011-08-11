@@ -191,7 +191,6 @@ class ObjectDB(TypedObject):
         self.cmdset = CmdSetHandler(self)
         self.cmdset.update(init_mode=True)
         self.scripts = ScriptHandler(self)
-        self.scripts.validate(init_mode=True)
         self.nicks = ObjectNickHandler(self)    
         
     # Wrapper properties to easily set database fields. These are
@@ -804,6 +803,9 @@ class ObjectDB(TypedObject):
         if object.__getattribute__(self, 'player') and self.player:
             self.player.character = None
         self.player = None 
+
+        for script in self.scripts.all():
+            script.stop()
         
         # if self.player:
         #     self.player.user.is_active = False 

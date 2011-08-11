@@ -182,7 +182,7 @@ class SessionBase(object):
         self.log('Logged in: %s' % self)
 
         # start (persistent) scripts on this object
-        reloads.reload_scripts(obj=self.player.character, init_mode=True)
+        reloads.reload_scripts(obj=self.player.character)
         
         #add session to connected list
         SESSIONS.add_loggedin_session(self)

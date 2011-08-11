@@ -44,9 +44,10 @@ class ScriptClass(TypeClass):
     def _stop_task(self):
         "stop task runner"
         try:
-            self.ndb.twisted_task.stop()
+            #print "stopping twisted task:", id(self.ndb.twisted_task), self.obj
+            self.ndb.twisted_task.stop()            
         except Exception:
-            pass 
+            logger.log_trace()
     def _step_err_callback(self, e):
         "callback for runner errors"
         cname = self.__class__.__name__
@@ -74,7 +75,7 @@ class ScriptClass(TypeClass):
         self.save()
     def _step_task(self):
         "step task"
-        try:
+        try:            
             d = maybeDeferred(self._step_succ_callback)
             d.addErrback(self._step_err_callback)            
             return d
@@ -107,30 +108,30 @@ class ScriptClass(TypeClass):
         """
         #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj), 
         #                                                          self.is_active, force_restart)        
-        if self.dbobj.db_is_active and not force_restart:
-            # script already runs.
+
+        if self.dbobj.is_active and not force_restart:
+            # script already runs and should not be restarted.
             return 0 
-        
-        if self.obj:            
+
+        obj = self.obj
+        if obj:            
             # check so the scripted object is valid and initalized 
             try:
-                dummy = object.__getattribute__(self.obj, 'cmdset')                
+                dummy = object.__getattribute__(obj, 'cmdset')                
             except AttributeError:
                 # this means the object is not initialized.
-                self.dbobj.db_is_active = False
+                self.dbobj.is_active = False
                 return 0 
         # try to start the script 
         try:            
-            self.dbobj.db_is_active = True
-            self.dbobj.save()
+            self.dbobj.is_active = True
             self.at_start()
             if self.dbobj.db_interval > 0:
                 self._start_task()
             return 1
         except Exception:
             logger.log_trace()
-            self.dbobj.db_is_active = False 
-            self.dbobj.save()
+            self.dbobj.is_active = False 
             return 0
 
     def stop(self, kill=False):
@@ -141,6 +142,8 @@ class ScriptClass(TypeClass):
         kill - don't call finishing hooks. 
         """
         #print "stopping script %s" % self.key
+        #import pdb
+        #pdb.set_trace()
         if not kill:
             try:
                 self.at_stop()
@@ -149,11 +152,13 @@ class ScriptClass(TypeClass):
         if self.dbobj.db_interval > 0:
             try:
                 self._stop_task()
-            except Exception:
+            except Exception, e:
+                logger.log_trace("Stopping script %s(%s)" % (self.key, self.id))
                 pass
         try:
             self.dbobj.delete()
         except AssertionError:
+            logger.log_trace()
             return 0
         return 1
 
@@ -175,7 +180,7 @@ class ScriptClass(TypeClass):
         pass
 
 
-# class ScriptClassOld(TypeClass):
+# class ScriptClass(TypeClass):
 #     """
 #     Base class for all Scripts. 
 #     """
