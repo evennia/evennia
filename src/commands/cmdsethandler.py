@@ -377,7 +377,7 @@ class CmdSetHandler(object):
     def delete_default(self):
         "This explicitly deletes the default cmdset. It's the only command that can."
         if self.cmdset_stack:
-            cmdset = self.cmdet_stack[0]
+            cmdset = self.cmdset_stack[0]
             if cmdset.permanent:
                 storage = self.obj.cmdset_storage
                 if storage:
