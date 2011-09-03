@@ -34,11 +34,12 @@ class DefaultCmdSet(CmdSet):
 
         # System commands
         self.add(system.CmdReload())
+        self.add(system.CmdReset())
+        self.add(system.CmdShutdown())
         self.add(system.CmdPy())
         self.add(system.CmdScripts())        
         self.add(system.CmdObjects())
         self.add(system.CmdService())
-        self.add(system.CmdShutdown())
         self.add(system.CmdVersion())
         self.add(system.CmdTime())
         self.add(system.CmdServerLoad())

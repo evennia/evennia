@@ -1,11 +1,12 @@
 
-Evennia README http://evennia.com
+Evennia README (http://evennia.com)
 -------------- 
 
-- < 2010 (earlier revisions)
-- May 2010 - merged ABOUT and README. Added Current status /Griatch
-- Aug 2010 - evennia devel merged into trunk /Griatch
+- Aug 2011 - split evennia into portal + server for better reload /Griatch
 - May 2011 - all commands implemented, web client, contribs /Griatch
+- Aug 2010 - evennia devel merged into trunk /Griatch
+- May 2010 - merged ABOUT and README. Added Current status /Griatch
+- < 2010 (earlier revisions)
 
 Contents:
 ---------
@@ -58,6 +59,15 @@ See the INSTALL file for help on setting up and running Evennia.
 Current Status
 --------------
 
+Aug 2011:
+Split Evennia into two processes: Portal and Server. After a lot of
+work trying to get in-memory code-reloading to work, it's clear this
+is not Python's forte - it's impossible to catch all exceptions,
+especially in asynchronous code like this.  Trying to do so results in
+hackish, flakey and unstable code. With the Portal-Server split, the
+Server can simply be rebooted while players connected to the Portal
+remain connected. The two communicates over twisted's AMP protocol.
+
 May 2011: 
 The new version of Evennia, originally hitting trunk in Aug2010, is
 maturing. All commands from the pre-Aug version, including IRC/IMC2
@@ -66,10 +76,11 @@ including moving Evennia to be its own webserver (no more need for
 Apache or django-testserver). Contrib-folder added. 
 
 Aug 2010:
-Evennia-griatch-branch is ready for merging with trunk. This marks
-a rather big change in the inner workings of the server, but should
-hopefully bring everything together into one consistent package as
-code development continues. 
+Evennia-griatch-branch is ready for merging with trunk. This marks a
+rather big change in the inner workings of the server, such as the
+introduction of TypeClasses and Scripts (as compared to the old
+ScriptParents and Events) but should hopefully bring everything
+together into one consistent package as code development continues.
 
 May 2010:
 Evennia is currently being heavily revised and cleaned from 
@@ -78,6 +89,8 @@ the years of gradual piecemeal development. It is thus in a very
 will not be backwards compatabile. Changes touch almost all
 parts of Evennia's innards, from the way Objects are handled 
 to Events, Commands and Permissions. 
+
+
 
 
 Contact, Support and Development

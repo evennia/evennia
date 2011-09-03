@@ -56,7 +56,6 @@ class CmdLook(MuxCommand):
         """
         caller = self.caller
         args = self.args        
-
         if args:
             # Use search to handle duplicate/nonexistant results.
             looking_at_obj = caller.search(args, use_nicks=True)
@@ -345,7 +344,7 @@ class CmdQuit(MuxCommand):
     def func(self):
         "hook function"  
         for session in self.caller.sessions:
-            session.msg("Quitting. Hope to see you soon again.")
+            session.msg("{RQuitting{n. Hope to see you soon again.")
             session.session_disconnect()
             
 class CmdWho(MuxCommand):

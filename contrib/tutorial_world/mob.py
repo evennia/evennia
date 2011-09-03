@@ -91,7 +91,7 @@ class AttackTimer(Script):
         "This sets up the script"
         self.key = "AttackTimer" 
         self.desc = "Drives an Enemy's combat."
-        self.interval = random.randint(10, 15) # how fast the Enemy acts 
+        self.interval = random.randint(2, 3) # how fast the Enemy acts 
         self.start_delay = True # wait self.interval before first call
         self.persistent = True 
 

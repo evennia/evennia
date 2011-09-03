@@ -1,0 +1,32 @@
+
+Evennia locales
+---------------
+
+ * Changing server language
+
+ Edit your settings file: 
+
+ USE_I18N = True 
+ LANGUAGE_CODE = 'en'
+
+Change 'en' to a translated language (see locale/). 
+Restart Server and Portal. 
+
+
+ * Translating
+
+This folder contains translation strings for the core server.
+
+First look in locale/ to see if there are already data files for 
+your language available to improve upon. If not, you can
+start translate for a new language by placing yourself in 
+Evennia's root directory and run 
+
+  django-admin makemessages -l <language code>
+
+where <language code> is the two-letter locale code for the language 
+you want, like "sv" for Swedish, "es" for Spanish and so on. Next 
+go to locale/<language code>/LC_MESSAGES/and edit the *.po file 
+you find there by translating each given English string to the equivalent in 
+the other language. Editing the raw file manually is not necessary -- search 
+the web and you'll find many open-source graphical .po editors available.

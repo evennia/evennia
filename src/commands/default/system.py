@@ -15,7 +15,7 @@ from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
 from src.server.models import ServerConfig
-from src.utils import reloads, create, logger, utils, gametime
+from src.utils import create, logger, utils, gametime
 from src.commands.default.muxcommand import MuxCommand
 
 
@@ -26,8 +26,9 @@ class CmdReload(MuxCommand):
     Usage:
       @reload
 
-    This reloads the system modules and
-    re-validates all scripts. 
+    This restarts the server. The Portal is not
+    affected. Non-persistent scripts will survive a @reload (use
+    @reset to purge) and at_reload() hooks will be called.
     """
     key = "@reload"
     locks = "cmd:perm(reload) or perm(Immortals)"
@@ -37,7 +38,62 @@ class CmdReload(MuxCommand):
         """
         Reload the system. 
         """
-        reloads.start_reload_loop()
+        SESSIONS.announce_all(" Server restarting ...")
+        SESSIONS.server.shutdown(mode='reload')
+
+class CmdReset(MuxCommand):
+    """
+    Reset and reboot the system
+
+    Usage:
+      @reset
+
+    A cold reboot. This works like a mixture of @reload and @shutdown,
+    - all shutdown hooks will be called and non-persistent scrips will
+    be purged. But the Portal will not be affected and the server will
+    automatically restart again.
+    """
+    key = "@reset"
+    aliases = ['@reboot']
+    locks = "cmd:perm(reload) or perm(Immortals)"
+    help_category = "System"
+
+    def func(self):
+        """
+        Reload the system. 
+        """
+        SESSIONS.announce_all(" Server restarting ...")
+        SESSIONS.server.shutdown(mode='reset')
+
+
+class CmdShutdown(MuxCommand):
+
+    """
+    @shutdown
+
+    Usage:
+      @shutdown [announcement]
+
+    Gracefully shut down both Server and Portal.
+    """
+    key = "@shutdown"
+    locks = "cmd:perm(shutdown) or perm(Immortals)"
+    help_category = "System"
+
+    def func(self):
+        "Define function"
+        try:
+            session = self.caller.sessions[0]
+        except Exception:
+            return
+        self.caller.msg('Shutting down server ...')
+        announcement = "\nServer is being SHUT DOWN!\n"
+        if self.args:
+            announcement += "%s\n" % self.args
+        logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
+        SESSIONS.announce_all(announcement)
+        SESSIONS.portal_shutdown()
+        SESSIONS.server.shutdown(mode='shutdown')
 
 class CmdPy(MuxCommand):
     """
@@ -115,6 +171,58 @@ class CmdPy(MuxCommand):
         except AssertionError: # this is a strange thing; the script looses its id somehow..?
             pass
 
+
+# helper function. Kept outside so it can be imported and run
+# by other commands. 
+
+def format_script_list(scripts):
+    "Takes a list of scripts and formats the output."
+    if not scripts:
+        return "<No scripts>"
+
+    table = [["id"], ["obj"], ["key"], ["intval"], ["next"], ["rept"], ["db"], ["typeclass"], ["desc"]]
+    for script in scripts:
+
+        table[0].append(script.id)
+        if not hasattr(script, 'obj') or not script.obj:
+            table[1].append("<Global>")
+        else:
+            table[1].append(script.obj.key)
+        table[2].append(script.key)
+        if not hasattr(script, 'interval') or script.interval < 0:
+            table[3].append("--")
+        else:
+            table[3].append("%ss" % script.interval)
+        next = script.time_until_next_repeat()
+        if not next:
+            table[4].append("--")
+        else:
+            table[4].append("%ss" % next)
+
+        if not hasattr(script, 'repeats') or not script.repeats:
+            table[5].append("--")
+        else:
+            table[5].append("%s" % script.repeats)
+        if script.persistent:
+            table[6].append("*")
+        else:
+            table[6].append("-")
+        typeclass_path = script.typeclass_path.rsplit('.', 1)
+        table[7].append("%s" % typeclass_path[-1])
+        table[8].append(script.desc)
+
+    ftable = utils.format_table(table)
+    string = ""
+    for irow, row in enumerate(ftable):
+        if irow == 0:
+            srow = "\n" + "".join(row)
+            srow = "{w%s{n" % srow.rstrip()
+        else:
+            srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
+        string += srow.rstrip()
+    return string.strip()
+
+
 class CmdScripts(MuxCommand):
     """
     Operate on scripts.
@@ -137,54 +245,7 @@ class CmdScripts(MuxCommand):
     aliases = "@listscripts"
     locks = "cmd:perm(listscripts) or perm(Wizards)"
     help_category = "System"
-
-    def format_script_list(self, scripts):
-        "Takes a list of scripts and formats the output."
-        if not scripts:
-            return "<No scripts>"
-
-        table = [["id"], ["obj"], ["key"], ["intval"], ["next"], ["rept"], ["db"], ["typeclass"], ["desc"]]
-        for script in scripts:
-
-            table[0].append(script.id)
-            if not hasattr(script, 'obj') or not script.obj:
-                table[1].append("<Global>")
-            else:
-                table[1].append(script.obj.key)
-            table[2].append(script.key)
-            if not hasattr(script, 'interval') or script.interval < 0:
-                table[3].append("--")
-            else:
-                table[3].append("%ss" % script.interval)
-            next = script.time_until_next_repeat()
-            if not next:
-                table[4].append("--")
-            else:
-                table[4].append("%ss" % next)
-
-            if not hasattr(script, 'repeats') or not script.repeats:
-                table[5].append("--")
-            else:
-                table[5].append("%s" % script.repeats)
-            if script.persistent:
-                table[6].append("*")
-            else:
-                table[6].append("-")
-            typeclass_path = script.typeclass_path.rsplit('.', 1)
-            table[7].append("%s" % typeclass_path[-1])
-            table[8].append(script.desc)
-
-        ftable = utils.format_table(table)
-        string = ""
-        for irow, row in enumerate(ftable):
-            if irow == 0:
-                srow = "\n" + "".join(row)
-                srow = "{w%s{n" % srow.rstrip()
-            else:
-                srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
-            string += srow.rstrip()
-        return string.strip()
-
+    
     def func(self):
         "implement method"
 
@@ -232,7 +293,7 @@ class CmdScripts(MuxCommand):
             else:
                 # multiple matches.
                 string = "Multiple script matches. Please refine your search:\n"
-                string += self.format_script_list(scripts)
+                string += format_script_list(scripts)
         elif self.switches and self.switches[0] in ("validate", "valid", "val"):
             # run validation on all found scripts
             nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts)
@@ -240,7 +301,7 @@ class CmdScripts(MuxCommand):
             string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
         else:
             # No stopping or validation. We just want to view things.
-            string = self.format_script_list(scripts)
+            string = format_script_list(scripts)
         caller.msg(string)
 
 
@@ -410,34 +471,6 @@ class CmdService(MuxCommand):
                 return
             caller.msg("Starting service '%s'." % self.args)
             service.startService()
-
-class CmdShutdown(MuxCommand):
-
-    """
-    @shutdown
-
-    Usage:
-      @shutdown [announcement]
-
-    Shut the game server down gracefully. 
-    """
-    key = "@shutdown"
-    locks = "cmd:perm(shutdown) or perm(Immortals)"
-    help_category = "System"
-
-    def func(self):
-        "Define function"
-        try:
-            session = self.caller.sessions[0]
-        except Exception:
-            return
-        self.caller.msg('Shutting down server ...')
-        announcement = "\nServer is being SHUT DOWN!\n"
-        if self.args:
-            announcement += "%s\n" % self.args
-        logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
-        SESSIONS.announce_all(announcement)
-        SESSIONS.server.shutdown()
 
 class CmdVersion(MuxCommand):
     """

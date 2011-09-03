@@ -88,10 +88,12 @@ class ScriptManager(TypedObjectManager):
         key = validate only scripts with a particular key
         dbref = validate only the single script with this particular id. 
 
-        init_mode - This is used during server upstart. It causes non-persistent 
-                    scripts to be removed and persistent scripts to be
-                    force-restarted.
-
+        init_mode - This is used during server upstart and can have
+             three values: 
+                False (no init mode). Called during run.
+                "reset" - server reboot. Kill non-persistent scripts
+                "reload" - server reload. Keep non-persistent scripts.
+                    
         This method also makes sure start any scripts it validates,
         this should be harmless, since already-active scripts
         have the property 'is_running' set and will be skipped. 
@@ -100,6 +102,7 @@ class ScriptManager(TypedObjectManager):
         # we store a variable that tracks if we are calling a 
         # validation from within another validation (avoids 
         # loops). 
+
         global VALIDATE_ITERATION        
         if VALIDATE_ITERATION > 0:
             # we are in a nested validation. Exit.
@@ -113,14 +116,15 @@ class ScriptManager(TypedObjectManager):
         nr_stopped = 0        
 
         if init_mode:
-            # special mode when server starts or object logs in. 
-            # This deletes all non-persistent scripts from database            
-            nr_stopped += self.remove_non_persistent(obj=obj)
+            if init_mode == 'reset':
+                # special mode when server starts or object logs in. 
+                # This deletes all non-persistent scripts from database                            
+                nr_stopped += self.remove_non_persistent(obj=obj)
             # turn off the activity flag for all remaining scripts
             scripts = self.get_all_scripts()
             for script in scripts:
                 script.dbobj.is_active = False 
-       
+                     
         elif not scripts:
             # normal operation 
             if dbref and self.dbref(dbref):
@@ -137,8 +141,8 @@ class ScriptManager(TypedObjectManager):
 
         #print "scripts to validate: [%s]" % (", ".join(script.key for script in scripts))        
         for script in scripts:
-            if script.is_valid():
-                #print "validating %s (%i) (init_mode=%s)" % (script.key, id(script.dbobj), init_mode)                                
+            #print "validating %s (%i) (init_mode=%s)" % (script.key, id(script.dbobj), init_mode)                                
+            if script.is_valid():                
                 nr_started += script.start(force_restart=init_mode) 
                 #print "back from start. nr_started=", nr_started
             else:

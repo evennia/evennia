@@ -258,7 +258,7 @@ class DarkState(Script):
         "Someone turned on a light. This state dies. Switch to LightState."
         for char in [char for char in self.obj.contents if char.has_player]:        
             char.cmdset.delete(DarkCmdSet)        
-            self.obj.db.is_dark = False
+        self.obj.db.is_dark = False
         self.obj.scripts.add(LightState)
 
 class LightState(Script):

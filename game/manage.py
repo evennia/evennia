@@ -8,6 +8,9 @@ the database.
 import sys
 import os
 
+# i18n
+from django.utils.translation import ugettext as _
+
 # Tack on the root evennia directory to the python path.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -97,9 +100,9 @@ from src.settings_default import *
     settings_file.write(string)
     settings_file.close()
 
-    print """
-    Welcome to Evennia (version %s)! 
-    We created a fresh settings.py file for you.""" % VERSION 
+    print _("""
+    Welcome to Evennia (version %(version)s)! 
+    We created a fresh settings.py file for you.""") % {'version': VERSION} 
 
 #------------------------------------------------------------
 # Test the import of the settings file
@@ -109,14 +112,14 @@ try:
 except Exception:
     import traceback
     string = "\n" + traceback.format_exc()
-    string += """\n
+    string += _("""\n
     Error: Couldn't import the file 'settings.py' in the directory 
-    containing %r. There can be two reasons for this: 
+    containing %(file)r. There can be two reasons for this: 
     1) You moved your settings.py elsewhere. In that case move it back or 
        create a link to it from this folder. 
     2) The settings module is where it's supposed to be, but contains errors.
        Review the traceback above to resolve the problem, then try again. 
-    """ % __file__
+    """) % {'file': __file__}
     print string 
     sys.exit(1)
 
@@ -129,11 +132,11 @@ if __name__ == "__main__":
 
     # checks if the settings file was created this run 
     if _CREATED_SETTINGS: 
-        print """
+        print _("""
     Edit your new settings.py file as needed, then run
     'python manage syncdb' and follow the prompts to
     create the database and your superuser account.
-        """
+        """)
         sys.exit()
 
     # run the standard django manager, if dependencies match

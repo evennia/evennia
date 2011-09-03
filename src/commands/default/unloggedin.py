@@ -212,7 +212,7 @@ class CmdQuit(MuxCommand):
         "Simply close the connection."
         session = self.caller
         session.msg("Good bye! Disconnecting ...")
-        session.at_disconnect()
+        session.session_disconnect()
 
 class CmdUnconnectedLook(MuxCommand):
     """

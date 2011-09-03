@@ -75,6 +75,17 @@ class Object(TypeClass):
         """ 
         pass
 
+    def at_init(self):
+        """
+        This is always called whenever this 
+        object initiated -- both when the object
+        is first created as well as after each restart.
+        It is also called after each server reload, so 
+        if something should survive a warm-reboot (rebooting
+        the server without the players logging out), put it here.
+        """
+        pass 
+
     def basetype_posthook_setup(self):
         """
         Called once, after basetype_setup and at_object_creation. This should generally not be overloaded unless
@@ -87,8 +98,25 @@ class Object(TypeClass):
     def at_cache(self):
         """
         Called whenever this object is cached to the idmapper backend. 
+        This is the place to put eventual reloads of non-persistent attributes
+        you saved in the at_server_reload() below. 
         """
         pass 
+
+    def at_server_reload(self):
+        """
+        This hook is called whenever the server is shutting down for restart/reboot. 
+        If you want to, for example, save non-persistent properties across a restart,
+        this is the place to do it. 
+        """
+        pass
+
+    def at_server_shutdown(self):
+        """
+        This hook is called whenever the server is shutting down fully (i.e. not for 
+        a restart). 
+        """
+        pass
 
     def at_cmdset_get(self):
         """
@@ -384,9 +412,9 @@ class Character(Object):
         the script is permanently stored to this object (the permanent
         keyword creates a script to do this), we should never need to
         do this again for as long as this object exists.
-        pass
         """        
-        
+        pass        
+
     def at_after_move(self, source_location):
         "Default is to look around after a move."
         self.execute_cmd('look')
@@ -512,7 +540,7 @@ class Exit(Object):
         self.locks.add("traverse:all()") # who can pass through exit by default
         self.locks.add("get:false()")    # noone can pick up the exit
  
-       # an exit should have a destination (this is replaced at creation time)
+        # an exit should have a destination (this is replaced at creation time)
         if self.dbobj.location:
             self.destination = self.dbobj.location  
 

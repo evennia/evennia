@@ -40,6 +40,7 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         """
         Populates the cmdset
         """
+        # calling setup in src.commands.default.cmdset_default
         super(DefaultCmdSet, self).at_cmdset_creation()
 
         #
@@ -47,6 +48,7 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         #
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())
+
 
 class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
     """
@@ -65,6 +67,7 @@ class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
         """
         Populates the cmdset
         """
+        # calling setup in src.commands.default.cmdset_unloggedin
         super(UnloggedinCmdSet, self).at_cmdset_creation()
         
         #
@@ -83,6 +86,7 @@ class OOCCmdSet(cmdset_ooc.OOCCmdSet):
         """
         Populates the cmdset
         """
+        # calling setup in src.commands.default.cmdset_ooc
         super(OOCCmdSet, self).at_cmdset_creation()
         
         #

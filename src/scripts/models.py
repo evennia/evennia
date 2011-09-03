@@ -265,3 +265,10 @@ class ScriptDB(TypedObject):
         # By setting is_active=True, we trick the script not to run "again".
         self.is_active = True 
         return super(ScriptDB, self).at_typeclass_error()
+
+    delete_iter = 0
+    def delete(self):
+        if self.delete_iter > 0:
+            return 
+        self.delete_iter += 1
+        super(ScriptDB, self).delete()

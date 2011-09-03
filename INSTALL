@@ -13,20 +13,20 @@ As far as operating systems go, any system with Python support should work.
     * Windows (2000, XP, Vista, Win7)
     * Mac OSX (>=10.5 recommended) 
 
-Of these, only Linux/Unix, Windows XP, and Windows 7 have actually been run by devs and shown to work at this time. Let us know.
+Of these, Linux/Unix, Windows XP, and Windows 7 have been tested. If you use something else, let us know.
 
 You'll need the following packages and minimum versions in order to run Evennia:
 
     * Python (http://www.python.org)
           o Version 2.5+ strongly recommended, although 2.3 or 2.4 may work. Obs- Python3.x is not supported yet.
-          o The default database system SQLite3 only comes as part of Python2.5 and later.
-          o Python is available in all modern operating systems (Linux, Mac, etc).
-          o Windows users are recommended to use ActivePython (http://www.activestate.com/activepython) 
+          o Default database system SQLite3 only comes as part of Python 2.5 and later.
+          o Windows only: 2.7+ required for full server restart functionality.
+          o Windows only: Optionally use ActivePython instad (http://www.activestate.com/activepython) 
     * Twisted (http://twistedmatrix.com)
           o Version 10.0+
           o Twisted also requires:
                 + ZopeInterface 3.0+ (http://www.zope.org/Products/ZopeInterface)
-                + For Windows only: pywin32 (http://sourceforge.net/projects/pywin32) 
+                + Windows only: pywin32 (http://sourceforge.net/projects/pywin32) 
     * Django (http://www.djangoproject.com)
           o Version 1.2.1+ or latest subversion trunk highly recommended.
           o PIL library (http://www.pythonware.com/products/pil) 
@@ -44,8 +44,8 @@ Optional packages:
           o Optional. Used for database migrations. 
     * Apache2 (http://httpd.apache.org)
           o Optional. Most likely you'll not need to bother with this since Evennia 
-            runs its own threaded web server based on Twisted. Other equivalent web servers with a Python interpreter 
-            module can also be used. 
+            runs its own threaded web server based on Twisted. Other equivalent web servers 
+            with a Python interpreter module can also be used. 
 
 
 Installation and Quickstart
@@ -84,18 +84,25 @@ Installation and Quickstart
 
 * Run   
 
-  > python evennia.py -i start
+  > python evennia.py
 
-  Note: Using -i starts the server in 'interactive mode' - it will print 
+  This will launch a menu with options. You normally want option 1 for production
+  servers, whereas options 2-4 offers more or less debug output to the screen. 
+
+  You can also start the server directly from the command line, e.g. with
+
+  > pythong evennia.py -i start
+
+  Note: Using -i starts the server and portal in 'interactive mode' - it will print 
   messages to standard output and you can shut it down with (on most systems) 
   Ctrl-C. To start the server as a background process (suitable for production 
   environments), just skip the -i flag. A server running as a process is 
-  instead stopped  with 'python evennia.py stop'.
+  instead stopped  with 'python evennia.py stop'. 
 
 * Start up your MUD client of choice and point it to your server and port 4000.
-  If you are just running locally the server name is most likely 'localhost'.
+  If you are just running locally the server name is 'localhost'.
 
-* Alternatively, ou can find the web interface and webclient by
+* Alternatively, you can find the web interface and webclient by
   pointing your web browser to http://localhost:8000.
 
 * Login with the email address and password you provided to the syncdb script.

@@ -408,7 +408,8 @@ class CmdCreate(ObjManipCommand):
                 if caller.location:
                     obj.home = caller.location 
                     obj.move_to(caller.location, quiet=True)
-        caller.msg(string)
+            if string:
+                caller.msg(string)
 
 
 class CmdDebug(MuxCommand):
@@ -1077,7 +1078,7 @@ class CmdOpen(ObjManipCommand):
                 exit_obj.destination = destination
                 string = "Created new Exit '%s' from %s to %s (aliases: %s)." % (exit_name,location.name,
                                                                                  destination.name,
-                                                                                 exit_aliases)
+                                                                                 ", ".join([str(e) for e in exit_aliases]))
             else:
                 string = "Error: Exit '%s' not created." % (exit_name)
         # emit results 
@@ -1824,17 +1825,19 @@ class CmdScript(MuxCommand):
     attach scripts
 
     Usage:
-      @script[/switch] <obj> = <script.path or scriptkey>
+      @script[/switch] <obj> [= <script.path or scriptkey>]
     
     Switches:
       start - start a previously added script
       stop - stop a previously added script
 
-    Attaches the given script to the object and starts it. Script path can be given
-    from the base location for scripts as given in settings. 
-    If stopping/starting an already existing script, the script's key
-    can be given instead (if giving a path, *all* scripts with this path 
-    on <obj> will be affected).
+    Attaches the given script to the object and starts it. Script path
+    can be given from the base location for scripts as given in
+    settings.  If stopping/starting an already existing script, the
+    script's key can be given instead (if giving a path, *all* scripts
+    with this path on <obj> will be affected). If no script name is given,
+    all scripts on the object is affected (or displayed if no start/stop
+    switch is set).
     """
     
     key = "@script"
@@ -1847,8 +1850,8 @@ class CmdScript(MuxCommand):
 
         caller = self.caller
 
-        if not self.rhs:
-            string = "Usage: @script[/switch] <obj> = <script.path or script key>"
+        if not self.args:
+            string = "Usage: @script[/switch] <obj> [= <script.path or script key>]"
             caller.msg(string)
             return 
         
@@ -1857,33 +1860,52 @@ class CmdScript(MuxCommand):
             return
 
         string = ""
-        if not self.switches:
-            # adding a new script, and starting it
-            ok = obj.scripts.add(self.rhs, autostart=True)
-            if not ok:
-                string += "\nScript %s could not be added and/or started." % self.rhs
+        if not self.rhs:
+            # no rhs means we want to operate on all scripts
+            scripts = obj.scripts.all()
+            if not scripts:
+                string += "No scripts defined on %s." % obj.key
+            elif not self.switches:
+                # view all scripts
+                from src.commands.default.system import format_script_list
+                string += format_script_list(scripts)
+            elif "start" in self.switches:                
+                num = sum([obj.scripts.start(script.key) for script in scripts])
+                string += "%s scripts started on %s." % num
+            elif "stop" in self.switches:               
+                for script in scripts:
+                    string += "Stopping script %s." % script.key
+                    script.stop()
+                string = string.strip()
+            obj.scripts.validate()
+        else: # rhs exists            
+            if not self.switches:
+                # adding a new script, and starting it
+                ok = obj.scripts.add(self.rhs, autostart=True)
+                if not ok:
+                    string += "\nScript %s could not be added and/or started." % self.rhs
+                else:
+                    string = "Script successfully added and started."
+
             else:
-                string = "Script successfully added and started."
-                
-        else:
-            paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs) 
-                                  for prefix in settings.SCRIPT_TYPECLASS_PATHS]            
-            if "stop" in self.switches:
-                # we are stopping an already existing script            
-                for path in paths:
-                    ok = obj.scripts.stop(path)                        
-                    if not ok:
-                        string += "\nScript %s could not be stopped. Does it exist?" % path
-                    else:
-                        string = "Script stopped and removed from object."
-                        break 
-            if "start" in self.switches:
-                # we are starting an already existing script 
-                for path in paths:
-                    ok = obj.scripts.start(path)
-                    if not ok:
-                        string += "\nScript %s could not be (re)started." % path
-                    else:
-                        string = "Script started successfully."
-                        break
+                paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs) 
+                                      for prefix in settings.SCRIPT_TYPECLASS_PATHS]            
+                if "stop" in self.switches:
+                    # we are stopping an already existing script            
+                    for path in paths:
+                        ok = obj.scripts.stop(path)                        
+                        if not ok:
+                            string += "\nScript %s could not be stopped. Does it exist?" % path
+                        else:
+                            string = "Script stopped and removed from object."
+                            break 
+                if "start" in self.switches:
+                    # we are starting an already existing script 
+                    for path in paths:
+                        ok = obj.scripts.start(path)
+                        if not ok:
+                            string += "\nScript %s could not be (re)started." % path
+                        else:
+                            string = "Script started successfully."
+                            break
         caller.msg(string.strip())

@@ -20,7 +20,7 @@ except ImportError:
     from django.test import TestCase
 from django.conf import settings
 from src.utils import create, ansi
-from src.server import session, sessionhandler
+from src.server import serversession, sessionhandler
 from src.locks.lockhandler import LockHandler
 from src.server.models import ServerConfig
 from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
@@ -46,15 +46,37 @@ def cleanup():
     ExternalChannelConnection.objects.all().delete()
     ServerConfig.objects.all().delete()
 
-class FakeSession(session.Session): 
+class FakeSessionHandler(sessionhandler.ServerSessionHandler):
+    """
+    Fake sessionhandler, without an amp connection
+    """
+    def portal_shutdown(self):
+        pass
+    def disconnect(self, session, reason=""):
+        pass
+    def login(self, session):
+        pass
+    def session_sync(self):
+        pass
+    def data_out(self, session, string="", data=""):
+        return string
+
+SESSIONS = FakeSessionHandler()
+
+class FakeSession(serversession.ServerSession): 
     """ 
     A fake session that
     implements dummy versions of the real thing; this is needed to
     mimic a logged-in player.  
     """ 
     protocol_key = "TestProtocol"
+    sessdict = {'protocol_key':'telnet', 'address':('0.0.0.0','5000'), 'sessid':2, 'uid':2, 'uname':None, 
+                'logged_in':False, 'cid':None, 'ndb':{}, 'encoding':'utf-8', 
+                'conn_time':time.time(), 'cmd_last':time.time(), 'cmd_last_visible':time.time(), 'cmd_total':1}  
+    
     def connectionMade(self):
-        self.session_connect('0,0,0,0')     
+        self.load_sync_data(self.sessdict)
+        self.sessionhandler = SESSIONS
     def disconnectClient(self): 
         pass 
     def lineReceived(self, raw_string): 

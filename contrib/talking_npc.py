@@ -9,7 +9,7 @@ simple menu-driven conversation. Create it by
 creating an object of typeclass contrib.talking_npc.TalkingNPC,
 For example using @create: 
 
- @create John : contrib.talking_npc.TalkingNCP
+ @create John : contrib.talking_npc.TalkingNPC
 
 Walk up to it and give the talk command 
 to strike up a conversation. If there are many

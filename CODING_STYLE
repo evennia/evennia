@@ -39,13 +39,13 @@ Since pylint cannot catch dynamically created variables used in commands and
 elsewhere in Evennia, one needs to reduce some checks to avoid false errors and
 warnings. For best results, run pylint like this: 
 
- > pylint --disable-msg=E1101,E0102,F0401,W0232,R0903 filename.py
+ > pylint --disable=E1101,E0102,F0401,W0232,R0903 filename.py
 
 To avoid entering the options every time, you can auto-create a pylintrc file by 
 using the option --generate-rcfile. You need to dump this output into a 
 file .pylintrc, for example like this (linux):
 
- > pylint --disable-msg=E1101,E0102,F0401,W0232,R0903 --generate-rcfile > ~/.pylintrc
+ > pylint --disable=E1101,E0102,F0401,W0232,R0903 --generate-rcfile > ~/.pylintrc
 
 From now on you can then just run 
 

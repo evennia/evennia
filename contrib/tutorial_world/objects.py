@@ -231,15 +231,22 @@ class StateLightSourceOn(Script):
         self.start_delay = True # only fire after self.interval s.
         self.repeats = 1 # only run once. 
         self.persistent = True  # survive a server reboot.
+
     def at_start(self):
         "Called at script start - this can also happen if server is restarted."
         self.interval = self.obj.db.burntime
         self.db.script_started = time.time()
+
+    def at_repeat(self):
+        # this is only called when torch has burnt out        
+        self.obj.db.burntime = -1
+        self.obj.reset()
+
     def at_stop(self):
         """
-        Since this script stops after only 1 "repeat", we can use this hook
-        instead of at_repeat(). Since the user may also turn off the light 
-        prematurely, this hook will also be called in that case. 
+        Since the user may also turn off the light 
+        prematurely, this hook will store the current
+        burntime. 
         """
         # calculate remaining burntime 
         try:
@@ -247,12 +254,9 @@ class StateLightSourceOn(Script):
         except TypeError:
             # can happen if script_started is not defined
             time_burnt = self.interval
-
         burntime = self.interval - time_burnt
         self.obj.db.burntime = burntime 
-        if burntime <= 0:
-            # no burntime left. Reset the object. 
-            self.obj.reset()            
+
     def is_valid(self):
         "This script is only valid as long as the lightsource burns."
         return self.obj.db.is_active
@@ -339,7 +343,7 @@ class LightSource(TutorialObject):
         """
         Can be called by tutorial world runner, or by the script when the lightsource 
         has burned out.
-        """
+        """        
         if self.db.burntime <= 0:
             # light burned out. Since the lightsources's "location" should be 
             # a character, notify them this way.
@@ -357,7 +361,7 @@ class LightSource(TutorialObject):
             try:
                 self.location.scripts.validate()
             except AttributeError,e:
-                pass
+                pass        
         self.delete()
 
 #------------------------------------------------------------

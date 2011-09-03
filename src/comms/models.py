@@ -16,7 +16,6 @@ be able to delete connections on the fly).
 
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
-#from src.server.sessionhandler import SESSIONS
 from src.comms import managers 
 from src.locks.lockhandler import LockHandler
 from src.utils import logger

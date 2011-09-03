@@ -3,6 +3,8 @@ General helper functions that don't fit neatly under any given category.
 
 They provide some useful string and conversion methods that might
 be of use when designing your own game. 
+
+
 """
 import os, sys, imp
 import textwrap
@@ -475,6 +477,7 @@ def check_evennia_dependencies():
     twisted_min = '10.0'
     django_min = '1.2'
     south_min = '0.7'
+    nt_stop_python_min = '2.7'
 
     errstring = ""
     no_error = True
@@ -483,7 +486,9 @@ def check_evennia_dependencies():
     pversion = ".".join([str(num) for num in sys.version_info if type(num) == int])
     if pversion < python_min:
         errstring += "\n WARNING: Python %s used. Evennia recommends version %s or higher (but not 3.x)." % (pversion, python_min)
-        no_error = False
+    if os.name == 'nt' and pversion < nt_stop_python_min:
+        errstring += "\n WARNING: Windows requires Python %s or higher in order to restart/stop the server from the command line."
+        errstring += "\n          (You need to restart/stop from inside the game.)" % nt_stop_python_min
     # Twisted
     try:
         import twisted

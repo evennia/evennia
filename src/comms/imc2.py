@@ -387,8 +387,8 @@ def start_scripts(validate=False):
     """
 
     if validate:         
-        from src.utils import reloads
-        reloads.reload_scripts()
+        from src.scripts.models import ScriptDB
+        ScriptDB.objects.validate()
         return 
     if not search.scripts("IMC2_Send_IsAlive"):
         create.create_script(Send_IsAlive)

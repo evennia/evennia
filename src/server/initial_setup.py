@@ -13,6 +13,9 @@ from src.server.models import ServerConfig
 from src.help.models import HelpEntry
 from src.utils import create 
 
+# i18n
+from django.utils.translation import ugettext as _
+
 def create_config_values():
     """
     Creates the initial config values.
@@ -31,7 +34,7 @@ def create_objects():
     Creates the #1 player and Limbo room.
     """
     
-    print " Creating objects (Player #1 and Limbo room) ..."
+    print _(" Creating objects (Player #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password. 
@@ -55,7 +58,7 @@ def create_objects():
                                          typeclass=character_typeclass,
                                          user=god_user)    
     god_character.id = 1
-    god_character.db.desc = 'This is User #1.'
+    god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
 
     god_character.save()
@@ -63,12 +66,13 @@ def create_objects():
     # Limbo is the initial starting room.
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
-    limbo_obj = create.create_object(room_typeclass, 'Limbo')
+    limbo_obj = create.create_object(room_typeclass, _('Limbo'))
     limbo_obj.id = 2
-    string = "Welcome to your new %chEvennia%cn-based game."
+    string = " Welcome to your new {wEvennia{n-based game."
     string += " From here you are ready to begin development."
     string += " If you should need help or would like to participate"
     string += " in community discussions, visit http://evennia.com."
+    string = _(string)
     limbo_obj.db.desc = string
     limbo_obj.save()
 
@@ -80,7 +84,7 @@ def create_channels():
     """
     Creates some sensible default channels.
     """
-    print " Creating default channels ..."
+    print _(" Creating default channels ...")
 
     # public channel
     key, aliases, desc, locks = settings.CHANNEL_PUBLIC
@@ -103,12 +107,12 @@ def import_MUX_help_files():
     """
     Imports the MUX help files.
     """ 
-    print " Importing MUX help database (devel reference only) ..."
+    print _(" Importing MUX help database (devel reference only) ...")
     management.call_command('loaddata', '../src/help/mux_help_db.json', verbosity=0)    
     # categorize the MUX help files into its own category.
     default_category = "MUX"
-    print " Moving imported help db to help category '%s'." \
-                                                   % default_category
+    print _(" Moving imported help db to help category '%(default)s'." \
+                                                   % {'default': default_category})
     HelpEntry.objects.all_to_category(default_category)
     
 def create_system_scripts():
@@ -118,7 +122,7 @@ def create_system_scripts():
     """
     from src.scripts import scripts
 
-    print " Creating and starting global scripts ..."
+    print _(" Creating and starting global scripts ...")
 
     # check so that all sessions are alive. 
     script1 = create.create_script(scripts.CheckSessions)
@@ -127,7 +131,7 @@ def create_system_scripts():
     # update the channel handler to make sure it's in sync
     script3 = create.create_script(scripts.ValidateChannelHandler)
     if not script1 or not script2 or not script3:
-        print " Error creating system scripts."
+        print _(" Error creating system scripts.")
      
 def start_game_time():
     """
@@ -136,7 +140,7 @@ def start_game_time():
     the total run time of the server as well as its current uptime
     (the uptime can also be found directly from the server though).
     """
-    print " Starting in-game time ..."
+    print _(" Starting in-game time ...")
     from src.utils import gametime
     gametime.init_gametime()
 
@@ -155,17 +159,17 @@ def create_admin_media_links():
     dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'media')
     apath = os.path.join(settings.ADMIN_MEDIA_ROOT)
     if os.path.isdir(apath):
-        print " ADMIN_MEDIA_ROOT already exists. Ignored."
+        print _(" ADMIN_MEDIA_ROOT already exists. Ignored.")
         return 
     if os.name == 'nt':        
-        print " Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode)."
+        print _(" Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode).")
         os.mkdir(apath)
         os.system('xcopy "%s" "%s" /e /q /c' % (dpath, apath))
     if os.name == 'posix':
         os.symlink(dpath, apath)
-        print " Admin-media symlinked to ADMIN_MEDIA_ROOT."
+        print _(" Admin-media symlinked to ADMIN_MEDIA_ROOT.")
     else:
-        print " Admin-media files should be copied manually to ADMIN_MEDIA_ROOT."
+        print _(" Admin-media files should be copied manually to ADMIN_MEDIA_ROOT.")
         
 def handle_setup(last_step):
     """

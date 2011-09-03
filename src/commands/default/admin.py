@@ -87,7 +87,7 @@ class CmdBoot(MuxCommand):
                 feedback += "\nReason given: %s" % reason
 
         for session in boot_list:
-            name = session.name
+            name = session.uname
             session.msg(feedback)
             session.disconnect()
             caller.msg("You booted %s." % name)

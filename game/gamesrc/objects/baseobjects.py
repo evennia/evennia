@@ -89,10 +89,14 @@ class Object(BaseObject):
      at_get(getter) - called after object has been picked up. Does not stop pickup.
      at_drop(dropper) - called when this object has been dropped.
      at_say(speaker, message) - by default, called if an object inside this object speaks
+
+     at_cache() - called when this typeclass is instantiated and cached
+     at_server_reload() - called when server is reloading
+     at_server_shutdown() - called when server is resetting/shutting down 
      
      """
     pass
-        
+
 class Character(BaseCharacter):
     """
     This is the default object created for a new user connecting - the

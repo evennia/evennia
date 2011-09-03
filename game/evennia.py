@@ -2,12 +2,15 @@
 """
 EVENNIA SERVER STARTUP SCRIPT
 
+This is the start point for running Evennia. 
+
 Sets the appropriate environmental variables and launches the server
-process. Run the script with the -h flag to see usage information.
+and portal through the runner. Run without arguments to get a
+menu. Run the script with the -h flag to see usage information.
+
 """
-import os  
-import sys
-import signal
+import os
+import sys, signal
 from optparse import OptionParser
 from subprocess import Popen, call
 
@@ -15,189 +18,425 @@ from subprocess import Popen, call
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
+# i18n
+from django.utils.translation import ugettext as _
+
+SIG = signal.SIGINT
+
+HELPENTRY = \
+_("""
+                                                 (version %s) 
+
+This program launches Evennia with various options. You can access all
+this functionality directly from the command line; for example option
+five (restart server) would be "evennia.py restart server".  Use
+"evennia.py -h" for command line options.
+
+Evennia consists of two separate programs that both must be running
+for the game to work as it should:
+
+Portal - the connection to the outside world (via telnet, web, ssh
+         etc). This is normally running as a daemon and don't need to
+         be reloaded unless you are debugging a new connection
+         protocol. As long as this is running, players won't loose
+         their connection to your game. Only one instance of Portal
+         will be started, more will be ignored.
+Server - the game server itself. This will often need to be reloaded
+         as you develop your game. The Portal will auto-connect to the
+         Server whenever the Server activates. We will also make sure
+         to automatically restart this whenever it is shut down (from
+         here or from inside the game or via task manager etc). Only
+         one instance of Server will be started, more will be ignored.
+
+In a production environment you will want to run with the default
+option (1), which runs as much as possible as a background
+process. When developing your game it is however convenient to
+directly see tracebacks on standard output, so starting with options
+2-4 may be a good bet. As you make changes to your code, reload the
+server (option 5) to make it available to users.
+
+Reload and stop is not well supported in Windows. If you have issues, log
+into the game to stop or restart the server instead. 
+""")
+
+MENU = \
+_("""
++---------------------------------------------------------------------------+
+|                                                                           |
+|                    Welcome to the Evennia launcher!                       |
+|                                                                           |
+|                Pick an option below. Use 'h' to get help.                 |
+|                                                                           |
++--- Starting (will not restart already running processes) -----------------+
+|                                                                           |
+|  1) (default):      Start Server and Portal. Portal starts in daemon mode.|
+|                     All output is to logfiles.                            |
+|  2) (game debug):   Start Server and Portal. Portal starts in daemon mode.|
+|                     Server outputs to stdout instead of logfile.          |
+|  3) (portal debug): Start Server and Portal. Portal starts in non-daemon  |
+|                     mode (can be reloaded) and logs to stdout.            |
+|  4) (full debug):   Start Server and Portal. Portal starts in non-daemon  |
+|                     mode (can be reloaded). Both log to stdout.           |
+|                                                                           |
++--- Restarting (must first be started) ------------------------------------+
+|                                                                           |
+|  5) Restart/reload the Server                                             |
+|  6) Restart/reload the Portal (only works in non-daemon mode. If running  |
+|       in daemon mode, Portal needs to be restarted manually (option 1-4)) |
+|                                                                           |
++--- Stopping (must first be started) --------------------------------------+
+|                                                                           |
+|  7) Stopping both Portal and Server. Server will not restart.             |
+|  8) Stopping only Server. Server will not restart.                        |
+|  9) Stopping only Portal.                                                 |
+|                                                                           |
++---------------------------------------------------------------------------+
+|  h) Help                                                                  |
+|  q) Quit                                                                  |
++---------------------------------------------------------------------------+
+""")
+
+
+#
+# System Configuration and setup
+#
+
+SERVER_PIDFILE = "server.pid"
+PORTAL_PIDFILE = "portal.pid"
+
+SERVER_RESTART = "server.restart"
+PORTAL_RESTART = "portal.restart"
+
 if not os.path.exists('settings.py'):
-    # make sure we have a settings.py file. 
-    print "    No settings.py file found. Launching manage.py ..."
+    # make sure we have a settings.py file.
+    print _("    No settings.py file found. launching manage.py ...")
 
-    import game.manage 
+    import game.manage
 
-    print """
-    Now configure Evennia by editing your new settings.py file.
-    If you haven't already, you should also create/configure the 
-    database with 'python manage.py syncdb' before continuing.
+    print _("""
+    ... A new settings file was created. Edit this file to configure
+    Evennia as desired by copy&pasting options from
+    src/settings_default.py.
 
-    When you are ready, run this program again to start the server."""
+    You should then also create/configure the database using
+
+        python manage.py syncdb
+
+    Make sure to create a new admin user when prompted -- this will be
+    user #1 in-game.  If you use django-south, you'll see mentions of
+    migrating things in the above run. You then also have to run
+
+        python manage.py migrate
+
+    If you use default sqlite3 database, you will find a file
+    evennia.db appearing. This is the database file. Just delete this
+    and repeat the above manage.py steps to start with a fresh
+    database.
+
+    When you are set up, run evennia.py again to start the server.""")
     sys.exit()
-                     
+
 # Get the settings
 from django.conf import settings
 
-# Setup the launch of twisted depending on which operating system we use
-if os.name == 'nt':
+from src.utils.utils import get_evennia_version
+EVENNIA_VERSION = get_evennia_version()
 
+# Setup access of the evennia server itself
+SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server/server.py')
+PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal.py')
+
+# Get logfile names
+SERVER_LOGFILE = settings.SERVER_LOG_FILE
+PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
+
+# Check so a database exists and is accessible
+from django.db import DatabaseError
+from src.objects.models import ObjectDB
+try:
+    test = ObjectDB.objects.get(id=1)
+except ObjectDB.DoesNotExist:
+    pass # this is fine at this point
+except DatabaseError:
+    print _("""
+    Your database does not seem to be set up correctly.
+
+    Please run:
+      
+         python manage.py syncdb
+
+    (make sure to create an admin user when prompted). If you use
+    pyhon-south you will get mentions of migrating in the above
+    run. You then need to also run
+
+         python manage.py migrate
+
+    When you have a database set up, rerun evennia.py.
+    """)
+    sys.exit()
+
+# Add this to the environmental variable for the 'twistd' command.
+currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if 'PYTHONPATH' in os.environ:
+    os.environ['PYTHONPATH'] += (":%s" % currpath)
+else:
+    os.environ['PYTHONPATH'] = currpath
+
+TWISTED_BINARY = 'twistd'
+if os.name == 'nt':
+    # Windows needs more work to get the correct binary
     try:
         # Test for for win32api
         import win32api
     except ImportError:
-        print """
-    ERROR: Unable to import win32api, which Twisted requires to run. 
+        print _("""
+    ERROR: Unable to import win32api, which Twisted requires to run.
     You may download it from:
-         
-    http://sourceforge.net/projects/pywin32 
-      or 
-    http://starship.python.net/crew/mhammond/win32/Downloads.html"""
+
+    http://sourceforge.net/projects/pywin32
+      or
+    http://starship.python.net/crew/mhammond/win32/Downloads.html""")
         sys.exit()
 
     if not os.path.exists('twistd.bat'):
-        # Test for executable twisted batch file. This calls the twistd.py 
+        # Test for executable twisted batch file. This calls the twistd.py
         # executable that is usually not found on the path in Windows.
-        # It's not enough to locate scripts.twistd, what we want is the 
-        # executable script C:\PythonXX/Scripts/twistd.py. Alas we cannot 
-        # hardcode this location since we don't know if user has Python 
-        # in a non-standard location, so we try to figure it out. 
+        # It's not enough to locate scripts.twistd, what we want is the
+        # executable script C:\PythonXX/Scripts/twistd.py. Alas we cannot
+        # hardcode this location since we don't know if user has Python
+        # in a non-standard location, so we try to figure it out.
         from twisted.scripts import twistd
         twistd_path = os.path.abspath(
-            os.path.join(os.path.dirname(twistd.__file__), 
-                         os.pardir, os.pardir, os.pardir, os.pardir, 
-                         'scripts', 'twistd.py'))        
+            os.path.join(os.path.dirname(twistd.__file__),
+                         os.pardir, os.pardir, os.pardir, os.pardir,
+                         'scripts', 'twistd.py'))
         bat_file = open('twistd.bat','w')
         bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
         bat_file.close()
-        print """
+        print _("""
     INFO: Since you are running Windows, a file 'twistd.bat' was
     created for you. This is a simple batch file that tries to call
     the twisted executable. Evennia determined this to be:
-      
-       %s
+
+       %{twistd_path}s
 
     If you run into errors at startup you might need to edit
     twistd.bat to point to the actual location of the Twisted
     executable (usually called twistd.py) on your machine.
 
-    This procedure is only done once. Run evennia.py again when you 
+    This procedure is only done once. Run evennia.py again when you
     are ready to start the server.
-    """ % twistd_path       
+    """) % {'twistd_path': twistd_path}
         sys.exit()
 
     TWISTED_BINARY = 'twistd.bat'
-else:
-    TWISTED_BINARY = 'twistd' 
 
-# Setup access of the evennia server itself
-SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server/server.py')
 
-# Add this to the environmental variable for the 'twistd' command.
-thispath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if 'PYTHONPATH' in os.environ:
-    os.environ['PYTHONPATH'] += (":%s" % thispath)
-else:
-    os.environ['PYTHONPATH'] = thispath
-
-def cycle_logfile():
-    """
-    Move the old log file to evennia.log.old (by default).
-
-    """    
-    logfile = settings.DEFAULT_LOG_FILE.strip()
-    logfile_old = logfile + '.old'
-    if os.path.exists(logfile):
-        # Cycle the old logfiles to *.old
-        if os.path.exists(logfile_old):
-            # E.g. Windows don't support rename-replace
-            os.remove(logfile_old)
-        os.rename(logfile, logfile_old)
-
-    logfile = settings.HTTP_LOG_FILE.strip()
-    logfile_old = logfile + '.old'
-    if os.path.exists(logfile):
-        # Cycle the old logfiles to *.old
-        if os.path.exists(logfile_old):
-            # E.g. Windows don't support rename-replace
-            os.remove(logfile_old)
-        os.rename(logfile, logfile_old)    
-
-def start_daemon(parser, options, args):
-    """
-    Start the server in daemon mode. This means that all logging output will
-    be directed to logs/evennia.log by default, and the process will be
-    backgrounded.
-    """ 
-    if os.path.exists('twistd.pid'):
-        print "A twistd.pid file exists in the current directory, which suggests that the server is already running."
-        sys.exit()
+# Functions
     
-    print '\nStarting Evennia server in daemon mode ...'
-    print 'Logging to: %s.' % settings.DEFAULT_LOG_FILE
-    
-    # Move the old evennia.log file out of the way.
-    cycle_logfile()
-
-    # Start it up
-    Popen([TWISTED_BINARY, 
-           '--logfile=%s' % settings.DEFAULT_LOG_FILE, 
-           '--python=%s' % SERVER_PY_FILE])
-    
-
-def start_interactive(parser, options, args):
+def get_pid(pidfile):
     """
-    Start in interactive mode, which means the process is foregrounded and
-    all logging output is directed to stdout.
+    Get the PID (Process ID) by trying to access
+    an PID file.
     """
-    print '\nStarting Evennia server in interactive mode (stop with keyboard interrupt) ...'
-    print 'Logging to: Standard output.'
+    pid = None
+    if os.path.exists(pidfile):
+        f = open(pidfile, 'r')
+        pid = f.read()
+    return pid
 
-    # we cycle logfiles (this will at most put all files to *.old)
-    # to handle html request logging files. 
-    cycle_logfile()
-    try:
-        call([TWISTED_BINARY, 
-              '-n', 
-              '--python=%s' % SERVER_PY_FILE])
-    except KeyboardInterrupt:
-        pass
+def del_pid(pidfile):
+    """
+    The pidfile should normally be removed after a process has finished, but
+    when sending certain signals they remain, so we need to clean them manually.
+    """
+    if os.path.exists(pidfile):
+        os.remove(pidfile)
 
-def stop_server(parser, options, args):
+def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart=True):
     """
-    Gracefully stop the server process.
+    Send a kill signal to a process based on PID. A customized success/error
+    message will be returned. If clean=True, the system will attempt to manually
+    remove the pid file.
     """
-    if os.name == 'posix': 
-        if os.path.exists('twistd.pid'):
-            print 'Stopping the Evennia server...'
-            f = open('twistd.pid', 'r')
-            pid = f.read()
-            os.kill(int(pid), signal.SIGINT)
-            print 'Server stopped.'
+    pid = get_pid(pidfile)
+    if pid:
+        if os.name == 'nt':
+            if sys.version < "2.7":
+                print _("Windows requires Python 2.7 or higher for this operation.")
+                return
+            os.remove(pidfile)
+        # set restart/norestart flag
+        f = open(restart_file, 'w')
+        f.write(str(restart))
+        f.close()
+        try:
+            os.kill(int(pid), signal)
+        except OSError:
+            print _("Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it.") % {'pid': pid, 'pidfile': pidfile}
+            return
+        print "Evennia:", succmsg
+        return
+    print "Evennia:", errmsg
+
+def run_menu():
+    """
+    This launches an interactive menu.
+    """
+
+    cmdstr = ["python", "runner.py"]
+
+    while True:
+        # menu loop
+
+        print MENU
+        inp = raw_input(_(" option > "))
+
+        # quitting and help
+        if inp.lower() == 'q':
+            sys.exit()
+        elif inp.lower() == 'h':
+            print HELPENTRY % EVENNIA_VERSION
+            raw_input(_("press <return> to continue ..."))
+            continue
+
+        # options
+        try:
+            inp = int(inp)
+        except ValueError:
+            print _("Not a valid option.")
+            continue
+        errmsg = _("The %s does not seem to be running.")
+        if inp < 5:
+            if inp == 1:
+                pass # default operation
+            elif inp == 2:
+                cmdstr.extend(['--iserver'])
+            elif inp == 3:
+                cmdstr.extend(['--iportal'])
+            elif inp == 4:
+                cmdstr.extend(['--iserver', '--iportal'])
+            return cmdstr
+        elif inp < 10:
+            if inp == 5:
+                if os.name == 'nt':
+                    print _("This operation is not supported under Windows. Log into the game to restart/reload the server.")    
+                    return 
+                kill(SERVER_PIDFILE, SIG, _("Server restarted."), errmsg % "Server")
+            elif inp == 6:
+                if os.name == 'nt':
+                    print _("This operation is not supported under Windows.")
+                    return
+                kill(PORTAL_PIDFILE, SIG, _("Portal restarted (or stopped if in daemon mode)."), errmsg % "Portal")
+            elif inp == 7:
+                kill(SERVER_PIDFILE, SIG, _("Stopped Portal."), errmsg % "Portal", PORTAL_RESTART, restart=False)
+                kill(PORTAL_PIDFILE, SIG, _("Stopped Server."), errmsg % "Server", restart=False)
+            elif inp == 8:
+                kill(PORTAL_PIDFILE, SIG, _("Stopped Server."), errmsg % "Server", restart=False)
+            elif inp == 9:
+                kill(SERVER_PIDFILE, SIG, _("Stopped Portal."), errmsg % "Portal", PORTAL_RESTART, restart=False)
+            return 
         else:
-            print "No twistd.pid file exists, the server doesn't appear to be running."
-    elif os.name == 'nt':
-        print '\n\rStopping cannot be done safely under this operating system.' 
-        print 'Kill server using the task manager or shut it down from inside the game.'
-    else:
-        print '\n\rUnknown OS detected, can not stop. '
-        
+            print _("Not a valid option.")
+    return None
+
+
+def handle_args(options, mode, service):
+    """
+    Handle argument options given on the command line.
+
+    options - parsed object for command line
+    mode - str; start/stop etc
+    service - str; server, portal or all
+    """
+
+    inter = options.interactive
+    cmdstr = ["python", "runner.py"]
+    errmsg = _("The %s does not seem to be running.")
+
+    if mode == 'start':
+        # starting one or many services
+        if service == 'server':
+            if inter:
+                cmdstr.append('--iserver')
+            cmdstr.append('--noportal')
+        elif service == 'portal':
+            if inter:
+                cmdstr.append('--iportal')
+            cmdstr.append('--noserver')
+        else: # all
+            # for convenience we don't start logging of portal, only of server with this command.
+            if inter:
+                cmdstr.extend(['--iserver'])
+        return cmdstr
+
+    elif mode == 'restart':
+        # restarting services
+        if os.name == 'nt':
+            print _("Restarting from command line is not supported under Windows. Log into the game to restart.")
+            return 
+        if service == 'server':
+            kill(SERVER_PIDFILE, SIG, _("Server restarted."), errmsg % 'Server')
+        elif service == 'portal':
+            print _("Note: Portal usually don't need to be restarted unless you are debugging in interactive mode.")
+            print _("If Portal was running in default Daemon mode, it cannot be restarted. In that case you have ")
+            print _("to restart it manually with 'evennia.py start portal'")
+            kill(PORTAL_PIDFILE, SIG, _("Portal restarted (or stopped, if it was in daemon mode)."), errmsg % 'Portal', PORTAL_RESTART)
+        else: # all
+            # default mode, only restart server
+            kill(SERVER_PIDFILE, SIG, _("Server restarted."), errmsg % 'Server')
+
+    elif mode == 'stop':
+        # stop processes, avoiding reload
+        if service == 'server':
+            kill(SERVER_PIDFILE, SIG, _("Server stopped."), errmsg % 'Server', restart=False)
+        elif service == 'portal':
+            kill(PORTAL_PIDFILE, SIG, _("Portal stopped."), errmsg % 'Portal', PORTAL_RESTART, restart=False)
+        else:
+            kill(PORTAL_PIDFILE, SIG, _("Portal stopped."), errmsg % 'Portal', PORTAL_RESTART, restart=False)
+            kill(SERVER_PIDFILE, SIG, _("Server stopped."), errmsg % 'Server', restart=False)
+    return None
+
 def main():
     """
-    Beginning of the program logic.
+    This handles command line input.
     """
-    parser = OptionParser(usage="%prog [options] <start|stop>",
-                          description="This command starts or stops the Evennia game server. Note that you have to setup the database by running  'manage.py syncdb' before starting the server for the first time.")
-    parser.add_option('-i', '--interactive', action='store_true', 
-                      dest='interactive', default=False,
-                      help='Start in interactive mode')
-    parser.add_option('-d', '--daemon', action='store_false', 
-                      dest='interactive',
-                      help='Start in daemon mode (default)')
-    (options, args) = parser.parse_args()
-        
-    if "start" in args:
-        if options.interactive:
-            start_interactive(parser, options, args)
-        else:
-            start_daemon(parser, options, args)
-    elif "stop" in args:
-        stop_server(parser, options, args)    
+
+    parser = OptionParser(usage="%prog [-i] [menu|start|restart|stop [server|portal|all]]",
+                          description=_("""This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Use --interactive together with start to launch services as 'interactive'. Note that when launching 'all' services with the --interactive flag, both services will be started, but only Server will actually be started in interactive mode. This is simply because this is the most commonly useful state. To activate interactive mode also for Portal, launch the two services explicitly as two separate calls to this program. You can also use the menu."""))
+
+    parser.add_option('-i', '--interactive', action='store_true', dest='interactive', default=False, help=_("Start given processes in interactive mode (log to stdout, don't start as a daemon)."))
+
+    options, args = parser.parse_args()
+    inter = options.interactive
+
+    if not args:
+        mode = "menu"
+        service = 'all'
+    if args:
+        mode = args[0]
+        service = "all"
+    if len(args) > 1:
+        service = args[1]
+
+    if mode not in ['menu', 'start', 'restart', 'stop']:
+        print _("mode should be none or one of 'menu', 'start', 'restart' or 'stop'.")
+        sys.exit()
+    if  service not in ['server', 'portal', 'all']:
+        print _("service should be none or 'server', 'portal' or 'all'.")
+        sys.exit()
+
+    if mode == 'menu':
+        # launch menu
+        cmdstr = run_menu()
     else:
-        parser.print_help()
+        # handle command-line arguments
+        cmdstr = handle_args(options, mode, service)
+    if cmdstr:
+        # call the runner. 
+        cmdstr.append('start')
+        Popen(cmdstr)
+
 if __name__ == '__main__':
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():

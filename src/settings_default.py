@@ -81,7 +81,8 @@ SRC_DIR = os.path.join(BASE_PATH, 'src')
 GAME_DIR = os.path.join(BASE_PATH, 'game')
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'logs')
-DEFAULT_LOG_FILE = os.path.join(LOG_DIR, 'evennia.log')
+SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
+PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
 # Where to log server requests to the web server. This is VERY spammy, so this 
 # file should be removed at regular intervals. 
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
@@ -111,7 +112,12 @@ IDLE_COMMAND = "idle"
 # Add sets for languages/regions your players are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
-
+# The game server opens an AMP port so that the portal can 
+# communicate with it. This is an internal functionality of Evennia, usually
+# operating between the two processes on the same machine. Don't change unless 
+# you know what you are doing. 
+AMP_HOST = 'localhost'
+AMP_PORT = 5000
 
 ###################################################
 # Evennia Database config 
@@ -340,7 +346,7 @@ SESSION_COOKIE_NAME = 'sessionid'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = False
+USE_I18N = True
 # This should be turned off unless you want to do tests with Django's 
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False

@@ -13,7 +13,6 @@ from src.comms import irc, imc2
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand            
-from src.server.sessionhandler import SESSIONS
 
 def find_channel(caller, channelname, silent=False, noaliases=False):
     """

@@ -1,8 +1,6 @@
 """
 This module implements the main Evennia server process, the core of
-the game engine. Don't import this module directly! If you need to
-access the server processes from code, instead go via the session-
-handler: src.sessionhandler.SESSIONS.server
+the game engine. 
 
 This module should be started with the 'twistd' executable since it
 sets up all the networking features.  (this is done automatically
@@ -12,6 +10,7 @@ by game/evennia.py).
 import time
 import sys
 import os
+import signal
 if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
     sys.path.insert(0, os.path.dirname(os.path.dirname(
@@ -22,14 +21,23 @@ from twisted.internet import protocol, reactor, defer
 from twisted.web import server, static
 from django.db import connection
 from django.conf import settings
+
 from src.scripts.models import ScriptDB
 from src.server.models import ServerConfig
-from src.server.sessionhandler import SESSIONS
 from src.server import initial_setup
 
 from src.utils.utils import get_evennia_version
 from src.comms import channelhandler
+from src.server.sessionhandler import SESSIONS
 
+if os.name == 'nt':
+    # For Windows we need to handle pid files manually.
+    SERVER_PIDFILE = os.path.join(settings.GAME_DIR, 'server.pid')
+
+SERVER_RESTART = os.path.join(settings.GAME_DIR, 'server.restart')
+
+# i18n
+from django.utils.translation import ugettext as _
 
 #------------------------------------------------------------
 # Evennia Server settings 
@@ -38,23 +46,10 @@ from src.comms import channelhandler
 SERVERNAME = settings.SERVERNAME
 VERSION = get_evennia_version()
 
-TELNET_PORTS = settings.TELNET_PORTS
-SSL_PORTS = settings.SSL_PORTS
-SSH_PORTS = settings.SSH_PORTS
-WEBSERVER_PORTS = settings.WEBSERVER_PORTS
+AMP_ENABLED = True 
+AMP_HOST = settings.AMP_HOST
+AMP_PORT = settings.AMP_PORT
 
-TELNET_INTERFACES = settings.TELNET_INTERFACES
-SSL_INTERFACES = settings.SSL_INTERFACES
-SSH_INTERFACES = settings.SSH_INTERFACES
-WEBSERVER_INTERFACES = settings.WEBSERVER_INTERFACES
-
-TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS and TELNET_INTERFACES
-SSL_ENABLED = settings.SSL_ENABLED and SSL_PORTS and SSL_INTERFACES
-SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS and SSH_INTERFACES
-WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
-WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED 
-IMC2_ENABLED = settings.IMC2_ENABLED
-IRC_ENABLED = settings.IRC_ENABLED
 
 #------------------------------------------------------------
 # Evennia Main Server object 
@@ -75,10 +70,13 @@ class Evennia(object):
 
         """        
         sys.path.append('.')
-        
+
         # create a store of services
         self.services = service.IServiceCollection(application)
-
+        self.amp_protocol = None # set by amp factory
+        self.sessions = SESSIONS
+        self.sessions.server = self
+        
         print '\n' + '-'*50
 
         # Database-specific startup optimizations.
@@ -87,20 +85,11 @@ class Evennia(object):
         # Run the initial setup if needed 
         self.run_initial_setup()
 
-        # we have to null this here.
-        SESSIONS.session_count(0)            
-        # we link ourself to the sessionhandler so other modules don't have to 
-        # re-import the server module itself (which would re-initialize it).
-        SESSIONS.server = self
-
         self.start_time = time.time()
 
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
-        
-        # init all global scripts
-        ScriptDB.objects.validate(init_mode=True)
-
+                                         
         # Make info output to the terminal.         
         self.terminal_output()
 
@@ -138,7 +127,7 @@ class Evennia(object):
         if not last_initial_setup_step:
             # None is only returned if the config does not exist,
             # i.e. this is an empty DB that needs populating.
-            print ' Server started for the first time. Setting defaults.'
+            print _(' Server started for the first time. Setting defaults.')
             initial_setup.handle_setup(0)
             print '-'*50
         elif int(last_initial_setup_step) >= 0:
@@ -146,51 +135,86 @@ class Evennia(object):
             # modules and setup will resume from this step, retrying
             # the last failed module. When all are finished, the step
             # is set to -1 to show it does not need to be run again.
-            print ' Resuming initial setup from step %s.' % \
-                last_initial_setup_step  
+            print _(' Resuming initial setup from step %(last)s.' % \
+                {'last': last_initial_setup_step})  
             initial_setup.handle_setup(int(last_initial_setup_step))
             print '-'*50
+
 
     def terminal_output(self):
         """
         Outputs server startup info to the terminal.
         """
-        print ' %s (%s) started on port(s):' % (SERVERNAME, VERSION)        
-        if TELNET_ENABLED:            
-            ports = ", ".join([str(port) for port in TELNET_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in TELNET_INTERFACES if iface != '0.0.0.0'])
-            print "  telnet%s: %s" % (ifaces, ports)
-        if SSH_ENABLED:
-            ports = ", ".join([str(port) for port in SSH_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in SSH_INTERFACES if iface != '0.0.0.0'])
-            print "  ssh%s: %s" % (ifaces, ports)
-        if SSL_ENABLED:
-            ports = ", ".join([str(port) for port in SSL_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in SSL_INTERFACES if iface != '0.0.0.0'])
-            print "  ssl%s: %s" % (ifaces, ports)
-        if WEBSERVER_ENABLED:
-            clientstring = ""
-            if WEBCLIENT_ENABLED:
-                clientstring = '/client'
-            ports = ", ".join([str(port) for port in WEBSERVER_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in WEBSERVER_INTERFACES if iface != '0.0.0.0'])
-            print "  webserver%s%s: %s" % (clientstring, ifaces, ports)
+        print _(' %(servername)s Portal (%(version)s) started.') % {'servername': SERVERNAME, 'version': VERSION}        
+        print '  amp (Portal): %s' % AMP_PORT
 
-    def shutdown(self, message="{rThe server has been shutdown. Disconnecting.{n", _abrupt=False):
+    def set_restart_mode(self, mode=None):
         """
-        If called directly, this disconnects everyone cleanly and shuts down the
-        reactor. If the server is killed by other means (Ctrl-C, reboot etc), this
-        might be called as a callback, at which point the reactor is already dead
-        and should not be tried to stop again (_abrupt=True).
+        This manages the flag file that tells the runner if the server is
+        reloading, resetting or shutting down. Valid modes are 
+          'reload', 'reset', 'shutdown' and None. 
+        If mode is None, no change will be done to the flag file.
 
-        message - message to send to all connected sessions
-        _abrupt - only to be used by internal callback_mechanism.
+        Either way, the active restart setting (Restart=True/False) is 
+        returned so the server knows which more it's in.
+        """        
+        if mode == None:
+            if os.path.exists(SERVER_RESTART) and 'True' == open(SERVER_RESTART, 'r').read():
+                mode = 'reload'                
+            else:
+                mode = 'shutdown'
+        else:
+            restart = mode in ('reload', 'reset')
+            f = open(SERVER_RESTART, 'w')
+            f.write(str(restart))
+            f.close()
+        return mode
+
+    def shutdown(self, mode=None, _abrupt=False):
         """
-        SESSIONS.disconnect_all_sessions(reason=message)
+        Shuts down the server from inside it. 
+
+        mode - sets the server restart mode. 
+               'reload' - server restarts, no "persistent" scripts are stopped, at_reload hooks called.
+               'reset' - server restarts, non-persistent scripts stopped, at_shutdown hooks called.
+               'shutdown' - like reset, but server will not auto-restart.
+               None - keep currently set flag from flag file. 
+        _abrupt - this is set if server is stopped by a kill command,
+                  in which case the reactor is dead anyway. 
+        """
+        mode = self.set_restart_mode(mode) 
+
+        # call shutdown hooks on all cached objects
+
+        from src.objects.models import ObjectDB
+        from src.players.models import PlayerDB
+        from src.server.models import ServerConfig
+
+        if mode == 'reload':
+            # call restart hooks
+            [(o.typeclass(o), o.at_server_reload()) for o in ObjectDB.get_all_cached_instances()]    
+            [(p.typeclass(p), p.at_server_reload()) for p in PlayerDB.get_all_cached_instances()]
+            [(s.typeclass(s), s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
+
+            ServerConfig.objects.conf("server_restart_mode", "reload")
+
+        else:
+            if mode == 'reset':
+                # don't call disconnect hooks on reset
+                [(o.typeclass(o), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
+            else: # shutdown
+                [(o.typeclass(o), o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
+            [(p.typeclass(p), p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
+            [(s.typeclass(s), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]            
+            
+            ServerConfig.objects.conf("server_restart_mode", "reset")
+            
         if not _abrupt:
             reactor.callLater(0, reactor.stop)
-
-
+        if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
+            # for Windows we need to remove pid files manually            
+            os.remove(SERVER_PIDFILE)
+            
 #------------------------------------------------------------
 #
 # Start the Evennia game server and add all active services
@@ -208,108 +232,24 @@ application = service.Application('Evennia')
 # and is where we store all the other services.
 EVENNIA = Evennia(application)
 
-# We group all the various services under the same twisted app.
-# These will gradually be started as they are initialized below. 
+# The AMP protocol handles the communication between
+# the portal and the mud server. Only reason to ever deactivate
+# it would be during testing and debugging. 
 
-if TELNET_ENABLED:
+if AMP_ENABLED: 
 
-    # Start telnet game connections
+    from src.server import amp
 
-    from src.server import telnet
-
-    for interface in TELNET_INTERFACES:
-        ifacestr = ""
-        if interface != '0.0.0.0' or len(TELNET_INTERFACES) > 1:
-            ifacestr = "-%s" % interface
-        for port in TELNET_PORTS:        
-            pstring = "%s:%s" % (ifacestr, port)
-            factory = protocol.ServerFactory()
-            factory.protocol = telnet.TelnetProtocol
-            telnet_service = internet.TCPServer(port, factory, interface=interface)
-            telnet_service.setName('EvenniaTelnet%s' % pstring)
-            EVENNIA.services.addService(telnet_service)
-
-if SSL_ENABLED:
-
-    # Start SSL game connection (requires PyOpenSSL).
-
-    from src.server import ssl
-
-    for interface in SSL_INTERFACES:
-        ifacestr = ""
-        if interface != '0.0.0.0' or len(SSL_INTERFACES) > 1:
-            ifacestr = "-%s" % interface
-        for port in SSL_PORTS: 
-            pstring = "%s:%s" % (ifacestr, port)
-            factory = protocol.ServerFactory()
-            factory.protocol = ssl.SSLProtocol
-            ssl_service = internet.SSLServer(port, factory, ssl.getSSLContext(), interface=interface)
-            ssl_service.setName('EvenniaSSL%s' % pstring)
-            EVENNIA.services.addService(ssl_service)
-
-if SSH_ENABLED:
-
-    # Start SSH game connections. Will create a keypair in evennia/game if necessary.
-    
-    from src.server import ssh
-
-    for interface in SSH_INTERFACES:
-        ifacestr = ""
-        if interface != '0.0.0.0' or len(SSH_INTERFACES) > 1:
-            ifacestr = "-%s" % interface
-        for port in SSH_PORTS:
-            pstring = "%s:%s" % (ifacestr, port)
-            factory = ssh.makeFactory({'protocolFactory':ssh.SshProtocol,
-                                       'protocolArgs':()})        
-            ssh_service = internet.TCPServer(port, factory, interface=interface)
-            ssh_service.setName('EvenniaSSH%s' % pstring)
-            EVENNIA.services.addService(ssh_service)
-
-if WEBSERVER_ENABLED:
-
-    # Start a django-compatible webserver.
-
-    from twisted.python import threadpool
-    from src.server.webserver import DjangoWebRoot, WSGIWebServer
-
-    # start a thread pool and define the root url (/) as a wsgi resource 
-    # recognized by Django
-    threads = threadpool.ThreadPool()
-    web_root = DjangoWebRoot(threads)
-    # point our media resources to url /media 
-    web_root.putChild("media", static.File(settings.MEDIA_ROOT))    
-
-    if WEBCLIENT_ENABLED:    
-        # create ajax client processes at /webclientdata
-        from src.server.webclient import WebClient
-        web_root.putChild("webclientdata", WebClient())
-
-    web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
-
-    for interface in WEBSERVER_INTERFACES:
-        ifacestr = ""
-        if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
-            ifacestr = "-%s" % interface
-        for port in WEBSERVER_PORTS:
-            pstring = "%s:%s" % (ifacestr, port)
-            # create the webserver
-            webserver = WSGIWebServer(threads, port, web_site, interface=interface)
-            webserver.setName('EvenniaWebServer%s' % pstring)
-            EVENNIA.services.addService(webserver)
-
-if IRC_ENABLED:
-
-    # IRC channel connections
-
-    from src.comms import irc 
-    irc.connect_all()
-
-if IMC2_ENABLED:
-
-    # IMC2 channel connections
-
-    from src.comms import imc2
-    imc2.connect_all()
+    factory = amp.AmpServerFactory(EVENNIA)
+    amp_service = internet.TCPServer(AMP_PORT, factory)
+    amp_service.setName("EvenniaPortal")
+    EVENNIA.services.addService(amp_service)
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)
+
+if os.name == 'nt':
+    # Windows only: Set PID file manually
+    f = open(os.path.join(settings.GAME_DIR, 'server.pid'), 'w')
+    f.write(str(os.getpid()))
+    f.close()

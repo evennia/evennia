@@ -8,20 +8,15 @@ sessions etc.
 """
 
 from twisted.conch.telnet import StatefulTelnetProtocol
-from django.conf import settings 
-from src.server import session
-from src.utils import ansi, utils, logger
+from src.server.session import Session
+from src.utils import utils, ansi 
 
-ENCODINGS = settings.ENCODINGS
-
-class TelnetProtocol(StatefulTelnetProtocol, session.Session):
+class TelnetProtocol(StatefulTelnetProtocol, Session):
     """
     Each player connecting over telnet (ie using most traditional mud
     clients) gets a telnet protocol instance assigned to them.  All
     communication between game and player goes through here.
     """
-
-    # telnet-specific hooks 
 
     def connectionMade(self):
         """
@@ -29,109 +24,57 @@ class TelnetProtocol(StatefulTelnetProtocol, session.Session):
         established. 
         """        
         # initialize the session
-        self.session_connect(self.getClientAddress())
+        client_address = self.transport.client        
+        self.init_session("telnet", client_address, self.factory.sessionhandler)
+        # add us to sessionhandler 
+        self.sessionhandler.connect(self)
         
-    def connectionLost(self, reason=None, step=1):
+    def connectionLost(self, reason):
         """
         This is executed when the connection is lost for 
-        whatever reason. 
+        whatever reason. It can also be called directly, from
+        the disconnect method
+        """            
+        self.sessionhandler.disconnect(self)        
+        self.transport.loseConnection()
         
-        Closing the connection takes two steps
-        
-        step 1 - is the default and is used when this method is
-                 called automatically. The method should then call self.session_disconnect().
-        Step 2 - means this method is called from at_disconnect(). At this point 
-                 the sessions are assumed to have been handled, and so the transport can close
-                 without further ado. 
-        """
-        if step == 1:
-            self.session_disconnect()
-        else:
-            self.transport.loseConnection()
-        
-    def getClientAddress(self):
-        """
-        Returns the client's address and port in a tuple. For example
-        ('127.0.0.1', 41917)
-        """
-        return self.transport.client
-
     def lineReceived(self, string):
         """
-        Communication Player -> Evennia. Any line return indicates a
-        command for the purpose of the MUD.  So we take the user input
-        and pass it on to the game engine.
+        Telnet method called when data is coming in over the telnet 
+        connection. We pass it on to the game engine directly.
         """        
-        self.at_data_in(string)
+        self.sessionhandler.data_in(self, string)
 
-    def lineSend(self, string):
-        """
-        Communication Evennia -> Player
-        Any string sent should already have been
-        properly formatted and processed 
-        before reaching this point.
+    # Session hooks 
 
+    def disconnect(self, reason=None):
         """
-        self.sendLine(string) #this is the telnet-specific method for sending
+        generic hook for the engine to call in order to 
+        disconnect this protocol.
+        """
+        if reason:
+            self.data_out(reason)
+        self.connectionLost(reason)
 
-    # session-general method hooks
-
-    def at_connect(self):
+    def data_out(self, string, data=None):
         """
-        Show the banner screen.
+        generic hook method for engine to call in order to send data 
+        through the telnet connection. 
+        Data Evennia -> Player. 'data' argument is not used 
         """
-        self.telnet_markup = True 
-        # show connection screen
-        self.execute_cmd('look')
-        
-    def at_login(self, player):
-        """
-        Called after authentication. self.logged_in=True at this point.
-        """
-        if player.has_attribute('telnet_markup'):
-            self.telnet_markup = player.get_attribute("telnet_markup")
-        else:
-            self.telnet_markup = True             
-
-    def at_disconnect(self, reason="Connection closed. Goodbye for now."):
-        """
-        Disconnect from server
-        """                        
-        char = self.get_character()        
-        if char:
-            char.at_disconnect()
-        self.at_data_out(reason)
-        self.connectionLost(step=2)
-
-    def at_data_out(self, string, data=None):
-        """
-        Data Evennia -> Player access hook. 'data' argument is a dict parsed for string settings.
-        """
-        try:
-            string = utils.to_str(string, encoding=self.encoding)
-        except Exception, e:
-            self.lineSend(str(e))
-            return 
-        nomarkup = not self.telnet_markup
-        raw = False 
-        if type(data) == dict:
+        try:                                                                                                           
+            string = utils.to_str(string, encoding=self.encoding)                                                      
+        except Exception, e:                                                                                           
+            self.sendLine(str(e))                                                                                      
+            return                                                                                                     
+        nomarkup = False
+        raw = False                                                                                                    
+        if type(data) == dict:                                                                                         
             # check if we want escape codes to go through unparsed.
-            raw = data.get("raw", self.telnet_markup)
+            raw = data.get("raw", False)
             # check if we want to remove all markup
-            nomarkup = data.get("nomarkup", not self.telnet_markup)            
-        if raw:
-            self.lineSend(string)
-        else:
-            self.lineSend(ansi.parse_ansi(string, strip_ansi=nomarkup))
-
-    def at_data_in(self, string, data=None):
-        """
-        Line from Player -> Evennia. 'data' argument is not used.
-        
-        """        
-        try:            
-            string = utils.to_unicode(string, encoding=self.encoding)
-            self.execute_cmd(string)
-            return 
-        except Exception, e:
-            logger.log_errmsg(str(e))
+            nomarkup = data.get("nomarkup", False)
+        if raw:                                                                                                        
+            self.sendLine(string)                                                                                      
+        else:                                                                                                          
+            self.sendLine(ansi.parse_ansi(string, strip_ansi=nomarkup))

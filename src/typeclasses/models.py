@@ -714,8 +714,9 @@ class TypedObject(SharedMemoryModel):
             infochan = Channel.objects.get_channel(infochan[0])            
             if infochan:
                 cname = infochan.key
-                cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n')])
-                infochan.msg(message)
+                cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n') if line])
+                cmessage = cmessage.strip()
+                infochan.msg(cmessage)
             else:
                 # no mudinfo channel is found. Log instead. 
                 cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
@@ -1102,8 +1103,7 @@ class TypedObject(SharedMemoryModel):
         "Stop accidental deletion."
         raise Exception("Cannot delete the ndb object!")
     ndb = property(ndb_get, ndb_set, ndb_del)
-
-
+        
     # Lock / permission methods
 
     def access(self, accessing_obj, access_type='read', default=False):

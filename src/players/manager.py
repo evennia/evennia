@@ -114,6 +114,14 @@ class PlayerManager(TypedObjectManager):
         return User.objects.filter(email__iexact=uemail)
 
     @returns_typeclass
+    @returns_player
+    def get_player_from_uid(self, uid):
+        """
+        Returns a player object based on User id.
+        """
+        return User.objects.get(id=uid)
+
+    @returns_typeclass
     def get_player_from_name(self, uname):
         "Get player object based on name"
         players = self.filter(user__username=uname)

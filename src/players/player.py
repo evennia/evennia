@@ -51,6 +51,17 @@ class Player(TypeClass):
         pass
  
 
+    def at_init(self):
+        """
+        This is always called whenever this 
+        object initiated -- both when the object
+        is first created as well as after each restart.
+        It is also called after each server reload, so 
+        if something should survive a warm-reboot (rebooting
+        the server without the players logging out), put it here.
+        """
+        pass 
+
     # Note that the hooks below also exist
     # in the character object's typeclass. You
     # can often ignore these and rely on the
@@ -101,3 +112,18 @@ class Player(TypeClass):
         itself as a sender in the msg() call. 
         """
         pass 
+
+    def at_server_reload(self):
+        """
+        This hook is called whenever the server is shutting down for restart/reboot. 
+        If you want to, for example, save non-persistent properties across a restart,
+        this is the place to do it. 
+        """
+        pass
+
+    def at_server_shutdown(self):
+        """
+        This hook is called whenever the server is shutting down fully (i.e. not for 
+        a restart). 
+        """
+        pass

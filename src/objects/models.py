@@ -724,7 +724,7 @@ class ObjectDB(TypedObject):
         Destroys all of the exits and any exits pointing to this
         object as a destination.
         """
-        for out_exit in self.exits:                            
+        for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
             out_exit.delete()
         for in_exit in ObjectDB.objects.filter(db_destination=self):
             in_exit.delete()
@@ -779,6 +779,7 @@ class ObjectDB(TypedObject):
             new_key = "%s_copy" % self.key
         return ObjectDB.objects.copy_object(self, new_key=new_key)
 
+    delete_iter = 0
     def delete(self):    
         """
         Deletes this object. 
@@ -786,12 +787,19 @@ class ObjectDB(TypedObject):
         objects to their respective home locations, as well as clean
         up all exits to/from the object.
         """
+        if self.delete_iter > 0:
+            # make sure to only call delete once on this object
+            # (avoid recursive loops)
+            return False
 
         if not self.at_object_delete():
             # this is an extra pre-check
             # run before deletion mechanism
             # is kicked into gear. 
+            self.delete_iter == 0
             return False
+
+        self.delete_iter += 1
 
         # See if we need to kick the player off.
 

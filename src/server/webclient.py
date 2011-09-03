@@ -29,7 +29,6 @@ from django.conf import settings
 from src.utils import utils, logger, ansi
 from src.utils.text2html import parse_html
 from src.server import session
-from src.server.sessionhandler import SESSIONS
 
 SERVERNAME = settings.SERVERNAME
 ENCODINGS = settings.ENCODINGS
@@ -55,7 +54,7 @@ def jsonify(obj):
     
 class WebClient(resource.Resource):
     """
-    An ajax/comet long-polling transport protocol for 
+    An ajax/comet long-polling transport 
     """
     isLeaf = True 
     allowedMethods = ('POST',)
@@ -95,24 +94,16 @@ class WebClient(resource.Resource):
             dataentries.append(jsonify({'msg':string, 'data':data}))
             self.databuffer[suid] = dataentries
     
-    def disconnect(self, suid, step=1):
+    def client_disconnect(self, suid):
         """
         Disconnect session with given suid.
-
-        step 1 : call session_disconnect()
-        step 2 : finalize disconnection        
         """        
-
-        if step == 1:
-            sess = SESSIONS.session_from_suid(suid)
-            sess[0].session_disconnect()
-        else:
-            if self.requests.has_key(suid):
-                for request in self.requests.get(suid, []):
-                    request.finish()
-                    del self.requests[suid]
-            if self.databuffer.has_key(suid):
-                del self.databuffer[suid]                
+        if self.requests.has_key(suid):
+            for request in self.requests.get(suid, []):
+                request.finish()
+                del self.requests[suid]
+        if self.databuffer.has_key(suid):
+            del self.databuffer[suid]                
 
     def mode_init(self, request):
         """
@@ -133,7 +124,9 @@ class WebClient(resource.Resource):
 
             sess = WebClientSession()
             sess.client = self        
-            sess.session_connect(remote_addr, suid)            
+            sess.init_session("comet", remote_addr, self.sessionhandler)
+            sess.suid = suid
+            sess.sessionhandler.connect(sess)
         return jsonify({'msg':host_string, 'suid':suid})
 
     def mode_input(self, request):
@@ -144,11 +137,12 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
             return ''
-        sess = SESSIONS.session_from_suid(suid)
+        sess = self.sessionhandler.session_from_suid(suid)
         if sess:
+            sess = sess[0]
             string = request.args.get('msg', [''])[0]
             data = request.args.get('data', [None])[0]
-            sess[0].at_data_in(string, data)
+            sess.sessionhandler.data_in(sess, string, data)
         return ''
 
     def mode_receive(self, request):
@@ -179,7 +173,7 @@ class WebClient(resource.Resource):
         """
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
-            self.disconnect(suid)
+            self.client_disconnect(suid)
         return ''
 
     def render_POST(self, request):
@@ -217,35 +211,16 @@ class WebClientSession(session.Session):
     """
     This represents a session running in a webclient.
     """
-    
-    def at_connect(self):
-        """
-        Show the banner screen. 
-        """
-        # show screen 
-        self.telnet_markup = True 
-        self.execute_cmd('look')
 
-        
-    def at_login(self, player):
-        """
-        Called after authentication. self.logged_in=True at this point.
-        """
-        if player.has_attribute('telnet_markup'):
-            self.telnet_markup = player.get_attribute("telnet_markup")
-
-    def at_disconnect(self, reason=None):
+    def disconnect(self, reason=None):
         """
         Disconnect from server
         """                        
         if reason:
             self.lineSend(self.suid, reason)
-        char = self.get_character()
-        if char:
-            char.at_disconnect()
-        self.client.disconnect(self.suid, step=2)
+        self.client.client_disconnect(self.suid)
 
-    def at_data_out(self, string='', data=None):
+    def data_out(self, string='', data=None):
         """
         Data Evennia -> Player access hook. 
 
@@ -261,35 +236,17 @@ class WebClientSession(session.Session):
         try:
             string = utils.to_str(string, encoding=self.encoding)                
             
-            nomarkup = not self.telnet_markup
+            nomarkup = False
             raw = False 
             if type(data) == dict:
                 # check if we want escape codes to go through unparsed.
-                raw = data.get("raw", self.telnet_markup)
+                raw = data.get("raw", False)
                 # check if we want to remove all markup 
-                nomarkup = data.get("nomarkup", not self.telnet_markup)            
+                nomarkup = data.get("nomarkup", False)            
             if raw:
                 self.client.lineSend(self.suid, string)
             else:
                 self.client.lineSend(self.suid, parse_html(ansi.parse_ansi(string, strip_ansi=nomarkup)))
             return 
         except Exception, e:            
-            logger.log_trace()
-            
-    def at_data_in(self, string, data=None):
-        """
-        Input from Player -> Evennia (called by client protocol). 
-        Use of 'data' is up to the client - server implementation.
-        """
-        
-        # treat data?
-        if data:
-            pass
-
-        # the string part is identical to telnet
-        try:            
-            string = utils.to_unicode(string, encoding=self.encoding)
-            self.execute_cmd(string)
-            return 
-        except Exception, e:
             logger.log_trace()
