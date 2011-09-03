@@ -160,7 +160,7 @@ class Evennia(object):
         """        
         if mode == None:
             if os.path.exists(SERVER_RESTART) and 'True' == open(SERVER_RESTART, 'r').read():
-                mode = 'reload'                
+                mode = 'reload'
             else:
                 mode = 'shutdown'
         else:

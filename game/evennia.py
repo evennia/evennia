@@ -80,8 +80,8 @@ _("""
 |                                                                           |
 +--- Restarting (must first be started) ------------------------------------+
 |                                                                           |
-|  5) Restart/reload the Server                                             |
-|  6) Restart/reload the Portal (only works in non-daemon mode. If running  |
+|  5) Reload the Server                                                     |
+|  6) Reload the Portal (only works in non-daemon mode. If running          |
 |       in daemon mode, Portal needs to be restarted manually (option 1-4)) |
 |                                                                           |
 +--- Stopping (must first be started) --------------------------------------+
@@ -322,12 +322,12 @@ def run_menu():
                 if os.name == 'nt':
                     print _("This operation is not supported under Windows. Log into the game to restart/reload the server.")    
                     return 
-                kill(SERVER_PIDFILE, SIG, _("Server restarted."), errmsg % "Server")
+                kill(SERVER_PIDFILE, SIG, _("Server reloaded."), errmsg % "Server")
             elif inp == 6:
                 if os.name == 'nt':
                     print _("This operation is not supported under Windows.")
                     return
-                kill(PORTAL_PIDFILE, SIG, _("Portal restarted (or stopped if in daemon mode)."), errmsg % "Portal")
+                kill(PORTAL_PIDFILE, SIG, _("Portal reloaded (or stopped if in daemon mode)."), errmsg % "Portal")
             elif inp == 7:
                 kill(SERVER_PIDFILE, SIG, _("Stopped Portal."), errmsg % "Portal", PORTAL_RESTART, restart=False)
                 kill(PORTAL_PIDFILE, SIG, _("Stopped Server."), errmsg % "Server", restart=False)
@@ -370,21 +370,21 @@ def handle_args(options, mode, service):
                 cmdstr.extend(['--iserver'])
         return cmdstr
 
-    elif mode == 'restart':
+    elif mode == 'reload':
         # restarting services
         if os.name == 'nt':
             print _("Restarting from command line is not supported under Windows. Log into the game to restart.")
             return 
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, _("Server restarted."), errmsg % 'Server')
+            kill(SERVER_PIDFILE, SIG, _("Server reloaded."), errmsg % 'Server')
         elif service == 'portal':
-            print _("Note: Portal usually don't need to be restarted unless you are debugging in interactive mode.")
+            print _("Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode.")
             print _("If Portal was running in default Daemon mode, it cannot be restarted. In that case you have ")
             print _("to restart it manually with 'evennia.py start portal'")
-            kill(PORTAL_PIDFILE, SIG, _("Portal restarted (or stopped, if it was in daemon mode)."), errmsg % 'Portal', PORTAL_RESTART)
+            kill(PORTAL_PIDFILE, SIG, _("Portal reloaded (or stopped, if it was in daemon mode)."), errmsg % 'Portal', PORTAL_RESTART)
         else: # all
             # default mode, only restart server
-            kill(SERVER_PIDFILE, SIG, _("Server restarted."), errmsg % 'Server')
+            kill(SERVER_PIDFILE, SIG, _("Server reload."), errmsg % 'Server')
 
     elif mode == 'stop':
         # stop processes, avoiding reload
@@ -402,7 +402,7 @@ def main():
     This handles command line input.
     """
 
-    parser = OptionParser(usage="%prog [-i] [menu|start|restart|stop [server|portal|all]]",
+    parser = OptionParser(usage="%prog [-i] [menu|start|reload|stop [server|portal|all]]",
                           description=_("""This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Use --interactive together with start to launch services as 'interactive'. Note that when launching 'all' services with the --interactive flag, both services will be started, but only Server will actually be started in interactive mode. This is simply because this is the most commonly useful state. To activate interactive mode also for Portal, launch the two services explicitly as two separate calls to this program. You can also use the menu."""))
 
     parser.add_option('-i', '--interactive', action='store_true', dest='interactive', default=False, help=_("Start given processes in interactive mode (log to stdout, don't start as a daemon)."))
@@ -419,8 +419,8 @@ def main():
     if len(args) > 1:
         service = args[1]
 
-    if mode not in ['menu', 'start', 'restart', 'stop']:
-        print _("mode should be none or one of 'menu', 'start', 'restart' or 'stop'.")
+    if mode not in ['menu', 'start', 'reload', 'stop']:
+        print _("mode should be none or one of 'menu', 'start', 'reload' or 'stop'.")
         sys.exit()
     if  service not in ['server', 'portal', 'all']:
         print _("service should be none or 'server', 'portal' or 'all'.")
