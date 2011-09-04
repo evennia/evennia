@@ -272,6 +272,9 @@ class CmdGet(MuxCommand):
             # don't allow picking up player objects, nor exits.
             caller.msg("You can't get that.")
             return
+        if obj.location == caller:
+            caller.msg("You already hold that.")
+            return
         if not obj.access(caller, 'get'):
             if obj.db.get_err_msg:
                 caller.msg(obj.db.get_err_msg)
