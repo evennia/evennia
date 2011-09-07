@@ -53,7 +53,7 @@ class ScriptClass(TypeClass):
         "stop task runner"
         try:
             #print "stopping twisted task:", id(self.ndb.twisted_task), self.obj
-            if self.ndb.twisted_task and not self.ndb.twisted_task.running:
+            if self.ndb.twisted_task and self.ndb.twisted_task.running:
                 self.ndb.twisted_task.stop()            
         except Exception:
             logger.log_trace()
