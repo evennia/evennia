@@ -264,7 +264,7 @@ class ObjectDB(TypedObject):
                 loc = location                       
             elif ObjectDB.objects.dbref(location):
                 # location is a dbref; search
-                loc = ObjectDB.objects.dbref_search(ocation)
+                loc = ObjectDB.objects.dbref_search(location)
                 if loc and hasattr(loc,'dbobj'):
                     loc = loc.dbobj
                 else:
