@@ -58,18 +58,18 @@ Example:
   
  We want to limit who may edit a particular object (let's call this access_type 
 for 'edit', it depends on what the command is looking for). We want this to
-only work for those with the Permission 'Builder'. So we use our lock
+only work for those with the Permission 'Builders'. So we use our lock
 function above and call it like this:
 
-  'edit:perm(Builder)'
+  'edit:perm(Builders)'
  
 Here, the lock-function perm() will be called (accessing_obj and accessed_obj are added
 automatically, you only need to add the args/kwargs, if any). 
 
-If we wanted to make sure the accessing object was BOTH a Builder and a GoodGuy, we
+If we wanted to make sure the accessing object was BOTH a Builders and a GoodGuy, we
 could use AND:
 
-  'edit:perm(Builder) AND perm(GoodGuy)'
+  'edit:perm(Builders) AND perm(GoodGuy)'
 
 To allow EITHER Builders and GoodGuys, we replace AND with OR. perm() is just one example,
 the lock function can do anything and compare any properties of the calling object to 
@@ -80,7 +80,7 @@ decide if the lock is passed or not.
 To make these work, add the string to the lockhandler of the object you want
 to apply the lock to: 
 
-  obj.lockhandler.add('edit:perm(Builder)')
+  obj.lockhandler.add('edit:perm(Builders)')
 
 From then on, a command that wants to check for 'edit' access on this 
 object would do something like this:

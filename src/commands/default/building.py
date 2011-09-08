@@ -618,7 +618,7 @@ class CmdDig(ObjManipCommand):
             typeclass = settings.BASE_ROOM_TYPECLASS
 
         # create room 
-        lockstring = "control:id(%s) or perm(Immortal); delete:id(%s) or perm(Wizard); edit:id(%s) or perm(Wizard)" 
+        lockstring = "control:id(%s) or perm(Immortals); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)" 
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
 
         new_room = create.create_object(typeclass, room["name"],
