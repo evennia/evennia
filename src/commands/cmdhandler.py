@@ -6,44 +6,34 @@ command line. The process is as follows:
 
 1) The calling object (caller) inputs a string and triggers the command parsing system.
 2) The system checks the state of the caller - loggedin or not
-3) Depending on the login/not state, it collects cmdsets from different sources:
-     not logged in - uses the single cmdset in settings.CMDSET_UNLOGGEDIN
+3) If no command string was supplied, we search the merged cmdset for system command CMD_NOINPUT 
+   and branches to execute that.  --> Finished
+4) Depending on the login/not state, it collects cmdsets from different sources:
+     not logged in - uses the single cmdset defined as settings.CMDSET_UNLOGGEDIN     
      normal - gathers command sets from many different sources (shown in dropping priority): 
            channels - all available channel names are auto-created into a cmdset, to allow 
                   for giving the channel name and have the following immediately
                   sent to the channel. The sending is performed by the CMD_CHANNEL
                   system command.
-           exits - exits from a room are dynamically made into a cmdset for matching,
-                  allowing the player to give just the name and thus traverse the exit.
-                  If a match, the traversing is handled by the CMD_EXIT system command.
            object cmdsets - all objects at caller's location are scanned for non-empty
-                  cmdsets.
-           caller - the caller is searched for its currently active cmdset.
-4) All the gathered cmdsets (if more than one) are merged into one using the cmdset priority rules. 
-5) If no cmdsets where found, we raise NoCmdSet exception. This should not happen, at least the
-   caller should have a default cmdset available at all times. --> Finished 
-6) The raw input string is parsed using the parser defined by settings.CMDPARSER. It returns
-   a special match object since a command may consist of many space-separated words and we 
-   thus have to match them all.
-7) If no command was supplied, we search the merged cmdset for system command CMD_NOINPUT 
-   and branches to execute that.  --> Finished
-8) We match the the match object against the merged cmdset and the eventual priorities given it
-   by the parser. The result is a list of command matches tied to their respective match object. 
-9) If we found no matches, branch to system command CMD_NOMATCH --> Finished
-10) If we were unable to weed out multiple matches, branch CMD_MULTIMATCH --> Finished
-11) We analyze the matched command to determine if it is a channel-type command, that is
-    a command auto-created to represent a valid comm channel. If so, we see if CMD_CHANNEL is 
-    custom-defined in the merged cmdset, or we launch the auto-created command 
-    direclty --> Finished
-12 We next check if this is an exit-type command, that is, a command auto-created to represent
-    an exit from this room. If so we check for custom CMD_EXIT in cmdset or launch
-    the auto-generated command directly --> Finished
-13) At this point we have found a normal command. We assign useful variables to it, that
+                  cmdsets. This includes cmdsets on exits. 
+           caller - the caller is searched for its own currently active cmdset.
+           player - lastly the cmdsets defined on caller.player are added. 
+5) All the gathered cmdsets (if more than one) are merged into one using the cmdset priority rules. 
+6) If merged cmdset is empty, raise NoCmdSet exception (this should not happen, at least the
+   player should have a default cmdset available at all times). --> Finished 
+7) The raw input string is parsed using the parser defined by settings.COMMAND_PARSER. It 
+   uses the available commands from the merged cmdset to know which commands to look for and
+   returns one or many matches.  
+8)   If match list is empty, branch to system command CMD_NOMATCH --> Finished
+9)   If match list has more than one element, branch to system command CMD_MULTIMATCH --> Finished
+10) A single match was found. If this is a channel-command (i.e. the command name is that of a channel),
+    branch to CMD_CHANNEL --> Finished 
+11) At this point we have found a normal command. We assign useful variables to it that
     will be available to the command coder at run-time. 
+12) We have a unique cmdobject, primed for use. Call all hooks: 
+    at_pre_cmd(), cmdobj.parse(), cmdobj.func() and finally at_post_cmd().  
 
-When launching the command (normal, or system command both), two hook functions are called
-in sequence, cmd.parse() followed by cmd.func(). It's up to the implementation as to how to
-use this to most advantage. 
 
 """
 
