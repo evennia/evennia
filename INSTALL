@@ -33,9 +33,8 @@ You'll need the following packages and minimum versions in order to run Evennia:
 
 To download/update Evennia:
 
-    * Subversion (http://subversion.apache.org)
+    * Mercurial (http://mercurial.selenic.com/)
           o This is needed to download and update Evennia itself.
-          o Windows users can use TortoiseSVN (http://tortoisesvn.tigris.org). 
 
 Optional packages:
 
@@ -53,14 +52,16 @@ Installation and Quickstart
 
 * Make sure you have/install the prerequsites listed above. 
 
-* Get a copy of the Evennia source through subversion (SVN):
+* Get a copy of the Evennia source through mercurial (hg):
   
-  >  svn checkout http://evennia.googlecode.com/svn/trunk/ evennia 
+  >  hg clone https://code.google.com/p/evennia/ evennia
 
   Once you have downloaded, this is as much internet connectivity you need 
   for trying out Evennia; you don't need to run any web server or to make 
   anything visible online (that's for when you have a game created and
   want people to join it). For now it runs just fine locally on your machine. 
+  (Use "hg pull" in the future to keep your code updated with latest Evennia
+  development)
 
 * Change to the evennia/game directory and run
    
@@ -91,13 +92,12 @@ Installation and Quickstart
 
   You can also start the server directly from the command line, e.g. with
 
-  > pythong evennia.py -i start
+  > python evennia.py -i start
 
   Note: Using -i starts the server and portal in 'interactive mode' - it will print 
-  messages to standard output and you can shut it down with (on most systems) 
-  Ctrl-C. To start the server as a background process (suitable for production 
-  environments), just skip the -i flag. A server running as a process is 
-  instead stopped  with 'python evennia.py stop'. 
+  messages to standard output. To start the server as a background process (suitable for production 
+  environments), just skip the -i flag. The server can be stopped with 'python evennia.py stop'. If
+  you don't give any argument to evennia.py, you will get a menu with all possibilities. 
 
 * Start up your MUD client of choice and point it to your server and port 4000.
   If you are just running locally the server name is 'localhost'.
