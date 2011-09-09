@@ -928,9 +928,9 @@ class CmdHome(CmdLink):
             old_home = obj.home
             obj.home = new_home 
             if old_home:
-                string = "%s's home location was changed from %s(%s) to %s(%s)." % (old_home, old_home.dbref, new_home, new_home.dbref)
+                string = "%s's home location was changed from %s(%s) to %s(%s)." % (obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
-                string = "%s' home location was set to %s(%s)." % (new_home, new_home.dbref)
+                string = "%s' home location was set to %s(%s)." % (obj, new_home, new_home.dbref)
         self.caller.msg(string)
 
 class CmdListCmdSets(MuxCommand):
