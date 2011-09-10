@@ -6,17 +6,23 @@
 Welcome to Evennia's documentation!
 ===================================
 
-This is `Evennia <http://www.evennia.com>`_'s sphinx-based
-documentation. It is built from the `online wiki <http://code.google.com/p/evennia/wiki/Index?tm=6>`_ at regular
+`Evennia <http://www.evennia.com>`_ is a barebones Python
+MUD/MUX/MU\* server/codebase using modern technologies and offering
+great freedom to design the multi-user online text game of your dreams. You
+code your game using normal Python modules - can't get more flexible
+than that! 
+
+This Sphinx-based (reST) documentation is built from the `online wiki <http://code.google.com/p/evennia/wiki/Index?tm=6>`_ at regular
 intervals.  
 
 
-Text documentation 
--------------------
 .. toctree::
    :titlesonly:
  
-   Manual <wiki/Index> 
+   Continue to the Manual <wiki/Index> 
+
+.. toctree::
+   
    How to give and get help <wiki/HowToGetAndGiveHelp>
    Evennia Links <wiki/Links>
 
