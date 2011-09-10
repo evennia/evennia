@@ -1,27 +1,10 @@
 
-Evennia README (http://evennia.com)
--------------- 
+-----------------------------------
+ Evennia README 
+ (http://evennia.com)
+ Alpha hg (mercurial) version
+-----------------------------------
 
-- Aug 2011 - split evennia into portal + server for better reload /Griatch
-- May 2011 - all commands implemented, web client, contribs /Griatch
-- Aug 2010 - evennia devel merged into trunk /Griatch
-- May 2010 - merged ABOUT and README. Added Current status /Griatch
-- < 2010 (earlier revisions)
-
-Contents:
----------
-- Version
-- About Evennia
-- Current Status
-- Contact, Support and Development
-- Directory structure
-- Design Objectives
-- The Components
-
-
-Version
--------
-Evennia Alpha SVN version
 
 About Evennia
 -------------
@@ -37,8 +20,7 @@ bare-bones base for developers. Some of our main features are:
   (djangoproject.com)
 * Powerful an extremely extendable bare-bones base system 
 
-The essential points here are the web integration and the SQL backing via
-Django. The Django framework has database abstraction abilities that give us
+The Django framework has database abstraction abilities that give us
 many features free, such as:
 
 * The codebase will run transparently on MySQL, SQLite, or Postgres
@@ -90,7 +72,7 @@ will not be backwards compatabile. Changes touch almost all
 parts of Evennia's innards, from the way Objects are handled 
 to Events, Commands and Permissions. 
 
-
+(Earlier revisions, with other maintainer, go back to 2005)
 
 
 Contact, Support and Development
@@ -132,7 +114,7 @@ evennia
 The two main directories you will spend most of your time in
 are src/ and game/ (probably mostly game/). 
 
-Basically src contains everything related to 
+Basically src/ contains everything related to 
 running the gritty stuff behind the scenes. Unless you are an
 Evennia developer you should normally make sure never to edit 
 things in src/, since this is where we push new revisions that
@@ -156,49 +138,3 @@ and use them.
 With this little first orientation, you should head into the online 
 Evennia wiki documentation to get going with the codebase. 
 
-
-Design Objectives
------------------
-1) To create a barebones MU* server that serves as a great foundation
-for capable admins to craft their own respective games. It is not the
-intention to provide a full-fledged, ready-to-run base, rather Evennia
-is offering the means to make such games.
-
-2) Development of games on Evennia must be easy for anyone with some
-degree of Python experience. Building needs to be easy, and per-room,
-per-object, and environmental customizations need to be simple to
-do. This is handled by use of normal Python classes transparently
-abstracting and wrapping the SQL backend. The user should not need to 
-use SQL or even know Django to any greater extent. 
-
-3) The server must utilize SQL as a storage back-end to allow for web->game
-integration through Django. 
-
-The Components
---------------
-Python (Including the SQL driver of your choice)
-  |-Twisted (http://twistedmatrix.com)
-  |-SQL (MySQL, SQLite, Postgresql)
-  |-Django (http://djangoproject.com)
-
-Evennia is built on top of Twisted, a networking engine that handles a lot
-of the guts and lower-level socket stuff for us.
-
-Serving as our storage medium, SQL allows for very simple code in many cases, and
-can lead to a game being a lot more scalable due to the inherent speed of
-most modern SQL servers. Another extremely important benefit is that by
-storing everything in SQL, we make the entire game accessible from other
-means, such as a website. Which leads us to the next component.
-
-Django is perhaps one of the most interesting introductions to the codebase.
- Django is technically a Python web framework, but it also includes a great 
-data modeling and database abstraction module. This means that things like 
-Players or Objects can be represented by a very short class, then related to one 
-another. This allows us to add, remove, delete, and manipulate things in our database
-very easily. Another huge benefit is the admin interface that Django more
-or less automatically generates for us. Instead of a bunch of clunky admin
-commands, you can fire up your web browser and administer pretty much 
-everything from there, although equivalent in-game commands may be offered.
-
-The possibilities for developing your game's website are nearly endless with
-this tandem of MU* server, SQL, and Django.

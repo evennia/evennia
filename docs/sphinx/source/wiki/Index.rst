@@ -1,0 +1,28 @@
+Evennia Documentation
+=====================
+
+This is Evennia's manual. You should hopefully find all you need to know
+about coding with, extending and using the codebase among these pages.
+
+The documentation is divided into several main categories, selectable
+below or from the left sidebar. If you are new, it might be an idea to
+browse the sections in the order they are listed. For more help, see the
+`how to get and give help <HowToGetAndGiveHelp.html>`_ page.
+
+Sections
+--------
+
+-  A `Lengthier introduction <EvenniaIntroduction.html>`_ to what
+   Evennia is.
+
+-  The `Getting Started <GettingStarted.html>`_ page helps with
+   downloading, installing and setting up Evennia for the first time.
+-  The `Administrative Documentation <AdminDocs.html>`_ covers the
+   practicalities of running and maintaining an Evennia game once it is
+   in place.
+-  The `Builder Docs <BuilderDocs.html>`_ section contains instructions
+   for starting to build a game world using Evennia.
+-  The `Developer Central <DeveloperCentral.html>`_ covers
+   implementation details and guides of interest for game-world coders
+   as well as for current and prospective Evennia developers.
+
