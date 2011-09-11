@@ -24,7 +24,7 @@ intervals.
 .. toctree::
    
    How to give and get help <wiki/HowToGetAndGiveHelp>
-   Evennia Links <wiki/Links>
+   Resources <wiki/Links>
 
 .. Code 
 .. -----

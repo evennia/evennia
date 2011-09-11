@@ -47,7 +47,10 @@ Frameworks
 Tools
 -----
 
--  `Subversion Manual <http://svnbook.red-bean.com/>`_
+-  `Mercurial tutorial <http://mercurial.selenic.com/wiki/Tutorial>`_
+-  `Another, pretty funny, Mercurial tutorial <http://hginit.com/>`_
+-  `Sphinx manual <http://sphinx.pocoo.org/contents.html>`_ (compile
+   documentation)
 -  `Doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ (build auto-docs)
 
 Python Info
