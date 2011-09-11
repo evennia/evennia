@@ -11,7 +11,7 @@ Evennia links
    updates)
 -  `Evennia forums <http://www.evennia.com/discussions>`_
 -  `Evennia Commit
-   Log <http://groups.google.com/group/evennia-commits>`_ (SVN commit
+   Log <http://groups.google.com/group/evennia-commits>`_ (hg commit
    notification)
 -  `Sequential source update
    list <http://code.google.com/p/evennia/source/list>`_ (easily see
@@ -22,8 +22,9 @@ Evennia links
 Third-party Evennia links
 -------------------------
 
--  `Read Evennia's manual on
-   ReadTheDocs <http://evennia.readthedocs.org>`_
+-  `Evennia's manual on
+   ReadTheDocs <http://readthedocs.org/projects/evennia/>`_ (also
+   convert to PDF)
 -  `Hosting Evennia on
    Webfaction <http://lotek.heavy.ch/evennia#Hosting>`_
 -  `Evennia on Ohloh <http://www.ohloh.net/projects/6906>`_

@@ -4,10 +4,10 @@ Evennia Documentation
 This is Evennia's manual. You should hopefully find all you need to know
 about coding with, extending and using the codebase among these pages.
 
-The documentation is divided into several main categories, selectable
-below or from the left sidebar. If you are new, it might be an idea to
-browse the sections in the order they are listed. For more help, see the
-`how to get and give help <HowToGetAndGiveHelp.html>`_ page.
+The documentation is divided into several main categories. If you are
+new, it might be an idea to browse the sections in the order they are
+listed. If you get stuck or feel the urge to improve things, see the
+section on `how to get and give help <HowToGetAndGiveHelp.html>`_.
 
 Sections
 --------
