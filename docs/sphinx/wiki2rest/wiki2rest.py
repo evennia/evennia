@@ -21,7 +21,7 @@
 #   3) Retrieve wiki files (*.wiki) from Google code by mercurial. Make sure
 #      to retrieve them into a directory wikiconvert/wiki: 
 #
-#         hg clone https://code.google.com/p/evennia/wiki wiki
+#         hg clone https://code.google.com/p/evennia.wiki wiki
 #
 #   4) Check so that you have the following file structure: 
 #
@@ -65,6 +65,7 @@ def wiki2rest():
     """
     Convert from wikifile to rst file, going through html 
     """        
+
     # convert from wikifile to html with wiki2html
     subprocess.call([RUBY_EXE, "wiki_convertor.rb", WIKI_DIR, HTML_DIR], cwd=WIKI2HTML_DIR)
 
@@ -77,9 +78,13 @@ def wiki2rest():
         htmlfilename = os.path.join(HTML_DIR, filename)
 
         string = "".join(open(htmlfilename, 'r').readlines())        
-        string = re.sub(r'<p class="summary">[A-Za-z0-9 ]*</p>', "", string)
-        string = re.sub(r"&lt;wiki:toc max_depth=&quot;[0-9]&quot; /&gt;", "", string)            
+        string = re.sub(r'<p class="summary">[A-Za-z0-9 .-\:]*</p>', "", string)
+        string = re.sub(r"&lt;wiki:toc max_depth=&quot;[0-9]*&quot; /&gt;", "", string)            
+        string = re.sub(r"&lt;wiki:toc max_depth<h1>&quot;[0-9]*&quot; /&gt;</h1>", "", string)            
         string = re.sub(r"<p>#settings Featured</p>", "", string)
+        string = re.sub(r'<p class="labels">Featured</p>', "", string)
+        string = re.sub(r'&lt;wiki:comment&gt;', "", string)
+        string = re.sub(r'&lt;/wiki:comment&gt;', "", string)
         #string = re.sub(r'&lt;wiki:comment&gt;[<>;a-zA\/\n-&Z0-9 ]*&lt;/wiki:comment&gt;', "", string)
         f = open(htmlfilename, 'w')
         f.write(string)

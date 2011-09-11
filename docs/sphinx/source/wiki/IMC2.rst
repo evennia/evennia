@@ -1,5 +1,3 @@
-Introduction to and configuration for IMC2.
-
 IMC2
 ====
 
@@ -73,8 +71,6 @@ You should join the channel automatically.
 
 Setting up a Channel ``<->`` IMC2 binding
 -----------------------------------------
-
-=
 
 Evennia developers have an open-access IMC channel called ``ievennia``
 on ``Server01`` of the Mudbytes network. For Evennia development we

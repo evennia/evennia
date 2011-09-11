@@ -14,14 +14,8 @@ Installation and Early Life
    Evennia <StartStopReload.html>`_
 -  `Keeping your game up to date <UpdatingYourGame.html>`_
 -  `Change Evennia's language <Internationalization.html>`_
-
-<wiki:comment>
-
 -  `Collaborate with others using version
-   control <StaffVersionControl.html>`_
-
-</wiki:comment>
-
+   control <StaffVersionControl.html>`_ (not updated)
 -  `Apache Configuration <ApacheConfig.html>`_ (optional)
 -  `Text encodings <TextEncodings.html>`_ used when connecting to
    Evennia

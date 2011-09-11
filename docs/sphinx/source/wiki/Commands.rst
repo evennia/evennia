@@ -1,5 +1,3 @@
-Details on how to use and extend the command system.
-
 Command system
 ==============
 

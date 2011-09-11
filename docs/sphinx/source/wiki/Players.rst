@@ -1,9 +1,5 @@
-<wiki:toc max\_depth
-
-"3" />
-======
-
-Players=
+Players
+=======
 
 All users (in the sense of actual people) connecting to Evennia are
 doing so through an object called *Player*. The Player object has no

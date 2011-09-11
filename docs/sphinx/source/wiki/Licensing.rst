@@ -1,33 +1,30 @@
-Evennia Licence
-===============
+Evennia Licence FAQ
+===================
 
 Evennia is licensed under the very friendly *Modified Clarified Artistic
 License*. You can find the license as ``LICENCE`` in the Evennia root
 directory. You can also read the full license file
 `here <http://code.google.com/p/evennia/source/browse/trunk/LICENSE>`_.
 
-Licence FAQ
------------
-
 You should read the full license file to know what it says exactly, but
 here are some answers to common questions.
 
-Q: I have created a game using Evennia, what does the license allow me
+Q: When creating a game using Evennia, what does the licence permit me
 to do with it?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------------------------------------------
 
-**A:** It's your own world to do with what you please! In summary, a
-MU``*`` world you create using Evennia (i.e. the files you create in
-``game``) falls under **§6** of the license (it's a sort of "library").
-So your game world and all its contents belongs to you (as it should
-be). Keep it to yourself or re-distribute it under any license of your
-choice - or sell it and become filthy rich for all we care.
+**A:** It's your own world to do with as you please! To summarize, a MUD
+world you create using Evennia (i.e. the files you create in ``game``)
+falls under **§6** of the license (it's a sort of "library"). So your
+game world and all its contents belongs to you (as it should be). Keep
+it to yourself or re-distribute it under any license of your choice - or
+sell it and become filthy rich for all we care.
 
 Q: I have modified Evennia itself, what does the license say about that?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------------
 
 **A:** The Evennia package itself (i.e. the stuff you download from us)
-is referred to as "The Package", "Standard version" in the license.
+is referred to as "The Package, Standard version" in the license.
 
 -  If you just fixed a typo or bug, that falls under **§2** - that is,
    you don't *have* to do anything to appease the license. Regardless,
@@ -42,7 +39,7 @@ is referred to as "The Package", "Standard version" in the license.
    developer!
 
 Q: Can I re-distribute Evennia along with my custom game implementation?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------------
 
 **A:** Sure. This is covered in **§4** - just package the "Standard
 version" (that is, the one you download from us) with your package. Make

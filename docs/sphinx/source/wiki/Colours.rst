@@ -1,9 +1,7 @@
 Putting Colour to your game
 ===========================
 
-<wiki:comment> </wiki:comment>
-
-*Note that the Wiki does not display colour the way it would look on the
+*Note that the Docs does not display colour the way it would look on the
 screen.*
 
 Evennia supports the ``ANSI`` standard for displaying text. This means

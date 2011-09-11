@@ -3,8 +3,15 @@ The Connection Screen
 
 When you first connect to your game you are greeted by Evennia's default
 connection screen. It welcomes you, gives you the server version and
-tells you how to connect. Effective, but not very exciting. You will
-most likely want to change this to be more unique for your game.
+tells you how to connect.
+
+::
+
+    ==============================================================
+     Welcome to Evennia, version SVN-Alpha! If you have an existing account, connect to it by typing:       connect <email> <password>  If you need to create an account, type (without the <>'s):       create "<username>" <email> <password> Enter help for more info. look will re-show this screen. ==============================================================
+
+Effective, but not very exciting. You will most likely want to change
+this to be more unique for your game.
 
 You can customize the connection screen easily. If you look in
 ``game/gamesrc/world`` you will find a module named

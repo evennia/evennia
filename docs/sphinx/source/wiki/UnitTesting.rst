@@ -1,5 +1,3 @@
-Using and writing unit tests for Evennia.
-
 Unit Testing
 ============
 

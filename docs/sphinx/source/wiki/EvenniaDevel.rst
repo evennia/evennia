@@ -1,13 +1,10 @@
 Summary of changes in devel-branch
 
-<wiki:toc max\_depth
-
-"3" />
-
-*Note: The devel branch merged with trunk as of r970. So if you are new
-to Evennia, this page is of no real interest to you.*
+*Note: The devel branch merged with trunk as of r970 (aug2010). So if
+you are new to Evennia, this page is of no real interest to you.*
 
 Introduction
+============
 
 The Evennia that has been growing in trunk for the last few years is a
 wonderful piece of software, with which you can do very nice coding
@@ -37,7 +34,8 @@ report bugs, you can get it from the *griatch* branch with
 
 ``svn checkout http://evennia.googlecode.com/svn/branches/griatch evennia-devel``
 
-Concepts changed from trunk to devel=
+Concepts changed from trunk to devel
+====================================
 
 Script parent -> Typeclasses
 ----------------------------

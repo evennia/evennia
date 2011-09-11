@@ -1,5 +1,3 @@
-: Using the Evennia batch code processor
-
 The Batch-Code processor
 ========================
 

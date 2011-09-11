@@ -4,7 +4,7 @@ Commands in Evennia's default command set
 =========================================
 
 *Note: This wiki page is auto-generated from the current status of the
-code base and should not be edited manually.*\_
+code base and should not be edited manually.*
 
 The commands are ordered after their given help category, which should
 usually match a module in ``src/commands/default``. So for example, the

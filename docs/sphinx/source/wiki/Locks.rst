@@ -1,9 +1,5 @@
-<wiki:toc max\_depth
-
-"3" />
-======
-
-Locks =
+Locks
+=====
 
 For most games it is a good idea to restrict what people can do. In
 Evennia such restrictions are applied and checked by something called

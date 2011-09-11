@@ -1,17 +1,22 @@
+Contributing to Evennia
+=======================
+
 Wanna help out? Great! Here's how.
 
 Contributing with Documentation
-===============================
+-------------------------------
 
 Evennia depends heavily on good documentation and we are always looking
-for extra eyes and hands to improve it. Even a small thing such as
-fixing typos is a great help.
+for extra eyes and hands to improve it. Even small things such as fixing
+typos is a great help.
 
-Contributing with Code
-======================
+Contributing with Code through a clone repository
+-------------------------------------------------
 
-Code sharing with Clone repository
-----------------------------------
+We always need more eyes and hands on the code. Even if you don't feel
+confident with tackling any major bugs or features, just correcting
+typos, adjusting formatting or simply using the thing helps us a lot in
+improving things.
 
 The most elegant way to contribute code to Evennia is to use Mercurial
 to create an online *clone* of the Evennia repository and make your
@@ -43,11 +48,12 @@ changes to that. .
 From your online repo, Evennia devs can then, assuming the change is
 deemed good, pick and merge your work into Evennia proper.
 
-Patches
--------
+Contributing with Patches
+-------------------------
 
-It's recommended to use a clone repository as described above. Otherwise
-you are also welcome to submit your suggested Evennia fixes/addendums as
+It's recommended to use a clone repository as described above, but for
+small, well isolated things you are also welcome to submit your
+suggested Evennia fixes/addendums as
 `patches <https://secure.wikimedia.org/wikipedia/en/wiki/Patch_(computing).html>`_
 if you like. Depending on what fits best, post your patch to the `issue
 tracker <https://code.google.com/p/evennia/issues/list.html>`_ or to the

@@ -1,11 +1,7 @@
 Workshop: Default-game whitepage
 
-<wiki:toc max\_depth
-
-"3" />
-======
-
-Introduction =
+Introduction
+============
 
 This is an initiative to create a "base" game system to be shipped with
 Evennia in a "contrib" folder. The game is an independent

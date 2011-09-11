@@ -1,5 +1,3 @@
-: Using the Evennia command batch processors
-
 The Batch-Command processor
 ===========================
 

@@ -2,7 +2,7 @@ Giving permissions to your staff
 ================================
 
 *OBS: This gives only a brief introduction to the access system. Locks
-and permissions are fully detailed `here <Locks.html>`_.*
+and permissions are fully detailed* `here <Locks.html>`_.
 
 The super user
 --------------

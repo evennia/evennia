@@ -1,9 +1,5 @@
-<wiki:toc max\_depth
-
-"3" />
-======
-
-The ``@py`` command =
+The ``@py`` command
+===================
 
 The ``@py`` command supplied with the default command set of Evennia
 allows you to execute Python commands directly from inside the game. An

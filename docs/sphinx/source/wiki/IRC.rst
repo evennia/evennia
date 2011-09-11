@@ -14,12 +14,8 @@ internet connection. For IRC operation you also need
 is available simply as a package *python-twisted-words* in many Linux
 distros, or directly downloadable from the link.
 
-<wiki:toc max\_depth
-
-"3" />
-======
-
-Configuring IRC =
+Configuring IRC
+---------------
 
 To configure IRC, you'll need to activate it in your settings file. You
 do this by copying the ``IRC_ENABLED`` flag from

@@ -22,6 +22,8 @@ Evennia links
 Third-party Evennia links
 -------------------------
 
+-  `Read Evennia's manual on
+   ReadTheDocs <http://evennia.readthedocs.org>`_
 -  `Hosting Evennia on
    Webfaction <http://lotek.heavy.ch/evennia#Hosting>`_
 -  `Evennia on Ohloh <http://www.ohloh.net/projects/6906>`_

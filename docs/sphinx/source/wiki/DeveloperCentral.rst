@@ -14,17 +14,13 @@ General Evennia development information
 ---------------------------------------
 
 -  `Evennia Licensing FAQ <Licensing.html>`_
--  `Contributing code to Evennia <Contributing.html>`_
+-  `Contributing to Evennia <Contributing.html>`_
 -  `Evennia Code Style
    Guide <http://evennia.googlecode.com/svn/trunk/CODING_STYLE>`_
    (Important!)
 -  `Policy for 'MUX-like' default commands <UsingMUXAsAStandard.html>`_
-
-<wiki:comment>
-
--  `Setting up a Bazaar environment for coding <BazaarDevel.html>`_
-
-</wiki:comment>
+-  `Setting up a Bazaar environment for coding <BazaarDevel.html>`_ (not
+   updated)
 
 Evennia Component Documentation
 -------------------------------

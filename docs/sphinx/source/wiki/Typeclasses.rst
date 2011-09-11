@@ -17,7 +17,7 @@ class methods that you shouldn't edit.
 
 Properties available to all typeclassed entities (Players, Objects,
 Scripts)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------------------------------------------
 
 -  ``key`` - the main identifier for the entity, say 'Rose', 'myscript'
    or 'Paul'. ``name`` is an alias that can also be used.
@@ -46,7 +46,7 @@ properties. Go to the pages for `Objects <Objects.html>`_,
 more info.
 
 Things to remember when using TypeClasses
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------------
 
 Typeclasses mostly behave like normal Python classes - you can
 add/overload custom methods and inherit your own classes from them -
@@ -132,7 +132,7 @@ object itself. They are covered in a separate entry
 `here <Attributes.html>`_.
 
 Why split it like this?
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 The *Database model* (Django model) allows for saving data to the
 database and is a great place for storing persistent data an object
@@ -219,7 +219,7 @@ Another example:
    :align: center
    :alt: 
 Caveats of the typeclass system
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------
 
 While there are many advantages to the typeclass system over working
 with Django models directly, there are also some caveats to remember.
