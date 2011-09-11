@@ -132,7 +132,24 @@ find longer descriptions of these in ``gamesrc/scripts/basescript.py``.
 ::
 
     import random
-    from game.gamesrc.scripts.basescript import Scriptclass Weather(Script):      "Displays weather info. Meant to be attached to a room."    def at_script_creation(self):         "Called once, during initial creation"         self.key = "weather_script"         self.desc = "Gives random weather messages."         self.interval = 60 * 5 # every 5 minutes         self.persistent = True    self.at_repeat(self):         "called every self.interval seconds."                 rand = random.random()         if rand < 0.5:             weather = "A faint breeze is felt."         elif rand < 0.7:             weather = "Clouds sweep across the sky."                                   else:             weather = "There is a light drizzle of rain."         # send this message to everyone inside the object this         # script is attached to (likely a room)         self.obj.msg_contents(weather)
+    from game.gamesrc.scripts.basescript import Scriptclass Weather(Script): 
+        "Displays weather info. Meant to be attached to a room."    def at_script_creation(self):
+            "Called once, during initial creation"
+            self.key = "weather_script"
+            self.desc = "Gives random weather messages."
+            self.interval = 60 * 5 # every 5 minutes
+            self.persistent = True    self.at_repeat(self):
+            "called every self.interval seconds."        
+            rand = random.random()
+            if rand < 0.5:
+                weather = "A faint breeze is felt."
+            elif rand < 0.7:
+                weather = "Clouds sweep across the sky."                          
+            else:
+                weather = "There is a light drizzle of rain."
+            # send this message to everyone inside the object this
+            # script is attached to (likely a room)
+            self.obj.msg_contents(weather)
 
 This is a simple weather script that we can put on an object. Every 5
 minutes it will tell everyone inside that object how the weather is.

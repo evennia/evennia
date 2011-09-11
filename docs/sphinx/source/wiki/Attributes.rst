@@ -29,7 +29,9 @@ assign data to it. Let's try to save some data to a *Rose* (an
 
 ::
 
-    # saving rose.has_thorns = True# getting it back is_ouch = rose.has_thorns
+    # saving
+    rose.has_thorns = True# getting it back
+    is_ouch = rose.has_thorns
 
 Whether this data is saved *persistently* to the database or not (i.e.
 if it survives a server reboot) depends on the setting of the variable
@@ -41,7 +43,9 @@ of ``FULL_PERSISTENCE``, use the ``db`` (!DataBase) interface.
 
 ::
 
-    # saving  rose.db.has_thorns = True # getting it back is_ouch = rose.db.has_thorns
+    # saving 
+    rose.db.has_thorns = True # getting it back
+    is_ouch = rose.db.has_thorns
 
 This creates a new ``Attribute`` object and links it uniquely to
 ``rose``. Using ``db`` ``will`` always save data to the database.
@@ -51,7 +55,9 @@ It works in the same way:
 
 ::
 
-    # saving  rose.ndb.has_thorns = True # getting it back is_ouch = rose.ndb.has_thorns
+    # saving 
+    rose.ndb.has_thorns = True # getting it back
+    is_ouch = rose.ndb.has_thorns
 
 (Using ``ndb`` like this will **NEVER** use the database.)
 
@@ -156,7 +162,18 @@ Examples of valid attribute data:
 
 ::
 
-    # a single value obj.db.test1 = 23 obj.db.test1 = False  # a database object (will be stored as dbref) obj.db.test2 = myobj # a list of objects obj.db.test3 = [obj1, 45, obj2, 67] # a dictionary obj.db.test4 = 'str':34, 'dex':56, 'agi':22, 'int':77 # a mixed dictionary/list obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]# a tuple will stored and returned as a list [1,2,3,4,5]! obj.db.test6 = (1,2,3,4,5)
+    # a single value
+    obj.db.test1 = 23
+    obj.db.test1 = False 
+    # a database object (will be stored as dbref)
+    obj.db.test2 = myobj
+    # a list of objects
+    obj.db.test3 = [obj1, 45, obj2, 67]
+    # a dictionary
+    obj.db.test4 = 'str':34, 'dex':56, 'agi':22, 'int':77
+    # a mixed dictionary/list
+    obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]# a tuple will stored and returned as a list [1,2,3,4,5]!
+    obj.db.test6 = (1,2,3,4,5)
 
 Notes
 -----

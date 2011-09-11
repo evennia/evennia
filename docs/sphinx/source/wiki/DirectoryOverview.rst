@@ -61,7 +61,24 @@ the server.
 
     game/
       evennia.py
-      manage.py  gamesrc/     commands/        basecommand.py       basecmdset.py       examples/         cmdset_red_button.py     scripts/       basescript.py       examples/         red_button_sripts.py     objects/       baseobjects.py       examples/         red_button.py     world/            examples/         batch_cmds.ev         batch_code.py
+      manage.py  gamesrc/
+        commands/ 
+          basecommand.py
+          basecmdset.py
+          examples/
+            cmdset_red_button.py
+        scripts/
+          basescript.py
+          examples/
+            red_button_sripts.py
+        objects/
+          baseobjects.py
+          examples/
+            red_button.py
+        world/     
+          examples/
+            batch_cmds.ev
+            batch_code.py
 
 ``game/gamesrc/``
 ~~~~~~~~~~~~~~~~~
@@ -137,7 +154,17 @@ bugs or features missing, file a bug report or send us a message.
 ::
 
     src/
-      settings_defaults.py  commands/   comms/   help/   objects/   locks/   players/   scripts/   server/   typeclasses/   utils/   web/
+      settings_defaults.py  commands/
+      comms/
+      help/
+      objects/
+      locks/
+      players/
+      scripts/
+      server/
+      typeclasses/
+      utils/
+      web/
 
 Most of the folders in ``src/`` are technically "Django apps",
 identified by containing a file ``models.py`` and usually

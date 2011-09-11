@@ -19,7 +19,14 @@ Here's how to define a new Object typeclass in code:
 
 ::
 
-    from game.gamesrc.objects.baseobjects import Objectclass Rose(Object):     """     This creates a simple rose object             """         at_object_creation(self):         "this is called only once, when object is first created"         # add a persistent attribute 'desc' to object.         self.db.desc = "This is a pretty rose with thorns."
+    from game.gamesrc.objects.baseobjects import Objectclass Rose(Object):
+        """
+        This creates a simple rose object        
+        """    
+        at_object_creation(self):
+            "this is called only once, when object is first created"
+            # add a persistent attribute 'desc' to object.
+            self.db.desc = "This is a pretty rose with thorns."
 
 Save your class to a module under ``game/gamesrc/objects``, say
 ``flowers.py``. Now you just need to point to the class *Rose* with the
@@ -34,7 +41,8 @@ To create a new object in code, use the method
 
 ::
 
-    from src.utils import create new_rose = create.create_object("game.gamesrc.objects.flowers.Rose", key="MyRose")
+    from src.utils import create
+    new_rose = create.create_object("game.gamesrc.objects.flowers.Rose", key="MyRose")
 
 (You have to give the full path to the class in this case.
 ``create.create_object`` is a powerful function that should be used for

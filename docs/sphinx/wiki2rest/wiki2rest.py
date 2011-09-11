@@ -11,6 +11,11 @@
 #
 #      This is a ruby program! Sorry, it was the best match I could find to do this. 
 #      So if you don't have ruby, you need that too. 
+#      
+#      You also need to patch a bug in above program to make code snippets work. From the wiki2rest folder,
+#      apply the patch like this: 
+#  
+#        patch -p0 -i wiki2html.patch 
 #
 #   2) Install pandoc: 
 #

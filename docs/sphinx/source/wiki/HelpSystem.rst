@@ -48,7 +48,16 @@ Example (from a module with command definitions):
 
 ::
 
-    class CmdMyCmd(Command):    """    mycmd - my very own command   Usage:       mycmd[/switches] <args>   Switches:      test - test the command      run  - do something else   This is my own command that does things to you when you    supply it with arguments.    """    ...    help_category = "Building"     ...
+    class CmdMyCmd(Command):
+       """
+       mycmd - my very own command   Usage: 
+         mycmd[/switches] <args>   Switches:
+         test - test the command
+         run  - do something else   This is my own command that does things to you when you
+       supply it with arguments.    """
+       ...
+       help_category = "Building"
+        ...
 
 So the text at the very top of the command class definition is the
 class' ``__doc__``-string and what will be shown to users looking for
@@ -87,7 +96,10 @@ You can create new help entries in code by using
 
 ::
 
-    from src.utils import create  entry = create.create_help_entry("emote",                                   "Emoting is important because ...",                                   category="Roleplaying", locks="view:all()"):
+    from src.utils import create 
+    entry = create.create_help_entry("emote", 
+                                     "Emoting is important because ...", 
+                                     category="Roleplaying", locks="view:all()"):
 
 From inside the game those with the right permissions can use the
 ``@sethelp`` command to add and modify help entries.

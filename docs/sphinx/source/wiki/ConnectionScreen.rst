@@ -8,7 +8,11 @@ tells you how to connect.
 ::
 
     ==============================================================
-     Welcome to Evennia, version SVN-Alpha! If you have an existing account, connect to it by typing:       connect <email> <password>  If you need to create an account, type (without the <>'s):       create "<username>" <email> <password> Enter help for more info. look will re-show this screen. ==============================================================
+     Welcome to Evennia, version SVN-Alpha! If you have an existing account, connect to it by typing:
+          connect <email> <password>
+     If you need to create an account, type (without the <>'s):
+          create "<username>" <email> <password> Enter help for more info. look will re-show this screen.
+    ==============================================================
 
 Effective, but not very exciting. You will most likely want to change
 this to be more unique for your game.

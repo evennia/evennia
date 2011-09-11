@@ -288,14 +288,18 @@ isolated new folder *mudenv*:
 
 ::
 
-    python virtualenv mudenv --no-site-packages cd mudenv
+    python virtualenv mudenv --no-site-packages
+    cd mudenv
 
 Now we should be in our new directory *mudenv*. Next we activate the
 virtual environment in here.
 
 ::
 
-    # for Linux: source bin/activate # for Windows: <path_to_this_place>\bin\activate.bat
+    # for Linux:
+    source bin/activate
+    # for Windows:
+    <path_to_this_place>\bin\activate.bat
 
 In here you can play around and install python packages of any version
 without affecting your normal system installation at all. Next we get

@@ -22,7 +22,8 @@ your ``game/settings.py`` file:
 
 ::
 
-    USE_I18N = True LANGUAGE_CODE = 'en'
+    USE_I18N = True
+    LANGUAGE_CODE = 'en'
 
 Here ``'en'`` should be changed to the abbreviation for one of the
 supported languages found in ``locale/``. Restart the server to activate

@@ -34,7 +34,10 @@ inheriting from ``game.gamesrc.objects.baseobjecs.Character``.
 
 ::
 
-    from game.gamesrc.objects.baseobjects import Characterclass ColourableCharacter(Character):     at_object_creation(self):                       # set a colour config value         self.db.config_colour = True
+    from game.gamesrc.objects.baseobjects import Characterclass ColourableCharacter(Character):
+        at_object_creation(self):              
+            # set a colour config value
+            self.db.config_colour = True
 
 Above we set a simple config value as an `attribute <Attributes.html>`_.
 
@@ -74,7 +77,11 @@ original. Here's how it could look:
 
 ::
 
-    from src.utils import ansimsg(self, message, from_obj=None, data=None):     "our custom msg()"     if not self.db.config_colour:         message = ansi.parse_ansi(message, strip_ansi=True)     self.dbobj.msg(message, from_obj, data)
+    from src.utils import ansimsg(self, message, from_obj=None, data=None):
+        "our custom msg()"
+        if not self.db.config_colour:
+            message = ansi.parse_ansi(message, strip_ansi=True)
+        self.dbobj.msg(message, from_obj, data)
 
 Above we create a custom version of the ``msg()`` method that cleans all
 ansi characters if the config value is not set to True. Once that's
@@ -100,7 +107,22 @@ for configuration down the line).
 
 ::
 
-    from game.gamesrc.commands.basecommand import MuxCommandclass ConfigColourCmd(MuxCommand):     """     Configures your colour    Usage:       @setcolour on|off    This turns ansii-colours on/off.      Default is on.      """    key = "@setcolour"     aliases = ["@setcolor"]    def func(self):         "Implements the command"          if not self.args or not self.args in ("on", "off"):             self.caller.msg("Usage: @setcolour on|off")              return         if self.args == "on":             self.caller.db.config_colour = True         else:             self.caller.db.config_colour = False           self.caller.msg("Colour was turned %s." % self.args)
+    from game.gamesrc.commands.basecommand import MuxCommandclass ConfigColourCmd(MuxCommand):
+        """
+        Configures your colour    Usage:
+          @setcolour on|off    This turns ansii-colours on/off. 
+        Default is on. 
+        """    key = "@setcolour"
+        aliases = ["@setcolor"]    def func(self):
+            "Implements the command" 
+            if not self.args or not self.args in ("on", "off"):
+                self.caller.msg("Usage: @setcolour on|off") 
+                return
+            if self.args == "on":
+                self.caller.db.config_colour = True
+            else:
+                self.caller.db.config_colour = False  
+            self.caller.msg("Colour was turned %s." % self.args)
 
 Lastly, we make this command available to the user by adding it to the
 default command set. Easiest is to add it to the end of
@@ -108,7 +130,14 @@ default command set. Easiest is to add it to the end of
 
 ::
 
-    from game.gamesrc.commands import configcmds class DefaultCmdSet(cmdset_default.DefaultCmdSet):         key = "DefaultMUX"          def at_cmdset_creation(self):                super(DefaultCmdSet, self).at_cmdset_creation()                 self.add(configcmds.ConfigColourCmd())
+    from game.gamesrc.commands import configcmds
+    class DefaultCmdSet(cmdset_default.DefaultCmdSet):
+       
+        key = "DefaultMUX"
+        
+        def at_cmdset_creation(self):       
+            super(DefaultCmdSet, self).at_cmdset_creation()        
+            self.add(configcmds.ConfigColourCmd())
 
 When adding a new command to a cmdset like this you need to run the
 ``@reload`` command (or reboot the server). From here on out, your users

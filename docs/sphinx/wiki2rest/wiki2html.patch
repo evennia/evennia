@@ -1,0 +1,14 @@
+Index: wiki2html/lib/wiki_syntax.rb
+===================================================================
+--- wiki2html/lib/wiki_syntax.rb	(revision 1961)
++++ wiki2html/lib/wiki_syntax.rb	(working copy)
+@@ -227,7 +227,8 @@
+         block
+       else
+         # remove newlines within normal (non-code) blocks of text
+-        "<p>" + block.gsub(/\n/, ' ') + "</p>"
++        #"<p>" + block.gsub(/\n/, ' ') + "</p>"
++        "<p>" + block + "</p>"
+       end
+     end.join
+   end

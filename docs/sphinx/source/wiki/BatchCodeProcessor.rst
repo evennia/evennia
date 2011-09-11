@@ -75,7 +75,13 @@ Below is a version of the example file found in
 
     #
     # This is an example batch-code build file for Evennia. 
-    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo) chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again."  caller.msg(string % (table, chair))
+    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search
+    from game.gamesrc.objects.examples import red_button
+    from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button", 
+                                      location=limbo, aliases=["button"])# caller points to the one running the script
+    caller.msg("A red button was created.")#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo)
+    chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again." 
+    caller.msg(string % (table, chair))
 
 This uses Evennia's Python API to create three objects in sequence.
 
@@ -137,7 +143,11 @@ batch-processor version of ``look``).
 
 ::
 
-    from src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")
+    from src.utils import create, search
+    from game.gamesrc.objects.examples import red_button
+    from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]red_button = create.create_object(red_button.RedButton, key="Red button", 
+                                      location=limbo, aliases=["button"])# caller points to the one running the script
+    caller.msg("A red button was created.")
 
 Compare with the example code given earlier. Notice how the content of
 ``#HEADER`` has been pasted at the top of the ``#CODE`` block. Use

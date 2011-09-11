@@ -60,7 +60,21 @@ Below is a version of the example file found in
 
 ::
 
-    # # This is an example batch build file for Evennia.  ## This creates a red button button@create button:examples.red_button.RedButton# (This comment ends input for @create) # Next command. Let's create something. @set button/desc =    This is a large red button. Now and then    it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You  know you want to!     # (This ends the @set command). Note that single line breaks  # and extra whitespace in the argument are ignored. Empty lines  # translate into line breaks in the output. # Now let's place the button where it belongs (let's say limbo #2 is  # the evil lair in our example)@teleport #2# (This comments ends the @teleport command.)  # Now we drop it so others can see it.  # The very last command in the file needs not be ended with #.drop button
+    #
+    # This is an example batch build file for Evennia. 
+    ## This creates a red button button@create button:examples.red_button.RedButton# (This comment ends input for @create)
+    # Next command. Let's create something. @set button/desc = 
+      This is a large red button. Now and then 
+      it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You 
+    know you want to! 
+      
+    # (This ends the @set command). Note that single line breaks 
+    # and extra whitespace in the argument are ignored. Empty lines 
+    # translate into line breaks in the output.
+    # Now let's place the button where it belongs (let's say limbo #2 is 
+    # the evil lair in our example)@teleport #2# (This comments ends the @teleport command.) 
+    # Now we drop it so others can see it. 
+    # The very last command in the file needs not be ended with #.drop button
 
 To test this, run ``@batchcommand`` on the file. A button will be
 created, described and dropped in Limbo. All commands will be executed

@@ -113,5 +113,8 @@ are trouble.
 
 ::
 
-    <Directory "/home/<yourname>/evennia/game/web">                 Options +ExecCGI                 Allow from all </Directory>
+    <Directory "/home/<yourname>/evennia/game/web">
+                    Options +ExecCGI
+                    Allow from all
+    </Directory>
 
