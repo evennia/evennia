@@ -48,8 +48,6 @@ Evennia:
    Obs- Python3.x is not supported yet.
 -  The default database system SQLite3 only comes as part of Python2.5
    and later.
--  Python is available in all modern operating systems (Linux, Mac,
-   etc).
 -  Windows users are recommended to use ActivePython
    (http://www.activestate.com/activepython)
 
@@ -102,7 +100,9 @@ Python itself is definitely available through all distributions. On
 Debian-derived systems you can do something like this (as root) to get
 all you need:
 
-``apt-get install python python-django python-twisted mercurial``
+::
+
+    apt-get install python python-django python-twisted mercurial
 
 If some or all dependencies are not readily available (for example,
 running some flavors of !RedHat/CentOS or an older Debian version) you
@@ -112,7 +112,9 @@ or the alternative
 `pip <http://www.pip-installer.org/en/latest/index.html>`_:
 ``easy_install django twisted pil mercurial``
 
-``pip install django twisted pil mercurial``
+::
+
+    pip install django twisted pil mercurial
 
 **Windows** users may choose to install
 `ActivePython <http://www.activestate.com/activepython>`_ instead of the
@@ -121,10 +123,12 @@ usual Python. If ActivePython is installed, you can use
 same manner as ``easy_install``/``pip`` above. This *greatly* simplifies
 getting started on Windows:
 
-``pypm install Django Twisted PIL Mercurial``
+::
 
-Another simple alternative (for all platforms) is to set up a *virtual
-Python environment* and install to that. This is covered
+    pypm install Django Twisted PIL Mercurial
+
+}} Another simple alternative (for all platforms) is to set up a
+*virtual Python environment* and install to that. This is covered
 `here <GettingStarted#Optional:%3Ci%3EA%3C/i%3Eseparate%3Ci%3Einstallation%3C/i%3Eenvironment%3Ci%3Ewith%3C/i%3Evirtualenv.html>`_.
 
 Windows users not using ActivePython or virtual environments will have
@@ -142,14 +146,18 @@ For command-line Mercurial client users, something like this will do the
 trick (first place yourself in a directory where you want a new folder
 ``evennia`` to be created):
 
-``hg clone https://code.google.com/p/evennia/ evennia``
+::
+
+    hg clone https://code.google.com/p/evennia/ evennia
 
 (``hg`` is the chemical abbreviation of mercury, hence the use of ``hg``
 for ``mercurial``)
 
 In the future, you just do
 
-``hg pull``
+::
+
+    hg pull
 
 from your ``evennia/`` directory to obtain the latest updates.
 
@@ -163,7 +171,9 @@ From within the Evennia ``game`` directory (``evennia/game/``, if you
 followed the Subversion instructions above) type the following to
 trigger the automatic creation of an empty ``settings.py`` file.
 
-``python manage.py``
+::
+
+    python manage.py
 
 Your new ``settings.py`` file will just be an empty template initially.
 In ``evennia/src/settings_default.py`` you will find the settings that
@@ -190,7 +200,9 @@ Finally, enter the following command in a terminal or shell to create
 the database file (in the case of SQLite) and populate the database with
 the standard tables and values:
 
-``python manage.py syncdb``
+::
+
+    python manage.py syncdb
 
 You should be asked for a superuser username, email, and password. Make
 **sure** you create a superuser here when asked, this becomes your login
@@ -202,7 +214,9 @@ double-check your ``settings.py`` file.
 If you installed ``South`` for database schema migrations, you will then
 need to do this:
 
-``python manage.py migrate``
+::
+
+    python manage.py migrate
 
 This will migrate the server to the latest version. If you don't use
 ``South``, migrations will not be used and your server will already be
@@ -215,7 +229,9 @@ Step 3: Starting and Stopping the Server
 To start the server, make sure you're in the ``evennia/game`` directory
 and execute ``evennia.py`` like this:
 
-``python evennia.py -i start``
+::
+
+    python evennia.py -i start
 
 This starts the server and portal. The ``-i`` flag means that the server
 starts in *interactive mode*, as a foreground process. You will see
@@ -227,7 +243,9 @@ and debugging but is not recommended for production environments. For
 the latter you'll want to run it as a *daemon* by skipping the ``-i``
 flag:
 
-``python evennia.py start``
+::
+
+    python evennia.py start
 
 This will start the server as a background process. Server messages will
 be logged to a file you specify in your configuration file (default is a
@@ -235,7 +253,9 @@ file in ``game/logs``).
 
 To stop Evennia, do:
 
-``python evennia.py stop``
+::
+
+    python evennia.py stop
 
 Step 4: Connecting to the server
 --------------------------------
@@ -269,7 +289,11 @@ or pypm (see above notes).
 
 Whenever you see a commit or mailing list message instructing you to run
 migrations to update your DB schema, simply do the following from within
-the ``evennia/game`` directory: ``python manage.py migrate``
+the ``evennia/game`` directory:
+
+::
+
+    python manage.py migrate
 
 You should see migrations being applied, and should be left with an
 updated DB schema afterwards.
