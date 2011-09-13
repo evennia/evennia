@@ -8,9 +8,6 @@ the database.
 import sys
 import os
 
-# i18n
-from django.utils.translation import ugettext as _
-
 # Tack on the root evennia directory to the python path.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -100,9 +97,13 @@ from src.settings_default import *
     settings_file.write(string)
     settings_file.close()
 
-    print _("""
+    # obs - this string cannot be under i18n since settings didn't exist yet.
+    print """
     Welcome to Evennia (version %(version)s)! 
-    We created a fresh settings.py file for you.""") % {'version': VERSION} 
+    We created a fresh settings.py file for you.""" % {'version': VERSION} 
+
+# i18n
+from django.utils.translation import ugettext as _
 
 #------------------------------------------------------------
 # Test the import of the settings file
