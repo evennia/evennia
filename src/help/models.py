@@ -50,7 +50,7 @@ class HelpEntry(SharedMemoryModel):
     # a string of permissionstrings, separated by commas. 
     db_permissions = models.CharField(max_length=255, blank=True)    
     # lock string storage
-    db_lock_storage = models.TextField(blank=True)
+    db_lock_storage = models.CharField(max_length=512, blank=True)
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore. 
     db_staff_only = models.BooleanField(default=False) 

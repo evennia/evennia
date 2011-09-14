@@ -177,7 +177,7 @@ class ObjectDB(TypedObject):
     db_destination = models.ForeignKey('self', related_name="destinations_set", 
                                        blank=True, null=True)
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.TextField(null=True)
+    db_cmdset_storage = models.CharField(max_length=255, null=True)
 
     # Database manager
     objects = ObjectManager()

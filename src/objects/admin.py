@@ -7,7 +7,7 @@ from src.objects.models import ObjAttribute, ObjectDB
 from django.contrib import admin
 
 class ObjAttributeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_value', 'db_mode', 'db_obj')
+    list_display = ('id', 'db_key', 'db_value', 'db_lock_storage', 'db_obj')
     list_display_links = ("id", 'db_key')
     ordering = ["db_obj", 'db_key']
     search_fields = ['id', 'db_key', 'db_obj']

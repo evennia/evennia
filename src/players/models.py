@@ -154,7 +154,7 @@ class PlayerDB(TypedObject):
     db_obj = models.ForeignKey("objects.ObjectDB", null=True)
     
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.TextField(null=True)
+    db_cmdset_storage = models.CharField(max_length=255, null=True)
 
     # Database manager 
     objects = manager.PlayerManager()

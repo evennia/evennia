@@ -104,7 +104,7 @@ class Msg(SharedMemoryModel):
     db_message = models.TextField()
     db_date_sent = models.DateTimeField(editable=False, auto_now_add=True)
     # lock storage
-    db_lock_storage = models.TextField(blank=True)
+    db_lock_storage = models.CharField(max_length=512, blank=True)
     # These are settable by senders/receivers/channels respectively.
     # Stored as a comma-separated string of dbrefs. Can be used by the
     # game to mask out messages from being visible in the archive (no
@@ -113,7 +113,7 @@ class Msg(SharedMemoryModel):
     db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
     db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
     # Storage of lock strings
-    db_lock_storage = models.TextField(null=True)    
+    #db_lock_storage = models.TextField(null=True)    
  
     # Database manager 
     objects = managers.MsgManager()
@@ -402,7 +402,7 @@ class Channel(SharedMemoryModel):
     # Whether this channel should remember its past messages
     db_keep_log = models.BooleanField(default=True)
     # Storage of lock definitions
-    db_lock_storage = models.TextField(blank=True)
+    db_lock_storage = models.CharField(max_length=512, blank=True)
  
     # Database manager
     objects = managers.ChannelManager()

@@ -96,7 +96,7 @@ class Attribute(SharedMemoryModel):
     # access through the value property 
     db_value = models.TextField(blank=True, null=True)
     # Lock storage 
-    db_lock_storage = models.TextField(blank=True)    
+    db_lock_storage = models.CharField(max_length=512, blank=True)    
     # references the object the attribute is linked to (this is set 
     # by each child class to this abstact class)
     db_obj =  None # models.ForeignKey("RefencedObject")
@@ -411,9 +411,9 @@ class TypedObject(SharedMemoryModel):
     # Creation date
     db_date_created = models.DateTimeField(editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
-    db_permissions = models.CharField(max_length=512, blank=True)
+    db_permissions = models.CharField(max_length=255, blank=True)
     # Lock storage 
-    db_lock_storage = models.TextField(blank=True)    
+    db_lock_storage = models.CharField(max_length=512, blank=True)    
 
     # Database manager
     objects = managers.TypedObjectManager()
