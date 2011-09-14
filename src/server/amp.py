@@ -268,13 +268,12 @@ class AMPProtocol(amp.AMP):
         #print "serveradmin (server side):", sessid, operation, data
 
         if operation == 'PCONN': #portal_session_connect
-            # create a new, session and sync it
+            # create a new session and sync it
             sess = ServerSession()
             sess.sessionhandler = self.factory.server.sessions
             sess.load_sync_data(data)            
             if sess.logged_in and sess.uid:
                 # this can happen in the case of auto-authenticating protocols like SSH
-                
                 sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
                 sess.at_sync() # this runs initialization without acr
 
@@ -296,7 +295,6 @@ class AMPProtocol(amp.AMP):
                 sess.load_sync_data(sessdict)
                 if sess.uid:
                     sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
-                sess.at_sync()
                 sesslist.append(sess)
             # replace sessions on server
             server_sessionhandler.portal_session_sync(sesslist)            

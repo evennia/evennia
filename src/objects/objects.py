@@ -85,6 +85,7 @@ class Object(TypeClass):
         the server without the players logging out), put it here.
         """
         pass 
+    
 
     def basetype_posthook_setup(self):
         """

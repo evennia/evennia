@@ -53,8 +53,10 @@ class ServerSession(Session):
         player = self.get_player()
         character = self.get_character()
         if player:
+            #print "sync: at_init() - player"
             player.at_init()
         if character:
+            #print "sync: at_init() - character"
             character.at_init()
             # start (persistent) scripts on this object
             ScriptDB.objects.validate(obj=character)
@@ -82,6 +84,7 @@ class ServerSession(Session):
         self.user.save()        
         
         # player init
+        #print "at_init() - player"
         player.at_init()
         
         # Check if this is the first time the *player* logs in 
@@ -91,6 +94,7 @@ class ServerSession(Session):
         player.at_pre_login()        
 
         character = player.character
+        #print "at_init() - character"
         character.at_init()
         if character: 
             # this player has a character. Check if it's the
@@ -100,9 +104,6 @@ class ServerSession(Session):
                 del character.db.FIRST_LOGIN            
             # run character login hook
             character.at_pre_login()
-
-        # this is always called first
-        player.at_init()
 
         self.log(_('Logged in: %(self)s') % {'self': self})
 
