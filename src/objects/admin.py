@@ -6,21 +6,16 @@
 from src.objects.models import ObjAttribute, ObjectDB
 from django.contrib import admin
 
-class ObjAttributeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_value', 'db_lock_storage', 'db_obj')
-    list_display_links = ("id", 'db_key')
-    ordering = ["db_obj", 'db_key']
-    search_fields = ['id', 'db_key', 'db_obj']
-    save_as = True 
-    save_on_top = True   
-    list_select_related = True 
-admin.site.register(ObjAttribute, ObjAttributeAdmin)
+class ObjAttributeInline(admin.TabularInline):
+    model = ObjAttribute
+    fields = ('db_key', 'db_value')
+    max_num = 1
 
 class ObjectDBAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_typeclass_path', 'db_location', 'db_player')
+    inlines = [ObjAttributeInline]
+    list_display = ('id', 'db_key', 'db_location', 'db_player', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
-    ordering = ['id', 'db_typeclass_path']
-    readonly_fields = ['db_permissions', 'db_lock_storage']
+    ordering = ['db_player', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
     save_as = True 
     save_on_top = True

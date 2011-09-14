@@ -22,11 +22,12 @@ SERVER_VERSION = get_evennia_version()
 # Setup lists of the most relevant apps so 
 # the adminsite becomes more readable. 
 
-USER_RELATED = ['Auth', 'Players']
+USER_RELATED = ['Players']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
 CONNECTIONS = ['Irc', 'Imc2']
 WEBSITE = ['Flatpages', 'News', 'Sites']
+
 
 # The main context processor function
 
