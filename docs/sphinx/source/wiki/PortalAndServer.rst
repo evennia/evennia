@@ -7,9 +7,9 @@ described `here <StartStopReload.html>`_.
 
 https://2498159658166209538-a-1802744773732722657-s-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia*server*portal.png
 
-As seen above, the Server and Portal are glued together via an AMP
-(Asynchronous Messaging Protocol) connection. This allows the two
-programs to communicate.
+The Server and Portal are glued together via an AMP (Asynchronous
+Messaging Protocol) connection. This allows the two programs to
+communicate.
 
 Portal and Server Sessions
 --------------------------
@@ -24,15 +24,16 @@ Session* is created on the Portal side. This session object looks
 different depending on which protocol is used to connect, but all still
 have a minimum set of attributes that are generic to all sessions.
 
-These common properties are piped through AMP to the Server, who is now
-informed a new connection has been established. On the Server side, a
-*Server Session* object is created to represent this. There is only one
-type of Server Session. It looks the same regardless of how the Player
-connects, it leaves such details up to the Portal.
+These common properties are piped from the Portal, through AMP, to the
+*Server*, which is now informed a new connection has been established.
+On the Server side, a *Server Session* object is created to represent
+this. There is only one type of Server Session. It looks the same
+regardless of how the Player connects.
 
 From now on, there is a one-to-one match between the Server Session on
-one side and the Portal Session on the other. Data arriving to the
-Portal Session is sent on to its mirror Server session and vice versa.
+one side of the AMP connection and the Portal Session on the other. Data
+arriving to the Portal Session is sent on to its mirror Server session
+and vice versa.
 
 During certain situations, the portal- and server-side sessions are
 "synced" with each other:
@@ -43,12 +44,12 @@ During certain situations, the portal- and server-side sessions are
 -  The Player quits from inside the game, killing the Server Session.
    The Server then syncs with the Portal to make sure to close the
    Portal connection cleanly.
--  The Server is rebooted/reset/shutdown - The Server Sessions are then
+-  The Server is rebooted/reset/shutdown - The Server Sessions are
    copied over ("saved") to the Portal side. When the Server comes back
    up, this data is returned by the Portal so the two are again in sync.
    This way a Player's login status and other connection-critical things
-   can survive a server reboot (assuming the Portal is also not stopped,
-   obviously).
+   can survive a server reboot (assuming the Portal is not stopped at
+   the same time, obviously).
 
 Sessionhandlers
 ---------------

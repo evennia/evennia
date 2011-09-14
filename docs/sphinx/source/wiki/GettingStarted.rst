@@ -49,7 +49,7 @@ Evennia:
 -  The default database system SQLite3 only comes as part of Python2.5
    and later.
 -  Windows users are recommended to use ActivePython
-   (http://www.activestate.com/activepython)
+   (http://www.activestate.com/activepython/downloads)
 
 **Twisted** (http://twistedmatrix.com)
 
@@ -106,19 +106,22 @@ all you need:
 
 If some or all dependencies are not readily available (for example,
 running some flavors of !RedHat/CentOS or an older Debian version) you
-can still retrieve them easily by using Python's
+can still retrieve them easily by installing and using Python's
 `easyinstall <http://packages.python.org/distribute/easy%3Ci%3Einstall.html>`_
 or the alternative
 `pip <http://www.pip-installer.org/en/latest/index.html>`_:
-``easy_install django twisted pil mercurial``
+
+::
+
+    easy_install django twisted pil mercurial
 
 ::
 
     pip install django twisted pil mercurial
 
 **Windows** users may choose to install
-`ActivePython <http://www.activestate.com/activepython>`_ instead of the
-usual Python. If ActivePython is installed, you can use
+`ActivePython <http://www.activestate.com/activepython/downloads>`_
+instead of the usual Python. If ActivePython is installed, you can use
 `pypm <http://docs.activestate.com/activepython/2.6/pypm.html>`_ in the
 same manner as ``easy_install``/``pip`` above. This *greatly* simplifies
 getting started on Windows:
@@ -127,8 +130,10 @@ getting started on Windows:
 
     pypm install Django Twisted PIL Mercurial
 
-}} Another simple alternative (for all platforms) is to set up a
-*virtual Python environment* and install to that. This is covered
+Another simple alternative (for all platforms) is to set up a *virtual
+Python environment* and install to that - in that case you can even
+experiment with different library versions without affecting your main
+system configuration. This is covered
 `here <GettingStarted#Optional:%3Ci%3EA%3C/i%3Eseparate%3Ci%3Einstallation%3C/i%3Eenvironment%3Ci%3Ewith%3C/i%3Evirtualenv.html>`_.
 
 Windows users not using ActivePython or virtual environments will have
@@ -257,6 +262,10 @@ To stop Evennia, do:
 
     python evennia.py stop
 
+See `Running
+Evennia <https://code.google.com/p/evennia/wiki/StartStopReload.html>`_
+for more advanced options on controlling Evennia's processes.
+
 Step 4: Connecting to the server
 --------------------------------
 
@@ -287,9 +296,10 @@ play. You can install South from
 available through the normal package distributions, easy\_install, pip,
 or pypm (see above notes).
 
-Whenever you see a commit or mailing list message instructing you to run
-migrations to update your DB schema, simply do the following from within
-the ``evennia/game`` directory:
+After your first run of ``migrate.py syncdb`` and whenever you see a
+commit or mailing list message telling you that "the Database Schema has
+changed", simply do the following from within the ``evennia/game``
+directory:
 
 ::
 
@@ -325,17 +335,22 @@ virtual environment in here.
     # for Windows:
     <path_to_this_place>\bin\activate.bat
 
-In here you can play around and install python packages of any version
-without affecting your normal system installation at all. Next we get
-all the requirements with *pip*, which comes with virtualenv. This is
-the cool bit.
+Next we get all the requirements with *pip*, which is included with
+virtualenv:
 
 ::
 
-    pip install django twisted pil
+    pip install django twisted pil mercurial
+
+(The difference from the normal install described earlier is that these
+installed packages are *only* localized to the virtual environment, they
+do not affect the normal versions of programs you run in the rest of
+your system. So you could for example experiment with bleeding-edge,
+unstable libraries or go back to older versions without having to worry
+about messing up other things. It's also very easy to uninstall the
+whole thing in one go - just delete your ``mudenv`` folder.)
 
 You can now refer to **Step 1** above and continue on from there to
-install Evennia into *mudenv* (you need to get ``subversion`` manually
-still, it's not a python program). In the future, just go into the
-folder and activate it to make this separate virtual environment
-available to Evennia.
+install Evennia into *mudenv*. In the future, just go into the folder
+and activate it to make this separate virtual environment available to
+Evennia.

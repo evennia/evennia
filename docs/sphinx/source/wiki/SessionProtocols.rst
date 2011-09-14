@@ -1,8 +1,8 @@
 Portal Sessions and Protocols
 =============================
 
-*Note: This is considered an advanced topic and not relevant to most
-users.*
+*Note: This is considered an advanced topic and is mostly of interest to
+users planning to implement their own custom client protocol.*
 
 A *Portal Session* is the basic data object representing an external
 connection to the Evennia `Portal <PortalAndServer.html>`_ -- usually a
@@ -40,17 +40,21 @@ A straight-forward protocol (like Telnet) is assumed to at least have
 the following components (although the actual method names might vary):
 
 -  ``connectionMade`` - called when a new connection is made. This must
-   call ``self.init_session()`` with three arguments: an identifier for
-   the protocol type (e.g. the string 'telnet'), the IP address
-   connecting, and a reference to the sessionhandler.
+   call ``self.init_session()`` with three arguments: an *identifier*
+   for the protocol type (e.g. the string 'telnet' or 'ssh'), the *IP
+   address* of the client connecting, and a reference to the
+   *sessionhandler*. The sessionhandler is by convention made available
+   by storing it on the protocol's *Factory* in
+   ``src/server/portal.py``, see that file for examples. Doing it this
+   way avoids many possible recursive import issues.
 -  ``connectionLost`` - called when connection is dropped for whatever
-   reason. This must call 'self.sessionhandler.disconnect(self)' so the
-   handler can make sure the disconnect is reported to the rest of the
-   system.
+   reason. This must call ``self.sessionhandler.disconnect(self)`` so
+   the handler can make sure the disconnect is reported to the rest of
+   the system.
 -  ``getData`` - data arriving from the player to Evennia. This should
    apply whatever custom formatting this protocol needs, then relay the
    data to ``self.sessionhandler.data_in(self, msg, data)``.
--  sendLine - data from server to Player. This is called by hook
+-  ``sendLine`` - data from Server to Player. This is called by hook
    ``data_out()`` below.
 
 See an example of this in
@@ -58,8 +62,8 @@ See an example of this in
 
 These might not be as clear-cut in all protocols, but the principle is
 there. These four basic components - however they are accessed - links
-to the *Session*, which is the actual common interface between the
-different low-level protocols and Evennia.
+to the *Portal Session*, which is the actual common interface between
+the different low-level protocols and Evennia.
 
 Portal Sessions
 ---------------
@@ -85,13 +89,15 @@ be named exactly like this):
 -  ``disconnect()`` - called when manually disconnecting. Must call the
    protocol-specific disconnect method (e.g. ``connectionLost`` above)
 -  ``data_out(string="", data=None)`` - data from Evennia to player.
-   ``string`` is normally a raw text string with formatting. ``data``
-   can be a collection of any extra information the server want to give
-   to the protocol; it's completely up to the Protocol to handle this
-   (e.g. telnet completely ignores the ``data`` variable). From inside
-   Evennia, this if often called with the alias ``msg`` instead. This
-   method should call the protocol-specific send method, such as
-   ``self.sendLine()``, directly.
+   This method should handle any protocol-specific processing before
+   relaying data on to a send-method like ``self.sendLine()`` mentioned
+   above. ``string`` is normally a raw text string with formatting.
+   ``data`` can be a collection of any extra information the server want
+   to give to the protocol- it's completely up to the Protocol to handle
+   this. To take an example, telnet assumes ``data`` to be either
+   ``None`` or a dictionary with flags for how the text should be
+   parsed. From inside Evennia, ``data_out`` is often called with the
+   alias ``msg`` instead.
 
 Assorted notes
 --------------
@@ -100,4 +106,6 @@ To take two examples, Evennia supports the *telnet* protocol as well as
 *webclient*, a custom ajax protocol. You'll find that whereas telnet is
 a textbook example of a Twisted protocol as seen above, the ajax client
 protocol looks quite different due to how it interacts with the
-webserver through long-polling (comet) style requests.
+webserver through long-polling (comet) style requests. All the necessary
+parts mentioned above are still there, but implemented in very different
+ways.
