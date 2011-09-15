@@ -93,7 +93,7 @@ class Object(BaseObject):
      at_server_reload() - called when server is reloading
      at_server_shutdown() - called when server is resetting/shutting down      
      """
-
+    pass
 
 
 class Character(BaseCharacter):
