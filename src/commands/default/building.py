@@ -137,7 +137,6 @@ class CmdSetObjAlias(MuxCommand):
         # save back to object.
         obj.aliases = aliases 
         # we treat this as a re-caching (relevant for exits to re-build their exit commands with the correct aliases)
-        obj.at_cache() 
         caller.msg("Aliases for '%s' are now set to %s." % (obj.key, ", ".join(obj.aliases)))
 
 class CmdCopy(ObjManipCommand):    

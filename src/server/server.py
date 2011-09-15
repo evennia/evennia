@@ -100,7 +100,9 @@ class Evennia(object):
         reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _abrupt=True)
 
         self.game_running = True
-                
+
+        self.run_init_hooks()
+                        
     # Server startup methods
 
     def sqlite3_prep(self):
@@ -140,6 +142,16 @@ class Evennia(object):
             initial_setup.handle_setup(int(last_initial_setup_step))
             print '-'*50
 
+    def run_init_hooks(self):
+        """
+        Called every server start
+        """
+        from src.objects.models import ObjectDB
+        from src.players.models import PlayerDB
+
+        print "run_init_hooks:", ObjectDB.get_all_cached_instances()
+        [(o.typeclass(o), o.at_init()) for o in ObjectDB.get_all_cached_instances()]
+        [(p.typeclass(p), p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
     def terminal_output(self):
         """

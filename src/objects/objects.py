@@ -77,6 +77,8 @@ class Object(TypeClass):
 
     def at_init(self):
         """
+        OBS: CURRENTLY NOT CALLED!
+        
         This is always called whenever this 
         object initiated -- both when the object
         is first created as well as after each restart.
@@ -95,14 +97,6 @@ class Object(TypeClass):
         etc to set up their exit-cmdsets.
         """
         pass
-
-    def at_cache(self):
-        """
-        Called whenever this object is cached to the idmapper backend. 
-        This is the place to put eventual reloads of non-persistent attributes
-        you saved in the at_server_reload() below. 
-        """
-        pass 
 
     def at_server_reload(self):
         """
