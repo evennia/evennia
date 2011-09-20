@@ -433,10 +433,7 @@ class Room(Object):
         """
 
         super(Room, self).basetype_setup()
-        self.locks.add("puppet:false()") # would be weird to puppet a room ...
-        self.locks.add("get:false()")        
-
-        super(Room, self).basetype_setup()
+        self.locks.add("get:false();puppet:false()") # would be weird to puppet a room ...
         self.location = None 
 
 
