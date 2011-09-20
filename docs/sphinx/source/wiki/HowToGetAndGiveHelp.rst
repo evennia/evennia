@@ -28,8 +28,8 @@ documentation <Index.html>`_, here's what to do:
 How to *give* Help
 ==================
 
-Evennia is a completely non-funded project. It relies on the time
-donated by its users and developers in order to progress.
+Evennia is a completely un-funded project. It relies on the time donated
+by its users and developers in order to progress.
 
 The first and easiest way you as a user can help us out is by taking
 part in `community
@@ -57,5 +57,5 @@ to get going:
 -  Check out the `Contributing <Contributing.html>`_ page on how to
    contribute with code in practice.
 
-In either case, you may find documentation useful to developers in the
-`Developer Central <DeveloperCentral.html>`_.
+See `Contributing to Evennia <Contributing.html>`_ for more detailed
+information.

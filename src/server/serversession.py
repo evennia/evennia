@@ -50,7 +50,7 @@ class ServerSession(Session):
         if not self.logged_in:
             return 
 
-        player = self.get_player()
+        player = self.get_player(1)
         character = self.get_character()
         if player:
             #print "sync: at_init() - player"

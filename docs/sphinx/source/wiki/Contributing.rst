@@ -8,7 +8,9 @@ Contributing with Documentation
 
 Evennia depends heavily on good documentation and we are always looking
 for extra eyes and hands to improve it. Even small things such as fixing
-typos is a great help.
+typos is a great help. To edit the wiki yourself you need contributor
+access. Otherwise, it goes a long way just pointing out wiki errors so
+devs can fix them.
 
 Contributing with Code through a clone repository
 -------------------------------------------------

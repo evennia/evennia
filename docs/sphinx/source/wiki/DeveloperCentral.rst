@@ -19,8 +19,8 @@ General Evennia development information
    Guide <http://evennia.googlecode.com/svn/trunk/CODING_STYLE>`_
    (Important!)
 -  `Policy for 'MUX-like' default commands <UsingMUXAsAStandard.html>`_
--  `Setting up a Bazaar environment for coding <BazaarDevel.html>`_ (not
-   updated)
+-  `Setting up a Mercurial environment for
+   coding <VersionControl.html>`_
 
 Evennia Component Documentation
 -------------------------------

@@ -87,11 +87,12 @@ situations though.
 -  You are worried about database performance. Maybe you are
    reading/storing data many times a second (for whatever reason) or you
    have many players doing things at the same time. Hitting the database
-   over an over might not be ideal in that case. Non-persistent data
-   simply writes to memory, it doesn't hit the database at all. With the
-   speed and quality of hardware these days, this point is probably less
-   likely to be of any big concern except for the most extreme of
-   situations.
+   over and over might not be ideal in that case. Non-persistent data
+   simply writes to memory, it doesn't hit the database at all. It
+   should be said that with the speed and quality of hardware these
+   days, this point is less likely to be of any big concern except for
+   the most extreme of situations. The default database even runs in RAM
+   if possible, alleviating the need to write to disk.
 -  You *want* to loose your state when logging off. Maybe you are
    testing a buggy `Script <Scripts.html>`_ that does potentially
    harmful stuff to your character object. With non-persistent storage
@@ -124,7 +125,8 @@ explicitly to get the result you want. This means writing a little bit
 more, but has the advantage of clarity and portability: If you plan to
 distribute your code to others, it's recommended you use explicit
 assignment. This avoids weird errors when your users don't happen to use
-the save persistence setting as you.
+the save persistence setting as you. The Evennia server distribution
+always use explicit assignment everywhere.
 
 What types of data can I save?
 ------------------------------
@@ -135,22 +137,22 @@ you can practically store any Python object that can be
 the ``pickle`` module to serialize data into the database.
 
 There is one notable type of object that cannot be pickled - and that is
-a Django database object. These will instead be stored as wrapper object
-containing the ID and its database model. It will be read back to a new
-instantiated `typeclass <Typeclasses.html>`_ when the Attribute is
+a Django database object. These will instead be stored as a wrapper
+object containing the ID and its database model. It will be read back to
+a new instantiated `typeclass <Typeclasses.html>`_ when the Attribute is
 accessed. Since erroneously trying to save database objects in an
 Attribute will lead to errors, Evennia will try to detect database
 objects by analyzing the data being stored. This means that Evennia must
 recursively traverse all iterables to make sure all database objects in
-them are stored safely. So for efficiently, it can be a good idea is to
+them are stored safely. So for efficiency, it can be a good idea is to
 avoid deeply nested lists with objects if you can.
 
-To store several objects, you may only use python *lists* or
-*dictionaries* to store them. If you try to save any other form of
-iterable (like a ``set`` or a home-made class), the Attribute will
-convert, store and retrieve it as a list instead. Since you can nest
-dictionaries and lists together in any combination, this is usually not
-a limitation you need to worry about.
+To store several objects, you may only use python *lists*,
+*dictionaries* or *tuples* to store them. If you try to save any other
+form of iterable (like a ``set`` or a home-made class), the Attribute
+will convert, store and retrieve it as a list instead. Since you can
+nest dictionaries, lists and tuples together in any combination, this is
+usually not a limitation you need to worry about.
 
 *Note that you could fool the safety check if you for example created
 custom, non-iterable classes and stored database objects in them. So to
@@ -172,8 +174,23 @@ Examples of valid attribute data:
     # a dictionary
     obj.db.test4 = 'str':34, 'dex':56, 'agi':22, 'int':77
     # a mixed dictionary/list
-    obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]# a tuple will stored and returned as a list [1,2,3,4,5]!
-    obj.db.test6 = (1,2,3,4,5)
+    obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]
+    # a tuple with a list in it
+    obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)# a set will still be stored and returned as a list [1,2,3,4,5]!
+    obj.db.test7 = set([1,2,3,4,5])
+
+Example of non-supported save:
+
+::
+
+    # this will fool the dbobj-check since myobj (a database object) is "hidden"
+    # inside a custom object. This is unsupported and will lead to unexpected
+    # results! 
+    class BadStorage(object):
+        pass
+    bad = BadStorage()
+    bad.dbobj = myobj
+    obj.db.test8 = bad # this will likely lead to a traceback
 
 Notes
 -----
