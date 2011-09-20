@@ -47,20 +47,23 @@ class Mob(tut_objects.TutorialObject):
         "Called just before moving"
         self.location.msg_contents("With a cold breeze, %s drifts in the direction of %s." % (self.key, destination.key))
 
-    def announce_move_to_(self, source_location):
+    def announce_move_to(self, source_location):
         "Called just after arriving"
         self.location.msg_contents("With a wailing sound, %s appears from the %s." % (self.key, source_location.key))
 
     def update_irregular(self):
         "Called at irregular intervals. Moves the mob."
         if self.roam_mode:
-            exits = [ex for ex in self.location.exits if self.access(ex, "traverse")]                    
+            exits = [ex for ex in self.location.exits if ex.access(self, "traverse")]
             if exits: 
                 # Try to make it so the mob doesn't backtrack. 
                 new_exits = [ex for ex in exits if ex.destination != self.db.last_location]
                 if new_exits:
                     exits = new_exits
-                self.db.last_location = self.location 
+                self.db.last_location = self.location
+                # execute_cmd() allows the mob to respect exit and exit-command locks,
+                # but may pose a problem if there is more than one exit with the same name.
+                # - see Enemy example for another way to move
                 self.execute_cmd("%s" % exits[random.randint(0, len(exits) - 1)].key)
 
 
@@ -191,7 +194,8 @@ class Enemy(Mob):
                 new_exits = [ex for ex in exits if ex.destination != self.db.last_location]
                 if new_exits:
                     exits = new_exits
-                self.db.last_location = self.location 
+                self.db.last_location = self.location
+                # locks should be checked here
                 self.move_to(exits[random.randint(0, len(exits) - 1)])
             else:
                 # no exits - a dead end room. Respawn back to start.
