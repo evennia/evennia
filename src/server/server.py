@@ -149,7 +149,7 @@ class Evennia(object):
         from src.objects.models import ObjectDB
         from src.players.models import PlayerDB
 
-        print "run_init_hooks:", ObjectDB.get_all_cached_instances()
+        #print "run_init_hooks:", ObjectDB.get_all_cached_instances()
         [(o.typeclass(o), o.at_init()) for o in ObjectDB.get_all_cached_instances()]
         [(p.typeclass(p), p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 

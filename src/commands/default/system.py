@@ -102,22 +102,24 @@ class CmdPy(MuxCommand):
     Usage:
       @py <cmd>
 
-    In this limited python environment, there are a 
-    few variables made available to give access to 
-    the system. 
+    Separate multiple commands by ';'.  A few variables are made
+    available for convenience in order to offer access to the system
+    (you can import more at execution time).
 
-    available_vars: 'self','me'  : caller
-                    'here'  : caller.location
-                    'obj'   : dummy obj instance
-                    'script': dummy script instance
-                    'config': dummy conf instance
-                    'ObjectDB' : ObjectDB class
-                    'ScriptDB' : ScriptDB class
-                    'ServerConfig' ServerConfig class
-    only two
-    variables are defined: 'self'/'me' which refers to one's
-    own object, and 'here' which refers to self's current
-    location. 
+    Available variables in @py environment: 
+      self, me                   : caller
+      here                       : caller.location
+      obj                        : dummy obj instance
+      script                     : dummy script instance
+      config                     : dummy conf instance                    
+      ObjectDB                   : ObjectDB class
+      ScriptDB                   : ScriptDB class
+      ServerConfig               : ServerConfig class
+      inherits_from(obj, parent) : check object inheritance
+
+    {rNote: In the wrong hands this command is a severe security risk.
+    It should only be accessible by trusted server admins/superusers.{n
+
     """
     key = "@py"
     aliases = ["!"]
@@ -141,12 +143,15 @@ class CmdPy(MuxCommand):
                                    key='testobject')
         conf = ServerConfig() # used to access conf values
 
+        # import useful checker
+
         available_vars = {'self':caller,
                           'me':caller,
                           'here':caller.location,
                           'obj':obj,
                           'script':script,
                           'config':conf,
+                          'inherits_from':utils.inherits_from,
                           'ObjectDB':ObjectDB,
                           'ScriptDB':ScriptDB,
                           'ServerConfig':ServerConfig}

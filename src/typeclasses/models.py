@@ -59,10 +59,116 @@ PARENTS = {
 #------------------------------------------------------------
 
 class PackedDBobject(object):
-    "Simple helper class for storing database object ids."
+    """
+    Attribute helper class.
+    A container for storing and easily identifying database objects in 
+    the database (which doesn't suppport storing dbobjects directly).
+    """
     def __init__(self, ID, db_model):        
         self.id = ID
         self.db_model = db_model
+
+class PackedDict(dict):
+    """
+    Attribute helper class.
+    A variant of dict that stores itself to the database when 
+    updating one of its keys. This is called and handled by 
+    Attribute.validate_data(). 
+    """
+    def __init__(self, db_obj):
+        """
+        Sets up the packing dict. The db_store variable
+        is set by Attribute.validate_data() when returned in
+        order to allow custom updates to the dict. 
+
+         db_obj - the Attribute object storing this dict.
+
+        """
+        self.db_obj = db_obj
+        self.db_store = False
+        super(PackedDict, self).__init__()
+    def db_save(self):
+        "save data to Attribute, if db_store is active"
+        if self.db_store:
+            self.db_obj.value = self
+    def __setitem__(self, *args, **kwargs):                
+        "Custom setitem that stores changed dict to database."
+        super(PackedDict, self).__setitem__(*args, **kwargs)
+        self.db_save()
+    def clear(self, *args, **kwargs):                
+        "Custom clear"
+        super(PackedDict, self).clear(*args, **kwargs)
+        self.db_save()
+    def pop(self, *args, **kwargs):                
+        "Custom pop"
+        super(PackedDict, self).pop(*args, **kwargs)
+        self.db_save()
+    def popitem(self, *args, **kwargs):                
+        "Custom popitem"
+        super(PackedDict, self).popitem(*args, **kwargs)
+        self.db_save()
+    def update(self, *args, **kwargs):                
+        "Custom update"
+        super(PackedDict, self).update(*args, **kwargs)
+        self.db_save()
+                
+class PackedList(list):
+    """
+    Attribute helper class.
+    A variant of list that stores itself to the database when 
+    updating one of its keys. This is called and handled by 
+    Attribute.validate_data(). 
+    """
+    def __init__(self, db_obj):
+        """
+        Sets up the packing list. The db_store variable
+        is set by Attribute.validate_data() when returned in
+        order to allow custom updates to the list. 
+
+         db_obj - the Attribute object storing this dict.
+
+        """
+        self.db_obj = db_obj
+        self.db_store = False
+        super(PackedList, self).__init__()
+    def db_save(self):
+        "save data to Attribute, if db_store is active"
+        if self.db_store:
+            self.db_obj.value = self
+    def __setitem__(self, *args, **kwargs):                
+        "Custom setitem that stores changed dict to database."
+        super(PackedList, self).__setitem__(*args, **kwargs)
+        self.db_save()
+    def append(self, *args, **kwargs):
+        "Custom append"
+        super(PackedList, self).append(*args, **kwargs)
+        self.db_save()
+    def extend(self, *args, **kwargs):
+        "Custom extend"
+        super(PackedList, self).extend(*args, **kwargs)
+        self.db_save()
+    def insert(self, *args, **kwargs):
+        "Custom insert"
+        super(PackedList, self).insert(*args, **kwargs)
+        self.db_save()
+    def remove(self, *args, **kwargs):
+        "Custom remove"
+        super(PackedList, self).remove(*args, **kwargs)
+        self.db_save()
+    def pop(self, *args, **kwargs):
+        "Custom pop"
+        super(PackedList, self).pop(*args, **kwargs)
+        self.db_save()
+    def reverse(self, *args, **kwargs):
+        "Custom reverse"
+        super(PackedList, self).reverse(*args, **kwargs)
+        self.db_save()
+    def sort(self, *args, **kwargs):
+        "Custom sort"
+        super(PackedList, self).sort(*args, **kwargs)
+        self.db_save()
+
+
 
 class Attribute(SharedMemoryModel):
     """
@@ -181,7 +287,7 @@ class Attribute(SharedMemoryModel):
         Getter. Allows for value = self.value.
         """        
         try:
-            return utils.to_unicode(self.validate_data(pickle.loads(utils.to_str(self.db_value))))
+            return utils.to_unicode(self.validate_data(pickle.loads(utils.to_str(self.db_value)), getmode=True))
         except pickle.UnpicklingError:
             return self.db_value
     #@value.setter
@@ -224,20 +330,30 @@ class Attribute(SharedMemoryModel):
     def __unicode__(self):
         return u"%s(%s)" % (self.key, self.id)
 
-    def validate_data(self, item):                
+    def validate_data(self, item, getmode=False):
         """
-        We have to make sure to not store database objects raw, since this will
-        crash the system. Instead we must store their IDs and make sure to convert
-        back when the attribute is read back later. 
+        We have to make sure to not store database objects raw, since
+        this will crash the system. Instead we must store their IDs
+        and make sure to convert back when the attribute is read back
+        later.
 
-        We handle only lists and dicts for iterables.
+        Due to this it's criticial that we check all iterables
+        recursively, converting all found database objects to a form
+        the database can handle. We handle lists, tuples and dicts
+        (and any nested combination of them) this way, all other
+        iterables are stored and returned as lists.
+
+        getmode (bool) - This is relevant only to iterables; it makes sure to hide the 
+                         storage version of packed iterables by converting them to "normal"
+                         Python types when returning. This way self.db.mylist == type(list) will
+                         work as expected. 
         """        
-        #print "in validate_data:", item
+
         if isinstance(item, basestring):
             # a string is unmodified 
             ret = item        
         elif type(item) == PackedDBobject:
-            # unpack a previously packed object
+            # unpack a previously packed db_object
             try:
                 #print "unpack:", item.id, item.db_model
                 mclass = ContentType.objects.get(model=item.db_model).model_class()
@@ -248,16 +364,24 @@ class Attribute(SharedMemoryModel):
             except Exception:
                 logger.log_trace("Attribute error: %s, %s" % (item.db_model, item.id)) #TODO: Remove when stable?
                 ret = None
-        elif type(item) == dict:
+        elif type(item) == dict or type(item) == PackedDict:            
             # handle dictionaries
-            ret = {}
+            ret = PackedDict(self)
             for key, it in item.items():
                 ret[key] = self.validate_data(it)
-        elif is_iter(item):
-            # Note: ALL other iterables are considered to be lists!
+            ret.db_store = True
+        elif type(item) == tuple:
+            # handle tuples 
             ret = []
             for it in item:
                 ret.append(self.validate_data(it))
+            ret = tuple(ret)
+        elif is_iter(item):
+            # Note: ALL other iterables except dicts and tuples are stored&retrieved as lists!
+            ret = PackedList(self)
+            for it in item:
+                ret.append(self.validate_data(it))
+            ret.db_store = True 
         elif has_parent('django.db.models.base.Model', item) or has_parent(PARENTS['typeclass'], item):
             # db models must be stored as dbrefs
             db_model = [parent for parent, path in PARENTS.items() if has_parent(path, item)]
@@ -650,7 +774,7 @@ class TypedObject(SharedMemoryModel):
                     object.__setattr__(self, 'db_typeclass_path', tpath)
                     object.__getattribute__(self, 'save')()
                     object.__setattr__(self, "cached_typeclass_path", tpath)
-                    object.__setattr__(self, "cached_typeclass", typeclass) 
+                    object.__setattr__(self, "cached_typeclass", typeclass)                     
                     return typeclass
                 elif hasattr(typeclass, '__file__'):
                     errstring += "\n%s seems to be just the path to a module. You need" % tpath
@@ -1011,7 +1135,9 @@ class TypedObject(SharedMemoryModel):
                         if attr:
                             return attr
                         return object.__getattribute__(self, 'all')                    
+                    val = obj.get_attribute(attrname)
                     return obj.get_attribute(attrname)
+
                 def __setattr__(self, attrname, value):                    
                     obj = object.__getattribute__(self, 'obj')
                     obj.set_attribute(attrname, value)

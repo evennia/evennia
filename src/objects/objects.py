@@ -472,7 +472,6 @@ class Exit(Object):
         for handling reloads and avoid tracebacks if this is called while
         the typeclass system is rebooting.
         """
-        #print "Exit:create_exit_cmdset "
         class ExitCommand(command.Command):
             """
             This is a command that simply cause the caller
