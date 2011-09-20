@@ -176,7 +176,8 @@ Examples of valid attribute data:
     # a mixed dictionary/list
     obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]
     # a tuple with a list in it
-    obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)# a set will still be stored and returned as a list [1,2,3,4,5]!
+    obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)
+    # a set will still be stored and returned as a list [1,2,3,4,5]!
     obj.db.test7 = set([1,2,3,4,5])
 
 Example of non-supported save:
