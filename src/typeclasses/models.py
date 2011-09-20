@@ -62,7 +62,7 @@ class PackedDBobject(object):
     """
     Attribute helper class.
     A container for storing and easily identifying database objects in 
-    the database (which doesn't suppport storing dbobjects directly).
+    the database (which doesn't suppport storing db_objects directly).
     """
     def __init__(self, ID, db_model):        
         self.id = ID
@@ -88,13 +88,15 @@ class PackedDict(dict):
         self.db_store = False
         super(PackedDict, self).__init__(*args, **kwargs)
     def db_save(self):
-        "save data to Attribute, if db_store is active"
+        "save data to Attribute, if db_store is active"        
         if self.db_store:
             self.db_obj.value = self
     def __setitem__(self, *args, **kwargs):                
-        "Custom setitem that stores changed dict to database."
+        "Custom setitem that stores changed dict to database."        
         super(PackedDict, self).__setitem__(*args, **kwargs)
         self.db_save()
+    def __getitem__(self, *args, **kwargs):        
+        return super(PackedDict, self).__getitem__(*args, **kwargs)
     def clear(self, *args, **kwargs):                
         "Custom clear"
         super(PackedDict, self).clear(*args, **kwargs)
@@ -217,6 +219,7 @@ class Attribute(SharedMemoryModel):
         "Initializes the parent first -important!"
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
+        self.value_cache = None 
 
     class Meta:
         "Define Django meta options"
@@ -285,15 +288,16 @@ class Attribute(SharedMemoryModel):
     def value_get(self):
         """
         Getter. Allows for value = self.value.
-        """        
+        """                
         try:
             return utils.to_unicode(self.validate_data(pickle.loads(utils.to_str(self.db_value))))
         except pickle.UnpicklingError:
             return self.db_value
     #@value.setter
     def value_set(self, new_value):
-        "Setter. Allows for self.value = value"                
+        "Setter. Allows for self.value = value"                        
         self.db_value = utils.to_unicode(pickle.dumps(utils.to_str(self.validate_data(new_value, setmode=True))))
+        #self.db_value = utils.to_unicode(pickle.dumps(utils.to_str(self.validate_data(new_value))))        
         self.save()
     #@value.deleter
     def value_del(self):
@@ -330,7 +334,7 @@ class Attribute(SharedMemoryModel):
     def __unicode__(self):
         return u"%s(%s)" % (self.key, self.id)
 
-    def validate_data(self, item, setmode=False):
+    def validate_data(self, item, niter=0, setmode=False):
         """
         We have to make sure to not store database objects raw, since
         this will crash the system. Instead we must store their IDs
@@ -347,7 +351,7 @@ class Attribute(SharedMemoryModel):
            sure that it's a normal built-in python object that is stored in the db,
            not the custom one. This will then just be updated later, assuring the
            pickling works as it should. 
-
+        niter - iteration counter for recursive iterable search. 
         """        
         if isinstance(item, basestring):
             # a string is unmodified 
@@ -371,27 +375,29 @@ class Attribute(SharedMemoryModel):
                 ret.append(self.validate_data(it))
             ret = tuple(ret)
         elif type(item) == dict or type(item) == PackedDict:            
-            # handle dictionaries
+            # handle dictionaries            
             if setmode:
                 ret = {}
                 for key, it in item.items():
-                    ret[key] = self.validate_data(it, setmode=True)
+                    ret[key] = self.validate_data(it, niter=niter+1, setmode=True)
             else:
                 ret = PackedDict(self)
                 for key, it in item.items():
-                    ret[key] = self.validate_data(it, setmode=True)
-                ret.db_store = True
+                    ret[key] = self.validate_data(it, niter=niter+1)
+                if niter == 0:
+                    ret.db_store = True                    
         elif is_iter(item):
             # Note: ALL other iterables except dicts and tuples are stored&retrieved as lists!
             if setmode:
                 ret = []
                 for it in item:
-                    ret.append(self.validate_data(it, setmode=True))
+                    ret.append(self.validate_data(it, niter=niter+1setmode=True))
             else:
                 ret = PackedList(self)
                 for it in item:
-                    ret.append(self.validate_data(it))
-                ret.db_store = True 
+                    ret.append(self.validate_data(it, niter=niter+1))
+                if niter == 0:
+                    ret.db_store = True 
         elif has_parent('django.db.models.base.Model', item) or has_parent(PARENTS['typeclass'], item):
             # db models must be stored as dbrefs
             db_model = [parent for parent, path in PARENTS.items() if has_parent(path, item)]
