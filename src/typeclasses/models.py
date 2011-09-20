@@ -75,7 +75,7 @@ class PackedDict(dict):
     updating one of its keys. This is called and handled by 
     Attribute.validate_data(). 
     """
-    def __init__(self, db_obj):
+    def __init__(self, db_obj, *args, **kwargs):
         """
         Sets up the packing dict. The db_store variable
         is set by Attribute.validate_data() when returned in
@@ -86,7 +86,7 @@ class PackedDict(dict):
         """
         self.db_obj = db_obj
         self.db_store = False
-        super(PackedDict, self).__init__()
+        super(PackedDict, self).__init__(*args, **kwargs)
     def db_save(self):
         "save data to Attribute, if db_store is active"
         if self.db_store:
@@ -119,7 +119,7 @@ class PackedList(list):
     updating one of its keys. This is called and handled by 
     Attribute.validate_data(). 
     """
-    def __init__(self, db_obj):
+    def __init__(self, db_obj, *args, **kwargs):
         """
         Sets up the packing list. The db_store variable
         is set by Attribute.validate_data() when returned in
@@ -130,7 +130,7 @@ class PackedList(list):
         """
         self.db_obj = db_obj
         self.db_store = False
-        super(PackedList, self).__init__()
+        super(PackedList, self).__init__(*args, **kwargs)
     def db_save(self):
         "save data to Attribute, if db_store is active"
         if self.db_store:
@@ -287,13 +287,13 @@ class Attribute(SharedMemoryModel):
         Getter. Allows for value = self.value.
         """        
         try:
-            return utils.to_unicode(self.validate_data(pickle.loads(utils.to_str(self.db_value)), getmode=True))
+            return utils.to_unicode(self.validate_data(pickle.loads(utils.to_str(self.db_value))))
         except pickle.UnpicklingError:
             return self.db_value
     #@value.setter
     def value_set(self, new_value):
-        "Setter. Allows for self.value = value"
-        self.db_value = utils.to_unicode(pickle.dumps(utils.to_str(self.validate_data(new_value))))
+        "Setter. Allows for self.value = value"                
+        self.db_value = utils.to_unicode(pickle.dumps(utils.to_str(self.validate_data(new_value, setmode=True))))
         self.save()
     #@value.deleter
     def value_del(self):
@@ -330,7 +330,7 @@ class Attribute(SharedMemoryModel):
     def __unicode__(self):
         return u"%s(%s)" % (self.key, self.id)
 
-    def validate_data(self, item, getmode=False):
+    def validate_data(self, item, setmode=False):
         """
         We have to make sure to not store database objects raw, since
         this will crash the system. Instead we must store their IDs
@@ -343,12 +343,12 @@ class Attribute(SharedMemoryModel):
         (and any nested combination of them) this way, all other
         iterables are stored and returned as lists.
 
-        getmode (bool) - This is relevant only to iterables; it makes sure to hide the 
-                         storage version of packed iterables by converting them to "normal"
-                         Python types when returning. This way self.db.mylist == type(list) will
-                         work as expected. 
-        """        
+        setmode - used for iterables; when first assigning, this settings makes
+           sure that it's a normal built-in python object that is stored in the db,
+           not the custom one. This will then just be updated later, assuring the
+           pickling works as it should. 
 
+        """        
         if isinstance(item, basestring):
             # a string is unmodified 
             ret = item        
@@ -364,24 +364,34 @@ class Attribute(SharedMemoryModel):
             except Exception:
                 logger.log_trace("Attribute error: %s, %s" % (item.db_model, item.id)) #TODO: Remove when stable?
                 ret = None
-        elif type(item) == dict or type(item) == PackedDict:            
-            # handle dictionaries
-            ret = PackedDict(self)
-            for key, it in item.items():
-                ret[key] = self.validate_data(it)
-            ret.db_store = True
         elif type(item) == tuple:
             # handle tuples 
             ret = []
             for it in item:
                 ret.append(self.validate_data(it))
             ret = tuple(ret)
+        elif type(item) == dict or type(item) == PackedDict:            
+            # handle dictionaries
+            if setmode:
+                ret = {}
+                for key, it in item.items():
+                    ret[key] = self.validate_data(it, setmode=True)
+            else:
+                ret = PackedDict(self)
+                for key, it in item.items():
+                    ret[key] = self.validate_data(it, setmode=True)
+                ret.db_store = True
         elif is_iter(item):
             # Note: ALL other iterables except dicts and tuples are stored&retrieved as lists!
-            ret = PackedList(self)
-            for it in item:
-                ret.append(self.validate_data(it))
-            ret.db_store = True 
+            if setmode:
+                ret = []
+                for it in item:
+                    ret.append(self.validate_data(it, setmode=True))
+            else:
+                ret = PackedList(self)
+                for it in item:
+                    ret.append(self.validate_data(it))
+                ret.db_store = True 
         elif has_parent('django.db.models.base.Model', item) or has_parent(PARENTS['typeclass'], item):
             # db models must be stored as dbrefs
             db_model = [parent for parent, path in PARENTS.items() if has_parent(path, item)]
@@ -398,8 +408,7 @@ class Attribute(SharedMemoryModel):
                 # not a valid object - some third-party class or primitive?
                 ret = item
         else:
-            ret = item 
-
+            ret = item             
         return ret
                     
     def access(self, accessing_obj, access_type='read', default=False):
@@ -1134,8 +1143,7 @@ class TypedObject(SharedMemoryModel):
                         attr = obj.get_attribute("all")
                         if attr:
                             return attr
-                        return object.__getattribute__(self, 'all')                    
-                    val = obj.get_attribute(attrname)
+                        return object.__getattribute__(self, 'all')                                        
                     return obj.get_attribute(attrname)
 
                 def __setattr__(self, attrname, value):                    
