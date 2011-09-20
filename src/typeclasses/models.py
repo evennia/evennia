@@ -391,7 +391,7 @@ class Attribute(SharedMemoryModel):
             if setmode:
                 ret = []
                 for it in item:
-                    ret.append(self.validate_data(it, niter=niter+1setmode=True))
+                    ret.append(self.validate_data(it, niter=niter+1,setmode=True))
             else:
                 ret = PackedList(self)
                 for it in item:
