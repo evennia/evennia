@@ -53,12 +53,13 @@ class Player(TypeClass):
 
     def at_init(self):
         """
-        This is always called whenever this 
-        object initiated -- both when the object
-        is first created as well as after each restart.
-        It is also called after each server reload, so 
-        if something should survive a warm-reboot (rebooting
-        the server without the players logging out), put it here.
+        This is always called whenever this object is initiated --
+        that is, whenever it its typeclass is cached from memory. This
+        happens on-demand first time the object is used or activated
+        in some way after being created but also after each server
+        restart or reload. In the case of player objects, this usually
+        happens the moment the player logs in or reconnects after a
+        reload.
         """
         pass 
 

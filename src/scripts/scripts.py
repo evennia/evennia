@@ -221,9 +221,6 @@ class ScriptClass(TypeClass):
         return True 
 
     # hooks
-    def at_init(self):
-        "called every typeclass initiation (reloads/restarts). not much use for scripts."
-        pass
     def at_script_creation(self):
         "placeholder"
         pass
@@ -238,6 +235,9 @@ class ScriptClass(TypeClass):
         pass
     def at_repeat(self):
         "placeholder"
+        pass
+    def at_init(self):
+        "called when typeclass re-caches. Usually not used for scripts."
         pass
     
 
