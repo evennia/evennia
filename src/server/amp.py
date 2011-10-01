@@ -194,6 +194,7 @@ class AMPProtocol(amp.AMP):
         """
         if hasattr(self.factory, "portal"):
             sessdata = self.factory.portal.sessions.get_all_sync_data()
+            print sessdata
             self.call_remote_ServerAdmin(0, 
                                          "PSYNC", 
                                          data=sessdata)
@@ -266,7 +267,7 @@ class AMPProtocol(amp.AMP):
         data = pickle.loads(utils.to_str(data))            
 
         #print "serveradmin (server side):", sessid, operation, data
-
+        
         if operation == 'PCONN': #portal_session_connect
             # create a new session and sync it
             sess = ServerSession()
@@ -278,7 +279,7 @@ class AMPProtocol(amp.AMP):
                 sess.at_sync() # this runs initialization without acr
 
             self.factory.server.sessions.portal_connect(sessid, sess)
-          
+
         elif operation == 'PDISCONN': #'portal_session_disconnect'
             # session closed from portal side 
             self.factory.server.sessions.portal_disconnect(sessid)
@@ -295,10 +296,9 @@ class AMPProtocol(amp.AMP):
                 sess.load_sync_data(sessdict)
                 if sess.uid:
                     sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
-                sesslist.append(sess)
+                sesslist.append(sess)                                
             # replace sessions on server
             server_sessionhandler.portal_session_sync(sesslist)            
-
             # after sync is complete we force-validate all scripts (this starts everthing)
             init_mode = ServerConfig.objects.conf("server_restart_mode", default=None)
             ScriptDB.objects.validate(init_mode=init_mode)
@@ -306,8 +306,7 @@ class AMPProtocol(amp.AMP):
 
         else:
             raise Exception(_("operation %(op)s not recognized.") % {'op': operation})
-
-
+            
         return {}
     ServerAdmin.responder(amp_server_admin)
 
