@@ -1827,16 +1827,15 @@ class CmdScript(MuxCommand):
       @script[/switch] <obj> [= <script.path or scriptkey>]
     
     Switches:
-      start - start a previously added script
-      stop - stop a previously added script
+      start - start all non-running scripts on object, or a given script only
+      stop - stop all scripts on objects, or a given script only
 
-    Attaches the given script to the object and starts it. Script path
-    can be given from the base location for scripts as given in
-    settings.  If stopping/starting an already existing script, the
-    script's key can be given instead (if giving a path, *all* scripts
-    with this path on <obj> will be affected). If no script name is given,
-    all scripts on the object is affected (or displayed if no start/stop
-    switch is set).
+    If no script path/key is given, lists all scripts active on the given
+    object. 
+    Script path can be given from the base location for scripts as given in
+    settings. If adding a new script, it will be started automatically (no /start
+    switch is needed). Using the /start or /stop switches on an object without 
+    specifying a script key/path will start/stop ALL scripts on the object. 
     """
     
     key = "@script"
@@ -1870,10 +1869,10 @@ class CmdScript(MuxCommand):
                 string += format_script_list(scripts)
             elif "start" in self.switches:                
                 num = sum([obj.scripts.start(script.key) for script in scripts])
-                string += "%s scripts started on %s." % num
+                string += "%s scripts started on %s." % (num, obj.key)
             elif "stop" in self.switches:               
                 for script in scripts:
-                    string += "Stopping script %s." % script.key
+                    string += "Stopping script %s on %s." % (script.key, obj.key)
                     script.stop()
                 string = string.strip()
             obj.scripts.validate()
@@ -1882,9 +1881,9 @@ class CmdScript(MuxCommand):
                 # adding a new script, and starting it
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
-                    string += "\nScript %s could not be added and/or started." % self.rhs
+                    string += "\nScript %s could not be added and/or started on %s." % (self.rhs, obj.key)
                 else:
-                    string = "Script successfully added and started."
+                    string = "Script {w%s{n successfully added and started on %s." % (self.rhs, obj.key)
 
             else:
                 paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs) 
