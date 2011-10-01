@@ -358,7 +358,7 @@ class PlayerDB(TypedObject):
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1) 
                 break        
-        cmdhandler.cmdhandler(self.typeclass(self), raw_string)
+        cmdhandler.cmdhandler(self.typeclass, raw_string)
 
     def search(self, ostring, global_search=False, attribute_name=None, use_nicks=False, 
                location=None, ignore_errors=False, player=False):

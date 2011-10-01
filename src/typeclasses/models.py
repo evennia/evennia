@@ -730,7 +730,7 @@ class TypedObject(SharedMemoryModel):
             # try to look back to this very database object.)
             typeclass = object.__getattribute__(self, 'typeclass')                        
             if typeclass:
-                return object.__getattribute__(typeclass(self), propname)            
+                return object.__getattribute__(typeclass, propname)            
             else:
                 raise AttributeError
 
@@ -765,9 +765,10 @@ class TypedObject(SharedMemoryModel):
         typeclass = object.__getattribute__(self, "cached_typeclass")
         try:
             if typeclass and object.__getattribute__(typeclass, "path") == path:
+                # don't call at_init() when returning from cache
                 return typeclass
         except AttributeError:
-            pass 
+            pass
 
         errstring = ""
         if not path:
@@ -789,7 +790,12 @@ class TypedObject(SharedMemoryModel):
                     object.__setattr__(self, 'db_typeclass_path', tpath)
                     object.__getattribute__(self, 'save')()
                     object.__setattr__(self, "cached_typeclass_path", tpath)
-                    object.__setattr__(self, "cached_typeclass", typeclass)                     
+                    typeclass = typeclass(self)
+                    object.__setattr__(self, "cached_typeclass", typeclass)
+                    try:
+                        typeclass.at_init()
+                    except Exception:
+                        logger.log_trace()
                     return typeclass
                 elif hasattr(typeclass, '__file__'):
                     errstring += "\n%s seems to be just the path to a module. You need" % tpath
@@ -894,13 +900,19 @@ class TypedObject(SharedMemoryModel):
         if not callable(typeclass):
             # if this is still giving an error, Evennia is wrongly configured or buggy
             raise Exception("CRITICAL ERROR: The final fallback typeclass %s cannot load!!" % defpath)
+        typeclass = typeclass(self)
         if save:
             object.__setattr__(self, 'db_typeclass_path', defpath)
             object.__getattribute__(self, 'save')()
         if cache:
             object.__setattr__(self, "cached_typeclass_path", defpath)
+
             object.__setattr__(self, "cached_typeclass", typeclass)
-        return typeclass             
+        try:            
+            typeclass.at_init()
+        except Exception:
+            logger.log_trace()
+        return typeclass 
 
     def is_typeclass(self, typeclass, exact=False):
         """
@@ -919,13 +931,14 @@ class TypedObject(SharedMemoryModel):
             typeclass = typeclass.path
         except AttributeError:
             pass 
+        typeclasses = [typeclass] + ["%s.%s" % (path, typeclass) for path in self.typeclass_paths]
         if exact:
             current_path = object.__getattribute__(self, "cached_typeclass_path")            
-            return typeclass and current_path == typeclass
+            return typeclass and any([current_path == typec for typec in typeclasses])
         else:
             # check parent chain
             return any([cls for cls in self.typeclass.mro()
-                        if "%s.%s" % (cls.__module__, cls.__name__) == typeclass])
+                        if any(["%s.%s" % (cls.__module__, cls.__name__) == typec for typec in typeclasses])])
 
     #
     # Object manipulation methods
@@ -967,7 +980,7 @@ class TypedObject(SharedMemoryModel):
         self.save()
         # this will automatically use a default class if
         # there is an error with the given typeclass.
-        new_typeclass = self.typeclass(self)
+        new_typeclass = self.typeclass
     
         if clean_attributes:
             # Clean out old attributes

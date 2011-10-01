@@ -48,16 +48,9 @@ class ServerSession(Session):
         the session as it was. 
         """
         if not self.logged_in:
-            return 
-
-        player = self.get_player()
+            return
         character = self.get_character()
-        if player:
-            #print "sync: at_init() - player"
-            player.at_init()
         if character:
-            #print "sync: at_init() - character"
-            character.at_init()
             # start (persistent) scripts on this object
             ScriptDB.objects.validate(obj=character)
                        

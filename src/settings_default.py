@@ -192,6 +192,8 @@ BASE_CHARACTER_TYPECLASS = "game.gamesrc.objects.baseobjects.Character"
 BASE_ROOM_TYPECLASS = "game.gamesrc.objects.baseobjects.Room"
 # Typeclass for Exit objects (fallback)
 BASE_EXIT_TYPECLASS = "game.gamesrc.objects.baseobjects.Exit"
+# Typeclass for Scripts (fallback)
+BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # The home location for new characters. This must be a unique 
 # dbref (default is Limbo #2). If you want more advanced control over
 # start locations, copy the "create" command from 

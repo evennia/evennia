@@ -150,8 +150,8 @@ class Evennia(object):
         from src.players.models import PlayerDB
 
         #print "run_init_hooks:", ObjectDB.get_all_cached_instances()
-        [(o.typeclass(o), o.at_init()) for o in ObjectDB.get_all_cached_instances()]
-        [(p.typeclass(p), p.at_init()) for p in PlayerDB.get_all_cached_instances()]
+        [(o.typeclass, o.at_init()) for o in ObjectDB.get_all_cached_instances()]
+        [(p.typeclass, p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
     def terminal_output(self):
         """
@@ -204,20 +204,20 @@ class Evennia(object):
 
         if mode == 'reload':
             # call restart hooks
-            [(o.typeclass(o), o.at_server_reload()) for o in ObjectDB.get_all_cached_instances()]    
-            [(p.typeclass(p), p.at_server_reload()) for p in PlayerDB.get_all_cached_instances()]
-            [(s.typeclass(s), s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
+            [(o.typeclass, o.at_server_reload()) for o in ObjectDB.get_all_cached_instances()]    
+            [(p.typeclass, p.at_server_reload()) for p in PlayerDB.get_all_cached_instances()]
+            [(s.typeclass, s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
 
             ServerConfig.objects.conf("server_restart_mode", "reload")
 
         else:
             if mode == 'reset':
                 # don't call disconnect hooks on reset
-                [(o.typeclass(o), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
+                [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
             else: # shutdown
-                [(o.typeclass(o), o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
-            [(p.typeclass(p), p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
-            [(s.typeclass(s), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]            
+                [(o.typeclass, o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
+            [(p.typeclass, p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
+            [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]            
             
             ServerConfig.objects.conf("server_restart_mode", "reset")
             

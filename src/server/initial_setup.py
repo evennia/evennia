@@ -54,9 +54,10 @@ def create_objects():
     # is inherited from the user so we don't specify it again here. 
 
     god_character = create.create_player(god_user.username, None, None, 
+                                         user=god_user,   
                                          create_character=True,
-                                         typeclass=character_typeclass,
-                                         user=god_user)    
+                                         character_typeclass=character_typeclass)
+                                         
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")

@@ -76,9 +76,7 @@ class Object(TypeClass):
         pass
 
     def at_init(self):
-        """
-        OBS: CURRENTLY NOT CALLED!
-        
+        """        
         This is always called whenever this 
         object initiated -- both when the object
         is first created as well as after each restart.
@@ -86,8 +84,7 @@ class Object(TypeClass):
         if something should survive a warm-reboot (rebooting
         the server without the players logging out), put it here.
         """
-        pass 
-    
+        pass     
 
     def basetype_posthook_setup(self):
         """

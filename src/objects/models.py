@@ -252,7 +252,7 @@ class ObjectDB(TypedObject):
         "Getter. Allows for value = self.location."
         loc = self.db_location
         if loc:
-            return loc.typeclass(loc)
+            return loc.typeclass
         return None 
     #@location.setter
     def location_set(self, location):
@@ -291,7 +291,7 @@ class ObjectDB(TypedObject):
         "Getter. Allows for value = self.home"
         home = self.db_home 
         if home:
-            return home.typeclass(home)
+            return home.typeclass
         return None 
     #@home.setter
     def home_set(self, home):
@@ -329,7 +329,7 @@ class ObjectDB(TypedObject):
         "Getter. Allows for value = self.destination."
         dest = self.db_destination
         if dest:
-            return dest.typeclass(dest)
+            return dest.typeclass
         return None 
     #@destination.setter
     def destination_set(self, destination):
@@ -565,7 +565,7 @@ class ObjectDB(TypedObject):
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1) 
                 break        
-        cmdhandler.cmdhandler(self.typeclass(self), raw_string)
+        cmdhandler.cmdhandler(self.typeclass, raw_string)
 
     def msg(self, message, from_obj=None, data=None):
         """

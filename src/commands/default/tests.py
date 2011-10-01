@@ -123,7 +123,7 @@ class CommandTest(TestCase):
         self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
         self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")        
         # create a faux player/character for testing.
-        self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", location=self.room1)
+        self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", character_location=self.room1)
         self.char1.player.user.is_superuser = True
         self.char1.lock_storage = ""
         self.char1.locks = LockHandler(self.char1)
@@ -132,7 +132,7 @@ class CommandTest(TestCase):
         sess.connectionMade()
         sess.session_login(self.char1.player)
         # create second player
-        self.char2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", location=self.room1)
+        self.char2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", character_location=self.room1)
         self.char2.player.user.is_superuser = False 
         self.char2.lock_storage = ""
         self.char2.locks = LockHandler(self.char2)

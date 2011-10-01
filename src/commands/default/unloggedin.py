@@ -161,9 +161,9 @@ class CmdCreate(MuxCommand):
 
             new_character = create.create_player(playername, email, password,
                                                  permissions=permissions,
-                                                 location=default_home,
-                                                 typeclass=typeclass,
-                                                 home=default_home)                                
+                                                 character_typeclass=typeclass,
+                                                 character_location=default_home,
+                                                 character_home=default_home)                            
             new_player = new_character.player
             
             # character safety features

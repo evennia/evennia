@@ -47,9 +47,11 @@ def create_object(typeclass, key=None, location=None,
     from src.objects.objects import Object
     from src.objects.models import ObjectDB
 
-    if isinstance(typeclass, ObjectDB):
+    if not typeclass:
+        typeclass = settings.BASE_OBJECT_TYPECLASS
+    elif isinstance(typeclass, ObjectDB):
         # this is already an objectdb instance, extract its typeclass
-        typeclass = new_db_object.typeclass.path
+        typeclass = typeclass.typeclass.path
     elif isinstance(typeclass, Object) or utils.inherits_from(typeclass, Object):
         # this is already an object typeclass, extract its path
         typeclass = typeclass.path         
@@ -60,27 +62,21 @@ def create_object(typeclass, key=None, location=None,
     # assign the typeclass 
     typeclass = utils.to_unicode(typeclass)
     new_db_object.typeclass_path = typeclass
+
+    # the name/key is often set later in the typeclass. This
+    # is set here as a failsafe. 
+    if key:
+        new_db_object.key = key 
+    else:
+        new_db_object.key = "#%i" % new_db_object.id
+
     # this will either load the typeclass or the default one
-    typeclass = new_db_object.typeclass
+    new_object = new_db_object.typeclass
 
     if not object.__getattribute__(new_db_object, "is_typeclass")(typeclass, exact=True):
         # this will fail if we gave a typeclass as input and it still gave us a default
         SharedMemoryModel.delete(new_db_object)
         return None 
-
-    # the name/key is often set later in the typeclass. This
-    # is set here as a failsafe. 
-    if key:
-        new_db_object.name = key 
-    else:
-        dbref = new_db_object.id
-        if typeclass and hasattr(typeclass, '__name__'):
-            new_db_object.name = "%s%i" % (typeclass.__name__, dbref)
-        else:
-            new_db_object.name = "#%i" % dbref
-
-    # initialize an object of this typeclass.
-    new_object = typeclass(new_db_object)
 
     # from now on we can use the typeclass object 
     # as if it was the database object.
@@ -151,39 +147,37 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     #print "in create_script", typeclass    
     from src.scripts.models import ScriptDB    
 
-    if isinstance(typeclass, ScriptDB):
-        # this is already an objectdb instance, extract its typeclass
+    if not typeclass:
+        typeclass = settings.BASE_SCRIPT_TYPECLASS
+    elif isinstance(typeclass, ScriptDB):
+        # this is already an scriptdb instance, extract its typeclass
         typeclass = new_db_object.typeclass.path
     elif isinstance(typeclass, Script) or utils.inherits_from(typeclass, Script):
         # this is already an object typeclass, extract its path
         typeclass = typeclass.path 
-    # create new database object 
-    new_db_object = ScriptDB()
-    
+
+    # create new database script
+    new_db_script = ScriptDB()    
+
     # assign the typeclass 
     typeclass = utils.to_unicode(typeclass)
-    new_db_object.typeclass_path = typeclass
+    new_db_script.typeclass_path = typeclass
+    
+    # the name/key is often set later in the typeclass. This
+    # is set here as a failsafe. 
+    if key:
+        new_db_script.key = key
+    else:
+        new_db_script.key = "#%i" % new_db_script.id
+
     # this will either load the typeclass or the default one
-    typeclass = new_db_object.typeclass
+    new_script = new_db_script.typeclass
 
-    if not object.__getattribute__(new_db_object, "is_typeclass")(typeclass, exact=True):
-        # this can happen if the default was loaded (due to 
-        # inability to load given typeclass), which we
-        # don't accept during creation.                         
-        SharedMemoryModel.delete(new_db_object)
+    if not object.__getattribute__(new_db_script, "is_typeclass")(typeclass, exact=True):
+        # this will fail if we gave a typeclass as input and it still gave us a default
+        print "failure:", new_db_script, typeclass
+        SharedMemoryModel.delete(new_db_script)
         return None 
-    
-    # the typeclass is initialized
-    new_script = typeclass(new_db_object)
-
-    # store variables on the typeclass (which means
-    # it's actually transparently stored on the db object)
-    
-    if not key:
-        if typeclass and hasattr(typeclass, '__name__'):
-            new_script.key = "%s" % typeclass.__name__
-        else:
-            new_script.key = "#%i" % new_db_object.id
 
     if obj:
         try:
@@ -206,6 +200,8 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
     # a new created script should usually be started.
     if autostart:
         new_script.start()
+    
+    new_db_script.save()
     return new_script 
 
 #
@@ -345,22 +341,29 @@ def create_channel(key, aliases=None, desc=None,
 #
 
 def create_player(name, email, password,
-                  permissions=None, 
-                  create_character=True,
-                  location=None, typeclass=None, home=None,
-                  is_superuser=False, user=None, locks=None):
+                  user=None,
+                  typeclass=None,
+                  is_superuser=False, 
+                  locks=None, permissions=None,
+                  create_character=True, character_typeclass=None,
+                  character_location=None, character_home=None):                   
+
     
     """
     This creates a new player, handling the creation of the User
-    object and its associated Player object. If create_character is
+    object and its associated Player object. 
+    
+    If create_character is
     True, a game player object with the same name as the User/Player will
-    also be created. Returns the new game character, or the Player obj if no
+    also be created. Its typeclass and base properties can also be given.
+
+    Returns the new game character, or the Player obj if no
     character is created.  For more info about the typeclass argument,
     see create_objects() above.
     
     Note: if user is supplied, it will NOT be modified (args name, email, 
     passw and is_superuser will be ignored). Change those properties 
-    explicitly instead. 
+    directly on the User instead. 
 
     If no permissions are given (None), the default permission group
     as defined in settings.PERMISSION_PLAYER_DEFAULT will be 
@@ -368,16 +371,15 @@ def create_player(name, email, password,
     occur. 
 
     Concerning is_superuser:
-    A superuser should have access to everything
-    in the game and on the server/web interface. The very first user
-    created in the database is always a superuser (that's using
-    django's own creation, not this one).
-    Usually only the server admin should need to be superuser, all
-    other access levels can be handled with more fine-grained
-    permissions or groups. 
-
-    Since superuser overrules all permissions, we don't
-    set any here.
+     A superuser should have access to everything
+     in the game and on the server/web interface. The very first user
+     created in the database is always a superuser (that's using
+     django's own creation, not this one).
+     Usually only the server admin should need to be superuser, all
+     other access levels can be handled with more fine-grained
+     permissions or groups. 
+     Since superuser overrules all permissions, we don't
+     set any in this case.
     
     """
     # The system should already have checked so the name/email
@@ -385,6 +387,7 @@ def create_player(name, email, password,
     # getting here. 
 
     from src.players.models import PlayerDB
+    from src.players.player import Player
 
     if user:
         new_user = user
@@ -394,9 +397,30 @@ def create_player(name, email, password,
         else:
             new_user = User.objects.create_user(name, email, password) 
 
-    # create the associated Player for this User, and tie them together
-    new_player = PlayerDB(db_key=name, user=new_user)
-    new_player.save()
+    if not typeclass:
+        typeclass = settings.BASE_PLAYER_TYPECLASS
+    elif isinstance(typeclass, PlayerDB):
+        # this is already an objectdb instance, extract its typeclass
+        typeclass = typeclass.typeclass.path
+    elif isinstance(typeclass, Player) or utils.inherits_from(typeclass, Player):
+        # this is already an object typeclass, extract its path
+        typeclass = typeclass.path         
+
+    # create new database object 
+    new_db_player = PlayerDB(db_key=name, user=new_user)
+    new_db_player.save()
+    
+    # assign the typeclass 
+    typeclass = utils.to_unicode(typeclass)
+    new_db_player.typeclass_path = typeclass
+
+    # this will either load the typeclass or the default one
+    new_player = new_db_player.typeclass
+
+    if not object.__getattribute__(new_db_player, "is_typeclass")(typeclass, exact=True):
+        # this will fail if we gave a typeclass as input and it still gave us a default
+        SharedMemoryModel.delete(new_db_player)
+        return None 
 
     new_player.basetype_setup() # setup the basic locks and cmdset
     # call hook method (may override default permissions)
@@ -413,12 +437,12 @@ def create_player(name, email, password,
         
     # create *in-game* 'player' object 
     if create_character:
-        if not typeclass:
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
+        if not character_typeclass:
+            character_typeclass = settings.BASE_CHARACTER_TYPECLASS
         # creating the object automatically links the player
         # and object together by player.obj <-> obj.player
-        new_character = create_object(typeclass, name,
-                                      location, home, 
+        new_character = create_object(character_typeclass, key=name,
+                                      location=character_location, home=character_location, 
                                       permissions=permissions,
                                       player=new_player)        
         return new_character

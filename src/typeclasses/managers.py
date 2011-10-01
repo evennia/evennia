@@ -55,7 +55,7 @@ def returns_typeclass_list(method):
         obj_classes = []
         for dbobj in match:
             try:
-                obj_classes.append(dbobj.typeclass(dbobj))        
+                obj_classes.append(dbobj.typeclass)
             except Exception:
                 obj_classes.append(dbobj)
                 #logger.log_trace() 
