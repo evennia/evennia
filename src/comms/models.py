@@ -88,23 +88,27 @@ class Msg(SharedMemoryModel):
     # named same as the field, but withtout the db_* prefix.
 
     # There must always be one sender of the message.
-    db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set', null=True)
+    db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set', null=True, verbose_name='sender')
     # in the case of external senders, no Player object might be available
-    db_sender_external = models.CharField(max_length=255, null=True, blank=True)
+    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, 
+          help_text="identifier for external sender, for example a sender over an IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
-    db_receivers = models.CharField(max_length=255, null=True, blank=True)                                       
+    db_receivers = models.CharField('receivers', max_length=255, null=True, blank=True, 
+           help_text='comma-separated list of object dbrefs this message is aimed at.')                                       
     # The channels this message was sent to. Stored as a
     # comma-separated string of channel dbrefs. A message can both
     # have channel targets and destination objects.
-    db_channels = models.CharField(max_length=255, null=True, blank=True)
+    db_channels = models.CharField('channels', max_length=255, null=True, blank=True, 
+           help_text='comma-separated list of channel dbrefs this message is aimed at.')
     # The actual message and a timestamp. The message field
     # should itself handle eventual headers etc. 
-    db_message = models.TextField()
-    db_date_sent = models.DateTimeField(editable=False, auto_now_add=True)
+    db_message = models.TextField('messsage')
+    db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True)
     # lock storage
-    db_lock_storage = models.CharField(max_length=512, blank=True)
+    db_lock_storage = models.CharField('locks', max_length=512, blank=True, 
+                                       help_text='access locks on this message.')
     # These are settable by senders/receivers/channels respectively.
     # Stored as a comma-separated string of dbrefs. Can be used by the
     # game to mask out messages from being visible in the archive (no
@@ -125,7 +129,6 @@ class Msg(SharedMemoryModel):
     class Meta:
         "Define Django meta options"
         verbose_name = "Message"
-        verbose_name_plural = "Messages"
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -392,20 +395,24 @@ class Channel(SharedMemoryModel):
     # named same as the field, but withtout the db_* prefix.
     
     # unique identifier for this channel
-    db_key = models.CharField(max_length=255, unique=True)
+    db_key = models.CharField('key', max_length=255, unique=True)
     # optional description of channel 
-    db_desc = models.CharField(max_length=80, blank=True, null=True)       
+    db_desc = models.CharField('description', max_length=80, blank=True, null=True)       
     # aliases for the channel. These are searched by cmdhandler
     # as well to determine if a command is the name of a channel.
     # Several aliases are separated by commas. 
-    db_aliases = models.CharField(max_length=255) 
+    db_aliases = models.CharField('aliases', max_length=255) 
     # Whether this channel should remember its past messages
     db_keep_log = models.BooleanField(default=True)
     # Storage of lock definitions
-    db_lock_storage = models.CharField(max_length=512, blank=True)
+    db_lock_storage = models.CharField('locks', max_length=512, blank=True)
  
     # Database manager
     objects = managers.ChannelManager()
+
+    class Meta:
+        "Define Django meta options"
+        verbose_name = "Channel"
 
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs) 
@@ -612,9 +619,9 @@ class PlayerChannelConnection(SharedMemoryModel):
     """
 
     # Player connected to a channel
-    db_player = models.ForeignKey("players.PlayerDB")
+    db_player = models.ForeignKey("players.PlayerDB", verbose_name='player')
     # Channel the player is connected to
-    db_channel = models.ForeignKey(Channel)
+    db_channel = models.ForeignKey(Channel, verbose_name='channel')
 
     # Database manager
     objects = managers.PlayerChannelConnectionManager()
@@ -667,22 +674,25 @@ class ExternalChannelConnection(SharedMemoryModel):
     that connection. 
     """
     # evennia channel connecting to
-    db_channel = models.ForeignKey(Channel)
+    db_channel = models.ForeignKey(Channel, verbose_name='channel', 
+                                   help_text='which channel this connection is tied to.')
     # external connection identifier
-    db_external_key = models.CharField(max_length=128)
+    db_external_key = models.CharField('external key', max_length=128, 
+                                       help_text='external connection identifier, used by calling protocol.')
     # eval-code to use when the channel tries to send a message
     # to the external protocol. 
-    db_external_send_code = models.TextField(blank=True)
+    db_external_send_code = models.TextField('executable code', blank=True, 
+           help_text='this is a custom snippet of Python code to connect the external protocol to the in-game channel.')
     # custom config for the connection
-    db_external_config = models.TextField(blank=True)
+    db_external_config = models.TextField('external config', blank=True,
+                                          help_text='configuration options on form understood by connection.')
     # activate the connection
-    db_is_enabled = models.BooleanField(default=True)
+    db_is_enabled = models.BooleanField('is enabled', default=True, help_text='turn on/off the connection.')
 
     objects = managers.ExternalChannelConnectionManager()
         
     class Meta:
         verbose_name = "External Channel Connection"
-        verbose_name_plural = "External Channel Connections"
         
     def __str__(self):
         return "%s <-> external %s" % (self.channel.key, self.db_external_key)

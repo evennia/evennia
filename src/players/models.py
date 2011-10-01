@@ -72,7 +72,6 @@ class PlayerAttribute(Attribute):
     class Meta:
         "Define Django meta options"
         verbose_name = "Player Attribute"
-        verbose_name_plural = "Player Attributes"
 
 #------------------------------------------------------------
 #
@@ -89,7 +88,7 @@ class PlayerNick(TypeNick):
     obj - match against object searches 
     channel - used to store own names for channels
     """
-    db_obj = models.ForeignKey("PlayerDB")
+    db_obj = models.ForeignKey("PlayerDB", verbose_name="player")
 
     class Meta:
         "Define Django meta options"
@@ -148,19 +147,21 @@ class PlayerDB(TypedObject):
 
     # this is the one-to-one link between the customized Player object and
     # this profile model. It is required by django. 
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True, 
+      help_text="The User object holds django-related authentication. Each Player must have a unique User account linked to them at all times.")
     # the in-game object connected to this player (if any). 
     # Use the property 'obj' to access. 
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True)
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, verbose_name="character", help_text='In-game object (optional).')
     
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.CharField(max_length=255, null=True)
+    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True)
 
     # Database manager 
     objects = manager.PlayerManager()
 
     class Meta:
         app_label = 'players'
+        verbose_name = 'Player'
 
     def __init__(self, *args, **kwargs):
         "Parent must be initiated first"

@@ -37,7 +37,7 @@ from src.scripts.manager import ScriptManager
 
 class ScriptAttribute(Attribute):
     "Attributes for ScriptDB objects."
-    db_obj = models.ForeignKey("ScriptDB")
+    db_obj = models.ForeignKey("ScriptDB", verbose_name='script')
 
     class Meta:
         "Define Django meta options"
@@ -88,19 +88,20 @@ class ScriptDB(TypedObject):
     # db_key, db_typeclass_path, db_date_created, db_permissions
     
     # optional description. 
-    db_desc = models.CharField(max_length=255, blank=True)
+    db_desc = models.CharField('desc', max_length=255, blank=True)
     # A reference to the database object affected by this Script, if any.
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True)
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, verbose_name='scripted object',
+                               help_text='the object to store this script on, if not a global script.')
     # how often to run Script (secs). -1 means there is no timer
-    db_interval = models.IntegerField(default=-1)
+    db_interval = models.IntegerField('interval', default=-1, help_text='how often to repeat script, in seconds. -1 means off.')
     # start script right away or wait interval seconds first
-    db_start_delay = models.BooleanField(default=False)
+    db_start_delay = models.BooleanField('start delay', default=False, help_text='pause interval seconds before starting.')
     # how many times this script is to be repeated, if interval!=0.
-    db_repeats = models.IntegerField(default=0)
+    db_repeats = models.IntegerField('number of repeats', default=0, help_text='0 means off.')
     # defines if this script should survive a reboot or not
-    db_persistent = models.BooleanField(default=False)
+    db_persistent = models.BooleanField('survive server reboot', default=False)
     # defines if this script has already been started in this session
-    db_is_active = models.BooleanField(default=False)
+    db_is_active = models.BooleanField('script active', default=False)
 
     # Database manager
     objects = ScriptManager()
@@ -108,7 +109,6 @@ class ScriptDB(TypedObject):
     class Meta:
         "Define Django meta options"
         verbose_name = "Script"
-        verbose_name_plural = "Scripts"
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using

@@ -16,8 +16,12 @@ class PlayerInline(admin.TabularInline):
     model = PlayerDB
 
 class UserAdmin(BaseUserAdmin):
-    inlines = [PlayerInline]
-    #fields = ('username', 'email', "is_staff", "is_superuser")
+    add_fieldsets = (
+        (None, 
+         {'fields': ('username', 'email', 'password1', 'password2', ('is_staff', 'is_superuser')),
+          'description':'Note that whereas Player name supports spaces, This User field does not!'},),        
+        )
+
 admin.site.register(User, UserAdmin)
 
 # class PlayerAttributeAdmin(admin.ModelAdmin):
@@ -26,11 +30,17 @@ admin.site.register(User, UserAdmin)
 
 class PlayerAttributeInline(admin.TabularInline):
     model = PlayerAttribute
-    fields = ('db_key', 'db_value')    
+    #fields = ('db_key', 'db_value')    
+    fieldsets = (
+        ("Attributes", 
+         {'fields'  : (('db_key', 'db_value')),
+          'classes' : ('wide',)}), )
+
     max_num = 1
 
 class PlayerDBAdmin(admin.ModelAdmin):
     inlines = [PlayerAttributeInline]
+
     list_display = ('id', 'db_key', 'user', 'db_permissions', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_key', 'db_typeclass_path']
@@ -38,4 +48,10 @@ class PlayerDBAdmin(admin.ModelAdmin):
     save_as = True 
     save_on_top = True
     list_select_related = True 
+    fieldsets = (
+        (None, 
+         {'fields'     : (('db_key', 'db_typeclass_path'), 'user', ('db_permissions','db_lock_storage'), 'db_obj'),
+          'description': 'To create a new Player, a User object must also be created and/or assigned.',
+          'classes'    : ('wide', 'extrapretty')}),)
+
 admin.site.register(PlayerDB, PlayerDBAdmin)

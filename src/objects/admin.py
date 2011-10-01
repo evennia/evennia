@@ -11,13 +11,15 @@ class ObjAttributeInline(admin.TabularInline):
     fields = ('db_key', 'db_value')
     max_num = 1
 
-class ObjectDBAdmin(admin.ModelAdmin):
-    inlines = [ObjAttributeInline]
+class ObjectDBAdmin(admin.ModelAdmin):    
     list_display = ('id', 'db_key', 'db_location', 'db_player', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_player', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
+    
     save_as = True 
     save_on_top = True
     list_select_related = True 
+    inlines = [ObjAttributeInline]
+
 admin.site.register(ObjectDB, ObjectDBAdmin)

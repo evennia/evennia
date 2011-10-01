@@ -20,4 +20,10 @@ class ScriptDBAdmin(admin.ModelAdmin):
     save_as = True 
     save_on_top = True
     list_select_related = True 
+
+    fieldsets = (
+        (None, {
+                'fields':(('db_key', 'db_typeclass_path'), 'db_interval', 'db_repeats', 'db_start_delay', 'db_persistent', 'db_obj')}),
+        )
+
 admin.site.register(ScriptDB, ScriptDBAdmin)

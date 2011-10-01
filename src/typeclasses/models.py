@@ -200,16 +200,16 @@ class Attribute(SharedMemoryModel):
     # These databse fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
-    db_key = models.CharField(max_length=255)
+    db_key = models.CharField('key', max_length=255)
     # access through the value property 
-    db_value = models.TextField(blank=True, null=True)
+    db_value = models.TextField('value', blank=True, null=True)
     # Lock storage 
-    db_lock_storage = models.CharField(max_length=512, blank=True)    
+    db_lock_storage = models.CharField('locks', max_length=512, blank=True)    
     # references the object the attribute is linked to (this is set 
     # by each child class to this abstact class)
     db_obj =  None # models.ForeignKey("RefencedObject")
     # time stamp
-    db_date_created = models.DateTimeField(editable=False, auto_now_add=True)
+    db_date_created = models.DateTimeField('date_created',editable=False, auto_now_add=True)
     
     # Database manager 
     objects = managers.AttributeManager()
@@ -224,8 +224,7 @@ class Attribute(SharedMemoryModel):
     class Meta:
         "Define Django meta options"
         abstract = True 
-        verbose_name = "Evennia Attribute"
-        verbose_name_plural = "Evennia Attributes"
+        verbose_name = "Evennia Attribute"    
     
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -449,16 +448,16 @@ class TypeNick(SharedMemoryModel):
     channel - used to store own names for channels
 
     """
-    db_nick = models.CharField(max_length=255, db_index=True) # the nick
-    db_real = models.TextField() # the aliased string
-    db_type = models.CharField(default="inputline", max_length=16, null=True, blank=True) # the type of nick
+    db_nick = models.CharField('nickname',max_length=255, db_index=True, help_text='the alias') 
+    db_real = models.TextField('realname', help_text='the original string to match and replace.')
+    db_type = models.CharField('nick type',default="inputline", max_length=16, null=True, blank=True,
+       help_text="the nick type describes when the engine tries to do nick-replacement. Common options are 'inputline','player','obj' and 'channel'. Inputline checks everything being inserted, whereas the other cases tries to replace in various searches or when posting to channels.")
     db_obj = None #models.ForeignKey("ObjectDB")
 
     class Meta:
         "Define Django meta options"
         abstract = True 
         verbose_name = "Nickname"
-        verbose_name_plural = "Nicknames"
         unique_together = ("db_nick", "db_type", "db_obj")
 
 class TypeNickHandler(object):
@@ -543,16 +542,16 @@ class TypedObject(SharedMemoryModel):
     
     # Main identifier of the object, for searching. Can also
     # be referenced as 'name'. 
-    db_key = models.CharField(max_length=255)
+    db_key = models.CharField('key', max_length=255)
     # This is the python path to the type class this object is tied to
     # (the type class is what defines what kind of Object this is)
-    db_typeclass_path = models.CharField(max_length=255, null=True)
+    db_typeclass_path = models.CharField('typeclass', max_length=255, null=True, help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
     # Creation date
-    db_date_created = models.DateTimeField(editable=False, auto_now_add=True)
+    db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
-    db_permissions = models.CharField(max_length=255, blank=True)
+    db_permissions = models.CharField('permissions', max_length=255, blank=True, help_text="a comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Normal players use 'Players' by default.")
     # Lock storage 
-    db_lock_storage = models.CharField(max_length=512, blank=True)    
+    db_lock_storage = models.CharField('locks', max_length=512, blank=True, help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Take a look at other Players to set this to a valid string.")    
 
     # Database manager
     objects = managers.TypedObjectManager()
@@ -573,7 +572,6 @@ class TypedObject(SharedMemoryModel):
         """
         abstract = True 
         verbose_name = "Evennia Database Object"
-        verbose_name_plural = "Evennia Database Objects"
         ordering = ['-db_date_created', 'id', 'db_typeclass_path', 'db_key']
     
     # Wrapper properties to easily set database fields. These are
