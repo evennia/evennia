@@ -193,6 +193,68 @@ Example of non-supported save:
     bad.dbobj = myobj
     obj.db.test8 = bad # this will likely lead to a traceback
 
+Storing nested data directly on the variable
+--------------------------------------------
+
+Evennia needs to do a lot of work behind the scenes in order to save and
+retrieve data from the database. Most of the time, things work just like
+normal Python, but there is one further exception except the one about
+storing database objects above. It is related to updating already
+existing attributes in-place. Normally this works just as it should. For
+example, you can do
+
+::
+
+    # saving data
+    obj.db.mydict["key"] = "test1"
+    obj.db.mylist[34] = "test2"
+    obj.db.mylist.append("test3")
+    # retrieving data
+    obj.db.mydict["key"] # returns "test1"
+    obj.db.mylist[34] # returns "test2
+    obj.db.mylist[-1] # returns "test3"
+
+and it will work fine, thanks to a lot of magic happening behind the
+scenes. What will *not* work however is editing *nested*
+lists/dictionaries in-place. This is due to the way Python referencing
+works. Consider the following:
+
+::
+
+    obj.db.mydict = 1:2:3
+
+This is a perfectly valid nested dictionary and Evennia will store it
+just fine.
+
+::
+
+    obj.db.mydict[1][2] # correctly returns 3
+
+However:
+
+::
+
+    obj.db.mydict[1][2] = "test" # fails!
+
+will not work - trying to edit the nested structure will fail silently
+and nothing will have changed. No, this is not consistent with normal
+Python operation, it's where the database magic fails. All is not lost
+however. In order to change a nested structure, you simply need to use a
+temporary variable:
+
+::
+
+    # retrieve old db data into temporary variable
+    mydict = obj.db.mydict
+    # update temporary variable
+    mydict[1][2] = "test"
+    # save back to database
+    obj.db.mydict = mydict
+    # test
+    obj.db.mydict[1][2] # now correctly returns "test"
+
+mydict was updated and recreated in the database.
+
 Notes
 -----
 

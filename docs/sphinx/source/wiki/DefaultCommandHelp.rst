@@ -20,7 +20,7 @@ Admin
 -----
 
 `Link to Python
-module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/default/admin.py.html>`_
+module <https://code.google.com/p/evennia/source/browse/src/commands/default/admin.py.html>`_
 
 @boot
 ~~~~~
@@ -200,7 +200,7 @@ Building
 --------
 
 `Link to Python
-module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/default/building.py.html>`_
+module <https://code.google.com/p/evennia/source/browse/src/commands/default/building.py.html>`_
 
 @alias
 ~~~~~~
@@ -652,14 +652,13 @@ module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/defau
           @script[/switch] <obj> [= <script.path or scriptkey>]
         
         Switches:
-          start - start a previously added script
-          stop - stop a previously added script    Attaches the given script to the object and starts it. Script path
-        can be given from the base location for scripts as given in
-        settings.  If stopping/starting an already existing script, the
-        script's key can be given instead (if giving a path, *all* scripts
-        with this path on <obj> will be affected). If no script name is given,
-        all scripts on the object is affected (or displayed if no start/stop
-        switch is set).
+          start - start all non-running scripts on object, or a given script only
+          stop - stop all scripts on objects, or a given script only    If no script path/key is given, lists all scripts active on the given
+        object. 
+        Script path can be given from the base location for scripts as given in
+        settings. If adding a new script, it will be started automatically (no /start
+        switch is needed). Using the /start or /stop switches on an object without 
+        specifying a script key/path will start/stop ALL scripts on the object.
 
 @set
 ~~~~
@@ -804,7 +803,7 @@ Comms
 -----
 
 `Link to Python
-module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/default/comms.py.html>`_
+module <https://code.google.com/p/evennia/source/browse/src/commands/default/comms.py.html>`_
 
 @cboot
 ~~~~~~
@@ -1115,7 +1114,7 @@ General
 -------
 
 `Link to Python
-module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/default/general.py.html>`_
+module <https://code.google.com/p/evennia/source/browse/src/commands/default/general.py.html>`_
 
 @encoding
 ~~~~~~~~~
@@ -1459,7 +1458,7 @@ System
 ------
 
 `Link to Python
-module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/default/system.py.html>`_
+module <https://code.google.com/p/evennia/source/browse/src/commands/default/system.py.html>`_
 
 @objects
 ~~~~~~~~
@@ -1508,20 +1507,19 @@ module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/defau
 ::
 
     Execute a snippet of python code     Usage:
-          @py <cmd>    In this limited python environment, there are a 
-        few variables made available to give access to 
-        the system.     available_vars: 'self','me'  : caller
-                        'here'  : caller.location
-                        'obj'   : dummy obj instance
-                        'script': dummy script instance
-                        'config': dummy conf instance
-                        'ObjectDB' : ObjectDB class
-                        'ScriptDB' : ScriptDB class
-                        'ServerConfig' ServerConfig class
-        only two
-        variables are defined: 'self'/'me' which refers to one's
-        own object, and 'here' which refers to self's current
-        location.
+          @py <cmd>    Separate multiple commands by ';'.  A few variables are made
+        available for convenience in order to offer access to the system
+        (you can import more at execution time).    Available variables in @py environment: 
+          self, me                   : caller
+          here                       : caller.location
+          obj                        : dummy obj instance
+          script                     : dummy script instance
+          config                     : dummy conf instance                    
+          ObjectDB                   : ObjectDB class
+          ScriptDB                   : ScriptDB class
+          ServerConfig               : ServerConfig class
+          inherits_from(obj, parent) : check object inheritance    rNote: In the wrong hands this command is a severe security risk.
+        It should only be accessible by trusted server admins/superusers.n
 
 @reload
 ~~~~~~~
@@ -1670,7 +1668,7 @@ Unloggedin
 ----------
 
 `Link to Python
-module <https://code.google.com/p/evennia/source/browse/trunk/src/commands/default/unloggedin.py.html>`_
+module <https://code.google.com/p/evennia/source/browse/src/commands/default/unloggedin.py.html>`_
 
 connect
 ~~~~~~~
