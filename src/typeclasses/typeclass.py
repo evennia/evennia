@@ -24,10 +24,6 @@ PROTECTED = ['id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass',
 
 # If this is true, all non-protected property assignments
 # are directly stored to a database attribute
-try:
-    FULL_PERSISTENCE = settings.FULL_PERSISTENCE
-except AttributeError:
-    FULL_PERSISTENCE = True
 
 class MetaTypeClass(type):
     """
@@ -120,13 +116,13 @@ class TypeClass(object):
                 return object.__getattribute__(dbobj, propname)
             except AttributeError:
                 try:
-                    if FULL_PERSISTENCE and propname != 'ndb':
+                    if propname != 'ndb':
                         if not dbobj.has_attribute(propname):
                             raise AttributeError
                         else:
                             value = dbobj.get_attribute(propname)
                     else:
-                        # Not FULL_PERSISTENCE
+                        # get non-persistent data 
                         ndb = object.__getattribute__(dbobj, 'ndb')
                         value = getattr(ndb, propname)
                     return value
@@ -165,12 +161,8 @@ class TypeClass(object):
                 if hasattr(dbobj, propname):
                     # only if attr already exists on dbobj, assign to it.
                     object.__setattr__(dbobj, propname, value)
-                elif FULL_PERSISTENCE:
+                else:
                     dbobj.set_attribute(propname, value)
-                else:                                        
-                    # not FULL_PERSISTENCE
-                    ndb = object.__getattribute__(dbobj, 'ndb')                    
-                    setattr(ndb, propname, value)
             else:
                 object.__setattr__(self, propname, value)
 
@@ -187,7 +179,7 @@ class TypeClass(object):
     def __delattr__(self, propname):
         """
         Transparently deletes data from the typeclass or dbobj by first searching on the typeclass,
-        secondly on the dbobj.db or ndb depending on FULL_PERSISTENCE setting.
+        secondly on the dbobj.db.
         Will not allow deletion of properties stored directly on dbobj. 
         """
         try:
@@ -210,13 +202,9 @@ class TypeClass(object):
                     logger.log_trace("This is probably due to an unsafe reload.")            
                     return # ignore delete                
                 try:
-                    if FULL_PERSISTENCE:
-                        if not dbobj.has_attribute(propname):
-                            raise AttributeError
-                        dbobj.del_attribute(propname)
-                    else:
-                        ndb = object.__getattribute__(dbobj, 'ndb')
-                        ndb.__delattr__(propname)
+                    if not dbobj.has_attribute(propname):
+                        raise AttributeError
+                    dbobj.del_attribute(propname)
                 except AttributeError:
                     string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
                     raise AttributeError(string % (propname, dbobj,

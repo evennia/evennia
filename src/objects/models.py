@@ -33,7 +33,6 @@ from src.utils.utils import is_iter, to_unicode, to_str, mod_import
 
 #PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
 
-FULL_PERSISTENCE = settings.FULL_PERSISTENCE 
 AT_SEARCH_RESULT = mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 #------------------------------------------------------------

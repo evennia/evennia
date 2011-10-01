@@ -995,9 +995,7 @@ class TypedObject(SharedMemoryModel):
 
     # 
     # Fully persistent attributes. You usually access these 
-    # through the obj.db.attrname method. If FULL_PERSISTENCE
-    # is set, you will access these by just obj.attrname instead.
-    #
+    # through the obj.db.attrname method. 
 
     # Helper methods for persistent attributes 
     
@@ -1176,9 +1174,8 @@ class TypedObject(SharedMemoryModel):
     db = property(db_get, db_set, db_del)
 
     #
-    # NON-PERSISTENT store. If you run FULL_PERSISTENT but still
-    # want to save something and be sure it's cleared on a server
-    # reboot, you should use this explicitly. Otherwise there is 
+    # NON-PERSISTENT store. If you want to loose data on server reboot 
+    # you should use this explicitly. Otherwise there is 
     # little point in using the non-persistent methods. 
     #
 
@@ -1212,9 +1209,8 @@ class TypedObject(SharedMemoryModel):
         """
         A non-persistent store (ndb: NonDataBase). Everything stored 
         to this is guaranteed to be cleared when a server is shutdown.
-        Works also if FULL_PERSISTENCE is active. Syntax is as for
-        the _get_db_holder() method and property, 
-        e.g. obj.ndb.attr = value etc.
+        Syntax is same as for the _get_db_holder() method and
+        property, e.g. obj.ndb.attr = value etc.
         """
         try:
             return self._ndb_holder

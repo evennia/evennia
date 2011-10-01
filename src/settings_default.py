@@ -52,17 +52,6 @@ SSL_ENABLED = False
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 SSL_INTERFACES = ['0.0.0.0']
-# Activate full persistence if you want everything in-game to be
-# stored to the database. With it set, you can do typeclass.attr=value
-# and value will be saved to the database under the name 'attr'.
-# This is easy but may be a performance hit for certain game types.
-# Turning it off gives more control over what hits the database since
-# typeclass.attr=value is then non-persistent (does not hit the
-# database and won't survive a server reload) and you need to
-# explicitly do typeclass.db.attr = value if you want to save your
-# value to the database. Your choice, but DON'T change this 
-# value once you have started using the server, it will not end well!
-FULL_PERSISTENCE = True
 # If multisessions are allowed, a user can log into the game
 # from several different computers/clients at the same time.
 # All feedback from the game will be echoed to all sessions. 
