@@ -97,7 +97,7 @@ class PlayerCreateForm(forms.ModelForm):
 class PlayerDBAdmin(admin.ModelAdmin):
     "Setting up and tying the player administration together"
 
-    list_display = ('id', 'db_key', 'user', 'db_permissions', 'db_typeclass_path')
+    list_display = ('id', 'db_key', 'user', 'db_obj', 'db_permissions', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_key', 'db_typeclass_path']
     search_fields = ['^db_key', 'db_typeclass_path']    
@@ -156,7 +156,8 @@ class PlayerDBAdmin(admin.ModelAdmin):
             if obj.db_obj:
                 char = obj.db_obj
                 char.db_player = obj
-                char.save()
+                char.save()            
+
             obj.at_init()
 
     def delete_model(self, request, obj):
