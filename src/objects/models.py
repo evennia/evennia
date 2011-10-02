@@ -178,7 +178,8 @@ class ObjectDB(TypedObject):
                                        blank=True, null=True, verbose_name='destination',
                                        help_text='a destination, used only by exit objects.')
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True)
+    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, blank=True,
+                                         help_text="optional python path to a cmdset class.")
 
     # Database manager
     objects = ObjectManager()

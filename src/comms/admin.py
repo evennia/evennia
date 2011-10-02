@@ -15,7 +15,6 @@ class MsgAdmin(admin.ModelAdmin):
     save_as = True 
     save_on_top = True   
     list_select_related = True 
-
 #admin.site.register(Msg, MsgAdmin)
 
 class PlayerChannelConnectionInline(admin.TabularInline):
@@ -24,7 +23,8 @@ class PlayerChannelConnectionInline(admin.TabularInline):
         (None, {
                 'fields':(('db_player', 'db_channel')),
                 'classes':('collapse',)}),)
-    max_num = 1
+    extra = 1
+
 class ExternalChannelConnectionInline(admin.StackedInline):
     model = ExternalChannelConnection
     fieldsets = (
@@ -32,7 +32,7 @@ class ExternalChannelConnectionInline(admin.StackedInline):
                 'fields':(('db_is_enabled','db_external_key', 'db_channel'), 'db_external_send_code', 'db_external_config'),
                 'classes':('collapse',)
                 }),)
-    max_num = 1
+    extra = 1
 
 class ChannelAdmin(admin.ModelAdmin):
     inlines = (PlayerChannelConnectionInline, ExternalChannelConnectionInline)

@@ -151,10 +151,11 @@ class PlayerDB(TypedObject):
       help_text="The User object holds django-related authentication. Each Player must have a unique User account linked to them at all times.")
     # the in-game object connected to this player (if any). 
     # Use the property 'obj' to access. 
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, verbose_name="character", help_text='In-game object (optional).')
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, verbose_name="character", help_text='In-game object.')
     
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True)
+    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, 
+                                         help_text="optional python path to a cmdset class.")
 
     # Database manager 
     objects = manager.PlayerManager()

@@ -22,7 +22,7 @@ SERVER_VERSION = get_evennia_version()
 # Setup lists of the most relevant apps so 
 # the adminsite becomes more readable. 
 
-USER_RELATED = ['Players']
+USER_RELATED = ['Players', 'Auth']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
 CONNECTIONS = ['Irc', 'Imc2']

@@ -193,7 +193,11 @@ class LockHandler(object):
         wlist = [] # warnings
         for raw_lockstring in storage_lockstring.split(';'):            
             lock_funcs = []
-            access_type, rhs = (part.strip() for part in raw_lockstring.split(':', 1))
+            try:
+                access_type, rhs = (part.strip() for part in raw_lockstring.split(':', 1))
+            except ValueError:
+                logger.log_trace()
+                return locks
 
             # parse the lock functions and separators
             funclist = RE_FUNCS.findall(rhs)                                           

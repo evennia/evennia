@@ -18,6 +18,14 @@
 
         {% if app.name in evennia_userapps %}
 
+        {% if app.name == 'Auth' %}
+        <h2>Admin</h2> 
+        <p><i>Note: Users hold django-specific authentication and should
+        not be created stand-alone. Groups
+        define permissions only relevant to admin-site access. 
+        To create a new In-game user, create a new <b>Player</b></i>.</p> 
+        {% endif %}
+
         <div class="module">
         <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
         <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
@@ -49,11 +57,16 @@
         {% endif %}
     {% endfor %}
 
-        <h2>In-game</h2> 
+        <h2>Game entities</h2> 
 
     {% for app in app_list %}        
 
         {% if app.name in evennia_entityapps %}
+
+        {% if app.name == 'Comms' %}        
+        <p><i>This defines entities that has an in-game precense or
+            effect of some kind.</i></p> 
+        {% endif %}
 
         <div class="module">
         <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
@@ -86,80 +99,6 @@
         {% endif %}
     {% endfor %}
  
-        <h2>configs</h2> 
-
-    {% for app in app_list %}        
-
-        {% if app.name in evennia_setupapps %}
-
-        <div class="module">
-        <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
-        <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
-        {% for model in app.models %}
-            <tr>
-            {% if model.perms.change %}
-                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
-            {% else %}
-                <th scope="row">{{ model.name }}</th>
-            {% endif %}
-
-            {% if model.perms.add %}
-                <td><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'Add' %}</a></td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-
-            {% if model.perms.change %}
-                <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-            </tr>
-
-        {% endfor %}
-        </table>
-        </div>
-
-        {% endif %}
-    {% endfor %}
-
-        <h2>Connections</h2> 
-
-    {% for app in app_list %}        
-
-        {% if app.name in evennia_connectapps %}
-
-        <div class="module">
-        <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
-        <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
-        {% for model in app.models %}
-            <tr>
-            {% if model.perms.change %}
-                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
-            {% else %}
-                <th scope="row">{{ model.name }}</th>
-            {% endif %}
-
-            {% if model.perms.add %}
-                <td><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'Add' %}</a></td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-
-            {% if model.perms.change %}
-                <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-            </tr>
-
-        {% endfor %}
-        </table>
-        </div>
-
-        {% endif %}
-    {% endfor %}
-
 
     <h2>Website</h2> 
 
@@ -167,6 +106,11 @@
     {% for app in app_list %}        
 
         {% if app.name in evennia_websiteapps %}
+
+        {% if app.name == 'Flatpages' %}        
+        <p><i>Miscellaneous objects related to the running and
+        managing of the Web presence.</i></p> 
+        {% endif %}
 
         <div class="module">
         <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">

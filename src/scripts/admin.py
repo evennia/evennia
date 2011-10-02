@@ -12,7 +12,7 @@ class ScriptAttributeInline(admin.TabularInline):
     max_num = 1
 
 class ScriptDBAdmin(admin.ModelAdmin):
-    inlines = [ScriptAttributeInline]
+
     list_display = ('id', 'db_key', 'db_typeclass_path', 'db_obj', 'db_interval', 'db_repeats', 'db_persistent')
     list_display_links = ('id', 'db_key')
     ordering = ['db_obj', 'db_typeclass_path']    
@@ -25,5 +25,7 @@ class ScriptDBAdmin(admin.ModelAdmin):
         (None, {
                 'fields':(('db_key', 'db_typeclass_path'), 'db_interval', 'db_repeats', 'db_start_delay', 'db_persistent', 'db_obj')}),
         )
+    #inlines = [ScriptAttributeInline]
+
 
 admin.site.register(ScriptDB, ScriptDBAdmin)
