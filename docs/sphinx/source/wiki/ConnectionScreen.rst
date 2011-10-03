@@ -8,7 +8,7 @@ tells you how to connect.
 ::
 
     ==============================================================
-     Welcome to Evennia, version SVN-Alpha! If you have an existing account, connect to it by typing:
+     Welcome to Evennia, version HG-Alpha! If you have an existing account, connect to it by typing:
           connect <email> <password>
      If you need to create an account, type (without the <>'s):
           create "<username>" <email> <password> Enter help for more info. look will re-show this screen.

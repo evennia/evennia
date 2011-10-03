@@ -23,23 +23,9 @@ data to arbitrary names.
 Saving and Retrieving data
 --------------------------
 
-The **default** way of storing data on Typeclassed objects is simply to
-assign data to it. Let's try to save some data to a *Rose* (an
+To save persistent data on a Typeclassed object you normally use the
+``db`` operator. Let's try to save some data to a *Rose* (an
 `Object <Objects.html>`_):
-
-::
-
-    # saving
-    rose.has_thorns = True# getting it back
-    is_ouch = rose.has_thorns
-
-Whether this data is saved *persistently* to the database or not (i.e.
-if it survives a server reboot) depends on the setting of the variable
-``FULL_PERSISTENCE`` in the settings (it's described in more detail
-later on this page).
-
-To be **sure** to save your data persistently, regardless of the setting
-of ``FULL_PERSISTENCE``, use the ``db`` (!DataBase) interface.
 
 ::
 
@@ -47,19 +33,20 @@ of ``FULL_PERSISTENCE``, use the ``db`` (!DataBase) interface.
     rose.db.has_thorns = True # getting it back
     is_ouch = rose.db.has_thorns
 
-This creates a new ``Attribute`` object and links it uniquely to
-``rose``. Using ``db`` ``will`` always save data to the database.
+This looks like any normal Python assignment, but that ``db`` makes sure
+that an *Attribute* is created behind the scenes and is stored in the
+database. Your rose will continue to have thorns throughout the life of
+the server now, until you deliberately remove them.
 
-To be sure to save **non-persistently**, you use ``ndb`` (!NonDataBase).
-It works in the same way:
+To be sure to save **non-persistently**, i.e. to make sure NOT create a
+database entry, you use ``ndb`` (!NonDataBase). It works in the same
+way:
 
 ::
 
     # saving 
     rose.ndb.has_thorns = True # getting it back
     is_ouch = rose.ndb.has_thorns
-
-(Using ``ndb`` like this will **NEVER** use the database.)
 
 Strictly speaking, ``ndb`` has nothing to do with ``Attributes``,
 despite how similar they look. No ``Attribute`` object is created behind
@@ -72,6 +59,45 @@ will for example delete an ``Attribute``:
 ::
 
     del rose.db.has_thorns
+
+Fast assignment
+---------------
+
+For quick testing you can most often skip the ``db`` operator and assign
+Attributes like you would any normal Python property:
+
+::
+
+    # saving
+    rose.has_thorns = True# getting it back
+    is_ouch = rose.has_thorns
+
+This looks like any normal Python assignment, but calls ``db`` behind
+the scenes for you.
+
+Assigning attributes this way is intuitive and makes for slightly less
+to write. There is a drawback to using this short-form though: Database
+objects and typeclasses *already* have a number of Python methods and
+properties defined on themselves. If you use one of those already-used
+names with this short form you will not be setting a new Attribute but
+will infact be editing an existing engine property.
+
+For example, the property ``self.location`` on yourself is tied directly
+to the ``db_location`` database field and will not accept anything but
+an ``ObjectDB`` object or it will raise a traceback. ``self.delete`` is
+a method handling the deletion of objects, and so on. The reason these
+are available is of course that you may *want* to overload these
+functions with your own implementations - this is one of the main powers
+of Evennia. But if you blindly do e.g. ``self.msg = "Hello"`` you will
+happily be overloading the core ``msg()`` method and be in a world of
+pain.
+
+Using ``db`` will always work like you expect. ``self.db.msg = 'Hello'``
+will create a new Attribute ``msg`` without affecting the core method
+named ``msg()`` at all. So in principle, whereas you can use the
+short-form for simple testing, it's best to use ``db`` when you want
+Attributes and skip it only when you explicitly want to edit/overload
+something in the base classes.
 
 Persistent vs non-persistent
 ----------------------------
@@ -98,35 +124,8 @@ situations though.
    harmful stuff to your character object. With non-persistent storage
    you can be sure that whatever the script messes up, it's nothing a
    server reboot can't clear up.
--  You want to implement a fully or partly *non-persistent world*.
-   Whereas this sounds to us like something of an under-use of the
-   codebase's potential, who are we to argue with your grand vision!
-
-FULL\_PERSISTENCE
------------------
-
-As mentioned above, Evennia allows you to change the default operation
-when storing attributes by using ``FULL_PERSISTENCE`` in
-``settings.py``.
-
-With ``FULL_PERSISTENCE`` on, you can completely ignore ``db`` and
-assign properties to your object as you would any python object. This is
-the 'default' method shown at the top). Behind the scenes an
-``Attribute`` will be created and your data will be saved to the
-database. Only thing you have to do explicitly is if you *don't* want
-persistence, where you have to use ``ndb``.
-
-With ``FULL_PERSISTENCE`` off, the inverse is true. You then have to
-specify ``db`` if you want to save, whereas normal assignment means
-non-persistence.
-
-Regardless of the setting you can always use ``db`` and ``ndb``
-explicitly to get the result you want. This means writing a little bit
-more, but has the advantage of clarity and portability: If you plan to
-distribute your code to others, it's recommended you use explicit
-assignment. This avoids weird errors when your users don't happen to use
-the save persistence setting as you. The Evennia server distribution
-always use explicit assignment everywhere.
+-  You want to implement a fully or partly *non-persistent world*. Who
+   are we to argue with your grand vision!
 
 What types of data can I save?
 ------------------------------

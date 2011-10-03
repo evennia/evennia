@@ -1,5 +1,8 @@
-Introduction
-============
+Notes on text encodings
+=======================
+
+Evennia is a text-based game server. This makes it important to
+understand how it actually deals with data in the form of text.
 
 Text *byte encodings* describe how a string of text is actually stored
 in the computer - that is, the particular sequence of bytes used to

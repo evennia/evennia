@@ -27,6 +27,28 @@ assigning something to an object.
 Below are some examples of commands. Use ``help <command>`` for learning
 more about each command and their detailed options.
 
+Making a Builder
+----------------
+
+If you just installed Evennia, your very first player account is called
+user #1, also known as the *superuser* or *god user*. This user is very
+powerful, so powerful that it will override many game restrictions such
+as locks. This can be useful, but it also hides some functionality that
+you might want to test. Let's create a more "normal" Builder player
+account instead.
+
+Log off and choose ``create`` from the login screen. Create a new
+account (don't log in). Let's say we call the new account "Anna". Next
+log in as your superuser account and give the recently created player
+build rights:
+
+::
+
+    @perm Anna = Builders
+
+That should do it. Log out again (``@quit``) and finally log back in as
+your builder account.
+
 Creating an object
 ------------------
 
@@ -95,9 +117,10 @@ box was dropped in the room, then try this:
     > @lock box = get:false()
 
 Locks are a rather `big topic <Locks.html>`_, but for now that will do
-what we want. This will lock the box so noone can lift it (except
-superusers, they override all locks and pick it up anyway). Make sure
-you log in as another user than #1 and try to get the box now:
+what we want. This will lock the box so noone can lift it. The exception
+is superusers, they override all locks and will pick it up anyway. Make
+sure you are using your builder account and not the superuser account
+and try to get the box now:
 
 ::
 
@@ -108,8 +131,7 @@ Think the default error message looks dull? The ``get`` command looks
 for an `Attribute <Attributes.html>`_ named ``get_err_msg`` for
 returning a nicer error message (we just happen to know this, you would
 currently need to peek into the code for the ``get`` command to find
-out. You set attributes using the ``@set`` command (if you logged in as
-another user, you need to have build permissions again for this):
+out. You set attributes using the ``@set`` command:
 
 ::
 
@@ -138,13 +160,15 @@ while and you will notice yourself starting making random observations.
 
 ::
 
-    > examine self
+    > @script self
 
-This will show details about yourself. You will also see the script and
-how long it is until it "fires" next (a randomizer determines if it will
-say something, so you will not see any output every time it fires).
+This will show details about scripts on yourself (also ``examine``
+works). You will see how long it is until it "fires" next. Don't be
+alarmed if nothing happens when the countdown reaches zero - this
+particular script has a randomizer to determine if it will say something
+or not. So you will not see output every time it fires.
 
-When you are tired of this, kill the script with
+When you are tired of your character's "insights", kill the script with
 
 ::
 
@@ -166,8 +190,7 @@ default object typeclass found in
 ``game/gamesrc/objects/baseobjects.py``. It is called simply *Object*.
 Let's create an object that is a little more interesting. Under
 ``game/gamesrc/objects/`` there is a directory ``examples`` with a
-module ``red_button.py``. It contains the enigmatic *!RedButton*
-typeclass.
+module ``red_button.py``. It contains the enigmatic RedButton typeclass.
 
 Let's make us one of *those*!
 
@@ -175,14 +198,12 @@ Let's make us one of *those*!
 
     > @create/drop button:examples.red_button.RedButton
 
-With the ``/drop`` switch we make sure to drop the button right away
-without having to use the ``drop`` command later. We import the
-*!RedButton* python class the same way you would import it in Python
-except Evennia defaults to looking in ``game/gamesrc/objects/`` so you
-don't have to write the full path every time. There you go - one red
-button.
+We import the RedButton python class the same way you would import it in
+Python except Evennia defaults to looking in ``game/gamesrc/objects/``
+so you don't have to write the full path every time. There you go - one
+red button.
 
-The *!RedButton* is an example object intended to show off many of
+The RedButton is an example object intended to show off many of
 Evennia's features. You will find that the `Scripts <Scripts.html>`_ and
 `Commands <Commands.html>`_ controlling it are scattered in
 ``examples``-folders all across ``game/gamesrc/``.

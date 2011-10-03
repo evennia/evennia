@@ -98,12 +98,13 @@ contain anything critical yet iẗ́'s probably easiest to simply reset it
 and start over rather than to bother converting.
 
 Enter `South <http://south.aeracode.org/>`_. South keeps track of
-changes in the database schema an applies them automatically for you.
-Basically, whenever the schema changes we tell South exactly how to
-repeat that change so you don't have to.
+changes in the database schema and applies them automatically for you.
+Basically, whenever the schema changes we also distribute small files
+called "migrations" with the source. Those tell South exactly how to
+repeat that change so you don't have to do so manually.
 
-Using South is optional, but if you install it, Evennia *will* use South
-automatically. See the correct section of
+Using South is optional, but if you do install it, Evennia *will* use
+South automatically. See the correct section of
 `GettingStarted <GettingStarted.html>`_ on how to install South and the
 slightly different way to start a clean database server when South is
 used (you have to give the ``mange.py migrate`` command as well as

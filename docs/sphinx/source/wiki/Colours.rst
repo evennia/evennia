@@ -1,5 +1,5 @@
-Putting Colour to your game
-===========================
+Adding Colour to your game
+==========================
 
 *Note that the Docs does not display colour the way it would look on the
 screen.*

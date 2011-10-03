@@ -71,7 +71,8 @@ care of all initialization and startup of the script for you.
 
 ::
 
-    # adding a script to an existing object 'myobj'myobj.scripts.add("game.gamesrc.scripts.myscripts.CoolScript")
+    # adding a script to an existing object 'myobj'
+    myobj.scripts.add("game.gamesrc.scripts.myscripts.CoolScript")
 
 The ``myobj.scripts.add()`` method also takes an argument *key* that
 allows you to name your script uniquely before adding it. This is not
@@ -132,13 +133,16 @@ find longer descriptions of these in ``gamesrc/scripts/basescript.py``.
 ::
 
     import random
-    from game.gamesrc.scripts.basescript import Scriptclass Weather(Script): 
-        "Displays weather info. Meant to be attached to a room."    def at_script_creation(self):
+    from game.gamesrc.scripts.basescript import Script
+    class Weather(Script): 
+        "Displays weather info. Meant to be attached to a room."
+        def at_script_creation(self):
             "Called once, during initial creation"
             self.key = "weather_script"
             self.desc = "Gives random weather messages."
             self.interval = 60 * 5 # every 5 minutes
-            self.persistent = True    self.at_repeat(self):
+            self.persistent = True
+        self.at_repeat(self):
             "called every self.interval seconds."        
             rand = random.random()
             if rand < 0.5:
@@ -160,7 +164,8 @@ above. Here we put it on a room called ``myroom``:
 
 ::
 
-    # Assuming Script is found in game/gamesrc/scripts/weather.pymyroom.scripts.add(weather.Weather)
+    # Assuming Script is found in game/gamesrc/scripts/weather.py
+    myroom.scripts.add(weather.Weather)
 
 Or, from in-game, use the ``@script`` command:
 

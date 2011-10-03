@@ -62,7 +62,7 @@ Twisted also requires:
 
 **Django** (http://www.djangoproject.com)
 
--  Version 1.2.1+ or latest subversion trunk highly recommended.
+-  Version 1.2.5+ or latest development versions highly recommended.
 -  PIL library (http://www.pythonware.com/products/pil)
 
 To download/update Evennia:
@@ -104,12 +104,13 @@ all you need:
 
     apt-get install python python-django python-twisted mercurial
 
-If some or all dependencies are not readily available (for example,
-running some flavors of !RedHat/CentOS or an older Debian version) you
-can still retrieve them easily by installing and using Python's
+Few distros actually keep the latest updated security updates (notably
+django and twisted) in their repos though. So it might be worth to use
+Python's
 `easyinstall <http://packages.python.org/distribute/easy%3Ci%3Einstall.html>`_
 or the alternative
-`pip <http://www.pip-installer.org/en/latest/index.html>`_:
+`pip <http://www.pip-installer.org/en/latest/index.html>`_ to get some
+or all of these instead:
 
 ::
 
@@ -173,8 +174,8 @@ Step 2: Setting up the Server
 -----------------------------
 
 From within the Evennia ``game`` directory (``evennia/game/``, if you
-followed the Subversion instructions above) type the following to
-trigger the automatic creation of an empty ``settings.py`` file.
+followed the Mercurial instructions above) type the following to trigger
+the automatic creation of an empty ``settings.py`` file.
 
 ::
 
@@ -202,8 +203,8 @@ that variable (if any), or the dependent variables will remain at the
 default values.*
 
 Finally, enter the following command in a terminal or shell to create
-the database file (in the case of SQLite) and populate the database with
-the standard tables and values:
+the database file (in the case of SQLite3) and populate the database
+with the standard tables and values:
 
 ::
 
@@ -269,8 +270,8 @@ for more advanced options on controlling Evennia's processes.
 Step 4: Connecting to the server
 --------------------------------
 
-The Evennia server is now up and running. You should now be able to
-login with any mud client or telnet client using the email address and
+The Evennia server is now up and running. You should be able to login
+with any mud client or telnet client using the email address and
 password you specified when syncing the database. If you are just
 testing the server out on your local machine, the server name will most
 likely be ``localhost`` whereas the port used by default is ``4000``.
