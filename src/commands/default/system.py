@@ -374,7 +374,7 @@ class CmdObjects(MuxCommand):
             table[0].append(utils.datetime_format(obj.date_created))
             table[1].append(obj.dbref)
             table[2].append(obj.key)
-            table[3].append(str(obj.typeclass))
+            table[3].append(str(obj.typeclass.path))
         ftable = utils.format_table(table, 5)
         for irow, row in enumerate(ftable):
             srow = "\n" + "".join(row)

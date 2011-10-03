@@ -36,6 +36,7 @@ class MetaTypeClass(type):
         Adds some features to typeclassed objects
         """
         super(MetaTypeClass, mcs).__init__(*args, **kwargs)
+        mcs.typename = mcs.__name__
         mcs.path = "%s.%s" % (mcs.__module__, mcs.__name__)
         
     def __str__(cls):

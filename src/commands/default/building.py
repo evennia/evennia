@@ -1260,7 +1260,7 @@ class CmdTypeclass(MuxCommand):
             # we did not supply a new typeclass, view the 
             # current one instead.
             if hasattr(obj, "typeclass"):                
-                string = "%s's current typeclass is '%s'." % (obj.name, obj.typeclass)
+                string = "%s's current typeclass is '%s'." % (obj.name, obj.typeclass.typename)
             else:
                 string = "%s is not a typed object." % obj.name
             caller.msg(string)
@@ -1276,23 +1276,28 @@ class CmdTypeclass(MuxCommand):
         if not hasattr(obj, 'swap_typeclass') or not hasattr(obj, 'typeclass'):
             caller.msg("This object cannot have a type at all!")
             return 
-
-        reset = "reset" in self.switches
         
-        old_typeclass = obj.typeclass_path
-        if old_typeclass == typeclass and not 'force' in self.switches:
+        old_path = obj.typeclass_path
+        if obj.is_typeclass(typeclass) and not 'force' in self.switches:
             string = "%s already has the typeclass '%s'." % (obj.name, typeclass)
         else:
-            obj.swap_typeclass(typeclass, clean_attributes=reset)        
-            new_typeclass = obj.typeclass
-            string = "%s's type is now %s (instead of %s).\n" % (obj.name, 
-                                                                   new_typeclass, 
-                                                                   old_typeclass)            
-            if reset:
-                string += "All attributes where reset."                                                               
-            else:    
-                string += "Note that the new class type could have overwritten "
-                string += "same-named attributes on the existing object."            
+            reset = "reset" in self.switches
+            old_typeclass_name = obj.typeclass.typename
+            ok = obj.swap_typeclass(typeclass, clean_attributes=reset)
+            if ok:
+                string = "%s's type is now %s (instead of %s).\n" % (obj.name, 
+                                                                     obj.typeclass.typename,
+                                                                     old_typeclass_name)
+                if reset:
+                    string += "All attributes where reset."                                                               
+                else:    
+                    string += "Note that the new class type could have overwritten "
+                    string += "same-named attributes on the existing object."            
+            else:
+                string = "Could not swap '%s' (%s) to typeclass '%s'." % (obj.name,
+                                                                                  old_typeclass_name,
+                                                                                  typeclass)
+                
         caller.msg(string)
 
 
@@ -1555,7 +1560,7 @@ class CmdExamine(ObjManipCommand):
             elif not perms:
                 perms = ["<None>"]                
             string += headers["playerperms"] % (", ".join(perms))         
-        string += headers["typeclass"] % (obj.typeclass, obj.typeclass_path)
+        string += headers["typeclass"] % (obj.typeclass.typename, obj.typeclass_path)
 
         if hasattr(obj, "location"):
             string += headers["location"] % obj.location

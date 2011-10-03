@@ -627,7 +627,7 @@ class TypedObject(SharedMemoryModel):
         "Setter. Allows for self.typeclass_path = value"
         self.db_typeclass_path = value
         self.save()
-        object.__setattr__(self, "cached_typeclass_path", value)
+        object.__setattr__(self, 'cached_typeclass_path', value)
     #@typeclass_path.deleter
     def typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
@@ -935,7 +935,7 @@ class TypedObject(SharedMemoryModel):
             return typeclass and any([current_path == typec for typec in typeclasses])
         else:
             # check parent chain
-            return any([cls for cls in self.typeclass.mro()
+            return any([cls for cls in self.typeclass.__class__.mro()
                         if any(["%s.%s" % (cls.__module__, cls.__name__) == typec for typec in typeclasses])])
 
     #
@@ -943,7 +943,7 @@ class TypedObject(SharedMemoryModel):
     #              
     #
 
-    def swap_typeclass(self, new_typeclass, clean_attributes=False):
+    def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
@@ -967,6 +967,10 @@ class TypedObject(SharedMemoryModel):
                            sure nothing in the new typeclass clashes
                            with the old one. If you supply a list,
                            only those named attributes will be cleared.
+        no_default - if this is active, the swapper will not allow for
+                     swapping to a default typeclass in case the given
+                     one fails for some reason. Instead the old one
+                     will be preserved.                           
         """
         if callable(new_typeclass):
             # this is an actual class object - build the path
@@ -974,12 +978,24 @@ class TypedObject(SharedMemoryModel):
             new_typeclass = "%s.%s" % (cls.__module__, cls.__name__)
 
         # Try to set the new path
-        self.db_typeclass_path = new_typeclass.strip()        
-        self.save()
+        # this will automatically save to database
+
+        old_typeclass_path = self.typeclass_path 
+        self.typeclass_path = new_typeclass.strip()                        
         # this will automatically use a default class if
         # there is an error with the given typeclass.
         new_typeclass = self.typeclass
-    
+        if self.typeclass_path == new_typeclass.path:
+            # the typeclass loading worked as expected
+            self.cached_typeclass_path = None
+            self.cached_typeclass = None 
+        elif no_default:
+            # something went wrong; the default was loaded instead,
+            # and we don't allow that; instead we return to previous.
+            self.typeclass_path = old_typeclass_path
+            self.cached_typeclass = None 
+            return False
+                    
         if clean_attributes:
             # Clean out old attributes
             if is_iter(clean_attributes):
@@ -999,6 +1015,7 @@ class TypedObject(SharedMemoryModel):
         # run hooks for this new typeclass
         new_typeclass.basetype_setup()
         new_typeclass.at_object_creation()
+        return True 
             
     #
     # Attribute handler methods 
