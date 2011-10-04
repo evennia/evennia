@@ -9,31 +9,37 @@ from django.contrib import admin
 from src.objects.models import ObjAttribute, ObjectDB
 from src.utils.utils import mod_import
 
-class ObjectAttributeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_obj')
-    list_display_links = ('id', 'db_key')
-    ordering = ('db_obj','db_key', 'id')
-    search_fields = ('^db_key', 'db_obj')
-    save_as = True
-    save_on_top = True
-    list_select_related = True 
-admin.site.register(ObjAttribute, ObjectAttributeAdmin)
+# class ObjectAttributeAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'db_key', 'db_obj')
+#     list_display_links = ('id', 'db_key')
+#     ordering = ('db_obj','db_key', 'id')
+#     search_fields = ('^db_key', 'db_obj')
+#     save_as = True
+#     save_on_top = True
+#     list_select_related = True 
+# admin.site.register(ObjAttribute, ObjectAttributeAdmin)
 
 class ObjAttributeInline(admin.TabularInline):
     model = ObjAttribute
     fields = ('db_key', 'db_value')
-    extra = 1
+    extra = 0
 
 class ObjectEditForm(forms.ModelForm):
     "This form details the look of the fields"
     class Meta:
         model = ObjectDB
-    db_typeclass_path = forms.CharField(label="Typeclass",initial=settings.BASE_OBJECT_TYPECLASS,
-         help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
-    db_permissions = forms.CharField(label="Permissions", required=False,
-         help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
-    db_lock_storage = forms.CharField(label="Locks", required=False, widget=forms.Textarea(attrs={'cols':'100', 'rows':'1'}),
-         help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Take a look at other Objects to see valid strings. An empty lock means no access is given to anything for anyone. ")
+    db_typeclass_path = forms.CharField(label="Typeclass",
+                                        initial=settings.BASE_OBJECT_TYPECLASS,
+                                        widget=forms.TextInput(attrs={'size':'78'}),
+                                        help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+    db_permissions = forms.CharField(label="Permissions", 
+                                     required=False,
+                                     widget=forms.TextInput(attrs={'size':'78'}),
+                                     help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
+    db_lock_storage = forms.CharField(label="Locks", 
+                                      required=False, 
+                                      widget=forms.Textarea(attrs={'cols':'100', 'rows':'2'}),
+                                      help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Take a look at other Objects to see valid strings. An empty lock means no access is given to anything for anyone. ")
 
 class ObjectCreateForm(forms.ModelForm):
     "This form details the look of the fields"
@@ -41,9 +47,11 @@ class ObjectCreateForm(forms.ModelForm):
         model = ObjectDB
         fields = ('db_key',)
     db_typeclass_path = forms.CharField(label="Typeclass",initial=settings.BASE_OBJECT_TYPECLASS,
-         help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
-    db_permissions = forms.CharField(label="Permissions", initial=settings.PERMISSION_PLAYER_DEFAULT,required=False,
-         help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
+                                        widget=forms.TextInput(attrs={'size':'78'}),
+                                        help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+    db_permissions = forms.CharField(label="Permissions", initial=settings.PERMISSION_PLAYER_DEFAULT, required=False,
+                                     widget=forms.TextInput(attrs={'size':'78'}),
+                                     help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
 
     
 class ObjectDBAdmin(admin.ModelAdmin):    
@@ -56,6 +64,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
     save_as = True 
     save_on_top = True
     list_select_related = True 
+    list_filter = ('db_permissions', 'db_location', 'db_typeclass_path')
 
     # editing fields setup
 
@@ -68,7 +77,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    #inlines = [ObjAttributeInline]
+    inlines = [ObjAttributeInline]
 
 
     # Custom modification to give two different forms wether adding or not.
