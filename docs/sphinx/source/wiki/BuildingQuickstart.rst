@@ -321,3 +321,19 @@ command.
 
     > @sethelp/add MyTopic = This help topic is about ...
 
+Adding a World
+--------------
+
+Evennia comes with a tutorial world for you to build. To build this you
+need to log back in as *superuser*. Place yourself in Limbo and do:
+
+::
+
+    @batchcommand contrib.tutorial_world.build
+
+This will take a while, but you will see a lot of messages as the world
+is built for you. You will end up with a new exit from Limbo named
+*tutorial*. See more info about the tutorial world
+`here <TutorialWorldIntroduction.html>`_. Read
+``contrib/tutorial/world/build.ev`` to see exactly how it's built, step
+by step.

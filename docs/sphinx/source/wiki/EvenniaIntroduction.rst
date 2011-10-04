@@ -59,9 +59,20 @@ shipping with Evennia. You can also edit the database from the browser
 using the admin interface. Apart from telnet, SSH, SSL and web
 connections, you can connect e.g. IRC and IMC2 channels to evennia's
 in-game channels so that your players can chat with people "outside" the
-game. If you didn't see it before, there is a
-`screenshot <Screenshot.html>`_ of Evennia running that shows some of
-the connections in action.
+game.
+
+Can I test it somewhere?
+------------------------
+
+There are Evennia-based muds under development but they are still not
+publicly available. If you do try to install Evennia (it's not hard), it
+comes with its own tutorial though - this shows off some of the
+possibilities *and* gives you a small single-player quest to play. The
+tutorial takes only one single in-game command to install as explained
+`here <TutorialWorldIntroduction.html>`_.
+
+If you didn't see it before, here is also a
+`screenshot <Screenshot.html>`_ of Evennia running.
 
 What you need to know to work with Evennia
 ==========================================
