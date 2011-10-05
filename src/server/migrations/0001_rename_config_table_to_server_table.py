@@ -6,14 +6,15 @@ from django.db import models, utils
 import pickle
 
 class Migration(SchemaMigration):
-
+    
+    no_dry_run = True 
     def forwards(self, orm):
         try:
             db.rename_table("config_configvalue", "server_serverconfig")    
             for conf in orm.ServerConfig.objects.all():
                 conf.db_value = pickle.dumps(conf.db_value)
                 conf.save()
-        except utils.DatabaseError:
+        except Exception: #utils.DatabaseError:
             # this will happen if we start db from scratch (the config
             # app will then already be gone and no data is to be transferred)
             # So instead of renaming the old we instead have to manually create the new model.
