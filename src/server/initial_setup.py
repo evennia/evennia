@@ -178,6 +178,20 @@ def create_admin_media_links():
         print _(" Admin-media symlinked to ADMIN_MEDIA_ROOT.")
     else:
         print _(" Admin-media files should be copied manually to ADMIN_MEDIA_ROOT.")
+
+def at_initial_setup():
+    """
+    Custom hook for users to overload some or all parts of the initial setup. Called very
+    last in the sequence. It tries to import and run a module 
+    """
+    try:
+        mod = __import__(settings.AT_INITIAL_SETUP_HOOK_MODULE, fromlist=[None])
+    except ImportError:
+        return 
+    print _(" Running at_initial_setup() hook.")
+    if mod.__dict__.get("at_initial_setup", None):
+        mod.at_initial_setup()
+                   
         
 def handle_setup(last_step):
     """
@@ -202,12 +216,13 @@ def handle_setup(last_step):
         create_system_scripts,
         start_game_time,
         create_admin_media_links,
-        import_MUX_help_files]
+        import_MUX_help_files,
+        at_initial_setup]
 
     if not settings.IMPORT_MUX_HELP:
         # skip importing of the MUX helpfiles, they are 
         # not interesting except for developers.
-        del setup_queue[-1]
+        del setup_queue[-2]
 
     #print " Initial setup: %s steps." % (len(setup_queue)) 
 
