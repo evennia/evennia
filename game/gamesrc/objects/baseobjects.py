@@ -107,10 +107,10 @@ class Character(BaseCharacter):
         
     def at_disconnect(self):
         """
-        We stove away the character when logging off, otherwise they will remain where 
-        they are, 'headless', so to say.
+        We stove away the character when logging off, otherwise the character object will 
+        remain in the room also after the player logged off ("headless", so to say).
         """
-        if self.location: # have to check, in case of multiple connections            
+        if self.location: # have to check, in case of multiple connections closing           
             self.location.msg_contents("%s has left the game." % self.name)
             self.db.prelogout_location = self.location
             self.location = None 
@@ -120,9 +120,14 @@ class Character(BaseCharacter):
         This recovers the character again after having been "stoved away" at disconnect.
         """
         if self.db.prelogout_location:
-            self.location = self.db.prelogout_location
-        else:
-            self.db.prelogout_location = self.location
+            # try to recover 
+            self.location = self.db.prelogout_location        
+        if self.location == None:
+            # make sure location is never None (home should always exist)
+            self.location = self.home
+        # save location again to be sure 
+        self.db.prelogout_location = self.location
+
         self.location.msg_contents("%s has entered the game." % self.name)
         self.location.at_object_receive(self, self.location)
 

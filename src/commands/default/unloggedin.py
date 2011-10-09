@@ -165,6 +165,9 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                                                  character_typeclass=typeclass,
                                                  character_location=default_home,
                                                  character_home=default_home)                            
+            if not new_character:
+                session.msg("There was an error creating the default Character/Player. This error was logged. Contact an admin.")
+                return 
             new_player = new_character.player
             
             # character safety features

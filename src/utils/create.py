@@ -397,53 +397,72 @@ def create_player(name, email, password,
         else:
             new_user = User.objects.create_user(name, email, password) 
 
-    if not typeclass:
-        typeclass = settings.BASE_PLAYER_TYPECLASS
-    elif isinstance(typeclass, PlayerDB):
-        # this is already an objectdb instance, extract its typeclass
-        typeclass = typeclass.typeclass.path
-    elif isinstance(typeclass, Player) or utils.inherits_from(typeclass, Player):
-        # this is already an object typeclass, extract its path
-        typeclass = typeclass.path         
+    try:
+        if not typeclass:
+            typeclass = settings.BASE_PLAYER_TYPECLASS
+        elif isinstance(typeclass, PlayerDB):
+            # this is already an objectdb instance, extract its typeclass
+            typeclass = typeclass.typeclass.path
+        elif isinstance(typeclass, Player) or utils.inherits_from(typeclass, Player):
+            # this is already an object typeclass, extract its path
+            typeclass = typeclass.path         
 
-    # create new database object 
-    new_db_player = PlayerDB(db_key=name, user=new_user)
-    new_db_player.save()
-    
-    # assign the typeclass 
-    typeclass = utils.to_unicode(typeclass)
-    new_db_player.typeclass_path = typeclass
+        # create new database object 
+        new_db_player = PlayerDB(db_key=name, user=new_user)
+        new_db_player.save()
 
-    # this will either load the typeclass or the default one
-    new_player = new_db_player.typeclass
+        # assign the typeclass 
+        typeclass = utils.to_unicode(typeclass)
+        new_db_player.typeclass_path = typeclass
 
-    if not object.__getattribute__(new_db_player, "is_typeclass")(typeclass, exact=True):
-        # this will fail if we gave a typeclass as input and it still gave us a default
-        SharedMemoryModel.delete(new_db_player)
-        return None 
+        # this will either load the typeclass or the default one
+        new_player = new_db_player.typeclass
 
-    new_player.basetype_setup() # setup the basic locks and cmdset
-    # call hook method (may override default permissions)
-    new_player.at_player_creation()
+        if not object.__getattribute__(new_db_player, "is_typeclass")(typeclass, exact=True):
+            # this will fail if we gave a typeclass as input and it still gave us a default
+            SharedMemoryModel.delete(new_db_player)
+            return None 
 
-    # custom given arguments potentially overrides the hook 
-    if permissions:
-        new_player.permissions = permissions
-    elif not new_player.permissions:
-        new_player.permissions = settings.PERMISSION_PLAYER_DEFAULT
+        new_player.basetype_setup() # setup the basic locks and cmdset
+        # call hook method (may override default permissions)
+        new_player.at_player_creation()
 
-    if locks:
-        new_player.locks.add(locks)
-        
-    # create *in-game* 'player' object 
-    if create_character:
-        if not character_typeclass:
-            character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-        # creating the object automatically links the player
-        # and object together by player.obj <-> obj.player
-        new_character = create_object(character_typeclass, key=name,
-                                      location=character_location, home=character_location, 
-                                      permissions=permissions,
-                                      player=new_player)        
-        return new_character
-    return new_player
+        # custom given arguments potentially overrides the hook 
+        if permissions:
+            new_player.permissions = permissions
+        elif not new_player.permissions:
+            new_player.permissions = settings.PERMISSION_PLAYER_DEFAULT
+
+        if locks:
+            new_player.locks.add(locks)
+
+        # create *in-game* 'player' object 
+        if create_character:
+            if not character_typeclass:
+                character_typeclass = settings.BASE_CHARACTER_TYPECLASS
+            # creating the object automatically links the player
+            # and object together by player.obj <-> obj.player
+            new_character = create_object(character_typeclass, key=name,
+                                          location=None, home=character_location, 
+                                          permissions=permissions,
+                                          player=new_player)        
+            return new_character
+        return new_player
+    except Exception:
+        # a failure in creating the character
+        if not user:
+            # in there was a failure we clean up everything we can
+            logger.log_trace()
+            try:
+                new_user.delete()
+            except Exception:
+                pass
+            try:
+                new_player.delete()
+            except Exception:
+                pass 
+            try:
+                del new_character
+            except Exception:
+                pass 
+
