@@ -68,7 +68,7 @@ def create_objects():
 
     god_character.save()
    
-    # Limbo is the initial starting room.
+    # Limbo is the default "nowhere" starting room
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'))
@@ -81,9 +81,12 @@ def create_objects():
     limbo_obj.db.desc = string
     limbo_obj.save()
 
-    # Now that Limbo exists, set the user up in Limbo.
-    god_character.location = limbo_obj
-    god_character.home = limbo_obj
+    # Now that Limbo exists, try to set the user up in Limbo (unless
+    # the creation hooks already fixed this).
+    if not god_character.location:        
+        god_character.location = limbo_obj
+    if not god_character.home:
+        god_character.home = limbo_obj
     
 def create_channels():
     """
