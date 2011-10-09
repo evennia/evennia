@@ -57,7 +57,11 @@ def create_objects():
                                          user=god_user,   
                                          create_character=True,
                                          character_typeclass=character_typeclass)
-                                         
+
+    if not god_character:
+        print _("#1 could not be created. Check the Player/Character typeclass for bugs.")
+        raise Exception 
+
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
