@@ -1719,7 +1719,7 @@ class CmdFind(MuxCommand):
             if not low <= int(result.id) <= high:
                 string += "\n   {RNo match found for '%s' within the given dbref limits.{n" % searchstring
             else:
-                string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref, result.typeclass)                            
+                string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref, result.typeclass.path)                            
         else:
             # Not a player/dbref search but a wider search; build a queryset. 
         
@@ -1749,14 +1749,14 @@ class CmdFind(MuxCommand):
                 restrictions = ", %s" % (",".join(self.switches))                
             if nresults:
                 # convert result to typeclasses. 
-                results = [result.typeclass(result) for result in results]                 
+                results = [result.typeclass for result in results]                 
                 if nresults > 1:                    
                     string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)
                     for res in results:
-                        string += "\n   {g%s(%s) - %s{n" % (res.key, res.dbref, res.typeclass)
+                        string += "\n   {g%s(%s) - %s{n" % (res.key, res.dbref, res.path)
                 else:
                     string = "{wOne Match{n(#%i-#%i%s):" % (low, high, restrictions)                    
-                    string += "\n   {g%s(%s) - %s{n" % (results[0].key, results[0].dbref, results[0].typeclass)            
+                    string += "\n   {g%s(%s) - %s{n" % (results[0].key, results[0].dbref, results[0].path)            
             else:
                 string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)                    
                 string += "\n   {RNo matches found for '%s'{n" % searchstring

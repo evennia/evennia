@@ -181,8 +181,10 @@ def create_admin_media_links():
 
 def at_initial_setup():
     """
-    Custom hook for users to overload some or all parts of the initial setup. Called very
-    last in the sequence. It tries to import and run a module 
+    Custom hook for users to overload some or all parts of the initial
+    setup. Called very last in the sequence. It tries to import and
+    run a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail
+    silently if this does not exist or fails to load.
     """
     try:
         mod = __import__(settings.AT_INITIAL_SETUP_HOOK_MODULE, fromlist=[None])
@@ -190,8 +192,7 @@ def at_initial_setup():
         return 
     print _(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
-        mod.at_initial_setup()
-                   
+        mod.at_initial_setup()                   
         
 def handle_setup(last_step):
     """
