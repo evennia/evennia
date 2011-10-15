@@ -396,10 +396,10 @@ class CmdCreate(ObjManipCommand):
                 continue
             if aliases: 
                 string = "You create a new %s: %s (aliases: %s)."
-                string = string % (obj.typeclass, obj.name, ", ".join(aliases))
+                string = string % (obj.typeclass.typename, obj.name, ", ".join(aliases))
             else:
                 string = "You create a new %s: %s."
-                string = string % (obj.typeclass, obj.name)
+                string = string % (obj.typeclass.typename, obj.name)
             # set a default desc
             if not obj.db.desc:
                 obj.db.desc = "You see nothing special."
@@ -1664,7 +1664,7 @@ class CmdFind(MuxCommand):
     find objects
 
     Usage:
-      @find[/switches] <name or dbref or *player> [= dbrefmin[ dbrefmax]]
+      @find[/switches] <name or dbref or *player> [= dbrefmin[-dbrefmax]]
 
     Switches:
       room - only look for rooms (location=None)
@@ -1673,7 +1673,7 @@ class CmdFind(MuxCommand):
 
     Searches the database for an object of a particular name or dbref.
     Use *playername to search for a player. The switches allows for
-    limiting matches to certain game entities. Dbrefmin and dbrefmax 
+    limiting object matches to certain game entities. Dbrefmin and dbrefmax 
     limits matches to within the given dbrefs, or above/below if only one is given. 
     """ 
 
@@ -1688,7 +1688,7 @@ class CmdFind(MuxCommand):
         switches = self.switches
 
         if not self.args:
-            caller.msg("Usage: @find <string> [= low [high]]")
+            caller.msg("Usage: @find <string> [= low [-high]]")
             return        
 
         searchstring = self.lhs

@@ -72,6 +72,15 @@ class Player(TypeClass):
     # regardless of which character is currently
     # connected to this player. 
 
+    def at_cmdset_get(self):
+        """
+        Called just before cmdsets on this player are requested by the
+        command handler. If changes need to be done on the fly to the cmdset
+        before passing them on to the cmdhandler, this is the place to do it.
+        This is called also if the player currently have no cmdsets.
+        """
+        pass
+
     def at_first_login(self):
         """
         Only called once, the very first
