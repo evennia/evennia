@@ -556,6 +556,11 @@ class ObjectDB(TypedObject):
         Do something as this object. This command transparently
         lets its typeclass execute the command. 
         raw_string - raw command input coming from the command line. 
+
+        The return from this method is None for all default commands
+        (it's the return value of cmd.func()) and is not used in any
+        way by the engine. It might be useful for admins wanting to
+        implement some sort of 'nested' command structure though,
         """        
         # nick replacement - we require full-word matching.
         
@@ -568,7 +573,7 @@ class ObjectDB(TypedObject):
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1) 
                 break        
-        cmdhandler.cmdhandler(self.typeclass, raw_string)
+        return cmdhandler.cmdhandler(self.typeclass, raw_string)
 
     def msg(self, message, from_obj=None, data=None):
         """

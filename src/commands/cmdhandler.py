@@ -234,11 +234,13 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
 
             # Parse and execute        
             cmd.parse()
-            cmd.func()
+            # (return value is normally None)
+            ret = cmd.func()
 
             # post-command hook
             cmd.at_post_cmd()
-            # Done! 
+            # Done! By default, Evennia does not use this return at all
+            return ret 
 
         except ExecSystemCommand, exc:             
             # Not a normal command: run a system command, if available,
