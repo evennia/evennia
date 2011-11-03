@@ -21,7 +21,7 @@ from manager import SharedMemoryManager
 # is used by SharedMemoryBase.save(). 
 #
 
-from twisted.internet.defer import DeferredQueue
+from twisted.internet.defer import DeferredQueue, execute
 from twisted.internet.task import cooperate 
 from twisted.internet.threads import deferToThread, blockingCallFromThread
 from django.conf import settings
@@ -37,7 +37,13 @@ ASYNC_QUEUE = DeferredQueue(backlog=1)
 def async_callback(funcdef):
     "This callback is run with the item returned from queue - a tuple (func, args, kwargs)"        
     #d = deferToThread(funcdef[0], *funcdef[1], **funcdef[2])
-    d = reactor.callFromThread(funcdef[0], *funcdef[1], **funcdef[2])
+    logger.log_infomsg("Callback")
+    def threadback(r):
+        print "Thread returned."
+    def threaderr(failure):
+        print "Thread error" + str(failure)
+    #d = reactor.callFromThread(funcdef[0], *funcdef[1], **funcdef[2]).addCallbacks(threadback, threaderr)1
+    d = execute(funcdef[0], *funcdef[1], **funcdef[2]).addCallbacks(threadback, threaderr)
     #d = reactor.blockingCallFromThread(funcdef[0], *funcdef[1], **funcdef[2])
     return d
 def async_errback(failure):
