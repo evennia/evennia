@@ -1,10 +1,15 @@
-from weakref import WeakValueDictionary, ref
+"""
+This is mostly unmodified from the original idmapper. 
+
+Evennia changes:
+  The cache mechanism was changed from a WeakValueDictionary to a 
+  normal dictionary. The old way caused very hard-to-diagnose bugs
+  over long periods of time (which Evennia requires)
+
+"""
 
 from django.db.models.base import Model, ModelBase
-
 from manager import SharedMemoryManager
-
-TCACHE = {} # test cache, for debugging /Griatch
 
 class SharedMemoryModelBase(ModelBase):
     #def __new__(cls, name, bases, attrs):
@@ -120,7 +125,6 @@ class SharedMemoryModel(Model):
         """
         cls._flush_cached_by_key(instance._get_pk_val())
         #key = "%s-%s" % (cls, instance.pk)            
-        #del TCACHE[key]
         #print "uncached: %s (%s: %s) (total cached: %s)" % (instance, cls.__name__, len(cls.__instance_cache__), len(TCACHE))
 
     flush_cached_instance = classmethod(flush_cached_instance)
