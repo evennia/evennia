@@ -141,6 +141,7 @@ DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
 DATABASE_PORT = ''
 
+DATABASE_NONBLOCKING_SAVE = True 
 
 ###################################################
 # Evennia in-game parsers
