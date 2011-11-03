@@ -343,7 +343,9 @@ SESSION_COOKIE_NAME = 'sessionid'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = False
+# Where to find locales (no need to change this, most likely)
+LOCALE_PATHS = ["../locale/"]
 # This should be turned off unless you want to do tests with Django's 
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
