@@ -310,8 +310,7 @@ class ObjectDB(TypedObject):
                     hom = home.dbobj    
             else:                
                 hom = home.dbobj                
-            if home:
-                self.db_home = hom        
+            self.db_home = hom        
         except Exception:
             string = "Cannot set home: "
             string += "%s is not a valid home." 
@@ -746,6 +745,9 @@ class ObjectDB(TypedObject):
         default_home_id = int(settings.CHARACTER_DEFAULT_HOME)
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
+            if default_home.id == self.id:
+                # we are deleting default home!
+                default_home = None 
         except Exception:
             string = "Could not find default home '(#%d)'."
             logger.log_errmsg(string % default_home_id)
@@ -754,17 +756,19 @@ class ObjectDB(TypedObject):
         for obj in objs:            
             home = obj.home 
             # Obviously, we can't send it back to here.
-            if home and home.id == self.id:
-                home = default_home
+            if not home or (home and home.id == self.id):
+                obj.home = default_home                
                 
             # If for some reason it's still None...
-            if not home:
+            if not obj.home:
                 string = "Missing default home, '%s(#%d)' "
                 string += "now has a null location."
+                obj.location = None 
+                obj.msg("Something went wrong! You are dumped into nowhere. Contact an admin.")
                 logger.log_errmsg(string % (obj.name, obj.id))
                 return 
-
-            if self.has_player:
+            
+            if obj.has_player:
                 if home:                        
                     string = "Your current location has ceased to exist,"
                     string += " moving you to %s(#%d)."
@@ -812,8 +816,7 @@ class ObjectDB(TypedObject):
 
         for session in self.sessions:
             session.msg("Your character %s has been destroyed." % self.name)
-            #session.session_disconnect()
-
+            # no need to disconnect, Player just jumps to OOC mode.                         
         # sever the connection (important!)
         if object.__getattribute__(self, 'player') and self.player:
             self.player.character = None
@@ -824,7 +827,7 @@ class ObjectDB(TypedObject):
         
         # if self.player:
         #     self.player.user.is_active = False 
-        #     self.player.user.save()
+        #     self.player.user.save(
 
         # Destroy any exits to and from this room, if any
         self.clear_exits()
