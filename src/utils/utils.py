@@ -624,3 +624,15 @@ def string_from_module(modpath, variable=None):
         if not mvars:
             return None
         return mvars[random.randint(0, len(mvars)-1)]
+
+def init_new_player(player):
+    """
+    Helper method to call all hooks, set flags etc on a newly created
+    player (and potentially their character, if it exists already)
+    """
+    # the FIRST_LOGIN flags are necessary for the system to call 
+    # the relevant first-login hooks. 
+    if player.character:
+        player.character.db.FIRST_LOGIN = True                            
+    player.db.FIRST_LOGIN = True 
+     

@@ -169,20 +169,10 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 session.msg("There was an error creating the default Character/Player. This error was logged. Contact an admin.")
                 return 
             new_player = new_character.player
-            
-            # character safety features
-            new_character.locks.delete("get")
-            new_character.locks.add("get:perm(Wizards)")
-            # allow the character itself and the player to puppet this character.
-            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" % 
-                                    (new_character.id, new_player.id))
 
-            # set a default description
-            new_character.db.desc = "This is a Player."
-
-            new_character.db.FIRST_LOGIN = True                
-            new_player = new_character.player
-            new_player.db.FIRST_LOGIN = True 
+            # This needs to be called so the engine knows this player is logging in for the first time.
+            # (so it knows to call the right hooks during login later)
+            utils.init_new_player(player)
 
             # join the new player to the public channel                
             pchanneldef = settings.CHANNEL_PUBLIC
@@ -191,10 +181,20 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 if not pchannel.connect_to(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
+            
+            # allow only the character itself and the player to puppet this character (and Immortals).
+            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" % 
+                                    (new_character.id, new_player.id))
+            
+            
+            # set a default description
+            new_character.db.desc = "This is a Player."
 
+            # tell the caller everything went well. 
             string = "A new account '%s' was created with the email address %s. Welcome!"
             string += "\n\nYou can now log with the command 'connect %s <your password>'."                
             session.msg(string % (playername, email, email))
+
         except Exception:
             # We are in the middle between logged in and -not, so we have to handle tracebacks 
             # ourselves at this point. If we don't, we won't see any errors at all.

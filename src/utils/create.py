@@ -389,6 +389,8 @@ def create_player(name, email, password,
     from src.players.models import PlayerDB
     from src.players.player import Player
 
+    if not email:
+        email = "dummy@dummy.com"
     if user:
         new_user = user
     else:

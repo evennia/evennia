@@ -22,7 +22,7 @@ from src.commands.cmdset import CmdSet
 from src.commands.default import cmdset_default, cmdset_unloggedin, cmdset_ooc
 from game.gamesrc.commands.basecommand import Command
 
-#from contrib import menusystem, lineeditor
+from contrib import menusystem, lineeditor
 #from contrib import misc_commands
 
 class DefaultCmdSet(cmdset_default.DefaultCmdSet):
@@ -47,9 +47,9 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-        #self.add(menusystem.CmdMenuTest())
+        self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())
-        #self.add(misc_commands.CmdQuell())
+        #self.add(misc_commands.CmdQuell())        
 
 class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
     """
@@ -74,7 +74,6 @@ class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-
 
 class OOCCmdSet(cmdset_ooc.OOCCmdSet):
     """

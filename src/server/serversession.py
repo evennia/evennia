@@ -13,7 +13,7 @@ from django.conf import settings
 from src.scripts.models import ScriptDB
 from src.comms.models import Channel
 from src.utils import logger
-from src.commands import cmdhandler
+from src.commands import cmdhandler, cmdsethandler
 
 IDLE_COMMAND = settings.IDLE_COMMAND 
         
@@ -37,7 +37,6 @@ class ServerSession(Session):
     through their session.
 
     """        
-
     def at_sync(self):
         """
         This is called whenever a session has been resynced with the portal.
@@ -48,12 +47,22 @@ class ServerSession(Session):
         the session as it was. 
         """
         if not self.logged_in:
+            # assign the unloggedin-command set.
+            self.cmdset = cmdsethandler.CmdSetHandler(self)
+            self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
+            self.cmdset.update(init_mode=True)            
+            self.cmdset.update(init_mode=True)
             return
+
         character = self.get_character()
         if character:
             # start (persistent) scripts on this object
             ScriptDB.objects.validate(obj=character)
-                       
+
+    def at_cmdset_get(self):
+        "dummy hook all objects with cmdsets need to have"
+        pass
+
     def session_login(self, player):
         """
         Startup mechanisms that need to run at login. This is called
@@ -193,8 +202,9 @@ class ServerSession(Session):
                 # there is no character, but we are logged in. Use player instead.
                 self.get_player().execute_cmd(command_string)                    
             else:            
-                # we are not logged in. Use special unlogged-in call. 
-                cmdhandler.cmdhandler(self, command_string, unloggedin=True)
+                # we are not logged in. Use the session directly 
+                # (it uses the settings.UNLOGGEDIN cmdset)
+                cmdhandler.cmdhandler(self, command_string)
         self.update_session_counters()            
 
     def data_out(self, msg, data=None):

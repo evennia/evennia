@@ -8,9 +8,7 @@ command line. The process is as follows:
 2) The system checks the state of the caller - loggedin or not
 3) If no command string was supplied, we search the merged cmdset for system command CMD_NOINPUT 
    and branches to execute that.  --> Finished
-4) Depending on the login/not state, it collects cmdsets from different sources:
-     not logged in - uses the single cmdset defined as settings.CMDSET_UNLOGGEDIN     
-     normal - gathers command sets from many different sources (shown in dropping priority): 
+4) Cmdsets are gathered from different sources (in order of dropping priority):     
            channels - all available channel names are auto-created into a cmdset, to allow 
                   for giving the channel name and have the following immediately
                   sent to the channel. The sending is performed by the CMD_CHANNEL
@@ -140,26 +138,20 @@ def get_and_merge_cmdsets(caller):
 
 # Main command-handler function 
 
-def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
+def cmdhandler(caller, raw_string, testing=False):
     """
     This is the main function to handle any string sent to the engine.    
     
     caller - calling object
     raw_string - the command string given on the command line
-    unloggedin - if caller is an authenticated user or not
     testing - if we should actually execute the command or not. 
               if True, the command instance will be returned instead.
     """    
     try: # catch bugs in cmdhandler itself
         try: # catch special-type commands
 
-            if unloggedin: 
-                # not logged in, so it's just one cmdset we are interested in
-                cmdset = import_cmdset(settings.CMDSET_UNLOGGEDIN, caller)
-            else:                
-                # We are logged in, collect all relevant cmdsets and merge
-                cmdset = get_and_merge_cmdsets(caller)
-
+            cmdset = get_and_merge_cmdsets(caller)
+                
             #print cmdset
             if not cmdset:
                 # this is bad and shouldn't happen. 

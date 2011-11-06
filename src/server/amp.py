@@ -276,7 +276,7 @@ class AMPProtocol(amp.AMP):
             if sess.logged_in and sess.uid:
                 # this can happen in the case of auto-authenticating protocols like SSH
                 sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
-                sess.at_sync() # this runs initialization without acr
+            sess.at_sync() # this runs initialization without acr
 
             self.factory.server.sessions.portal_connect(sessid, sess)
 
