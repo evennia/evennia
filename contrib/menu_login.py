@@ -1,7 +1,7 @@
 """
 Menu-driven login system  
 
-Contribution 2011 - Griatch 
+Contribution - Griatch 2011
 
 
 This is an alternative login system for Evennia, using the

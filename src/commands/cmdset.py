@@ -243,10 +243,10 @@ class CmdSet(object):
             # add all commands 
             if not hasattr(cmd, 'obj'):
                 cmd.obj = self.cmdsetobj            
-            ic = [i for i, oldcmd in enumerate(self.commands) if oldcmd.match(cmd)]            
-            if ic:                
-                self.commands[ic[0]] = cmd # replace 
-            else:                
+            try:
+                ic = self.commands.index(cmd)
+                self.commands[ic] = cmd # replace 
+            except ValueError:
                 self.commands.append(cmd)
             # extra run to make sure to avoid doublets            
             self.commands = list(set(self.commands))

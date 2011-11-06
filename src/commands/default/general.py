@@ -616,7 +616,7 @@ class CmdOOCLook(CmdLook):
         self.character = None
         if utils.inherits_from(self.caller, "src.objects.objects.Object"):
             # An object of some type is calling. Convert to player.
-            print self.caller, self.caller.__class__
+            #print self.caller, self.caller.__class__
             self.character = self.caller 
             if hasattr(self.caller, "player"):
                 self.caller = self.caller.player

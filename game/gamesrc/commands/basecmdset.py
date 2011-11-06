@@ -24,6 +24,7 @@ from game.gamesrc.commands.basecommand import Command
 
 from contrib import menusystem, lineeditor
 #from contrib import misc_commands
+#from contrib import character_creation
 
 class DefaultCmdSet(cmdset_default.DefaultCmdSet):
     """

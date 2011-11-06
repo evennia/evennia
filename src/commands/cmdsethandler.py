@@ -121,7 +121,8 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             logger.log_trace()    
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 object.__getattribute__(emit_to_obj, "msg")(errstring)            
-        #raise # have to raise, or we will not see any errors in some situations!
+        logger.log_errmsg("Error: %s" % errstring)
+        raise # have to raise, or we will not see any errors in some situations!
 
 # classes 
 
@@ -246,8 +247,8 @@ class CmdSetHandler(object):
     def add(self, cmdset, emit_to_obj=None, permanent=False):
         """
         Add a cmdset to the handler, on top of the old ones.
-        Default is to not make this permanent (i.e. no script
-        will be added to add the cmdset every server start/login).
+        Default is to not make this permanent, i.e. the set 
+        will not survive a server reset. 
 
         cmdset - can be a cmdset object or the python path to
                  such an object.
