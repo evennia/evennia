@@ -24,7 +24,7 @@ from game.gamesrc.commands.basecommand import Command
 
 from contrib import menusystem, lineeditor
 #from contrib import misc_commands
-#from contrib import character_creation
+from contrib import chargen
 
 class DefaultCmdSet(cmdset_default.DefaultCmdSet):
     """
@@ -93,8 +93,8 @@ class OOCCmdSet(cmdset_ooc.OOCCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
+        self.add(chargen.OOCCmdSetCharGen)
         
-
 class BaseCmdSet(CmdSet):
     """
     Implements an empty, example cmdset.

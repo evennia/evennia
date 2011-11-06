@@ -69,11 +69,11 @@ class ObjectManager(TypedObjectManager):
         return self.get_object_with_user(dbref)
 
     @returns_typeclass_list
-    def get_objs_with_key_and_typeclass(oname, otypeclass_path):
+    def get_objs_with_key_and_typeclass(self, oname, otypeclass_path):
         """
         Returns objects based on simultaneous key and typeclass match.
         """
-        return self.filter(db_key__iexact=oname).filter(db_typeclass_path_exact=otypeclass_path)
+        return self.filter(db_key__iexact=oname).filter(db_typeclass_path__exact=otypeclass_path)
 
     # attr/property related
 
