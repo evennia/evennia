@@ -73,6 +73,7 @@ def create_object(typeclass, key=None, location=None,
     # this will either load the typeclass or the default one
     new_object = new_db_object.typeclass
 
+
     if not object.__getattribute__(new_db_object, "is_typeclass")(typeclass, exact=True):
         # this will fail if we gave a typeclass as input and it still gave us a default
         SharedMemoryModel.delete(new_db_object)
@@ -105,6 +106,10 @@ def create_object(typeclass, key=None, location=None,
     # perform a move_to in order to display eventual messages.
     if home:
         new_object.home = home
+    else:
+        new_object.home = settings.CHARACTER_DEFAULT_HOME
+
+                
     if location:
         new_object.move_to(location, quiet=True)
     else:

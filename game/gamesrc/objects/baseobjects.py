@@ -99,37 +99,13 @@ class Object(BaseObject):
 class Character(BaseCharacter):
     """
     This is the default object created for a new user connecting - the
-    in-game player character representation. Note that it's important
-    that at_object_creation sets up an script that adds the Default
-    command set whenever the player logs in - otherwise they won't be
-    able to use any commands! 
+    in-game player character representation. The basetype_setup always
+    assigns the default_cmdset as a fallback to objects of this type.
+    The default hooks also hide the character object away (by moving
+    it to a Null location whenever the player logs off (otherwise the
+    character would remain in the world, "headless" so to say). 
     """
-        
-    def at_disconnect(self):
-        """
-        We stove away the character when logging off, otherwise the character object will 
-        remain in the room also after the player logged off ("headless", so to say).
-        """
-        if self.location: # have to check, in case of multiple connections closing           
-            self.location.msg_contents("%s has left the game." % self.name)
-            self.db.prelogout_location = self.location
-            self.location = None 
-
-    def at_post_login(self):
-        """
-        This recovers the character again after having been "stoved away" at disconnect.
-        """
-        if self.db.prelogout_location:
-            # try to recover 
-            self.location = self.db.prelogout_location        
-        if self.location == None:
-            # make sure location is never None (home should always exist)
-            self.location = self.home
-        # save location again to be sure 
-        self.db.prelogout_location = self.location
-
-        self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
-        self.location.at_object_receive(self, self.location)
+    pass 
 
 class Room(BaseRoom):
     """

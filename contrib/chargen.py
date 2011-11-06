@@ -190,7 +190,7 @@ class OOCCmdSetCharGen(OOCCmdSet):
     """    
     def at_cmdset_creation(self):
         "Install everything from the default set, then overload"
-        #super(OOCCmdSetExtended, self).at_cmdset_creation()
+        super(OOCCmdSetCharGen, self).at_cmdset_creation()
         self.add(CmdOOCLook())
         self.add(CmdOOCCharacterCreate())
 

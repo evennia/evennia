@@ -168,6 +168,12 @@ AT_INITIAL_SETUP_HOOK_MODULE = "game.gamesrc.world.at_initial_setup"
 ###################################################
 # Default command sets 
 ###################################################
+# Note that with the exception of the unloggedin set (which is not
+# stored anywhere), changing these paths will only affect NEW created
+# characters, not those already in play. So if you plan to change
+# this, it's recommended you do it on a pristine setup only.  To
+# dynamically add new commands to a running server, extend/overload
+# these existing sets instead.
 
 # Command set used before player has logged in
 CMDSET_UNLOGGEDIN = "game.gamesrc.commands.basecmdset.UnloggedinCmdSet"
