@@ -7,16 +7,18 @@
 # The names of the string variables doesn't matter (except they
 # shouldn't start with _), but each should hold a string defining a
 # connection screen - as seen when first connecting to the game
-# (before having logged in). If there are more than one string
-# variable defined, a random one is picked.
+# (before having logged in).
 #
-# After adding new connection screens to this module you must 
-# either reboot or reload the server to make them available. 
+# OBS - If there are more than one string variable viable in this
+# module, a random one is picked!
+#
+# After adding new connection screens to this module you must either
+# reboot or reload the server to make them available.
 #
 
 from src.commands.connection_screen import DEFAULT_SCREEN
 
-# from src.utils import utils
+#from src.utils import utils
 #
 # CUSTOM_SCREEN = \
 # """{b=============================================================={n
@@ -29,3 +31,12 @@ from src.commands.connection_screen import DEFAULT_SCREEN
 #
 # Enter {whelp{n for more info. {wlook{n will re-load this screen.
 #{b=============================================================={n""" % utils.get_evennia_version()
+
+
+# # A suggested alternative screen for the Menu login system
+
+# from src.utils import utils
+# MENU_SCREEN = \
+# """{b=============================================================={n
+#  Welcome to {gEvennnia{n, version %s! 
+# {b=============================================================={n""" % utils.get_evennia_version()

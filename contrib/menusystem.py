@@ -222,7 +222,7 @@ class MenuNode(object):
 
     """
     def __init__(self, key, text="", links=None, linktexts=None, 
-                 keywords=None, cols=1, helptext=None, selectcmds=None, code="", nodefaultcmds=False):
+                 keywords=None, cols=1, helptext=None, selectcmds=None, code="", nodefaultcmds=False, separator=""):
         """
         key       - the unique identifier of this node.
         text      - is the text that will be displayed at top when viewing this node. 
@@ -243,6 +243,7 @@ class MenuNode(object):
                     as soon after it's been selected from another node). self.caller is available
                     to call from this code block, as well as ObjectDB and PlayerDB. 
         nodefaultcmds - if true, don't offer the default help and look commands in the node                    
+        separator - this string will be put on the line between menu nodes5B. 
         """
         self.key = key
         self.cmdset = None
@@ -253,6 +254,7 @@ class MenuNode(object):
         self.selectcmds = selectcmds
         self.code = code
         self.nodefaultcmds = nodefaultcmds
+        self.separator = separator
         Nlinks = len(self.links)
         
         # validate the input 
@@ -307,7 +309,7 @@ class MenuNode(object):
         for row in ftable:
             string +="\n" + "".join(row)
         # store text 
-        self.text = 78*"-" + "\n" + string.rstrip()
+        self.text = self.separator + "\n" + string.rstrip()
 
     def init(self, menutree):
         """

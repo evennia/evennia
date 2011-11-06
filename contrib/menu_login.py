@@ -1,7 +1,8 @@
 """
-Alternative Login system 
+Menu-driven login system  
 
 Contribution 2011 - Griatch 
+
 
 This is an alternative login system for Evennia, using the
 contrib.menusystem module. As opposed to the default system it doesn't
@@ -9,6 +10,21 @@ use emails for authentication and also don't auto-creates a Character
 with the same name as the Player (instead assuming some sort of
 character-creation to come next).
 
+
+Install is simple: 
+
+To your settings file, add/edit the line:
+
+CMDSET_UNLOGGEDIN = "contrib.alt_login.UnloggedInCmdSet"
+
+That's it. The cmdset in this module will now be used instead of the
+default one.
+
+The initial login "graphic" is taken from strings in the module given
+by settings.CONNECTION_SCREEN_MODULE. You will want to edit the string
+in that module (at least comment out the default string that mentions
+commands that are not available) and add something more suitable for
+the initial splash screen.
 
 """
 
@@ -253,7 +269,7 @@ class CmdUnloggedinQuit(Command):
 
 # The login menu tree, using the commands above
 
-START = MenuNode("START", text=utils.string_from_module(CONNECTION_SCREEN_MODULE) + "\n\rPick one of the following:", 
+START = MenuNode("START", text=utils.string_from_module(CONNECTION_SCREEN_MODULE), 
                  links=["node1a", "node2a", "node3", "END"], 
                  linktexts=["Log in with an existing account", 
                             "Create a new account", 
