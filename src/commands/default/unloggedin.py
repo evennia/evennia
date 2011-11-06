@@ -13,6 +13,7 @@ from src.comms.models import Channel
 
 from src.utils import create, logger, utils, ansi
 from src.commands.default.muxcommand import MuxCommand
+from src.commands.cmdhandler import CMD_LOGINSTART
 
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
@@ -221,10 +222,12 @@ class CmdQuit(MuxCommand):
 class CmdUnconnectedLook(MuxCommand):
     """
     This is an unconnected version of the look command for simplicity. 
-    All it does is re-show the connect screen. 
+
+    This is called by the server and kicks everything in gear. 
+    All it does is display the connect screen. 
     """
-    key = "look"
-    aliases = "l"
+    key = CMD_LOGINSTART
+    aliases = ["look", "l"]
     locks = "cmd:all()"
     
     def func(self):

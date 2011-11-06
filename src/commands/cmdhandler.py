@@ -50,11 +50,17 @@ COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
 # allow for custom behaviour when the command handler hits
 # special situations -- it then calls a normal Command
 # that you can customize! 
+# Import these variables and use them rather than trying
+# to remember the actual string constants. 
 
 CMD_NOINPUT = "__noinput_command"
 CMD_NOMATCH = "__nomatch_command"
 CMD_MULTIMATCH = "__multimatch_command"
-CMD_CHANNEL = "__send_to_channel"
+CMD_CHANNEL = "__send_to_channel_command"
+# this is the name of the command the engine calls when the player
+# connects. It is expected to show the login screen.
+CMD_LOGINSTART = "__unloggedin_look_command" 
+
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."

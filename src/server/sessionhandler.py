@@ -19,6 +19,8 @@ from django.contrib.auth.models import User
 from src.server.models import ServerConfig
 from src.utils import utils 
 
+from src.commands.cmdhandler import CMD_LOGINSTART
+
 # i18n
 from django.utils.translation import ugettext as _
 
@@ -94,7 +96,7 @@ class ServerSessionHandler(SessionHandler):
         Creates a new, unlogged-in game session.
         """
         self.sessions[sessid] = session
-        session.execute_cmd('look')
+        session.execute_cmd(CMD_LOGINSTART)
 
     def portal_disconnect(self, sessid):
         """

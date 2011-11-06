@@ -149,15 +149,19 @@ class MenuTree(object):
     'START' and 'END' respectively. 
 
     """
-    def __init__(self, caller, nodes=None, startnode="START", endnode="END"):
+    def __init__(self, caller, nodes=None, startnode="START", endnode="END", exec_end="look"):
         """
         We specify startnode/endnode so that the system knows where to
         enter and where to exit the menu tree. If nodes is given, it
         shuld be a list of valid node objects to add to the tree.
+        
+        exec_end - if not None, will execute the given command string
+                   directly after the menu system has been exited.
         """
         self.tree = {}
         self.startnode = startnode
         self.endnode = endnode 
+        self.exec_end = exec_end
         self.caller = caller 
         if nodes and utils.is_iter(nodes):
             for node in nodes:
@@ -186,7 +190,8 @@ class MenuTree(object):
             # if we was given the END node key, we clean up immediately.
             self.caller.cmdset.delete("menucmdset")
             del self.caller.db._menu_data
-            self.caller.execute_cmd("look")
+            if self.exec_end != None:
+                self.caller.execute_cmd(self.exec_end)
             return 
         # not exiting, look for a valid code. 
         node = self.tree.get(key, None)

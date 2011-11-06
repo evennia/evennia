@@ -128,7 +128,7 @@ class Character(BaseCharacter):
         # save location again to be sure 
         self.db.prelogout_location = self.location
 
-        self.location.msg_contents("%s has entered the game." % self.name)
+        self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         self.location.at_object_receive(self, self.location)
 
 class Room(BaseRoom):

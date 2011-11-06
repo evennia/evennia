@@ -59,10 +59,6 @@ class ServerSession(Session):
             # start (persistent) scripts on this object
             ScriptDB.objects.validate(obj=character)
 
-    def at_cmdset_get(self):
-        "dummy hook all objects with cmdsets need to have"
-        pass
-
     def session_login(self, player):
         """
         Startup mechanisms that need to run at login. This is called
@@ -96,11 +92,10 @@ class ServerSession(Session):
         player.at_pre_login()        
 
         character = player.character
-        #print "at_init() - character"
-        character.at_init()
         if character: 
             # this player has a character. Check if it's the
             # first time *this character* logs in
+            character.at_init()
             if character.db.FIRST_LOGIN:
                 character.at_first_login()
                 del character.db.FIRST_LOGIN            
@@ -190,7 +185,7 @@ class ServerSession(Session):
         if str(command_string).strip() == IDLE_COMMAND:
             self.update_session_counters(idle=True)            
             return 
-
+        
         # all other inputs, including empty inputs
         character = self.get_character()        
     
@@ -216,6 +211,7 @@ class ServerSession(Session):
     def __eq__(self, other):
         return self.address == other.address
 
+    
     def __str__(self):
         """
         String representation of the user session class. We use
@@ -249,3 +245,57 @@ class ServerSession(Session):
     def msg(self, string='', data=None):
         "alias for at_data_out"
         self.data_out(string, data=data)
+
+
+    # Dummy API hooks for use a non-loggedin operation
+        
+    def at_cmdset_get(self):
+        "dummy hook all objects with cmdsets need to have"
+        pass
+
+    # Mock db/ndb properties for allowing easy storage on the session
+    # (note that no databse is involved at all here. session.db.attr =
+    # value just saves a normal property in memory, just like ndb).
+    
+    #@property
+    def ndb_get(self):
+        """
+        A non-persistent store (ndb: NonDataBase). Everything stored 
+        to this is guaranteed to be cleared when a server is shutdown.
+        Syntax is same as for the _get_db_holder() method and
+        property, e.g. obj.ndb.attr = value etc.
+        """
+        try:
+            return self._ndb_holder
+        except AttributeError:
+            class NdbHolder(object):
+                "Holder for storing non-persistent attributes."
+                def all(self):
+                    return [val for val in self.__dict__.keys() 
+                            if not val.startswith['_']]                    
+                def __getattribute__(self, key):
+                    # return None if no matching attribute was found. 
+                    try:
+                        return object.__getattribute__(self, key)
+                    except AttributeError:
+                        return None 
+            self._ndb_holder = NdbHolder()
+            return self._ndb_holder
+    #@ndb.setter
+    def ndb_set(self, value):
+        "Stop accidentally replacing the db object"
+        string = "Cannot assign directly to ndb object! "
+        string = "Use ndb.attr=value instead."
+        raise Exception(string)
+    #@ndb.deleter
+    def ndb_del(self):
+        "Stop accidental deletion."
+        raise Exception("Cannot delete the ndb object!")
+    ndb = property(ndb_get, ndb_set, ndb_del)
+    db = property(ndb_get, ndb_set, ndb_del)
+
+    # Mock access method for the session (there is no lock info
+    # at this stage, so we just present a uniform API)
+    def access(self, *args, **kwargs):
+        "Dummy method."
+        return True 
