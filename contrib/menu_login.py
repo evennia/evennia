@@ -15,7 +15,7 @@ Install is simple:
 
 To your settings file, add/edit the line:
 
-CMDSET_UNLOGGEDIN = "contrib.alt_login.UnloggedInCmdSet"
+CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedInCmdSet"
 
 That's it. The cmdset in this module will now be used instead of the
 default one.
