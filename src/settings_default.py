@@ -253,6 +253,8 @@ PERMISSION_PLAYER_DEFAULT = "Players"
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
 LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
+# Module holding server-side functions for out-of-band protocols to call.
+OOB_FUNC_MODULE = ""
 
 
 ###################################################

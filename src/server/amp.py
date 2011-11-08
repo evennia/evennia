@@ -34,10 +34,6 @@ SERVER_RESTART = os.path.join(settings.GAME_DIR, "server.restart")
 # i18n
 from django.utils.translation import ugettext as _
 
-# Signals
-
-
-
 
 def get_restart_mode(restart_file):
     """
@@ -141,6 +137,24 @@ class MsgServer2Portal(amp.Command):
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
+class OOBPortal2Server(amp.Command):
+    """
+    OOB data portal -> server
+    """
+    arguments = [('sessid', amp.Integer()),
+                 ('data', amp.String())]
+    errors = [(Exception, "EXCEPTION")]
+    response = []
+    
+class OOBServer2Portal(amp.Command):
+    """
+    OOB data server -> portal
+    """
+    arguments = [('sessid', amp.Integer()),
+                 ('data', amp.String())]
+    errors = [(Exception, "EXCEPTION")]
+    response = []
+    
 class ServerAdmin(amp.Command):
     """
     Portal -> Server
@@ -168,6 +182,8 @@ class PortalAdmin(amp.Command):
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
+dumps = lambda data: utils.to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
+loads = lambda data: pickle.loads(utils.to_str(data))
 
 #------------------------------------------------------------
 # Core AMP protocol for communication Server <-> Portal
@@ -220,7 +236,7 @@ class AMPProtocol(amp.AMP):
         Relays message to server. This method is executed on the Server.
         """
         #print "msg portal -> server (server side):", sessid, msg
-        self.factory.server.sessions.data_in(sessid, msg, pickle.loads(utils.to_str(data)))
+        self.factory.server.sessions.data_in(sessid, msg, loads(data))
         return {}
     MsgPortal2Server.responder(amp_msg_portal2server)
 
@@ -232,7 +248,7 @@ class AMPProtocol(amp.AMP):
         self.callRemote(MsgPortal2Server,
                         sessid=sessid,
                         msg=msg,
-                        data=utils.to_str(pickle.dumps(data))).addErrback(self.errback, "MsgPortal2Server")
+                        data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
 
     # Server -> Portal message 
 
@@ -241,7 +257,7 @@ class AMPProtocol(amp.AMP):
         Relays message to Portal. This method is executed on the Portal.
         """
         #print "msg server->portal (portal side):", sessid, msg
-        self.factory.portal.sessions.data_out(sessid, msg, pickle.loads(utils.to_str(data)))
+        self.factory.portal.sessions.data_out(sessid, msg, loads(data))
         return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
@@ -253,8 +269,50 @@ class AMPProtocol(amp.AMP):
         self.callRemote(MsgServer2Portal,
                         sessid=sessid,
                         msg=utils.to_str(msg),
-                        data=utils.to_str(pickle.dumps(data))).addErrback(self.errback, "MsgServer2Portal")
+                        data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
 
+    # OOB Portal -> Server 
+        
+    # Portal -> Server Msg
+    
+    def amp_oob_portal2server(self, sessid, data):        
+        """
+        Relays out-of-band data to server. This method is executed on the Server.
+        """
+        #print "oob portal -> server (server side):", sessid, loads(data)
+        self.factory.server.sessions.oob_data_in(sessid, loads(data))
+        return {}
+    OOBPortal2Server.responder(amp_oob_portal2server)
+
+    def call_remote_OOBPortal2Server(self, sessid, data=""):
+        """
+        Access method called by the Portal and executed on the Portal.
+        """        
+        #print "oob portal->server (portal side):", sessid, data
+        self.callRemote(OOBPortal2Server,
+                        sessid=sessid,                        
+                        data=dumps(data)).addErrback(self.errback, "OOBPortal2Server")
+
+    # Server -> Portal message 
+
+    def amp_oob_server2portal(self, sessid, data):
+        """
+        Relays out-of-band data to Portal. This method is executed on the Portal.
+        """
+        #print "oob server->portal (portal side):", sessid, data
+        self.factory.portal.sessions.oob_data_out(sessid, loads(data))
+        return {}
+    OOBServer2Portal.responder(amp_oob_server2portal)
+
+    def call_remote_OOBServer2Portal(self, sessid, data=""):
+        """
+        Access method called by the Server and executed on the Server.
+        """
+        #print "oob server->portal (server side):", sessid, data        
+        self.callRemote(OOBServer2Portal,
+                        sessid=sessid,                        
+                        data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
+        
 
     # Server administration from the Portal side 
 
@@ -264,7 +322,7 @@ class AMPProtocol(amp.AMP):
         operations on the server.  This is executed on the Server.
 
         """
-        data = pickle.loads(utils.to_str(data))            
+        data = loads(data)
 
         #print "serveradmin (server side):", sessid, operation, data
         
@@ -315,7 +373,7 @@ class AMPProtocol(amp.AMP):
         Access method called by the Portal and Executed on the Portal.
         """
         #print "serveradmin (portal side):", sessid, operation, data
-        data = utils.to_str(pickle.dumps(data))
+        data = dumps(data)
 
         self.callRemote(ServerAdmin,
                         sessid=sessid,
@@ -329,7 +387,7 @@ class AMPProtocol(amp.AMP):
         This allows the server to perform admin 
         operations on the portal. This is executed on the Portal.
         """
-        data = pickle.loads(utils.to_str(data))            
+        data = loads(data)
 
         #print "portaladmin (portal side):", sessid, operation, data
         if operation == 'SLOGIN': # 'server_session_login'
@@ -376,7 +434,7 @@ class AMPProtocol(amp.AMP):
         Access method called by the server side.
         """
         #print "portaladmin (server side):", sessid, operation, data
-        data = utils.to_str(pickle.dumps(data))
+        data = dumps(data)
 
         self.callRemote(PortalAdmin,
                         sessid=sessid,

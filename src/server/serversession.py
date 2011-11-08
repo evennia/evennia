@@ -12,12 +12,16 @@ from datetime import datetime
 from django.conf import settings
 from src.scripts.models import ScriptDB
 from src.comms.models import Channel
-from src.utils import logger
+from src.utils import logger, utils
 from src.commands import cmdhandler, cmdsethandler
+from src.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND 
-        
-from src.server.session import Session
+
+# load optional out-of-band function module
+OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
+if OOB_FUNC_MODULE:
+    OOB_FUNC_MODULE = utils.mod_import(settings.OOB_FUNC_MODULE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -207,6 +211,44 @@ class ServerSession(Session):
         Send Evennia -> Player
         """
         self.sessionhandler.data_out(self, msg, data)
+
+
+    def oob_data_in(self, data):
+        """
+        This receives out-of-band data from the Portal.
+
+        This method parses the data input (a dict) and uses
+        it to launch correct methods from those plugged into 
+        the system. 
+        
+        data = {funcname: ( [args], {kwargs]),
+                funcname: ( [args], {kwargs}), ...}
+
+        example: 
+           data = {"get_hp": ([], {}),
+                   "update_counter", (["counter1"], {"now":True}) }
+        """
+
+        print "server: "
+        outdata = {}
+        
+        for funcname, argtuple in data.items():
+            # loop through the data, calling available functions.
+            func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
+            if func:
+                outdata[funcname] = func(*argtuple[0], **argtuple[1])
+            else:
+                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % funcname)
+        if outdata:
+            self.oob_data_out(outdata)
+
+
+    def oob_data_out(self, data):
+        """
+        This sends data from Server to the Portal across the AMP connection.
+        """
+        self.sessionhandler.oob_data_out(self, data)
+
 
     def __eq__(self, other):
         return self.address == other.address

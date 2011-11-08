@@ -295,6 +295,20 @@ class ServerSessionHandler(SessionHandler):
         # to put custom effects on the server due to data input, e.g.
         # from a custom client. 
     
+    def oob_data_in(self, sessid, data):
+        """
+        OOB (Out-of-band) Data Portal -> Server
+        """
+        session = self.sessions.get(sessid, None)
+        if session:
+            session.oob_data_in(data)
+
+    def oob_data_out(self, session, data):
+        """
+        OOB (Out-of-band) Data Server -> Portal
+        """
+        self.server.amp_protocol.call_remote_OOBServer2Portal(session.sessid,
+                                                              data=data)
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -391,6 +405,21 @@ class PortalSessionHandler(SessionHandler):
         session = self.sessions.get(sessid, None)
         if session:
             session.data_out(string, data=data)                                        
+
+    def oob_data_in(self, session, data):
+        """
+        OOB (Out-of-band) data Portal -> Server
+        """
+        self.portal.amp_protocol.call_remote_OOBPortal2Server(session.sessid,
+                                                              data=data)
+
+    def oob_data_out(self, sessid, data):
+        """
+        OOB (Out-of-band) data Server -> Portal
+        """
+        session = self.sessions.get(sessid, None)
+        if session:
+            session.oob_data_out(data)
 
 SESSIONS = ServerSessionHandler()
 PORTAL_SESSIONS = PortalSessionHandler()

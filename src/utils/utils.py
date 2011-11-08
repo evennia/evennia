@@ -542,7 +542,7 @@ def has_parent(basepath, obj):
 
 def mod_import(mod_path, propname=None):
     """
-    Takes filename of a module, converts it to a python path
+    Takes filename of a module (a python path or a full pathname)
     and imports it. If property is given, return the named 
     property from this module instead of the module itself. 
     """
