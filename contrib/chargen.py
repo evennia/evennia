@@ -17,16 +17,19 @@ Installation:
 Import this module in game.gamesrc.basecmdset and
 add the following line to the end of OOCCmdSet's at_cmdset_creation():
    
-   self.add(character_creation.OOCCmdSetExtended)
+   self.add(character_creation.OOCCmdSetCharGen)
 
-You could also add/edit this line to your game/settings.py file: 
 
-CMDSET_OOC = "contrib.character_creation.OOCCmdSetExtended"
+If you have a freshly installed database you could also instead add/edit 
+this line to your game/settings.py file: 
 
-(uncomment the super() statement in OOCCmdSetExtended in this case
-too) This will however only affect NEWLY created players, not those
-already in the game, so you'd usually only do this if you are starting
-from scratch.
+CMDSET_OOC = "contrib.character_creation.OOCCmdSetCharGen"
+
+This will replace the default OOCCmdset to look to this module 
+instead of the one in game.gamesrc.basecmdset. If you do this, uncomment 
+the super() statement in OOCCmdSetCharGen (end of this file) too. This will 
+however only affect NEWLY created players, not those already in the game, which i
+s why you'd usually only do this if you are starting from scratch.
 
 """
 
@@ -190,7 +193,7 @@ class OOCCmdSetCharGen(OOCCmdSet):
     """    
     def at_cmdset_creation(self):
         "Install everything from the default set, then overload"
-        super(OOCCmdSetCharGen, self).at_cmdset_creation()
+        #super(OOCCmdSetCharGen, self).at_cmdset_creation()
         self.add(CmdOOCLook())
         self.add(CmdOOCCharacterCreate())
 

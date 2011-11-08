@@ -420,7 +420,7 @@ def error_check_python_modules():
     imp(settings.SEARCH_AT_RESULT)
     imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
     imp(settings.CONNECTION_SCREEN_MODULE, split=False)
-    imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
+    #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
     for path in settings.LOCK_FUNC_MODULES:
         imp(path, split=False)
     # cmdsets
