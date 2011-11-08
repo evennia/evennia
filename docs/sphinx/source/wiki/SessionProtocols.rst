@@ -99,6 +99,121 @@ be named exactly like this):
    parsed. From inside Evennia, ``data_out`` is often called with the
    alias ``msg`` instead.
 
+Out-of-band communication
+-------------------------
+
+Out-of-band communication (OOB) is data being sent to and fro the
+player's client and the server on the protocol level, often due to the
+request of the player's client software rather than any sort of active
+input by the player. There are two main types:
+
+-  Data requested by the client which the server responds to
+   immediately. This could for example be data that should go into a
+   window that the client just opened up.
+-  Data the server sends to the client to keep ut up-to-date. A common
+   example of this is something like a graphical health bar - *whenever*
+   the character's health status changes the server sends this data to
+   the client so it can update the bar graphic. This sending could also
+   be done on a timer, for example updating a weather map regularly.
+
+To communicate to the client, there are a range of protocols available
+for MUDs, supported by different clients, such as MSDP and GMCP. They
+basically implements custom telnet negotiation sequences and goes into a
+custom Evennia Portal protocol so Evennia can understand it.
+
+It then needs to translate each protocol-specific function into an
+Evennia function name - specifically a name of a module-level function
+you define in the module given by ``settings.OOB_FUNC_MODULE``. These
+function will get the session/character as first argument but is
+otherwise completely free of form. The portal packs all function names
+and eventual arguments they need in a dictionary and sends them off to
+the Server by use of the ``sessionhandler.oob_data_in()`` method. On the
+Server side, the dictionary is parsed, and the correct functions in
+``settings.OOB_FUNC_MODULE`` are called with the given arguments. The
+results from this function are again packed in a dictionary (keyed by
+function name) and sent back to the portal. It will appear in the Portal
+session's ``oob_data_out(data)`` method.
+
+So to summarize: To implement a Portal protocol with OOB communication
+support, you need to first let your normal ``getData`` method somehow
+parse out the special protocol format format coming in from the client
+(MSDP, GMCP etc). It needs to translate what the client wants into
+function names matching that in the ``OOB_FUNC_MODULE`` - these
+functions need to be created to match too of course. The function name
+and arguments are packed in a dictionary and sent off to the server via
+``sessionhandler.oob_data_in()``. Finally, the portal session must
+implement ``oob_data_out(data)`` to handle the data coming back from
+Server. It will be a dictionary of return values keyed by the function
+names.
+
+Example of out-of-band calling sequence
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let's say we want our client to be able to request the character's
+current health. In our Portal protocol we somehow parse the incoming
+data stream and figure out what the request for health looks like. We
+map this to the Evennia ``get_health`` function.
+
+We point ``settings.OOB_FUNC_MODULE`` to someplace in ``game/`` and
+create a module there with the following function:
+
+::
+
+    # the caller is always added as first argument
+    # we also assume health is stored as a simple 
+    # attribute on the character here. 
+    def get_health(character):    
+        return character.db.health
+
+Done, this function will do just what we want. Let's finish up the first
+part of the portal protocol:
+
+::
+
+    # this method could be named differently depending on the 
+    # protocol you are using (this is telnet)
+    def lineReceived(self, string):
+       # (does stuff to analyze the incoming string)   outdict = 
+       if GET_HEALTH:
+           # call get_health(char)
+           outdict["get_health"] = ([], )
+       elif GET_MANA:
+           # call get_mana(char)
+           outdict["get_mana"] = ([], )
+       elif GET_CONFIG:
+           # call get_config(char, 2, hidden=True)
+           outdict["get_config"] = ([2], 'hidden':True)   [...]   self.sessionhandler.oob_data_out(outdict)
+
+The server will properly accept this and call get\_health and get the
+right value for the health. We need to define an ``oob_data_out(data)``
+in our portal protocol to catch the return value:
+
+::
+
+    def oob_data_out(self, data):
+        # the indata is a dicationary funcname:retval    outstring = ""
+        for funcname, retval in data.items():
+            if funcname == 'get_health':
+                # convert to the right format for sending back to client, store
+                # in outstring ...
+         [...]
+
+Above, once the dict is parsed and the return values properly put in a
+format the client will understand, send the whole thing off using the
+protocol's relevant send method.
+
+Implementing auto-sending
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To have the Server update the client regularly, simply create a global
+`Script <Scripts.html>`_ that upon each repeat creates the request
+dictionary (basically faking a request from the portal) and sends it
+directly to
+``src.server.sessionhandler.oob_data_in(session.sessid, datadict)``.
+Repeat for all sessions. All specified OOB functions are called as
+normal and data will be sent back to be handled by the portal just as if
+the portal initiated the request.
+
 Assorted notes
 --------------
 

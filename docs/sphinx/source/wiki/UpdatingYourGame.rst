@@ -17,6 +17,7 @@ root directory and type:
 ::
 
     hg pull
+     hg update
 
 Assuming you've got the command line client. If you're using a graphical
 client, you will probably want to navigate to the ``evennia`` directory
@@ -112,8 +113,8 @@ used (you have to give the ``mange.py migrate`` command as well as
 
 Once you have a database ready and using South, you work as normal.
 Whenever a new Evennia update tells you that the database schema has
-changed (check ``hg log`` or the online list), you go to ``game/`` and
-run this command:
+changed (check ``hg log`` after you pulled the latest stuff, or read the
+online list), you go to ``game/`` and run this command:
 
 ::
 
