@@ -232,11 +232,20 @@ class ServerSession(Session):
         print "server: "
         outdata = {}
         
+        entity = self.get_character()
+        if not entity:
+            entity = self.get_player()
+        if not entity:
+            entity = self 
+
         for funcname, argtuple in data.items():
             # loop through the data, calling available functions.
             func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
             if func:
-                outdata[funcname] = func(*argtuple[0], **argtuple[1])
+                try:
+                    outdata[funcname] = func(entity, *argtuple[0], **argtuple[1])
+                except Exception:
+                    logger.log_trace()
             else:
                 logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % funcname)
         if outdata:
