@@ -119,13 +119,14 @@ def get_and_merge_cmdsets(caller):
     try:
         player_cmdset = caller.player.cmdset.current
     except AttributeError:
-        player_cmdset = None 
+        player_cmdset = None
 
     cmdsets = [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_objects_cmdsets
     # weed out all non-found sets 
     cmdsets = [cmdset for cmdset in cmdsets if cmdset]
     # sort cmdsets after reverse priority (highest prio are merged in last)
     cmdsets = sorted(cmdsets, key=lambda x: x.priority)
+
     if cmdsets:
         # Merge all command sets into one, beginning with the lowest-prio one
         cmdset = cmdsets.pop(0)
@@ -135,7 +136,7 @@ def get_and_merge_cmdsets(caller):
             cmdset = merging_cmdset + cmdset 
     else:
         cmdset = None
-    
+
     for cset in (cset for cset in local_objects_cmdsets if cset):
         cset.duplicates = cset.old_duplicates
 
@@ -157,8 +158,8 @@ def cmdhandler(caller, raw_string, testing=False):
         try: # catch special-type commands
 
             cmdset = get_and_merge_cmdsets(caller)
-                
-            #print cmdset
+
+            # print cmdset
             if not cmdset:
                 # this is bad and shouldn't happen. 
                 raise NoCmdSets
@@ -169,12 +170,10 @@ def cmdhandler(caller, raw_string, testing=False):
                 syscmd = cmdset.get(CMD_NOINPUT)
                 sysarg = ""
                 raise ExecSystemCommand(syscmd, sysarg)
-
             # Parse the input string and match to available cmdset.
             # This also checks for permissions, so all commands in match
             # are commands the caller is allowed to call.
             matches = COMMAND_PARSER(raw_string, cmdset, caller)
-
             # Deal with matches
             if not matches:
                 # No commands match our entered command

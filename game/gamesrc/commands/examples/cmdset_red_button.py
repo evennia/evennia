@@ -30,6 +30,7 @@ class CmdNudge(Command):
     
     key = "nudge lid" # two-word command name!
     aliases = ["nudge"]
+    locks = "cmd:all()"
 
     def func(self):
         """
@@ -54,6 +55,7 @@ class CmdPush(Command):
     """
     key = "push button"
     aliases = ["push", "press button", "press"]
+    locks = "cmd:all()"
     
     def func(self):
         """
@@ -94,6 +96,7 @@ class CmdSmashGlass(Command):
     
     key = "smash glass"
     aliases = ["smash lid", "break lid", "smash"]
+    locks = "cmd:all()"
     
     def func(self):
         """
@@ -129,6 +132,7 @@ class CmdOpenLid(Command):
 
     key = "open lid"
     aliases = ["open button", 'open']
+    locks = "cmd:all()"
 
     def func(self):
         "simply call the right function."
@@ -159,6 +163,7 @@ class CmdCloseLid(Command):
 
     key = "close lid"
     aliases = ["close"]
+    locks = "cmd:all()"
     
     def func(self):
         "Close the lid"
@@ -183,6 +188,8 @@ class CmdBlindLook(Command):
 
     key = "look"    
     aliases = ["l", "get", "examine", "ex", "feel", "listen"]
+    locks = "cmd:all()"
+    
     def func(self):
         "This replaces all the senses when blinded."
 
@@ -215,6 +222,8 @@ class CmdBlindHelp(Command):
     """
     key = "help"
     aliases = "h"    
+    locks = "cmd:all()"
+
     def func(self):
         "Give a message."
         self.caller.msg("You are beyond help ... until you can see again.")

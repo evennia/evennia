@@ -49,7 +49,6 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         matches.extend([create_match(cmdname, raw_string, cmd)
                         for cmdname in [cmd.key] + cmd.aliases 
                         if cmdname and l_raw_string.startswith(cmdname.lower())])
-            
     if not matches:                        
         # no matches found. 
         if '-' in raw_string:
