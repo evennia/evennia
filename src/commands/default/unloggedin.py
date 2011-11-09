@@ -173,7 +173,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
 
             # This needs to be called so the engine knows this player is logging in for the first time.
             # (so it knows to call the right hooks during login later)
-            utils.init_new_player(player)
+            utils.init_new_player(new_player)
 
             # join the new player to the public channel                
             pchanneldef = settings.CHANNEL_PUBLIC
