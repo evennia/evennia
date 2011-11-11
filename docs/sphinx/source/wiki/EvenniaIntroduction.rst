@@ -17,7 +17,7 @@ and running a text-based massively-multiplayer game
 your very own. You might just be starting to think about it, or you
 might have lugged around that *perfect* game in your mind for years ...
 you know *just* how good it would be, if you could only make it come to
-reality. We know how you feel. That is, after all why Evennia came to
+reality. We know how you feel. That is, after all, why Evennia came to
 be.
 
 Evennia is in principle a MUD-building system: a bare-bones Python
@@ -33,11 +33,11 @@ will in that case all be optional.
 
 What we *do* however, is to provide a solid foundation for all the
 boring database, networking, and behind-the-scenes administration stuff
-that all online games need whether they like it or not. Evennia is by
-default *fully persistent*, that means things you drop on the ground
-somewhere will still be there a dozen server reboots later. Through
-Django, we support a large variety of different database systems (the
-default of which is created for you automatically).
+that all online games need whether they like it or not. Evennia is
+*fully persistent*, that means things you drop on the ground somewhere
+will still be there a dozen server reboots later. Through Django we
+support a large variety of different database systems (a database is
+created for you automatically if you use the defaults).
 
 Using the full power of Python throughout the server offers some
 distinct advantages. All your coding, from object definitions and custom
@@ -104,11 +104,11 @@ manual <http://code.google.com/p/evennia/wiki/Index>`_ with lots of
 examples. But while Python is a relatively easy programming language, it
 still represents a learning curve if you are new to programming. You
 should probably sit down with a Python beginner's
-`tutorial <http://docs.python.org/tutorial/tutorial>`_ (there are plenty
-of them on the web if you look around) so you at least know know what
-you are seeing. To efficiently code your dream game in Evennia you don't
-need to be a Python guru, but you do need to be able to read example
-code containing at least these basic Python features:
+`tutorial <http://docs.python.org/tutorial/>`_ (there are plenty of them
+on the web if you look around) so you at least know what you are seeing.
+To efficiently code your dream game in Evennia you don't need to be a
+Python guru, but you do need to be able to read example code containing
+at least these basic Python features:
 
 -  Importing python modules
 -  Using variables, `conditional

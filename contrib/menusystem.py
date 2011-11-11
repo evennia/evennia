@@ -48,7 +48,7 @@ class CmdMenuNode(Command):
     locks = "cmd:all()"
     help_category = "Menu"
 
-    menutree = None
+    menutree = None    
     code = None 
 
     def func(self):
@@ -127,8 +127,7 @@ class MenuCmdSet(CmdSet):
     mergetype = "Replace"    
     def at_cmdset_creation(self):
         "populate cmdset"
-        self.add(CmdMenuLook())
-        self.add(CmdMenuHelp())
+        pass
 
 #
 # Menu Node system 
@@ -150,15 +149,19 @@ class MenuTree(object):
     'START' and 'END' respectively. 
 
     """
-    def __init__(self, caller, nodes=None, startnode="START", endnode="END"):
+    def __init__(self, caller, nodes=None, startnode="START", endnode="END", exec_end="look"):
         """
         We specify startnode/endnode so that the system knows where to
         enter and where to exit the menu tree. If nodes is given, it
         shuld be a list of valid node objects to add to the tree.
+        
+        exec_end - if not None, will execute the given command string
+                   directly after the menu system has been exited.
         """
         self.tree = {}
         self.startnode = startnode
         self.endnode = endnode 
+        self.exec_end = exec_end
         self.caller = caller 
         if nodes and utils.is_iter(nodes):
             for node in nodes:
@@ -187,7 +190,8 @@ class MenuTree(object):
             # if we was given the END node key, we clean up immediately.
             self.caller.cmdset.delete("menucmdset")
             del self.caller.db._menu_data
-            self.caller.execute_cmd("look")
+            if self.exec_end != None:
+                self.caller.execute_cmd(self.exec_end)
             return 
         # not exiting, look for a valid code. 
         node = self.tree.get(key, None)
@@ -218,18 +222,28 @@ class MenuNode(object):
 
     """
     def __init__(self, key, text="", links=None, linktexts=None, 
-                 keywords=None, cols=1, helptext=None, code=""):
+                 keywords=None, cols=1, helptext=None, selectcmds=None, code="", nodefaultcmds=False, separator=""):
         """
         key       - the unique identifier of this node.
         text      - is the text that will be displayed at top when viewing this node. 
-        links     - a list of keys for unique menunodes this is connected to.
-        linktexts - a list of texts to describe the links. If defined, need to match links list
-        keywords  - a list of unique keys for choosing links. Must match links list. If not given, index numbers will be used.
+        links     - a list of keys for unique menunodes this is connected to. The actual keys will not be
+                    printed - keywords will be used (or a number) 
+        linktexts - an optional list of texts to describe the links. Must match link list if defined. Entries can be None
+                    to not generate any extra text for a particular link.  
+        keywords  - an optional list of unique keys for choosing links. Must match links list. If not given, index numbers
+                    will be used. Also individual list entries can be None and will be replaed by indices.
+                    If CMD_NOMATCH or CMD_NOENTRY, no text will be generated to indicate the option exists.
         cols      - how many columns to use for displaying options.
         helptext  - if defined, this is shown when using the help command instead of the normal help index.
+        selectcmds- a list of custom cmdclasses for handling each option. Must match links list, but some entries 
+                    may be set to None to use default menu cmds. The given command's key will be used for the menu
+                    list entry unless it's CMD_NOMATCH or CMD_NOENTRY, in which case no text will be generated. These
+                    commands have access to self.menutree and so can be used to select nodes. 
         code      - functional code. This will be executed just before this node is loaded (i.e. 
                     as soon after it's been selected from another node). self.caller is available
                     to call from this code block, as well as ObjectDB and PlayerDB. 
+        nodefaultcmds - if true, don't offer the default help and look commands in the node                    
+        separator - this string will be put on the line between menu nodes5B. 
         """
         self.key = key
         self.cmdset = None
@@ -237,23 +251,32 @@ class MenuNode(object):
         self.linktexts = linktexts
         self.keywords = keywords
         self.cols = cols
+        self.selectcmds = selectcmds
         self.code = code
-                   
+        self.nodefaultcmds = nodefaultcmds
+        self.separator = separator
+        Nlinks = len(self.links)
+        
         # validate the input 
         if not self.links:
             self.links = []
-        if not self.linktexts or (self.linktexts and len(self.linktexts) != len(self.links)):
-            self.linktexts = []
-        if not self.keywords or (self.keywords and len(self.keywords) != len(self.links)):
-            self.keywords = []
+        if not self.linktexts or (len(self.linktexts) != Nlinks):
+            self.linktexts = [None for i in range(Nlinks)]
+        if not self.keywords or (len(self.keywords) != Nlinks):
+            self.keywords = [None for i in range(Nlinks)]
+        if not selectcmds or (len(self.selectcmds) != Nlinks):
+            self.selectcmds = [None for i in range(Nlinks)]
 
         # Format default text for the menu-help command 
         if not helptext:            
-            helptext = "Select one of the valid options"
-            if self.keywords:
-                helptext += " (" + ", ".join(self.keywords) + ")"
-            elif self.links:
-                helptext += " (" + ", ".join([str(i + 1) for i in range(len(self.links))]) + ")"
+            helptext = "Select one of the valid options ("
+            for i in range(Nlinks):
+                if self.keywords[i]:
+                    if self.keywords[i] not in (CMD_NOMATCH, CMD_NOINPUT):
+                        helptext += "%s, " % self.keywords[i]
+                else:
+                    helptext += "%s, " % (i + 1) 
+            helptext = helptext.rstrip(", ") + ")"
         self.helptext = helptext
 
         # Format text display 
@@ -264,12 +287,14 @@ class MenuNode(object):
         # format the choices into as many collumns as specified
         choices = []
         for ilink, link in enumerate(self.links):
-            if self.keywords:
-                choice = "{g%s{n" % self.keywords[ilink]
+            choice = ""
+            if self.keywords[ilink]:
+                if self.keywords[ilink] not in (CMD_NOMATCH, CMD_NOINPUT):
+                    choice += "{g%s{n" % self.keywords[ilink]
             else:
-                choice = "{g%i{n" % (ilink + 1) 
-            if self.linktexts:
-                choice += "-%s" % self.linktexts[ilink]
+                choice += "{g %i{n" % (ilink + 1) 
+            if self.linktexts[ilink]:
+                choice += " - %s" % self.linktexts[ilink]
             choices.append(choice)
         cols = [[] for i in range(min(len(choices), cols))]
         while True:
@@ -282,9 +307,9 @@ class MenuNode(object):
                 break 
         ftable = utils.format_table(cols)
         for row in ftable:
-            string += "\n" + "".join(row)
+            string +="\n" + "".join(row)
         # store text 
-        self.text = 78*"-" + "\n" + string.strip()
+        self.text = self.separator + "\n" + string.rstrip()
 
     def init(self, menutree):
         """
@@ -292,15 +317,24 @@ class MenuNode(object):
         """        
         # Create the relevant cmdset 
         self.cmdset = MenuCmdSet()
-        for i, link in enumerate(self.links):
-            cmd = CmdMenuNode()
-            cmd.key = str(i + 1)
+        if not self.nodefaultcmds:
+            # add default menu commands
+            self.cmdset.add(CmdMenuLook())
+            self.cmdset.add(CmdMenuHelp())            
+        
+        for i, link in enumerate(self.links):            
+            if self.selectcmds[i]:
+                cmd = self.selectcmds[i]()
+            else:
+                cmd = CmdMenuNode()
+                cmd.key = str(i + 1)
+                # this is the operable command, it moves us to the next node. 
+                cmd.code = "self.menutree.goto('%s')" % link
+            # also custom commands get access to the menutree. 
             cmd.menutree = menutree
-            # this is the operable command, it moves us to the next node. 
-            cmd.code = "self.menutree.goto('%s')" % link
-            if self.keywords:
+            if self.keywords[i] and cmd.key not in (CMD_NOMATCH, CMD_NOINPUT):
                 cmd.aliases = [self.keywords[i]]
-            self.cmdset.add(cmd)                
+            self.cmdset.add(cmd)
 
     def __str__(self):
         "Returns the string representation."

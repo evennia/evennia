@@ -616,6 +616,29 @@ command must be added to a cmdset as well before it will work.
         def func(self):
             self.caller.msg("Don't just press return like that, talk to me!")
 
+Exits
+-----
+
+*Note: This is an advanced topic.*
+
+The functionality of `Exit <Objects.html>`_ objects in Evennia is not
+hard-coded in the engine. Instead Exits are normal typeclassed objects
+that auto-creates a ``CmdSet`` on themselves when they are loaded. This
+cmdset has a single command with the same name (and aliases) as the Exit
+object itself. So what happens when a Player enters the name of the Exit
+on the command line is simply that the command handler, in the process
+of searching all available commands, also picks up the command from the
+Exit object(s) in the same room. Having found the matching command, it
+executes it. The command then makes sure to do all checks and eventually
+move the Player across the exit as appropriate. This allows exits to be
+extremely flexible - the functionality can be customized just like one
+would edit any other command.
+
+Admittedly, you will usually be fine just using the appropriate
+``traverse_*`` hooks. But if you are interested in really changing how
+things work under the hood, check out ``src.objects.objects`` for how
+the default ``Exit`` typeclass is set up.
+
 How commands actually work
 --------------------------
 
@@ -684,3 +707,14 @@ Call ``func()`` on the command instance. This is the functional body of
 the command, actually doing useful things.
 
 Call ``at_post_command()`` on the command instance.
+
+Assorted notes
+--------------
+
+The return value of ``Command.func()`` *is* safely passed on should one
+have some very specific use case in mind. So one could in principle do
+``value = obj.execute_cmd(cmdname)``. Evennia does not use this
+functionality at all by default (all default commands simply returns
+``None``) and it's probably not relevant to any but the most
+advanced/exotic designs (one might use it to create a "nested" command
+structure for example).

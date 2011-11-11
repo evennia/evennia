@@ -221,7 +221,7 @@ class CmdSet(object):
         are made, rather later added commands will simply replace 
         existing ones to make a unique set. 
         """
-
+        
         if inherits_from(cmd, "src.commands.cmdset.CmdSet"):
             # this is a command set so merge all commands in that set
             # to this one. We are not protecting against recursive
@@ -235,19 +235,19 @@ class CmdSet(object):
                 string += "make sure they are not themself cyclically added to the new cmdset somewhere in the chain."
                 raise RuntimeError(string % (cmd, self.__class__))
             cmds = cmd.commands
-        elif not is_iter(cmd):
-            cmds = [instantiate(cmd)]
+        elif is_iter(cmd):
+            cmds = [instantiate(c) for c in cmd]
         else:
-            cmds = instantiate(cmd)
+            cmds = [instantiate(cmd)]
         for cmd in cmds:
             # add all commands 
             if not hasattr(cmd, 'obj'):
-                cmd.obj = self.cmdsetobj
+                cmd.obj = self.cmdsetobj            
             try:
                 ic = self.commands.index(cmd)
                 self.commands[ic] = cmd # replace 
             except ValueError:
-                self.commands.append(cmd) 
+                self.commands.append(cmd)
             # extra run to make sure to avoid doublets            
             self.commands = list(set(self.commands))
             #print "In cmdset.add(cmd):", self.key, cmd

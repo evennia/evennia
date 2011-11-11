@@ -123,3 +123,20 @@ class Session(object):
         """
         pass 
     
+    def oob_data_out(self, data):
+        """
+        for Portal, this receives out-of-band data from Server across the AMP.
+        for Server, this sends out-of-band data to Portal.
+
+        data is a dictionary
+        """
+        pass
+
+    def oob_data_in(self, data):
+        """
+        for Portal, this sends out-of-band requests to Server over the AMP.
+        for Server, this receives data from Portal.
+        
+        data is a dictionary
+        """
+        pass

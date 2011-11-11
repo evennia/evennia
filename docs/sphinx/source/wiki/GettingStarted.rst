@@ -44,8 +44,7 @@ Evennia:
 
 **Python** (http://www.python.org)
 
--  Version 2.5+ strongly recommended, although 2.3 or 2.4 **may** work.
-   Obs- Python3.x is not supported yet.
+-  Version 2.5+. Obs- Python3.x is not supported yet.
 -  The default database system SQLite3 only comes as part of Python2.5
    and later.
 -  Windows users are recommended to use ActivePython
@@ -97,8 +96,8 @@ Installing pre-requisites
 
 **Linux** package managers should usually handle all this for you.
 Python itself is definitely available through all distributions. On
-Debian-derived systems you can do something like this (as root) to get
-all you need:
+Debian-derived systems (such as Ubuntu) you can do something like this
+(as root) to get all you need:
 
 ::
 
@@ -164,6 +163,7 @@ In the future, you just do
 ::
 
     hg pull
+     hg update
 
 from your ``evennia/`` directory to obtain the latest updates.
 

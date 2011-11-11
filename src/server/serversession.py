@@ -12,12 +12,16 @@ from datetime import datetime
 from django.conf import settings
 from src.scripts.models import ScriptDB
 from src.comms.models import Channel
-from src.utils import logger
-from src.commands import cmdhandler
+from src.utils import logger, utils
+from src.commands import cmdhandler, cmdsethandler
+from src.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND 
-        
-from src.server.session import Session
+
+# load optional out-of-band function module
+OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
+if OOB_FUNC_MODULE:
+    OOB_FUNC_MODULE = utils.mod_import(settings.OOB_FUNC_MODULE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -37,7 +41,6 @@ class ServerSession(Session):
     through their session.
 
     """        
-
     def at_sync(self):
         """
         This is called whenever a session has been resynced with the portal.
@@ -48,12 +51,18 @@ class ServerSession(Session):
         the session as it was. 
         """
         if not self.logged_in:
+            # assign the unloggedin-command set.
+            self.cmdset = cmdsethandler.CmdSetHandler(self)
+            self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
+            self.cmdset.update(init_mode=True)            
+            self.cmdset.update(init_mode=True)
             return
+
         character = self.get_character()
         if character:
             # start (persistent) scripts on this object
             ScriptDB.objects.validate(obj=character)
-                       
+
     def session_login(self, player):
         """
         Startup mechanisms that need to run at login. This is called
@@ -87,11 +96,10 @@ class ServerSession(Session):
         player.at_pre_login()        
 
         character = player.character
-        #print "at_init() - character"
-        character.at_init()
         if character: 
             # this player has a character. Check if it's the
             # first time *this character* logs in
+            character.at_init()
             if character.db.FIRST_LOGIN:
                 character.at_first_login()
                 del character.db.FIRST_LOGIN            
@@ -181,7 +189,7 @@ class ServerSession(Session):
         if str(command_string).strip() == IDLE_COMMAND:
             self.update_session_counters(idle=True)            
             return 
-
+        
         # all other inputs, including empty inputs
         character = self.get_character()        
     
@@ -193,8 +201,9 @@ class ServerSession(Session):
                 # there is no character, but we are logged in. Use player instead.
                 self.get_player().execute_cmd(command_string)                    
             else:            
-                # we are not logged in. Use special unlogged-in call. 
-                cmdhandler.cmdhandler(self, command_string, unloggedin=True)
+                # we are not logged in. Use the session directly 
+                # (it uses the settings.UNLOGGEDIN cmdset)
+                cmdhandler.cmdhandler(self, command_string)
         self.update_session_counters()            
 
     def data_out(self, msg, data=None):
@@ -203,9 +212,57 @@ class ServerSession(Session):
         """
         self.sessionhandler.data_out(self, msg, data)
 
+
+    def oob_data_in(self, data):
+        """
+        This receives out-of-band data from the Portal.
+
+        This method parses the data input (a dict) and uses
+        it to launch correct methods from those plugged into 
+        the system. 
+        
+        data = {funcname: ( [args], {kwargs]),
+                funcname: ( [args], {kwargs}), ...}
+
+        example: 
+           data = {"get_hp": ([], {}),
+                   "update_counter", (["counter1"], {"now":True}) }
+        """
+
+        print "server: "
+        outdata = {}
+        
+        entity = self.get_character()
+        if not entity:
+            entity = self.get_player()
+        if not entity:
+            entity = self 
+
+        for funcname, argtuple in data.items():
+            # loop through the data, calling available functions.
+            func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
+            if func:
+                try:
+                    outdata[funcname] = func(entity, *argtuple[0], **argtuple[1])
+                except Exception:
+                    logger.log_trace()
+            else:
+                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % funcname)
+        if outdata:
+            self.oob_data_out(outdata)
+
+
+    def oob_data_out(self, data):
+        """
+        This sends data from Server to the Portal across the AMP connection.
+        """
+        self.sessionhandler.oob_data_out(self, data)
+
+
     def __eq__(self, other):
         return self.address == other.address
 
+    
     def __str__(self):
         """
         String representation of the user session class. We use
@@ -239,3 +296,57 @@ class ServerSession(Session):
     def msg(self, string='', data=None):
         "alias for at_data_out"
         self.data_out(string, data=data)
+
+
+    # Dummy API hooks for use a non-loggedin operation
+        
+    def at_cmdset_get(self):
+        "dummy hook all objects with cmdsets need to have"
+        pass
+
+    # Mock db/ndb properties for allowing easy storage on the session
+    # (note that no databse is involved at all here. session.db.attr =
+    # value just saves a normal property in memory, just like ndb).
+    
+    #@property
+    def ndb_get(self):
+        """
+        A non-persistent store (ndb: NonDataBase). Everything stored 
+        to this is guaranteed to be cleared when a server is shutdown.
+        Syntax is same as for the _get_db_holder() method and
+        property, e.g. obj.ndb.attr = value etc.
+        """
+        try:
+            return self._ndb_holder
+        except AttributeError:
+            class NdbHolder(object):
+                "Holder for storing non-persistent attributes."
+                def all(self):
+                    return [val for val in self.__dict__.keys() 
+                            if not val.startswith['_']]                    
+                def __getattribute__(self, key):
+                    # return None if no matching attribute was found. 
+                    try:
+                        return object.__getattribute__(self, key)
+                    except AttributeError:
+                        return None 
+            self._ndb_holder = NdbHolder()
+            return self._ndb_holder
+    #@ndb.setter
+    def ndb_set(self, value):
+        "Stop accidentally replacing the db object"
+        string = "Cannot assign directly to ndb object! "
+        string = "Use ndb.attr=value instead."
+        raise Exception(string)
+    #@ndb.deleter
+    def ndb_del(self):
+        "Stop accidental deletion."
+        raise Exception("Cannot delete the ndb object!")
+    ndb = property(ndb_get, ndb_set, ndb_del)
+    db = property(ndb_get, ndb_set, ndb_del)
+
+    # Mock access method for the session (there is no lock info
+    # at this stage, so we just present a uniform API)
+    def access(self, *args, **kwargs):
+        "Dummy method."
+        return True 

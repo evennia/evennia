@@ -129,7 +129,7 @@ class Command(object):
         previously extracted from the raw string by the system.
         cmdname is always lowercase when reaching this point.
         """
-        return (cmdname == self.key) or (cmdname in self.aliases)
+        return cmdname and ((cmdname == self.key) or (cmdname in self.aliases))
 
     def access(self, srcobj, access_type="cmd", default=False):
         """

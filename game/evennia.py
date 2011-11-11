@@ -355,6 +355,10 @@ def handle_args(options, mode, service):
     errmsg = _("The %s does not seem to be running.")
 
     if mode == 'start':
+        
+        # launch the error checker. Best to catch the errors already here. 
+        error_check_python_modules()
+
         # starting one or many services
         if service == 'server':
             if inter:
@@ -397,6 +401,42 @@ def handle_args(options, mode, service):
             kill(SERVER_PIDFILE, SIG, _("Server stopped."), errmsg % 'Server', restart=False)
     return None
 
+def error_check_python_modules():
+    """
+    Import settings modules in settings. This will raise exceptions on
+    pure python-syntax issues which are hard to catch gracefully
+    with exceptions in the engine (since they are formatting errors in
+    the python source files themselves). Best they fail already here
+    before we get any further.
+    """    
+    def imp(path, split=True):
+        mod, fromlist = path, "None"
+        if split:
+            mod, fromlist = path.rsplit('.', 1)
+        __import__(mod, fromlist=[fromlist])
+
+    # core modules
+    imp(settings.COMMAND_PARSER)
+    imp(settings.SEARCH_AT_RESULT)
+    imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
+    imp(settings.CONNECTION_SCREEN_MODULE, split=False)
+    #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
+    for path in settings.LOCK_FUNC_MODULES:
+        imp(path, split=False)
+    # cmdsets
+    from src.commands import cmdsethandler
+    cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None)
+    cmdsethandler.import_cmdset(settings.CMDSET_DEFAULT, None)
+    cmdsethandler.import_cmdset(settings.CMDSET_OOC, None)
+    # typeclasses
+    imp(settings.BASE_PLAYER_TYPECLASS)
+    imp(settings.BASE_OBJECT_TYPECLASS)
+    imp(settings.BASE_CHARACTER_TYPECLASS)
+    imp(settings.BASE_ROOM_TYPECLASS)
+    imp(settings.BASE_EXIT_TYPECLASS)
+    imp(settings.BASE_SCRIPT_TYPECLASS)
+
+
 def main():
     """
     This handles command line input.
@@ -438,6 +478,7 @@ def main():
         Popen(cmdstr)
 
 if __name__ == '__main__':
+
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
         main()

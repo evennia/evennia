@@ -68,6 +68,13 @@ class ObjectManager(TypedObjectManager):
         # use the id to find the player
         return self.get_object_with_user(dbref)
 
+    @returns_typeclass_list
+    def get_objs_with_key_and_typeclass(self, oname, otypeclass_path):
+        """
+        Returns objects based on simultaneous key and typeclass match.
+        """
+        return self.filter(db_key__iexact=oname).filter(db_typeclass_path__exact=otypeclass_path)
+
     # attr/property related
 
     @returns_typeclass_list

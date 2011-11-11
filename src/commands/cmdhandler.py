@@ -8,9 +8,7 @@ command line. The process is as follows:
 2) The system checks the state of the caller - loggedin or not
 3) If no command string was supplied, we search the merged cmdset for system command CMD_NOINPUT 
    and branches to execute that.  --> Finished
-4) Depending on the login/not state, it collects cmdsets from different sources:
-     not logged in - uses the single cmdset defined as settings.CMDSET_UNLOGGEDIN     
-     normal - gathers command sets from many different sources (shown in dropping priority): 
+4) Cmdsets are gathered from different sources (in order of dropping priority):     
            channels - all available channel names are auto-created into a cmdset, to allow 
                   for giving the channel name and have the following immediately
                   sent to the channel. The sending is performed by the CMD_CHANNEL
@@ -52,11 +50,17 @@ COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
 # allow for custom behaviour when the command handler hits
 # special situations -- it then calls a normal Command
 # that you can customize! 
+# Import these variables and use them rather than trying
+# to remember the actual string constants. 
 
 CMD_NOINPUT = "__noinput_command"
 CMD_NOMATCH = "__nomatch_command"
 CMD_MULTIMATCH = "__multimatch_command"
-CMD_CHANNEL = "__send_to_channel"
+CMD_CHANNEL = "__send_to_channel_command"
+# this is the name of the command the engine calls when the player
+# connects. It is expected to show the login screen.
+CMD_LOGINSTART = "__unloggedin_look_command" 
+
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
@@ -115,13 +119,14 @@ def get_and_merge_cmdsets(caller):
     try:
         player_cmdset = caller.player.cmdset.current
     except AttributeError:
-        player_cmdset = None 
+        player_cmdset = None
 
     cmdsets = [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_objects_cmdsets
     # weed out all non-found sets 
     cmdsets = [cmdset for cmdset in cmdsets if cmdset]
     # sort cmdsets after reverse priority (highest prio are merged in last)
     cmdsets = sorted(cmdsets, key=lambda x: x.priority)
+
     if cmdsets:
         # Merge all command sets into one, beginning with the lowest-prio one
         cmdset = cmdsets.pop(0)
@@ -131,7 +136,7 @@ def get_and_merge_cmdsets(caller):
             cmdset = merging_cmdset + cmdset 
     else:
         cmdset = None
-    
+
     for cset in (cset for cset in local_objects_cmdsets if cset):
         cset.duplicates = cset.old_duplicates
 
@@ -140,27 +145,21 @@ def get_and_merge_cmdsets(caller):
 
 # Main command-handler function 
 
-def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
+def cmdhandler(caller, raw_string, testing=False):
     """
     This is the main function to handle any string sent to the engine.    
     
     caller - calling object
     raw_string - the command string given on the command line
-    unloggedin - if caller is an authenticated user or not
     testing - if we should actually execute the command or not. 
               if True, the command instance will be returned instead.
     """    
     try: # catch bugs in cmdhandler itself
         try: # catch special-type commands
 
-            if unloggedin: 
-                # not logged in, so it's just one cmdset we are interested in
-                cmdset = import_cmdset(settings.CMDSET_UNLOGGEDIN, caller)
-            else:                
-                # We are logged in, collect all relevant cmdsets and merge
-                cmdset = get_and_merge_cmdsets(caller)
+            cmdset = get_and_merge_cmdsets(caller)
 
-            #print cmdset
+            # print cmdset
             if not cmdset:
                 # this is bad and shouldn't happen. 
                 raise NoCmdSets
@@ -171,12 +170,10 @@ def cmdhandler(caller, raw_string, unloggedin=False, testing=False):
                 syscmd = cmdset.get(CMD_NOINPUT)
                 sysarg = ""
                 raise ExecSystemCommand(syscmd, sysarg)
-
             # Parse the input string and match to available cmdset.
             # This also checks for permissions, so all commands in match
             # are commands the caller is allowed to call.
             matches = COMMAND_PARSER(raw_string, cmdset, caller)
-
             # Deal with matches
             if not matches:
                 # No commands match our entered command

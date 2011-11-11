@@ -409,6 +409,34 @@ class Character(Object):
     def at_after_move(self, source_location):
         "Default is to look around after a move."
         self.execute_cmd('look')
+
+    def at_disconnect(self):
+        """
+        We stove away the character when logging off, otherwise the character object will 
+        remain in the room also after the player logged off ("headless", so to say).
+        """
+        if self.location: # have to check, in case of multiple connections closing           
+            self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+            self.db.prelogout_location = self.location
+            self.location = None 
+
+    def at_post_login(self):
+        """
+        This recovers the character again after having been "stoved away" at disconnect.
+        """
+        if self.db.prelogout_location:
+            # try to recover 
+            self.location = self.db.prelogout_location        
+        if self.location == None:
+            # make sure location is never None (home should always exist)
+            self.location = self.home
+        # save location again to be sure 
+        self.db.prelogout_location = self.location
+
+        self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+        self.location.at_object_receive(self, self.location)
+
+
             
 #
 # Base Room object 

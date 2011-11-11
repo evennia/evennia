@@ -60,12 +60,12 @@ form.
 
 ::
 
-    django-admin.py compilemessages
+    django-admin compilemessages
 
 This will go through all languages and create/update compiled files
 (``*.mo``) for them. This needs to be done whenever a ``*.po`` file is
 updated.
 
-When you are done, send the ``*.po`` and \*.mo file to the Evennia
+When you are done, send the ``*.po`` and ``*.mo`` file to the Evennia
 developer list (or push it into your own repository clone) so we can
 integrate your translation into Evennia!

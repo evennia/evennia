@@ -316,7 +316,7 @@ class ObjectDB(TypedObject):
             string += "%s is not a valid home." 
             self.msg(string % home)
             logger.log_trace(string)
-            raise 
+            #raise 
         self.save()
     #@home.deleter
     def home_del(self):

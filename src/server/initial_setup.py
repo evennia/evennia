@@ -59,8 +59,7 @@ def create_objects():
                                          character_typeclass=character_typeclass)
 
     if not god_character:
-        print _("#1 could not be created. Check the Player/Character typeclass for bugs.")
-        raise Exception 
+        raise Exception(_("#1 could not be created. Check the Player/Character typeclass for bugs."))
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
