@@ -80,7 +80,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    inlines = [AliasInline, ObjAttributeInline]
+    inlines = [AliasInline]#, ObjAttributeInline]
 
 
     # Custom modification to give two different forms wether adding or not.
