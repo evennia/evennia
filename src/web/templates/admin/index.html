@@ -20,10 +20,9 @@
 
         {% if app.name == 'Auth' %}
         <h2>Admin</h2> 
-        <p><i>Note: Users hold django-specific authentication and should
-        not be created stand-alone. Groups
-        define permissions only relevant to admin-site access. 
-        To create a new In-game user, create a new <b>Player</b></i>.</p> 
+        <p><i>Players are the out-of-character representation of a
+        game account. A Player can potentially control any number of
+        in-game character Objects (depending on game).</i></p>
         {% endif %}
 
         <div class="module">
@@ -31,10 +30,11 @@
         <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
         {% for model in app.models %}
             <tr>
-            {% if model.perms.change %}
-                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
-            {% else %}
-                <th scope="row">{{ model.name }}</th>
+            {% if model.name == "Users" %}      
+              {% if model.perms.change %}
+                  <th scope="row"><a href="{{ model.admin_url }}">Player</a></th>
+              {% else %}
+                  <th scope="row">Player</th>
             {% endif %}
 
             {% if model.perms.add %}
@@ -49,6 +49,7 @@
                 <td>&nbsp;</td>
             {% endif %}
             </tr>
+            {% endif %} 
 
         {% endfor %}
         </table>

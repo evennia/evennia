@@ -12,19 +12,19 @@ from django.contrib.admin import widgets
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import User
 from src.players.models import PlayerDB, PlayerAttribute
-
+from src.utils import logger, create
+        
 # remove User itself from admin site
 admin.site.unregister(User)
 
 # handle the custom User editor
-
 class CustomUserChangeForm(UserChangeForm):
     username = forms.RegexField(label="Username", 
                                 max_length=30, 
                                 regex=r'^[\w. @+-]+$',
                                 widget=forms.TextInput(attrs={'size':'30'}),
                                 error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."}, 
-                                help_text = "This should be the same as the connected Player's key name. 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+                                help_text = "30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.RegexField(label="Username", 
@@ -32,166 +32,117 @@ class CustomUserCreationForm(UserCreationForm):
                                 regex=r'^[\w. @+-]+$',
                                 widget=forms.TextInput(attrs={'size':'30'}),
                                 error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."}, 
-                                help_text = "This should be the same as the connected Player's key name. 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+                                help_text = "30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
 
+# # The Player editor 
+# class PlayerAttributeForm(forms.ModelForm):
+#     "Defines how to display the atttributes"
+#     class Meta:
+#         model = PlayerAttribute
+#     db_key = forms.CharField(label="Key", 
+#                              widget=forms.TextInput(attrs={'size':'15'}))
+#     db_value = forms.CharField(label="Value", 
+#                                widget=forms.Textarea(attrs={'rows':'2'}))
 
-class UserAdmin(BaseUserAdmin):
-    "This will pop up from the Player admin."
+# class PlayerAttributeInline(admin.TabularInline):
+#     "Inline creation of player attributes"    
+#     model = PlayerAttribute
+#     extra = 0
+#     form = PlayerAttributeForm
+#     fieldsets = (
+#         (None, {'fields'  : (('db_key', 'db_value'))}),)
 
-    list_display = ('username', 'email', 'is_staff', 'is_superuser')
-    form = CustomUserChangeForm
-    add_form = CustomUserCreationForm
-    add_fieldsets = (
-        (None, 
-         {'fields': ('username', 'email', 'password1', 'password2', ('is_staff', 'is_superuser')),
-          'description':"The <i>User</i> object holds all authentication information and bits for using the admin site. A <i>superuser</i> account represents  a 'God user' in-game. This User account should have the same username as its corresponding <i>Player</i> object has; the two are always uniquely connected to each other."},),)
-admin.site.register(User, UserAdmin)
-
-# The Player editor 
-class PlayerAttributeForm(forms.ModelForm):
-    "Defines how to display the atttributes"
-    class Meta:
-        model = PlayerAttribute
-    db_key = forms.CharField(label="Key", 
-                             widget=forms.TextInput(attrs={'size':'15'}))
-    db_value = forms.CharField(label="Value", 
-                               widget=forms.Textarea(attrs={'rows':'2'}))
-
-class PlayerAttributeInline(admin.TabularInline):
-    "Inline creation of player attributes"    
-    model = PlayerAttribute
-    extra = 0
-    form = PlayerAttributeForm
-    fieldsets = (
-        (None, {'fields'  : (('db_key', 'db_value'))}),)
-
-class PlayerEditForm(forms.ModelForm):
-    "This form details the look of the fields"
+class PlayerForm(forms.ModelForm):
+    "Defines how to display Players"
 
     class Meta:
-        # important! This allows us to not excplicitly add all fields.
         model = PlayerDB
-
     db_key = forms.RegexField(label="Username", 
-                              max_length=30, regex=r'^[\w. @+-]+$', 
+                              initial="PlayerDummy",
+                              max_length=30, 
+                              regex=r'^[\w. @+-]+$',
+                              required=False, 
                               widget=forms.TextInput(attrs={'size':'30'}),
-                              error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."},
-                              help_text = "this should be the same as the User's name. 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+                              error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."}, 
+                              help_text = "This should be the same as the connected Player's key name. 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+
     db_typeclass_path = forms.CharField(label="Typeclass",
                                         initial=settings.BASE_PLAYER_TYPECLASS, 
                                         widget=forms.TextInput(attrs={'size':'78'}),
-                                        help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+                                        help_text="Required. Defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass. Defaults to settings.BASE_PLAYER_TYPECLASS.")
     db_permissions = forms.CharField(label="Permissions", 
                                      initial=settings.PERMISSION_PLAYER_DEFAULT,
                                      required=False,
                                      widget=forms.TextInput(attrs={'size':'78'}),
-                                     help_text="a comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. A Player permission can be overloaded by the permissions of a controlled Character. Normal players use 'Players' by default.")
+                                     help_text="In-game permissions. A comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. A Player permission can be overloaded by the permissions of a controlled Character. Normal players use 'Players' by default.")
     db_lock_storage = forms.CharField(label="Locks", 
                                       widget=forms.Textarea(attrs={'cols':'100', 'rows':'2'}),
                                       required=False,
-                                      help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. This is set to a default upon creation.")
+                                      help_text="In-game lock definition string. If not given, defaults will be used. This string should be on the form <i>type:lockfunction(args);type2:lockfunction2(args);...")
     db_cmdset_storage = forms.CharField(label="cmdset", 
                                         initial=settings.CMDSET_OOC, 
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         required=False,
-                                        help_text="python path to cmdset class.")
-    user = forms.ModelChoiceField(queryset=User.objects.all(), 
-                                  widget=forms.Select(attrs={'disabled':'true'}))
-
-
-
-class PlayerCreateForm(forms.ModelForm):
-    "This form details the look of the fields"
-
-    class Meta:
-        # important! This allows us to not excplicitly add all fields.
-        model = PlayerDB
-
-    db_key = forms.RegexField(label="Username", max_length=30, regex=r'^[\w. @+-]+$', widget=forms.TextInput(attrs={'size':'30'}),
-         help_text = "this should be the same as the User's name. 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
-    db_typeclass_path = forms.CharField(label="Typeclass",
-                                        initial=settings.BASE_PLAYER_TYPECLASS, 
-                                        widget=forms.TextInput(attrs={'size':'78'}),
-                                        help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
-    db_permissions = forms.CharField(label="Permissions", 
-                                     initial=settings.PERMISSION_PLAYER_DEFAULT,
-                                     required=False,
-                                     help_text="a comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. A Player permission can be overloaded by the permissions of a controlled Character. Normal players use 'Players' by default.")
-    db_cmdset_storage = forms.CharField(label="cmdset", 
-                                        initial=settings.CMDSET_OOC, 
-                                        widget=forms.TextInput(attrs={'size':'78'}),
-                                        required=False,
-                                        help_text="python path to cmdset class.")
-        
-class PlayerDBAdmin(admin.ModelAdmin):
-    "Setting up and tying the player administration together"
-
-    list_display = ('id', 'db_key', 'user', 'db_obj', 'db_permissions', 'db_typeclass_path')
-    list_display_links = ('id', 'db_key')
-    ordering = ['db_key', 'db_typeclass_path']
-    search_fields = ['^db_key', 'db_typeclass_path']    
-    save_as = True 
-    save_on_top = True
-    list_select_related = True 
-    list_filter = ('db_permissions',)
-
-    
-    # editing/adding player 
-    form = PlayerEditForm
+                                        help_text="python path to player cmdset class (settings.CMDSET_OOC by default)")
+       
+class PlayerInline(admin.StackedInline):
+    "Inline creation of Player"
+    model = PlayerDB
+    template = "admin/players/stacked.html"
+    form = PlayerForm
     fieldsets = (
-        (None,          
-          {'fields'     : (('db_key', 'db_typeclass_path'), 'user', ('db_permissions','db_lock_storage'), 'db_cmdset_storage', 'db_obj'),
-           'classes'    : ('wide', 'extrapretty')}),)
-    # deactivated, they cause empty players to be created in admin.
-    inlines = [PlayerAttributeInline]
+        ("In-game Permissions and Locks",
+         {'fields': ('db_permissions', 'db_lock_storage'),
+          'description':"<i>These are permissions/locks for in-game use. They are unrelated to website access rights.</i>"}),
+        ("In-game Player data",
+         {'fields':('db_typeclass_path', 'db_cmdset_storage'),
+          'description':"<i>These fields define in-game-specific properties for the Player object in-game.</i>"}),
+        ("Evennia In-game Character",
+         {'fields':('db_obj',),
+          'description': "<i>To actually play the game, a Player must control a Character. This could be added in-game instead of from here if some sort of character creation system is in play. If not, you should normally create a new Character here rather than assigning an existing one. Observe that the admin does not check for puppet-access rights when assigning Characters! If not creating a new Character, make sure the one you assign is not puppeted by someone else!</i>"}))
     
-    add_form = PlayerCreateForm
+
+    extra = 1
+    max_num = 1
+    
+class UserAdmin(BaseUserAdmin):
+    "This is the main creation screen for Users/players"
+
+    list_display = ('username','email', 'is_staff', 'is_superuser')
+    form = CustomUserChangeForm
+    add_form = CustomUserCreationForm
+    inlines = [PlayerInline]
+    add_form_template = "admin/players/add_form.html"
+    change_form_template = "admin/players/change_form.html"
+    change_list_template = "admin/players/change_list.html"
+    fieldsets = (
+        (None, {'fields': ('username', 'password', 'email')}),
+        ('Website profile', {'fields': ('first_name', 'last_name'),
+                           'description':"<i>These are not used in the default system.</i>"}),
+        ('Website dates', {'fields': ('last_login', 'date_joined'),
+                             'description':'<i>Relevant only to the website.</i>'}),
+        ('Website Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions','groups'),
+                                 'description': "<i>These are permissions/permission groups for accessing the admin site. They are unrelated to in-game access rights.</i>"}),)
+
+
     add_fieldsets = (
-        (None,          
-          {'fields'     : (('db_key', 'db_typeclass_path'), 'user', 'db_permissions', 'db_cmdset_storage', 'db_obj'),
-           'description': 'To create a new Player, a User object <i>must</i> also be created to match. Never connect a Player to a User already assigned to another Player. When deleting a Player, its connected User will also be deleted.',
-           'classes'    : ('wide', 'extrapretty')}),)
+        (None, 
+         {'fields': ('username', 'password1', 'password2', 'email'),
+          'description':"<i>These account details are shared by the admin system and the game.</i>"},),)
 
-    def get_fieldsets(self, request, obj=None):
-        if not obj:
-            return self.add_fieldsets
-        return super(PlayerDBAdmin, self).get_fieldsets(request, obj)
-
-    def get_form(self, request, obj=None, **kwargs):
-        """
-        Use special form during creation
-        """
-        defaults = {}
-        if obj is None:
-            defaults.update({
-                    'form': self.add_form,
-                    'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
-                    })
-            defaults.update(kwargs)
-        return super(PlayerDBAdmin, self).get_form(request, obj, **defaults)
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            # adding a new object
-            new_obj = obj.typeclass
-            new_obj.basetype_setup()            
-            new_obj.at_player_creation()            
-            if new_obj.obj:
-                char = new_obj.db_obj
-                char.db_player = obj
-                char.save() 
-            new_obj.at_init()
-        else:
-            if obj.db_obj:
-                char = obj.db_obj
-                char.db_player = obj
-                char.save()            
-
-            obj.at_init()
-
-    def delete_model(self, request, obj):
-        # called when deleting a player object. Makes sure to also delete user. 
-        user = obj.user 
-        user.delete()
-
-admin.site.register(PlayerDB, PlayerDBAdmin)
+    def save_formset(self, request, form, formset, change):        
+        "Run all hooks on the player object"
+        super(UserAdmin, self).save_formset(request, form, formset, change)
+        playerdb = form.instance.get_profile()
+        if not change:            
+            create.create_player("", "", "", 
+                                 typeclass=playerdb.db_typeclass_path,
+                                 create_character=False,
+                                 player_dbobj=playerdb)
+        if playerdb.db_obj:
+            playerdb.db_obj.db_player = playerdb
+            playerdb.db_obj.save()
+        
+        #assert False, (form.instance, form.instance.get_profile())
+        
+admin.site.register(User, UserAdmin)

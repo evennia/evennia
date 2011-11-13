@@ -351,12 +351,18 @@ def create_player(name, email, password,
                   is_superuser=False, 
                   locks=None, permissions=None,
                   create_character=True, character_typeclass=None,
-                  character_location=None, character_home=None):                   
+                  character_location=None, character_home=None,
+                  player_dbobj=None):                   
 
     
     """
     This creates a new player, handling the creation of the User
     object and its associated Player object. 
+
+    If player_dbobj is given, this player object is used instead of 
+    creating a new one. This is called by the admin interface since it
+    needs to create the player object in order to relate it automatically
+    to the user. 
     
     If create_character is
     True, a game player object with the same name as the User/Player will
@@ -414,9 +420,12 @@ def create_player(name, email, password,
             # this is already an object typeclass, extract its path
             typeclass = typeclass.path         
 
-        # create new database object 
-        new_db_player = PlayerDB(db_key=name, user=new_user)
-        new_db_player.save()
+        if player_dbobj:
+            new_db_player = player_dbobj
+        else:
+            # create new database object 
+            new_db_player = PlayerDB(db_key=name, user=new_user)
+            new_db_player.save()
 
         # assign the typeclass 
         typeclass = utils.to_unicode(typeclass)
