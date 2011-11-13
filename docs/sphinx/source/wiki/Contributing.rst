@@ -29,11 +29,13 @@ changes to that. .
 #. If you are logged in, you should see a button named *Create a Clone*.
    Click that.
 #. You are asked to fill in a few fields. Name your clone repository
-   something snazzy. Give a brief summary, like "my repo for messing
-   around with Evennia". Accept.
-#. Your new repo is created. This is actually your own mini-version of
-   the Evennia page! Go to your checkout page and use the command there
-   to get a local copy of your clone to your computer.
+   something useful, like "Johns-evennia-fixes". Give a brief summary,
+   like "my repo for contributing to Evennia". Accept.
+#. Your new repo is created. You should see it appear in the `clone-repo
+   list <https://code.google.com/p/evennia/source/clones.html>`_. This
+   is actually your own mini-version of the Evennia page! Choose your
+   repo and you will find it has its own Checkout page. Use the command
+   there to get a local copy of your clone to your computer.
 #. Code away on your computer, fixing bugs or whatnot (you can be
    offline for this). Commit your code to your local clone as you work,
    as often as you like.
@@ -53,9 +55,9 @@ deemed good, pick and merge your work into Evennia proper.
 Contributing with Patches
 -------------------------
 
-It's recommended to use a clone repository as described above, but for
-small, well isolated things you are also welcome to submit your
-suggested Evennia fixes/addendums as
+To help with Evennia development it's recommended to do so using a clone
+repository as described above. But for small, well isolated fixes you
+are also welcome to submit your suggested Evennia fixes/addendums as
 `patches <https://secure.wikimedia.org/wikipedia/en/wiki/Patch_(computing).html>`_
 if you like. Depending on what fits best, post your patch to the `issue
 tracker <https://code.google.com/p/evennia/issues/list.html>`_ or to the

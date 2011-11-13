@@ -29,7 +29,7 @@ into many different command sets. By storing the command set on a
 character object you will make all the commands therein available to use
 by that character. You can also store command sets on normal objects if
 you want users to be able to use the object in various ways. Consider a
-"Tree" object with a cmdset defining the commands *climb* and *shop
+"Tree" object with a cmdset defining the commands *climb* and *chop
 down*. Or a "Clock" with a cmdset containing the single command *check
 time*.
 
@@ -44,6 +44,21 @@ inherit from a child of ``Command`` called ``MuxCommand`` - this is the
 class that knows all the mux-like syntax like ``/switches``, splitting
 by "=" etc. Below we'll avoid mux-specifics and use the base ``Command``
 class directly.
+
+::
+
+    # basic Command definition
+    from game.gamesrc.commands.basecommand import Command
+    class MyCmd(Command):
+       """
+       This is the help-text for the command
+       """
+       key = "mycommand" 
+       locks = "cmd:all()" # this lock means cmd is available to all
+       def parse(self):
+           # parsing the command line here
+       def func(self):
+           # executing the command here
 
 You define a new command by assigning a few class-global properties on
 your inherited class and overloading one or two hook functions. The full
@@ -258,7 +273,8 @@ snippet:
 
     @py self.cmdset.add('game.gamesrc.commands.mycmdset.MyCmdSet')
 
-This will stay with you until you shut down the server or run
+This will stay with you until you ``@reset`` or ``@shutdown`` the
+server, or you run
 
 ::
 
@@ -602,6 +618,10 @@ non-commands as text input.
    subscribing to - Default is to relay the command's argument to that
    channel. Such commands are created by the Comm system on the fly
    depending on your subscriptions.
+-  New session connection ('cmdhandler.CMD\_LOGINSTART'). This command
+   name should be put in the ``settings.CMDSET_UNLOGGEDIN``. Whenever a
+   new connection is established, this command is always called on the
+   the server (default is to show the login screen).
 
 Below is an example of redefining what happens when the player don't
 give any input (e.g. just presses return). Of course the new system

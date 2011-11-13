@@ -12,13 +12,15 @@ Building basics
 -  `Adding colour <Colours.html>`_
 -  `Customizing the connection screen <ConnectionScreen.html>`_
 
-World creation
---------------
+Advanced building and World building
+------------------------------------
 
 `Overview of batch processors <BatchProcessors.html>`_
 
 -  `Batch-command processor <BatchCommandProcessor.html>`_
 -  `Batch-code processor <BatchCodeProcessor.html>`_
+
+`Adding zones <Zones.html>`_
 
 The Tutorial world
 ------------------

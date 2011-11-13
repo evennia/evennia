@@ -1,10 +1,23 @@
 Typeclassed objects
 ===================
 
-Several of the the main game 'entities' in Evennia, namely
-`Players <Players.html>`_, `Objects <Objects.html>`_ and
-`Scripts <Scripts.html>`_ - are what we call *typeclassed*. This
-basically means that they are almost normal Python classes that hide
+How do you represent different objects in a game? What makes a bear
+different from a stone, or a character different from a house? How do
+you store such differences in the database? One way would be to create
+new database tables for each type. So a bear would have a database field
+"claws" and the stone would have fields specifying its weight and colour
+... and you'd soon go crazy with making custom database manipulations
+for all infinite combinations.
+
+Evennia instead uses very generic and simple database models and
+"decorates" these with normal Python classes that specify their
+functionality. Using Python classes means you get all the flexibility of
+Python object management for free.
+
+There are three main game 'entities' in Evennia that are what we call
+*typeclassed*. They are `Players <Players.html>`_,
+`Objects <Objects.html>`_ and `Scripts <Scripts.html>`_. As said, this
+basically means that they are (almost) normal Python classes that hide
 underlying database models ...
 
 ... and that's basically all you *really* need to know about how

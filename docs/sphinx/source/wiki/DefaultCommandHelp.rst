@@ -465,12 +465,12 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ::
 
     find objects    Usage:
-          @find[/switches] <name or dbref or *player> [= dbrefmin[ dbrefmax]]    Switches:
+          @find[/switches] <name or dbref or *player> [= dbrefmin[-dbrefmax]]    Switches:
           room - only look for rooms (location=None)
           exit - only look for exits (destination!=None)
           char - only look for characters (BASE_CHARACTER_TYPECLASS)    Searches the database for an object of a particular name or dbref.
         Use *playername to search for a player. The switches allows for
-        limiting matches to certain game entities. Dbrefmin and dbrefmax 
+        limiting object matches to certain game entities. Dbrefmin and dbrefmax 
         limits matches to within the given dbrefs, or above/below if only one is given.
 
 @help
@@ -1670,6 +1670,21 @@ Unloggedin
 `Link to Python
 module <https://code.google.com/p/evennia/source/browse/src/commands/default/unloggedin.py.html>`_
 
+**unloggedin*look*command
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ``key`` = ``__unloggedin_look_command``
+-  ``aliases`` = ``look, l``
+-  `locks <Locks.html>`_ = ``cmd:all()``
+-  `helpcategory <HelpSystem.html>`_ = ``Unloggedin``
+-  `Auto-help <HelpSystem#Auto-help%3C/i%3Esystem.html>`_
+   (``__doc__ string``) =
+
+::
+
+    This is an unconnected version of the look command for simplicity.     This is called by the server and kicks everything in gear. 
+        All it does is display the connect screen.
+
 connect
 ~~~~~~~
 
@@ -1716,21 +1731,6 @@ help
 
     This is an unconnected version of the help command,
         for simplicity. It shows a pane or info.
-
-look
-~~~~
-
--  ``key`` = ``look``
--  ``aliases`` = ``l``
--  `locks <Locks.html>`_ = ``cmd:all()``
--  `helpcategory <HelpSystem.html>`_ = ``Unloggedin``
--  `Auto-help <HelpSystem#Auto-help%3C/i%3Esystem.html>`_
-   (``__doc__ string``) =
-
-::
-
-    This is an unconnected version of the look command for simplicity. 
-        All it does is re-show the connect screen.
 
 quit
 ~~~~
