@@ -19,6 +19,7 @@ if os.name == 'nt':
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from twisted.web import server, static
+import django 
 from django.db import connection
 from django.conf import settings
 
@@ -109,11 +110,11 @@ class Evennia(object):
         """
         Optimize some SQLite stuff at startup since we
         can't save it to the database.
-        """
-        if (settings.DATABASE_ENGINE == "sqlite3"
-            or hasattr(settings, 'DATABASE')   
-            and settings.DATABASE.get('ENGINE', None) 
-                == 'django.db.backends.sqlite3'):            
+        """        
+        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASE_ENGINE == "sqlite3")
+            or (hasattr(settings, 'DATABASES') 
+                and settings.DATABASES.get("default", {}).get('ENGINE', None) 
+                == 'django.db.backends.sqlite3')):            
             cursor = connection.cursor()
             cursor.execute("PRAGMA cache_size=10000")
             cursor.execute("PRAGMA synchronous=OFF")
