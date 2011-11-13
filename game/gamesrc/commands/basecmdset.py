@@ -24,7 +24,7 @@ from game.gamesrc.commands.basecommand import Command
 
 #from contrib import menusystem, lineeditor
 #from contrib import misc_commands
-#from contrib import chargen, menu_login
+#from contrib import chargen
 
 class DefaultCmdSet(cmdset_default.DefaultCmdSet):
     """
@@ -49,8 +49,8 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         # any commands you add below will overload the default ones.
         #
         #self.add(menusystem.CmdMenuTest())
-        #self.add(lineeditor.CmdEditor())
-        #self.add(misc_commands.CmdQuell())        
+        #self.add(lineeditor.CmdEditor())        
+        #self.add(misc_commands.CmdQuell())                
 
 class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
     """
@@ -89,7 +89,6 @@ class OOCCmdSet(cmdset_ooc.OOCCmdSet):
         """
         # calling setup in src.commands.default.cmdset_ooc
         super(OOCCmdSet, self).at_cmdset_creation()
-        
         #
         # any commands you add below will overload the default ones.
         #        

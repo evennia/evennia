@@ -17,13 +17,13 @@ Installation:
 Import this module in game.gamesrc.basecmdset and
 add the following line to the end of OOCCmdSet's at_cmdset_creation():
    
-   self.add(character_creation.OOCCmdSetCharGen)
+   self.add(chargen.OOCCmdSetCharGen)
 
 
 If you have a freshly installed database you could also instead add/edit 
 this line to your game/settings.py file: 
 
-CMDSET_OOC = "contrib.character_creation.OOCCmdSetCharGen"
+CMDSET_OOC = "contrib.chargen.OOCCmdSetCharGen"
 
 This will replace the default OOCCmdset to look to this module 
 instead of the one in game.gamesrc.basecmdset. If you do this, uncomment 
