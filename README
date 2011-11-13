@@ -2,7 +2,7 @@
 -----------------------------------
  Evennia README 
  (http://evennia.com)
- Alpha hg (mercurial) version
+ Beta hg (mercurial) version
 -----------------------------------
 
 
@@ -40,6 +40,14 @@ See the INSTALL file for help on setting up and running Evennia.
 
 Current Status
 --------------
+
+Nov 2011: 
+After creating several different proof-of-concept game systems (in contrib
+and privately) as well testing lots of things to make sure the implementation 
+is basically sound, we are declaring Evennia out of Alpha. This can mean 
+as much or as little as you want, admittedly - development is 
+still heavy but the issue list is at an all-time low and the server is slowly 
+stabilizing as people try different things with it. 
 
 Aug 2011:
 Split Evennia into two processes: Portal and Server. After a lot of
