@@ -3,12 +3,21 @@ Developer Central
 
 This page serves as a central nexus for useful information regarding
 coding using the Evennia codebase, and also for development of the
-codebase itself. Everyone is welcome to help out! If you have any
-questions, please feel free to ask them in the `Forum/Discussion
-Group <http://www.evennia.com/discussions>`_. Bugs should be reported to
-the `Issue tracker <http://code.google.com/p/evennia/issues/list>`_. You
-can find more links to Evennia resources from the `Links <Links.html>`_
-page.
+codebase itself. Everyone is welcome to `help
+out <http://code.google.com/p/evennia/wiki/Contributing>`_! If you have
+any questions, please feel free to ask them in the `Forum/Discussion
+Group <http://www.evennia.com/discussions>`_. If you want more docs on a
+particular issue, consider filling out our
+"https://docs.google.com/spreadsheet/viewform?hl
+
+en\_US&formkey
+
+dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid
+======================================
+
+0.html">online form and tell us! Bugs should be reported to the `Issue
+tracker <http://code.google.com/p/evennia/issues/list>`_. You can find
+more links to Evennia resources from the `Links <Links.html>`_ page.
 
 General Evennia development information
 ---------------------------------------

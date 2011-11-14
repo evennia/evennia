@@ -107,10 +107,10 @@ player's client and the server on the protocol level, often due to the
 request of the player's client software rather than any sort of active
 input by the player. There are two main types:
 
--  Data requested by the client which the server responds to
+-  Data requested by the client to which the server responds
    immediately. This could for example be data that should go into a
    window that the client just opened up.
--  Data the server sends to the client to keep ut up-to-date. A common
+-  Data the server sends to the client to keep it up-to-date. A common
    example of this is something like a graphical health bar - *whenever*
    the character's health status changes the server sends this data to
    the client so it can update the bar graphic. This sending could also
@@ -150,57 +150,73 @@ Example of out-of-band calling sequence
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let's say we want our client to be able to request the character's
-current health. In our Portal protocol we somehow parse the incoming
-data stream and figure out what the request for health looks like. We
-map this to the Evennia ``get_health`` function.
+current health, stamina and maybe some skill values. In our Portal
+protocol we somehow parse the incoming data stream and figure out what
+the request for health looks like. We map this to the Evennia
+``get_health`` function.
 
 We point ``settings.OOB_FUNC_MODULE`` to someplace in ``game/`` and
-create a module there with the following function:
+create a module there with the following functions:
 
 ::
 
-    # the caller is always added as first argument
-    # we also assume health is stored as a simple 
-    # attribute on the character here. 
-    def get_health(character):    
-        return character.db.health
+    # the caller is automatically added as first argument
+    def get_health(character):
+        "Get health, stored as simple attribute"    
+        return character.db.health 
+    def get_stamina(character):
+        "Get stamina level, stored as simple attribute"
+        return character.db.stamina
+    def get_skill(character, skillname, master=False):
+        """we assume skills are stored as a dictionary 
+           stored in an attribute. Master skills are 
+           stored separately (for whatever reason)"""
+        if master:
+            return character.db.skills_master.get(skillname, "NoSkill")
+        return character.db.skills.get(skillname, "NoSkill")
 
-Done, this function will do just what we want. Let's finish up the first
-part of the portal protocol:
+Done, the functions will return what we want assuming Characters do
+store this information in our game. Let's finish up the first part of
+the portal protocol:
 
 ::
 
     # this method could be named differently depending on the 
     # protocol you are using (this is telnet)
     def lineReceived(self, string):
-       # (does stuff to analyze the incoming string)   outdict = 
+       # (does stuff to analyze the incoming string)
+       # ...
+       outdict = 
        if GET_HEALTH:
            # call get_health(char)
            outdict["get_health"] = ([], )
-       elif GET_MANA:
+       elif GET_STAMINA:
            # call get_mana(char)
-           outdict["get_mana"] = ([], )
-       elif GET_CONFIG:
-           # call get_config(char, 2, hidden=True)
-           outdict["get_config"] = ([2], 'hidden':True)   [...]   self.sessionhandler.oob_data_out(outdict)
+           outdict["get_stamina"] = ([], )
+       elif GET_MASTER_SKILL_SMITH:
+           # call get_skill(char, "smithing", master=True)
+           outdict["get_skill"] = (["smithing"], 'master':True)   [...]   self.sessionhandler.oob_data_out(outdict)
 
-The server will properly accept this and call get\_health and get the
-right value for the health. We need to define an ``oob_data_out(data)``
-in our portal protocol to catch the return value:
+The Server will properly accept this and call the relevant functions to
+get their return values for the health, stamina and skill. The return
+values will be packed in a dictionary keyed by function name before
+being passed back to the Portal. We need to define
+``oob_data_out(data)`` in our portal protocol to catch this:
 
 ::
 
     def oob_data_out(self, data):
-        # the indata is a dicationary funcname:retval    outstring = ""
+        # the indata is a dictionary funcname:retval    outstring = ""
         for funcname, retval in data.items():
             if funcname == 'get_health':
                 # convert to the right format for sending back to client, store
                 # in outstring ...
          [...]
+        # send off using the protocols send method (this is telnet)
+        sendLine(outstring)
 
-Above, once the dict is parsed and the return values properly put in a
-format the client will understand, send the whole thing off using the
-protocol's relevant send method.
+As seen, ``oob_data`` takes the values and formats into a form the
+protocol understands before sending it off.
 
 Implementing auto-sending
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -210,9 +226,9 @@ To have the Server update the client regularly, simply create a global
 dictionary (basically faking a request from the portal) and sends it
 directly to
 ``src.server.sessionhandler.oob_data_in(session.sessid, datadict)``.
-Repeat for all sessions. All specified OOB functions are called as
-normal and data will be sent back to be handled by the portal just as if
-the portal initiated the request.
+Loop over all relevant sessions. The Server will treat this like a
+Portal call and data will be sent back to be handled by the portal as
+normal.
 
 Assorted notes
 --------------

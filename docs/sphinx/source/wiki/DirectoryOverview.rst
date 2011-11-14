@@ -1,7 +1,7 @@
 Evennia directory overview
 ==========================
 
-Evennia's main directory (``evennia``) is divided into four sub
+Evennia's main directory (``evennia``) is divided into five sub
 directories - ``src/``, ``game/``, ``contrib/``, ``locale`` and
 ``doc/``. The first two are the most important ones. ``game/`` is the
 place where you will create your own game, whereas ``src/`` is the home
@@ -19,15 +19,18 @@ binary versions of the ``.py`` files to speed up execution.
 The ``docs/`` directory
 -----------------------
 
-You may have noticed that ``docs/`` is pretty empty. This is because you
-are in fact reading the docs right now - this wiki *is* the
-documentation.
+This contains Evennia's offline documentation. The main source of
+up-to-date documentation is the online wiki however.
 
-You can create the *autodocs* of Evennia by following the instructions
-in ``docs/README``. This will make use of the source code itself to
+Read ``sphinx/README`` for instructions on building the ReST
+documentation, based on a current snapshot of the wiki. This can be
+browsed offline or made into a PDF for printing etc.
+
+You can create the Evennia *autodocs* by following the instructions in
+``doxygen/README``. This will make use of the source code itself to
 create a nice browsable web-index of all the sources and comments. In
 the same way you could in theory also create nice ``LaTeX``-formatted
-PDFs of the Evennia source (all 300+ pages of it ...).
+PDFs of the Evennia source (all 400+ pages of it ...).
 
 The ``locale`` directory
 ------------------------

@@ -3,6 +3,16 @@ Evennia Documentation
 
 This is Evennia's manual. You should hopefully find all you need to know
 about coding with, extending and using the codebase among these pages.
+If you have trouble with unclear documentation, fill in our quick
+"https://docs.google.com/spreadsheet/viewform?hl
+
+en\_US&formkey
+
+dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid
+======================================
+
+0.html">online form and tell us so - maybe more details or a new
+tutorial is needed!
 
 The documentation is divided into several main categories. If you are
 new, it might be an idea to browse the sections in the order they are

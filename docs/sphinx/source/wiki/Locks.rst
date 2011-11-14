@@ -167,7 +167,7 @@ You are not allowed to use just any function in your lock definition;
 you are infact only allowed to use those functions defined in one of the
 modules given in ``settings.LOCK_FUNC_MODULES``. All functions in any of
 those modules will automatically be considered a valid lock function.
-The default ones are found in src/locks/lockfuncs.py.
+The default ones are found in ``src/locks/lockfuncs.py``.
 
 A lock function must always accept at least two arguments - the
 *accessing object* (this is the object wanting to get access) and the
@@ -185,11 +185,11 @@ appear as extra arguments.
         return False
 
 (Using the ``*`` and ``**`` syntax causes Python to magically put all
-extra arguments into a list ``args``and all keyword arguments into a
+extra arguments into a list ``args`` and all keyword arguments into a
 dictionary ``kwargs`` respectively. If you are unfamiliar with how
 ``*args`` and ``**kwargs`` work, see the Python manuals).
 
-Some useful default lockfuncs (see lockfuncs.py for a full list):
+Some useful default lockfuncs (see ``src/locks/lockfuncs.py`` for more):
 
 -  ``true()/all()`` - give access to everyone
 -  ``false()/none()/superuser()`` - give access to noone. Superusers
@@ -226,8 +226,8 @@ like rooms and exits store their internal variables). This is called
 once, before ``at_object_creation``, so just put them in the latter
 method on your child object to change the default. Also creation
 commands like ``@create`` changes the locks of objects you create - for
-example it sets the ``control`` lock\_type allow youm, its creator to
-control and delete the object.
+example it sets the ``control`` lock\_type so as to allow you, its
+creator, to control and delete the object.
 
 Permissions
 ===========
@@ -295,11 +295,12 @@ You are only allowed to do *examine* on this object if you have
 ::
 
     # lock for the tell command
-    cmd: perm(Builders) and not perm(no_tell)
+    cmd: not perm(no_tell)
 
-Locks can be used to implement highly specific bans. Set this on e.g.
-the ``tell`` command, then give a player the "permission" ``no_tell`` to
-disable their use of this particular command henceforth.
+Locks can be used to implement highly specific bans. This will allow
+everyone *not* having the "permission" ``no_tell`` to use the ``tell``
+command. Just give a player the "permission" ``no_tell`` to disable
+their use of this particular command henceforth.
 
 ::
 

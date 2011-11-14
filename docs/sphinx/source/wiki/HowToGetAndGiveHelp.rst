@@ -6,6 +6,18 @@ How to *get* Help
 If you cannot find what you are looking for in the `online
 documentation <Index.html>`_, here's what to do:
 
+-  If you don't understand a concept or think the docs are not clear
+   enough, fill in our quick little
+   "https://docs.google.com/spreadsheet/viewform?hl
+
+   en*US&formkey*
+
+   dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid
+   ======================================
+
+   0.html">online form and say so - maybe the docs need to be improved
+   or a tutorial added!
+
 -  If you have trouble with a missing feature or a problem you think is
    a bug, go to the `issue
    tracker <http://code.google.com/p/evennia/issues/list>`_. If you
@@ -19,7 +31,7 @@ documentation <Index.html>`_, here's what to do:
 -  If you want more direct discussions with developers and other users,
    consider dropping into our IRC chat channel
    "http://webchat.freenode.net/?channels
-   evennia">#evennia on the *Freenode* network. Please note however that
+   evennia">#evennia on the Freenode\_ network. Please note however that
    you have to be patient if you don't get any response immediately; we
    are all in very different time zones and many have busy personal
    lives. So you might have to lurk about for a while - you'll get
