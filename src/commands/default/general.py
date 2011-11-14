@@ -383,9 +383,14 @@ class CmdWho(MuxCommand):
         for session in session_list:
             if not session.logged_in:
                 continue
+
             delta_cmd = time.time() - session.cmd_last_visible
             delta_conn = time.time() - session.conn_time
             plr_pobject = session.get_character()
+            if not plr_pobject:
+                plr_pobject = session.get_player()
+                show_session_data = False 
+                table = [["Player Name"], ["On for"], ["Idle"]]
             if show_session_data:
                 table[0].append(plr_pobject.name[:25])
                 table[1].append(utils.time_format(delta_conn, 0))
@@ -397,6 +402,7 @@ class CmdWho(MuxCommand):
                 table[0].append(plr_pobject.name[:25])
                 table[1].append(utils.time_format(delta_conn,0))
                 table[2].append(utils.time_format(delta_cmd,1))
+
         stable = []
         for row in table: # prettify values
             stable.append([str(val).strip() for val in row])
@@ -665,7 +671,7 @@ class CmdIC(MuxCommand):
                 return
         if not new_character:
             # search for a matching character
-            new_character = caller.search(self.args)
+            new_character = caller.search(self.args, global_search=True)
         if not new_character:
             # the search method handles error messages etc.
             return 
