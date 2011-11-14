@@ -20,17 +20,6 @@ add the following line to the end of OOCCmdSet's at_cmdset_creation():
    self.add(chargen.OOCCmdSetCharGen)
 
 
-If you have a freshly installed database you could also instead add/edit 
-this line to your game/settings.py file: 
-
-CMDSET_OOC = "contrib.chargen.OOCCmdSetCharGen"
-
-This will replace the default OOCCmdset to look to this module 
-instead of the one in game.gamesrc.basecmdset. If you do this, uncomment 
-the super() statement in OOCCmdSetCharGen (end of this file) too. This will 
-however only affect NEWLY created players, not those already in the game, which i
-s why you'd usually only do this if you are starting from scratch.
-
 """
 
 from django.conf import settings 
