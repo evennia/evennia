@@ -42,12 +42,13 @@ Current Status
 --------------
 
 Nov 2011: 
-After creating several different proof-of-concept game systems (in contrib
-and privately) as well testing lots of things to make sure the implementation 
-is basically sound, we are declaring Evennia out of Alpha. This can mean 
-as much or as little as you want, admittedly - development is 
-still heavy but the issue list is at an all-time low and the server is slowly 
-stabilizing as people try different things with it. 
+After creating several different proof-of-concept game systems (in
+contrib and privately) as well testing lots of things to make sure the
+implementation is basically sound, we are declaring Evennia out of
+Alpha. This can mean as much or as little as you want, admittedly -
+development is still heavy but the issue list is at an all-time low
+and the server is slowly stabilizing as people try different things
+with it. So Beta it is!
 
 Aug 2011:
 Split Evennia into two processes: Portal and Server. After a lot of
@@ -80,7 +81,11 @@ will not be backwards compatabile. Changes touch almost all
 parts of Evennia's innards, from the way Objects are handled 
 to Events, Commands and Permissions. 
 
-(Earlier revisions, with other maintainer, go back to 2005)
+April 2010: 
+Griatch takes over Maintainership of the Evennia project from
+the original creator Greg Taylor. 
+
+(Earlier revisions, with previous maintainer, go back to 2005)
 
 
 Contact, Support and Development
@@ -121,6 +126,8 @@ evennia
  |_______contrib 
  |
  |_______docs 
+ |
+ |_______locales
 
 The two main directories you will spend most of your time in
 are src/ and game/ (probably mostly game/). 
@@ -150,6 +157,8 @@ docs/ contain offline versions of the documentation, you can use
 python-sphinx to convert the raw data to nice-looking output for 
 printing etc. The online wiki is otherwise first to be updated.  
 
+locales/ holds translations of the server strings to other languages
+than English.
+
 With this little first orientation, you should head into the online 
 Evennia wiki documentation to get going with the codebase. 
-

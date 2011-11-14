@@ -1,103 +1,57 @@
 
---------------------
-Evennia Installation
---------------------
+-------------
+Evennia Setup 
+-------------
+
+You can find the updated and more detailed version of this page on 
+http://code.google.com/p/evennia/wiki/GettingStarted
 
 
-Pre-Requesites
---------------
+Installation
+------------
 
-As far as operating systems go, any system with Python support should work.
+* Make sure you have/install the prerequsites with minimum versions
+  listed on http://code.google.com/p/evennia/wiki/GettingStarted:
+    - python 
+    - django
+    - twisted + PIL
+    - mercurial 
+    - django-south (optional)
 
-    * Linux/Unix
-    * Windows (2000, XP, Vista, Win7)
-    * Mac OSX (>=10.5 recommended) 
+* Go to a directory on your harddrive where you want the "evennia" 
+  directory to be created.
+    
+    $ cd mud/
 
-Of these, Linux/Unix, Windows XP, and Windows 7 have been tested. If you use something else, let us know.
-
-You'll need the following packages and minimum versions in order to run Evennia:
-
-    * Python (http://www.python.org)
-          o Version 2.5+ strongly recommended, although 2.3 or 2.4 may work. Obs- Python3.x is not supported yet.
-          o Default database system SQLite3 only comes as part of Python 2.5 and later.
-          o Windows only: 2.7+ required for full server restart functionality.
-          o Windows only: Optionally use ActivePython instad (http://www.activestate.com/activepython) 
-    * Twisted (http://twistedmatrix.com)
-          o Version 10.0+
-          o Twisted also requires:
-                + ZopeInterface 3.0+ (http://www.zope.org/Products/ZopeInterface)
-                + Windows only: pywin32 (http://sourceforge.net/projects/pywin32) 
-    * Django (http://www.djangoproject.com)
-          o Version 1.2.1+ or latest subversion trunk highly recommended.
-          o PIL library (http://www.pythonware.com/products/pil) 
-
-To download/update Evennia:
-
-    * Mercurial (http://mercurial.selenic.com/)
-          o This is needed to download and update Evennia itself.
-
-Optional packages:
-
-    * South (http://south.aeracode.org/)
-          o Version 0.7+
-          o Optional. Used for database migrations. 
-    * Apache2 (http://httpd.apache.org)
-          o Optional. Most likely you'll not need to bother with this since Evennia 
-            runs its own threaded web server based on Twisted. Other equivalent web servers 
-            with a Python interpreter module can also be used. 
-
-
-Installation and Quickstart
----------------------------
-
-* Make sure you have/install the prerequsites listed above. 
-
-* Get a copy of the Evennia source through mercurial (hg):
+* Get a copy of the Evennia source:
   
-  >  hg clone https://code.google.com/p/evennia/ evennia
+    $ hg clone https://code.google.com/p/evennia/ evennia
 
-  Once you have downloaded, this is as much internet connectivity you need 
-  for trying out Evennia; you don't need to run any web server or to make 
-  anything visible online (that's for when you have a game created and
-  want people to join it). For now it runs just fine locally on your machine. 
-  (Use "hg pull" in the future to keep your code updated with latest Evennia
-  development)
+* Change to the evennia/game directory and run the setup scripts.
 
-* Change to the evennia/game directory and run
+    $ cd evennia/game 
    
-  >  python manage.py 
+    $ python manage.py 
   
-  This will create a settings.py file. You may override any of the default
-  values in src/config_defaults.py by pasting them into settings.py and
-  changing the values. Never edit src/config_defaults.py directly!
+* Edit the new game/settings.py if needed, then run 
+  (make sure to create an admin account when asked):
 
-* If you want to use anything other than the default SQLite setup, copy and
-  modify the database-related variables from src/config_defaults.py.
+    $ python manage.py syncdb 
 
-* Run 
- 
-  > python manage.py syncdb 
+* If you use django-south you need to also run
 
-  This sets up the database. Answer 'yes' to create an admin account. Supply 
-  a name, e-mail and password when prompted. Remember what you enter since 
-  they are used when you log into the server as admin. The name given will 
-  be the name of your admin character.
+    $ python manage.py migrate
 
-* Run   
 
-  > python evennia.py
+Starting Evennia 
+----------------
 
-  This will launch a menu with options. You normally want option 1 for production
-  servers, whereas options 2-4 offers more or less debug output to the screen. 
-
-  You can also start the server directly from the command line, e.g. with
-
-  > python evennia.py -i start
-
-  Note: Using -i starts the server and portal in 'interactive mode' - it will print 
-  messages to standard output. To start the server as a background process (suitable for production 
-  environments), just skip the -i flag. The server can be stopped with 'python evennia.py stop'. If
-  you don't give any argument to evennia.py, you will get a menu with all possibilities. 
+    $ python evennia.py -i start 
+  or 
+    $ python evennia.py
+   
+  for a menu of launch options.
+  See http://code.google.com/p/evennia/wiki/StartStopReload for more info.
 
 * Start up your MUD client of choice and point it to your server and port 4000.
   If you are just running locally the server name is 'localhost'.
