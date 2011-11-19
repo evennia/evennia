@@ -7,17 +7,17 @@ sessions etc.
 
 """
 
-from twisted.conch.telnet import StatefulTelnetProtocol
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
 from src.server.session import Session
+from src.server import ttype 
 from src.utils import utils, ansi 
 
-class TelnetProtocol(StatefulTelnetProtocol, Session):
+class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
     Each player connecting over telnet (ie using most traditional mud
     clients) gets a telnet protocol instance assigned to them.  All
     communication between game and player goes through here.
-    """
-
+    """    
     def connectionMade(self):
         """
         This is called when the connection is first 
@@ -26,9 +26,20 @@ class TelnetProtocol(StatefulTelnetProtocol, Session):
         # initialize the session
         client_address = self.transport.client        
         self.init_session("telnet", client_address, self.factory.sessionhandler)
+
+        # setup ttype 
+        self.ttype = ttype.Ttype(self)
+
         # add us to sessionhandler 
         self.sessionhandler.connect(self)
-        
+
+    def enableRemote(self, option): 
+        """
+        This sets up the options we allow for this protocol.
+        """
+        return (option == LINEMODE or
+                option == ttype.TTYPE)
+    
     def connectionLost(self, reason):
         """
         This is executed when the connection is lost for 
@@ -37,14 +48,34 @@ class TelnetProtocol(StatefulTelnetProtocol, Session):
         """            
         self.sessionhandler.disconnect(self)        
         self.transport.loseConnection()
-        
+
+    def dataReceived(self, data):
+        """
+        This method will split the incoming data depending on if it
+        starts with IAC (a telnet command) or not. All other data will
+        be handled in line mode.
+        """
+        # print "dataRcv:", data,
+        # try:
+        #     for b in data:
+        #         print ord(b),
+        #         if b == chr(24): print "ttype found!"
+        #     print ""
+        # except Exception, e:
+        #     print str(e) + ":", str(data)
+
+        if data and data[0] == IAC:
+            super(TelnetProtocol, self).dataReceived(data)
+        else:
+            StatefulTelnetProtocol.dataReceived(self, data)
+
     def lineReceived(self, string):
         """
         Telnet method called when data is coming in over the telnet 
         connection. We pass it on to the game engine directly.
         """        
         self.sessionhandler.data_in(self, string)
-
+            
     # Session hooks 
 
     def disconnect(self, reason=None):

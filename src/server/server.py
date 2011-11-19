@@ -158,7 +158,7 @@ class Evennia(object):
         """
         Outputs server startup info to the terminal.
         """
-        print _(' %(servername)s Portal (%(version)s) started.') % {'servername': SERVERNAME, 'version': VERSION}        
+        print _(' %(servername)s Server (%(version)s) started.') % {'servername': SERVERNAME, 'version': VERSION}        
         print '  amp (Portal): %s' % AMP_PORT
 
     def set_restart_mode(self, mode=None):

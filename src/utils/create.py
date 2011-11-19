@@ -404,6 +404,7 @@ def create_player(name, email, password,
         email = "dummy@dummy.com"
     if user:
         new_user = user
+        email = user.email
     else:
         if is_superuser:
             new_user = User.objects.create_superuser(name, email, password)
@@ -423,7 +424,6 @@ def create_player(name, email, password,
         if player_dbobj:
             new_db_player = player_dbobj
         else:
-            # create new database object 
             new_db_player = PlayerDB(db_key=name, user=new_user)
             new_db_player.save()
 
