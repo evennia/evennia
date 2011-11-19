@@ -1,4 +1,6 @@
 """
+TTYPE (MTTS) - Mud Terminal Type Standard
+
 This module implements the TTYPE telnet protocol as per
 http://tintin.sourceforge.net/mtts/. It allows the server to ask the
 client about its capabilities. If the client also supports TTYPE, it
@@ -42,9 +44,9 @@ class Ttype(object):
         self.protocol.protocol_flags['TTYPE'] = {}
 
         # setup protocol to handle ttype initialization and negotiation
-        self.protocol.negotiationMap[TTYPE] = self.negotiate_ttype                
+        self.protocol.negotiationMap[TTYPE] = self.do_ttype                
         # ask if client will ttype, connect callback if it does.
-        self.protocol.will(TTYPE).addCallbacks(self.negotiate_ttype, self.no_ttype)
+        self.protocol.will(TTYPE).addCallbacks(self.do_ttype, self.no_ttype)
 
     def no_ttype(self, option):
         """
@@ -52,7 +54,7 @@ class Ttype(object):
         """
         pass
 
-    def negotiate_ttype(self, option):
+    def do_ttype(self, option):
         """
         Handles negotiation of the ttype protocol once the 
         client has confirmed that it supports the ttype 

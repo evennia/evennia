@@ -7,9 +7,9 @@ sessions etc.
 
 """
 
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, DO, DONT
 from src.server.session import Session
-from src.server import ttype 
+from src.server import ttype, mccp
 from src.utils import utils, ansi 
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
@@ -27,8 +27,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client        
         self.init_session("telnet", client_address, self.factory.sessionhandler)
 
-        # setup ttype 
-        self.ttype = ttype.Ttype(self)
+        # setup ttype (client info)
+        #self.ttype = ttype.Ttype(self)
+
+        # setup mccp (data compression)
+        # self.mccp = mccp.Mccp(self) #TODO: mccp doesn't work quite right yet.
 
         # add us to sessionhandler 
         self.sessionhandler.connect(self)
@@ -38,7 +41,24 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         This sets up the options we allow for this protocol.
         """
         return (option == LINEMODE or
-                option == ttype.TTYPE)
+                option == ttype.TTYPE or
+                option == mccp.MCCP)
+
+    def enableLocal(self, option):
+        """
+        Allow certain options on this protocol
+        """
+        if option == mccp.MCCP:
+            #self.mccp.do_mccp(option)
+            return True 
+
+    def disableLocal(self, option):
+        if option == mccp.MCCP:
+            self.mccp.no_mccp(option)
+            return True 
+        else:
+            return super(TelnetProtocol, self).disableLocal(option)
+            
     
     def connectionLost(self, reason):
         """
@@ -58,8 +78,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # print "dataRcv:", data,
         # try:
         #     for b in data:
-        #         print ord(b),
-        #         if b == chr(24): print "ttype found!"
+        #         print ord(b),                
         #     print ""
         # except Exception, e:
         #     print str(e) + ":", str(data)
@@ -68,6 +87,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             super(TelnetProtocol, self).dataReceived(data)
         else:
             StatefulTelnetProtocol.dataReceived(self, data)
+            
+    def _write(self, byt):
+        "hook overloading the one used in plain telnet"
+        #print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in byt))
+        super(TelnetProtocol, self)._write(mccp.mccp_compress(self, byt))
+
+    def sendLine(self, line):
+        "hook overloading the one used linereceiver"
+        #print "sendLine (%s):\n%s" % (self.state, line)
+        super(TelnetProtocol, self).sendLine(mccp.mccp_compress(self, line))
 
     def lineReceived(self, string):
         """
