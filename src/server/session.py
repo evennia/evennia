@@ -36,7 +36,7 @@ class Session(object):
     _attrs_to_sync = ['protocol_key', 'address', 'suid', 'sessid', 'uid', 'uname', 
                       'logged_in', 'cid', 'encoding', 
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total', 
-                      'protocol_flags', 'server_data']    
+                      'server_data']    
     
     def init_session(self, protocol_key, address, sessionhandler):
         """

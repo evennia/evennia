@@ -48,7 +48,6 @@ class Mssp(object):
         """
         This is the normal operation.
         """
-        print "no mssp"
         pass
 
     def do_mssp(self, option):
@@ -182,6 +181,3 @@ class Mssp(object):
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)
-
-
-

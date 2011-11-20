@@ -47,7 +47,7 @@ class Ttype(object):
         self.protocol.negotiationMap[TTYPE] = self.do_ttype                
         # ask if client will ttype, connect callback if it does.
         self.protocol.will(TTYPE).addCallbacks(self.do_ttype, self.no_ttype)
-
+        
     def no_ttype(self, option):
         """
         Callback if ttype is not supported by client. 
@@ -79,7 +79,7 @@ class Ttype(object):
             elif self.ttype_step == 3:
                 self.protocol.protocol_flags['TTYPE']['TERM'] = option
                 self.protocol.requestNegotiation(TTYPE, SEND)
-            elif self.ttype_step == 4 and option.startswith('MTTS'):                
+            elif self.ttype_step == 4:                
                 option = int(option.strip('MTTS '))
                 self.protocol.protocol_flags['TTYPE']['MTTS'] = option                
                 for codenum, standard in MTTS: 

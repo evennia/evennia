@@ -36,9 +36,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # negotiate mssp (crawler communication)
         self.mssp = mssp.Mssp(self)
-
-        # add us to sessionhandler 
-        self.sessionhandler.connect(self)
+        
+        # add this new connection to sessionhandler so 
+        # the Server becomes aware of it. 
+        self.sessionhandler.connect(self)        
+    
 
     def enableRemote(self, option): 
         """
@@ -137,8 +139,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             string = utils.to_str(string, encoding=self.encoding)                                                      
         except Exception, e:                                                                                           
             self.sendLine(str(e))                                                                                      
-            return                                                                                                     
-        nomarkup = False
+            return 
+        xterm256 = self.protocol_flags.get('TTYPE', {}).get('256 COLORS')
+        nomarkup = not (xterm256 or not self.protocol_flags.get('TTYPE') 
+                        or self.protocol_flags.get('TTYPE', {}).get('ANSI'))
         raw = False                                                                                                    
         if type(data) == dict:                                                                                         
             # check if we want escape codes to go through unparsed.
@@ -147,5 +151,5 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             nomarkup = data.get("nomarkup", False)
         if raw:                                                                                                        
             self.sendLine(string)                                                                                      
-        else:                                                                                                          
-            self.sendLine(ansi.parse_ansi(string, strip_ansi=nomarkup))
+        else:
+            self.sendLine(ansi.parse_ansi(string, strip_ansi=nomarkup, xterm256=xterm256))

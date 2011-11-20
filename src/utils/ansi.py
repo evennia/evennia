@@ -16,51 +16,45 @@ user.
 import re
 from src.utils import utils
 
-class ANSITable(object):
-    """
-    A table defining the 
-    standard ANSI command sequences.
+# ANSI definitions 
 
-    """
-    ansi = {}
-    ansi["beep"] = "\07"
-    ansi["escape"] = "\033"
-    ansi["normal"] = "\033[0m"
+ANSI_BEEP = "\07"
+ANSI_ESCAPE = "\033"
+ANSI_NORMAL = "\033[0m"
     
-    ansi["underline"] = "\033[4m"
-    ansi["hilite"] = "\033[1m"
-    ansi["blink"] = "\033[5m"
-    ansi["inverse"] = "\033[7m"
-    ansi["inv_hilite"] = "\033[1;7m"
-    ansi["inv_blink"] = "\033[7;5m"
-    ansi["blink_hilite"] = "\033[1;5m"
-    ansi["inv_blink_hilite"] = "\033[1;5;7m"
+ANSI_UNDERLINE = "\033[4m"
+ANSI_HILITE = "\033[1m"
+ANSI_BLINK = "\033[5m"
+ANSI_INVERSE = "\033[7m"
+ANSI_INV_HILITE = "\033[1;7m"
+ANSI_INV_BLINK = "\033[7;5m"
+ANSI_BLINK_HILITE = "\033[1;5m"
+ANSI_INV_BLINK_HILITE = "\033[1;5;7m"
     
-    # Foreground colors
-    ansi["black"] = "\033[30m"
-    ansi["red"] = "\033[31m"
-    ansi["green"] = "\033[32m"
-    ansi["yellow"] = "\033[33m"
-    ansi["blue"] = "\033[34m"
-    ansi["magenta"] = "\033[35m"
-    ansi["cyan"] = "\033[36m"
-    ansi["white"] = "\033[37m"
+# Foreground colors
+ANSI_BLACK = "\033[30m"
+ANSI_RED = "\033[31m"
+ANSI_GREEN = "\033[32m"
+ANSI_YELLOW = "\033[33m"
+ANSI_BLUE = "\033[34m"
+ANSI_MAGENTA = "\033[35m"
+ANSI_CYAN = "\033[36m"
+ANSI_WHITE = "\033[37m"
     
-    # Background colors
-    ansi["back_black"] = "\033[40m"
-    ansi["back_red"] = "\033[41m"
-    ansi["back_green"] = "\033[42m"
-    ansi["back_yellow"] = "\033[43m"
-    ansi["back_blue"] = "\033[44m"
-    ansi["back_magenta"] = "\033[45m"
-    ansi["back_cyan"] = "\033[46m"
-    ansi["back_white"] = "\033[47m"
+# Background colors
+ANSI_BACK_BLACK = "\033[40m"
+ANSI_BACK_RED = "\033[41m"
+ANSI_BACK_GREEN = "\033[42m"
+ANSI_BACK_YELLOW = "\033[43m"
+ANSI_BACK_BLUE = "\033[44m"
+ANSI_BACK_MAGENTA = "\033[45m"
+ANSI_BACK_CYAN = "\033[46m"
+ANSI_BACK_WHITE = "\033[47m"
     
-    # Formatting Characters
-    ansi["return"] = "\r\n"
-    ansi["tab"] = "\t"
-    ansi["space"] = " "
-    
+# Formatting Characters
+ANSI_RETURN = "\r\n"
+ANSI_TAB = "\t"
+ANSI_SPACE = " "
 
 class ANSIParser(object):
     """
@@ -74,64 +68,132 @@ class ANSIParser(object):
         # MUX-style mappings %cr %cn etc
 
         self.mux_ansi_map = [
-            (r'%r',  ANSITable.ansi["return"]),
-            (r'%t',  ANSITable.ansi["tab"]),
-            (r'%b',  ANSITable.ansi["space"]),
-            (r'%cf', ANSITable.ansi["blink"]),
-            (r'%ci', ANSITable.ansi["inverse"]),
-            (r'%ch', ANSITable.ansi["hilite"]),
-            (r'%cn', ANSITable.ansi["normal"]),
-            (r'%cx', ANSITable.ansi["black"]),
-            (r'%cX', ANSITable.ansi["back_black"]),
-            (r'%cr', ANSITable.ansi["red"]),
-            (r'%cR', ANSITable.ansi["back_red"]),
-            (r'%cg', ANSITable.ansi["green"]),
-            (r'%cG', ANSITable.ansi["back_green"]),
-            (r'%cy', ANSITable.ansi["yellow"]),
-            (r'%cY', ANSITable.ansi["back_yellow"]),
-            (r'%cb', ANSITable.ansi["blue"]),
-            (r'%cB', ANSITable.ansi["back_blue"]),
-            (r'%cm', ANSITable.ansi["magenta"]),
-            (r'%cM', ANSITable.ansi["back_magenta"]),
-            (r'%cc', ANSITable.ansi["cyan"]),
-            (r'%cC', ANSITable.ansi["back_cyan"]),
-            (r'%cw', ANSITable.ansi["white"]),
-            (r'%cW', ANSITable.ansi["back_white"]),
+            (r'%r',  ANSI_RETURN),
+            (r'%t',  ANSI_TAB),
+            (r'%b',  ANSI_SPACE),
+            (r'%cf', ANSI_BLINK),
+            (r'%ci', ANSI_INVERSE),
+            (r'%ch', ANSI_HILITE),
+            (r'%cn', ANSI_NORMAL),
+            (r'%cx', ANSI_BLACK),
+            (r'%cX', ANSI_BACK_BLACK),
+            (r'%cr', ANSI_RED),
+            (r'%cR', ANSI_BACK_RED),
+            (r'%cg', ANSI_GREEN),
+            (r'%cG', ANSI_BACK_GREEN),
+            (r'%cy', ANSI_YELLOW),
+            (r'%cY', ANSI_BACK_YELLOW),
+            (r'%cb', ANSI_BLUE),
+            (r'%cB', ANSI_BACK_BLUE),
+            (r'%cm', ANSI_MAGENTA),
+            (r'%cM', ANSI_BACK_MAGENTA),
+            (r'%cc', ANSI_CYAN),
+            (r'%cC', ANSI_BACK_CYAN),
+            (r'%cw', ANSI_WHITE),
+            (r'%cW', ANSI_BACK_WHITE),
             ]
 
         # Expanded mapping {r {n etc
 
-        hilite = ANSITable.ansi['hilite']
-        normal = ANSITable.ansi['normal']
+        hilite = ANSI_HILITE
+        normal = ANSI_NORMAL
         self.ext_ansi_map = [
-            (r'{r', hilite + ANSITable.ansi['red']),    
-            (r'{R', normal + ANSITable.ansi['red']),    
-            (r'{g', hilite + ANSITable.ansi['green']),
-            (r'{G', normal + ANSITable.ansi['green']),
-            (r'{y', hilite + ANSITable.ansi['yellow']),
-            (r'{Y', normal + ANSITable.ansi['yellow']),
-            (r'{b', hilite + ANSITable.ansi['blue']),
-            (r'{B', normal + ANSITable.ansi['blue']),
-            (r'{m', hilite + ANSITable.ansi['magenta']),
-            (r'{M', normal + ANSITable.ansi['magenta']),
-            (r'{c', hilite + ANSITable.ansi['cyan']),
-            (r'{C', normal + ANSITable.ansi['cyan']),
-            (r'{w', hilite + ANSITable.ansi['white']), #white
-            (r'{W', normal + ANSITable.ansi['white']), #light grey
-            (r'{x', hilite + ANSITable.ansi['black']), #dark grey
-            (r'{X', normal + ANSITable.ansi['black']), #pure black
-            (r'{n', normal)                            #reset
+            (r'{r', hilite + ANSI_RED),
+            (r'{R', normal + ANSI_RED),
+            (r'{g', hilite + ANSI_GREEN),
+            (r'{G', normal + ANSI_GREEN),
+            (r'{y', hilite + ANSI_YELLOW),
+            (r'{Y', normal + ANSI_YELLOW),
+            (r'{b', hilite + ANSI_BLUE),
+            (r'{B', normal + ANSI_BLUE),
+            (r'{m', hilite + ANSI_MAGENTA),
+            (r'{M', normal + ANSI_MAGENTA),
+            (r'{c', hilite + ANSI_CYAN),
+            (r'{C', normal + ANSI_CYAN),
+            (r'{w', hilite + ANSI_WHITE), # pure white 
+            (r'{W', normal + ANSI_WHITE), #light grey
+            (r'{x', hilite + ANSI_BLACK), #dark grey
+            (r'{X', normal + ANSI_BLACK), #pure black
+            (r'{n', normal)               #reset
             ] 
         
-        self.ansi_map = self.mux_ansi_map + self.ext_ansi_map
+        # xterm256
+
+        self.xterm256_map = [
+            (r'%c([1-5]{3})', self.parse_rgb),
+            (r'%c(b[1-5]{3})', self.parse_rgb),
+            (r'{([1-5]{3})', self.parse_rgb),
+            (r'{(b[1-5]{3})', self.parse_rgb)
+            ]
+                
+        # obs - order matters here, we want to do the xterms first since 
+        # they collide with some of the other mappings otherwise. 
+        self.ansi_map = self.xterm256_map + self.mux_ansi_map + self.ext_ansi_map 
 
         # prepare regex matching
         self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
                          for sub in self.ansi_map]
+
         # prepare matching ansi codes overall
         self.ansi_regex = re.compile("\033\[[0-9;]+m")
 
-    def parse_ansi(self, string, strip_ansi=False):
+    def parse_rgb(self, rgbmatch):
+        """
+        This is a replacer method called by re.sub with the matched
+        tag. It must return the correct ansi sequence. 
+
+        It checks self.do_xterm256 to determine if conversion
+        to standard ansi should be done or not. 
+        """
+        if not rgbmatch:
+            return ""
+        rgbtag = rgbmatch.groups()[0]
+
+        background = rgbtag[0] == 'b'
+        if background:
+            red, green, blue = int(rgbtag[1]), int(rgbtag[2]), int(rgbtag[3])
+        else:
+            red, green, blue = int(rgbtag[0]), int(rgbtag[1]), int(rgbtag[2])
+            
+        if self.do_xterm256:            
+            colval = 16 + (red * 36) + (green * 6) + blue
+            return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval/100, (colval%100)/10, colval%10)
+        else:
+            # xterm256 not supported, convert the rgb value to ansi instead
+            if red == green and red == blue and red < 2:
+                if background: return ANSI_BACK_BLACK
+                elif red >= 1: return ANSI_HILITE + ANSI_BLACK
+                else: return ANSO_NORMAL + ANSI_BLACK
+            elif red == green and red == blue:
+                if background: return ANSI_BACK_WHITE
+                elif red >= 4: return ANSI_HILITE + ANSI_WHITE
+                else: return ANSI_NORMAL + ANSI_WHITE
+            elif red > green and red > blue:
+                if background: return ANSI_BACK_RED
+                elif red >= 3: return ANSI_HILITE + ANSI_RED
+                else: return ANSI_NORMAL + ANSI_RED
+            elif red == green and red > blue:
+                if background: return ANSI_BACK_YELLOW
+                elif red >= 3: return ANSI_HILITE + ANSI_YELLOW
+                else: return ANSI_NORMAL + ANSI_YELLOW
+            elif red == blue and red > green:
+                if background: return ANSI_BACK_MAGENTA
+                elif red >= 3: return ANSI_HILITE + ANSI_MAGENTA
+                else: return ANSI_NORMAL + ANSI_MAGENTA
+            elif green > blue:
+                if background: return ANSI_BACK_GREEN
+                elif green >= 3: return ANSI_HILITE + ANSI_GREEN
+                else: return ANSI_NORMAL + ANSI_GREEN
+            elif green == blue:
+                if background: return ANSI_BACK_CYAN
+                elif green >= 3: return ANSI_HILITE + ANSI_CYAN
+                else: return ANSI_NORMAL + ANSI_CYAN
+            else:    # mostly blue
+                if background: return ANSI_BACK_BLUE
+                elif blue >= 3: return ANSI_HILITE + ANSI_BLUE
+                else: return ANSI_NORMAL + ANSI_BLUE
+
+    def parse_ansi(self, string, strip_ansi=False, xterm256=False):
         """
         Parses a string, subbing color codes according to
         the stored mapping. 
@@ -142,6 +204,9 @@ class ANSIParser(object):
         if not string:
             return ''
         string = utils.to_str(string)
+
+        self.do_xterm256 = xterm256
+        # handle all subs 
         for sub in self.ansi_sub:
             # go through all available mappings and translate them
             string = sub[0].sub(sub[1], string)
@@ -150,7 +215,6 @@ class ANSIParser(object):
             string = self.ansi_regex.sub("", string)
         return string 
 
-
             
 ANSI_PARSER = ANSIParser()
 
@@ -158,11 +222,11 @@ ANSI_PARSER = ANSIParser()
 # Access function
 #
 
-def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER):
+def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False):
     """
     Parses a string, subbing color codes as needed.
 
     """
-    return parser.parse_ansi(string, strip_ansi=strip_ansi)
+    return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256)
 
 

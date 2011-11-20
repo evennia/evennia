@@ -6,58 +6,42 @@ This is a IMC2 complacent version.
 """
 
 import re
-from src.utils.ansi import ANSIParser, ANSITable, parse_ansi
+from src.utils import ansi
 
-class IMCANSIParser(ANSIParser):
+class IMCANSIParser(ansi.ANSIParser):
     """
     This parser is per the IMC2 specification.
     """
     def __init__(self):
+        normal = ansi.ANSI_NORMAL
+        hilite = ansi.ANSI_HILITE 
         self.ansi_map = [
-            # Random
-            (r'~Z', ANSITable.ansi["normal"]),
-            # Dark Grey
-            (r'~D', ANSITable.ansi["hilite"] + ANSITable.ansi["black"]),
-            (r'~z', ANSITable.ansi["hilite"] + ANSITable.ansi["black"]),
-            # Grey/reset
-            (r'~w', ANSITable.ansi["normal"]),
-            (r'~d', ANSITable.ansi["normal"]),
-            (r'~!', ANSITable.ansi["normal"]),
-            # Bold/hilite
-            (r'~L', ANSITable.ansi["hilite"]),
-            # White
-            (r'~W', ANSITable.ansi["normal"] + ANSITable.ansi["hilite"]),
-            # Dark Green
-            (r'~g', ANSITable.ansi["normal"] + ANSITable.ansi["green"]),
-            # Green
-            (r'~G', ANSITable.ansi["hilite"] + ANSITable.ansi["green"]),
-            # Dark magenta
-            (r'~p', ANSITable.ansi["normal"] + ANSITable.ansi["magenta"]),
-            (r'~m', ANSITable.ansi["normal"] + ANSITable.ansi["magenta"]),
-            # Magenta
-            (r'~M', ANSITable.ansi["hilite"] + ANSITable.ansi["magenta"]),
-            (r'~P', ANSITable.ansi["hilite"] + ANSITable.ansi["magenta"]),
-            # Black
-            (r'~x', ANSITable.ansi["normal"] + ANSITable.ansi["black"]),
-            # Cyan
-            (r'~c', ANSITable.ansi["normal"] + ANSITable.ansi["cyan"]),
-            # Dark Yellow (brown)
-            (r'~Y', ANSITable.ansi["hilite"] + ANSITable.ansi["yellow"]),
-            # Yellow
-            (r'~y', ANSITable.ansi["normal"] + ANSITable.ansi["yellow"]),
-            # Dark Blue
-            (r'~B', ANSITable.ansi["normal"] + ANSITable.ansi["blue"]),
-            # Blue
-            (r'~C', ANSITable.ansi["hilite"] + ANSITable.ansi["blue"]),
-            # Dark Red
-            (r'~r', ANSITable.ansi["normal"] + ANSITable.ansi["red"]),
-            # Red
-            (r'~R', ANSITable.ansi["normal"] + ANSITable.ansi["red"]),
-            # Dark Blue
-            (r'~b', ANSITable.ansi["normal"] + ANSITable.ansi["blue"]),
+            (r'~Z', normal), # Random            
+            (r'~x', normal + ansi.ANSI_BLACK),   # Black
+            (r'~D', hilite + ansi.ANSI_BLACK),   # Dark Grey
+            (r'~z', hilite + ansi.ANSI_BLACK),
+            (r'~w', normal + ansi.ANSI_WHITE),   # Grey
+            (r'~W', hilite + ansi.ANSI_WHITE),   # White
+            (r'~g', normal + ansi.ANSI_GREEN),   # Dark Green
+            (r'~G', hilite + ansi.ANSI_GREEN),   # Green
+            (r'~p', normal + ansi.ANSI_MAGENTA), # Dark magenta
+            (r'~m', normal + ansi.ANSI_MAGENTA),           
+            (r'~M', hilite + ansi.ANSI_MAGENTA), # Magenta
+            (r'~P', hilite + ansi.ANSI_MAGENTA),
+            (r'~c', normal + ansi.ANSI_CYAN),    # Cyan
+            (r'~y', normal + ansi.ANSI_YELLOW),  # Dark Yellow (brown)
+            (r'~Y', hilite + ansi.ANSI_YELLOW),  # Yellow             
+            (r'~b', normal + ansi.ANSI_BLUE),    # Dark Blue
+            (r'~B', hilite + ansi.ANSI_BLUE),    # Blue
+            (r'~C', hilite + ansi.ANSI_BLUE),    
+            (r'~r', normal + ansi.ANSI_RED),     # Dark Red
+            (r'~R', hilite + ansi.ANSI_RED),     # Red 
+
             ## Formatting
-            (r'\\r', ANSITable.ansi["normal"]),
-            (r'\\n', ANSITable.ansi["return"]),
+            (r'~L', hilite),                     # Bold/hilite
+            (r'~!', normal),                     # reset 
+            (r'\\r', normal),
+            (r'\\n', ansi.ANSI_RETURN),
         ]
         # prepare regex matching
         self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
