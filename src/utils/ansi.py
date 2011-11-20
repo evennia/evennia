@@ -117,13 +117,13 @@ class ANSIParser(object):
             (r'{n', normal)               #reset
             ] 
         
-        # xterm256
+        # xterm256 {123, %c134, 
 
         self.xterm256_map = [
-            (r'%c([1-5]{3})', self.parse_rgb),
-            (r'%c(b[1-5]{3})', self.parse_rgb),
-            (r'{([1-5]{3})', self.parse_rgb),
-            (r'{(b[1-5]{3})', self.parse_rgb)
+            (r'%c([1-5]{3})', self.parse_rgb),  # %c123 - foreground colour
+            (r'%c(b[1-5]{3})', self.parse_rgb), # %cb123 - background colour
+            (r'{([1-5]{3})', self.parse_rgb),   # {123 - foreground colour
+            (r'{(b[1-5]{3})', self.parse_rgb)   # {b123 - background colour
             ]
                 
         # obs - order matters here, we want to do the xterms first since 
