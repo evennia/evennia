@@ -9,7 +9,8 @@ sessions etc.
 
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, DO, DONT
 from src.server.session import Session
-from src.server import ttype, mccp
+from src.server import ttype, mssp
+from src.server.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi 
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
@@ -27,11 +28,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client        
         self.init_session("telnet", client_address, self.factory.sessionhandler)
 
-        # setup ttype (client info)
-        #self.ttype = ttype.Ttype(self)
+        # negotiate mccp (data compression)
+        self.mccp = Mccp(self) 
+        
+        # negotiate ttype (client info)
+        self.ttype = ttype.Ttype(self)
 
-        # setup mccp (data compression)
-        # self.mccp = mccp.Mccp(self) #TODO: mccp doesn't work quite right yet.
+        # negotiate mssp (crawler communication)
+        self.mssp = mssp.Mssp(self)
 
         # add us to sessionhandler 
         self.sessionhandler.connect(self)
@@ -42,18 +46,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         return (option == LINEMODE or
                 option == ttype.TTYPE or
-                option == mccp.MCCP)
+                option == MCCP or 
+                option == mssp.MSSP)
 
     def enableLocal(self, option):
         """
         Allow certain options on this protocol
         """
-        if option == mccp.MCCP:
-            #self.mccp.do_mccp(option)
-            return True 
+        return option == MCCP
 
     def disableLocal(self, option):
-        if option == mccp.MCCP:
+        if option == MCCP:
             self.mccp.no_mccp(option)
             return True 
         else:
@@ -84,19 +87,26 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         #     print str(e) + ":", str(data)
 
         if data and data[0] == IAC:
-            super(TelnetProtocol, self).dataReceived(data)
-        else:
-            StatefulTelnetProtocol.dataReceived(self, data)
+            try:
+                super(TelnetProtocol, self).dataReceived(data)
+                return 
+            except Exception:
+                pass
+        StatefulTelnetProtocol.dataReceived(self, data)
             
-    def _write(self, byt):
+    def _write(self, data):
         "hook overloading the one used in plain telnet"
-        #print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in byt))
-        super(TelnetProtocol, self)._write(mccp.mccp_compress(self, byt))
+        #print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in data))        
+        data = data.replace('\n', '\r\n')
+        super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
     def sendLine(self, line):
-        "hook overloading the one used linereceiver"
+        "hook overloading the one used by linereceiver"        
         #print "sendLine (%s):\n%s" % (self.state, line)
-        super(TelnetProtocol, self).sendLine(mccp.mccp_compress(self, line))
+        #escape IAC in line mode, and correctly add \r\n
+        line += self.delimiter
+        line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+        return self.transport.write(mccp_compress(self, line))
 
     def lineReceived(self, string):
         """
@@ -105,6 +115,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """        
         self.sessionhandler.data_in(self, string)
             
+
     # Session hooks 
 
     def disconnect(self, reason=None):

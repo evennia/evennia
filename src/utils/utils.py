@@ -604,25 +604,45 @@ def mod_import(mod_path, propname=None):
         return mod_prop
     return mod 
 
-def string_from_module(modpath, variable=None):
+def variable_from_module(modpath, variable, default=None):
     """
-    This obtains a string from a given module python path. 
-    The variable must be global within that module - that is, defined in
-    the outermost scope of the module. The value of the 
-    variable will be returned. If not found (or if it's not a string), 
-    None is returned. 
+    Retrieve a given variable from a module. The variable must be
+    defined globally in the module. This can be used to implement
+    arbitrary plugin imports in the server. 
 
-    This is useful primarily for storing various game strings
-    in a module and extract them by name or randomly. 
+    If module cannot be imported or variable not found, default
+    is returned.
+    """
+    try:
+        mod = __import__(modpath, fromlist=["None"])
+        return mod.__dict__.get(variable, default)
+    except ImportError:
+        return default
+
+def string_from_module(modpath, variable=None, default=None):
+    """
+    This is a variation used primarily to get login screens randomly
+    from a module.
+
+    This obtains a string from a given module python path.  Using a
+    specific variable name will also retrieve non-strings.
+    
+    The variable must be global within that module - that is, defined
+    in the outermost scope of the module. The value of the variable
+    will be returned. If not found, default is returned. If no variable is
+    given, a random string variable is returned.
+
+    This is useful primarily for storing various game strings in a
+    module and extract them by name or randomly.
     """
     mod = __import__(modpath, fromlist=[None])
     if variable:
-        return mod.__dict__.get(variable, None)
+        return mod.__dict__.get(variable, default)
     else:
         mvars = [val for key, val in mod.__dict__.items() 
                  if not key.startswith('_') and isinstance(val, basestring)]    
         if not mvars:
-            return None
+            return default
         return mvars[random.randint(0, len(mvars)-1)]
 
 def init_new_player(player):

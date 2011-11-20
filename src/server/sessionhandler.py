@@ -89,6 +89,7 @@ class ServerSessionHandler(SessionHandler):
         """
         self.sessions = {}
         self.server = None 
+        self.server_data = {"servername":settings.SERVERNAME}
 
     def portal_connect(self, sessid, session):
         """
@@ -333,6 +334,16 @@ class PortalSessionHandler(SessionHandler):
         self.portal = None 
         self.sessions = {}
         self.latest_sessid = 0
+        self.uptime = time.time()
+        self.connection_time = 0
+
+    def at_server_connection(self):
+        """
+        Called when the Portal establishes connection with the
+        Server. At this point, the AMP connection is already
+        established.
+        """
+        self.connection_time = time.time() 
 
     def connect(self, session):
         """
@@ -372,6 +383,14 @@ class PortalSessionHandler(SessionHandler):
         for session in self.sessions.values():            
             session.disconnect(reason)
             del session        
+
+
+    def count_loggedin(self, include_unloggedin=False):
+        """
+        Count loggedin connections, alternatively count all connections.
+        """
+        return len(self.get_sessions(include_unloggedin=include_unloggedin))
+        
 
     def session_from_suid(self, suid):
         """

@@ -7,10 +7,12 @@ http://tintin.sourceforge.net/mccp/. MCCP allows for the server to
 compress data when sending to supporting clients, reducing bandwidth
 by 70-90%.. The compression is done using Python's builtin zlib
 library. If the client doesn't support MCCP, server sends uncompressed
-instead.  Note: On modern hardware you are not likely to notice the
+as normal.  Note: On modern hardware you are not likely to notice the
 effect of MCCP unless you have extremely heavy traffic or sits on a
 terribly slow connection.
 
+This protocol is implemented by the telnet protocol importing
+mccp_compress and calling it from its write methods. 
 """
 import zlib 
 
@@ -21,8 +23,7 @@ FLUSH = zlib.Z_SYNC_FLUSH
 def mccp_compress(protocol, data):
     "Handles zlib compression, if applicable"        
     if hasattr(protocol, 'zlib'):
-        data = protocol.zlib.compress(data)
-        data += protocol.zlib.flush(FLUSH)
+        return protocol.zlib.compress(data) + protocol.zlib.flush(FLUSH)
     return data 
 
 class Mccp(object):
@@ -47,8 +48,7 @@ class Mccp(object):
     def no_mccp(self, option):
         """
         If client doesn't support mccp, don't do anything.
-        """        
-        print "deactivating mccp ..."
+        """                
         if hasattr(self.protocol, 'zlib'):
             del self.protocol.zlib
         self.protocol.protocol_flags['MCCP'] = False 
@@ -58,7 +58,6 @@ class Mccp(object):
         The client supports MCCP. Set things up by 
         creating a zlib compression stream.         
         """                       
-        print "activating mccp ..."
         self.protocol.protocol_flags['MCCP'] = True 
         self.protocol.requestNegotiation(MCCP, '')
         self.protocol.zlib = zlib.compressobj(9)

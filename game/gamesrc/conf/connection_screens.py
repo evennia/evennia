@@ -16,9 +16,9 @@
 # reboot or reload the server to make them available.
 #
 
+from src.utils import utils 
 from src.commands.connection_screen import DEFAULT_SCREEN
 
-#from src.utils import utils
 #
 # CUSTOM_SCREEN = \
 # """{b=============================================================={n
@@ -32,10 +32,8 @@ from src.commands.connection_screen import DEFAULT_SCREEN
 # Enter {whelp{n for more info. {wlook{n will re-load this screen.
 #{b=============================================================={n""" % utils.get_evennia_version()
 
-
 # # A suggested alternative screen for the Menu login system
 
-# from src.utils import utils
 # MENU_SCREEN = \
 # """{b=============================================================={n
 #  Welcome to {gEvennnia{n, version %s! 

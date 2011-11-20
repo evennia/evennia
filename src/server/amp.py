@@ -210,14 +210,14 @@ class AMPProtocol(amp.AMP):
         """
         if hasattr(self.factory, "portal"):
             sessdata = self.factory.portal.sessions.get_all_sync_data()
-            print sessdata
+            #print sessdata
             self.call_remote_ServerAdmin(0, 
                                          "PSYNC", 
                                          data=sessdata)
             if get_restart_mode(SERVER_RESTART):
                 msg = _(" ... Server restarted.")
                 self.factory.portal.sessions.announce_all(msg)
-
+            self.factory.portal.sessions.at_server_connection()
           
     # Error handling 
 

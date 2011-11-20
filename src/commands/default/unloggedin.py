@@ -237,13 +237,13 @@ class CmdUnconnectedLook(MuxCommand):
             string = ansi.parse_ansi(screen)
             self.caller.msg(string)
         except Exception, e:
-            self.caller.msg(e)
+            self.caller.msg("Error in CONNECTION_SCREEN MODULE: " + str(e))
             self.caller.msg("Connect screen not found. Enter 'help' for aid.")
 
 class CmdUnconnectedHelp(MuxCommand):
     """
     This is an unconnected version of the help command,
-    for simplicity. It shows a pane or info. 
+    for simplicity. It shows a pane of info. 
     """
     key = "help"
     aliases = ["h", "?"]
