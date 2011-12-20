@@ -621,7 +621,7 @@ non-commands as text input.
 -  New session connection ('cmdhandler.CMD\_LOGINSTART'). This command
    name should be put in the ``settings.CMDSET_UNLOGGEDIN``. Whenever a
    new connection is established, this command is always called on the
-   the server (default is to show the login screen).
+   server (default is to show the login screen).
 
 Below is an example of redefining what happens when the player don't
 give any input (e.g. just presses return). Of course the new system

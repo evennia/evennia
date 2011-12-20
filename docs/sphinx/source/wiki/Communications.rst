@@ -33,14 +33,8 @@ Properties defined on ``Msg``
    to.
 -  ``channels`` - a list of target Channels to send to.
 -  ``message`` - the actual text being sent
--  ``date_sent`` - when message was sent.
+-  ``date_sent`` - when message was sent (auto-created).
 -  ``locks`` - a `lock definition <Locks.html>`_.
-
-The following is currently unimplemented in Evennia (stay tuned):
-
--  hide*from*sender - bool if message should be hidden from sender
--  hide*from*receivers - list of receiver objects to hide message from
--  hide*from*channels - list of channels objects to hide message from
 
 You create new messages in code using
 ``src.utils.create.create_message.``
@@ -64,7 +58,9 @@ There are three default channels created in stock Evennia - ``MUDinfo``,
 ``MUDconnections`` and ``Public``. Two first ones are server-related
 messages meant for Admins, the last one is open to everyone to chat on
 (all new players are automatically joined to it when logging in, useful
-for asking questions).
+for asking questions). The default channels created are defined by
+``settings.CHANNEL_PUBLIC``, ``settings.CHANNEL_MUDINFO`` and
+``settings.CHANNEL_CONNECTINFO``.
 
 You create new channels with ``src.utils.create.create_channel()``.
 

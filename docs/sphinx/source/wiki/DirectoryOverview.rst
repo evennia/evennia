@@ -24,7 +24,10 @@ up-to-date documentation is the online wiki however.
 
 Read ``sphinx/README`` for instructions on building the ReST
 documentation, based on a current snapshot of the wiki. This can be
-browsed offline or made into a PDF for printing etc.
+browsed offline or made into a PDF for printing etc. Since these files
+are automatically converted directly from the wiki files, there may be
+formatting problems here and there, especially if trying to convert to
+printable format.
 
 You can create the Evennia *autodocs* by following the instructions in
 ``doxygen/README``. This will make use of the source code itself to
@@ -66,22 +69,14 @@ the server.
       evennia.py
       manage.py  gamesrc/
         commands/ 
-          basecommand.py
-          basecmdset.py
           examples/
-            cmdset_red_button.py
         scripts/
-          basescript.py
           examples/
-            red_button_sripts.py
         objects/
-          baseobjects.py
           examples/
-            red_button.py
         world/     
           examples/
-            batch_cmds.ev
-            batch_code.py
+        conf/
 
 ``game/gamesrc/``
 ~~~~~~~~~~~~~~~~~
@@ -126,24 +121,34 @@ Button* object itself.
 ``gamesrc/world/``
 ^^^^^^^^^^^^^^^^^^
 
-``gamesrc/world/``, finally, contains all the rest that make up your
-world. This is where you would put your own custom economic system,
-combat mechanic, emote-parser or what have you; organized in whatever
-way you like. Just remember that if you create new folders under
-``world``, they must contain an empty file ``__init__.py``, or Python
-will not know how to import modules from them. The ``world`` folder is
-also where Evennia's `batch processors <BatchProcessors.html>`_ by
-default look for their input files. These allow you to build your world
-offline using your favourite text editor rather than have to do it
-online over a command line. The `Batch-Command
-processor <BatchCommandProcessor.html>`_ expects files ending with
-``.ev``, whereas the more advanced `Batch-Code
+``gamesrc/world/``, contains all the rest that make up your world. This
+is where you would put your own custom economic system, combat mechanic,
+emote-parser or what have you; organized in whatever way you like. Just
+remember that if you create new folders under ``world``, they must
+contain an empty file ``__init__.py``, or Python will not know how to
+import modules from them. The ``world`` folder is also where Evennia's
+`batch processors <BatchProcessors.html>`_ by default look for their
+input files. These allow you to build your world offline using your
+favourite text editor rather than have to do it online over a command
+line. The `Batch-Command processor <BatchCommandProcessor.html>`_
+expects files ending with ``.ev``, whereas the more advanced `Batch-Code
 processor <BatchCodeProcessor.html>`_ takes ``.py`` with some special
 formatting.
 
 ``world/examples/`` contains one batch file for each processor. Each
 creates a *Red Button* object in *Limbo* using their respective special
 syntax.
+
+``gamesrc/conf/``
+^^^^^^^^^^^^^^^^^
+
+``gamesrc/world/`` holds optional extension modules for the Evennia
+engine. Certain functionality in the server is meant to be extended, and
+in order to allow you to do this without modifying the server itself, it
+imports files from this directory. Modifying these are optionally and
+you can usually change a variable in ``game/settings.py`` to change
+which module Evennia is looking for. There are dummy example files in
+here, read their headers for usage instructions.
 
 The ``src/`` directory
 ----------------------

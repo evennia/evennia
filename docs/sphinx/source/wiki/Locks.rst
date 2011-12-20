@@ -63,19 +63,9 @@ Defining locks
 
 Defining a lock (i.e. an access restriction) in Evennia is done by
 adding simple strings of lock definitions to the object's ``locks``
-property using ``obj.locks.add()``. Such a *lockstring* formally looks
-like this:
+property using ``obj.locks.add()``.
 
-::
-
-    access_type:[NOT] func1([arg1,..])[[AND|OR][ NOT] func2([arg1,...])[...]]
-
-where ``[..]`` marks optional parts. AND, OR and NOT are not case
-sensitive and excess spaces are ignored. ``func1, func2`` etc are
-special *lock functions* available to the lock system.
-
-This form of writing may look complicated, so let's immediately give
-some much nicer examples:
+Here are some examples of lock strings:
 
 ::
 
@@ -83,7 +73,17 @@ some much nicer examples:
      edit:all()      # let everyone edit 
      get: not attr(very_weak) or perm(Wizard) # only those who are not "very_weak" or are Wizards may pick this up
 
-So, a lockstring consists of the type of restriction (the
+Formally, a lockstring has the following syntax:
+
+::
+
+    access_type:[not] func1([arg1,..])[[and|or][ not] func2([arg1,...])[...]]
+
+where ``[..]`` marks optional parts. AND, OR and NOT are not case
+sensitive and excess spaces are ignored. ``func1, func2`` etc are
+special *lock functions* available to the lock system.
+
+So, a lockstrings consists of the type of restriction (the
 ``access_type``), a colon (``:``) and then a list of function calls that
 determine what is needed to pass the lock. Each function returns either
 ``True`` or ``False``. AND/OR and NOT works like normal Python to

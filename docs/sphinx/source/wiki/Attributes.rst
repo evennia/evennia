@@ -75,29 +75,15 @@ Attributes like you would any normal Python property:
 This looks like any normal Python assignment, but calls ``db`` behind
 the scenes for you.
 
-Assigning attributes this way is intuitive and makes for slightly less
-to write. There is a drawback to using this short-form though: Database
-objects and typeclasses *already* have a number of Python methods and
-properties defined on themselves. If you use one of those already-used
-names with this short form you will not be setting a new Attribute but
-will infact be editing an existing engine property.
-
-For example, the property ``self.location`` on yourself is tied directly
-to the ``db_location`` database field and will not accept anything but
-an ``ObjectDB`` object or it will raise a traceback. ``self.delete`` is
-a method handling the deletion of objects, and so on. The reason these
-are available is of course that you may *want* to overload these
-functions with your own implementations - this is one of the main powers
-of Evennia. But if you blindly do e.g. ``self.msg = "Hello"`` you will
-happily be overloading the core ``msg()`` method and be in a world of
-pain.
-
-Using ``db`` will always work like you expect. ``self.db.msg = 'Hello'``
-will create a new Attribute ``msg`` without affecting the core method
-named ``msg()`` at all. So in principle, whereas you can use the
-short-form for simple testing, it's best to use ``db`` when you want
-Attributes and skip it only when you explicitly want to edit/overload
-something in the base classes.
+Note however that this form stands the chance of overloading already
+existing properties on typeclasses and their database objects.
+``rose.msg()`` is for example an already defined method for sending
+messages. Doing ``rose.msg = "Ouch"`` will overload the method with a
+string and will create all sorts of trouble down the road (the engine
+uses ``msg()`` a lot to send text to you). Using
+``rose.db.msg = "Ouch"`` will always do what you expect and is usually
+the safer bet. And it also makes it visually clear at all times when you
+are saving to the database and not.
 
 Persistent vs non-persistent
 ----------------------------
@@ -117,8 +103,10 @@ situations though.
    simply writes to memory, it doesn't hit the database at all. It
    should be said that with the speed and quality of hardware these
    days, this point is less likely to be of any big concern except for
-   the most extreme of situations. The default database even runs in RAM
-   if possible, alleviating the need to write to disk.
+   the most extreme of situations. Modern database systems cache data
+   very efficiently for speed. Our default database even runs completely
+   in RAM if possible, alleviating much of the need to write to disk
+   during heavy loads.
 -  You *want* to loose your state when logging off. Maybe you are
    testing a buggy `Script <Scripts.html>`_ that does potentially
    harmful stuff to your character object. With non-persistent storage
@@ -205,29 +193,31 @@ example, you can do
 ::
 
     # saving data
+    obj.db.mydict = "key":"test0"
     obj.db.mydict["key"] = "test1"
-    obj.db.mylist[34] = "test2"
+    obj.db.mylist = [0,1,2,3]
+    obj.db.mylist[3] = "test2"
     obj.db.mylist.append("test3")
     # retrieving data
     obj.db.mydict["key"] # returns "test1"
-    obj.db.mylist[34] # returns "test2
+    obj.db.mylist[3] # returns "test2
     obj.db.mylist[-1] # returns "test3"
 
 and it will work fine, thanks to a lot of magic happening behind the
-scenes. What will *not* work however is editing *nested*
-lists/dictionaries in-place. This is due to the way Python referencing
-works. Consider the following:
+scenes. What will *not* work however is *assigning nested
+lists/dictionaries in-place*. This is due to the way Python referencing
+works, no way around it alas. Consider the following:
 
 ::
 
     obj.db.mydict = 1:2:3
 
 This is a perfectly valid nested dictionary and Evennia will store it
-just fine.
+just fine. Retrieving this data will also work normally:
 
 ::
 
-    obj.db.mydict[1][2] # correctly returns 3
+    val = obj.db.mydict[1][2] # correctly returns 3
 
 However:
 
@@ -237,9 +227,10 @@ However:
 
 will not work - trying to edit the nested structure will fail silently
 and nothing will have changed. No, this is not consistent with normal
-Python operation, it's where the database magic fails. All is not lost
-however. In order to change a nested structure, you simply need to use a
-temporary variable:
+Python operation, it's where the database magic fails. Sorry, but there
+does not seem to be a way around this (if you know one, let us know!)
+All is not lost however. In order to change a nested structure, you
+simply need to use a temporary variable:
 
 ::
 
@@ -250,7 +241,7 @@ temporary variable:
     # save back to database
     obj.db.mydict = mydict
     # test
-    obj.db.mydict[1][2] # now correctly returns "test"
+    val = obj.db.mydict[1][2] # now correctly returns "test"
 
 mydict was updated and recreated in the database.
 

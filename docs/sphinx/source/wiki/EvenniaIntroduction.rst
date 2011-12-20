@@ -8,8 +8,7 @@ and actions performed in the virtual world. Players typically interact
 with each other and the world by typing commands that resemble a natural
 language.*" - `Wikipedia <http://en.wikipedia.org/wiki/MUD>`_
 
-Evennia introduction
-====================
+Evennia introduction=
 
 If you are reading this, it's quite likely you are dreaming of creating
 and running a text-based massively-multiplayer game
@@ -54,15 +53,8 @@ commands, or to have the command syntax mimic other systems, like Diku,
 LP, MOO and so on. Or why not create a new and better command system of
 your own design.
 
-There is already a default django website as well as an ajax web client
-shipping with Evennia. You can also edit the database from the browser
-using the admin interface. Apart from telnet, SSH, SSL and web
-connections, you can connect e.g. IRC and IMC2 channels to evennia's
-in-game channels so that your players can chat with people "outside" the
-game.
-
 Can I test it somewhere?
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are Evennia-based muds under development but they are still not
 publicly available. If you do try to install Evennia (it's not hard), it
@@ -73,6 +65,63 @@ tutorial takes only one single in-game command to install as explained
 
 If you didn't see it before, here is also a
 `screenshot <Screenshot.html>`_ of Evennia running.
+
+Brief summary of features
+=========================
+
+Technical
+~~~~~~~~~
+
+-  Game development is done by the server importing your normal Python
+   modules. Specific server features are implemented by overloading
+   hooks that the engine calls appropriately.
+-  All game entities are simply Python classes that handles database
+   negotiations behind the scenes without you needing to worry.
+-  Command sets are stored on individual objects (including characters)
+   to offer unique functionality and object-specific commands. Sets can
+   be updated and modified on the fly to expand/limit player input
+   options during play.
+-  Scripts are used to offer asynchronous/timed execution abilities.
+   Scripts can also be persistent. There are easy mechanisms to thread
+   particularly long-running processes.
+-  In-game communication channels are modular and can be modified to any
+   functionality, including mailing systems and full logging of all
+   messages.
+-  Server can be fully rebooted/reloaded without users disconnecting.
+-  A session (player) can freely connect/disconnect from game-objects,
+   offering an easy way to implement multi-character systems and
+   puppeting.
+-  All source code is extensively documented.
+-  Unit-testing suite, including tests of default commands and plugins
+
+Default content
+~~~~~~~~~~~~~~~
+
+-  Basic classes for Objects, Characers, Rooms and Exits
+-  Basic login system, using the Player's login name as their in-game
+   Character's name for simplicity
+-  "MUX-like" command set with administration, building, puppeting,
+   channels and social commands
+-  In-game Tutorial
+-  Contributions folder with working, but optional, code such as
+   alternative login, menus, character generation and more
+
+Standards/Protocols supported
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Telnet with mud-specific extensions (MCCP, MSSP, TTYPE)
+-  SSH
+-  SSL
+-  TCP/Comet, JavaScript browser webclient included
+-  HTTP - Website served by in-built webserver and connected to same
+   database as game.
+-  IRC/IMC2 - external IRC and/or IMC2 channels can be connected to
+   in-game chat channels
+-  ANSI, xterm256 colours
+-  Several different databases supported (SQLite3, MySQL, ...)
+
+For more extensive feature information, see
+`here <http://code.google.com/p/evennia/wiki/DeveloperCentral>`_.
 
 What you need to know to work with Evennia
 ==========================================

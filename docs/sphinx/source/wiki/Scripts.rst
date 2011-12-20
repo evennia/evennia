@@ -26,7 +26,7 @@ leaving the remaining poor characters in darkness once again.
 By combining state-changes with timers one can make a room look
 different during nighttime than it does during the day. Weather and
 seasons might come and go. But one can also achieve more complex things
-such as state-AI systems that make mobs move around and possibly persue
+such as state-AI systems that make mobs move around and possibly pursue
 characters between rooms.
 
 ... In short, Scripts make the game world *tick*. Scripts are
@@ -130,6 +130,30 @@ find longer descriptions of these in ``gamesrc/scripts/basescript.py``.
 -  ``at_stop()`` - this is called when the script stops for whatever
    reason. It's a good place to do custom cleanup.
 
+Running methods (usually called automatically by the engine, but
+possible to also invoke manually)
+
+-  ``start()`` - this will start the script. This is called
+   automatically whenever you add a new script to a handler.
+   ``at_start()`` will be called.
+-  ``stop()`` - this will stop the script and delete it. Removing a
+   script from a handler will stop it auomatically. ``at_stop()`` will
+   be called.
+-  ``pause()`` - this pauses a running script, rendering it inactive,
+   but not deleting it. Timers are saved and can be resumed. This is
+   called automatically when the server reloads. No hooks are called -
+   this is a suspension of the script, not a change of state.
+-  ``unpause()`` - resumes a previously paused script. Timers etc are
+   restored to what they were before pause. The server unpauses all
+   paused scripts after a server reload. No hooks are called - as far as
+   the script is concerned, it never stopped running.
+-  ``time_until_next_repeat()`` - for timed scripts, this returns the
+   time in seconds until it next fires. Returns None if not a timed
+   script.
+
+Example script
+--------------
+
 ::
 
     import random
@@ -173,10 +197,18 @@ Or, from in-game, use the ``@script`` command:
 
     @script here = weather.Weather
 
-Further notes
--------------
+Global scripts
+--------------
 
-Should you *really* need to create a script unrelated to a particular
-Object (this is called a *Global* script), you can create it with
-``src.utils.create.create_script()`` and refrain from supplying an
-object to store it on. See that module for more info.
+You can create scripts that are not attached to a given object -
+*Global* scripts. You can create such a script with
+``src.utils.create.create_script()`` by refrainnig from supplying an
+object to store it on.
+
+::
+
+    from src.utils.create import create_script
+      create_script(globals.MyGlobalEconomy, key="economy", obj=None)
+
+Assuming ``game.gamesrc.scripts.global.MyGlobalEconomy`` can be found,
+this will create and start it as a global script.

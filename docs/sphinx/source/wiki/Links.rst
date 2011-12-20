@@ -32,6 +32,33 @@ Third-party Evennia links
 -  `Evennia on
    PyPi <http://pypi.python.org/pypi/Evennia%20MUD%20Server/Alpha>`_
 
+General mud/game development ideas and discussions
+--------------------------------------------------
+
+-  `MudLab <http://mudlab.org/>`_ mud design discussion forum
+-  `MudConnector <http://www.mudconnect.com/>`_ mud listing and forums
+-  `MudBytes <http://www.mudbytes.net/>`_ mud listing and forums
+-  `Top Mud bytes <http://www.topmudsites.com/>`_ mud listing and forums
+-  `MudStandards wiki <http://www.mudstandards.org/MudStandards_Wiki>`_
+   is an attempt at gathering protocol standards for MUD servers.
+
+-  `Planet Mud-Dev <http://planet-muddev.disinterest.org/>`_ is a blog
+   aggregator following blogs of current MUD development around the
+   'net.
+-  Mud Dev mailing list archive
+   (`mirror1 <http://nilgiri.net/MUD-Dev-archive/>`_),(`mirror2 <http://www.disinterest.org/resource/MUD-Dev/>`_)
+   - Influential mailing list active 1996-2004. Advanced game design
+   discussions.
+-  `Imaginary
+   Realities <http://disinterest.org/resource/imaginary-realities/>`_ is
+   an e-magazine on game/MUD design which were active 1998-2001.
+   Interesting articles.
+
+-  `Lost Garden <http://www.lostgarden.com/>`_ is a game development
+   blog with long and interesting articles (not MUD-specific)
+-  `What Games Are <http://whatgamesare.com/>`_ is a blog about general
+   game design (not MUD-specific)
+
 Frameworks
 ----------
 

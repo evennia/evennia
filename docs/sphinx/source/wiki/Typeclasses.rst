@@ -21,12 +21,14 @@ basically means that they are (almost) normal Python classes that hide
 underlying database models ...
 
 ... and that's basically all you *really* need to know about how
-typeclasses work behind the scenes. To work with them you should know
-that all the listed game entities inherit a common interface from the
-typeclass system, properties you can *always* expect a typeclassed
-entity to have *beyond* the more specialized properties unique to each
-sub-type. Typeclasses also do some special things with their in-built
-class methods that you shouldn't edit.
+typeclasses work behind the scenes.
+
+To work with them you should however know that all the listed game
+entities inherit a common interface from the typeclass system,
+properties you can *always* expect a typeclassed entity to have *beyond*
+the more specialized properties unique to each sub-type. Typeclasses
+also do some special things with their in-built class methods that you
+shouldn't edit.
 
 Properties available to all typeclassed entities (Players, Objects,
 Scripts)
@@ -97,7 +99,7 @@ a few things that you need to remember however:
    or you *will* crash the server! You have been warned.
 
 How typeclasses actually work
------------------------------
+=============================
 
 \_You don't need to read this section to use typeclassed entities, but
 it might be useful if you want to do advanced things or are interested
