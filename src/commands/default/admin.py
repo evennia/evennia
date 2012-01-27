@@ -150,8 +150,8 @@ class CmdBan(MuxCommand):
     Examples: 
       @ban thomas             - ban account 'thomas'
       @ban/ip 134.233.2.111   - ban specific ip address
-      @ban/ip 134.233.2.*     - ban all in the 134.233.2 subnet
-      @ban/ip 134.233.*.*     - ban all in the 134.233 subnet 
+      @ban/ip 134.233.2.*     - ban all in a subnet 
+      @ban/ip 134.233.*.*     - even wider ban 
  
     A single IP filter is easy to circumvent by changing the computer
     (also, some ISPs assign only temporary IPs to their users in the
