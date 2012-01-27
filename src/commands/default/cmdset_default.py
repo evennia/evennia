@@ -47,6 +47,8 @@ class DefaultCmdSet(CmdSet):
         
         # Admin commands
         self.add(admin.CmdBoot())
+        self.add(admin.CmdBan())
+        self.add(admin.CmdUnban())
         self.add(admin.CmdDelPlayer())
         self.add(admin.CmdEmit())
         self.add(admin.CmdNewPassword())

@@ -62,6 +62,18 @@ class CmdConnect(MuxCommand):
             session.msg("Incorrect password.")
             return 
 
+        # Check IP and/or name bans
+        bans = ServerConfig.objects.conf("server_bans")
+        if bans and (any(tup[0]==player.name for tup in bans) 
+                     or 
+                     any(tup[2].match(session.address[0]) for tup in bans if tup[2])):
+            # this is a banned IP or name! 
+            string = "{rYou have been banned and cannot continue from here."
+            string += "\nIf you feel this ban is in error, please email an admin.{x"
+            session.msg(string)
+            session.execute_cmd("quit")
+            return 
+
         # actually do the login. This will call all hooks. 
         session.session_login(player)
 

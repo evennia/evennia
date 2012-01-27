@@ -31,14 +31,11 @@ the initial splash screen.
 import re
 import traceback
 from django.conf import settings 
-from django.contrib.auth.models import User
-from src.server import sessionhandler
 from src.players.models import PlayerDB
-from src.objects.models import ObjectDB
 from src.server.models import ServerConfig
 from src.comms.models import Channel
 
-from src.utils import create, logger, utils, ansi
+from src.utils import create, logger, utils
 from src.commands.command import Command
 from src.commands.cmdset import CmdSet
 from src.commands.cmdhandler import CMD_LOGINSTART
@@ -114,6 +111,18 @@ class CmdPasswordSelect(Command):
         if not player.user.check_password(self.args):
             self.caller.msg("{rIncorrect password.{n")
             self.menutree.goto("node1b")
+            return 
+
+        # before going on, check eventual bans
+        bans = ServerConfig.objects.conf("server_bans")
+        if bans and (any(tup[0]==player.name for tup in bans) 
+                     or 
+                     any(tup[2].match(player.sessions[0].address[0]) for tup in bans if tup[2])):
+            # this is a banned IP or name! 
+            string = "{rYou have been banned and cannot continue from here."
+            string += "\nIf you feel this ban is in error, please email an admin.{x"
+            self.caller.msg(string)
+            self.caller.session_disconnect()
             return 
 
         # we are ok, log us in.

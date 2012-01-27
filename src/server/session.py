@@ -50,6 +50,7 @@ class Session(object):
         self.protocol_key = protocol_key
         # Protocol address tied to this session
         self.address = address
+        
         # suid is used by some protocols, it's a hex key.
         self.suid = None 
         

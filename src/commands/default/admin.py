@@ -4,10 +4,12 @@ Admin commands
 
 """
 
+import time, re
 from django.conf import settings
 from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.server.sessionhandler import SESSIONS
+from src.server.models import ServerConfig
 from src.utils import utils
 from src.commands.default.muxcommand import MuxCommand
 
@@ -93,6 +95,170 @@ class CmdBoot(MuxCommand):
             caller.msg("You booted %s." % name)
 
 
+# regex matching IP addresses with wildcards, eg. 233.122.4.*
+IPREGEX = re.compile(r"[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}")
+
+def list_bans(banlist):
+    """
+    Helper function to display a list of active bans. Input argument
+    is the banlist read into the two commands @ban and @undban below.
+    """
+    if not banlist: 
+        return "No active bans were found."
+
+    table = [["id"], ["name/ip"], ["date"], ["reason"]]
+    table[0].extend([str(i+1) for i in range(len(banlist))])
+    for ban in banlist: 
+        if ban[0]: 
+            table[1].append(ban[0])
+        else: 
+            table[1].append(ban[1])        
+    table[2].extend([ban[3] for ban in banlist])
+    table[3].extend([ban[4] for ban in banlist])
+    ftable = utils.format_table(table, 4)
+    string = "{wActive bans:{x"
+    for irow, row in enumerate(ftable):
+        if irow == 0:
+            srow = "\n" + "".join(row)
+            srow = "{w%s{n" % srow.rstrip()
+        else:
+            srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
+        string += srow.rstrip()        
+    return string 
+
+class CmdBan(MuxCommand):
+    """
+    ban a player from the server
+
+    Usage:
+      @ban [<name or ip> [: reason]]
+      
+    Without any arguments, shows numbered list of active bans. 
+      
+    This command bans a user from accessing the game. Supply an
+    optional reason to be able to later remember why the ban was put in
+    place
+    
+    It is often to
+    prefer over deleting a player with @delplayer. If banned by name,
+    that player account can no longer be logged into.
+
+    IP (Internet Protocol) address banning allows to block all access
+    from a specific address or subnet. Use the asterisk (*) as a
+    wildcard. 
+
+    Examples: 
+      @ban thomas             - ban account 'thomas'
+      @ban/ip 134.233.2.111   - ban specific ip address
+      @ban/ip 134.233.2.*     - ban all in the 134.233.2 subnet
+      @ban/ip 134.233.*.*     - ban all in the 134.233 subnet 
+ 
+    A single IP filter is easy to circumvent by changing the computer
+    (also, some ISPs assign only temporary IPs to their users in the
+    first placer. Widening the IP block filter with wildcards might be
+    tempting, but remember that blocking too much may accidentally
+    also block innocent users connecting from the same country and
+    region.
+     
+    """
+    key = "@ban"
+    aliases = ["@bans"]
+    locks = "cmd:perm(ban) or perm(Immortals)"
+    help_category="Admin"
+
+    def func(self):
+        """
+        Bans are stored in a serverconf db object as a list of 
+        dictionaries: 
+          [ (name, ip, ipregex, date, reason),
+            (name, ip, ipregex, date, reason),...  ]
+        where name and ip are set by the user and are shown in
+        lists. ipregex is a converted form of ip where the * is
+        replaced by an appropriate regex pattern for fast
+        matching. date is the time stamp the ban was instigated and
+        'reason' is any optional info given to the command. Unset 
+        values in each tuple is set to the empty string.
+        """        
+        banlist = ServerConfig.objects.conf('server_bans')
+        if not banlist:
+            banlist = []
+        
+        if not self.args or (self.switches 
+                             and not any(switch in ('ip', 'name') for switch in self.switches)): 
+            self.caller.msg(list_bans(banlist))
+            return 
+
+        now = time.ctime()
+        reason = ""
+        if ':' in self.args:
+            ban, reason = self.args.rsplit(':',1)
+        else:
+            ban = self.args
+        ban = ban.lower()        
+        ipban = IPREGEX.findall(ban)
+        if not ipban:
+            # store as name 
+            typ = "Name"
+            bantup = (ban, "", "", now, reason)            
+        else: 
+            # an ip address.
+            typ = "IP"
+            ban = ipban[0]
+            # replace * with regex form and compile it
+            ipregex = ban.replace('.','\.')
+            ipregex = ipregex.replace('*', '[0-9]{1,3}')
+            print "regex:",ipregex
+            ipregex = re.compile(r"%s" % ipregex)
+            bantup = ("", ban, ipregex, now, reason)
+        # save updated banlist 
+        banlist.append(bantup)
+        ServerConfig.objects.conf('server_bans', banlist)        
+        self.caller.msg("%s-Ban {w%s{x was added." % (typ, ban))
+
+class CmdUnban(MuxCommand): 
+    """
+    remove a ban
+
+    Usage: 
+      @unban <banid>
+
+    This will clear a player name/ip ban previously set with the @ban
+    command.  Use this command without an argument to view a numbered
+    list of bans. Use the numbers in this list to select which one to
+    unban.
+
+    """
+    key = "@unban"
+    locks = "cmd:perm(unban) or perm(Immortals)"
+    help_category="Admin"
+    
+    def func(self):
+        "Implement unbanning"
+
+        banlist = ServerConfig.objects.conf('server_bans')
+
+        if not self.args: 
+            self.caller.msg(list_bans(banlist))
+            return 
+
+        try: 
+            num = int(self.args)
+        except Exception:
+            self.caller.msg("You must supply a valid ban id to clear.")
+            return 
+
+        if not banlist: 
+            self.caller.msg("There are no bans to clear.")
+        elif not (0 < num < len(banlist) + 1):
+            self.caller.msg("Ban id {w%s{x was not found." % self.args)            
+        else:
+            # all is ok, clear ban
+            ban = banlist[num-1]
+            del banlist[num-1]
+            ServerConfig.objects.conf('server_bans', banlist)
+            self.caller.msg("Cleared ban %s: %s" % (num, " ".join([s for s in ban[:2]])))
+
+        
 class CmdDelPlayer(MuxCommand):
     """
     delplayer - delete player from server
@@ -102,7 +268,7 @@ class CmdDelPlayer(MuxCommand):
       
     Switch:
       delobj - also delete the player's currently
-                assigned in-game object.   
+               assigned in-game object.   
 
     Completely deletes a user from the server database,
     making their nick and e-mail again available.    
