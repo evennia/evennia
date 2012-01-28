@@ -54,8 +54,6 @@ SSL_ENABLED = settings.SSL_ENABLED and SSL_PORTS and SSL_INTERFACES
 SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS and SSH_INTERFACES
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED 
-IMC2_ENABLED = settings.IMC2_ENABLED
-IRC_ENABLED = settings.IRC_ENABLED
 
 AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
@@ -282,20 +280,6 @@ if WEBSERVER_ENABLED:
             webserver = WSGIWebServer(threads, port, web_site, interface=interface)
             webserver.setName('EvenniaWebServer%s' % pstring)
             PORTAL.services.addService(webserver)
-
-if IRC_ENABLED:
-
-    # IRC channel connections
-
-    from src.comms import irc 
-    irc.connect_all()
-
-if IMC2_ENABLED:
-
-    # IMC2 channel connections
-
-    from src.comms import imc2
-    imc2.connect_all()
 
 if os.name == 'nt':
     # Windows only: Set PID file manually

@@ -174,8 +174,6 @@ def connect_to_irc(connection):
 def connect_all():
     """
     Activate all irc bots. 
-    
-    Returns a list of (key, TCPClient) tuples for server to properly set services. 
     """
     for connection in ExternalChannelConnection.objects.filter(db_external_key__startswith='irc_'):
         connect_to_irc(connection)

@@ -1,9 +1,11 @@
 """
-This module ties together all the commands of the default command set. 
+This module ties together all the commands of the default command
+set.  Note that some commands, such as communication-commands are
+instead put in the OOC cmdset.
 """
 from src.commands.cmdset import CmdSet
 from src.commands.default import general, help, admin, system
-from src.commands.default import comms, building
+from src.commands.default import building
 from src.commands.default import batchprocess
 
 class DefaultCmdSet(CmdSet):

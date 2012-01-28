@@ -9,7 +9,7 @@ for easy handling.
 """
 from django.conf import settings
 from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
-from src.comms import irc, imc2
+from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand            
@@ -1078,3 +1078,91 @@ class CmdIMCTell(MuxCommand):
         IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", data=data)
 
         self.caller.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
+
+
+# RSS connection 
+class CmdRSS2Chan(MuxCommand):
+    """
+    @rss2chan - link evennia channel to an RSS feed
+
+    Usage:
+      @rss2chan[/switches] <evennia_channel> = <rss_url>
+
+    Switches:
+      /disconnect - this will stop the feed and remove the connection to the channel.
+      /remove     -                                 " 
+      /list       - show all rss->evennia mappings
+
+    Example:
+      @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
+
+    This creates an RSS reader  that connects to a given RSS feed url. Updates will be 
+    echoed as a title and news link to the given channel. The rate of updating is set
+    with the RSS_UPDATE_INTERVAL variable in settings (default is every 10 minutes). 
+    
+    When disconnecting you need to supply both the channel and url again so as to identify
+    the connection uniquely. 
+    """
+        
+    key = "@rss2chan"
+    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
+    help_category = "Comms"
+
+    def func(self):
+        "Setup the rss-channel mapping"
+
+        if not settings.RSS_ENABLED:
+            string = """RSS is not enabled. You need to activate it in game/settings.py."""
+            self.caller.msg(string)
+            return
+
+        if 'list' in self.switches:
+            # show all connections
+            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='rss_')            
+            if connections:
+                cols = [["Evennia-channel"], ["RSS-url"]]
+                for conn in connections:
+                    cols[0].append(conn.channel.key)
+                    cols[1].append(conn.external_config.split('|')[0])
+                ftable = utils.format_table(cols)
+                string = ""
+                for ir, row in enumerate(ftable):
+                    if ir == 0:
+                        string += "{w%s{n" % "".join(row)
+                    else:
+                        string += "\n" + "".join(row)
+                self.caller.msg(string)
+            else:
+                self.caller.msg("No connections found.")
+            return 
+
+        if not self.args or not self.rhs:
+            string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
+            self.caller.msg(string)
+            return 
+        channel = self.lhs
+        url = self.rhs
+
+        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+            chanmatch = find_channel(self.caller, channel, silent=True)
+            if chanmatch:
+                channel = chanmatch.key
+
+            ok = rss.delete_connection(channel, url)
+            if not ok:
+                self.caller.msg("RSS connection/reader could not be removed, does it exist?")
+            else:
+                self.caller.msg("RSS connection destroyed.")
+            return 
+        
+        channel = find_channel(self.caller, channel)
+        if not channel:
+            return
+        interval = settings.RSS_UPDATE_INTERVAL
+        if not interval:
+            interval = 10*60
+        ok = rss.create_connection(channel, url, interval)
+        if not ok:
+            self.caller.msg("This RSS connection already exists.")
+            return 
+        self.caller.msg("Connection created. Starting RSS reader.")

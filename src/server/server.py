@@ -51,6 +51,10 @@ AMP_ENABLED = True
 AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
 
+# server-channel mappings
+IMC2_ENABLED = settings.IMC2_ENABLED
+IRC_ENABLED = settings.IRC_ENABLED
+RSS_ENABLED = settings.RSS_ENABLED
 
 #------------------------------------------------------------
 # Evennia Main Server object 
@@ -257,6 +261,27 @@ if AMP_ENABLED:
     amp_service = internet.TCPServer(AMP_PORT, factory)
     amp_service.setName("EvenniaPortal")
     EVENNIA.services.addService(amp_service)
+
+
+if IRC_ENABLED:
+
+    # IRC channel connections
+
+    from src.comms import irc 
+    irc.connect_all()
+
+if IMC2_ENABLED:
+
+    # IMC2 channel connections
+
+    from src.comms import imc2
+    imc2.connect_all()
+
+if RSS_ENABLED:
+    
+    # RSS feed channel connections 
+    from src.comms import rss
+    rss.connect_all() 
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)

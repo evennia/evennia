@@ -307,6 +307,14 @@ IMC2_NETWORK = "server01.mudbytes.net"
 IMC2_PORT = 5000
 IMC2_CLIENT_PWD = ""
 IMC2_SERVER_PWD = ""
+# RSS allows to connect RSS feeds (from forum updates, blogs etc) to
+# an in-game channel. The channel will be updated when the rss feed
+# updates. Use @rss2chan in game to connect if this setting is
+# active. OBS: RSS support requires the python-feedparser package to
+# be installed (through package manager or from the website 
+# http://code.google.com/p/feedparser/)
+RSS_ENABLED=False
+RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
 
 ###################################################
 # Config for Django web features

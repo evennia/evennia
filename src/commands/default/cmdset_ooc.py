@@ -1,9 +1,8 @@
 """
 
-This is the cmdset for OutOfCharacter (OOC) commands.
-These are stored on the Player object and should
-thus be able to handle getting a Player object
-as caller rather than a Character. 
+This is the cmdset for OutOfCharacter (OOC) commands.  These are
+stored on the Player object and should thus be able to handle getting
+a Player object as caller rather than a Character.
 
 """
 from src.commands.cmdset import CmdSet
@@ -53,3 +52,4 @@ class OOCCmdSet(CmdSet):
         self.add(comms.CmdIMC2Chan())
         self.add(comms.CmdIMCInfo())
         self.add(comms.CmdIMCTell())
+        self.add(comms.CmdRSS2Chan())
