@@ -211,6 +211,13 @@ def main():
     parser.add_option('-d', '--iportal', action='store_true', 
                       dest='iportal', default=False,
                       help=_('output portal log to stdout. Does not make portal a daemon.'))
+    parser.add_option('-S', '--profile-server', action='store_true',
+                      dest='sprof', default=False,
+                      help='run server under cProfile')
+    parser.add_option('-P', '--profile-portal', action='store_true',
+                      dest='pprof', default=False,
+                      help='run portal under cProfile')
+
     options, args = parser.parse_args()
 
     if not args or args[0] != 'start':
@@ -228,6 +235,16 @@ def main():
                    '--logfile=%s' % PORTAL_LOGFILE,
                    '--pidfile=%s' % PORTAL_PIDFILE, 
                    '--python=%s' % PORTAL_PY_FILE]    
+    
+    # Profiling settings (read file from python shell e.g with
+    # p = pstats.Stats('server.prof')
+    sprof_argv = ['--savestats',
+                  '--profiler=cprofile',
+                  '--profile=server.prof']
+    pprof_argv = ['--savestats',
+                  '--profiler=cprofile',
+                  '--profile=portal.prof']
+
     # Server 
     
     pid = get_pid(SERVER_PIDFILE)
@@ -235,13 +252,16 @@ def main():
             print _("\nEvennia Server is already running as process %(pid)s. Not restarted.") % {'pid': pid}
             options.noserver = True
     if options.noserver:
-        server_argv = None 
+        server_argv = None         
     else:
         set_restart_mode(SERVER_RESTART, True)
         if options.iserver:
             # don't log to server logfile
             del server_argv[2]
             print _("\nStarting Evennia Server (output to stdout).")
+        elif options.sprof:
+            server_argv.extend(sprof_argv)
+            print "\nRunning Evennia Server under cProfile."
         else:
             print _("\nStarting Evennia Server (output to server logfile).")
         cycle_logfile(SERVER_LOGFILE)
@@ -260,7 +280,10 @@ def main():
             portal_argv[1] = '--nodaemon'
             PORTAL_INTERACTIVE = True                     
             set_restart_mode(PORTAL_RESTART, True)
-            print _("\nStarting Evennia Portal in non-Daemon mode (output to stdout).")
+            print _("\nStarting Evennia Portal in non-Daemon mode (output to stdout).")    
+        elif options.pprof:
+            server_argv.extend(pprof_argv)
+            print "\nRunning Evennia Portal under cProfile."
         else:
             set_restart_mode(PORTAL_RESTART, False)
             print _("\nStarting Evennia Portal in Daemon mode (output to portal logfile).")            
