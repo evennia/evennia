@@ -24,15 +24,6 @@ def is_iter(iterable):
     """
     return hasattr(iterable, '__iter__')
 
-    # if isinstance(iterable, basestring):
-    #     # skip all forms of strings (str, unicode etc)
-    #     return False     
-    # try:
-    #     # check if object implements iter protocol
-    #     return iter(iterable)
-    # except TypeError:
-    #     return False 
-
 def fill(text, width=78, indent=0):
     """
     Safely wrap text to a certain number of characters.
@@ -396,7 +387,7 @@ def inherits_from(obj, parent):
         parent_path = "%s.%s" % (parent.__module__, parent.__name__)
     else:
         parent_path = "%s.%s" % (parent.__class__.__module__, parent.__class__.__name__)
-    return any(True for obj_path in obj_paths if obj_path == parent_path)
+    return any(1 for obj_path in obj_paths if obj_path == parent_path)
 
 
 def format_table(table, extra_space=1):

@@ -105,9 +105,10 @@ class Command(object):
         key and aliases.
         input can be either a cmd object or the name of a command.
         """
-        if type(cmd) != self:
+        try:
+            return self.match(cmd.key)
+        except AttributeError: # got a string
             return self.match(cmd)
-        return self.match(cmd.key)
 
     def __contains__(self, query):
         """
@@ -117,10 +118,11 @@ class Command(object):
 
         input can be either a command object or a command name.
         """
-        if type(query) == type(Command()):
+        try:
             query = query.key
-        return (query in self.key) or \
-               (sum([query in alias for alias in self.aliases]) > 0)
+        except AttributeError: # we got a string
+            pass
+        return (query in self.key) or any(query in alias for alias in self.aliases)
 
     def match(self, cmdname):
         """

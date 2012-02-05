@@ -50,8 +50,7 @@ def union(cmdset_a, cmdset_b, duplicates=False):
     if duplicates and cmdset_a.priority == cmdset_b.priority:
         cmdset_c.commands.extend(cmdset_b.commands)
     else:
-        cmdset_c.commands.extend([cmd for cmd in cmdset_b
-                               if not cmd in cmdset_a])
+        cmdset_c.commands.extend([cmd for cmd in cmdset_b if not cmd in cmdset_a])
     return cmdset_c            
 
 def intersect(cmdset_a, cmdset_b, duplicates=False):
@@ -68,7 +67,7 @@ def intersect(cmdset_a, cmdset_b, duplicates=False):
 def replace(cmdset_a, cmdset_b, cmdset_c):
     "C = A + B where the result is A."
     cmdset_c = cmdset_a.copy_this()
-    cmdset_c.commands = cmdset_a.commands[:] 
+    cmdset_c.commands = cmdset_a.commands[:]
     return cmdset_c
 
 def remove(cmdset_a, cmdset_b, cmdset_c):
@@ -83,13 +82,10 @@ def instantiate(cmd):
     and not, say a cmdclass. If it is, instantiate it.
     Other types, like strings, are passed through. 
     """    
-    if callable(cmd):
-        # this is a valid check since Command *instances*
-        # don't implement __call__, so this will catch 
-        # Command *classes* and instantiate them.
+    try:
         return cmd()
-    return cmd 
-        
+    except TypeError:
+        return cmd        
 
 class CmdSet(object):
     """
@@ -223,11 +219,9 @@ class CmdSet(object):
         """
         
         if inherits_from(cmd, "src.commands.cmdset.CmdSet"):
-            # this is a command set so merge all commands in that set
-            # to this one. We are not protecting against recursive
-            # loops (adding a cmdset that itself adds this cmdset here
-            # since such an error will be very visible and lead to a
-            # traceback at startup anyway.
+            # cmd is a command set so merge all commands in that set
+            # to this one. We raise a visible error if we created 
+            # an infinite loop (adding cmdset to itself somehow)
             try:
                 cmd = instantiate(cmd)
             except RuntimeError, e:
@@ -242,7 +236,7 @@ class CmdSet(object):
         for cmd in cmds:
             # add all commands 
             if not hasattr(cmd, 'obj'):
-                cmd.obj = self.cmdsetobj            
+                cmd.obj = self.cmdsetobj
             try:
                 ic = self.commands.index(cmd)
                 self.commands[ic] = cmd # replace 
@@ -258,8 +252,7 @@ class CmdSet(object):
         cmd can be either a cmd instance or a key string. 
         """
         cmd = instantiate(cmd)
-        self.commands = [oldcmd for oldcmd in self.commands
-                             if oldcmd != cmd]
+        self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
                                  
     def get(self, cmd):
         """
@@ -268,10 +261,9 @@ class CmdSet(object):
         a key string. 
         """
         cmd = instantiate(cmd)
-        if cmd:
-            for thiscmd in self.commands:
-                if thiscmd == cmd:
-                    return thiscmd 
+        for thiscmd in self.commands:
+            if thiscmd == cmd:
+                return thiscmd 
 
     def count(self):
         "Return number of commands in set"
@@ -283,8 +275,7 @@ class CmdSet(object):
         commands starting with double underscore __.
         These are excempt from merge operations. 
         """
-        return [cmd for cmd in self.commands
-                if len(cmd.key) > 2 and cmd.key[:2] == '__']
+        return [cmd for cmd in self.commands if cmd.key.startswith('__')]
 
     def copy_this(self):
         """
@@ -300,7 +291,7 @@ class CmdSet(object):
         cmdset.mergetype = self.mergetype
         cmdset.priority = self.priority
         cmdset.duplicates = self.duplicates
-        cmdset.key_mergetypes = copy.deepcopy(self.key_mergetypes)
+        cmdset.key_mergetypes = self.key_mergetypes.copy() #copy.deepcopy(self.key_mergetypes)
         return cmdset
         
     def make_unique(self, caller):
@@ -340,7 +331,7 @@ class CmdSet(object):
         """
         Returns True if this cmdset contains the given command (as defined
         by command name and aliases). This allows for things like 'if cmd in cmdset'
-        """
+        """        
         return any(cmd == othercmd for cmd in self.commands)
                
     def __add__(self, cmdset_b):
@@ -367,8 +358,7 @@ class CmdSet(object):
 
         if self.priority >= cmdset_b.priority: 
             # A higher or equal priority than B
-            mergetype = self.key_mergetypes.get(cmdset_b.key,
-                                                self.mergetype)            
+            mergetype = self.key_mergetypes.get(cmdset_b.key, self.mergetype)            
             if mergetype == "Intersect":
                 cmdset_c = intersect(self, cmdset_b, cmdset_b.duplicates)
             elif mergetype == "Replace":
@@ -379,8 +369,7 @@ class CmdSet(object):
                 cmdset_c = union(self, cmdset_b, cmdset_b.duplicates)
         else:
             # B higher priority than A
-            mergetype = cmdset_b.key_mergetypes.get(self.key,
-                                                 cmdset_b.mergetype)  
+            mergetype = cmdset_b.key_mergetypes.get(self.key, cmdset_b.mergetype)  
             if mergetype == "Intersect":
                 cmdset_c = intersect(cmdset_b, self, self.duplicates)
             elif mergetype == "Replace":
@@ -396,7 +385,6 @@ class CmdSet(object):
         cmdset_c.actual_mergetype = mergetype 
 
         # return the system commands to the cmdset
-        for cmd in sys_commands:
-            cmdset_c.add(cmd)
+        cmdset_c.add(sys_commands)
 
         return cmdset_c 
