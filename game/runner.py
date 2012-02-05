@@ -259,11 +259,12 @@ def main():
             # don't log to server logfile
             del server_argv[2]
             print _("\nStarting Evennia Server (output to stdout).")
-        elif options.sprof:
-            server_argv.extend(sprof_argv)
-            print "\nRunning Evennia Server under cProfile."
         else:
             print _("\nStarting Evennia Server (output to server logfile).")
+        if options.sprof:
+            server_argv.extend(sprof_argv)
+            print "\nRunning Evennia Server under cProfile."
+
         cycle_logfile(SERVER_LOGFILE)
 
     # Portal 
@@ -281,12 +282,13 @@ def main():
             PORTAL_INTERACTIVE = True                     
             set_restart_mode(PORTAL_RESTART, True)
             print _("\nStarting Evennia Portal in non-Daemon mode (output to stdout).")    
-        elif options.pprof:
-            server_argv.extend(pprof_argv)
-            print "\nRunning Evennia Portal under cProfile."
         else:
             set_restart_mode(PORTAL_RESTART, False)
             print _("\nStarting Evennia Portal in Daemon mode (output to portal logfile).")            
+        if options.pprof:
+            server_argv.extend(pprof_argv)
+            print "\nRunning Evennia Portal under cProfile."
+
         cycle_logfile(PORTAL_LOGFILE)
 
     # Windows fixes (Windows don't support pidfiles natively)
