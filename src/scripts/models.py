@@ -27,6 +27,7 @@ Common examples of uses of Scripts:
 from django.conf import settings
 from django.db import models
 from src.typeclasses.models import Attribute, TypedObject
+from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
 
 #------------------------------------------------------------
@@ -244,9 +245,10 @@ class ScriptDB(TypedObject):
     #
 
     # this is required to properly handle attributes and typeclass loading
-    attribute_model_path = "src.scripts.models"
-    attribute_model_name = "ScriptAttribute"
+    #attribute_model_path = "src.scripts.models"
+    #attribute_model_name = "ScriptAttribute"
     typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS 
+    attribute_class = ScriptAttribute
 
     # this is used by all typedobjects as a fallback
     try:

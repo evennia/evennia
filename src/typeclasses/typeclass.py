@@ -13,14 +13,19 @@ used by the typesystem or django itself.
 from src.utils import logger
 from django.conf import settings
 
+# these are called so many times it's worth to avoid lookup calls
+GA = object.__getattribute__
+SA = object.__setattr__
+DA = object.__delattr__
+
 # To ensure the sanity of the model, there are a
 # few property names we won't allow the admin to
 # set on the typeclass just like that. Note that these are *not* related
 # to *in-game* safety (if you can edit typeclasses you have
 # full access anyway), so no protection against changing
 # e.g. 'locks' or 'permissions' should go here.
-PROTECTED = ['id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass',
-             'attr', 'save', 'delete']
+PROTECTED = ('id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass',
+             'attr', 'save', 'delete')
 
 # If this is true, all non-protected property assignments
 # are directly stored to a database attribute
@@ -69,24 +74,23 @@ class TypeClass(object):
         """
         # typecheck of dbobj - we can't allow it to be added here
         # unless it's really a TypedObject.
-        dbobj_cls = object.__getattribute__(dbobj, '__class__')
-        dbobj_mro = object.__getattribute__(dbobj_cls, '__mro__')
+        dbobj_cls = GA(dbobj, '__class__')
+        dbobj_mro = GA(dbobj_cls, '__mro__')
         if not any('src.typeclasses.models.TypedObject' 
                    in str(mro) for mro in dbobj_mro):
             raise Exception("dbobj is not a TypedObject: %s: %s" % \
                                 (dbobj_cls, dbobj_mro))
-        object.__setattr__(self, 'dbobj', dbobj) 
 
         # store the needed things on the typeclass
-        object.__setattr__(self, '_protected_attrs', PROTECTED)
+        SA(self, 'dbobj', dbobj) 
 
         # # sync the database object to this typeclass. 
-        # cls = object.__getattribute__(self, '__class__')
-        # db_typeclass_path = "%s.%s" % (object.__getattribute__(cls, '__module__'),
-        #                                object.__getattribute__(cls, '__name__'))        
-        # if not object.__getattribute__(dbobj, "db_typeclass_path") == db_typeclass_path:
-        #     object.__setattr__(dbobj, "db_typeclass_path", db_typeclass_path)
-        #     object.__getattribute__(dbobj, "save")()
+        # cls = GA(self, '__class__')
+        # db_typeclass_path = "%s.%s" % (GA(cls, '__module__'),
+        #                                GA(cls, '__name__'))        
+        # if not GA(dbobj, "db_typeclass_path") == db_typeclass_path:
+        #     SA(dbobj, "db_typeclass_path", db_typeclass_path)
+        #     GA(dbobj, "save")()
 
     def __getattribute__(self, propname):
         """
@@ -98,7 +102,7 @@ class TypeClass(object):
         accessible through getattr. 
         """
         try:
-            dbobj = object.__getattribute__(self, 'dbobj')
+            dbobj = GA(self, 'dbobj')
         except AttributeError:
             dbobj = None 
             logger.log_trace("This is probably due to an unsafe reload.")            
@@ -108,25 +112,20 @@ class TypeClass(object):
         if propname.startswith('__') and propname.endswith('__'):
             # python specials are parsed as-is (otherwise things like
             # isinstance() fail to identify the typeclass)
-            return object.__getattribute__(self, propname)
+            return GA(self, propname)
         #print "get %s (dbobj:%s)" % (propname, type(dbobj))        
         try:
-            return object.__getattribute__(self, propname)
+            return GA(self, propname)
         except AttributeError:
             try:
-                return object.__getattribute__(dbobj, propname)
+                return GA(dbobj, propname)
             except AttributeError:
                 try:
-                    if propname != 'ndb':
-                        if not dbobj.has_attribute(propname):
-                            raise AttributeError
-                        else:
-                            value = dbobj.get_attribute(propname)
-                    else:
+                    if propname == 'ndb':
                         # get non-persistent data 
-                        ndb = object.__getattribute__(dbobj, 'ndb')
-                        value = getattr(ndb, propname)
-                    return value
+                        return getattr(GA(dbobj, 'ndb'), propname)
+                    else: 
+                        return dbobj.get_attribute_raise(propname)
                 except AttributeError:
                     string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
                     raise AttributeError(string % (propname, dbobj,
@@ -142,39 +141,38 @@ class TypeClass(object):
         corresponding to a field on ObjectDB model. 
         """
         #print "set %s -> %s" % (propname, value)
-        try:            
-            protected = object.__getattribute__(self, '_protected_attrs')
-        except AttributeError:
-            protected = PROTECTED
-            logger.log_trace("This is probably due to an unsafe reload.")                    
-        if propname in protected:
+        if propname in PROTECTED:
             string = "%s: '%s' is a protected attribute name." 
-            string += " (protected: [%s])" % (", ".join(protected))
+            string += " (protected: [%s])" % (", ".join(PROTECTED))
             logger.log_errmsg(string % (self.name, propname))
-        else:
+            return 
+
+        try:
+            dbobj = GA(self, 'dbobj')
+        except AttributeError:
+            dbobj = None 
+            logger.log_trace("This is probably due to an unsafe reload.")            
+ 
+        if dbobj: 
             try:
-                dbobj = object.__getattribute__(self, 'dbobj')
+                # only set value on propname if propname already exists 
+                # on dbobj. __getattribute__ will raise attribute error otherwise.
+                GA(dbobj, propname)
+                SA(dbobj, propname, value)
             except AttributeError:
-                dbobj = None 
-                logger.log_trace("This is probably due to an unsafe reload.")            
-            if dbobj: # and hasattr(dbobj, propname):        
-                #print "   ---> dbobj"
-                if hasattr(dbobj, propname):
-                    # only if attr already exists on dbobj, assign to it.
-                    object.__setattr__(dbobj, propname, value)
-                else:
-                    dbobj.set_attribute(propname, value)
-            else:
-                object.__setattr__(self, propname, value)
+                dbobj.set_attribute(propname, value)
+        else:
+            SA(self, propname, value)
 
         def __eq__(self, other):
             """
             dbobj-recognized comparison
             """            
-            if hasattr(other, 'user'):
-                return other == self or other == self.dbobj or other == self.dbobj.user
-            else:
-                return other == self or other == self.dbobj
+            try:
+                return other == self or other == GA(self, dbobj) or other == GA(self, dbobj).user
+            except AttributeError:
+                # if self.dbobj.user fails it means the two previous comparisons failed already
+                return False
     
 
     def __delattr__(self, propname):
@@ -183,35 +181,28 @@ class TypeClass(object):
         secondly on the dbobj.db.
         Will not allow deletion of properties stored directly on dbobj. 
         """
-        try:
-            protected = object.__getattribute__(self, '_protected_attrs')
-        except AttributeError:
-            protected = PROTECTED
-            logger.log_trace("Thiis is probably due to an unsafe reload.")
-        if propname in protected:
+        if propname in PROTECTED:
             string = "%s: '%s' is a protected attribute name." 
-            string += " (protected: [%s])" % (", ".join(protected))
+            string += " (protected: [%s])" % (", ".join(PROTECTED))
             logger.log_errmsg(string % (self.name, propname))
-        else:
-            try:
-                object.__delattr__(self, propname)
-            except AttributeError:
-                # not on typeclass, try to delete on db/ndb
-                try:
-                    dbobj = object.__getattribute__(self, 'dbobj')
-                except AttributeError:
-                    logger.log_trace("This is probably due to an unsafe reload.")            
-                    return # ignore delete                
-                try:
-                    if not dbobj.has_attribute(propname):
-                        raise AttributeError
-                    dbobj.del_attribute(propname)
-                except AttributeError:
-                    string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
-                    raise AttributeError(string % (propname, dbobj,
-                                                   dbobj.dbref,
-                                                   dbobj.typeclass_path,))
+            return 
 
+        try:
+            DA(self, propname)
+        except AttributeError:
+            # not on typeclass, try to delete on db/ndb
+            try:
+                dbobj = GA(self, 'dbobj')
+            except AttributeError:
+                logger.log_trace("This is probably due to an unsafe reload.")            
+                return # ignore delete                
+            try:
+                dbobj.del_attribute_raise(propname) 
+            except AttributeError:
+                string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
+                raise AttributeError(string % (propname, dbobj,
+                                               dbobj.dbref,
+                                               dbobj.typeclass_path,))
 
     def __str__(self):
         "represent the object"

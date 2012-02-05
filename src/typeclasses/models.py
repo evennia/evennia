@@ -41,6 +41,11 @@ from src.utils.utils import is_iter, has_parent
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
+CTYPEGET = ContentType.objects.get
+GA = object.__getattribute__
+SA = object.__setattr__
+DA = object.__delattr__
+
 # used by Attribute to efficiently identify stored object types.
 # Note that these have to be updated if directory structure changes.
 PARENTS = {
@@ -359,7 +364,7 @@ class Attribute(SharedMemoryModel):
             # unpack a previously packed db_object
             try:
                 #print "unpack:", item.id, item.db_model
-                mclass = ContentType.objects.get(model=item.db_model).model_class()
+                mclass = CTYPEGET(model=item.db_model).model_class()
                 try:
                     ret = mclass.objects.dbref_search(item.id)
                 except AttributeError:
@@ -618,7 +623,7 @@ class TypedObject(SharedMemoryModel):
     #@property
     def typeclass_path_get(self):
         "Getter. Allows for value = self.typeclass_path"
-        typeclass_path = object.__getattribute__(self, 'cached_typeclass_path')
+        typeclass_path = GA(self, 'cached_typeclass_path')
         if typeclass_path: 
             return typeclass_path 
         return self.db_typeclass_path
@@ -627,7 +632,7 @@ class TypedObject(SharedMemoryModel):
         "Setter. Allows for self.typeclass_path = value"
         self.db_typeclass_path = value
         self.save()
-        object.__setattr__(self, 'cached_typeclass_path', value)
+        SA(self, 'cached_typeclass_path', value)
     #@typeclass_path.deleter
     def typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
@@ -698,9 +703,10 @@ class TypedObject(SharedMemoryModel):
 
     # Each subclass should set this property to their respective
     # attribute model (ObjAttribute, PlayerAttribute etc).
-    attribute_model_path = "src.typeclasses.models"
-    attribute_model_name = "Attribute"
+    #attribute_model_path = "src.typeclasses.models"
+    #attribute_model_name = "Attribute"
     typeclass_paths = settings.OBJECT_TYPECLASS_PATHS 
+    attribute_class = Attribute # replaced by relevant attribute class for child
 
     def __eq__(self, other):        
         return other and hasattr(other, 'id') and self.id == other.id
@@ -720,15 +726,15 @@ class TypedObject(SharedMemoryModel):
         have to be very careful to avoid loops.
         """
         try:
-            return object.__getattribute__(self, propname)
+            return GA(self, propname)
         except AttributeError:
             # check if the attribute exists on the typeclass instead
             # (we make sure to not incur a loop by not triggering the
             # typeclass' __getattribute__, since that one would
             # try to look back to this very database object.)
-            typeclass = object.__getattribute__(self, 'typeclass')                        
+            typeclass = GA(self, 'typeclass')                        
             if typeclass:
-                return object.__getattribute__(typeclass, propname)            
+                return GA(typeclass, propname)            
             else:
                 raise AttributeError
 
@@ -752,17 +758,17 @@ class TypedObject(SharedMemoryModel):
         types of objects that the game needs. This property
         handles loading and initialization of the typeclass on the fly.
 
-        Note: The liberal use of object.__getattribute__ and __setattr__ (instead
+        Note: The liberal use of GA and __setattr__ (instead
               of normal dot notation) is due to optimization: it avoids calling 
               the custom self.__getattribute__ more than necessary. 
         """        
 
-        path = object.__getattribute__(self, "cached_typeclass_path")
+        path = GA(self, "cached_typeclass_path")
         if not path: 
-            path = object.__getattribute__(self, 'db_typeclass_path')        
-        typeclass = object.__getattribute__(self, "cached_typeclass")
+            path = GA(self, 'db_typeclass_path')        
+        typeclass = GA(self, "cached_typeclass")
         try:
-            if typeclass and object.__getattribute__(typeclass, "path") == path:
+            if typeclass and GA(typeclass, "path") == path:
                 # don't call at_init() when returning from cache
                 return typeclass
         except AttributeError:
@@ -771,25 +777,25 @@ class TypedObject(SharedMemoryModel):
         errstring = ""
         if not path:
             # this means we should get the default obj without giving errors.
-            return object.__getattribute__(self, "get_default_typeclass")(cache=True, silent=True, save=True)
+            return GA(self, "get_default_typeclass")(cache=True, silent=True, save=True)
         else:                                   
             # handle loading/importing of typeclasses, searching all paths.
             # (self.typeclass_paths is a shortcut to settings.TYPECLASS_*_PATHS
             # where '*' is either OBJECT, SCRIPT or PLAYER depending on the typed
             # entities). 
-            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in object.__getattribute__(self, 'typeclass_paths')]
+            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in GA(self, 'typeclass_paths')]
            
             for tpath in typeclass_paths: 
 
                 # try to import and analyze the result
-                typeclass = object.__getattribute__(self, "_path_import")(tpath)
+                typeclass = GA(self, "_path_import")(tpath)
                 if callable(typeclass):
                     # we succeeded to import. Cache and return.   
-                    object.__setattr__(self, 'db_typeclass_path', tpath)
-                    object.__getattribute__(self, 'save')()
-                    object.__setattr__(self, "cached_typeclass_path", tpath)
+                    SA(self, 'db_typeclass_path', tpath)
+                    GA(self, 'save')()
+                    SA(self, "cached_typeclass_path", tpath)
                     typeclass = typeclass(self)
-                    object.__setattr__(self, "cached_typeclass", typeclass)
+                    SA(self, "cached_typeclass", typeclass)
                     try:
                         typeclass.at_init()
                     except Exception:
@@ -802,8 +808,8 @@ class TypedObject(SharedMemoryModel):
                     errstring += "\n%s" % typeclass # this will hold a growing error message. 
         # If we reach this point we couldn't import any typeclasses. Return default. It's up to the calling
         # method to use e.g. self.is_typeclass() to detect that the result is not the one asked for. 
-        object.__getattribute__(self, "_display_errmsg")(errstring)
-        return object.__getattribute__(self, "get_default_typeclass")(cache=False, silent=False, save=False)
+        GA(self, "_display_errmsg")(errstring)
+        return GA(self, "get_default_typeclass")(cache=False, silent=False, save=False)
 
     #@typeclass.deleter
     def typeclass_del(self):
@@ -878,34 +884,34 @@ class TypedObject(SharedMemoryModel):
 
         Default operation is to load a default typeclass.
         """
-        defpath = object.__getattribute__(self, "default_typeclass_path")                
-        typeclass = object.__getattribute__(self, "_path_import")(defpath)
+        defpath = GA(self, "default_typeclass_path")                
+        typeclass = GA(self, "_path_import")(defpath)
         # if not silent:
         #     #errstring = "\n\nUsing Default class '%s'." % defpath                
-        #     object.__getattribute__(self, "_display_errmsg")(errstring)
+        #     GA(self, "_display_errmsg")(errstring)
 
         if not callable(typeclass):
             # if typeclass still doesn't exist at this point, we're in trouble.
             # fall back to hardcoded core class which is wrong for e.g. scripts/players etc. 
             failpath = defpath
             defpath = "src.objects.objects.Object"
-            typeclass = object.__getattribute__(self, "_path_import")(defpath)
+            typeclass = GA(self, "_path_import")(defpath)
             if not silent:
                 #errstring = "  %s\n%s" % (typeclass, errstring)
                 errstring = "  Default class '%s' failed to load." % failpath
                 errstring += "\n  Using Evennia's default class '%s'." % defpath            
-                object.__getattribute__(self, "_display_errmsg")(errstring)
+                GA(self, "_display_errmsg")(errstring)
         if not callable(typeclass):
             # if this is still giving an error, Evennia is wrongly configured or buggy
             raise Exception("CRITICAL ERROR: The final fallback typeclass %s cannot load!!" % defpath)
         typeclass = typeclass(self)
         if save:
-            object.__setattr__(self, 'db_typeclass_path', defpath)
-            object.__getattribute__(self, 'save')()
+            SA(self, 'db_typeclass_path', defpath)
+            GA(self, 'save')()
         if cache:
-            object.__setattr__(self, "cached_typeclass_path", defpath)
+            SA(self, "cached_typeclass_path", defpath)
 
-            object.__setattr__(self, "cached_typeclass", typeclass)
+            SA(self, "cached_typeclass", typeclass)
         try:            
             typeclass.at_init()
         except Exception:
@@ -931,7 +937,7 @@ class TypedObject(SharedMemoryModel):
             pass 
         typeclasses = [typeclass] + ["%s.%s" % (path, typeclass) for path in self.typeclass_paths]
         if exact:
-            current_path = object.__getattribute__(self, "cached_typeclass_path")            
+            current_path = GA(self, "cached_typeclass_path")            
             return typeclass and any([current_path == typec for typec in typeclasses])
         else:
             # check parent chain
@@ -1033,12 +1039,9 @@ class TypedObject(SharedMemoryModel):
         
         attribute_name: (str) The attribute's name.
         """        
-        exec("from %s import %s" % (self.attribute_model_path, 
-                                    self.attribute_model_name))
-        model = eval("%s" % self.attribute_model_name)
-        attr = model.objects.attr_namesearch(attribute_name, self)
-        return attr.count() > 0
-
+        return self.attribute_class.objects.filter(db_obj=self).filter(
+            db_key__iexact=attribute_name).count()
+    
     def set_attribute(self, attribute_name, new_value=None):
         """
         Sets an attribute on an object. Creates the attribute if need
@@ -1049,53 +1052,47 @@ class TypedObject(SharedMemoryModel):
                                 a str, the object will be stored as a pickle.  
         """
         attrib_obj = None
-        if self.has_attribute(attribute_name):
-            exec("from %s import %s" % (self.attribute_model_path, 
-                                        self.attribute_model_name))          
-            model = eval("%s" % self.attribute_model_name)
-            #print "attr: model:", self.attribute_model_name
-            attrib_obj = \
-                model.objects.filter(
-                db_obj=self).filter(
-                db_key__iexact=attribute_name)[0]                        
-        if attrib_obj:                
-            # Save over the existing attribute's value.
-            #print "attr:overwrite: %s.%s = %s" % (attrib_obj.db_obj.key, attribute_name, new_value)
-            attrib_obj.value = new_value            
-        else:
-            # Create a new attribute            
-            exec("from %s import %s" % (self.attribute_model_path, 
-                                        self.attribute_model_name))          
-            new_attrib = eval("%s()" % self.attribute_model_name)            
-            new_attrib.db_key = attribute_name
-            new_attrib.db_obj = self
+        attrclass = self.attribute_class
+        try:
+            attrib_obj = attrclass.objects.filter(
+                db_obj=self).filter(db_key__iexact=attribute_name)[0]
+        except IndexError:
+            # no match; create new attribute
+            new_attrib = attrclass(db_key=attribute_name, db_obj=self)
             new_attrib.value = new_value            
-            #print "attr:new: %s.%s = %s" % (new_attrib.db_obj.key, attribute_name, new_value)
-
+            return 
+        # re-set an old attribute value 
+        attrib_obj.value = new_value 
+        
     def get_attribute(self, attribute_name, default=None):
         """
         Returns the value of an attribute on an object. You may need to
         type cast the returned value from this function since the attribute
-        can be of any type.
+        can be of any type. Returns default if no match is found. 
         
         attribute_name: (str) The attribute's name.
         default: What to return if no attribute is found
         """
-        if self.has_attribute(attribute_name):            
-            try:
-                exec("from %s import %s" % (self.attribute_model_path, 
-                                            self.attribute_model_name))          
-                model = eval("%s" % self.attribute_model_name)
-                attrib = model.objects.filter(
-                    db_obj=self).filter(
-                    db_key=attribute_name)[0]
-            except Exception:
-                # safety, if something goes wrong (like unsynced db), catch it.
-                logger.log_trace()
-                return default            
-            return attrib.value
-        else:
-            return default
+        attrib_obj = default
+        try:
+            attrib_obj = self.attribute_class.objects.filter(
+                db_obj=self).filter(db_key__iexact=attribute_name)[0]
+        except IndexError:
+            return default 
+        return attrib_obj.value
+
+    def get_attribute_raise(self, attribute_name):
+        """
+        Returns value of an attribute. Raises AttributeError
+        if no match is found.
+
+        attribute_name: (str) The attribute's name.
+        """
+        try:
+            return self.attribute_class.objects.filter(
+                db_obj=self).filter(db_key__iexact=attribute_name)[0].value
+        except IndexError:
+            raise AttributeError
                 
     def del_attribute(self, attribute_name):
         """
@@ -1103,23 +1100,30 @@ class TypedObject(SharedMemoryModel):
         
         attribute_name: (str) The attribute's name.
         """
-        exec("from %s import %s" % (self.attribute_model_path, 
-                                    self.attribute_model_name))          
-        model = eval("%s" % self.attribute_model_name)
-        #print "delete attr", model, attribute_name
+        try:
+            self.attribute_class.objects.filter(
+                db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
+        except IndexError:
+            pass 
 
-        attrs = \
-           model.objects.attr_namesearch(attribute_name, self)        
-        #print "found attrs:", attrs
-        if attrs:
-            attrs[0].delete()
+    def del_attribute_raise(self, attribute_name):
+        """
+        Removes and attribute. Raises AttributeError if 
+        attribute is not found. 
+
+        attribute_name: (str) The attribute's name.
+        """
+        try:
+            self.attribute_class.objects.filter(
+                db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
+        except IndexError:
+            raise AttributeError    
 
     def get_all_attributes(self):
         """
         Returns all attributes defined on the object.
-        """
-        attr_set_all = eval("self.%s_set.all()" % (self.attribute_model_name.lower()))
-        return [attr for attr in attr_set_all]
+        """        
+        return list(self.attribute_class.objects.filter(db_obj=self))
 
     def attr(self, attribute_name=None, value=None, delete=False):
         """
@@ -1131,8 +1135,7 @@ class TypedObject(SharedMemoryModel):
         set delete=True to delete the named attribute. 
 
         Note that you cannot set the attribute
-        value to None using this method should you
-        want that, use set_attribute for that. 
+        value to None using this method. Use set_attribute.
         """
         if attribute_name == None: 
             # act as a list method
@@ -1166,34 +1169,29 @@ class TypedObject(SharedMemoryModel):
             class DbHolder(object):
                 "Holder for allowing property access of attributes"
                 def __init__(self, obj):
-                    object.__setattr__(self, 'obj', obj)
+                    SA(self, 'obj', obj)
                 def __getattribute__(self, attrname):                   
-                    obj = object.__getattribute__(self, 'obj')                    
                     if attrname == 'all':
                         # we allow for overwriting the all() method
                         # with an attribute named 'all'. 
-                        attr = obj.get_attribute("all")
+                        attr = GA(self, 'obj').get_attribute("all")
                         if attr:
                             return attr
-                        return object.__getattribute__(self, 'all')                                        
-                    return obj.get_attribute(attrname)
-
+                        return GA(self, 'all')                                        
+                    return GA(self, 'obj').get_attribute(attrname)
                 def __setattr__(self, attrname, value):                    
-                    obj = object.__getattribute__(self, 'obj')
-                    obj.set_attribute(attrname, value)
+                    GA(self, 'obj').set_attribute(attrname, value)                    
                 def __delattr__(self, attrname):                    
-                    obj = object.__getattribute__(self, 'obj')                    
-                    obj.del_attribute(attrname)
+                    GA(self, 'obj').del_attribute(attrname)
                 def all(self):
-                    obj = object.__getattribute__(self, 'obj')
-                    return obj.get_all_attributes()
+                    return GA(self, 'obj').get_all_attributes()
             self._db_holder = DbHolder(self)
             return self._db_holder
     #@db.setter
     def db_set(self, value):
         "Stop accidentally replacing the db object"
         string = "Cannot assign directly to db object! "
-        string = "Use db.attr=value instead."
+        string += "Use db.attr=value instead."
         raise Exception(string)
     #@db.deleter
     def db_del(self):
@@ -1202,9 +1200,7 @@ class TypedObject(SharedMemoryModel):
     db = property(db_get, db_set, db_del)
 
     #
-    # NON-PERSISTENT store. If you want to loose data on server reboot 
-    # you should use this explicitly. Otherwise there is 
-    # little point in using the non-persistent methods. 
+    # NON-PERSISTENT storage methods
     #
 
     def nattr(self, attribute_name=None, value=None, delete=False):
@@ -1221,16 +1217,16 @@ class TypedObject(SharedMemoryModel):
                         if not val.startswith['_']]                        
         elif delete == True:
             if hasattr(self.ndb, attribute_name):
-                object.__delattr__(self.db, attribute_name)
+                DA(self.db, attribute_name)
         elif value == None:
             # act as a getter.
             if hasattr(self.ndb, attribute_name):
-                object.__getattribute__(self.ndb, attribute_name)
+                GA(self.ndb, attribute_name)
             else:
                 return None 
         else:
             # act as a setter
-            object.__setattr__(self.db, attribute_name, value)
+            SA(self.db, attribute_name, value)
             
     #@property
     def ndb_get(self):
@@ -1247,11 +1243,11 @@ class TypedObject(SharedMemoryModel):
                 "Holder for storing non-persistent attributes."
                 def all(self):
                     return [val for val in self.__dict__.keys() 
-                            if not val.startswith['_']]                    
+                            if not val.startswith['_']]
                 def __getattribute__(self, key):
                     # return None if no matching attribute was found. 
                     try:
-                        return object.__getattribute__(self, key)
+                        return GA(self, key)
                     except AttributeError:
                         return None 
             self._ndb_holder = NdbHolder()
@@ -1268,7 +1264,9 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete the ndb object!")
     ndb = property(ndb_get, ndb_set, ndb_del)
         
+    #
     # Lock / permission methods
+    #
 
     def access(self, accessing_obj, access_type='read', default=False):
         """

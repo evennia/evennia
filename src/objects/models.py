@@ -194,6 +194,7 @@ class ObjectDB(TypedObject):
         self.cmdset.update(init_mode=True)
         self.scripts = ScriptHandler(self)
         self.nicks = ObjectNickHandler(self)    
+        # store the attribute class
         
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -420,9 +421,10 @@ class ObjectDB(TypedObject):
     # 
 
     # this is required to properly handle attributes and typeclass loading.
-    attribute_model_path = "src.objects.models"
-    attribute_model_name = "ObjAttribute"
+    #attribute_model_path = "src.objects.models"
+    #attribute_model_name = "ObjAttribute"
     typeclass_paths = settings.OBJECT_TYPECLASS_PATHS 
+    attribute_class = ObjAttribute
 
     # this is used by all typedobjects as a fallback
     try:
