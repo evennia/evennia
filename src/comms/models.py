@@ -395,7 +395,7 @@ class Channel(SharedMemoryModel):
     # named same as the field, but withtout the db_* prefix.
     
     # unique identifier for this channel
-    db_key = models.CharField('key', max_length=255, unique=True)
+    db_key = models.CharField('key', max_length=255, unique=True, db_index=True)
     # optional description of channel 
     db_desc = models.CharField('description', max_length=80, blank=True, null=True)       
     # aliases for the channel. These are searched by cmdhandler

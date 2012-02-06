@@ -63,7 +63,7 @@ class Alias(SharedMemoryModel):
     is so as to allow for effective global searches also by
     alias. 
     """    
-    db_key = models.CharField('alias', max_length=255)
+    db_key = models.CharField('alias', max_length=255, db_index=True)
     db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
     
     class Meta:
@@ -168,13 +168,13 @@ class ObjectDB(TypedObject):
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing. 
-    db_location = models.ForeignKey('self', related_name="locations_set",
+    db_location = models.ForeignKey('self', related_name="locations_set",db_index=True,
                                      blank=True, null=True, verbose_name='game location')
     # a safety location, this usually don't change much.
     db_home = models.ForeignKey('self', related_name="homes_set",
                                  blank=True, null=True, verbose_name='home location')
     # destination of this object - primarily used by exits.
-    db_destination = models.ForeignKey('self', related_name="destinations_set", 
+    db_destination = models.ForeignKey('self', related_name="destinations_set", db_index=True,
                                        blank=True, null=True, verbose_name='destination',
                                        help_text='a destination, used only by exit objects.')
     # database storage of persistant cmdsets.

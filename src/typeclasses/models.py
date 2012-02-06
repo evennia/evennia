@@ -205,7 +205,7 @@ class Attribute(SharedMemoryModel):
     # These databse fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
-    db_key = models.CharField('key', max_length=255)
+    db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property 
     db_value = models.TextField('value', blank=True, null=True)
     # Lock storage 
@@ -547,7 +547,7 @@ class TypedObject(SharedMemoryModel):
     
     # Main identifier of the object, for searching. Can also
     # be referenced as 'name'. 
-    db_key = models.CharField('key', max_length=255)
+    db_key = models.CharField('key', max_length=255, db_index=True)
     # This is the python path to the type class this object is tied to
     # (the type class is what defines what kind of Object this is)
     db_typeclass_path = models.CharField('typeclass', max_length=255, null=True, help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")

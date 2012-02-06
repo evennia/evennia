@@ -147,11 +147,12 @@ class PlayerDB(TypedObject):
 
     # this is the one-to-one link between the customized Player object and
     # this profile model. It is required by django. 
-    user = models.ForeignKey(User, unique=True, 
+    user = models.ForeignKey(User, unique=True, db_index=True,
       help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
     # the in-game object connected to this player (if any). 
     # Use the property 'obj' to access. 
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, verbose_name="character", help_text='In-game object.')
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, 
+                               verbose_name="character", help_text='In-game object.')
     
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, 
