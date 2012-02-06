@@ -6,6 +6,10 @@ Evennia changes:
   normal dictionary. The old way caused very hard-to-diagnose bugs
   over long periods of time (which Evennia requires)
 
+  added save() overloading mechanism to update cache 
+
+  added get_all_cached_instances() for convenient access to objects
+
 """
 
 from django.db.models.base import Model, ModelBase
