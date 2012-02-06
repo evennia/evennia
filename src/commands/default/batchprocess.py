@@ -240,6 +240,7 @@ class CmdBatchCommands(MuxCommand):
             show_curr(caller)
         else:
             caller.msg("Running Batch-command processor - Automatic mode for %s ..." % python_path)
+            
             # add the 'safety' cmdset in case the batch processing adds cmdsets to us
             for inum in range(len(commands)):
                 # loop through the batch file 

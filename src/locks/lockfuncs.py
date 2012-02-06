@@ -120,18 +120,20 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     is part of PERMISSION_HIERARCHY, permission is also granted
     to all ranks higher up in the hierarchy. 
     """
-    if not args:
+    try:
+        perm = args[0].lower()
+        permissions = [p.lower() for p in accessing_obj.permissions]
+    except AttributeError, IndexError:
         return False 
-    perm = args[0].lower()
-    if hasattr(accessing_obj, 'permissions'):
-        if perm in [p.lower() for p in accessing_obj.permissions]:
-            # simplest case - we have a direct match
-            return True 
-        if perm in PERMISSION_HIERARCHY:
-            # check if we have a higher hierarchy position
-            ppos = PERMISSION_HIERARCHY.index(perm)
-            return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY) 
-                       if hperm in [p.lower() for p in accessing_obj.permissions] and hpos > ppos)
+    
+    if perm in permissions:
+        # simplest case - we have a direct match
+        return True 
+    if perm in PERMISSION_HIERARCHY:
+        # check if we have a higher hierarchy position
+        ppos = PERMISSION_HIERARCHY.index(perm)
+        return any(1 for hpos, hperm in enumerate(PERMISSION_HIERARCHY)
+                   if hperm in permissions and hpos > ppos)
     return False 
 
 def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
@@ -141,10 +143,16 @@ def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
     it's assumed we refer to superuser. If no hierarchy is defined,
     this function has no meaning and returns False. 
     """
-    if args and args[0].lower() in PERMISSION_HIERARCHY:
-        ppos = PERMISSION_HIERARCHY.index(args[0].lower())
-        return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY)
+    try:
+        perm = args[0].lower()
+    except IndexError:
+        return False 
+
+    if perm in PERMISSION_HIERARCHY:
+        ppos = PERMISSION_HIERARCHY.index(perm)
+        return any(1 for hpos, hperm in enumerate(PERMISSION_HIERARCHY)
                    if hperm in [p.lower() for p in accessing_obj.permissions] and hpos > ppos)
+    return False 
 
 def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -204,6 +212,15 @@ def pid(accessing_obj, accessed_obj, *args, **kwargs):
     return dbref(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
 
 
+# this is more efficient than multiple if ... elif statments 
+CF_MAPPING = {'eq': lambda val1, val2: val1 == val2 or int(val1) == int(val2),
+              'gt': lambda val1, val2: int(val1) > int(val2),
+              'lt': lambda val1, val2: int(val1) < int(val2),
+              'ge': lambda val1, val2: int(val1) >= int(val2),
+              'le': lambda val1, val2: int(val1) <= int(val2),
+              'ne': lambda val1, val2: int(val1) != int(val2),
+              'default': lambda val1, val2: False}
+
 def attr(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -233,24 +250,11 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     compare = 'eq'
     if kwargs:
         compare = kwargs.get('compare', 'eq')
-
+               
     def valcompare(val1, val2, typ='eq'):
         "compare based on type"
         try:
-            if typ == 'eq':
-                return val1 == val2 or int(val1) == int(val2)
-            elif typ == 'gt':
-                return int(val1) > int(val2)
-            elif typ == 'lt':
-                return int(val1) < int(val2)
-            elif typ == 'ge':
-                return int(val1) >= int(val2)
-            elif typ == 'le':
-                return int(val1) <= int(val2)
-            elif typ == 'ne':
-                return int(val1) != int(val2)
-            else:
-                return False 
+            return CF_MAPPING.get(typ, 'default')(val1, val2)
         except Exception, e:
             #print e
             # this might happen if we try to compare two things that cannot be compared

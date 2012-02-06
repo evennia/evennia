@@ -76,6 +76,8 @@ def create_objects():
     string += " From here you are ready to begin development."
     string += " If you should need help or would like to participate"
     string += " in community discussions, visit http://evennia.com."
+    string += " If you are logged in as User #1 you can create a"
+    string += " demo/tutorial area with '@batchcommand contrib.tutorial_world.build'."
     string = _(string)
     limbo_obj.db.desc = string
     limbo_obj.save()
