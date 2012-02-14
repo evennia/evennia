@@ -425,6 +425,7 @@ class ObjectDB(TypedObject):
     #attribute_model_name = "ObjAttribute"
     typeclass_paths = settings.OBJECT_TYPECLASS_PATHS 
     attribute_class = ObjAttribute
+    db_model_name = "objectdb" # used by attributes to safely store objects
 
     # this is used by all typedobjects as a fallback
     try:

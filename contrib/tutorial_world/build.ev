@@ -224,8 +224,8 @@ start
 @create/drop The sea (in the distance);sea;ocean
 #
 @desc sea =
- The grey sea stretches as far as the eye can se to the east, and far below you its waves crash
- against the foot of the cliff. The vast inland moors meets the ocean along a high and uninviting
+ The grey sea stretches as far as the eye can see to the east. Far below you its waves crash
+ against the foot of the cliff. The vast inland moor meets the ocean along a high and uninviting
  coastline of ragged vertical stone.
  
  Once this part of the world might have been beautiful, but now the eternal winds and storms have
@@ -287,16 +287,15 @@ north
  : tutorial_world.rooms.TutorialRoom 
  = enter;in,leave;out
 #
-@desc The Evennia Inn consist mainly of one large room filled with tables. The bardisk extends 
+@desc The Evennia Inn consists of one large room filled with tables. The bardisk extends 
  along the east wall, where multiple barrels and bottles line the shelves. The barkeep seems busy 
  handing out ale and chatting with the patrons, which are a rowdy and cheerful lot, keeping the sound
- level only just below thunderous. 
+ level only just below thunderous. This is a rare spot of warmth and mirth on this dread moor.
 
 
  Soon you have a beer in hand and is chatting with the locals. Your eye fall on a {wbarrel{n in a corner with a few 
- old rusty weapons sticking out. There is a sign next to it: {wFree to take{n. 
- 
- A patron tells you cheerfully that it's the leftovers from those foolish adventurers that challenged the old ruin before you ... 
+ old rusty weapons sticking out. There is a sign next to it: {wFree to take{n. A patron tells you cheerfully that 
+ it's the leftovers from those foolish adventurers that challenged the old ruin before you ... 
 #
 @set here/tutorial_info = 
  Nothing special about this room, only a bonus place to go for chatting

@@ -55,7 +55,7 @@ class GameTime(Script):
         self.persistent = True         
         self.start_delay = True 
         self.attr("game_time", 0.0) #IC time
-        self.attr("run_time", 0.0) #OOC time 
+        self.attr("run_time", 0.0) #OOC time         
         self.attr("up_time", 0.0) #OOC time 
 
     def at_repeat(self):

@@ -249,6 +249,7 @@ class ScriptDB(TypedObject):
     #attribute_model_name = "ScriptAttribute"
     typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS 
     attribute_class = ScriptAttribute
+    db_model_name = "scriptdb" # used by attributes to safely store objects
 
     # this is used by all typedobjects as a fallback
     try:

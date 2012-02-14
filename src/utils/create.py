@@ -399,7 +399,7 @@ def create_player(name, email, password,
 
     from src.players.models import PlayerDB
     from src.players.player import Player
-
+    
     if not email:
         email = "dummy@dummy.com"
     if user:
@@ -410,7 +410,6 @@ def create_player(name, email, password,
             new_user = User.objects.create_superuser(name, email, password)
         else:
             new_user = User.objects.create_user(name, email, password) 
-
     try:
         if not typeclass:
             typeclass = settings.BASE_PLAYER_TYPECLASS
@@ -464,7 +463,7 @@ def create_player(name, email, password,
                                           player=new_player)        
             return new_character
         return new_player
-    except Exception:
+    except Exception,e:
         # a failure in creating the character
         if not user:
             # in there was a failure we clean up everything we can

@@ -269,6 +269,7 @@ class PlayerDB(TypedObject):
     #attribute_model_name = "PlayerAttribute"
     typeclass_paths = settings.PLAYER_TYPECLASS_PATHS 
     attribute_class = PlayerAttribute
+    db_model_name = "playerdb" # used by attributes to safely store objects
 
         # name property (wraps self.user.username)
     #@property

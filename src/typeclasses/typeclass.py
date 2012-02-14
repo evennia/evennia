@@ -25,7 +25,8 @@ DA = object.__delattr__
 # full access anyway), so no protection against changing
 # e.g. 'locks' or 'permissions' should go here.
 PROTECTED = ('id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass',
-             'attr', 'save', 'delete')
+             'attr', 'save', 'delete', 'db_model_name','attribute_class',
+             'typeclass_paths')
 
 # If this is true, all non-protected property assignments
 # are directly stored to a database attribute
@@ -207,3 +208,5 @@ class TypeClass(object):
     def __str__(self):
         "represent the object"
         return self.key
+    def __unicode__(self):
+        return u"%s" % self.key
