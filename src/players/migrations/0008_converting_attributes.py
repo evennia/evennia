@@ -14,7 +14,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        for attr in orb.PlayerAttribute.objects.all():
+        for attr in orm.PlayerAttribute.objects.all():
             attr.value = pickle.loads(to_str(attr.db_value))
 
     def backwards(self, orm):
