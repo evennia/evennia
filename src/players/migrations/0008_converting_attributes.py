@@ -9,13 +9,22 @@ try:
 except ImportError:
     import pickle
 from src.utils.utils import to_str, to_unicode
+from src.typeclasses.models import PackedDBobject
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
         for attr in orm.PlayerAttribute.objects.all():
-            attr.value = pickle.loads(to_str(attr.db_value))
+            # repack attr into new format, and reimport
+            val = pickle.loads(to_str(attr.db_value))
+            if hasattr(val, '__iter__'):
+                val = ("iter", val)
+            elif type(val) == PackedDBobject:
+                val = ("dbobj", val)
+            else:
+                val = ("simple", val)
+            attr.value = attr.from_attr(val)
 
     def backwards(self, orm):
         "Write your backwards methods here."

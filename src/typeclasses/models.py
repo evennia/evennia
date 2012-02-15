@@ -70,20 +70,20 @@ PDUMPS = pickle.dumps
 #
 #------------------------------------------------------------
 
-class PackedDBobject(dict):
+class PackedDBobject(object):
     """
     Attribute helper class.
     A container for storing and easily identifying database objects in 
     the database (which doesn't suppport storing db_objects directly).
     """
     def __init__(self, ID, db_model, db_key):        
-        self['id'] = ID
-        self['db_model'] = db_model
-        self['key'] = db_key
+        self.id = ID
+        self.db_model = db_model
+        self.key = db_key
     def __str__(self):        
-        return "%s(#%s)" % (self['key'], self['id'])
+        return "%s(#%s)" % (self.key, self.id)
     def __unicode__(self):
-        return u"%s(#%s)" % (self['key'], self['id'])
+        return u"%s(#%s)" % (self.key, self.id)
 
 class PackedDict(dict):
     """
@@ -418,7 +418,7 @@ class Attribute(SharedMemoryModel):
             if db_model_name == "typeclass":
                 # typeclass cannot help us, we want the actual child object model name
                 db_model_name = GA(data.dbobj, "db_model_name")
-            return ("dbobj", PackedDBobject(data.id, db_model_name, data.db_key))
+            return ("dbobj", PackedDBobject(data.id, db_model_name, data.db_key))        
         elif hasattr(data, "__iter__"): 
             return ("iter", iter_db2id(data))
         else:
@@ -447,12 +447,13 @@ class Attribute(SharedMemoryModel):
             """
             Convert db-stored dbref back to object
             """
-            mclass = CTYPEGET(model=data["db_model"]).model_class()
+            mclass = CTYPEGET(model=data.db_model).model_class()
             try:
-                return mclass.objects.dbref_search(data['id'])
+                return mclass.objects.dbref_search(data.id)
+
             except AttributeError:
                 try:
-                    return mclass.objects.get(id=data['id'])
+                    return mclass.objects.get(id=data.id)
                 except mclass.DoesNotExist: # could happen if object was deleted in the interim.
                     return None                
 

@@ -18,9 +18,38 @@ from subprocess import Popen, call
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
+if not os.path.exists('settings.py'):
+    # make sure we have a settings.py file.
+    print _("    No settings.py file found. launching manage.py ...")
+
+    import game.manage
+
+    print _("""
+    ... A new settings file was created. Edit this file to configure
+    Evennia as desired by copy&pasting options from
+    src/settings_default.py.
+
+    You should then also create/configure the database using
+
+        python manage.py syncdb
+
+    Make sure to create a new admin user when prompted -- this will be
+    user #1 in-game.  If you use django-south, you'll see mentions of
+    migrating things in the above run. You then also have to run
+
+        python manage.py migrate
+
+    If you use default sqlite3 database, you will find a file
+    evennia.db appearing. This is the database file. Just delete this
+    and repeat the above manage.py steps to start with a fresh
+    database.
+
+    When you are set up, run evennia.py again to start the server.""")
+    sys.exit()
+
 # i18n
 from django.utils.translation import ugettext as _
-
+# signal processing 
 SIG = signal.SIGINT
 
 HELPENTRY = \
@@ -106,35 +135,6 @@ PORTAL_PIDFILE = "portal.pid"
 
 SERVER_RESTART = "server.restart"
 PORTAL_RESTART = "portal.restart"
-
-if not os.path.exists('settings.py'):
-    # make sure we have a settings.py file.
-    print _("    No settings.py file found. launching manage.py ...")
-
-    import game.manage
-
-    print _("""
-    ... A new settings file was created. Edit this file to configure
-    Evennia as desired by copy&pasting options from
-    src/settings_default.py.
-
-    You should then also create/configure the database using
-
-        python manage.py syncdb
-
-    Make sure to create a new admin user when prompted -- this will be
-    user #1 in-game.  If you use django-south, you'll see mentions of
-    migrating things in the above run. You then also have to run
-
-        python manage.py migrate
-
-    If you use default sqlite3 database, you will find a file
-    evennia.db appearing. This is the database file. Just delete this
-    and repeat the above manage.py steps to start with a fresh
-    database.
-
-    When you are set up, run evennia.py again to start the server.""")
-    sys.exit()
 
 # Get the settings
 from django.conf import settings
