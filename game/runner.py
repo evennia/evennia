@@ -35,12 +35,9 @@ PORTAL_RESTART = "portal.restart"
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
-# i18n
-from django.utils.translation import ugettext as _
-
 if not os.path.exists('settings.py'):
 
-    print _("No settings.py file found. Run evennia.py to create it.")
+    print "No settings.py file found. Run evennia.py to create it."
     sys.exit()
                      
 # Get the settings
@@ -72,7 +69,7 @@ if os.name == 'nt':
     if not os.path.exists(TWISTED_BINARY):
         err = True 
     if err:
-        print _("Twisted binary for Windows is not ready to use. Please run evennia.py.")
+        print "Twisted binary for Windows is not ready to use. Please run evennia.py."
         sys.exit()
 
 # Functions 
@@ -146,14 +143,14 @@ def start_services(server_argv, portal_argv):
         try: 
             rc = Popen(server_argv).wait()
         except Exception, e:
-            print _("Server process error: %(e)s") % {'e': e}
+            print "Server process error: %(e)s" % {'e': e}
         queue.put(("server_stopped", rc)) # this signals the controller that the program finished
 
     def portal_waiter(queue):                
         try: 
             rc = Popen(portal_argv).wait()
         except Exception, e:
-            print _("Portal process error: %(e)s") % {'e': e}
+            print "Portal process error: %(e)s" % {'e': e}
         queue.put(("portal_stopped", rc)) # this signals the controller that the program finished
                     
     if server_argv:
@@ -179,13 +176,13 @@ def start_services(server_argv, portal_argv):
 
         # restart only if process stopped cleanly
         if message == "server_stopped" and int(rc) == 0 and get_restart_mode(SERVER_RESTART):
-            print _("Evennia Server stopped. Restarting ...")            
+            print "Evennia Server stopped. Restarting ..."            
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue 
 
         # normally the portal is not reloaded since it's run as a daemon.
         if message == "portal_stopped" and int(rc) == 0 and get_restart_mode(PORTAL_RESTART):
-            print _("Evennia Portal stopped in interactive mode. Restarting ...")
+            print "Evennia Portal stopped in interactive mode. Restarting ..."
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))                            
             continue 
         break 
@@ -198,19 +195,19 @@ def main():
     """
     
     parser = OptionParser(usage="%prog [options] start",
-                          description=_("This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism)."))
+                          description="This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism).")
     parser.add_option('-s', '--noserver', action='store_true', 
                       dest='noserver', default=False,
-                      help=_('Do not start Server process'))
+                      help='Do not start Server process')
     parser.add_option('-p', '--noportal', action='store_true', 
                       dest='noportal', default=False,
-                      help=_('Do not start Portal process'))
+                      help='Do not start Portal process')
     parser.add_option('-i', '--iserver', action='store_true', 
                       dest='iserver', default=False,
-                      help=_('output server log to stdout instead of logfile'))
+                      help='output server log to stdout instead of logfile')
     parser.add_option('-d', '--iportal', action='store_true', 
                       dest='iportal', default=False,
-                      help=_('output portal log to stdout. Does not make portal a daemon.'))
+                      help='output portal log to stdout. Does not make portal a daemon.')
     parser.add_option('-S', '--profile-server', action='store_true',
                       dest='sprof', default=False,
                       help='run server under cProfile')
@@ -249,7 +246,7 @@ def main():
     
     pid = get_pid(SERVER_PIDFILE)
     if pid and not options.noserver:
-            print _("\nEvennia Server is already running as process %(pid)s. Not restarted.") % {'pid': pid}
+            print "\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid}
             options.noserver = True
     if options.noserver:
         server_argv = None         
@@ -258,9 +255,9 @@ def main():
         if options.iserver:
             # don't log to server logfile
             del server_argv[2]
-            print _("\nStarting Evennia Server (output to stdout).")
+            print "\nStarting Evennia Server (output to stdout)."
         else:
-            print _("\nStarting Evennia Server (output to server logfile).")
+            print "\nStarting Evennia Server (output to server logfile)."
         if options.sprof:
             server_argv.extend(sprof_argv)
             print "\nRunning Evennia Server under cProfile."
@@ -271,7 +268,7 @@ def main():
 
     pid = get_pid(PORTAL_PIDFILE)
     if pid and not options.noportal:
-        print _("\nEvennia Portal is already running as process %(pid)s. Not restarted.") % {'pid': pid}    
+        print "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid}    
         options.noportal = True             
     if options.noportal:
         portal_argv = None 
@@ -281,10 +278,10 @@ def main():
             portal_argv[1] = '--nodaemon'
             PORTAL_INTERACTIVE = True                     
             set_restart_mode(PORTAL_RESTART, True)
-            print _("\nStarting Evennia Portal in non-Daemon mode (output to stdout).")    
+            print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
         else:
             set_restart_mode(PORTAL_RESTART, False)
-            print _("\nStarting Evennia Portal in Daemon mode (output to portal logfile).")            
+            print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
         if options.pprof:
             server_argv.extend(pprof_argv)
             print "\nRunning Evennia Portal under cProfile."
