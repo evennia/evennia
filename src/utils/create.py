@@ -126,7 +126,9 @@ def create_object(typeclass, key=None, location=None,
 # Script creation 
 #
 
-def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
+def create_script(typeclass, key=None, obj=None, locks=None, 
+                  interval=None, start_delay=None, repeats=None, 
+                  persistent=None, autostart=True):
     """
     Create a new script. All scripts are a combination
     of a database object that communicates with the
@@ -197,11 +199,18 @@ def create_script(typeclass, key=None, obj=None, locks=None, autostart=True):
 
     # custom-given variables override the hook
     if key:
-        new_script.key = key 
-
+        new_script.key = key        
     if locks:
         new_script.locks.add(locks)
-
+    if interval != None: 
+        new_script.interval = interval
+    if start_delay != None:
+        new_script.start_delay = start_delay
+    if repeats != None:
+        new_script.repeats = repeats
+    if persistent != None:
+        new_script.persistent = persistent
+    
     # a new created script should usually be started.
     if autostart:
         new_script.start()
