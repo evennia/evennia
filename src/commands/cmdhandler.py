@@ -238,7 +238,7 @@ def cmdhandler(caller, raw_string, testing=False):
             # post-command hook
             cmd.at_post_cmd()
 
-            if cmd.save_next:
+            if cmd.save_for_next:
                 # store a reference to this command, possibly
                 # accessible by the next command.
                 caller.ndb.last_cmd = copy(cmd)
