@@ -35,6 +35,7 @@ command line. The process is as follows:
 
 """
 
+from copy import copy
 from traceback import format_exc
 from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
@@ -225,7 +226,7 @@ def cmdhandler(caller, raw_string, testing=False):
             if testing:
                 # only return the command instance
                 return cmd
-
+        
             # pre-command hook
             cmd.at_pre_cmd()
 
@@ -236,6 +237,14 @@ def cmdhandler(caller, raw_string, testing=False):
 
             # post-command hook
             cmd.at_post_cmd()
+
+            if cmd.save_next:
+                # store a reference to this command, possibly
+                # accessible by the next command.
+                caller.ndb.last_cmd = copy(cmd)
+            else:
+                caller.ndb.last_cmd = None 
+            
             # Done! By default, Evennia does not use this return at all
             return ret 
 

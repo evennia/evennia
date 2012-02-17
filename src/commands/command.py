@@ -26,6 +26,8 @@ class CommandMeta(type):
             except Exception: 
                 mcs.aliases = []
         mcs.aliases = [str(alias).strip() for alias in mcs.aliases]
+        if not hasattr(mcs, "save_next"):
+            mcs.save_next = False
 
         # pre-process locks as defined in class definition
         temp = []

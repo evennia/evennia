@@ -1,7 +1,7 @@
 """
 CmdSethandler
 
-The Cmdhandler tracks an object's 'Current CmdSet', which is the
+The Cmdsethandler tracks an object's 'Current CmdSet', which is the
 current merged sum of all CmdSets added to it.
 
 A CmdSet constitues a set of commands. The CmdSet works as a special
