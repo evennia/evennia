@@ -20,11 +20,11 @@ Log in as superuser (#1), then run
 
  @batchcommand contrib.tutorial_world.build
 
-Wait for building to complete. This should build the world and 
-connect it to Limbo. 
+Wait a little while for building to complete. This should build the
+world and connect it to Limbo.
 
 Log is as a non-superuser to play the game as intended. The
-tutorial area's systems mostly ignores the prescence of a 
+tutorial area's systems mostly ignores the presence of a 
 superuser (so use that to examine things "under the hood" later).
 
 ================================================================
@@ -37,10 +37,13 @@ effects and might give some good ideas along the way.
 
 It's suggested you play it through (as a normal user, NOT as
 Superuser!) and explore it a bit, then come back here and start
-looking into the (heavily documented) source code to find out how
-things tick - that's the "tutorial" in Tutorial world after all.
+looking into the (heavily documented) build/source code to find out
+how things tick - that's the "tutorial" in Tutorial world after all.
 
 Please report bugs in the tutorial to the Evennia issue tracker. 
+
+
+
 
 
 
@@ -72,20 +75,20 @@ tutorial game. *
     ++---------+       \  +--------+    +--------+   +---+----+
     |intro     |        \ |cell    |    |trap    |   |temple  |
  o--+          |         \|        +----+        |   |        |
-    |          |          \        |   /|        |   |        |
-    +----+-----+          +--------+  / ---+-+-+-+   +---+----+
-         |                           /     | | |         |
-    +----+-----+          +--------+/   +--+-+-+---------+----+
-    |outro     |          |tomb    |    |antechamber          |
+L   |          |          \        |   /|        |   |        |
+I   +----+-----+          +--------+  / ---+-+-+-+   +---+----+
+M        |                           /     | | |         |
+B   +----+-----+          +--------+/   +--+-+-+---------+----+
+O   |outro     |          |tomb    |    |antechamber          |
  o--+          +----------+        |    |                     |
     |          |          |        |    |                     |
     +----------+          +--------+    +---------------------+
 
-Notes: 
+Hints/Notes: 
 
 o-- connections to/from Limbo
 intro/outro areas are rooms that automatically sets/cleans the 
-            Character of any settings incured upon it during the
+            Character of any settings assigned to it during the
             tutorial game. 
 The Cliff is a good place to get an overview of the surroundings.
 The Bridge may seem like a big room, but it is really only one
@@ -102,6 +105,6 @@ The Catacombs feature a puzzle for finding the correct Grave
 The Cell  is your reward if you fail in various ways. Finding a 
           way out of it is a small puzzle of its own. 
 The Tomb  is a nice place to find a weapon that can hurt the 
-          castle guardian. This is infact the goal of the tutorial.
+          castle guardian. This is the goal of the tutorial.
           Explore on, or take the exit to finish the tutorial. 
 ?  - look into the code if you cannot find this bonus area!
