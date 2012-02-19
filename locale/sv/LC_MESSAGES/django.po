@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-03 20:21+0100\n"
-"PO-Revision-Date: 2011-11-03 22:23+0100\n"
+"POT-Creation-Date: 2012-02-19 10:36+0100\n"
+"PO-Revision-Date: 2012-02-19 10:45+0100\n"
 "Last-Translator: Griatch <griatch@gmail.com>\n"
 "Language-Team: Griatch <griatch@gmail.com>\n"
 "Language: \n"
@@ -19,385 +19,6 @@ msgstr ""
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: Sweden\n"
 "X-Poedit-SourceCharset: utf-8\n"
-
-#: game/evennia.py:27
-#, python-format
-msgid ""
-"\n"
-"                                                 (version %s) \n"
-"\n"
-"This program launches Evennia with various options. You can access all\n"
-"this functionality directly from the command line; for example option\n"
-"five (restart server) would be \"evennia.py restart server\".  Use\n"
-"\"evennia.py -h\" for command line options.\n"
-"\n"
-"Evennia consists of two separate programs that both must be running\n"
-"for the game to work as it should:\n"
-"\n"
-"Portal - the connection to the outside world (via telnet, web, ssh\n"
-"         etc). This is normally running as a daemon and don't need to\n"
-"         be reloaded unless you are debugging a new connection\n"
-"         protocol. As long as this is running, players won't loose\n"
-"         their connection to your game. Only one instance of Portal\n"
-"         will be started, more will be ignored.\n"
-"Server - the game server itself. This will often need to be reloaded\n"
-"         as you develop your game. The Portal will auto-connect to the\n"
-"         Server whenever the Server activates. We will also make sure\n"
-"         to automatically restart this whenever it is shut down (from\n"
-"         here or from inside the game or via task manager etc). Only\n"
-"         one instance of Server will be started, more will be ignored.\n"
-"\n"
-"In a production environment you will want to run with the default\n"
-"option (1), which runs as much as possible as a background\n"
-"process. When developing your game it is however convenient to\n"
-"directly see tracebacks on standard output, so starting with options\n"
-"2-4 may be a good bet. As you make changes to your code, reload the\n"
-"server (option 5) to make it available to users.\n"
-"\n"
-"Reload and stop is not well supported in Windows. If you have issues, log\n"
-"into the game to stop or restart the server instead. \n"
-msgstr ""
-"\n"
-"                                                 (version %s) \n"
-"\n"
-"Detta program startar Evennia med olika funktionalitet. Du kan se alla\n"
-"functioner direkt från kommandoraden; t.ex så motsvarar val nummer 5\n"
-"(starta om servern) kommandot \"evennia.py restart server\" Använd \n"
-"\"evennia.py -h för att lista alla möjliga kommandon. \n"
-"\n"
-"Evennia består av tvp separata program som båda måste vara igång\n"
-"för att servern ska fungera:\n"
-"\n"
-"Portal - Kopplingen till omvärlden (via telnet, web, ssh etc). Portalen\n"
-"         körs vanligen som en \"demon\" och behöver inte startas om\n"
-"         såtillvida du inte debuggar ett nytt nätverksprotokoll. Så länge\n"
-"         Portalen kör så kommer inte spelare att förlora kontakten med\n"
-"         spelet. Bara en instans av Portalen kan starts p¨ en gång, ytterligare\n"
-"         instanser kommer att ignoreras\n"
-"Server - Spelservern själv. Denna kan ofta behöva starts om medan\n"
-"         du utvecklar ditt spel. Portalen kommer att automatiskt ansluta\n"
-"         till Servern så fort denna startar. Servern startar också automatiskt\n"
-"         om så fort den stängs ner (innfrån spelet eller via operativsystemet).\n"
-"         Bara en instans av Server kan vara igång samtidigt. \n"
-"\n"
-"När servern är öppen för allmänheten är det lämpligt att använda val (1)\n"
-"som innebär att så mycket som möjligt jörs i bakgrunden.\n"
-" När man utvecklar sitt spel är det dock bekvämt att direkt se felmeddanden\n"
-"i terminalen. För detta är val 2-4 bra val. Starta om servern när ny kod är\n"
-"på plats genom att använda val (5).\n"
-"\n"
-"Omstart och stopp fungerar inte så bra i Windows. Om du har problem, \n"
-"loggin in i spelet och starta om innifrån istället.\n"
-
-#: game/evennia.py:63
-msgid ""
-"\n"
-"+---------------------------------------------------------------------------+\n"
-"|                                                                           |\n"
-"|                    Welcome to the Evennia launcher!                       |\n"
-"|                                                                           |\n"
-"|                Pick an option below. Use 'h' to get help.                 |\n"
-"|                                                                           |\n"
-"+--- Starting (will not restart already running processes) -----------------+\n"
-"|                                                                           |\n"
-"|  1) (default):      Start Server and Portal. Portal starts in daemon mode.|\n"
-"|                     All output is to logfiles.                            |\n"
-"|  2) (game debug):   Start Server and Portal. Portal starts in daemon mode.|\n"
-"|                     Server outputs to stdout instead of logfile.          |\n"
-"|  3) (portal debug): Start Server and Portal. Portal starts in non-daemon  |\n"
-"|                     mode (can be reloaded) and logs to stdout.            |\n"
-"|  4) (full debug):   Start Server and Portal. Portal starts in non-daemon  |\n"
-"|                     mode (can be reloaded). Both log to stdout.           |\n"
-"|                                                                           |\n"
-"+--- Restarting (must first be started) ------------------------------------+\n"
-"|                                                                           |\n"
-"|  5) Reload the Server                                                     |\n"
-"|  6) Reload the Portal (only works in non-daemon mode. If running          |\n"
-"|       in daemon mode, Portal needs to be restarted manually (option 1-4)) |\n"
-"|                                                                           |\n"
-"+--- Stopping (must first be started) --------------------------------------+\n"
-"|                                                                           |\n"
-"|  7) Stopping both Portal and Server. Server will not restart.             |\n"
-"|  8) Stopping only Server. Server will not restart.                        |\n"
-"|  9) Stopping only Portal.                                                 |\n"
-"|                                                                           |\n"
-"+---------------------------------------------------------------------------+\n"
-"|  h) Help                                                                  |\n"
-"|  q) Quit                                                                  |\n"
-"+---------------------------------------------------------------------------+\n"
-msgstr ""
-"\n"
-"+---------------------------------------------------------------------------+\n"
-"|                                                                           |\n"
-"|                    Välkommen till Evennia!                                |\n"
-"|                                                                           |\n"
-"|                Välj nedan. Ge '-h' för att få hjälp.                      |\n"
-"|                                                                           |\n"
-"+--- Starta (kommer inte att starta om existerande processer)-------------+\n"
-"|                                                                           |\n"
-"|  1) (förvalt):      Start Server och Portal. Portalen startar som demon|n|                     Alla meddelanden till loggfiler                       |\n"
-"|  2) (spelutveckling): Starta Server och Portal. Portalen startar som    .|\n"
-"|                     demon. Server meddelar till terminal.                 |\n"
-"|  3) (portal debug): StartaServer and Portal. Portal startar som           |\n"
-"|                     icke-demon.                                          |\n"
-"|  4) (full debug):   StartaServer and Portal. Båda  startar som            |\n"
-"|                     icke-demon. Båda meddear till terminal.               |\n"
-"|                                                                           |\n"
-"+--- Starta om (måste först vara startad)-----------------------------------+\n"
-"|                                                                           |\n"
-"|  5) Starta om Server                                                      |\n"
-"|  6) Starta om Portalen (funkar bara som icke-demon). Om man kör           |\n"
-"|       som demon så måste Portalen startas om manuellt (val 1-4)           |\n"
-"|                                                                           |\n"
-"+--- Stopp (måste först vara startad) --------------------------------------+\n"
-"|                                                                           |\n"
-"|  7) Stoppa både Portal och Server. Server startar inte om.                |\n"
-"|  8) Stoppa bara Server. Server kommer inte att starta om.                 |\n"
-"|  9) Stoppa bara Portalen.                                                 |\n"
-"|                                                                           |\n"
-"+---------------------------------------------------------------------------+\n"
-"|  h) Hjälp                                                                 |\n"
-"|  q) Avsluta                                                               |\n"
-"+---------------------------------------------------------------------------+\n"
-
-#: game/evennia.py:112
-msgid "    No settings.py file found. launching manage.py ..."
-msgstr "   Filen \"settings.py\" hittades inte. Startar manage.py ..."
-
-#: game/evennia.py:116
-msgid ""
-"\n"
-"    ... A new settings file was created. Edit this file to configure\n"
-"    Evennia as desired by copy&pasting options from\n"
-"    src/settings_default.py.\n"
-"\n"
-"    You should then also create/configure the database using\n"
-"\n"
-"        python manage.py syncdb\n"
-"\n"
-"    Make sure to create a new admin user when prompted -- this will be\n"
-"    user #1 in-game.  If you use django-south, you'll see mentions of\n"
-"    migrating things in the above run. You then also have to run\n"
-"\n"
-"        python manage.py migrate\n"
-"\n"
-"    If you use default sqlite3 database, you will find a file\n"
-"    evennia.db appearing. This is the database file. Just delete this\n"
-"    and repeat the above manage.py steps to start with a fresh\n"
-"    database.\n"
-"\n"
-"    When you are set up, run evennia.py again to start the server."
-msgstr ""
-"\n"
-"    ... En ny settings-fil har skapats. Modifiera denna fil för att konfigurera\n"
-"    Evennia som önskas genom att klippa och klistra från originalet i \n"
-"    src/settings_default.py.\n"
-"\n"
-"    Du bör sedan återskapa databasen med\n"
-"\n"
-"        python manage.py syncdb\n"
-"\n"
-"    Se till att skapa ett nytt admin-lösenord när så tillfrågas - detta används\n"
-"    för användare #1 i spelet. Om nu använder django-south kommer du \n"
-"    se ett omnämnande om migrationer efter de ovanstående kommandona.\n"
-"    Du måste då köra: \n"
-"        python manage.py migrate\n"
-"\n"
-"    Om du använder sqlite3-databasen kommer du att hitta en fil\n"
-"        evennia.db i game/. Detta är databas-filen. Radera denna fil \n"
-"    och upprepa de ovannämnda stegen för att starta om med en \n"
-"    ny, tom databas. \n"
-"\n"
-"    När allt är klart, kör evennia.py igen rör att starta servern."
-
-#: game/evennia.py:161
-msgid ""
-"\n"
-"    Your database does not seem to be set up correctly.\n"
-"\n"
-"    Please run:\n"
-"      \n"
-"         python manage.py syncdb\n"
-"\n"
-"    (make sure to create an admin user when prompted). If you use\n"
-"    pyhon-south you will get mentions of migrating in the above\n"
-"    run. You then need to also run\n"
-"\n"
-"         python manage.py migrate\n"
-"\n"
-"    When you have a database set up, rerun evennia.py.\n"
-"    "
-msgstr ""
-"\n"
-"    Din databas verkar inte korrekt konfigurerad.\n"
-"\n"
-"    Vänligen kör:\n"
-"      \n"
-"         python manage.py syncdb\n"
-"\n"
-"    (Se till att skapa ett administrationskonto när det tillfrågas.\n"
-"    Om du använder pyhon-south kommer du att se omnämnande om \n"
-"    Se till att då också köra\n"
-"\n"
-"         python manage.py migrate\n"
-"\n"
-"    När databasen fungeran, kör evennia.py igen.\n"
-"    "
-
-#: game/evennia.py:192
-msgid ""
-"\n"
-"    ERROR: Unable to import win32api, which Twisted requires to run.\n"
-"    You may download it from:\n"
-"\n"
-"    http://sourceforge.net/projects/pywin32\n"
-"      or\n"
-"    http://starship.python.net/crew/mhammond/win32/Downloads.html"
-msgstr ""
-"\n"
-"    FEL: Kunde inte importera win32api. Twisted behöver detta.   \n"
-"    Ladda ner från:\n"
-"\n"
-"    http://sourceforge.net/projects/pywin32\n"
-"      eller\n"
-"    http://starship.python.net/crew/mhammond/win32/Downloads.html"
-
-#: game/evennia.py:216
-msgid ""
-"\n"
-"    INFO: Since you are running Windows, a file 'twistd.bat' was\n"
-"    created for you. This is a simple batch file that tries to call\n"
-"    the twisted executable. Evennia determined this to be:\n"
-"\n"
-"       %{twistd_path}s\n"
-"\n"
-"    If you run into errors at startup you might need to edit\n"
-"    twistd.bat to point to the actual location of the Twisted\n"
-"    executable (usually called twistd.py) on your machine.\n"
-"\n"
-"    This procedure is only done once. Run evennia.py again when you\n"
-"    are ready to start the server.\n"
-"    "
-msgstr ""
-"\n"
-"    INFO: Efersom du kör Windows har en fil 'twistd.bat' skapats\n"
-"    Detta är en enkel batch-file som försöker anropa twisted:s\n"
-"    exeutiva fil. Evennia bedömde att detta är:\n"
-"\n"
-"       %{twistd_path}s\n"
-"\n"
-"    Om du stöter på fel under starten så kanske du behöver \n"
-"    modifiera twistd.dat så att den hittar Twisted:s binärfil (vanligen\n"
-"    kallad twistd.py) just på din dator.\n"
-"\n"
-"    Denna procedur behöver bara göras en gång. Kör evennia.py\n"
-"    igen när du är redo att starta servern.\n"
-"    "
-
-#: game/evennia.py:266
-msgid "Windows requires Python 2.7 or higher for this operation."
-msgstr "Windows kräver Python 2.7 för att utföra detta. "
-
-#: game/evennia.py:276
-#, python-format
-msgid "Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it."
-msgstr "Processen %(pid)s kunde inte signaleras. PID-filen '%(pidfile)s' verkar vara ur synk. Ta bort den manuellt."
-
-#: game/evennia.py:293
-msgid " option > "
-msgstr "val >"
-
-#: game/evennia.py:300
-msgid "press <return> to continue ..."
-msgstr "tryck <retur> för att fortsätta ..."
-
-#: game/evennia.py:307
-#: game/evennia.py:340
-msgid "Not a valid option."
-msgstr "Inte ett lämpligt val."
-
-#: game/evennia.py:309
-#: game/evennia.py:355
-#, python-format
-msgid "The %s does not seem to be running."
-msgstr "%s verkar inte köra. "
-
-#: game/evennia.py:323
-msgid "This operation is not supported under Windows. Log into the game to restart/reload the server."
-msgstr "Detta stöds inte under Windows. Logga in för att starta om servern."
-
-#: game/evennia.py:325
-#: game/evennia.py:379
-msgid "Server reloaded."
-msgstr "Servern startades om."
-
-#: game/evennia.py:328
-msgid "This operation is not supported under Windows."
-msgstr "Detta stöds inte under Windows."
-
-#: game/evennia.py:330
-msgid "Portal reloaded (or stopped if in daemon mode)."
-msgstr "Portalen startades om (eller stoppades, om den körde some demon)"
-
-#: game/evennia.py:332
-#: game/evennia.py:337
-msgid "Stopped Portal."
-msgstr "Stoppade Portalen."
-
-#: game/evennia.py:333
-#: game/evennia.py:335
-msgid "Stopped Server."
-msgstr "Stoppade Portalen."
-
-#: game/evennia.py:376
-msgid "Restarting from command line is not supported under Windows. Log into the game to restart."
-msgstr "Att starta om från kommandoraden stöds inte under Windows. Logga in för att starta om. "
-
-#: game/evennia.py:381
-msgid "Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode."
-msgstr "Obs: Portalen behöver oftast inte startas om såtillvida man inte håller på att debugga portalen. "
-
-#: game/evennia.py:382
-msgid "If Portal was running in default Daemon mode, it cannot be restarted. In that case you have "
-msgstr "Om Portalen kördes som en demon så kan den inte startas om. I såfall måste du"
-
-#: game/evennia.py:383
-msgid "to restart it manually with 'evennia.py start portal'"
-msgstr "starta om den manuellt med 'evennia.py start portal'"
-
-#: game/evennia.py:384
-msgid "Portal reloaded (or stopped, if it was in daemon mode)."
-msgstr "Portalen startades om (eller stoppades om den kördes som demon)"
-
-#: game/evennia.py:387
-msgid "Server reload."
-msgstr "Serven laddades om."
-
-#: game/evennia.py:392
-#: game/evennia.py:397
-msgid "Server stopped."
-msgstr "Servern stoppades."
-
-#: game/evennia.py:394
-#: game/evennia.py:396
-msgid "Portal stopped."
-msgstr "Portalen stoppades."
-
-#: game/evennia.py:406
-msgid "This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Use --interactive together with start to launch services as 'interactive'. Note that when launching 'all' services with the --interactive flag, both services will be started, but only Server will actually be started in interactive mode. This is simply because this is the most commonly useful state. To activate interactive mode also for Portal, launch the two services explicitly as two separate calls to this program. You can also use the menu."
-msgstr "Detta är Evennias huvudprogram. Det hanterar Portalen och Servern, de två program so utgör Evennia. Normal verkar alla kommandon på båda programmen. Använd --interactive tillsammans med start för att starta interaktiva lägen. Notera att normalt startar bara Servern i interaktivt läge eftersom detta är det oftast använda läget. För att aktivera interaktivt läge även för Portalen så måste man starta programmen var för sig. Man kan också använde menyn. "
-
-#: game/evennia.py:408
-msgid "Start given processes in interactive mode (log to stdout, don't start as a daemon)."
-msgstr "Starta den angivna processen i interaktivt läge (alla meddelanden till terminalen, starta inte som demon)"
-
-#: game/evennia.py:423
-msgid "mode should be none or one of 'menu', 'start', 'reload' or 'stop'."
-msgstr "'mode' (om den anges) måste antingen vara 'menu', 'start', 'reload' eller 'stop'."
-
-#: game/evennia.py:426
-msgid "service should be none or 'server', 'portal' or 'all'."
-msgstr "'service' (om den anges) måste antingen vara 'server', 'portal' eller 'all'."
 
 #: game/manage.py:116
 #, python-format
@@ -444,117 +65,21 @@ msgstr ""
 "    för att skapa databasen och ditt superuser-konto.\n"
 "    "
 
-#: game/runner.py:43
-msgid "No settings.py file found. Run evennia.py to create it."
-msgstr "Ingen settings.py-fil kunde hittas. Kör evennia.py för att skapa den. "
-
-#: game/runner.py:75
-msgid "Twisted binary for Windows is not ready to use. Please run evennia.py."
-msgstr "Twisted:s Windows-binärfil är inte klar att användas. Vänligen kör evennia.py först. "
-
-#: game/runner.py:149
-#, python-format
-msgid "Server process error: %(e)s"
-msgstr "Server: Process-fel: %(e)s"
-
-#: game/runner.py:156
-#, python-format
-msgid "Portal process error: %(e)s"
-msgstr "Portal: Process-fel: %(e)s"
-
-#: game/runner.py:182
-msgid "Evennia Server stopped. Restarting ..."
-msgstr "Evennia:s Serverprocess stoppades. Startar om ..."
-
-#: game/runner.py:188
-msgid "Evennia Portal stopped in interactive mode. Restarting ..."
-msgstr "Evennia:s Portal-process stoppades i interaktivt läge. Startar om ..."
-
-#: game/runner.py:201
-msgid "This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism)."
-msgstr "Detta program bör normalt *inte* anropas direkt - det startas automatiskt från evennia.py. Programmet styr Evennia:s Server- och Portal-processer med hj'lp av en trådbaserad loop som gör att Servern kan startas om. "
-
-#: game/runner.py:204
-msgid "Do not start Server process"
-msgstr "Starta inte Server-processen."
-
-#: game/runner.py:207
-msgid "Do not start Portal process"
-msgstr "Starta inte Portal-processen"
-
-#: game/runner.py:210
-msgid "output server log to stdout instead of logfile"
-msgstr "Avge Server-data till stdout istället för till en logfil"
-
-#: game/runner.py:213
-msgid "output portal log to stdout. Does not make portal a daemon."
-msgstr "Avge Portal-data till stdout. Starta inte som demon."
-
-#: game/runner.py:235
-#, python-format
-msgid ""
-"\n"
-"Evennia Server is already running as process %(pid)s. Not restarted."
-msgstr ""
-"\n"
-" Evennias Server-process kör redan som %(pid)s. Behöver inte startas. "
-
-#: game/runner.py:244
-msgid ""
-"\n"
-"Starting Evennia Server (output to stdout)."
-msgstr ""
-"\n"
-"Startar Evennias Server-process (meddelanden till terminalen)."
-
-#: game/runner.py:246
-msgid ""
-"\n"
-"Starting Evennia Server (output to server logfile)."
-msgstr ""
-"\n"
-"Startar Evennias Server (meddelanden till logfil)."
-
-#: game/runner.py:253
-#, python-format
-msgid ""
-"\n"
-"Evennia Portal is already running as process %(pid)s. Not restarted."
-msgstr ""
-"\n"
-"Evennias portal kör redan som %(pid)s. Behöver inte startas."
-
-#: game/runner.py:263
-msgid ""
-"\n"
-"Starting Evennia Portal in non-Daemon mode (output to stdout)."
-msgstr ""
-"\n"
-"Startar Evennias Portal-process som icke-demon (meddelanden till terminalen)"
-
-#: game/runner.py:266
-msgid ""
-"\n"
-"Starting Evennia Portal in Daemon mode (output to portal logfile)."
-msgstr ""
-"\n"
-"Startar Evennias Portal-process som en demon (meddelanden till logfil)."
-
-#: src/server/amp.py:113
+#: src/server/amp.py:109
 msgid " Portal lost connection to Server."
 msgstr "Portalen förlorade sin koppling till terminalen. "
 
-#: src/server/amp.py:202
+#: src/server/amp.py:218
 msgid " ... Server restarted."
 msgstr "... Servern startades om. "
 
-#: src/server/amp.py:211
+#: src/server/amp.py:227
 #, python-format
 msgid "AMP Error for %(info)s: %(e)s"
 msgstr "AMP-fel: %(info)s: %(e)s"
 
-#: src/server/amp.py:308
-#: src/server/amp.py:370
+#: src/server/amp.py:366
+#: src/server/amp.py:428
 #, python-format
 msgid "operation %(op)s not recognized."
 msgstr "kommando av typ %(op)s kunde inte kännas igen."
@@ -567,56 +92,56 @@ msgstr "Skapar objekt (Spelare #1 och Limbo) ..."
 msgid "#1 could not be created. Check the Player/Character typeclass for bugs."
 msgstr "#1 kunde inte skapas. Kolla efter fel i typklassen för Player/Character. "
 
-#: src/server/initial_setup.py:66
+#: src/server/initial_setup.py:65
 msgid "This is User #1."
 msgstr "Detta är användare #1."
 
-#: src/server/initial_setup.py:74
+#: src/server/initial_setup.py:73
 msgid "Limbo"
 msgstr "Limbo"
 
-#: src/server/initial_setup.py:95
+#: src/server/initial_setup.py:96
 msgid " Creating default channels ..."
 msgstr "Skapar standardkanaler ..."
 
-#: src/server/initial_setup.py:118
+#: src/server/initial_setup.py:119
 msgid " Importing MUX help database (devel reference only) ..."
 msgstr "Importerar MUX:s hjälpdatabas (enbart för utvecklare)..."
 
-#: src/server/initial_setup.py:122
+#: src/server/initial_setup.py:123
 #, python-format
 msgid " Moving imported help db to help category '%(default)s'."
 msgstr "Flyttar de importerade hjälpfileran till hjälpkategorin '%(default)s'."
 
-#: src/server/initial_setup.py:133
+#: src/server/initial_setup.py:134
 msgid " Creating and starting global scripts ..."
 msgstr "Skapar och startar globala skript ..."
 
-#: src/server/initial_setup.py:142
+#: src/server/initial_setup.py:143
 msgid " Error creating system scripts."
 msgstr "Fel under skapandet av System-skript."
 
-#: src/server/initial_setup.py:151
+#: src/server/initial_setup.py:152
 msgid " Starting in-game time ..."
 msgstr "Startar spelets tid ..."
 
-#: src/server/initial_setup.py:170
+#: src/server/initial_setup.py:171
 msgid " ADMIN_MEDIA_ROOT already exists. Ignored."
 msgstr "ADMIN_MEDIA_ROOT existerar redan. Ignorerar."
 
-#: src/server/initial_setup.py:173
+#: src/server/initial_setup.py:174
 msgid " Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode)."
 msgstr "Admin-media-filer kopierades till ADMIN_MEDIA_ROOT (Windows-läge)"
 
-#: src/server/initial_setup.py:178
+#: src/server/initial_setup.py:179
 msgid " Admin-media symlinked to ADMIN_MEDIA_ROOT."
 msgstr "Admin-media länkades till ADMIN_MEDIA_ROOT."
 
-#: src/server/initial_setup.py:180
+#: src/server/initial_setup.py:181
 msgid " Admin-media files should be copied manually to ADMIN_MEDIA_ROOT."
 msgstr "Admin-media-filer bör kopieras manuellt till ADMIN_MEDIA_ROOT."
 
-#: src/server/initial_setup.py:193
+#: src/server/initial_setup.py:194
 msgid " Running at_initial_setup() hook."
 msgstr "Kör kroken at_initial_setup()."
 
@@ -625,36 +150,40 @@ msgstr "Kör kroken at_initial_setup()."
 msgid "ServerConfig cannot store db objects! (%s)"
 msgstr "ServerConfig kan inte lagra databas-objekt! (%s)"
 
-#: src/server/portal.py:108
-#: src/server/server.py:160
+#: src/server/portal.py:106
 #, python-format
 msgid " %(servername)s Portal (%(version)s) started."
 msgstr " %(servername)s Portal (%(version)s) startades."
 
-#: src/server/portal.py:140
+#: src/server/portal.py:138
 #, python-format
 msgid "writing mode=%(mode)s to %(portal_restart)s"
 msgstr "writing mode = %(mode)s till %(portal_restart)s"
 
-#: src/server/server.py:132
+#: src/server/server.py:137
 msgid " Server started for the first time. Setting defaults."
 msgstr "Servern startades för första gången. Sätter standardvärden."
 
-#: src/server/server.py:140
+#: src/server/server.py:145
 #, python-format
 msgid " Resuming initial setup from step %(last)s."
 msgstr "Startar om uppstarten från steg nummer %(last)s."
 
-#: src/server/serversession.py:101
+#: src/server/server.py:165
+#, fuzzy, python-format
+msgid " %(servername)s Server (%(version)s) started."
+msgstr " %(servername)s Portal (%(version)s) startades."
+
+#: src/server/serversession.py:109
 #, python-format
 msgid "Logged in: %(self)s"
 msgstr "%(self)s loggade in. "
 
-#: src/server/sessionhandler.py:201
+#: src/server/sessionhandler.py:204
 msgid "Logged in from elsewhere. Disconnecting."
 msgstr "Inloggad från någon annanstans. Kopplas ifrån."
 
-#: src/server/sessionhandler.py:217
+#: src/server/sessionhandler.py:220
 msgid "Idle timeout exceeded, disconnecting."
 msgstr "Passivitetstimer överskriden. Kopplas ifrån."
 
@@ -724,49 +253,640 @@ msgstr "Evennia webside-admin"
 msgid "Evennia database administration"
 msgstr "Evennia databas-administration"
 
-#: src/web/templates/admin/index.html:30
-#: src/web/templates/admin/index.html:72
-#: src/web/templates/admin/index.html:116
+#: src/web/templates/admin/index.html:29
+#: src/web/templates/admin/index.html:73
+#: src/web/templates/admin/index.html:117
 #, python-format
 msgid "Models available in the %(name)s application."
 msgstr "Modeller tillgängliga i %(name)s."
 
-#: src/web/templates/admin/index.html:31
-#: src/web/templates/admin/index.html:73
-#: src/web/templates/admin/index.html:117
+#: src/web/templates/admin/index.html:30
+#: src/web/templates/admin/index.html:74
+#: src/web/templates/admin/index.html:118
 #, python-format
 msgid "%(name)s"
 msgstr "%(name)s"
 
 #: src/web/templates/admin/index.html:41
-#: src/web/templates/admin/index.html:83
-#: src/web/templates/admin/index.html:127
+#: src/web/templates/admin/index.html:84
+#: src/web/templates/admin/index.html:128
+#: src/web/templates/admin/players/change_form.html:23
 msgid "Add"
 msgstr "Lägg till"
 
 #: src/web/templates/admin/index.html:47
-#: src/web/templates/admin/index.html:89
-#: src/web/templates/admin/index.html:133
+#: src/web/templates/admin/index.html:90
+#: src/web/templates/admin/index.html:134
 msgid "Change"
 msgstr "Ändra"
 
-#: src/web/templates/admin/index.html:148
+#: src/web/templates/admin/index.html:149
 msgid "You don't have permission to edit anything."
 msgstr "Du har inte tillstånd att ändra någonting."
 
-#: src/web/templates/admin/index.html:156
+#: src/web/templates/admin/index.html:157
 msgid "Recent Actions"
 msgstr "Senaste Handlingar"
 
-#: src/web/templates/admin/index.html:157
+#: src/web/templates/admin/index.html:158
 msgid "My Actions"
 msgstr "Mina Handlingar"
 
-#: src/web/templates/admin/index.html:161
+#: src/web/templates/admin/index.html:162
 msgid "None yet."
 msgstr "Inga än."
 
-#: src/web/templates/admin/index.html:175
+#: src/web/templates/admin/index.html:176
 msgid "Unknown content"
 msgstr "Okänt innehåll"
 
+#: src/web/templates/admin/players/add_form.html:6
+msgid "First, enter a username and password. Then you'll be able to edit more Player options."
+msgstr "Mata först in ett användarnamn och lösenord. Sedan kommer du att kunna ändra fler Spelarinställningar."
+
+#: src/web/templates/admin/players/add_form.html:8
+msgid "Enter a username and password."
+msgstr "Mata in ett användarnamn och lösenord."
+
+#: src/web/templates/admin/players/change_form.html:20
+#: src/web/templates/admin/players/change_list.html:42
+msgid "Home"
+msgstr "Hem"
+
+#: src/web/templates/admin/players/change_form.html:31
+msgid "History"
+msgstr "Historia"
+
+#: src/web/templates/admin/players/change_form.html:32
+#: src/web/templates/admin/players/stacked.html:9
+msgid "View on site"
+msgstr "Se på Websida"
+
+#: src/web/templates/admin/players/change_form.html:43
+#: src/web/templates/admin/players/change_list.html:73
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Vänligen korrigera felet nedan."
+msgstr[1] "Vänligen korrigera felen nedan."
+
+#: src/web/templates/admin/players/change_list.html:64
+#, python-format
+msgid "Add %(name)s"
+msgstr "Lägg till %(name)s"
+
+#: src/web/templates/admin/players/change_list.html:84
+msgid "Filter"
+msgstr "Filtrera"
+
+#: src/web/templates/admin/players/stacked.html:67
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr "Lägg till ett annat %(verbose_name)s"
+
+#: src/web/templates/admin/players/stacked.html:70
+msgid "Remove"
+msgstr "Ta bort"
+
+#~ msgid ""
+#~ "\n"
+#~ "                                                 (version %s) \n"
+#~ "\n"
+#~ "This program launches Evennia with various options. You can access all\n"
+#~ "this functionality directly from the command line; for example option\n"
+#~ "five (restart server) would be \"evennia.py restart server\".  Use\n"
+#~ "\"evennia.py -h\" for command line options.\n"
+#~ "\n"
+#~ "Evennia consists of two separate programs that both must be running\n"
+#~ "for the game to work as it should:\n"
+#~ "\n"
+#~ "Portal - the connection to the outside world (via telnet, web, ssh\n"
+#~ "         etc). This is normally running as a daemon and don't need to\n"
+#~ "         be reloaded unless you are debugging a new connection\n"
+#~ "         protocol. As long as this is running, players won't loose\n"
+#~ "         their connection to your game. Only one instance of Portal\n"
+#~ "         will be started, more will be ignored.\n"
+#~ "Server - the game server itself. This will often need to be reloaded\n"
+#~ "         as you develop your game. The Portal will auto-connect to the\n"
+#~ "         Server whenever the Server activates. We will also make sure\n"
+#~ "         to automatically restart this whenever it is shut down (from\n"
+#~ "         here or from inside the game or via task manager etc). Only\n"
+#~ "         one instance of Server will be started, more will be ignored.\n"
+#~ "\n"
+#~ "In a production environment you will want to run with the default\n"
+#~ "option (1), which runs as much as possible as a background\n"
+#~ "process. When developing your game it is however convenient to\n"
+#~ "directly see tracebacks on standard output, so starting with options\n"
+#~ "2-4 may be a good bet. As you make changes to your code, reload the\n"
+#~ "server (option 5) to make it available to users.\n"
+#~ "\n"
+#~ "Reload and stop is not well supported in Windows. If you have issues, "
+#~ "log\n"
+#~ "into the game to stop or restart the server instead. \n"
+#~ msgstr ""
+#~ "\n"
+#~ "                                                 (version %s) \n"
+#~ "\n"
+#~ "Detta program startar Evennia med olika funktionalitet. Du kan se alla\n"
+#~ "functioner direkt från kommandoraden; t.ex så motsvarar val nummer 5\n"
+#~ "(starta om servern) kommandot \"evennia.py restart server\" Använd \n"
+#~ "\"evennia.py -h för att lista alla möjliga kommandon. \n"
+#~ "\n"
+#~ "Evennia består av tvp separata program som båda måste vara igång\n"
+#~ "för att servern ska fungera:\n"
+#~ "\n"
+#~ "Portal - Kopplingen till omvärlden (via telnet, web, ssh etc). Portalen\n"
+#~ "         körs vanligen som en \"demon\" och behöver inte startas om\n"
+#~ "         såtillvida du inte debuggar ett nytt nätverksprotokoll. Så "
+#~ "länge\n"
+#~ "         Portalen kör så kommer inte spelare att förlora kontakten med\n"
+#~ "         spelet. Bara en instans av Portalen kan starts p¨ en gång, "
+#~ "ytterligare\n"
+#~ "         instanser kommer att ignoreras\n"
+#~ "Server - Spelservern själv. Denna kan ofta behöva starts om medan\n"
+#~ "         du utvecklar ditt spel. Portalen kommer att automatiskt ansluta\n"
+#~ "         till Servern så fort denna startar. Servern startar också "
+#~ "automatiskt\n"
+#~ "         om så fort den stängs ner (innfrån spelet eller via "
+#~ "operativsystemet).\n"
+#~ "         Bara en instans av Server kan vara igång samtidigt. \n"
+#~ "\n"
+#~ "När servern är öppen för allmänheten är det lämpligt att använda val (1)\n"
+#~ "som innebär att så mycket som möjligt jörs i bakgrunden.\n"
+#~ " När man utvecklar sitt spel är det dock bekvämt att direkt se "
+#~ "felmeddanden\n"
+#~ "i terminalen. För detta är val 2-4 bra val. Starta om servern när ny kod "
+#~ "är\n"
+#~ "på plats genom att använda val (5).\n"
+#~ "\n"
+#~ "Omstart och stopp fungerar inte så bra i Windows. Om du har problem, \n"
+#~ "loggin in i spelet och starta om innifrån istället.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "+---------------------------------------------------------------------------"
+#~ "+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|                    Welcome to the Evennia "
+#~ "launcher!                       |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|                Pick an option below. Use 'h' to get "
+#~ "help.                 |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+--- Starting (will not restart already running processes) "
+#~ "-----------------+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|  1) (default):      Start Server and Portal. Portal starts in daemon "
+#~ "mode.|\n"
+#~ "|                     All output is to "
+#~ "logfiles.                            |\n"
+#~ "|  2) (game debug):   Start Server and Portal. Portal starts in daemon "
+#~ "mode.|\n"
+#~ "|                     Server outputs to stdout instead of "
+#~ "logfile.          |\n"
+#~ "|  3) (portal debug): Start Server and Portal. Portal starts in non-"
+#~ "daemon  |\n"
+#~ "|                     mode (can be reloaded) and logs to "
+#~ "stdout.            |\n"
+#~ "|  4) (full debug):   Start Server and Portal. Portal starts in non-"
+#~ "daemon  |\n"
+#~ "|                     mode (can be reloaded). Both log to "
+#~ "stdout.           |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+--- Restarting (must first be started) "
+#~ "------------------------------------+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|  5) Reload the "
+#~ "Server                                                     |\n"
+#~ "|  6) Reload the Portal (only works in non-daemon mode. If "
+#~ "running          |\n"
+#~ "|       in daemon mode, Portal needs to be restarted manually (option "
+#~ "1-4)) |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+--- Stopping (must first be started) "
+#~ "--------------------------------------+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|  7) Stopping both Portal and Server. Server will not "
+#~ "restart.             |\n"
+#~ "|  8) Stopping only Server. Server will not "
+#~ "restart.                        |\n"
+#~ "|  9) Stopping only "
+#~ "Portal.                                                 |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+---------------------------------------------------------------------------"
+#~ "+\n"
+#~ "|  h) "
+#~ "Help                                                                  |\n"
+#~ "|  q) "
+#~ "Quit                                                                  |\n"
+#~ "+---------------------------------------------------------------------------"
+#~ "+\n"
+#~ msgstr ""
+#~ "\n"
+#~ "+---------------------------------------------------------------------------"
+#~ "+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|                    Välkommen till "
+#~ "Evennia!                                |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|                Välj nedan. Ge '-h' för att få "
+#~ "hjälp.                      |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+--- Starta (kommer inte att starta om existerande processer)-------------"
+#~ "+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|  1) (förvalt):      Start Server och Portal. Portalen startar som demon|"
+#~ "n|                     Alla meddelanden till "
+#~ "loggfiler                       |\n"
+#~ "|  2) (spelutveckling): Starta Server och Portal. Portalen startar "
+#~ "som    .|\n"
+#~ "|                     demon. Server meddelar till "
+#~ "terminal.                 |\n"
+#~ "|  3) (portal debug): StartaServer and Portal. Portal startar "
+#~ "som           |\n"
+#~ "|                     icke-"
+#~ "demon.                                          |\n"
+#~ "|  4) (full debug):   StartaServer and Portal. Båda  startar "
+#~ "som            |\n"
+#~ "|                     icke-demon. Båda meddear till "
+#~ "terminal.               |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+--- Starta om (måste först vara "
+#~ "startad)-----------------------------------+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|  5) Starta om "
+#~ "Server                                                      |\n"
+#~ "|  6) Starta om Portalen (funkar bara som icke-demon). Om man "
+#~ "kör           |\n"
+#~ "|       som demon så måste Portalen startas om manuellt (val "
+#~ "1-4)           |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+--- Stopp (måste först vara startad) "
+#~ "--------------------------------------+\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "|  7) Stoppa både Portal och Server. Server startar inte "
+#~ "om.                |\n"
+#~ "|  8) Stoppa bara Server. Server kommer inte att starta "
+#~ "om.                 |\n"
+#~ "|  9) Stoppa bara "
+#~ "Portalen.                                                 |\n"
+#~ "|                                                                           "
+#~ "|\n"
+#~ "+---------------------------------------------------------------------------"
+#~ "+\n"
+#~ "|  h) "
+#~ "Hjälp                                                                 |\n"
+#~ "|  q) "
+#~ "Avsluta                                                               |\n"
+#~ "+---------------------------------------------------------------------------"
+#~ "+\n"
+
+#~ msgid "    No settings.py file found. launching manage.py ..."
+#~ msgstr "   Filen \"settings.py\" hittades inte. Startar manage.py ..."
+
+#~ msgid ""
+#~ "\n"
+#~ "    ... A new settings file was created. Edit this file to configure\n"
+#~ "    Evennia as desired by copy&pasting options from\n"
+#~ "    src/settings_default.py.\n"
+#~ "\n"
+#~ "    You should then also create/configure the database using\n"
+#~ "\n"
+#~ "        python manage.py syncdb\n"
+#~ "\n"
+#~ "    Make sure to create a new admin user when prompted -- this will be\n"
+#~ "    user #1 in-game.  If you use django-south, you'll see mentions of\n"
+#~ "    migrating things in the above run. You then also have to run\n"
+#~ "\n"
+#~ "        python manage.py migrate\n"
+#~ "\n"
+#~ "    If you use default sqlite3 database, you will find a file\n"
+#~ "    evennia.db appearing. This is the database file. Just delete this\n"
+#~ "    and repeat the above manage.py steps to start with a fresh\n"
+#~ "    database.\n"
+#~ "\n"
+#~ "    When you are set up, run evennia.py again to start the server."
+#~ msgstr ""
+#~ "\n"
+#~ "    ... En ny settings-fil har skapats. Modifiera denna fil för att "
+#~ "konfigurera\n"
+#~ "    Evennia som önskas genom att klippa och klistra från originalet i \n"
+#~ "    src/settings_default.py.\n"
+#~ "\n"
+#~ "    Du bör sedan återskapa databasen med\n"
+#~ "\n"
+#~ "        python manage.py syncdb\n"
+#~ "\n"
+#~ "    Se till att skapa ett nytt admin-lösenord när så tillfrågas - detta "
+#~ "används\n"
+#~ "    för användare #1 i spelet. Om nu använder django-south kommer du \n"
+#~ "    se ett omnämnande om migrationer efter de ovanstående kommandona.\n"
+#~ "    Du måste då köra: \n"
+#~ "        python manage.py migrate\n"
+#~ "\n"
+#~ "    Om du använder sqlite3-databasen kommer du att hitta en fil\n"
+#~ "        evennia.db i game/. Detta är databas-filen. Radera denna fil \n"
+#~ "    och upprepa de ovannämnda stegen för att starta om med en \n"
+#~ "    ny, tom databas. \n"
+#~ "\n"
+#~ "    När allt är klart, kör evennia.py igen rör att starta servern."
+
+#~ msgid ""
+#~ "\n"
+#~ "    Your database does not seem to be set up correctly.\n"
+#~ "\n"
+#~ "    Please run:\n"
+#~ "      \n"
+#~ "         python manage.py syncdb\n"
+#~ "\n"
+#~ "    (make sure to create an admin user when prompted). If you use\n"
+#~ "    pyhon-south you will get mentions of migrating in the above\n"
+#~ "    run. You then need to also run\n"
+#~ "\n"
+#~ "         python manage.py migrate\n"
+#~ "\n"
+#~ "    When you have a database set up, rerun evennia.py.\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "    Din databas verkar inte korrekt konfigurerad.\n"
+#~ "\n"
+#~ "    Vänligen kör:\n"
+#~ "      \n"
+#~ "         python manage.py syncdb\n"
+#~ "\n"
+#~ "    (Se till att skapa ett administrationskonto när det tillfrågas.\n"
+#~ "    Om du använder pyhon-south kommer du att se omnämnande om \n"
+#~ "    Se till att då också köra\n"
+#~ "\n"
+#~ "         python manage.py migrate\n"
+#~ "\n"
+#~ "    När databasen fungeran, kör evennia.py igen.\n"
+#~ "    "
+
+#~ msgid ""
+#~ "\n"
+#~ "    ERROR: Unable to import win32api, which Twisted requires to run.\n"
+#~ "    You may download it from:\n"
+#~ "\n"
+#~ "    http://sourceforge.net/projects/pywin32\n"
+#~ "      or\n"
+#~ "    http://starship.python.net/crew/mhammond/win32/Downloads.html"
+#~ msgstr ""
+#~ "\n"
+#~ "    FEL: Kunde inte importera win32api. Twisted behöver detta.   \n"
+#~ "    Ladda ner från:\n"
+#~ "\n"
+#~ "    http://sourceforge.net/projects/pywin32\n"
+#~ "      eller\n"
+#~ "    http://starship.python.net/crew/mhammond/win32/Downloads.html"
+
+#~ msgid ""
+#~ "\n"
+#~ "    INFO: Since you are running Windows, a file 'twistd.bat' was\n"
+#~ "    created for you. This is a simple batch file that tries to call\n"
+#~ "    the twisted executable. Evennia determined this to be:\n"
+#~ "\n"
+#~ "       %{twistd_path}s\n"
+#~ "\n"
+#~ "    If you run into errors at startup you might need to edit\n"
+#~ "    twistd.bat to point to the actual location of the Twisted\n"
+#~ "    executable (usually called twistd.py) on your machine.\n"
+#~ "\n"
+#~ "    This procedure is only done once. Run evennia.py again when you\n"
+#~ "    are ready to start the server.\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "    INFO: Efersom du kör Windows har en fil 'twistd.bat' skapats\n"
+#~ "    Detta är en enkel batch-file som försöker anropa twisted:s\n"
+#~ "    exeutiva fil. Evennia bedömde att detta är:\n"
+#~ "\n"
+#~ "       %{twistd_path}s\n"
+#~ "\n"
+#~ "    Om du stöter på fel under starten så kanske du behöver \n"
+#~ "    modifiera twistd.dat så att den hittar Twisted:s binärfil (vanligen\n"
+#~ "    kallad twistd.py) just på din dator.\n"
+#~ "\n"
+#~ "    Denna procedur behöver bara göras en gång. Kör evennia.py\n"
+#~ "    igen när du är redo att starta servern.\n"
+#~ "    "
+
+#~ msgid "Windows requires Python 2.7 or higher for this operation."
+#~ msgstr "Windows kräver Python 2.7 för att utföra detta. "
+
+#~ msgid ""
+#~ "Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems "
+#~ "stale. Try removing it."
+#~ msgstr ""
+#~ "Processen %(pid)s kunde inte signaleras. PID-filen '%(pidfile)s' verkar "
+#~ "vara ur synk. Ta bort den manuellt."
+
+#~ msgid " option > "
+#~ msgstr "val >"
+
+#~ msgid "press <return> to continue ..."
+#~ msgstr "tryck <retur> för att fortsätta ..."
+
+#~ msgid "Not a valid option."
+#~ msgstr "Inte ett lämpligt val."
+
+#~ msgid "The %s does not seem to be running."
+#~ msgstr "%s verkar inte köra. "
+
+#~ msgid ""
+#~ "This operation is not supported under Windows. Log into the game to "
+#~ "restart/reload the server."
+#~ msgstr "Detta stöds inte under Windows. Logga in för att starta om servern."
+
+#~ msgid "Server reloaded."
+#~ msgstr "Servern startades om."
+
+#~ msgid "This operation is not supported under Windows."
+#~ msgstr "Detta stöds inte under Windows."
+
+#~ msgid "Portal reloaded (or stopped if in daemon mode)."
+#~ msgstr "Portalen startades om (eller stoppades, om den körde some demon)"
+
+#~ msgid "Stopped Portal."
+#~ msgstr "Stoppade Portalen."
+
+#~ msgid "Stopped Server."
+#~ msgstr "Stoppade Portalen."
+
+#~ msgid ""
+#~ "Restarting from command line is not supported under Windows. Log into the "
+#~ "game to restart."
+#~ msgstr ""
+#~ "Att starta om från kommandoraden stöds inte under Windows. Logga in för "
+#~ "att starta om. "
+
+#~ msgid ""
+#~ "Note: Portal usually don't need to be reloaded unless you are debugging "
+#~ "in interactive mode."
+#~ msgstr ""
+#~ "Obs: Portalen behöver oftast inte startas om såtillvida man inte håller "
+#~ "på att debugga portalen. "
+
+#~ msgid ""
+#~ "If Portal was running in default Daemon mode, it cannot be restarted. In "
+#~ "that case you have "
+#~ msgstr ""
+#~ "Om Portalen kördes som en demon så kan den inte startas om. I såfall "
+#~ "måste du"
+
+#~ msgid "to restart it manually with 'evennia.py start portal'"
+#~ msgstr "starta om den manuellt med 'evennia.py start portal'"
+
+#~ msgid "Portal reloaded (or stopped, if it was in daemon mode)."
+#~ msgstr "Portalen startades om (eller stoppades om den kördes som demon)"
+
+#~ msgid "Server reload."
+#~ msgstr "Serven laddades om."
+
+#~ msgid "Server stopped."
+#~ msgstr "Servern stoppades."
+
+#~ msgid "Portal stopped."
+#~ msgstr "Portalen stoppades."
+
+#~ msgid ""
+#~ "This is the main Evennia launcher. It handles the Portal and Server, the "
+#~ "two services making up Evennia. Default is to operate on both services. "
+#~ "Use --interactive together with start to launch services as "
+#~ "'interactive'. Note that when launching 'all' services with the --"
+#~ "interactive flag, both services will be started, but only Server will "
+#~ "actually be started in interactive mode. This is simply because this is "
+#~ "the most commonly useful state. To activate interactive mode also for "
+#~ "Portal, launch the two services explicitly as two separate calls to this "
+#~ "program. You can also use the menu."
+#~ msgstr ""
+#~ "Detta är Evennias huvudprogram. Det hanterar Portalen och Servern, de två "
+#~ "program so utgör Evennia. Normal verkar alla kommandon på båda "
+#~ "programmen. Använd --interactive tillsammans med start för att starta "
+#~ "interaktiva lägen. Notera att normalt startar bara Servern i interaktivt "
+#~ "läge eftersom detta är det oftast använda läget. För att aktivera "
+#~ "interaktivt läge även för Portalen så måste man starta programmen var för "
+#~ "sig. Man kan också använde menyn. "
+
+#~ msgid ""
+#~ "Start given processes in interactive mode (log to stdout, don't start as "
+#~ "a daemon)."
+#~ msgstr ""
+#~ "Starta den angivna processen i interaktivt läge (alla meddelanden till "
+#~ "terminalen, starta inte som demon)"
+
+#~ msgid "mode should be none or one of 'menu', 'start', 'reload' or 'stop'."
+#~ msgstr ""
+#~ "'mode' (om den anges) måste antingen vara 'menu', 'start', 'reload' eller "
+#~ "'stop'."
+
+#~ msgid "service should be none or 'server', 'portal' or 'all'."
+#~ msgstr ""
+#~ "'service' (om den anges) måste antingen vara 'server', 'portal' eller "
+#~ "'all'."
+
+#~ msgid "No settings.py file found. Run evennia.py to create it."
+#~ msgstr ""
+#~ "Ingen settings.py-fil kunde hittas. Kör evennia.py för att skapa den. "
+
+#~ msgid ""
+#~ "Twisted binary for Windows is not ready to use. Please run evennia.py."
+#~ msgstr ""
+#~ "Twisted:s Windows-binärfil är inte klar att användas. Vänligen kör "
+#~ "evennia.py först. "
+
+#~ msgid "Server process error: %(e)s"
+#~ msgstr "Server: Process-fel: %(e)s"
+
+#~ msgid "Portal process error: %(e)s"
+#~ msgstr "Portal: Process-fel: %(e)s"
+
+#~ msgid "Evennia Server stopped. Restarting ..."
+#~ msgstr "Evennia:s Serverprocess stoppades. Startar om ..."
+
+#~ msgid "Evennia Portal stopped in interactive mode. Restarting ..."
+#~ msgstr ""
+#~ "Evennia:s Portal-process stoppades i interaktivt läge. Startar om ..."
+
+#~ msgid ""
+#~ "This runner should normally *not* be called directly - it is called "
+#~ "automatically from the evennia.py main program. It manages the Evennia "
+#~ "game server and portal processes an hosts a threaded loop to restart the "
+#~ "Server whenever it is stopped (this constitues Evennia's reload "
+#~ "mechanism)."
+#~ msgstr ""
+#~ "Detta program bör normalt *inte* anropas direkt - det startas automatiskt "
+#~ "från evennia.py. Programmet styr Evennia:s Server- och Portal-processer "
+#~ "med hj'lp av en trådbaserad loop som gör att Servern kan startas om. "
+
+#~ msgid "Do not start Server process"
+#~ msgstr "Starta inte Server-processen."
+
+#~ msgid "Do not start Portal process"
+#~ msgstr "Starta inte Portal-processen"
+
+#~ msgid "output server log to stdout instead of logfile"
+#~ msgstr "Avge Server-data till stdout istället för till en logfil"
+
+#~ msgid "output portal log to stdout. Does not make portal a daemon."
+#~ msgstr "Avge Portal-data till stdout. Starta inte som demon."
+
+#~ msgid ""
+#~ "\n"
+#~ "Evennia Server is already running as process %(pid)s. Not restarted."
+#~ msgstr ""
+#~ "\n"
+#~ " Evennias Server-process kör redan som %(pid)s. Behöver inte startas. "
+
+#~ msgid ""
+#~ "\n"
+#~ "Starting Evennia Server (output to stdout)."
+#~ msgstr ""
+#~ "\n"
+#~ "Startar Evennias Server-process (meddelanden till terminalen)."
+
+#~ msgid ""
+#~ "\n"
+#~ "Starting Evennia Server (output to server logfile)."
+#~ msgstr ""
+#~ "\n"
+#~ "Startar Evennias Server (meddelanden till logfil)."
+
+#~ msgid ""
+#~ "\n"
+#~ "Evennia Portal is already running as process %(pid)s. Not restarted."
+#~ msgstr ""
+#~ "\n"
+#~ "Evennias portal kör redan som %(pid)s. Behöver inte startas."
+
+#~ msgid ""
+#~ "\n"
+#~ "Starting Evennia Portal in non-Daemon mode (output to stdout)."
+#~ msgstr ""
+#~ "\n"
+#~ "Startar Evennias Portal-process som icke-demon (meddelanden till "
+#~ "terminalen)"
+
+#~ msgid ""
+#~ "\n"
+#~ "Starting Evennia Portal in Daemon mode (output to portal logfile)."
+#~ msgstr ""
+#~ "\n"
+#~ "Startar Evennias Portal-process som en demon (meddelanden till logfil)."

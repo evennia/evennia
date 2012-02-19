@@ -21,6 +21,12 @@ Customizing the server
 -  `Changing text encodings used by the server <TextEncodings.html>`_
 -  `How to connect Evennia to IRC channels <IRC.html>`_
 -  `How to connect Evennia to an IMC2 network <IMC2.html>`_
+-  `How to connect Evennia to RSS feeds <RSS.html>`_
+
+Administrating the running game
+-------------------------------
+
+-  `Banning <Banning.html>`_ Banning and deleting users
 
 Working with Evennia
 --------------------

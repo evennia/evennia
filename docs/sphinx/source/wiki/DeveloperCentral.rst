@@ -64,6 +64,7 @@ Programming Evennia
 
 -  `Running and Testing Python code from inside the
    game <ExecutePythonCode.html>`_
+-  `Useful coding utilities <CodingUtils.html>`_
 -  `Running and writing unit tests for Evennia <UnitTesting.html>`_
 -  `Removing Colour from your game - tutorial on redefining typeclass
    methods <RemovingColour.html>`_

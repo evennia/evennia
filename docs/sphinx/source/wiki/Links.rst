@@ -32,6 +32,9 @@ Third-party Evennia links
 -  `Evennia on
    PyPi <http://pypi.python.org/pypi/Evennia%20MUD%20Server/Alpha>`_
 
+-  `Avaloria <http://code.google.com/p/avaloria/>`_ (MUD under
+   development, using Evennia)
+
 General mud/game development ideas and discussions
 --------------------------------------------------
 

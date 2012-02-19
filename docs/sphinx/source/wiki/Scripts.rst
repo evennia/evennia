@@ -43,11 +43,12 @@ database model). Scripts have no in-game representation and you cannot
 define them with any default commands. They have to be created in python
 code modules and imported from there into the game.
 
-The vast majority of scripts are always run 'on'
-`Objects <Objects.html>`_ affecting that object and maybe its
-surroundings or contents. Scripts unrelated to objects are called
-*Global* scripts and could handle things like game-time, weather and
-other tickers.
+Scripts may run directly 'on' `Objects <Objects.html>`_, affecting that
+object and maybe its surroundings or contents. An alternative way to
+affect many objects (rather than one script per object) is to create one
+Script and have it call all objects that "subscribe" to it at regular
+intervals (a *ticker*). Scripts not defined directly 'on' objects are
+called *Global* scripts.
 
 Custom script modules are usually stored in ``game/gamesrc/scripts``. As
 a convenience you can inherit all scripts from
@@ -64,7 +65,7 @@ can try it out with an example script:
 This should cause some random messages. The ``/stop`` switch will kill
 the script again.
 
-In code, you add scripts to `Objects <Objects.html>`_ and the script can
+In code, if you add scripts to `Objects <Objects.html>`_ the script can
 then manipulate the object as desired. The script is added to the
 object's *script handler*, called simply ``scripts``. The handler takes
 care of all initialization and startup of the script for you.
@@ -72,12 +73,27 @@ care of all initialization and startup of the script for you.
 ::
 
     # adding a script to an existing object 'myobj'
-    myobj.scripts.add("game.gamesrc.scripts.myscripts.CoolScript")
+     myobj.scripts.add("game.gamesrc.scripts.myscripts.CoolScript")
+     # alternative way
+     from src.utils.create import create_script
+     create_script("game.gamesrc.scripts.myscripts.CoolScript", obj=myobj)
 
-The ``myobj.scripts.add()`` method also takes an argument *key* that
-allows you to name your script uniquely before adding it. This is not
-necessary, but is useful if you add many scripts of the same class and
-later plan to use ``myobj.scripts.delete`` to remove individual scripts.
+The creation method(s) takes an optional argument *key* that allows you
+to name your script uniquely before adding it. This can be useful if you
+add many scripts of the same type and later plan to use
+``myobj.scripts.delete`` to remove individual scripts.
+
+You can create global scripts with ``src.utils.create.create_script()``.
+Just don't supply an object to store it on.
+
+::
+
+    # adding a global script
+     from src.utils.create import create_script
+     create_script("game.gamesrc.scripts.globals.MyGlobalEconomy", key="economy", obj=None)
+
+Assuming the Script ``game.gamesrc.scripts.globals.MyGlobalEconomy``
+exists, this will create and start it as a global script.
 
 Properties and functions defined on Scripts
 -------------------------------------------
@@ -85,12 +101,13 @@ Properties and functions defined on Scripts
 It's important to know the variables controlling the script before one
 can create one. Beyond those properties assigned to all typeclassed
 objects (see `Typeclasses <Typeclasses.html>`_), such as ``key``,
-``db``, ``ndb`` etc, all Scripts also has the following properties:
+``db``, ``ndb`` etc, all Scripts also have the following properties:
 
 -  ``desc`` - an optional description of the script's function. Seen in
-   listings.
+   script listings.
 -  ``interval`` - how often the script should run. If ``interval == 0``
-   (default), it runs forever (it will not accept a negative value).
+   (default), it runs forever, without any repeating (it will not accept
+   a negative value).
 -  ``start_delay`` - (bool), if we should wait ``interval`` seconds
    before firing for the first time or not.
 -  ``repeats`` - How many times we should repeat, assuming
@@ -102,8 +119,9 @@ There is one special property:
 
 -  ``obj`` - the `Object <Objects.html>`_ this script is attached to (if
    any). You should not need to set this manually. If you add the script
-   to the Object with ``myobj.scripts.add(myscriptpath)``, the ``obj``
-   property will be set to ``myobj`` for you.
+   to the Object with ``myobj.scripts.add(myscriptpath)`` or give
+   ``myobj`` as an argument to the ``utils.create.create_script``
+   function, the ``obj`` property will be set to ``myobj`` for you.
 
 It's also imperative to know the hook functions. Normally, overriding
 these are all the customization you'll need to do in Scripts. You can
@@ -129,6 +147,10 @@ find longer descriptions of these in ``gamesrc/scripts/basescript.py``.
    before calling.
 -  ``at_stop()`` - this is called when the script stops for whatever
    reason. It's a good place to do custom cleanup.
+-  ``at_server_reload()`` - this is called whenever the server is
+   warm-rebooted (e.g. with the ``@reload`` command). It's a good place
+   to save non-persistent data you might want to survive a reload.
+-  ``at_server_shutdown()`` - this is called on a full systems shutdown.
 
 Running methods (usually called automatically by the engine, but
 possible to also invoke manually)
@@ -140,16 +162,17 @@ possible to also invoke manually)
    script from a handler will stop it auomatically. ``at_stop()`` will
    be called.
 -  ``pause()`` - this pauses a running script, rendering it inactive,
-   but not deleting it. Timers are saved and can be resumed. This is
-   called automatically when the server reloads. No hooks are called -
+   but not deleting it. All properties are saved and timers can be
+   resumed. This is called automatically when the server reloads. No
+   hooks are called - as far as the script knows, it never stopped -
    this is a suspension of the script, not a change of state.
 -  ``unpause()`` - resumes a previously paused script. Timers etc are
    restored to what they were before pause. The server unpauses all
    paused scripts after a server reload. No hooks are called - as far as
    the script is concerned, it never stopped running.
 -  ``time_until_next_repeat()`` - for timed scripts, this returns the
-   time in seconds until it next fires. Returns None if not a timed
-   script.
+   time in seconds until it next fires. Returns ``None`` if
+   ``interval==0``.
 
 Example script
 --------------
@@ -188,8 +211,15 @@ above. Here we put it on a room called ``myroom``:
 
 ::
 
-    # Assuming Script is found in game/gamesrc/scripts/weather.py
     myroom.scripts.add(weather.Weather)
+
+In code you can also use the create function directly if you know how to
+locate the room you want:
+
+::
+
+    from src.utils.create import create_script
+    create_script('game.gamesrc.scripts.weather.Weather', obj=myroom)
 
 Or, from in-game, use the ``@script`` command:
 
@@ -197,18 +227,3 @@ Or, from in-game, use the ``@script`` command:
 
     @script here = weather.Weather
 
-Global scripts
---------------
-
-You can create scripts that are not attached to a given object -
-*Global* scripts. You can create such a script with
-``src.utils.create.create_script()`` by refrainnig from supplying an
-object to store it on.
-
-::
-
-    from src.utils.create import create_script
-      create_script(globals.MyGlobalEconomy, key="economy", obj=None)
-
-Assuming ``game.gamesrc.scripts.global.MyGlobalEconomy`` can be found,
-this will create and start it as a global script.

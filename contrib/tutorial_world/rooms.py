@@ -545,7 +545,7 @@ class BridgeRoom(TutorialRoom):
         self.db.west_exit     -   -  |  -   -     self.db.east_exit
                               0   1  2  3   4
 
-        The position is handled by a variabled stored on the player when entering and giving
+        The position is handled by a variable stored on the player when entering and giving
         special move commands will increase/decrease the counter until the bridge is crossed.                            
 
     """

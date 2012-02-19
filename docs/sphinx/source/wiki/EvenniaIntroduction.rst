@@ -117,6 +117,7 @@ Standards/Protocols supported
    database as game.
 -  IRC/IMC2 - external IRC and/or IMC2 channels can be connected to
    in-game chat channels
+-  RSS feeds can be echoed to in-game channels
 -  ANSI, xterm256 colours
 -  Several different databases supported (SQLite3, MySQL, ...)
 

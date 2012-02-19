@@ -12,7 +12,10 @@ Note, what is translated in this way are hard-coded strings from the
 server, things like "Connection closed" or "Server restarted".
 Basically, the things users are not supposed to change on their own.
 This means that the default command set is *not* translated. The reason
-for this is that commands are *intended* to be modified by users.
+for this is that commands are *intended* to be modified by users. Adding
+*i18n* code to commands tend to add complexity to code that will be
+changed anyway. One of the goals of Evennia is to keep the
+user-changeable code as clean and easy-to-read as possible.
 
 Changing server language
 ------------------------

@@ -23,7 +23,7 @@ Here's how to define a new Object typeclass in code:
         """
         This creates a simple rose object        
         """    
-        at_object_creation(self):
+        def at_object_creation(self):
             "this is called only once, when object is first created"
             # add a persistent attribute 'desc' to object.
             self.db.desc = "This is a pretty rose with thorns."
@@ -44,20 +44,23 @@ To create a new object in code, use the method
     from src.utils import create
     new_rose = create.create_object("game.gamesrc.objects.flowers.Rose", key="MyRose")
 
-(You have to give the full path to the class in this case.
+(You have to give the full path to the class in this case -
 ``create.create_object`` is a powerful function that should be used for
-all coded creating. Check out the module for more info on which
-arguments you can give the function.)
+all coded creating, for example if you create your own command that
+creates some objects as it runs. Check out the ``src.utils.create``
+module for more info on which arguments you can give the function.)
 
-This particular class doesn't really do much, all it does it make sure
-the attribute ``desc``(which is what the ``look`` command looks for) is
-pre-set. You could just as well do the same with the ``@describe``
-command. The ``Object`` typeclass offers many more hooks that is
-available to use though. Look at the ``Object`` class in
-``game/gamesrc/objects/baseobjects.py`` to orient yourself. If you
-define a new Object class (inheriting from the base one), and wants that
-to be the default instead, set ``BASE_OBJECT_TYPECLASS`` in
-``settings.py`` to point to your new class.
+This particular Rose class doesn't really do much, all it does it make
+sure the attribute ``desc``(which is what the ``look`` command looks
+for) is pre-set, which is pretty pointless since you will usually want
+to change this at build time (using the ``@describe`` command). The
+``Object`` typeclass offers many more hooks that is available to use
+though - see next section.
+
+If you define a new Object class (inheriting from the base one), and
+wants the default create command (``@create``) to default to that
+instead, set ``BASE_OBJECT_TYPECLASS`` in ``settings.py`` to point to
+your new class.
 
 Properties and functions on Objects
 -----------------------------------
@@ -67,36 +70,41 @@ Beyond those properties assigned to all
 following custom properties:
 
 -  ``aliases`` - a list of alternative names for the object. Aliases are
-   stored database objects, but the ``aliases`` property receives and
-   returns lists - so assign to it like normal, e.g.
-   ``obj.aliases=['flower', 'red blossom']``
--  ``location`` - a reference to the object currently storing this
+   stored in the database and can be searched for very fast. The
+   ``aliases`` property receives and returns lists - so assign to it
+   like normal, e.g. ``obj.aliases=['flower', 'red blossom']``
+-  ``location`` - a reference to the object currently containing this
    object.
 -  ``home`` is a backup location. The main motivation is to have a safe
    place to move the object to if its ``location`` is destroyed. All
-   objects should usually have a home location for this reason.
+   objects should usually have a home location for safety.
 -  ``destination`` - this holds a reference to another object this
    object links to in some way. Its main use is for
    `Exits <Objects#Exits.html>`_, it's otherwise usually unset.
 -  ``nicks`` - as opposed to aliases, a `Nick <Nicks.html>`_ holds a
    convenient nickname replacement for a real name, word or sequence,
-   only valid for this object. Nicks are stored in the database and are
-   a bit more complex than aliases since they have a *type* that defines
-   where Evennia tries to do the substituion. Use nicks.get(alias, type)
-   to get a nick, or nicks.add(alias, realname) to add a new one.
+   only valid for this object. This mainly makes sense if the Object is
+   used as a game character - it can then store briefer shorts, example
+   so as to quickly reference game commands or other characters. Nicks
+   are stored in the database and are a bit more complex than aliases
+   since they have a *type* that defines where Evennia tries to do the
+   substituion. In code, use nicks.get(alias, type) to get a nick, or
+   nicks.add(alias, realname) to add a new one.
 -  ``player`` - this holds a reference to a connected
    `Player <Players.html>`_ controlling this object (if any). Note that
    this is set also if the controlling player is *not* currently online
-   - to test if a server is online, use ``has_player`` instead.
+   - to test if a player is online, use the ``has_player`` property
+   instead.
 -  ``sessions`` - if ``player`` field is set *and the player is online*,
    this is a list of all active sessions (server connections) to contact
-   them through.
+   them through (it may be more than one if multiple connections are
+   allowed in settings).
 -  ``permissions`` - a list of `permission strings <Locks.html>`_ for
-   defining access rights.
--  ``has_player`` - a shorthand for checking if an online player is
+   defining access rights for this Object.
+-  ``has_player`` - a shorthand for checking if an *online* player is
    currently connected to this object.
--  ``contents`` - this is a list referencing all objects 'inside' this
-   object, that is which has this object set as their ``location``.
+-  ``contents`` - this returns a list referencing all objects 'inside'
+   this object (i,e. which has this object set as their ``location``).
 -  ``exits`` - this returns all objects inside this object that are
    *Exits*, that is, has the ``destination`` property set.
 
@@ -113,8 +121,11 @@ headers in ``src/objects/models.py`` for arguments and more details.
 -  ``msg`` - this function is used to send messages from the server to a
    player connected to this object.
 -  ``msg_contents`` - calls ``msg`` on all objects inside this object.
--  ``search`` - this is a convenient way to search for a specific
-   object, at a given location or globally.
+-  ``search`` - this is a convenient shorthand to search for a specific
+   object, at a given location or globally. It's mainly useful when
+   defining commands (in which case the object executing the command is
+   named ``caller`` and one can do ``caller.search()`` to find objects
+   in the room to operate on).
 -  ``execute_cmd`` - Lets the object execute the given string as if it
    was given on the command line.
 -  ``move_to`` - perform a full move of this object to a new location.
@@ -127,11 +138,12 @@ headers in ``src/objects/models.py`` for arguments and more details.
 -  ``delete`` - deletes this object, first calling ``clear_exits()`` and
    ``clear_contents()``.
 
-Objects also define a host of *hook methods* beyond
-``at_object_creation``. When implementing your custom objects, you will
-inherit from the base parent and overload these hooks with your own
-custom code. See ``game.gamesrc.baseobjects`` for an updated list of all
-the available hooks.
+The Object Typeclass defines many more *hook methods* beyond
+``at_object_creation``. Evennia calls these hooks at various points.
+When implementing your custom objects, you will inherit from the base
+parent and overload these hooks with your own custom code. See
+``game.gamesrc.baseobjects`` for an updated list of all the available
+hooks.
 
 Subclasses of *Object*
 ----------------------
@@ -140,8 +152,9 @@ There are three special subclasses of *Object* in default Evennia -
 *Characters*, *Rooms* and *Exits*. The reason they are separated is
 because these particular object types are fundamental, something you
 will always need and in some cases requires some extra attention in
-order to be recognized by the game engine. In practice they are all
-pretty similar to the base Object. You will import them all from
+order to be recognized by the game engine (there is nothing stopping you
+from redefining them though). In practice they are all pretty similar to
+the base Object. You will import them all from
 ``game.gamesrc.objects.baseobjects``.
 
 Characters
@@ -154,9 +167,9 @@ attribute. A ``Character`` object must have a `Default
 Commandset <Commands#Command_Sets.html>`_ set on itself at creation, or
 the player will not be able to issue any commands! If you just inherit
 your own class from ``baseobjects.Character`` and make sure the parent
-methods are run you should not have to worry about this. You can change
-the default typeclass assigned to new Players in your settings with
-``BASE_CHARACTER_TYPECLASS``.
+methods are not stopped from running you should not have to worry about
+this. You can change the default typeclass assigned to new Players in
+your settings with ``BASE_CHARACTER_TYPECLASS``.
 
 Rooms
 ~~~~~

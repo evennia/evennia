@@ -223,27 +223,24 @@ However:
 
 ::
 
-    obj.db.mydict[1][2] = "test" # fails!
+    obj.db.mydict[1][2] = "test" # silently fails!
+    val = obj.db.mydict[1][2] # still returns 3
 
 will not work - trying to edit the nested structure will fail silently
 and nothing will have changed. No, this is not consistent with normal
 Python operation, it's where the database magic fails. Sorry, but there
 does not seem to be a way around this (if you know one, let us know!)
 All is not lost however. In order to change a nested structure, you
-simply need to use a temporary variable:
+simply need to use a temporary variable to update:
 
 ::
 
-    # retrieve old db data into temporary variable
-    mydict = obj.db.mydict
-    # update temporary variable
-    mydict[1][2] = "test"
-    # save back to database
-    obj.db.mydict = mydict
-    # test
+    temp = obj.db.mydict
+    temp[1][2] = "test"
+    obj.db.mydict = temp
     val = obj.db.mydict[1][2] # now correctly returns "test"
 
-mydict was updated and recreated in the database.
+This is cumbersome, but always works as expected.
 
 Notes
 -----

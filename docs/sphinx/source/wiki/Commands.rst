@@ -124,6 +124,11 @@ Beyond the properties Evennia always assigns to the command at runtime
 -  ``help_category`` (optional) - setting this helps to structure the
    auto-help into categories. If none is set, this will be set to
    *General*.
+-  ``save_for_next`` (optional). This defaults to ``False``. If
+   ``True``, this command object (along with any changes you have done
+   to it) will be stored by the system and can be accessed by the next
+   command called by retrieving ``self.caller.ndb.last_cmd``. The next
+   run command will either clear or replace the storage.
 
 You should also implement at least two methods, ``parse()`` and
 ``func()`` (You could also implement ``perm()``, but that's not needed
@@ -602,10 +607,9 @@ Here are the exceptional situations that triggers system commands:
 
 -  No input (``cmdhandler.CMD_NOINPUT``) - the player just pressed
    return without any input. Default is to do nothing, but it can be
-
-useful for certain implementations such as line editors that interpret
-non-commands as text input.
-
+   useful to do something here for certain implementations such as line
+   editors that interpret non-commands as text input (an empty line in
+   the editing buffer).
 -  Command not found (``cmdhandler.CMD_NOMATCH``) - No matching command
    was found. Default is to display the "Huh?" error message.
 -  Several matching commands where found (``cmdhandler.CMD_MULTIMATCH``)
@@ -738,3 +742,7 @@ functionality at all by default (all default commands simply returns
 ``None``) and it's probably not relevant to any but the most
 advanced/exotic designs (one might use it to create a "nested" command
 structure for example).
+
+The ``save_for_next`` class variable can be used to implement
+state-persistent commands. For example it can make a command operate on
+"it", where it is determined by what the previous command operated on.

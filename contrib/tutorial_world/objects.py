@@ -10,10 +10,12 @@ Objects:
 TutorialObject
 
 Readable 
+Climbable
 Obelisk 
 LightSource 
 CrumblingWall
 Weapon 
+WeaponRack
 
 """
 
@@ -729,6 +731,7 @@ class CmdAttack(Command):
 
         if target.db.combat_parry_mode:
             # target is defensive; even harder to hit!
+            target.msg("{GYou defend, trying to avoid the attack.{n")
             hit *= 0.5
 
         if random.random() <= hit:
