@@ -41,7 +41,7 @@ var CLIENT_HASH = '0'; // variable holding the client id
 
 function webclient_receive(){
     // This starts an asynchronous long-polling request. It will either timeout
-    // or receive data from the 'receivedata' url. In both cases a new request will
+    // or receive data from the 'webclientdata' url. In both cases a new request will
     // immediately be started.
 
     $.ajax({
