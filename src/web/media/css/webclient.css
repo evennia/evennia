@@ -23,8 +23,7 @@ a:hover, a:active { color: #ccc }
 
 /* Base style for new messages in the main message area */
 .msg {
-  white-space: pre-wrap;
-  word-break: break-all;
+  white-space: pre-wrap;  
   padding: .5em .9em;}
   /*border-bottom: 1px dotted #222 } /*optional line between messages */
 
