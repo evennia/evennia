@@ -37,7 +37,7 @@ class TextToHTMLparser(object):
     normalcode = '\033[0m'                
     tabstop = 4
 
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)|(?P<protocol>(^|\s)((http|ftp)://.*?))(\s|$)', 
+    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)',#|(?P<protocol>(^|\s)((http|ftp)://.*?))(\s|$)', 
                            re.S|re.M|re.I)
 
     def re_color(self, text):
@@ -79,7 +79,7 @@ class TextToHTMLparser(object):
     def convert_urls(self, text):
         "Replace urls (http://...) by valid HTML"
         regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$]+))"
-        return re.sub(regexp, r'<a href="\1">\1</a>', text)
+        return re.sub(regexp, r'<a href="\1">\1</a> ', text)
 
     def do_sub(self, m):
         "Helper method to be passed to re.sub."
@@ -88,23 +88,26 @@ class TextToHTMLparser(object):
             return cgi.escape(c['htmlchars'])
         if c['lineend']:
             return '<br>'
+        elif c['space'] == '\t':
+            return ' '*self.tabstop
         elif c['space']:
             t = m.group().replace('\t', '&nbsp;'*self.tabstop)
             t = t.replace(' ', '&nbsp;')
             return t
-        elif c['space'] == '\t':
-            return ' '*self.tabstop
-        else:
-            url = m.group('protocol')
-            if url.startswith(' '):
-                prefix = ' '
-                url = url[1:]
-            else:
-                prefix = ''
-            last = m.groups()[-1]
-            if last in ['\n', '\r', '\r\n']:
-                last = '<br>'
-            return '%s%s' % (prefix, url)
+        # else: 
+        #     return m.group('protocol') + ' ' 
+        #     url = m.group('protocol')
+        #     prefix, postfix = '',''
+        #     if url.startswith(' '):
+        #         prefix = ' '
+        #         url = url[1:]
+        #     if url.endswith(' '):
+        #         postfix = ' '
+        #         url = url[:-1]
+        #     last = m.groups()[-1]
+        #     if last in ['\n', '\r', '\r\n']:
+        #         last = '<br>'
+        #     return '%s%s%s' % (prefix, url, postfix)
 
     def parse(self, text):
         """
@@ -124,7 +127,6 @@ class TextToHTMLparser(object):
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
-
         # clean out eventual ansi that was missed
         result = ansi.parse_ansi(result, strip_ansi=True)
     

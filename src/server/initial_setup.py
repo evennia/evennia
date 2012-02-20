@@ -74,7 +74,7 @@ def create_objects():
     limbo_obj.id = 2
     string = " ".join([
         "Welcome to your new {wEvennia{n-based game. From here you are ready to begin development.",
-        "If you should need help or would like to participate in community discussions, visit http://evennia.com.",
+        "Visit http://evennia.com if you should need help or would like to participate in community discussions.",
         "If you are logged in as User #1 you can create a demo/tutorial area with '@batchcommand contrib.tutorial_world.build'.",
         "Log out and create a new non-admin account at the login screen to play the tutorial properly."])
     string = _(string)
