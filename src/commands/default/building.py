@@ -9,6 +9,7 @@ from src.objects.models import ObjectDB, ObjAttribute
 from src.players.models import PlayerAttribute
 from src.utils import create, utils, debug 
 from src.commands.default.muxcommand import MuxCommand
+from src.commands.cmdhandler import get_and_merge_cmdsets
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -1506,7 +1507,7 @@ class CmdExamine(ObjManipCommand):
                 string += "\n %s = %s" % (attr, value)
         return string 
     
-    def format_output(self, obj, raw=False):
+    def format_output(self, obj, avail_cmdset, raw=False):
         """
         Helper function that creates a nice report about an object.
 
@@ -1579,8 +1580,8 @@ class CmdExamine(ObjManipCommand):
             string += headers["cmdset"] % cmdsetstr
     
             # list the actually available commands
-            from src.commands.cmdhandler import get_and_merge_cmdsets
-            avail_cmdset = get_and_merge_cmdsets(obj)
+            #from src.commands.cmdhandler import get_and_merge_cmdsets
+            #avail_cmdset = get_and_merge_cmdsets(obj)
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
             
             cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)                            
@@ -1619,6 +1620,18 @@ class CmdExamine(ObjManipCommand):
         msgdata = None
         if "raw" in self.switches:
             msgdata = {"raw":True}
+
+        def get_cmdset_callback(cmdset):
+            """
+            We make use of the cmdhandeler.get_and_merge_cmdsets below. This 
+            is an asynchronous function, returning a Twisted deferred.
+            So in order to properly use this we need use this callback; 
+            it is called with the result of get_and_merge_cmdsets, whenever
+            that function finishes. Taking the resulting cmdset, we continue
+            to format and output the result. 
+            """
+            string = self.format_output(obj, cmdset, raw=msgdata)
+            caller.msg(string.strip(), data=msgdata)
             
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
@@ -1627,12 +1640,11 @@ class CmdExamine(ObjManipCommand):
             #If we don't have special info access, just look at the object instead.
                 caller.execute_cmd('look %s' % obj.name)
                 return              
-            string = self.format_output(obj, raw=msgdata)
-            caller.msg(string.strip(), data=msgdata)
-            return 
+            # using callback for printing result whenever function returns. 
+            get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
+            return
 
         # we have given a specific target object 
-        string = ""
         for objdef in self.lhs_objattr:
 
             obj_name = objdef['name']
@@ -1653,10 +1665,10 @@ class CmdExamine(ObjManipCommand):
             if obj_attrs:
                 for attrname in obj_attrs:
                     # we are only interested in specific attributes                    
-                    string += self.format_attributes(obj, attrname, crop=False, raw=msgdata)                        
+                    caller.msg(self.format_attributes(obj, attrname, crop=False, raw=msgdata))
             else:
-                string += self.format_output(obj, raw=msgdata)        
-        caller.msg(string.strip(), data=msgdata)
+                # using callback to print results whenever function returns. 
+                get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
 
 
 class CmdFind(MuxCommand):

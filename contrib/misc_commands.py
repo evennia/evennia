@@ -69,12 +69,15 @@ class CmdQuell(MuxCommand):
         self.caller.player.user.is_superuser = False 
         self.caller.player.user.save()
 
-        try:
-            ret = self.caller.execute_cmd(cmd)
-        except Exception, e:
-            self.caller.msg(str(e))
+        def callback(ret):
+            self.caller.msg(ret)
+        def errback(err):
+            self.caller.msg(err)
+
+        # this returns a deferred, so we need to assign callbacks
+        self.caller.execute_cmd(cmd).addCallbacks(callback, errback)
             
         self.caller.permissions = oldperm
         self.caller.player.user.is_superuser = old_superuser 
         self.caller.player.user.save() 
-        return ret
+        return
