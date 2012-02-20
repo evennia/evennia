@@ -276,14 +276,17 @@ def create_message(senderobj, message, channels=None,
     desired. 
     """
     from src.comms.models import Msg
+    from src.players.models import PlayerDB
     from src.comms.managers import to_object
 
     def to_player(obj):
         "Make sure the object is a player object"
-        if hasattr(obj, 'user'):
+        if isinstance(obj, PlayerDB):
             return obj
-        elif hasattr(obj, 'player'):
-            return obj.player
+        elif hasattr(obj, 'user'):
+            return obj.dbobj
+        elif hasattr(obj, 'db_player'):
+            return obj.db_player
         else:
             return None 
 
