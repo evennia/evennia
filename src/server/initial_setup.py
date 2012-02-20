@@ -72,12 +72,11 @@ def create_objects():
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'))
     limbo_obj.id = 2
-    string = " Welcome to your new {wEvennia{n-based game."
-    string += " From here you are ready to begin development."
-    string += " If you should need help or would like to participate"
-    string += " in community discussions, visit http://evennia.com."
-    string += " If you are logged in as User #1 you can create a"
-    string += " demo/tutorial area with '@batchcommand contrib.tutorial_world.build'."
+    string = " ".join([
+        "Welcome to your new {wEvennia{n-based game. From here you are ready to begin development.",
+        "If you should need help or would like to participate in community discussions, visit http://evennia.com.",
+        "If you are logged in as User #1 you can create a demo/tutorial area with '@batchcommand contrib.tutorial_world.build'.",
+        "Log out and create a new non-admin account at the login screen to play the tutorial properly."])
     string = _(string)
     limbo_obj.db.desc = string
     limbo_obj.save()
