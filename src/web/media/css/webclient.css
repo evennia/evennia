@@ -39,6 +39,23 @@ a:hover, a:active { color: #ccc }
 /* Error messages (red) */
 .err { color: #f00 }
 
+/* Style specific classes corresponding to formatted, narative text. */
+.white { color: white; } 
+.cyan { color: #00FFFF; }
+.blue { color: blue; }
+.red { color: red; }
+.magenta { color: #FF00FF; }
+.lime { color: lime; } 
+.yellow { color: yellow; }
+.gray { color: gray; }
+.teal { color: teal; } 
+.navy { color: navy; }
+.maroon { color: maroon; }
+.purple { color: purple; }
+.green { color: green; }
+.olive { color: olive; }
+.underline { text-decoration: underline; }
+
 /* Container surrounding entire chat */
 #wrapper {
   position: relative;
