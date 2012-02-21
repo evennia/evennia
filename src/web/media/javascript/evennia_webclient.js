@@ -35,6 +35,46 @@ contain the 'mode' of the request to be handled by the protocol:
 // jQuery must be imported by the calling html page before this script
 // There are plenty of help on using the jQuery library on http://jquery.com/
 
+
+$.fn.appendCaret = function() {
+    /* jQuery extension that will forward the caret to the end of the input, and
+       won't harm other elements (although calling this on multiple inputs might
+       not have the expected consequences).
+       
+       Thanks to
+       http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+       for the good starting point.  */
+    return this.each(function() {
+        var range,
+            // Index at where to place the caret.
+            end,
+            self = this;
+
+        if (self.setSelectionRange) {
+            // other browsers
+            end = self.value.length;
+            self.focus();
+            // NOTE: Need to delay the caret movement until after the callstack.
+            setTimeout(function() {
+                self.setSelectionRange(end, end);
+            }, 0);
+        } 
+        else if (self.createTextRange) {
+            // IE
+            end = self.value.length - 1;
+            range = self.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', end);
+            // NOTE: I haven't tested to see if IE has the same problem as
+            // W3C browsers seem to have in this context (needing to fire
+            // select after callstack).
+            range.select();
+        }
+    });
+};
+
+
 // Server communications
 
 var CLIENT_HASH = '0'; // variable holding the client id
@@ -192,10 +232,12 @@ function history_add(input) {
 // Catching keyboard shortcuts
 
 $(document).keydown( function(event) {
-    // Get the pressed key 
-    var code = event.keyCode ? event.keyCode : event.which;    
+    // Get the pressed key (normalized by jQuery)
+    var code = event.which,
+        inputField = $("#inputfield");
+        
     // always focus input field no matter which key is pressed
-    $("#inputfield")[0].focus();
+    inputField.focus();
 
     // Special keys recognized by client
 
@@ -204,18 +246,13 @@ $(document).keydown( function(event) {
     if (code == 13) { // Enter Key
         webclient_input();
         event.preventDefault();
-        return false;
     }
     else {
         if (code == 38) { // arrow up 38
-            $("#inputfield").val(function(index, value){                
-                return history_step_back();
-            });
+            inputField.val(history_step_back()).appendCaret();
         }
         else if (code == 40) { // arrow down 40
-            $("#inputfield").val(function(index, value){
-                return history_step_fwd();
-            });
+            inputField.val(history_step_fwd()).appendCaret();
         }
     }
 });

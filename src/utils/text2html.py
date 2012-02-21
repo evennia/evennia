@@ -37,28 +37,28 @@ class TextToHTMLparser(object):
     normalcode = '\033[0m'                
     tabstop = 4
 
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)',#|(?P<protocol>(^|\s)((http|ftp)://.*?))(\s|$)', 
-                           re.S|re.M|re.I)
+    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
 
     def re_color(self, text):
-        "Replace ansi colors with html color tags"
+        """Replace ansi colors with html color class names.
+        Let the client choose how it will display colors, if it wishes to."""
         for colorname, code in self.colorcodes:
             regexp = "(?:%s)(.*?)(?:%s)" % (code, self.normalcode)
             regexp = regexp.replace('[', r'\[')
-            text = re.sub(regexp, r'''<span style="color: %s">\1</span>''' % colorname, text)
+            text = re.sub(regexp, r'''<span class="%s">\1</span>''' % colorname, text)
         return text
 
     def re_bold(self, text):
-        "Replace ansi hilight with bold text"
+        "Replace ansi hilight with strong text element."
         regexp = "(?:%s)(.*?)(?:%s)" % ('\033[1m', self.normalcode)
         regexp = regexp.replace('[', r'\[')
-        return re.sub(regexp, r'<span style="font-weight:bold">\1</span>', text)
+        return re.sub(regexp, r'<strong>\1</strong>', text)
 
     def re_underline(self, text):
-        "Replace ansi underline with html equivalent"
+        "Replace ansi underline with html underline class name."
         regexp = "(?:%s)(.*?)(?:%s)" % ('\033[4m', self.normalcode)
         regexp = regexp.replace('[', r'\[')
-        return re.sub(regexp, r'<span style="text-decoration: underline">\1</span>', text)
+        return re.sub(regexp, r'<span class="underline">\1</span>', text)
 
     def remove_bells(self, text):
         "Remove ansi specials"
@@ -79,7 +79,9 @@ class TextToHTMLparser(object):
     def convert_urls(self, text):
         "Replace urls (http://...) by valid HTML"
         regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$]+))"
-        return re.sub(regexp, r'<a href="\1">\1</a> ', text)
+        # -> added target to output prevent the web browser from attempting to 
+        # change pages (and losing our webclient session).
+        return re.sub(regexp, r'<a href="\1" target="_blank">\1</a>', text)
 
     def do_sub(self, m):
         "Helper method to be passed to re.sub."
@@ -94,20 +96,6 @@ class TextToHTMLparser(object):
             t = m.group().replace('\t', '&nbsp;'*self.tabstop)
             t = t.replace(' ', '&nbsp;')
             return t
-        # else: 
-        #     return m.group('protocol') + ' ' 
-        #     url = m.group('protocol')
-        #     prefix, postfix = '',''
-        #     if url.startswith(' '):
-        #         prefix = ' '
-        #         url = url[1:]
-        #     if url.endswith(' '):
-        #         postfix = ' '
-        #         url = url[:-1]
-        #     last = m.groups()[-1]
-        #     if last in ['\n', '\r', '\r\n']:
-        #         last = '<br>'
-        #     return '%s%s%s' % (prefix, url, postfix)
 
     def parse(self, text):
         """
