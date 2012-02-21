@@ -346,6 +346,11 @@ start
 #
 @lock north = view:attr(last_climbed) ; traverse:attr(last_climbed)
 #
+@desc north
+ This is a hardly visible footpath leading off through the rain-beaten
+ grass. It seems to circle the trees northward. You would never had
+ noticed it had you not seen it from above.
+#
 @set north/tutorial_info = 
  This exit is locked with a lock string that looks like this: 
 
@@ -513,7 +518,7 @@ bridge
 @desc
  You are on a narrow ledge protruding from the side of the cliff,
  about halfway down.  The air if saturated with salty sea water,
- sprays hitting your from the crashing waves below.
+ sprays hitting your face from the crashing waves below.
  
  The ledge is covered with a few black-grey brushes. Not far from you
  the cliff-face is broken down to reveal a narrow natural opening into
@@ -529,11 +534,15 @@ bridge
 #
 @create/drop The sea (far below you);sea;ocean
 #
+@set sea/get_err_msg: 
+ Try as you might, the Sea will always get you long before you can
+ ever get it.
+#
 @lock sea = get:false()
 #
 @desc sea =
- Below you the gray sea rages. You can almost imagine feeling the
- cliff tremble under its onslaught.
+ Below you the gray sea rages. You can almost imagine the
+ cliff trembling under its onslaught.
 #
 @create/drop The hang bridge (above you);bridge;hangbridge;above
 #
@@ -1063,9 +1072,10 @@ stairs down
 @desc
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
+
  
- {rSuddenly you hear a distinct 'click' and the ground suddenly
- disappears under your feet! You fall ... things go dark. {n
+ {rSuddenly you hear a distinct 'click' and the ground abruptly
+ disappears under your feet! You fall ... things go dark. {n 
  
  
  ... 

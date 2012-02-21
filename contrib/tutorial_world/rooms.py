@@ -359,7 +359,7 @@ class TeleportRoom(TutorialRoom):
 
     def at_object_receive(self, character, source_location):
         "This hook is called by the engine whenever the player is moved into this room."
-        if not character.has_player or character.is_superuser:
+        if not character.has_player:
             # only act on player characters. 
             return
         #print character.db.puzzle_clue, self.db.puzzle_value
