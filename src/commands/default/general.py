@@ -432,7 +432,7 @@ class CmdSay(MuxCommand):
     """
     
     key = "say"
-    aliases = ['"']
+    aliases = ['"', "'"]
     locks = "cmd:all()"
     
     def func(self):
