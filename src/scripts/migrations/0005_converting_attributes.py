@@ -152,17 +152,20 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         for attr in orm.ScriptAttribute.objects.all():
-            # repack attr into new format, and reimport
-            val = pickle.loads(to_str(attr.db_value))
-            if hasattr(val, '__iter__'):
-                val = ("iter", val)
-            elif type(val) == PackedDBobject:
-                val = ("dbobj", val)
-            else:
-                val = ("simple", val)
-            attr.db_value = to_unicode(pickle.dumps(to_str(to_attr(from_attr(attr, val)))))
-            attr.save()
- 
+            try:
+                # repack attr into new format, and reimport
+                val = pickle.loads(to_str(attr.db_value))
+                if hasattr(val, '__iter__'):
+                    val = ("iter", val)
+                elif type(val) == PackedDBobject:
+                    val = ("dbobj", val)
+                else:
+                    val = ("simple", val)
+                attr.db_value = to_unicode(pickle.dumps(to_str(to_attr(from_attr(attr, val)))))
+                attr.save()
+            except TypeError, RuntimeError:
+                pass
+
     def backwards(self, orm):
         "Write your backwards methods here."
         raise RuntimeError
