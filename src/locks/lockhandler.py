@@ -5,7 +5,7 @@ A lock defines access to a particular subsystem or property of
 Evennia. For example, the "owner" property can be impmemented as a
 lock. Or the disability to lift an object or to ban users.
 
-A lock consists of two three parts: 
+A lock consists of three parts: 
 
  - access_type - this defines what kind of access this lock regulates. This
    just a string. 
@@ -42,7 +42,7 @@ Lock functions should most often be pretty general and ideally possible to
 re-use and combine in various ways to build clever locks. 
 
 
-# Lock definition
+# Lock definition ("Lock string")
 
 A lock definition is a string with a special syntax. It is added to 
 each object's lockhandler, making that lock available from then on. 
@@ -59,12 +59,13 @@ Example:
  We want to limit who may edit a particular object (let's call this access_type 
 for 'edit', it depends on what the command is looking for). We want this to
 only work for those with the Permission 'Builders'. So we use our lock
-function above and call it like this:
+function above and define it like this:
 
   'edit:perm(Builders)'
  
-Here, the lock-function perm() will be called (accessing_obj and accessed_obj are added
-automatically, you only need to add the args/kwargs, if any). 
+Here, the lock-function perm() will be called with the string
+'Builders' (accessing_obj and accessed_obj are added automatically,
+you only need to add the args/kwargs, if any).
 
 If we wanted to make sure the accessing object was BOTH a Builders and a GoodGuy, we
 could use AND:
@@ -86,9 +87,13 @@ From then on, a command that wants to check for 'edit' access on this
 object would do something like this:
 
   if not target_obj.lockhandler.has_perm(caller, 'edit'):
-      caller.msg("Sorry you cannot edit that.")
+      caller.msg("Sorry, you cannot edit that.")
 
+All objects also has a shortcut called 'access' that is recommended to use instead:
 
+  if not target_obj.access(caller, 'edit'):
+      caller.msg("Sorry, you cannot edit that.")
+  
 # Permissions 
 
 Permissions are just text strings stored in a comma-separated list on
@@ -108,8 +113,8 @@ from src.utils import logger, utils
 #
 
 class LockException(Exception):
+    "raised during an error in a lock."
     pass
-
 
 #
 # Cached lock functions
@@ -166,7 +171,6 @@ class LockHandler(object):
         self._cache_locks(self.obj.lock_storage)
 
 
-
     def __str__(self):
         return ";".join(self.locks[key][2] for key in sorted(self.locks))
 
@@ -181,8 +185,10 @@ class LockHandler(object):
 
     def _parse_lockstring(self, storage_lockstring):
         """
-        Helper function. 
-        locks are stored as a string 'atype:[NOT] lock()[[ AND|OR [NOT] lock() [...]];atype...
+        Helper function. This is normally only called when the
+        lockstring is cached and does preliminary checking.  locks are
+        stored as a string 'atype:[NOT] lock()[[ AND|OR [NOT] lock()[...]];atype...
+
         """
         locks = {}
         if not storage_lockstring:
@@ -204,14 +210,14 @@ class LockHandler(object):
             evalstring = rhs.replace('AND','and').replace('OR','or').replace('NOT','not')
             nfuncs = len(funclist)
             for funcstring in funclist: 
-                funcname, rest = [part.strip().strip(')') for part in funcstring.split('(', 1)]
-                func = LOCKFUNCS.get(funcname, None)
+                funcname, rest = (part.strip().strip(')') for part in funcstring.split('(', 1))
+                func = LOCKFUNCS.get(funcname, None)                    
                 if not callable(func):
                     elist.append("Lock: function '%s' is not available." % funcstring)
                     continue 
-                args = [arg.strip() for arg in rest.split(',') if not '=' in arg]
+                args = list(arg.strip() for arg in rest.split(',') if not '=' in arg)
                 kwargs = dict([arg.split('=', 1) for arg in rest.split(',') if '=' in arg])                
-                lock_funcs.append((func, args, kwargs))            
+                lock_funcs.append((func, args, kwargs))
                 evalstring = evalstring.replace(funcstring, '%s')        
             if len(lock_funcs) < nfuncs:                                
                 continue
@@ -228,12 +234,13 @@ class LockHandler(object):
                                  (access_type, locks[access_type][2], raw_lockstring))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)            
         if wlist and self.log_obj:
-            # not an error, so only report if log_obj is available.
+            # a warning text was set, it's not an error, so only report if log_obj is available.
             self._log_error("\n".join(wlist))
         if elist:
+            # an error text was set, raise exception. 
             raise LockException("\n".join(elist))        
             self.no_errors = False
-        
+        # return the gathered locks in an easily executable form 
         return locks 
 
     def _cache_locks(self, storage_lockstring):
@@ -312,7 +319,24 @@ class LockHandler(object):
         accessing_obj - the object seeking access
         access_type - the type of access wanted
         default - if no suitable lock type is found, use this
-        no_superuser_bypass - don't use this unless you really, really need to
+        no_superuser_bypass - don't use this unless you really, really need to,
+                              it makes supersusers susceptible to the lock check.
+
+        A lock is executed in the follwoing way: 
+        
+        Parsing the lockstring, we (during cache) extract the valid
+        lock functions and store their function objects in the right
+        order along with their args/kwargs. These are now executed in
+        sequence, creating a list of True/False values. This is put
+        into the evalstring, which is a string of AND/OR/NOT entries
+        separated by placeholders where each function result should
+        go. We just put those results in and evaluate the string to
+        get a final, combined True/False value for the lockstring.
+
+        The important bit with this solution is that the full
+        lockstring is never blindly evaluated, and thus there (should
+        be) no way to sneak in malign code in it. Only "safe" lock
+        functions (as defined by your settings) are executed.
 
         """
         if self.reset_flag:
@@ -331,15 +355,11 @@ class LockHandler(object):
         if access_type in self.locks:
             # we have a lock, test it.            
             evalstring, func_tup, raw_string = self.locks[access_type]            
-            # we have previously stored the function object and all the args/kwargs as list/dict,
-            # now we just execute them all in sequence. The result will be a list of True/False 
-            # statements. Note that there is no eval here, these are normal command calls!
-            true_false = (bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
-            # we now input these True/False list into the evalstring, which combines them with 
-            # AND/OR/NOT in order to get the final result
-            #true_false = tuple(true_false)
-            #print accessing_obj, self.obj, access_type, true_false, evalstring, func_tup, raw_string
-            return eval(evalstring % tuple(true_false))
+            # execute all lock funcs in the correct order, producing a tuple of True/False results.
+            true_false = tuple(bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
+            # the True/False tuple goes into evalstring, which combines them 
+            # with AND/OR/NOT in order to get the final result.
+            return eval(evalstring % true_false)
         else:
             return default
 
@@ -357,12 +377,10 @@ class LockHandler(object):
         
         locks = self. _parse_lockstring(lockstring)
         for access_type in locks:
-            evalstring, func_tup, raw_string = locks[access_type]            
-            true_false = (tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
-            return eval(evalstring % tuple(true_false))
-            
-
-        
+            evalstring, func_tup, raw_string = locks[access_type]
+            true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
+            return eval(evalstring % true_false)
+                    
 def test():
     # testing 
 
