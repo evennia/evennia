@@ -248,10 +248,9 @@ def cmdhandler(caller, raw_string, testing=False):
             else:
                 caller.ndb.last_cmd = None 
             
-            # Done! By default, Evennia does not use this return at all
-            def callback(r):
-                return r
-            returnValue(ret).addCallback(r)
+            # Done! This returns a deferred. By default, Evennia does
+            # not use this at all.
+            returnValue(ret)
 
         except ExecSystemCommand, exc:             
             # Not a normal command: run a system command, if available,
@@ -267,16 +266,17 @@ def cmdhandler(caller, raw_string, testing=False):
                 if hasattr(syscmd, 'obj') and hasattr(syscmd.obj, 'scripts'):
                     # cmd.obj is automatically made available.
                     # we make sure to validate its scripts. 
-                    syscmd.obj.scripts.validate()
+                    yield syscmd.obj.scripts.validate()
                     
                 if testing:
                     # only return the command instance
                     returnValue(syscmd)
 
                 # parse and run the command
-                syscmd.parse()
-                syscmd.func()
+                yield syscmd.parse()
+                yield syscmd.func()
             elif sysarg:
+                # return system arg
                 caller.msg(exc.sysarg)
 
         except NoCmdSets:
@@ -299,7 +299,7 @@ def cmdhandler(caller, raw_string, testing=False):
     except Exception:            
         # This catches exceptions in cmdhandler exceptions themselves
         string = "%s\nAbove traceback is from a Command handler bug."
-        string += " Please contact an admin."
+        string += " Please contact an admin and/or file a bug report."
         logger.log_trace(string)
         caller.msg(string % format_exc())
 
