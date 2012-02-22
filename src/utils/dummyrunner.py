@@ -93,6 +93,19 @@ Setup:
      from a python prompt (see Python's manual on cProfiler).
 
 """
+# number of clients to launch if no input is given on command line
+DEFAULT_NCLIENTS = 1
+# time between each 'tick', in seconds, if not set on command
+# line. All launched clients will be called upon to possibly do an
+# action with this frequency.
+DEFAULT_TIMESTEP = 5 
+# Port to use, if not specified on command line
+DEFAULT_PORT = settings.TELNET_PORTS[0]
+# chance of an action happening, per timestep. This helps to
+# spread out usage randomly, like it would be in reality.
+CHANCE_OF_ACTION = 0.1 
+
+
 #------------------------------------------------------------
 # Helper functions
 #------------------------------------------------------------
@@ -134,7 +147,9 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self._actions = self.factory.actions
         self._echo_brief = self.factory.verbose == 1
         self._echo_all = self.factory.verbose == 2
-        print " ** client %i connected successfully." % self.cid
+        #print " ** client %i connected." % self.cid
+
+        reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
         
         # start client tick
         d = LoopingCall(self.step)
@@ -147,7 +162,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             
     def connectionLost(self, reason):
         "loosing the connection"
-        print " ** client %i lost connection." % self.cid
+        #print " ** client %i lost connection." % self.cid
 
     def error(self, err):
         "error callback"
@@ -157,25 +172,33 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         "produces a unique id, also between clients"
         return OID.next()
 
+    def logout(self):
+        "Causes the client to log out of the server. Triggered by ctrl-c signal."
+        cmd, report = self._actions[1](self)
+        print "client %i %s (%s actions)" % (self.cid, report, self.istep)        
+        self.sendLine(cmd)
+
     def step(self):
         """
         Perform a step. This is called repeatedly by the runner
         and causes the client to issue commands to the server.
         This holds all "intelligence" of the dummy client. 
         """
-        if self.istep == 0: 
+        if random.random() > CHANCE_OF_ACTION: 
+            return 
+        if self.istep == 0:            
             cfunc = self._actions[0]
         else: # random selection using cumulative probabilities
             rand = random.random()
-            cfunc = [func for cprob, func in self._actions[1] if cprob >= rand][0]
+            cfunc = [func for cprob, func in self._actions[2] if cprob >= rand][0]
         # launch the action (don't hide tracebacks)
         cmd, report = cfunc(self)
         # handle the result 
         cmd = "\n".join(makeiter(cmd))
-        if self._echo_brief or self._echo_all:
+        if self.istep == 0 or self._echo_brief or self._echo_all:
             print "client %i %s" % (self.cid, report)
         self.sendLine(cmd)
-        self.istep += 1 
+        self.istep += 1 # only steps up if an action is taken
 
 class DummyFactory(protocol.ClientFactory):
     protocol = DummyClient
@@ -196,12 +219,12 @@ def start_all_dummy_clients(actions, nclients=1, timestep=5, telnet_port=4000, v
     # validating and preparing the action tuple
     
     # make sure the probabilities add up to 1
-    pratio = 1.0 / sum(tup[0] for tup in actions[1:])
-    flogin, probs, cfuncs = actions[0], [tup[0] * pratio for tup in actions[1:]], [tup[1] for tup in actions[1:]]
+    pratio = 1.0 / sum(tup[0] for tup in actions[2:])
+    flogin, flogout, probs, cfuncs = actions[0], actions[1], [tup[0] * pratio for tup in actions[2:]], [tup[1] for tup in actions[2:]]
     # create cumulative probabilies for the random actions 
     cprobs = [sum(v for i,v in enumerate(probs) if i<=k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
-    actions = (flogin, zip(cprobs, cfuncs))
+    actions = (flogin, flogout, zip(cprobs, cfuncs))
     
     # setting up all clients (they are automatically started)
     factory = DummyFactory(actions, timestep, verbose)
@@ -227,9 +250,9 @@ if __name__ == '__main__':
     options, args = parser.parse_args() 
 
     nargs = len(args)
-    nclients = 1
-    timestep = 5
-    port = 4000
+    nclients = DEFAULT_NCLIENTS
+    timestep = DEFAULT_TIMESTEP
+    port = DEFAULT_PORT
     try:
         if not args : raise Exception 
         if nargs > 0: nclients = max(1, int(args[0]))
@@ -248,6 +271,8 @@ if __name__ == '__main__':
     actions = utils.mod_import(action_modpath, "ACTIONS")
         
     print "Connecting %i dummy client(s) to port %i using a %i second timestep ... " % (nclients, port, timestep)
+    t0 = time.time() 
     start_all_dummy_clients(actions, nclients, timestep, port, 
                        verbose=options.verbose)
-    print "... dummy client runner finished."
+    ttot = time.time() - t0
+    print "... dummy client runner finished after %i seconds." % ttot

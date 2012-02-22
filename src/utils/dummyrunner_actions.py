@@ -66,7 +66,11 @@ def c_login(client):
            '@dig %s' % START_ROOM % client.cid,
            '@teleport %s' % START_ROOM % client.cid)
     
-    return cmd, "logs into game as %s ..." % cname
+    return cmd, "logs in as %s ..." % cname
+
+def c_logout(client):
+    "logouts of the game"
+    return "@quit", "logs out"
 
 def c_looks(client):
     "looks at various objects"
@@ -133,12 +137,14 @@ def c_moves(client):
 #  
 # This is a tuple of client action functions. The first element is the
 # function the client should use to log into the game and move to
-# STARTROOM . The following elements are 2-tuples of (probability,
+# STARTROOM . The second element is the logout command, for cleanly 
+# exiting the mud. The following elements are 2-tuples of (probability,
 # action_function). The probablities should normally sum up to 1,
 # otherwise the system will normalize them. 
 #
 
 ACTIONS = ( c_login,            
+            c_logout, 
             (0.2, c_looks),
             (0.1, c_examines),
             (0.2, c_help),

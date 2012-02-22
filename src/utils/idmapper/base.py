@@ -12,6 +12,7 @@ Evennia changes:
 
 """
 
+from twisted.internet import reactor 
 from django.db.models.base import Model, ModelBase
 from manager import SharedMemoryManager
 
@@ -134,6 +135,8 @@ class SharedMemoryModel(Model):
     flush_cached_instance = classmethod(flush_cached_instance)
     
     def save(self, *args, **kwargs):
+        #ssave = super(SharedMemoryModel, self).save
+        #reactor.callInThread(ssave, *args, **kwargs)
         super(SharedMemoryModel, self).save(*args, **kwargs)
         self.__class__.cache_instance(self)
 
