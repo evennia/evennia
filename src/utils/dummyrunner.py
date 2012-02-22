@@ -15,7 +15,7 @@ full step-by-step setup help.
 Basically (for testing default Evennia): 
 
  - Use an empty/testing database.
- - set PERMISSION_PLAYERS_DEFAULT = "Builders"
+ - set PERMISSION_PLAYER_DEFAULT = "Builders"
  - start server, eventually with profiling active
  - launch this client runner
 
