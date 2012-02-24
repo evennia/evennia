@@ -99,32 +99,47 @@ class PackedDict(dict):
         order to allow custom updates to the dict. 
 
          db_obj - the Attribute object storing this dict.
+
+         The 'parent' property is set to 'init' at creation,
+         this stops the system from saving itself over and over
+         when first assigning the dict. Once initialization
+         is over, the Attribute from_attr() method will assign
+         the parent (or None, if at the root)
          
         """
         self.db_obj = db_obj
+        self.parent = 'init'
         super(PackedDict, self).__init__(*args, **kwargs)
     def __str__(self):
         return "{%s}" % ", ".join("%s:%s" % (key, str(val)) for key, val in self.items())
+    def save(self):
+        "Relay save operation upwards in tree until we hit the root."
+        if self.parent == 'init':
+            pass
+        elif self.parent:
+            self.parent.save()         
+        else:
+            self.db_obj.value = self 
     def __setitem__(self, *args, **kwargs):                
         "assign item to this dict"
         super(PackedDict, self).__setitem__(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def clear(self, *args, **kwargs):                
         "Custom clear"
         super(PackedDict, self).clear(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def pop(self, *args, **kwargs):                
         "Custom pop"
         super(PackedDict, self).pop(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def popitem(self, *args, **kwargs):                
         "Custom popitem"
         super(PackedDict, self).popitem(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def update(self, *args, **kwargs):                
         "Custom update"
         super(PackedDict, self).update(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
                 
 class PackedList(list):
     """
@@ -137,43 +152,59 @@ class PackedList(list):
         """
         Sets up the packing list. 
          db_obj - the Attribute object storing this dict.
+
+         The 'parent' property is set to 'init' at creation,
+         this stops the system from saving itself over and over
+         when first assigning the dict. Once initialization
+         is over, the Attribute from_attr() method will assign
+         the parent (or None, if at the root)
+
         """
         self.db_obj = db_obj
+        self.parent = 'init'
         super(PackedList, self).__init__(*args, **kwargs)
     def __str__(self):
         return "[%s]" % ", ".join(str(val) for val in self)
+    def save(self):
+        "Relay save operation upwards in tree until we hit the root."
+        if self.parent == 'init':
+            pass
+        elif self.parent:
+            self.parent.save() 
+        else:
+            self.db_obj.value = self 
     def __setitem__(self, *args, **kwargs):                
         "Custom setitem that stores changed list to database."
         super(PackedList, self).__setitem__(*args, **kwargs)        
-        self.db_obj.value = self
+        self.save()
     def append(self, *args, **kwargs):
         "Custom append"
         super(PackedList, self).append(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def extend(self, *args, **kwargs):
         "Custom extend"
         super(PackedList, self).extend(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def insert(self, *args, **kwargs):
         "Custom insert"
         super(PackedList, self).insert(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def remove(self, *args, **kwargs):
         "Custom remove"
         super(PackedList, self).remove(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def pop(self, *args, **kwargs):
         "Custom pop"
         super(PackedList, self).pop(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def reverse(self, *args, **kwargs):
         "Custom reverse"
         super(PackedList, self).reverse(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
     def sort(self, *args, **kwargs):
         "Custom sort"
         super(PackedList, self).sort(*args, **kwargs)
-        self.db_obj.value = self
+        self.save()
 
 class Attribute(SharedMemoryModel):
     """
@@ -457,7 +488,7 @@ class Attribute(SharedMemoryModel):
                 except mclass.DoesNotExist: # could happen if object was deleted in the interim.
                     return None                
 
-        def iter_id2db(item):
+        def iter_id2db(item, parent=None):
             """
             Recursively looping through stored iterables, replacing ids with actual objects.
             We return PackedDict and PackedLists instead of normal lists; this is needed in order for
@@ -472,10 +503,16 @@ class Attribute(SharedMemoryModel):
             elif dtype == tuple:                        
                 return tuple([iter_id2db(val) for val in item])
             elif dtype in (dict, PackedDict):
-                return PackedDict(self, dict(zip([key for key in item.keys()],
-                                                 [iter_id2db(val) for val in item.values()])))
+                pdict = PackedDict(self)
+                pdict.update(dict(zip([key for key in item.keys()],
+                                      [iter_id2db(val, pdict) for val in item.values()])))
+                pdict.parent = parent
+                return pdict
             elif hasattr(item, '__iter__'):
-                return PackedList(self, list(iter_id2db(val) for val in item))
+                plist = PackedList(self)
+                plist.extend(list(iter_id2db(val, plist) for val in item))
+                plist.parent = parent
+                return plist
             else: 
                 return item 
 
