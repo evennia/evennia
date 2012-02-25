@@ -42,6 +42,10 @@ class CommandMeta(type):
             temp.append(lockstring)
         mcs.lock_storage = ";".join(temp)
 
+        if not hasattr(mcs, 'is_exit'):
+            mcs.is_exit = False 
+        if not hasattr(mcs, "help_category"):
+            mcs.help_category = "general"
         mcs.help_category = mcs.help_category.lower()
         super(CommandMeta, mcs).__init__(*args, **kwargs)
 

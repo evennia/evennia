@@ -12,11 +12,10 @@ from src.help.models import HelpEntry
 from src.utils import create 
 from src.commands.default.muxcommand import MuxCommand
 
-LIST_ARGS = ["list", "all"]
+LIST_ARGS = ("list", "all")
 SEP = "{C" + "-"*78 + "{n"
  
-def format_help_entry(title, help_text, aliases=None,
-                      suggested=None):
+def format_help_entry(title, help_text, aliases=None, suggested=None):
     """
     This visually formats the help entry.
     """            
@@ -36,7 +35,9 @@ def format_help_entry(title, help_text, aliases=None,
 
 def format_help_list(hdict_cmds, hdict_db):
     """
-    Output a category-ordered list.
+    Output a category-ordered list. The input are the 
+    pre-loaded help files for commands and database-helpfiles 
+    resectively.
     """    
     string = ""
     if hdict_cmds and hdict_cmds.values():
@@ -94,21 +95,20 @@ class CmdHelp(Command):
         # Listing help entries
         
         if query in LIST_ARGS:
-            # we want to list all available help entries
+            # we want to list all available help entries, grouped by category.
             hdict_cmd = {}
             for cmd in (cmd for cmd in cmdset if cmd.access(caller)
-                        if not cmd.key.startswith('__')
-                        and not (hasattr(cmd, 'is_exit') and cmd.is_exit)):
-                if hdict_cmd.has_key(cmd.help_category):
+                        if not cmd.key.startswith('__') and not cmd.is_exit):
+                try:
                     hdict_cmd[cmd.help_category].append(cmd.key)
-                else:
-                    hdict_cmd[cmd.help_category] = [cmd.key]
+                except KeyError:
+                    hdict_cmd[cmd.help_category] = [cmd.key]                    
             hdict_db = {}
             for topic in (topic for topic in HelpEntry.objects.get_all_topics()
                           if topic.access(caller, 'view', default=True)):
-                if hdict_db.has_key(topic.help_category):
-                    hdict_db[topic.help_category].append(topic.key)
-                else:
+                try:
+                    hdict_db[topic.help_category].append(topic.key)                    
+                except KeyError:
                     hdict_db[topic.help_category] = [topic.key]
             help_entry = format_help_list(hdict_cmd, hdict_db)
             caller.msg(help_entry)
@@ -117,38 +117,29 @@ class CmdHelp(Command):
         # Look for a particular help entry
         
         # Cmd auto-help dynamic entries 
-        cmdmatches = [cmd for cmd in cmdset
-                      if query in cmd and cmd.access(caller)]
+        cmdmatches = [cmd for cmd in cmdset if query in cmd and cmd.access(caller)]
         if len(cmdmatches) > 1:
             # multiple matches. Try to limit it down to exact match
-            exactmatches = [cmd for cmd in cmdmatches if cmd == query]
-            if exactmatches:
-                cmdmatches = exactmatches
+            cmdmatches = [cmd for cmd in cmdmatches if cmd == query] or cmdmatches
                 
         # Help-database static entries
-        dbmatches = \
-                  [topic for topic in
-                   HelpEntry.objects.find_topicmatch(query, exact=False)
-                   if topic.access(caller, 'view', default=True)]
+        dbmatches = [topic for topic in
+                     HelpEntry.objects.find_topicmatch(query, exact=False)
+                     if topic.access(caller, 'view', default=True)]
         if len(dbmatches) > 1:
-            exactmatches = \
-                  [topic for topic in
-                   HelpEntry.objects.find_topicmatch(query, exact=True)
-                   if topic.access(caller, 'view', default=True)]
-            if exactmatches:
-                dbmatches = exactmatches
+            # try to get unique match
+            dbmatches = [topic for topic in HelpEntry.objects.find_topicmatch(query, exact=True)
+                         if topic.access(caller, 'view', default=True)] or dbmatches
 
         # Handle result 
         if (not cmdmatches) and (not dbmatches):
             # no normal match. Check if this is a category match instead
-            categ_cmdmatches = [cmd.key for cmd in cmdset
-                                if query == cmd.help_category and cmd.access(caller)]
-            categ_dbmatches = \
-                    [topic.key for topic in
-                     HelpEntry.objects.find_topics_with_category(query)
-                     if topic.access(caller, 'view', default=True)]
+            categ_cmdmatches = [cmd.key for cmd in cmdset if query == cmd.help_category and cmd.access(caller)]
+            categ_dbmatches = [topic.key for topic in HelpEntry.objects.find_topics_with_category(query)
+                               if topic.access(caller, 'view', default=True)]
             cmddict = None
             dbdict = None
+    
             if categ_cmdmatches:
                 cmddict = {query:categ_cmdmatches}
             if categ_dbmatches:                
@@ -159,7 +150,7 @@ class CmdHelp(Command):
                 help_entry = "No help entry found for '%s'" % self.original_args
 
         elif len(cmdmatches) == 1:
-            # we matched against a command name or alias. Show its help entry.
+            # we matched against a unique command name or alias. Show its help entry.
             suggested = []
             if dbmatches:
                 suggested = [entry.key for entry in dbmatches]
