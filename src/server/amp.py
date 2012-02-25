@@ -22,7 +22,8 @@ except ImportError:
 from twisted.protocols import amp
 from twisted.internet import protocol, defer
 from django.conf import settings
-from src.utils import utils
+from src.utils.utils import to_str
+
 from src.server.models import ServerConfig
 from src.scripts.models import ScriptDB
 from src.players.models import PlayerDB
@@ -76,8 +77,6 @@ class AmpServerFactory(protocol.ServerFactory):
         self.server.amp_protocol = AMPProtocol()
         self.server.amp_protocol.factory = self
         return self.server.amp_protocol
-
-
 
 class AmpClientFactory(protocol.ReconnectingClientFactory):
     """
@@ -193,8 +192,8 @@ class PortalAdmin(amp.Command):
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
-dumps = lambda data: utils.to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
-loads = lambda data: pickle.loads(utils.to_str(data))
+dumps = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
+loads = lambda data: pickle.loads(to_str(data))
 
 #------------------------------------------------------------
 # Core AMP protocol for communication Server <-> Portal
@@ -279,7 +278,7 @@ class AMPProtocol(amp.AMP):
         #print "msg server->portal (server side):", sessid, msg, data
         self.callRemote(MsgServer2Portal,
                         sessid=sessid,
-                        msg=utils.to_str(msg),
+                        msg=to_str(msg),
                         data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
 
     # OOB Portal -> Server 
@@ -367,7 +366,7 @@ class AMPProtocol(amp.AMP):
                 sesslist.append(sess)                                
             # replace sessions on server
             server_sessionhandler.portal_session_sync(sesslist)            
-            # after sync is complete we force-validate all scripts (this starts everthing)
+            # after sync is complete we force-validate all scripts (this starts everything)
             init_mode = ServerConfig.objects.conf("server_restart_mode", default=None)
             ScriptDB.objects.validate(init_mode=init_mode)
             ServerConfig.objects.conf("server_restart_mode", delete=True)

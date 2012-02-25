@@ -26,8 +26,7 @@ def is_iter(iterable):
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."
-    if not hasattr(iterable, '__iter__'): 
-        return [obj]
+    if not hasattr(obj, '__iter__'): return [obj]
     return obj 
 
 def fill(text, width=78, indent=0):
