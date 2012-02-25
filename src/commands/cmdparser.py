@@ -229,9 +229,8 @@ def at_multimatch_cmd(caller, matches):
         if is_channel:
             is_channel = " (channel)"
         else:
-            is_channel = ""
-        is_exit = hasattr(cmd, "is_exit") and cmd.is_exit 
-        if is_exit and cmd.destination:
+            is_channel = ""        
+        if cmd.is_exit and cmd.destination:
             is_exit =  " (exit to %s)" % cmd.destination
         else:
             is_exit = ""
