@@ -221,7 +221,7 @@ class ServerSessionHandler(SessionHandler):
         and see if any are dead.
         """
         tcurr = time.time()
-        reason= _("Idle timeout exceeded, disconnecting.")2
+        reason= _("Idle timeout exceeded, disconnecting.")
         for session in (session for session in self.sessions.values() 
                         if session.logged_in and IDLE_TIMEOUT > 0 
                         and (tcurr - session.cmd_last) > IDLE_TIMEOUT):
