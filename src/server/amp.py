@@ -20,7 +20,7 @@ try:
 except ImportError:
     import pickle
 from twisted.protocols import amp
-from twisted.internet import protocol, defer, reactor
+from twisted.internet import protocol, defer
 from django.conf import settings
 from src.utils import utils
 from src.server.models import ServerConfig
@@ -30,6 +30,17 @@ from src.server.serversession import ServerSession
 
 PORTAL_RESTART = os.path.join(settings.GAME_DIR, "portal.restart")
 SERVER_RESTART = os.path.join(settings.GAME_DIR, "server.restart")
+
+# communication bits 
+
+PCONN = chr(1)       # portal session connect
+PDISCONN = chr(2)    # portal session disconnect
+PSYNC = chr(3)       # portal session sync
+SLOGIN = chr(4)      # server session login
+SDISCONN = chr(5)    # server session disconnect  
+SDISCONNALL = chr(6) # server session disconnect all
+SSHUTD = chr(7)      # server shutdown 
+SSYNC = chr(8)       # server session sync
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -212,7 +223,7 @@ class AMPProtocol(amp.AMP):
             sessdata = self.factory.portal.sessions.get_all_sync_data()
             #print sessdata
             self.call_remote_ServerAdmin(0, 
-                                         "PSYNC", 
+                                         PSYNC, 
                                          data=sessdata)
             if get_restart_mode(SERVER_RESTART):
                 msg = _(" ... Server restarted.")
@@ -315,7 +326,6 @@ class AMPProtocol(amp.AMP):
         
 
     # Server administration from the Portal side 
-
     def amp_server_admin(self, sessid, operation, data):
         """
         This allows the portal to perform admin
@@ -326,7 +336,7 @@ class AMPProtocol(amp.AMP):
 
         #print "serveradmin (server side):", sessid, operation, data
         
-        if operation == 'PCONN': #portal_session_connect
+        if operation == PCONN: #portal_session_connect
             # create a new session and sync it
             sess = ServerSession()
             sess.sessionhandler = self.factory.server.sessions
@@ -338,11 +348,11 @@ class AMPProtocol(amp.AMP):
 
             self.factory.server.sessions.portal_connect(sessid, sess)
 
-        elif operation == 'PDISCONN': #'portal_session_disconnect'
+        elif operation == PDISCONN: #'portal_session_disconnect'
             # session closed from portal side 
             self.factory.server.sessions.portal_disconnect(sessid)
 
-        elif operation == 'PSYNC': #'portal_session_sync'
+        elif operation == PSYNC: #'portal_session_sync'
             # force a resync of sessions when portal reconnects to server (e.g. after a server reboot)            
             # the data kwarg contains a dict {sessid: {arg1:val1,...}} representing the attributes
             # to sync for each session.
@@ -390,24 +400,24 @@ class AMPProtocol(amp.AMP):
         data = loads(data)
 
         #print "portaladmin (portal side):", sessid, operation, data
-        if operation == 'SLOGIN': # 'server_session_login'
+        if operation == SLOGIN: # 'server_session_login'
             # a session has authenticated; sync it.
             sess = self.factory.portal.sessions.get_session(sessid)            
             sess.load_sync_data(data)
 
-        elif operation == 'SDISCONN': #'server_session_disconnect'
+        elif operation == SDISCONN: #'server_session_disconnect'
             # the server is ordering to disconnect the session
             self.factory.portal.sessions.server_disconnect(sessid, reason=data)
 
-        elif operation == 'SDISCONNALL': #'server_session_disconnect_all'
+        elif operation == SDISCONNALL: #'server_session_disconnect_all'
             # server orders all sessions to disconnect
             self.factory.portal.sessions.server_disconnect_all(reason=data)
 
-        elif operation == 'SSHUTD': #server_shutdown'
+        elif operation == SSHUTD: #server_shutdown'
             # the server orders the portal to shut down
             self.factory.portal.shutdown(restart=False)
             
-        elif operation == 'SSYNC': #'server_session_sync'
+        elif operation == SSYNC: #'server_session_sync'
             # server wants to save session data to the portal, maybe because
             # it's about to shut down. We don't overwrite any sessions, 
             # just update data on them and remove eventual ones that are 

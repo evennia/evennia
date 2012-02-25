@@ -10,7 +10,6 @@ There are two similar but separate stores of sessions:
          twisted protocols. These are dumb connectors that
          handle network communication but holds no game info.
       
-
 """
 
 import time
@@ -20,6 +19,16 @@ from src.server.models import ServerConfig
 from src.utils import utils 
 
 from src.commands.cmdhandler import CMD_LOGINSTART
+
+# AMP signals 
+PCONN = chr(1)       # portal session connect
+PDISCONN = chr(2)    # portal session disconnect
+PSYNC = chr(3)       # portal session sync
+SLOGIN = chr(4)      # server session login
+SDISCONN = chr(5)    # server session disconnect  
+SDISCONNALL = chr(6) # server session disconnect all
+SSHUTD = chr(7)      # server shutdown 
+SSYNC = chr(8)       # server session sync
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -129,7 +138,7 @@ class ServerSessionHandler(SessionHandler):
         Called by server when shutting down the portal.
         """        
         self.server.amp_protocol.call_remote_PortalAdmin(0,
-                                                         operation='SSHUTD',
+                                                         operation=SSHUTD,
                                                          data="")        
     # server-side access methods 
 
@@ -144,7 +153,7 @@ class ServerSessionHandler(SessionHandler):
             del self.sessions[sessid]
             # inform portal that session should be closed.
             self.server.amp_protocol.call_remote_PortalAdmin(sessid,
-                                                             operation='SDISCONN',
+                                                             operation=SDISCONN,
                                                              data=reason)
         self.session_count(-1)
 
@@ -165,7 +174,7 @@ class ServerSessionHandler(SessionHandler):
         # sync the portal to this session
         sessdata = session.get_sync_data()
         self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
-                                                         operation='SLOGIN',
+                                                         operation=SLOGIN,
                                                          data=sessdata)
     
     def session_sync(self):
@@ -175,11 +184,11 @@ class ServerSessionHandler(SessionHandler):
         """
         sessdata = self.get_all_sync_data()
         self.server.amp_protocol.call_remote_PortalAdmin(0,
-                                                         'SSYNC',
+                                                         SSYNC,
                                                          data=sessdata)
 
 
-    def disconnect_all_sessions(self, reason="You have been disconnected."):
+    def disconnect_all_sessions(self, reason=_("You have been disconnected.")):
         """
         Cleanly disconnect all of the connected sessions.
         """
@@ -189,10 +198,10 @@ class ServerSessionHandler(SessionHandler):
         self.session_count(0)
         # tell portal to disconnect all sessions
         self.server.amp_protocol.call_remote_PortalAdmin(0,
-                                                         operation='SDISCONNALL',
+                                                         operation=SDISCONNALL,
                                                          data=reason)
 
-    def disconnect_duplicate_sessions(self, curr_session):
+    def disconnect_duplicate_sessions(self, curr_session, reason = _("Logged in from elsewhere. Disconnecting.") ):
         """
         Disconnects any existing sessions with the same game object. 
         """
@@ -201,7 +210,6 @@ class ServerSessionHandler(SessionHandler):
                             if sess.logged_in 
                             and sess.get_character() == curr_char
                             and sess != curr_session]
-        reason = _("Logged in from elsewhere. Disconnecting.") 
         for sessid in doublet_sessions:
             self.disconnect(session, reason)            
             self.session_count(-1)
@@ -213,11 +221,11 @@ class ServerSessionHandler(SessionHandler):
         and see if any are dead.
         """
         tcurr = time.time()
-        invalid_sessions = [session for session in self.sessions.values() 
-                            if session.logged_in and IDLE_TIMEOUT > 0 
-                            and (tcurr - session.cmd_last) > IDLE_TIMEOUT]            
-        for session in invalid_sessions:
-            self.disconnect(session, reason=_("Idle timeout exceeded, disconnecting."))
+        reason= _("Idle timeout exceeded, disconnecting."))
+        for session in (session for session in self.sessions.values() 
+                        if session.logged_in and IDLE_TIMEOUT > 0 
+                        and (tcurr - session.cmd_last) > IDLE_TIMEOUT):
+            self.disconnect(session, reason=reason)
             self.session_count(-1)
                 
     def session_count(self, num=None):
@@ -357,7 +365,7 @@ class PortalSessionHandler(SessionHandler):
         self.sessions[sessid] = session
         # sync with server-side 
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
-                                                         operation="PCONN",
+                                                         operation=PCONN,
                                                          data=sessdata)
     def disconnect(self, session):
         """
@@ -365,7 +373,7 @@ class PortalSessionHandler(SessionHandler):
         """
         sessid = session.sessid
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
-                                                         operation="PDISCONN")
+                                                         operation=PDISCONN)
         
     def server_disconnect(self, sessid, reason=""):
         """
