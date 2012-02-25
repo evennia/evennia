@@ -11,6 +11,7 @@ etc.
 
 """
 import re
+from src.utils.utils import make_iter
 
 # variables
 MSDP = chr(69)
@@ -112,22 +113,89 @@ class Msdp(object):
             arrays[array[0]] = dict(regex_varval(array[1]))
         variables = dict(regex._varval(regex_array.sub("", regex_table.sub("", data))))
     
+
+
+    # MSDP Commands 
     # Some given MSDP (varname, value) pairs can also be treated as command + argument. 
     # Generic msdp command map. The argument will be sent to the given command.
     # See http://tintin.sourceforge.net/msdp/ for definitions of each command. 
+    # These are client->server commands.  
+    def msdp_cmd_list(self, arg):
+        """
+        The List command allows for retrieving various info about the server/client
+        """        
+        if arg == 'COMMANDS':
+            return self.func_to_msdp(arg, MSDP_COMMANDS.keys())
+        elif arg == 'LISTS':
+            return self.func_to_msdp(arg, ("COMMANDS", "LISTS", 
+                                           "CONFIGURABLE_VARIABLES", 
+                                           "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
+        elif arg == 'CONFIGURABLE_VARIABLES':
+            return self.func_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
+        elif arg == 'REPORTABLE_VARIABLES':
+            return self.func_to_msdp(arg, MSDP_REPORTABLE.keys())
+        elif arg == 'REPORTED_VARIABLES':
+            return self.func_to_msdp(arg, MSDP_REPORTED.keys())
+        elif arg == 'SENDABLE_VARIABLES':
+            return self.func_to_msdp(arg, MSDP_SEND.keys())
+        else:
+            return self.func_to_msdp("LIST", arg)
+
+    def msdp_cmd_report(self, arg):
+        """
+        The report command instructs the server to start reporting a
+        reportable variable to the client.
+        """
+        try:
+            MSDP_REPORTABLE[arg](report=True)
+        except Exception:
+            logger.log_trace() 
+
+    def msdp_cmd_unreport(self, arg):
+        """
+        Unreport a previously reported variable
+        """
+        try:
+            MSDP_REPORTABLE[arg](eport=False)
+        except Exception:
+            logger.log_trace()
+    
+    def msdp_cmd_reset(self, arg):
+        """
+        The reset command resets a variable to its initial state.
+        """
+        try:
+            MSDP_REPORTABLE[arg](reset=True)
+        except Exception:
+            logger.log_trace() 
+
+    def msdp_cmd_send(self, arg):
+        """
+        Request the server to send a particular variable
+        to the client. 
+
+        arg - this is a list of variables the client wants.
+        """
+        ret = []
+        for var in makeiter(arg):
+            try:
+                ret.append(MSDP_REPORTABLE[arg](send=True))
+            except Exception:
+                logger.log_trace() 
+        return ret    
+
     MSDP_COMMANDS = {
-        "LIST": "msdp_list",
+        "LIST": self.msdp_list,
         "REPORT":"mspd_report",
         "RESET":"mspd_reset",
         "SEND":"mspd_send",
         "UNREPORT":"mspd_unreport"
         }
 
-
     # MSDP_MAP is a standard suggestions for making it easy to create generic guis.         
     # this maps MSDP command names to Evennia commands found in OOB_FUNC_MODULE. It
     # is up to these commands to return data on proper form. 
-    MSDP_MAP = {
+    MSDP_REPORTABLE = {
         # General
         "CHARACTER_NAME": "get_character_name",
         "SERVER_ID": "get_server_id",

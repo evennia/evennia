@@ -24,6 +24,12 @@ def is_iter(iterable):
     """
     return hasattr(iterable, '__iter__')
 
+def make_iter(obj):
+    "Makes sure that the object is always iterable."
+    if not hasattr(iterable, '__iter__'): 
+        return [obj]
+    return obj 
+
 def fill(text, width=78, indent=0):
     """
     Safely wrap text to a certain number of characters.
