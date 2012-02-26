@@ -5,6 +5,7 @@ all Attributes and TypedObjects).
 """
 from django.db import models
 from src.utils import idmapper
+from src.utils.utils import make_iter
 #from src.typeclasses import idmap
 
 # Managers 
@@ -26,56 +27,33 @@ class AttributeManager(models.Manager):
             return self.filter(db_obj=obj).filter(
                 db_key__icontains=searchstr)
 
-
 #
 # helper functions for the TypedObjectManager. 
 #    
 
 def returns_typeclass_list(method):
     """
-    Decorator function that turns the return of the
-    decorated method (which are ObjectDB objects)
-    into object_classes(s) instead.
-    Will always return a list or None. 
+    Decorator: Chantes return of the decorated method (which are
+    TypeClassed objects) into object_classes(s) instead.  Will always
+    return a list (may be empty).
     """        
     def func(self, *args, **kwargs):
-        """
-        This overloads the relevant method.
-        The return is *always* either None
-        or a list. 
-        """        
-        match = method(self, *args, **kwargs)        
-        #print "deco: %s" % match, 
-        if not match:
-            return []
-        try:
-            match = list(match)
-        except TypeError:
-            match = [match]
-        obj_classes = []
-        for dbobj in match:
-            try:
-                obj_classes.append(dbobj.typeclass)
-            except Exception:
-                obj_classes.append(dbobj)
-                #logger.log_trace() 
-        #print "-> %s" % obj_classes
-        #if not obj_classes:
-        #    return None
-        return obj_classes
+        "decorator. Returns a list."        
+        matches = method(self, *args, **kwargs)        
+        return [dbobj.typeclass or dbobj for dbobj in make_iter(matches)]
     return func    
 
 def returns_typeclass(method):
     """
-    Decorator: Will always return a single result or None.
+    Decorator: Will always return a single typeclassed result or None.
     """
     def func(self, *args, **kwargs):
-        "decorator"
+        "decorator. Returns result or None."
         rfunc = returns_typeclass_list(method)
-        match = rfunc(self, *args, **kwargs)
-        if match:
-            return match[0]
-        return None 
+        try:
+            return rfunc(self, *args, **kwargs)[0]
+        except IndexError: 
+            return None 
     return func
 
 
