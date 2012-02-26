@@ -242,29 +242,26 @@ class ObjectDB(TypedObject):
         We have to be careful here since Player is also
         a TypedObject, so as to not create a loop.
         """
-        try:
-            return object.__getattribute__(self, 'db_player')
-        except AttributeError:
-            return None 
+        return get_cache(self, "player")
     #@player.setter
     def player_set(self, player):
         "Setter. Allows for self.player = value"
         if isinstance(player, TypeClass):
             player = player.dbobj
-        self.db_player = player 
-        self.save()
+        set_cache(self, "player", player)
     #@player.deleter
     def player_del(self):
         "Deleter. Allows for del self.player"
         self.db_player = None
         self.save()
+        del_cache(self, "player")
     player = property(player_get, player_set, player_del)
 
     # location property (wraps db_location)
     #@property 
     def location_get(self):
         "Getter. Allows for value = self.location."
-        loc = self.db_location
+        loc = get_cache(self, "location")
         if loc:
             return loc.typeclass
         return None 
@@ -284,8 +281,7 @@ class ObjectDB(TypedObject):
                     loc = location.dbobj    
             else:                
                 loc = location.dbobj                        
-            self.db_location = loc 
-            self.save()
+            set_cache(self, "location", loc)
         except Exception:
             string = "Cannot set location: "
             string += "%s is not a valid location." 
@@ -297,13 +293,14 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.location"
         self.db_location = None 
         self.save()
+        del_cache()
     location = property(location_get, location_set, location_del)
 
     # home property (wraps db_home)
     #@property 
     def home_get(self):
         "Getter. Allows for value = self.home"
-        home = self.db_home 
+        home = get_cache(self, "home")
         if home:
             return home.typeclass
         return None 
@@ -321,26 +318,26 @@ class ObjectDB(TypedObject):
                     hom = home.dbobj    
             else:                
                 hom = home.dbobj                
-            self.db_home = hom        
+            set_cache(self, "home", hom)
         except Exception:
             string = "Cannot set home: "
             string += "%s is not a valid home." 
             self.msg(string % home)
             logger.log_trace(string)
             #raise 
-        self.save()
     #@home.deleter
     def home_del(self):
         "Deleter. Allows for del self.home."
         self.db_home = None 
         self.save()
+        del_cache(self, "home")
     home = property(home_get, home_set, home_del)
 
     # destination property (wraps db_destination)
     #@property 
     def destination_get(self):
         "Getter. Allows for value = self.destination."
-        dest = self.db_destination
+        dest = get_cache(self, "destination")
         if dest:
             return dest.typeclass
         return None 
@@ -360,8 +357,7 @@ class ObjectDB(TypedObject):
                     dest = destination.dbobj    
             else:                
                 dest = destination.dbobj                        
-            self.db_destination = dest 
-            self.save()
+            set_cache(self, "destination", dest)
         except Exception:
             string = "Cannot set destination: "
             string += "%s is not a valid destination." 
@@ -373,9 +369,11 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.destination"
         self.db_destination = None 
         self.save()
+        del_cache(self, "destination")
     destination = property(destination_get, destination_set, destination_del)
 
-    # cmdset_storage property
+    # cmdset_storage property. 
+    # This seems very sensitive to caching, so leaving it be for now. /Griatch
     #@property
     def cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."

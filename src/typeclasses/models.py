@@ -58,7 +58,7 @@ def get_cache(obj, name):
         return GA(obj, "_cached_db_%s" % name)
     except AttributeError:        
         val = GA(obj, "db_%s" % name)
-        SA(obj, "_cached_db_%s" % name, val)
+        if val: SA(obj, "_cached_db_%s" % name, val)
         return val 
 def set_cache(obj, name, val):
     "On-model Cache setter"
@@ -68,7 +68,10 @@ def set_cache(obj, name, val):
 
 def del_cache(obj, name):
     "On-model cache deleter"
-    DA(obj, "_cached_db_%s" % name)
+    try:
+        DA(obj, "_cached_db_%s" % name)
+    except AttributeError:
+        pass 
 
 #------------------------------------------------------------
 #

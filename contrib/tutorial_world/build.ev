@@ -346,7 +346,7 @@ start
 #
 @lock north = view:attr(last_climbed) ; traverse:attr(last_climbed)
 #
-@desc north
+@desc north = 
  This is a hardly visible footpath leading off through the rain-beaten
  grass. It seems to circle the trees northward. You would never had
  noticed it had you not seen it from above.
