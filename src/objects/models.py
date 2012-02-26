@@ -589,7 +589,7 @@ class ObjectDB(TypedObject):
         """
         contents = self.contents
         if exclude:
-            excluce = make_iter(exclude)
+            exclude = make_iter(exclude)
             contents = [obj for obj in contents
                         if (obj not in exclude and obj not in exclude)]
         for obj in contents:

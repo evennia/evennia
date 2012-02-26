@@ -41,7 +41,7 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger, utils
-from src.utils.utils import is_iter, has_parent, to_unicode, to_str
+from src.utils.utils import make_iter, is_iter, has_parent, to_unicode, to_str
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
@@ -60,6 +60,15 @@ def get_cache(obj, name):
         val = GA(obj, "db_%s" % name)
         SA(obj, "_cached_db_%s" % name, val)
         return val 
+def set_cache(obj, name, val):
+    "On-model Cache setter"
+    SA(obj, "db_%s" % name, val)
+    GA(obj, "save")()
+    SA(obj, "_cached_db_%s" % name, val)
+
+def del_cache(obj, name):
+    "On-model cache deleter"
+    DA(obj, "_cached_db_%s" % name)
 
 #------------------------------------------------------------
 #
@@ -282,8 +291,7 @@ class Attribute(SharedMemoryModel):
     #@key.setter
     def key_set(self, value):
         "Setter. Allows for self.key = value"
-        self.db_key = value
-        self.save()
+        set_cache(self, "key", value)
     #@key.deleter
     def key_del(self):
         "Deleter. Allows for del self.key"
@@ -298,13 +306,13 @@ class Attribute(SharedMemoryModel):
     #@obj.setter
     def obj_set(self, value):
         "Setter. Allows for self.obj = value"
-        self.db_obj = value
-        self.save()
+        set_cache(self, "db_obj", value)        
     #@obj.deleter
     def obj_del(self):
         "Deleter. Allows for del self.obj"
         self.db_obj = None
         self.save()
+        del_cache(self, "db_obj")
     obj = property(obj_get, obj_set, obj_del)   
 
     # date_created property (wraps db_date_created)
@@ -698,8 +706,7 @@ class TypedObject(SharedMemoryModel):
     #@key.setter
     def key_set(self, value):
         "Setter. Allows for self.key = value"
-        SA(self, "db_key", value)
-        GA(self, "save")()
+        set_cache(self, "key", value)
     #@key.deleter
     def key_del(self):
         "Deleter. Allows for del self.key"
@@ -714,8 +721,7 @@ class TypedObject(SharedMemoryModel):
     #@name.setter
     def name_set(self, value):
         "Setter. Allows for self.name = value"
-        SA(self, "db_key", value)
-        GA(self, "save")()
+        set_cache(self, "name", value)
     #@name.deleter
     def name_del(self):
         "Deleter. Allows for del self.name"
@@ -730,15 +736,13 @@ class TypedObject(SharedMemoryModel):
     #@typeclass_path.setter
     def typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
-        self.db_typeclass_path = value
-        self.save()
-        SA(self, '_cached_db_typeclass_path', value)
+        set_cache(self, "typeclass_path", value)
     #@typeclass_path.deleter
     def typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
         self.db_typeclass_path = ""
         self.save()
-        DA(self, "_cached_db_typeclass_path")
+        del_cache(self, "typeclass_path")
     typeclass_path = property(typeclass_path_get, typeclass_path_set, typeclass_path_del)
 
     # date_created property
@@ -766,16 +770,15 @@ class TypedObject(SharedMemoryModel):
         return []
     #@permissions.setter
     def permissions_set(self, value):
-        "Setter. Allows for self.name = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([utils.to_unicode(val).strip() for val in value])
-        self.db_permissions = value
-        self.save()        
+        "Setter. Allows for self.name = value. Stores as a comma-separated string."        
+        value = ",".join([utils.to_unicode(val).strip() for val in make_iter(value)])
+        set_cache(self, "permissions", value)
     #@permissions.deleter
     def permissions_del(self):
         "Deleter. Allows for del self.name"
         self.db_permissions = ""
         self.save()
+        del_cache(self, "permissions")
     permissions = property(permissions_get, permissions_set, permissions_del)
 
     # lock_storage property (wraps db_lock_storage)
@@ -786,8 +789,7 @@ class TypedObject(SharedMemoryModel):
     #@lock_storage.setter
     def lock_storage_set(self, value):
         """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        self.db_lock_storage = value
-        self.save()
+        set_cache(self, "lock_storage", value)
     #@lock_storage.deleter
     def lock_storage_del(self):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""

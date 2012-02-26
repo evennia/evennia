@@ -477,6 +477,7 @@ def create_player(name, email, password,
         return new_player
     except Exception,e:
         # a failure in creating the character
+        print e
         if not user:
             # in there was a failure we clean up everything we can
             logger.log_trace()
