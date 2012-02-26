@@ -20,7 +20,8 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
-from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler, get_cache
+from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
+from src.typeclasses.models import get_cache, set_cache, del_cache
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
@@ -378,20 +379,28 @@ class ObjectDB(TypedObject):
     #@property
     def cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
-        if self.db_cmdset_storage:
-            return [path.strip() for path  in self.db_cmdset_storage.split(',')]
+        try:
+            return get_cache(self, "cmdset_storage")
+        except AttributeError:
+            cstorage = [path.strip() for path  in self.db_cmdset_storage.split(',')]
+            SA(self, "_cached_db_cmdset_storage", cstorage)
+            return cstorage
         return []
     #@cmdset_storage.setter
     def cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
-        value = ",".join(str(val).strip() for val in make_iter(value))
-        self.db_cmdset_storage = value
-        self.save()        
+        value = ",".join(str(val).strip() for val in make_iter(value))                
+        SA(self, "db_cmdset_storate", value)
+        GA(self, "save")()
+        value = [path for path in value.split(',')]    
+        SA(self, "_cached_db_cmdset_storage", value)        
+
     #@cmdset_storage.deleter
     def cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
         self.db_cmdset_storage = ""
         self.save()
+        del_cache(self, "cmdset_storage")
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
 
