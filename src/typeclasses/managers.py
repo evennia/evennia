@@ -40,7 +40,7 @@ def returns_typeclass_list(method):
     def func(self, *args, **kwargs):
         "decorator. Returns a list."        
         matches = method(self, *args, **kwargs)        
-        return [dbobj.typeclass or dbobj for dbobj in make_iter(matches)]
+        return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj for dbobj in make_iter(matches)]
     return func    
 
 def returns_typeclass(method):
