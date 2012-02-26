@@ -77,21 +77,11 @@ class TypeClass(object):
         # unless it's really a TypedObject.
         dbobj_cls = GA(dbobj, '__class__')
         dbobj_mro = GA(dbobj_cls, '__mro__')
-        if not any('src.typeclasses.models.TypedObject' 
-                   in str(mro) for mro in dbobj_mro):
-            raise Exception("dbobj is not a TypedObject: %s: %s" % \
-                                (dbobj_cls, dbobj_mro))
+        if not any('src.typeclasses.models.TypedObject' in str(mro) for mro in dbobj_mro):
+            raise Exception("dbobj is not a TypedObject: %s: %s" % (dbobj_cls, dbobj_mro))
 
-        # store the needed things on the typeclass
+        # store the reference to the database model instance
         SA(self, 'dbobj', dbobj) 
-
-        # # sync the database object to this typeclass. 
-        # cls = GA(self, '__class__')
-        # db_typeclass_path = "%s.%s" % (GA(cls, '__module__'),
-        #                                GA(cls, '__name__'))        
-        # if not GA(dbobj, "db_typeclass_path") == db_typeclass_path:
-        #     SA(dbobj, "db_typeclass_path", db_typeclass_path)
-        #     GA(dbobj, "save")()
 
     def __getattribute__(self, propname):
         """
@@ -123,10 +113,10 @@ class TypeClass(object):
             except AttributeError:
                 try:
                     if propname == 'ndb':
-                        # get non-persistent data 
+                        # get non-persistent data (getattr raises AttributeError)
                         return getattr(GA(dbobj, 'ndb'), propname)
                     else: 
-                        return dbobj.get_attribute_raise(propname)
+                        return GA(dbobj,"get_attribute_raise")(propname)
                 except AttributeError:
                     string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
                     raise AttributeError(string % (propname, dbobj,
