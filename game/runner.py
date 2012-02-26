@@ -283,7 +283,7 @@ def main():
             set_restart_mode(PORTAL_RESTART, False)
             print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
         if options.pprof:
-            server_argv.extend(pprof_argv)
+            portal_argv.extend(pprof_argv)
             print "\nRunning Evennia Portal under cProfile."
 
         cycle_logfile(PORTAL_LOGFILE)
