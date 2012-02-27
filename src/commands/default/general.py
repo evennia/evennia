@@ -49,6 +49,7 @@ class CmdLook(MuxCommand):
     key = "look"
     aliases = ["l", "ls"]
     locks = "cmd:all()"
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         """

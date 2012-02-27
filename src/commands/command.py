@@ -5,6 +5,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 
 """
 
+import re
 from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter
 
@@ -41,6 +42,11 @@ class CommandMeta(type):
                 lockstring = "cmd:%s" % lockstring
             temp.append(lockstring)
         mcs.lock_storage = ";".join(temp)
+
+        if hasattr(mcs, 'arg_regex') and isinstance(mcs.arg_regex, basestring):
+            mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I)
+        else:
+            mcs.arg_regex = None
 
         if not hasattr(mcs, 'is_exit'):
             mcs.is_exit = False 

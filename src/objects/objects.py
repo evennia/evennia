@@ -500,6 +500,7 @@ class Exit(Object):
             """
             locks = "cmd:all()" # should always be set to this.            
             obj = None
+            arg_regex=r"\s.*?|$"
 
             def func(self):
                 "Default exit traverse if no syscommand is defined."
