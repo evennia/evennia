@@ -206,7 +206,7 @@ class CmdDarkHelp(Command):
 
 # the nomatch system command will give a suitable error when we cannot find the normal commands. 
 from src.commands.default.syscommands import CMD_NOMATCH
-
+from src.commands.default.general import CmdSay
 class CmdDarkNoMatch(Command):
     "This is called when there is no match"
     key = CMD_NOMATCH
@@ -225,7 +225,7 @@ class DarkCmdSet(CmdSet):
         self.add(CmdLookDark())
         self.add(CmdDarkHelp())
         self.add(CmdDarkNoMatch())
-
+        self.add(CmdSay)
 #
 # Darkness room two-state system 
 #
@@ -483,6 +483,9 @@ class CmdLookBridge(Command):
                  "Under your feet a plank comes loose, tumbling down. For a moment you dangle over the abyss ...",
                  "The section of rope you hold onto crumble in your hands, parts of it breaking apart. You sway trying to regain balance.")
         message = "{c%s{n\n" % self.obj.key + messages[bridge_position] + "\n" + moods[random.randint(0, len(moods) - 1)]
+        chars = [obj for obj in self.obj.contents if obj.has_player]
+        message += "\n You see: %s" % ", ".join("{c%s{n" % char.key for char in chars)
+
         self.caller.msg(message)
         
         # there is a chance that we fall if we are on the western or central part of the bridge.  

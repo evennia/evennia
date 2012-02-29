@@ -336,7 +336,7 @@ class LightSource(TutorialObject):
         super(LightSource, self).at_object_creation()
         self.db.tutorial_info = "This object can be turned on off and has a timed script controlling it."
         self.db.is_active = False 
-        self.db.burntime = 60 # 1 minute
+        self.db.burntime = 60*3 # 3 minutes
         self.db.desc = "A splinter of wood with remnants of resin on it, enough for burning."
         # add commands 
         self.cmdset.add_default(CmdSetLightSource, permanent=True)
