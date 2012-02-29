@@ -250,14 +250,16 @@ class StateLightSourceOn(Script):
         prematurely, this hook will store the current
         burntime. 
         """
-        # calculate remaining burntime 
-        try:
-            time_burnt = time.time() - self.db.script_started
-        except TypeError:
-            # can happen if script_started is not defined
-            time_burnt = self.interval
-        burntime = self.interval - time_burnt
-        self.obj.db.burntime = burntime 
+        # calculate remaining burntime, if object is not
+        # already deleted (because it burned out)
+        if self.obj:
+            try:
+                time_burnt = time.time() - self.db.script_started
+            except TypeError:
+                # can happen if script_started is not defined
+                time_burnt = self.interval
+            burntime = self.interval - time_burnt
+            self.obj.db.burntime = burntime
 
     def is_valid(self):
         "This script is only valid as long as the lightsource burns."

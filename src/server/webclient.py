@@ -217,7 +217,7 @@ class WebClientSession(session.Session):
         Disconnect from server
         """                        
         if reason:
-            self.lineSend(self.suid, reason)
+            self.client.lineSend(self.suid, reason)
         self.client.client_disconnect(self.suid)
 
     def data_out(self, string='', data=None):
