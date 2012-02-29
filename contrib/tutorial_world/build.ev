@@ -81,9 +81,23 @@
 # in-game they will fill the lines to the width as defined by the
 # player's client.
 #
-@dig/teleport Intro;tut#01 
+@dig Intro;tut#01 
  : tutorial_world.rooms.IntroRoom 
- = tutorial;tut;intro
+#
+# Open an exit to tutorial. We don't do this in the @dig
+# command since we want to describe the exit. 
+#
+@open tutorial;tut;intro = tut#01
+#
+# describe the tutorial exit
+#
+@desc tutorial = 
+ This starts the {gEvennia tutorial{n, using a small solo game to show off
+ some of the server's possibilities.
+#
+# now we actually go to the tutorial
+#
+tutorial
 #
 # ... and describe it.
 #
