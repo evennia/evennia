@@ -27,7 +27,7 @@ from src.scripts.models import ScriptDB
 from src.server.models import ServerConfig
 from src.server import initial_setup
 
-from src.utils.utils import get_evennia_version
+from src.utils.utils import get_evennia_version, mod_import
 from src.comms import channelhandler
 from src.server.sessionhandler import SESSIONS
 
@@ -35,7 +35,11 @@ if os.name == 'nt':
     # For Windows we need to handle pid files manually.
     SERVER_PIDFILE = os.path.join(settings.GAME_DIR, 'server.pid')
 
+# a file with a flag telling the server to restart after shutdown or not.
 SERVER_RESTART = os.path.join(settings.GAME_DIR, 'server.restart')
+
+# module containing hook methods 
+SERVER_HOOK_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -158,6 +162,9 @@ class Evennia(object):
         [(o.typeclass, o.at_init()) for o in ObjectDB.get_all_cached_instances()]
         [(p.typeclass, p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
+        # call server hook.
+        SERVER_HOOK_MODULE.at_server_start()         
+
     def terminal_output(self):
         """
         Outputs server startup info to the terminal.
@@ -221,12 +228,14 @@ class Evennia(object):
                 [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
             else: # shutdown
                 [(o.typeclass, o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]    
+
             [(p.typeclass, p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
-            [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]            
+            [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]                        
             
             ServerConfig.objects.conf("server_restart_mode", "reset")
-            
+                    
         if not _abrupt:
+            SERVER_HOOK_MODULE.at_server_stop()
             reactor.callLater(0, reactor.stop)
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually            

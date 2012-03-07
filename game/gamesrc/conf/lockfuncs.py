@@ -15,6 +15,7 @@ arguments should be handled (excess ones calling magic (*args,
 eventual tracebacks by logging the error and returning False.
 
 See many more examples of lock functions in src.locks.lockfuncs. 
+
 """
 
 def myfalse(accessing_obj, accessed_obj, *args, **kwargs):

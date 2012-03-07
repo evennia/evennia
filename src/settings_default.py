@@ -142,7 +142,7 @@ DATABASE_HOST = ''
 DATABASE_PORT = ''
 
 ###################################################
-# Evennia in-game parsers
+# Evennia pluggable modules 
 ###################################################
 
 # An alternate command parser module to use 
@@ -163,8 +163,13 @@ CONNECTION_SCREEN_MODULE = "game.gamesrc.conf.connection_screens"
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load. 
 AT_INITIAL_SETUP_HOOK_MODULE = "game.gamesrc.conf.at_initial_setup"
+# Module holding at_server_start(), at_server_reload() and
+# at_server_stop() methods. These methods will be called every time
+# the server starts, reloads and  resets/stops.
+AT_SERVER_STARTSTOP_MODULE = "game.gamesrc.conf.at_server_startstop"
 # Module holding server-side functions for out-of-band protocols to call.
 OOB_FUNC_MODULE = "game.gamesrc.conf.oobfuncs"
+
 
 ###################################################
 # Default command sets 
