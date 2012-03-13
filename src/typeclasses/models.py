@@ -1093,7 +1093,6 @@ class TypedObject(SharedMemoryModel):
         # this will automatically use a default class if
         # there is an error with the given typeclass.
         new_typeclass = self.typeclass
-        print "new_typeclass:",new_typeclass.path, self.typeclass_path
         if self.typeclass_path == new_typeclass.path:
             # the typeclass loading worked as expected
             DA(self, "_cached_db_typeclass_path")
