@@ -724,7 +724,7 @@ class TypedObject(SharedMemoryModel):
     #@name.setter
     def name_set(self, value):
         "Setter. Allows for self.name = value"
-        set_cache(self, "name", value)
+        set_cache(self, "key", value)
     #@name.deleter
     def name_del(self):
         "Deleter. Allows for del self.name"
@@ -1093,9 +1093,10 @@ class TypedObject(SharedMemoryModel):
         # this will automatically use a default class if
         # there is an error with the given typeclass.
         new_typeclass = self.typeclass
+        print "new_typeclass:",new_typeclass.path, self.typeclass_path
         if self.typeclass_path == new_typeclass.path:
             # the typeclass loading worked as expected
-            SA(self, "_cached_db_typeclass_path", None)
+            DA(self, "_cached_db_typeclass_path")
             SA(self, "_cached_typeclass", None)
         elif no_default:
             # something went wrong; the default was loaded instead,
