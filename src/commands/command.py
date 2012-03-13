@@ -47,9 +47,10 @@ class CommandMeta(type):
             mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I)
         else:
             mcs.arg_regex = None
-
+        if not hasattr(mcs, "auto_help"):
+            mcs.auto_help = True
         if not hasattr(mcs, 'is_exit'):
-            mcs.is_exit = False 
+            mcs.is_exit = False
         if not hasattr(mcs, "help_category"):
             mcs.help_category = "general"
         mcs.help_category = mcs.help_category.lower()
@@ -99,10 +100,15 @@ class Command(object):
     locks = ""
     # used by the help system to group commands in lists.
     help_category = "general"
+
+    # this normally does not need to be changed. It allows to turn off
+    # auto-help entry creation for individual commands.
+    auto_help = True 
     # There is also the property 'obj'. This gets set by the system 
     # on the fly to tie this particular command to a certain in-game entity.
     # self.obj should NOT be defined here since it will not be overwritten 
     # if it already exists. 
+    
 
     def __init__(self):
         self.lockhandler = LockHandler(self)

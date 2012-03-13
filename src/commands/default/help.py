@@ -92,13 +92,13 @@ class CmdHelp(Command):
         # having to allow doublet commands to manage exits etc.
         cmdset.make_unique(caller)
         
-        # Listing help entries
+        # Listing all help entries
         
         if query in LIST_ARGS:
             # we want to list all available help entries, grouped by category.
             hdict_cmd = {}
-            for cmd in (cmd for cmd in cmdset if cmd.access(caller)
-                        if not cmd.key.startswith('__') and not cmd.is_exit):
+            for cmd in (cmd for cmd in cmdset if cmd.auto_help and not cmd.is_exit 
+                        and not cmd.key.startswith('__') and cmd.access(caller)):
                 try:
                     hdict_cmd[cmd.help_category].append(cmd.key)
                 except KeyError:
@@ -117,7 +117,7 @@ class CmdHelp(Command):
         # Look for a particular help entry
         
         # Cmd auto-help dynamic entries 
-        cmdmatches = [cmd for cmd in cmdset if query in cmd and cmd.access(caller)]
+        cmdmatches = [cmd for cmd in cmdset if query in cmd and cmd.auto_help and cmd.access(caller)]
         if len(cmdmatches) > 1:
             # multiple matches. Try to limit it down to exact match
             cmdmatches = [cmd for cmd in cmdmatches if cmd == query] or cmdmatches
