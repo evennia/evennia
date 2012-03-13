@@ -651,4 +651,3 @@ def init_new_player(player):
     if player.character:
         player.character.db.FIRST_LOGIN = True                            
     player.db.FIRST_LOGIN = True 
-     

@@ -1150,7 +1150,46 @@ class CmdSetAttribute(ObjManipCommand):
     key = "@set"
     locks = "cmd:perm(set) or perm(Builders)"
     help_category = "Building"
-    
+
+    def convert_from_string(self, strobj):
+        """
+        Converts a single object in *string form* to its equivalent python
+        type. Handles floats, ints, and limited nested lists and dicts 
+        (can't handle lists in a dict, for example, this is mainly due to 
+        the complexity of parsing this rather than any technical difficulty -
+        if there is a need for @set-ing such complex structures on the 
+        command line we might consider adding it). 
+
+        We need to convert like this since all data being sent over the
+        telnet connection by the Player is text - but we will want to
+        store it as the "real" python type so we can do convenient
+        comparisons later (e.g.  obj.db.value = 2, if value is stored as a
+        string this will always fail).
+        """
+        def rec_convert(obj):
+            """
+            Helper function of recursive conversion calls.
+            """
+            # simple types 
+            try: return int(obj)
+            except ValueError: pass
+            try: return float(obj)
+            except ValueError: pass
+            # iterables
+            if obj.startswith('[') and obj.endswith(']'):
+                "A list. Traverse recursively." 
+                return [rec_convert(val) for val in obj[1:-1].split(',')]
+            if obj.startswith('(') and obj.endswith(')'):
+                "A tuple. Traverse recursively." 
+                return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
+            if obj.startswith('{') and obj.endswith('}') and ':' in obj:
+                "A dict. Traverse recursively."
+                return dict([(rec_convert(pair.split(":",1)[0]), rec_convert(pair.split(":",1)[1]))
+                             for pair in obj[1:-1].split(',') if ":" in pair])
+            # if nothing matches, return as-is
+            return obj
+        return rec_convert(strobj.strip())
+   
     def func(self):
         "Implement the set attribute - a limited form of @py."
 
@@ -1192,21 +1231,9 @@ class CmdSetAttribute(ObjManipCommand):
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)            
         else:
-            # setting attribute(s)
- 
-            # analyze if we are trying to set a list or a dict.
-            if value.startswith('[') and value.endswith(']'):
-                value = value.lstrip('[').rstrip(']').split(',')            
-                value = [utils.to_str(val) for val in value]
-            elif value.startswith('{') and value.endswith('}') and ':' in value:
-                dictpairs = value.lstrip('{').rstrip('}').split(',')            
-                try:
-                    value = dict([[utils.to_str(p.strip()) for p in pair.split(':')] for pair in dictpairs])
-                except Exception:
-                    pass 
-
-            for attr in attrs:
-                obj.set_attribute(attr, value)
+            # setting attribute(s). Make sure to convert to real Python type before saving.
+             for attr in attrs:
+                obj.set_attribute(attr, self.convert_from_string(value))
                 string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
         # send feedback
         caller.msg(string.strip('\n')) 
@@ -1519,8 +1546,8 @@ class CmdExamine(ObjManipCommand):
                    "player":"\n{wPlayer{n: {c%s{n",
                    "playerperms":"\n{wPlayer Perms{n: %s",
                    "typeclass":"\n{wTypeclass{n: %s (%s)",
-                   "location":"\n{wLocation{n: %s",
-                   "destination":"\n{wDestination{n: %s",
+                   "location":"\n{wLocation{n: %s (#%s)",
+                   "destination":"\n{wDestination{n: %s (#%s)",
                    "perms":"\n{wPermissions{n: %s",
                    "locks":"\n{wLocks{n:",
                    "cmdset":"\n{wCurrent Cmdset(s){n:\n %s",
@@ -1533,9 +1560,9 @@ class CmdExamine(ObjManipCommand):
                    "aliases":"\nAliases: %s",
                    "player":"\nPlayer: %s",
                    "playerperms":"\nPlayer Perms: %s",
-                   "typeclass":"\nTypeclass: %s (%s)",
-                   "location":"\nLocation: %s",
-                   "destination":"\nDestination: %s",
+                   "typeclass":"\nTypeclass: %s%s",
+                   "location":"\nLocation: %s (#%s)",
+                   "destination":"\nDestination: %s (#%s)",
                    "perms":"\nPermissions: %s",
                    "locks":"\nLocks:",
                    "cmdset":"\nCurrent Cmdset(s):\n %s",
@@ -1563,10 +1590,10 @@ class CmdExamine(ObjManipCommand):
             string += headers["playerperms"] % (", ".join(perms))         
         string += headers["typeclass"] % (obj.typeclass.typename, obj.typeclass_path)
 
-        if hasattr(obj, "location"):
-            string += headers["location"] % obj.location
+        if hasattr(obj, "location") and obj.location:
+            string += headers["location"] % (obj.location, obj.location.id)
         if hasattr(obj, "destination") and obj.destination:
-            string += headers["destination"]  % obj.destination
+            string += headers["destination"]  % (obj.destination, obj.destination.id)
         perms = obj.permissions
         if perms:            
             string += headers["perms"] % (", ".join(perms)) 
