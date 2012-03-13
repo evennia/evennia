@@ -425,6 +425,7 @@ class CmdEast(Command):
                 caller.msg("No east exit was found for this room. Contact an admin.")
             return 
         caller.db.tutorial_bridge_position = bridge_step
+        caller.location.msg_contents("%s steps eastwards across the bridge." % caller.name, exclude=caller)
         caller.execute_cmd("look")
     
 # go back across the bridge
@@ -452,6 +453,7 @@ class CmdWest(Command):
                 caller.msg("No west exit was found for this room. Contact an admin.")
             return 
         caller.db.tutorial_bridge_position = bridge_step
+        caller.location.msg_contents("%s steps westwartswards across the bridge." % caller.name, exclude=caller)
         caller.execute_cmd("look")
 
 class CmdLookBridge(Command):
@@ -483,8 +485,9 @@ class CmdLookBridge(Command):
                  "Under your feet a plank comes loose, tumbling down. For a moment you dangle over the abyss ...",
                  "The section of rope you hold onto crumble in your hands, parts of it breaking apart. You sway trying to regain balance.")
         message = "{c%s{n\n" % self.obj.key + messages[bridge_position] + "\n" + moods[random.randint(0, len(moods) - 1)]
-        chars = [obj for obj in self.obj.contents if obj.has_player]
-        message += "\n You see: %s" % ", ".join("{c%s{n" % char.key for char in chars)
+        chars = [obj for obj in self.obj.contents if obj != self.caller and obj.has_player]
+        if chars: 
+            message += "\n You see: %s" % ", ".join("{c%s{n" % char.key for char in chars)
 
         self.caller.msg(message)
         
