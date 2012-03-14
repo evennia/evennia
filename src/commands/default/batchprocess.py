@@ -26,6 +26,7 @@ from django.conf import settings
 from src.utils.batchprocessors import BATCHCMD, BATCHCODE
 from src.commands.cmdset import CmdSet
 from src.commands.default.muxcommand import MuxCommand
+from src.utils import utils
 
 HEADER_WIDTH = 70
 UTF8_ERROR = \
@@ -57,14 +58,12 @@ def format_header(caller, entry):
     """
     width = HEADER_WIDTH - 10
     entry = entry.strip()    
-    header = entry[:min(width, min(len(entry), entry.find('\n')))]
-    if len(entry) > width:
-        header = "%s[...]" % header    
+    header = utils.crop(entry, width=width)
     ptr = caller.ndb.batch_stackptr + 1 
     stacklen = len(caller.ndb.batch_stack)    
     header = "{w%02i/%02i{G: %s{n" % (ptr, stacklen, header)
     # add extra space to the side for padding.
-    header = "%s%s" % (header, " "*(width-len(header)))
+    header = "%s%s" % (header, " "*(width - len(header)))
     header = header.replace('\n', '\\n')
     
     return header 
