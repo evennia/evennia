@@ -10,7 +10,11 @@ Evennia depends heavily on good documentation and we are always looking
 for extra eyes and hands to improve it. Even small things such as fixing
 typos is a great help. To edit the wiki yourself you need contributor
 access. Otherwise, it goes a long way just pointing out wiki errors so
-devs can fix them.
+devs can fix them (in an Issue or just over chat/forum). You can also
+commit wiki changes over Mercurial - just go to the wiki repository
+"http://code.google.com/p/evennia/source/checkout?repo
+
+wiki">here and then continue from point ``2`` below.
 
 Contributing with Code through a clone repository
 -------------------------------------------------
@@ -43,7 +47,9 @@ Once you have an online clone and a local copy of it:
 
 #. Code away on your computer, fixing bugs or whatnot (you can be
    offline for this). Commit your code to your local clone as you work,
-   as often as you like.
+   as often as you like. There are some suggestions for setting up a
+   sane local work environment with Mercurial
+   `here <http://code.google.com/p/evennia/wiki/VersionControl>`_.
 #. When you have something you feel is worthwhile (or just want to ask
    people's opinions or make an online backup), *push* your local code
    up to your online repository with Mercurial.

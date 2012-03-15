@@ -26,13 +26,13 @@ relative to a folder you define to hold your batch files, set with
 
     > @batchcommand examples.batch_cmds
 
-A batch-command file contains a list of Evennia commands that you have
-previously entered. The processor will run the batch file from beginning
-to end. Note that *it will not stop if commands in it fail* (there is no
-universal way for the processor to know what a failure looks like for
-all different commands). So keep a close watch on the output, or use
-*Interactive mode* (see below) to run the file in a more controlled,
-gradual manner.
+A batch-command file contains a list of Evennia in-game commands
+separated by comments. The processor will run the batch file from
+beginning to end. Note that *it will not stop if commands in it fail*
+(there is no universal way for the processor to know what a failure
+looks like for all different commands). So keep a close watch on the
+output, or use *Interactive mode* (see below) to run the file in a more
+controlled, gradual manner.
 
 The batch file
 --------------
@@ -41,40 +41,31 @@ The batch file is a simple plain-text file containing Evennia commands.
 Just like you would write them in-game, except you have more freedom
 with line breaks.
 
-Here's the rules of syntax of an ``*.ev`` file. You'll find it's really,
-really simple:
+Here are the rules of syntax of an ``*.ev`` file. You'll find it's
+really, really simple:
 
--  All lines having the # (hash)-symbol *as the first one on the line*
-   are considered *comments*.
--  Comments also have an actual function -- they mark the *end of the
+-  All lines having the ``#`` (hash)-symbol *as the first one on the
+   line* are considered *comments*. All non-comment lines are treated as
+   a command and/or their arguments.
+-  Comment lines have an actual function -- they mark the *end of the
    previous command definition*. So never put two commands directly
    after one another in the file - separate them with a comment, or the
-   second of the two will be considered an argument to the first one
-   (regardless, using plenty of comments is a good practice anyway).
--  Extra whitespace in a command definition are ignored. If you want a
-   line break in texts, leave an empty line. Two empty lines thus means
-   a new paragraph (for commands accepting formatting, that is).
+   second of the two will be considered an argument to the first one.
+   Besides, using plenty of comments is good practice anyway.
+-  Extra whitespace in a command definition is *ignored*.
+-  A completely empty line translates in to a line break in texts. Two
+   empty lines thus means a new paragraph (this is obviously only
+   relevant for commands accepting such formatting, such as the
+   ``@desc`` command).
+-  The very last command in the file is not required to end with a
+   comment.
 
 Below is a version of the example file found in
 ``game/gamesrc/commands/examples/batch_cmds.ev``.
 
 ::
 
-    #
-    # This is an example batch build file for Evennia. 
-    ## This creates a red button button@create button:examples.red_button.RedButton# (This comment ends input for @create)
-    # Next command. Let's create something. @set button/desc = 
-      This is a large red button. Now and then 
-      it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You 
-    know you want to! 
-      
-    # (This ends the @set command). Note that single line breaks 
-    # and extra whitespace in the argument are ignored. Empty lines 
-    # translate into line breaks in the output.
-    # Now let's place the button where it belongs (let's say limbo #2 is 
-    # the evil lair in our example)@teleport #2# (This comments ends the @teleport command.) 
-    # Now we drop it so others can see it. 
-    # The very last command in the file needs not be ended with #.drop button
+    # # This is an example batch build file for Evennia.  ## This creates a red button @create button:examples.red_button.RedButton # (This comment ends input for @create) # Next command. Let's create something.  @set button/desc =    This is a large red button. Now and then    it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You  know you want to!     # (This ends the @set command). Note that single line breaks  # and extra whitespace in the argument are ignored. Empty lines  # translate into line breaks in the output. # Now let's place the button where it belongs (let's say limbo #2 is  # the evil lair in our example) @teleport #2 # (This comments ends the @teleport command.)  # Now we drop it so others can see it.  # The very last command in the file needs not be ended with #. drop button
 
 To test this, run ``@batchcommand`` on the file. A button will be
 created, described and dropped in Limbo. All commands will be executed
@@ -174,3 +165,9 @@ to allow others than superusers to call the processor. Since normal
 access-checks are still performed, a malevolent builder with access to
 the processor should not be able to do all that much damage (this is the
 main drawback of the `batch-code processor <BatchCodeProcessor.html>`_)
+
+`GNU Emacs <http://en.wikipedia.org/wiki/Emacs>`_ users might find it
+interesting to use emacs' *evennia mode*. This is an Emacs major mode
+found in ``src/utils/evennia-mode.el``. It offers correct syntax
+highlighting and indentation with ``<tab>`` when editing ``.ev`` files
+in Emacs. See the header of that file for installation instructions.

@@ -16,8 +16,7 @@ root directory and type:
 
 ::
 
-    hg pull
-     hg update
+    hg pull  hg update
 
 Assuming you've got the command line client. If you're using a graphical
 client, you will probably want to navigate to the ``evennia`` directory
@@ -77,8 +76,7 @@ database is named "Evennia":
 
 ::
 
-    mysql> DROP DATABASE Evennia; 
-    mysql> exit
+    mysql> DROP DATABASE Evennia;  mysql> exit
 
 A Note on Schema Migration
 --------------------------

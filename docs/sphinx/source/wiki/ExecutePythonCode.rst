@@ -10,8 +10,7 @@ entrust to just anybody.
 
 ::
 
-    @py 1+2 
-    <<< 3
+    @py 1+2  <<< 3
 
 Available variables
 -------------------
@@ -37,8 +36,7 @@ found in ``src/utils/utils.py``:
 
 ::
 
-    @py from src.utils import utils; utils.time_format(33333)
-    <<< Done.
+    @py from src.utils import utils; utils.time_format(33333) <<< Done.
 
 Note that we didn't get any return value, all we where told is that the
 code finished executing without error. This is often the case in more
@@ -48,9 +46,7 @@ system to echo it to us explicitly with ``self.msg()``.
 
 ::
 
-    @py from src.utils import utils; self.msg(utils.time_format(33333))
-    09:15
-    <<< Done.
+    @py from src.utils import utils; self.msg(utils.time_format(33333)) 09:15 <<< Done.
 
 If you were to use Python's standard ``print``, you will see the result
 in your current ``stdout`` (your terminal by default), *if* you are
@@ -67,10 +63,7 @@ Locating an object is best done using ``self.search()``:
 
 ::
 
-    @py self.search("red_ball")
-    <<< Ball @py self.search("red_ball").db.color = "red"
-    <<< Done. @py self.search("red_ball").db.color
-    <<< red
+    @py self.search("red_ball") <<< Ball @py self.search("red_ball").db.color = "red" <<< Done. @py self.search("red_ball").db.color <<< red
 
 ``self.search()`` is by far the most used case, but you can also search
 other database tables for other Evennia entities like scripts or
@@ -79,8 +72,7 @@ entries found in ``src.utils.search``.
 
 ::
 
-    @py from src.utils import search; self.msg(search.scripts("sys_game_time"))
-    <<< [<src.utils.gametime.GameTime object at 0x852be2c>]
+    @py from src.utils import search; self.msg(search.scripts("sys_game_time")) <<< [<src.utils.gametime.GameTime object at 0x852be2c>]
 
 You can also use the database model managers directly (accessible
 through the ``objects`` properties of database models). This is a bit
@@ -89,8 +81,7 @@ search methods defined in each manager.
 
 ::
 
-    @py ScriptDB.objects.script_search("sys_game_time")
-    <<< [<src.utils.gametime.GameTime object at 0x852be2c>]
+    @py ScriptDB.objects.script_search("sys_game_time") <<< [<src.utils.gametime.GameTime object at 0x852be2c>]
 
 (Note that since this second example becomes a simple statement, we
 don't have to wrap it in ``self.msg()`` to get the output). If you want
@@ -101,8 +92,7 @@ contents of the database using normal Django query operations:
 
 ::
 
-    @py ConfigValue.objects.all()
-    <<< [<ConfigValue: default_home]>, <ConfigValue:site_name>, ...]
+    @py ConfigValue.objects.all() <<< [<ConfigValue: default_home]>, <ConfigValue:site_name>, ...]
 
 In doing so however, keep in mind the difference between `Typeclasses
 and Database Objects <Typeclasses.html>`_: Using the search commands in
@@ -114,13 +104,7 @@ most situations.
 
 ::
 
-    # this uses Evennia's manager method get_id(). 
-    # It returns a Character typeclass instance
-    @py ObjectDB.objects.get_id(1).__class__
-    <<< Character# this uses the standard Django get() query. 
-    # It returns a django database model instance.
-    @py ObjectDB.objects.get(id=1).__class__
-    <<< <class 'src.objects.models.ObjectDB'>
+    # this uses Evennia's manager method get_id().  # It returns a Character typeclass instance @py ObjectDB.objects.get_id(1).__class__ <<< Character# this uses the standard Django get() query.  # It returns a django database model instance. @py ObjectDB.objects.get(id=1).__class__ <<< <class 'src.objects.models.ObjectDB'>
 
 Running a Python Parser outside the game
 ========================================
@@ -145,8 +129,5 @@ tab-completion and ``__doc__``-string reading.
 
 ::
 
-    $ python manage.py shellIPython 0.10 -- An enhanced Interactive Python
-    ...In [1]: from src.objects.models import ObjectDB
-    In [2]: ObjectDB.objects.all()
-    Out[3]: [<ObjectDB: Harry>, <ObjectDB: Limbo>, ...]
+    $ python manage.py shellIPython 0.10 -- An enhanced Interactive Python ...In [1]: from src.objects.models import ObjectDB In [2]: ObjectDB.objects.all() Out[3]: [<ObjectDB: Harry>, <ObjectDB: Limbo>, ...]
 

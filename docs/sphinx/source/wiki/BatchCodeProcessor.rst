@@ -35,21 +35,23 @@ The batch file
 --------------
 
 A batch-code file is mostly a normal Python source file. The only thing
-separating a batch file from any Python module is that the code are
-wrapped into *blocks* using a special syntax. These blocks allow the
+separating a batch file from any standard Python module is that the code
+is wrapped into *blocks* using a special syntax. These blocks allow the
 batch processor more control over execution, especially when using the
-processor's *interactive* mode, where they allow the default
-``@batchcommand`` to pause and only execute certain blocks at a time.
+processor's *interactive* mode. In interactive mode these blocs allow
+the batchcode runner to pause and only execute certain blocks at a time.
+There is however nothing stopping you from coding everything in one
+single block if you don't want to split things up into chunks like this.
 
 Here are the rules of syntax of the batch-command ``*.py`` file.
 
 -  ``#HEADER`` as the first on a line marks the start of a *header*
    block. This is intended to hold imports and variables that might be
-   of use for for other blocks. All python code defined in a header
-   block will always be inserted at the top of all ``#CODE`` blocks in
-   the file. You may have more than one ``#HEADER`` block, but that is
-   equivalent to having just one big one. Comments in ``#HEADER`` blocks
-   are stripped out before merging.
+   of use for other blocks. All python code defined in a header block
+   will always be inserted at the top of all ``#CODE`` blocks in the
+   file. You may have more than one ``#HEADER`` block, but that is
+   equivalent to having one big one. Comments in ``#HEADER`` blocks are
+   stripped out before merging.
 -  ``#CODE`` as the first on a line marks the start of a *code* block.
    Code blocks contain functional python code. ``#HEADER`` blocks are
    added to the top of code blocks at runtime.
@@ -57,7 +59,7 @@ Here are the rules of syntax of the batch-command ``*.py`` file.
    block header. The ``(info)`` field gives extra info about what's
    going on in the block and is displayed by the batch processor. The
    ``obj1, obj2, ...`` parts are optional object labels used by the
-   processors *debug* mode in order to auto-delete objects after a test
+   processor's *debug* mode in order to auto-delete objects after a test
    run.
 -  A new ``#HEADER`` or ``#CODE`` (or the end of the file) ends the
    previous block. Text before the first block are ignored.
@@ -75,13 +77,7 @@ Below is a version of the example file found in
 
     #
     # This is an example batch-code build file for Evennia. 
-    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search
-    from game.gamesrc.objects.examples import red_button
-    from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button", 
-                                      location=limbo, aliases=["button"])# caller points to the one running the script
-    caller.msg("A red button was created.")#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo)
-    chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again." 
-    caller.msg(string % (table, chair))
+    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo) chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again."  caller.msg(string % (table, chair))
 
 This uses Evennia's Python API to create three objects in sequence.
 
@@ -138,16 +134,12 @@ This shows that you are on the first ``#CODE`` block, the first of only
 two commands in this batch file. Observe that the block has *not*
 actually been executed at this point!
 
-To take a look at the full command you are about to run, use ``ll`` (a
-batch-processor version of ``look``).
+To take a look at the full code snippet you are about to run, use ``ll``
+(a batch-processor version of ``look``).
 
 ::
 
-    from src.utils import create, search
-    from game.gamesrc.objects.examples import red_button
-    from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]red_button = create.create_object(red_button.RedButton, key="Red button", 
-                                      location=limbo, aliases=["button"])# caller points to the one running the script
-    caller.msg("A red button was created.")
+    from src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")
 
 Compare with the example code given earlier. Notice how the content of
 ``#HEADER`` has been pasted at the top of the ``#CODE`` block. Use

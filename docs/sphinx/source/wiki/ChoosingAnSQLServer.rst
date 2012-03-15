@@ -9,32 +9,29 @@ about supported
 Databases <http://docs.djangoproject.com/en/dev/ref/databases/#ref-databases>`_
 page.
 
-SQLite
-------
+SQLite3
+-------
 
 This is the default database used, and for the vast majority of Evennia
-installs it will probably be more than adequate for a long time. No
-server process is needed, the administrative overhead is tiny (as is
+installs it will probably be more than adequate or even the best choice.
+No server process is needed, the administrative overhead is tiny (as is
 resource consumption). The database will appear as a simple file
-(``game/evennia.db3``). SQLite is excellent for development and easy
-testing. The database is however hampered in speed by not allowing
-concurrent reads. For a full production game with many users accessing
-the database, a more fully featured database engine (MySQL, Postgres
-etc) is probably better.
+(``game/evennia.db3``) and since we run SQLite as an in-memory process
+without any socket overhead, it might well be faster than Postgres/MySQL
+unless your database is huge.
 
-**Note:** If you run Windows and for some reason need to use a
-third-party web server like Apache rather than Evennia's internal web
-server, sqlite is probably also not be the best choice. This is due to
-the possibility of clashes with file-locking of the database file under
-Windows.
+**Note:** If you for some reason need to use a third-party web server
+like Apache rather than Evennia's internal web server, SQLite is
+probably not be the best choice. This is due to the possibility of
+clashes with file-locking when using SQLite from more than one process.
 
 Postgres
 --------
 
-This is Django's recommended database engine, usable for all sites
-aspiring to grow to a larger size. While not as fast as SQLite for
-simple purposes, it will scale infinitely better than SQLite, especially
-if your game has an extensive web presence.
+This is Django's recommended database engine, While not as fast as
+SQLite for normal usage, it will scale better than SQLite, especially if
+your game has an very large database and/or extensive web presence
+through a separate server process.
 
 **Warning:** Postgres has issues with Evennia on some installs at the
 moment. "http://code.google.com/p/evennia/issues/detail?id
@@ -44,8 +41,8 @@ moment. "http://code.google.com/p/evennia/issues/detail?id
 MySQL
 -----
 
-MySQL **may** be slightly faster than Postgres depending on your setup
-and software versions involved. Older versions of MySQL had some
+MySQL *may* be slightly faster than Postgres depending on your setup and
+software versions involved. Older versions of MySQL had some
 peculiarities though, so check out Django's `Notes about supported
 Databases <http://docs.djangoproject.com/en/dev/ref/databases/#ref-databases>`_
 to make sure you use the correct version.

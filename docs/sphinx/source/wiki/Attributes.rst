@@ -29,9 +29,7 @@ To save persistent data on a Typeclassed object you normally use the
 
 ::
 
-    # saving 
-    rose.db.has_thorns = True # getting it back
-    is_ouch = rose.db.has_thorns
+    # saving  rose.db.has_thorns = True # getting it back is_ouch = rose.db.has_thorns
 
 This looks like any normal Python assignment, but that ``db`` makes sure
 that an *Attribute* is created behind the scenes and is stored in the
@@ -44,9 +42,7 @@ way:
 
 ::
 
-    # saving 
-    rose.ndb.has_thorns = True # getting it back
-    is_ouch = rose.ndb.has_thorns
+    # saving  rose.ndb.has_thorns = True # getting it back is_ouch = rose.ndb.has_thorns
 
 Strictly speaking, ``ndb`` has nothing to do with ``Attributes``,
 despite how similar they look. No ``Attribute`` object is created behind
@@ -68,9 +64,7 @@ Attributes like you would any normal Python property:
 
 ::
 
-    # saving
-    rose.has_thorns = True# getting it back
-    is_ouch = rose.has_thorns
+    # saving rose.has_thorns = True# getting it back is_ouch = rose.has_thorns
 
 This looks like any normal Python assignment, but calls ``db`` behind
 the scenes for you.
@@ -84,6 +78,13 @@ uses ``msg()`` a lot to send text to you). Using
 ``rose.db.msg = "Ouch"`` will always do what you expect and is usually
 the safer bet. And it also makes it visually clear at all times when you
 are saving to the database and not.
+
+Another drawback of this shorter form is that it will handle a non-found
+Attribute as it would any non-found property on the object. The ``db``
+operator will instead return ``None`` if no matching Attribute is found.
+So if an object has no attribute (or property) named ``test``, doing
+``obj.test`` will raise an ``AttributeException`` error, whereas
+``obj.db.test`` will return ``None``.
 
 Persistent vs non-persistent
 ----------------------------
@@ -151,96 +152,33 @@ Examples of valid attribute data:
 
 ::
 
-    # a single value
-    obj.db.test1 = 23
-    obj.db.test1 = False 
-    # a database object (will be stored as dbref)
-    obj.db.test2 = myobj
-    # a list of objects
-    obj.db.test3 = [obj1, 45, obj2, 67]
-    # a dictionary
-    obj.db.test4 = 'str':34, 'dex':56, 'agi':22, 'int':77
-    # a mixed dictionary/list
-    obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]
-    # a tuple with a list in it
-    obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)
-    # a set will still be stored and returned as a list [1,2,3,4,5]!
-    obj.db.test7 = set([1,2,3,4,5])
+    # a single value obj.db.test1 = 23 obj.db.test1 = False  # a database object (will be stored as dbref) obj.db.test2 = myobj # a list of objects obj.db.test3 = [obj1, 45, obj2, 67] # a dictionary obj.db.test4 = 'str':34, 'dex':56, 'agi':22, 'int':77 # a mixed dictionary/list obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5] # a tuple with a list in it obj.db.test6 = (1,3,4,8, ["test", "test2"], 9) # a set will still be stored and returned as a list [1,2,3,4,5]! obj.db.test7 = set([1,2,3,4,5])
 
 Example of non-supported save:
 
 ::
 
-    # this will fool the dbobj-check since myobj (a database object) is "hidden"
-    # inside a custom object. This is unsupported and will lead to unexpected
-    # results! 
-    class BadStorage(object):
-        pass
-    bad = BadStorage()
-    bad.dbobj = myobj
-    obj.db.test8 = bad # this will likely lead to a traceback
+    # this will fool the dbobj-check since myobj (a database object) is "hidden" # inside a custom object. This is unsupported and will lead to unexpected # results!  class BadStorage(object):     pass bad = BadStorage() bad.dbobj = myobj obj.db.test8 = bad # this will likely lead to a traceback
 
-Storing nested data directly on the variable
---------------------------------------------
+Retrieving Mutable objects
+--------------------------
 
-Evennia needs to do a lot of work behind the scenes in order to save and
-retrieve data from the database. Most of the time, things work just like
-normal Python, but there is one further exception except the one about
-storing database objects above. It is related to updating already
-existing attributes in-place. Normally this works just as it should. For
-example, you can do
+A side effect of the way Evennia stores Attributes is that Python Lists
+and Dictionaries (only )are handled by custom objects called PackedLists
+and !PackedDicts. These have the special property that they save to the
+database whenever new data gets assigned to them. This allows you to do
+things like self.db.mylist`4 <4.html>`_
 
-::
+val without having to extract the mylist Attribute into a temporary
+variable first.
 
-    # saving data
-    obj.db.mydict = "key":"test0"
-    obj.db.mydict["key"] = "test1"
-    obj.db.mylist = [0,1,2,3]
-    obj.db.mylist[3] = "test2"
-    obj.db.mylist.append("test3")
-    # retrieving data
-    obj.db.mydict["key"] # returns "test1"
-    obj.db.mylist[3] # returns "test2
-    obj.db.mylist[-1] # returns "test3"
+There is however an important thing to remember. If you retrieve this
+data into another variable, e.g. ``mylist2 = obj.db.mylist``, your new
+variable will *still* be a PackedList, and if you assign things to it,
+it will save to the database! To "disconnect" it from the database
+system, you need to convert it to a normal list with mylist2
 
-and it will work fine, thanks to a lot of magic happening behind the
-scenes. What will *not* work however is *assigning nested
-lists/dictionaries in-place*. This is due to the way Python referencing
-works, no way around it alas. Consider the following:
-
-::
-
-    obj.db.mydict = 1:2:3
-
-This is a perfectly valid nested dictionary and Evennia will store it
-just fine. Retrieving this data will also work normally:
-
-::
-
-    val = obj.db.mydict[1][2] # correctly returns 3
-
-However:
-
-::
-
-    obj.db.mydict[1][2] = "test" # silently fails!
-    val = obj.db.mydict[1][2] # still returns 3
-
-will not work - trying to edit the nested structure will fail silently
-and nothing will have changed. No, this is not consistent with normal
-Python operation, it's where the database magic fails. Sorry, but there
-does not seem to be a way around this (if you know one, let us know!)
-All is not lost however. In order to change a nested structure, you
-simply need to use a temporary variable to update:
-
-::
-
-    temp = obj.db.mydict
-    temp[1][2] = "test"
-    obj.db.mydict = temp
-    val = obj.db.mydict[1][2] # now correctly returns "test"
-
-This is cumbersome, but always works as expected.
+list(mylist2).
 
 Notes
 -----

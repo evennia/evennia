@@ -41,19 +41,7 @@ Here's how to define a new Player typeclass in code:
 
 ::
 
-    from src.players.player import Player
-    class ConfigPlayer(Player):
-        """
-        This creates a Player with some configuration options
-        """        
-        at_player_creation(self):
-            "this is called only once, when player is first created"
-            self.db.real_name = None      # this is set later
-            self.db.real_address = None   #        ''
-            self.db.config_1 = True       # default config
-            self.db.config_2 = False      #       "
-            self.db.config_3 = 1          #       "
-            # ... whatever else our game needs to know
+    from src.players.player import Player class ConfigPlayer(Player):     """     This creates a Player with some configuration options     """             at_player_creation(self):         "this is called only once, when player is first created"         self.db.real_name = None      # this is set later         self.db.real_address = None   #        ''         self.db.config_1 = True       # default config         self.db.config_2 = False      #       "         self.db.config_3 = 1          #       "         # ... whatever else our game needs to know
 
 There is no pre-made folder in ``game/gamesrc`` to store custom player
 typeclasses. Either make your own folder or store it in

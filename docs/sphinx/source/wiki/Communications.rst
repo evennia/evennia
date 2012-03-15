@@ -76,12 +76,7 @@ send a non-persistent message, also if you send it a ``Msg`` object.
 
 ::
 
-    # assume we have a 'sender' object and a channel named 'mychan'# send and store in database 
-    from src.utils import create
-    mymsg = create.create_message(sender, "Hello!", channels=[mychan])
-    mychan.msg(mymsg)# send a one-time message
-    mychan.msg("Hello!")# send a one-time message created from a Msg object
-    mychan.tempmsg(mymsg)
+    # assume we have a 'sender' object and a channel named 'mychan'# send and store in database  from src.utils import create mymsg = create.create_message(sender, "Hello!", channels=[mychan]) mychan.msg(mymsg)# send a one-time message mychan.msg("Hello!")# send a one-time message created from a Msg object mychan.tempmsg(mymsg)
 
 As a more advanced note, sending text to channels is a "special
 exception" as far as commands are concerned, and you may completely

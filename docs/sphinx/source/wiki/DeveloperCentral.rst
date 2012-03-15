@@ -74,6 +74,7 @@ Programming Evennia
 Game implementation hints
 -------------------------
 
+-  `Planning your own Evennia game <GamePlanning.html>`_
 -  `Creating a Zoning system <Zones.html>`_
 -  `Implementing cooldowns for commands <CommandCooldown.html>`_
 
@@ -85,7 +86,8 @@ features and ideas. Items here may or may not make it into Evennia down
 the road.*
 
 -  `Basic game system implementation <WorkshopDefaultGame.html>`_
--  `Rtclient protocol <Workshop.html>`_
+   (inactive)
+-  `Rtclient protocol <Workshop.html>`_ (deprecated)
 -  `Summary of changes <EvenniaDevel.html>`_ of latest version vs old
-   Evennia (pre aug2010)
+   Evennia (implemented in aug2010)
 

@@ -255,8 +255,7 @@ query). You can easily convert between them with ``dbobj.typeclass`` and
 
 ::
 
-    obj = ObjectDB.objects.get_id(1) # custom evennia manager method. This returns the typeclass.
-    obj = ObjectDB.objects.get(1) # standard Django. Returns a Django model object.
+    obj = ObjectDB.objects.get_id(1) # custom evennia manager method. This returns the typeclass. obj = ObjectDB.objects.get(1) # standard Django. Returns a Django model object.
 
 Even more important to know for Django affectionados: Evennia's custom
 methods return *lists* where you with normal Django methods would expect

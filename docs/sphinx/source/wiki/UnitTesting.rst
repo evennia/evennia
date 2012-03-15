@@ -57,25 +57,7 @@ Example of a ``TestCase`` class (inside a file ``tests.py``):
 
 ::
 
-    # testing a simple funciontry:
-       # this is an optimized version only available in later Django versions
-       from django.utils.unittest import TestCase
-    except ImportError:
-       # if the first fail, we use the old version
-       from django.test import TestCase# the function we want to test
-    from mypath import myfuncTestObj(unittest.TestCase):
-       "This tests a function myfunc."   def test_return_value(self):
-           "test method. Makes sure return value is as expected."  
-           expected_return = "This is me being nice."
-           actual_return = myfunc()
-           # test 
-           self.assertEqual(expected_return, actual_return)
-       def test_alternative_call(self):
-           "test method. Calls with a keyword argument."
-           expected_return = "This is me being baaaad."
-           actual_return = myfunc(bad=True)
-           # test
-           self.assertEqual(expected_return, actual_return)
+    # testing a simple funciontry:    # this is an optimized version only available in later Django versions    from django.utils.unittest import TestCase except ImportError:    # if the first fail, we use the old version    from django.test import TestCase# the function we want to test from mypath import myfuncTestObj(unittest.TestCase):    "This tests a function myfunc."   def test_return_value(self):        "test method. Makes sure return value is as expected."          expected_return = "This is me being nice."        actual_return = myfunc()        # test         self.assertEqual(expected_return, actual_return)    def test_alternative_call(self):        "test method. Calls with a keyword argument."        expected_return = "This is me being baaaad."        actual_return = myfunc(bad=True)        # test        self.assertEqual(expected_return, actual_return)
 
 The above example is very simplistic, but you should get the idea. Look
 at ``src/objects/tests.py`` for more realistic examples of tests. You

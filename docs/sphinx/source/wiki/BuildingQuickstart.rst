@@ -124,8 +124,7 @@ and try to get the box now:
 
 ::
 
-    > get box
-    You can't get that.
+    > get box You can't get that.
 
 Think the default error message looks dull? The ``get`` command looks
 for an `Attribute <Attributes.html>`_ named ``get_err_msg`` for

@@ -54,9 +54,7 @@ how it would (and do) look from inside the ``@delete`` command:
 
 ::
 
-    if not obj.access(accessing_obj, 'delete'):
-         accessing_obj.msg("Sorry, you may not delete that.")
-         return
+    if not obj.access(accessing_obj, 'delete'):      accessing_obj.msg("Sorry, you may not delete that.")      return
 
 Defining locks
 --------------
@@ -69,9 +67,7 @@ Here are some examples of lock strings:
 
 ::
 
-    delete:id(34)   # only allow obj #34 to delete
-     edit:all()      # let everyone edit 
-     get: not attr(very_weak) or perm(Wizard) # only those who are not "very_weak" or are Wizards may pick this up
+    delete:id(34)   # only allow obj #34 to delete  edit:all()      # let everyone edit   get: not attr(very_weak) or perm(Wizard) # only those who are not "very_weak" or are Wizards may pick this up
 
 Formally, a lockstring has the following syntax:
 
@@ -178,11 +174,7 @@ appear as extra arguments.
 
 ::
 
-    # A simple example lock function. Called with e.g. id(34)def id(accessing_obj, accessed_obj, *args, **kwargs):
-        if args:
-            wanted_id = args[0]
-            return accessing_obj.id == wanted_id
-        return False
+    # A simple example lock function. Called with e.g. id(34)def id(accessing_obj, accessed_obj, *args, **kwargs):     if args:         wanted_id = args[0]         return accessing_obj.id == wanted_id     return False
 
 (Using the ``*`` and ``**`` syntax causes Python to magically put all
 extra arguments into a list ``args`` and all keyword arguments into a
@@ -250,11 +242,7 @@ default permission hierarchy is as follows:
 
 ::
 
-    Immortals
-     Wizards
-     Builders
-     PlayerHelpers
-     Players # this is what all new Players start with by default
+    Immortals  Wizards  Builders  PlayerHelpers  Players # this is what all new Players start with by default
 
 The main use of this is that if you use the lock function ``perm()``
 mentioned above, a lock check for a particular permission in the
@@ -267,8 +255,7 @@ looked for is not in the hierarchy, an exact match is required.
 
 ::
 
-    obj1.permissions = ["Builders", "cool_guy"]
-    obj2.locks.add("enter:perm_above(Players) and perm(cool_guy)")obj2.access(obj1, "enter") # this returns True!
+    obj1.permissions = ["Builders", "cool_guy"] obj2.locks.add("enter:perm_above(Players) and perm(cool_guy)")obj2.access(obj1, "enter") # this returns True!
 
 Superusers
 ----------
@@ -339,8 +326,7 @@ other is an `Object <Objects.html>`_ called ``box``.
 
 ::
 
-    > @create/drop box
-     > @desc box = "This is a very big and heavy box."
+    > @create/drop box  > @desc box = "This is a very big and heavy box."
 
 We want to limit which objects can pick up this heavy box. Let's say
 that to do that we require the would-be lifter to to have an attribute
@@ -359,12 +345,7 @@ this snippet:
 
 ::
 
-    if not obj.access(caller, 'get'):
-        if obj.db.get_err_msg:
-            caller.msg(obj.db.get_err_msg)
-        else:
-            caller.msg("You can't get that.")
-        return
+    if not obj.access(caller, 'get'):     if obj.db.get_err_msg:         caller.msg(obj.db.get_err_msg)     else:         caller.msg("You can't get that.")     return
 
 So the ``get`` command looks for a lock with the type *get* (not so
 surprising). It also looks for an `Attribute <Attributes.html>`_ on the
@@ -398,9 +379,7 @@ like this:
 
 ::
 
-    from src.utils import create
-    box = create.create_object(None, key="box", locks="get:attr_gt(strength, 50)")# or, if we don't set the locks right awaybox.locks.add("get:attr_gt(strength, 50)")# set the attributesbox.db.desc = "This is a very big and heavy box."
-    box.db.get_err_msg = "You are not strong enough to lift this box."# one heavy box, ready to withstand all but the strongest...
+    from src.utils import create box = create.create_object(None, key="box", locks="get:attr_gt(strength, 50)")# or, if we don't set the locks right awaybox.locks.add("get:attr_gt(strength, 50)")# set the attributesbox.db.desc = "This is a very big and heavy box." box.db.get_err_msg = "You are not strong enough to lift this box."# one heavy box, ready to withstand all but the strongest...
 
 On Django's permission system
 =============================

@@ -85,8 +85,7 @@ Write something in the Evennia channel *irc*.
 
 ::
 
-    irc Hello, World!
-    [irc] Anna: Hello, World!
+    irc Hello, World! [irc] Anna: Hello, World!
 
 If you are viewing your IRC channel with a separate IRC client you
 should see your text appearing there, spoken by the bot:

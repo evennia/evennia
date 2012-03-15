@@ -72,11 +72,7 @@ care of all initialization and startup of the script for you.
 
 ::
 
-    # adding a script to an existing object 'myobj'
-     myobj.scripts.add("game.gamesrc.scripts.myscripts.CoolScript")
-     # alternative way
-     from src.utils.create import create_script
-     create_script("game.gamesrc.scripts.myscripts.CoolScript", obj=myobj)
+    # adding a script to an existing object 'myobj'  myobj.scripts.add("game.gamesrc.scripts.myscripts.CoolScript")  # alternative way  from src.utils.create import create_script  create_script("game.gamesrc.scripts.myscripts.CoolScript", obj=myobj)
 
 The creation method(s) takes an optional argument *key* that allows you
 to name your script uniquely before adding it. This can be useful if you
@@ -88,9 +84,7 @@ Just don't supply an object to store it on.
 
 ::
 
-    # adding a global script
-     from src.utils.create import create_script
-     create_script("game.gamesrc.scripts.globals.MyGlobalEconomy", key="economy", obj=None)
+    # adding a global script  from src.utils.create import create_script  create_script("game.gamesrc.scripts.globals.MyGlobalEconomy", key="economy", obj=None)
 
 Assuming the Script ``game.gamesrc.scripts.globals.MyGlobalEconomy``
 exists, this will create and start it as a global script.
@@ -218,8 +212,7 @@ locate the room you want:
 
 ::
 
-    from src.utils.create import create_script
-    create_script('game.gamesrc.scripts.weather.Weather', obj=myroom)
+    from src.utils.create import create_script create_script('game.gamesrc.scripts.weather.Weather', obj=myroom)
 
 Or, from in-game, use the ``@script`` command:
 

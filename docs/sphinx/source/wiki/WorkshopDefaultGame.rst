@@ -1,10 +1,18 @@
 Workshop: Default-game whitepage
 
+**Status Update**:*There does not seem to be any active development on
+this by the original initiator (rcaskey). As far as I know there is no
+active game code written apart from a Smaug area converter (how
+complete?). If anyone is willing to continue with this particular idea,
+they are welcome to do so. I will help out but I don't know anything
+about Smaug myself. In the interim I will chalk this one down as being a
+stalled project. /Griatch*
+
 Introduction
 ============
 
-This is an initiative to create a "base" game system to be shipped with
-Evennia in a "contrib" folder. The game is an independent
+This is(was?) an initiative to create a "base" game system to be shipped
+with Evennia in a "contrib" folder. The game is an independent
 re-implementation of the basic stuff of the
 `SMAUG <http://www.smaug.org>`_ system. No code from the original will
 be used, and no licensed content will be included in the release. For

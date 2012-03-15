@@ -160,20 +160,7 @@ create a module there with the following functions:
 
 ::
 
-    # the caller is automatically added as first argument
-    def get_health(character):
-        "Get health, stored as simple attribute"    
-        return character.db.health 
-    def get_stamina(character):
-        "Get stamina level, stored as simple attribute"
-        return character.db.stamina
-    def get_skill(character, skillname, master=False):
-        """we assume skills are stored as a dictionary 
-           stored in an attribute. Master skills are 
-           stored separately (for whatever reason)"""
-        if master:
-            return character.db.skills_master.get(skillname, "NoSkill")
-        return character.db.skills.get(skillname, "NoSkill")
+    # the caller is automatically added as first argument def get_health(character):     "Get health, stored as simple attribute"         return character.db.health  def get_stamina(character):     "Get stamina level, stored as simple attribute"     return character.db.stamina def get_skill(character, skillname, master=False):     """we assume skills are stored as a dictionary         stored in an attribute. Master skills are         stored separately (for whatever reason)"""     if master:         return character.db.skills_master.get(skillname, "NoSkill")     return character.db.skills.get(skillname, "NoSkill")
 
 Done, the functions will return what we want assuming Characters do
 store this information in our game. Let's finish up the first part of
@@ -181,21 +168,7 @@ the portal protocol:
 
 ::
 
-    # this method could be named differently depending on the 
-    # protocol you are using (this is telnet)
-    def lineReceived(self, string):
-       # (does stuff to analyze the incoming string)
-       # ...
-       outdict = 
-       if GET_HEALTH:
-           # call get_health(char)
-           outdict["get_health"] = ([], )
-       elif GET_STAMINA:
-           # call get_mana(char)
-           outdict["get_stamina"] = ([], )
-       elif GET_MASTER_SKILL_SMITH:
-           # call get_skill(char, "smithing", master=True)
-           outdict["get_skill"] = (["smithing"], 'master':True)   [...]   self.sessionhandler.oob_data_out(outdict)
+    # this method could be named differently depending on the  # protocol you are using (this is telnet) def lineReceived(self, string):    # (does stuff to analyze the incoming string)    # ...    outdict =     if GET_HEALTH:        # call get_health(char)        outdict["get_health"] = ([], )    elif GET_STAMINA:        # call get_mana(char)        outdict["get_stamina"] = ([], )    elif GET_MASTER_SKILL_SMITH:        # call get_skill(char, "smithing", master=True)        outdict["get_skill"] = (["smithing"], 'master':True)   [...]   self.sessionhandler.oob_data_out(outdict)
 
 The Server will properly accept this and call the relevant functions to
 get their return values for the health, stamina and skill. The return
@@ -205,15 +178,7 @@ being passed back to the Portal. We need to define
 
 ::
 
-    def oob_data_out(self, data):
-        # the indata is a dictionary funcname:retval    outstring = ""
-        for funcname, retval in data.items():
-            if funcname == 'get_health':
-                # convert to the right format for sending back to client, store
-                # in outstring ...
-         [...]
-        # send off using the protocols send method (this is telnet)
-        sendLine(outstring)
+    def oob_data_out(self, data):     # the indata is a dictionary funcname:retval    outstring = ""     for funcname, retval in data.items():         if funcname == 'get_health':             # convert to the right format for sending back to client, store             # in outstring ...      [...]     # send off using the protocols send method (this is telnet)     sendLine(outstring)
 
 As seen, ``oob_data`` takes the values and formats into a form the
 protocol understands before sending it off.

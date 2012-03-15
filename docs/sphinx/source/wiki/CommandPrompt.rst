@@ -15,9 +15,7 @@ of the look command, followed by the prompt. As an example:
 
 ::
 
-    > look
-    You see nothing special.
-    HP:10, SP:20, MP: 5
+    > look You see nothing special. HP:10, SP:20, MP: 5
 
 MUD clients can be set to detect prompts like this and display them in
 various client-specific ways.
@@ -33,12 +31,7 @@ administration for example).
 
 ::
 
-    class MyCommand(Command):    [...]    def at_post_cmd(self):
-        
-            # we assume health/stamina/magic are just stored
-            # as simple attributes on the character.         hp = self.caller.db.hp
-            sp = self.caller.db.sp
-            mp = self.caller.db.mp        self.caller.msg("HP: %i, SP: %i, MP: %i" % (hp, sp, mp))
+    class MyCommand(Command):    [...]    def at_post_cmd(self):              # we assume health/stamina/magic are just stored         # as simple attributes on the character.         hp = self.caller.db.hp         sp = self.caller.db.sp         mp = self.caller.db.mp        self.caller.msg("HP: %i, SP: %i, MP: %i" % (hp, sp, mp))
 
 Prompt on the same line
 -----------------------
@@ -48,8 +41,7 @@ return of every command, on the same line:
 
 ::
 
-    > look
-    HP: 10, SP:20, MP:5 -- You see nothing special.
+    > look HP: 10, SP:20, MP:5 -- You see nothing special.
 
 Now, there is an ``at_pre_cmd()`` hook analogous to the hook from last
 section except called just *before* parsing of the command. But putting
@@ -58,9 +50,7 @@ before* the function return:
 
 ::
 
-    > look
-    HP:10, SP:20, MP: 5 
-    You see nothing special.
+    > look HP:10, SP:20, MP: 5  You see nothing special.
 
 ... which might be cool too, but not what we wanted. To have the prompt
 appear on the same line as the return this, we need to change how
@@ -73,8 +63,7 @@ player. This is defined in ``src/objects/models.py``, on the
 
 ::
 
-    def msg(self, outgoing_message, from_obj=None, data=None): 
-       ...
+    def msg(self, outgoing_message, from_obj=None, data=None):     ...
 
 The only argument we are interested in here is the ``outgoing_message``,
 which contains the text that is about to be passed on to the player. We
@@ -85,13 +74,7 @@ custom Character typeclass add this:
 
 ::
 
-    def msg(self, outgoing_message, from_obj=None, data=None):  
-     
-        # prepend the prompt in front of the message    hp = self.db.hp
-        sp = self.db.sp
-        mp = self.db.mp 
-        prompt = "%i, %i, %i -- " % (hp, sp, mp)
-        outgoing_message = prompt + outgoing_message    # pass this on to the original msg() method on the database object    self.dbobj.msg(outgoing_message, from_obj=from_obj, data=data)
+    def msg(self, outgoing_message, from_obj=None, data=None):         # prepend the prompt in front of the message    hp = self.db.hp     sp = self.db.sp     mp = self.db.mp      prompt = "%i, %i, %i -- " % (hp, sp, mp)     outgoing_message = prompt + outgoing_message    # pass this on to the original msg() method on the database object    self.dbobj.msg(outgoing_message, from_obj=from_obj, data=data)
 
 Note that this solution will *always* give you the prompt, also if you
 use admin commands, which could get annoying. You might want to have

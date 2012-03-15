@@ -51,8 +51,7 @@ retrieved when emitting:
 
 ::
 
-    &HELLO_VALUE.D me=Hello World
-    &HELLO_WORLD.C me=$hello:@pemit %#=[v(HELLO_VALUE.D)]
+    &HELLO_VALUE.D me=Hello World &HELLO_WORLD.C me=$hello:@pemit %#=[v(HELLO_VALUE.D)]
 
 The v() function returns the HELLO\_VALUE.D attribute on the object that
 the command resides (``me``, which is yourself in this case). This

@@ -116,9 +116,7 @@ Example of new command definition:
 
 ::
 
-    class CmdTest(Command):
-        def func(self):
-             self.caller.msg("This is the test!")
+    class CmdTest(Command):     def func(self):          self.caller.msg("This is the test!")
 
 Events + States -> Scripts
 --------------------------
@@ -264,16 +262,14 @@ just do:
 
 ::
 
-    obj.db.attr = value 
-    value = obj.db.attr
+    obj.db.attr = value  value = obj.db.attr
 
 And for storing something non-persistently (stored only until the server
 reboots) you can just do
 
 ::
 
-    obj.attr = value
-    value = obj.attr
+    obj.attr = value value = obj.attr
 
 The last example may sound trivial, but it's actually impossible to do
 in trunk since django objects are not guaranteed to remain the same

@@ -67,7 +67,8 @@ Twisted also requires:
 **Django** (http://www.djangoproject.com)
 
 -  Version 1.2.5+ or latest development versions highly recommended.
--  PIL library (http://www.pythonware.com/products/pil)
+-  PIL (Python Imaging Library) (http://www.pythonware.com/products/pil)
+   - not strictly required unless you use images in Django.
 
 To download/update Evennia:
 
@@ -129,17 +130,19 @@ or all of these instead:
 ``easy_install`` or ``pip`` like Linux users do. There are however
 reports that you might need to get the
 `Xcode <https://developer.apple.com/xcode/.html>`_ development system to
-install the packages that requites extension compiling. You can also
+install the packages that requires extension compiling. You can also
 retrieve the dependencies directly and install them through their native
-installers or python setups.
+installers or python setups. Some users have reported problems compiling
+the ``PIL`` library on Mac, it's however not strictly required to use
+Django.
 
 **Windows** users may choose to install
 `ActivePython <http://www.activestate.com/activepython/downloads>`_
 instead of the usual Python. If ActivePython is installed, you can use
 `pypm <http://docs.activestate.com/activepython/2.6/pypm.html>`_ in the
 same manner as ``easy_install``/``pip`` above. This *greatly* simplifies
-getting started on Windows since that platform is otherwise missing many
-of the background developer systems that Linux users take for granted.
+getting started on Windows since that platform is by default missing
+many of the sane developer systems that Linux users take for granted.
 After installing ActivePython you may need to open a new DOS window to
 make this new command available on the command line:
 
@@ -171,20 +174,21 @@ trick (first place yourself in a directory where you want a new folder
 
     hg clone https://code.google.com/p/evennia/ evennia
 
-(``hg`` is the chemical abbreviation of mercury, hence the use of ``hg``
-for ``mercurial``)
+(Mercurial is abbreviated ``hg`` since this is the chemical symbol for
+mercury).
 
 In the future, you just do
 
 ::
 
-    hg pull
-     hg update
+    hg pull  hg update
 
 from your ``evennia/`` directory to obtain the latest updates.
 
 If you use a graphical Mercurial client, use the equivalent buttons to
-perform the above operations.
+perform the above operations. See
+`here <http://code.google.com/p/evennia/wiki/VersionControl>`_ for more
+advanced suggestions to set up a development environment with Mercurial.
 
 Step 2: Setting up the Server
 -----------------------------
@@ -324,10 +328,7 @@ virtual environment in here.
 
 ::
 
-    # for Linux/Unix:
-    source bin/activate
-    # for Windows:
-    <path_to_this_place>\Scripts\activate.bat
+    # for Linux/Unix: source bin/activate # for Windows: <path_to_this_place>\Scripts\activate.bat
 
 The virtual environment within our *mudenv* folder is now active. Next
 we get all the requirements with *pip*, which is included with

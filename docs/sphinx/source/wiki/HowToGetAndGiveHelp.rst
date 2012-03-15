@@ -6,17 +6,18 @@ How to *get* Help
 If you cannot find what you are looking for in the `online
 documentation <Index.html>`_, here's what to do:
 
--  If you don't understand a concept or think the docs are not clear
-   enough, fill in our quick little
-   "https://docs.google.com/spreadsheet/viewform?hl
+-  If you think the documentation is not clear enough, fill in our quick
+   little "https://docs.google.com/spreadsheet/viewform?hl
 
    en*US&formkey*
 
    dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid
    ======================================
 
-   0.html">online form and say so - maybe the docs need to be improved
-   or a tutorial added!
+   0.html">online form and say so (no login required). Maybe the docs
+   need to be improved or a new tutorial added! Note that this form will
+   help you by helping us improve documentation, but you cannot get
+   direct, specific answers back from it.
 
 -  If you have trouble with a missing feature or a problem you think is
    a bug, go to the `issue

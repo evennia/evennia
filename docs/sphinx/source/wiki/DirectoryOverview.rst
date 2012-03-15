@@ -76,16 +76,7 @@ the server.
 
     game/
       evennia.py
-      manage.py  gamesrc/
-        commands/ 
-          examples/
-        scripts/
-          examples/
-        objects/
-          examples/
-        world/     
-          examples/
-        conf/
+      manage.py  gamesrc/     commands/        examples/     scripts/       examples/     objects/       examples/     world/            examples/     conf/
 
 ``game/gamesrc/``
 ~~~~~~~~~~~~~~~~~
@@ -151,12 +142,12 @@ syntax.
 ``gamesrc/conf/``
 ^^^^^^^^^^^^^^^^^
 
-``gamesrc/world/`` holds optional extension modules for the Evennia
+``gamesrc/conf/`` holds optional extension modules for the Evennia
 engine. Certain functionality in the server is meant to be extended, and
 in order to allow you to do this without modifying the server itself, it
-imports files from this directory. Modifying these are optionally and
-you can usually change a variable in ``game/settings.py`` to change
-which module Evennia is looking for. There are dummy example files in
+imports files from this directory. Modifying these are optional and you
+can usually change a variable in ``game/settings.py`` to change exactly
+which module Evennia actually uses. There are dummy example files in
 here, read their headers for usage instructions.
 
 The ``src/`` directory
@@ -171,17 +162,7 @@ bugs or features missing, file a bug report or send us a message.
 ::
 
     src/
-      settings_defaults.py  commands/
-      comms/
-      help/
-      objects/
-      locks/
-      players/
-      scripts/
-      server/
-      typeclasses/
-      utils/
-      web/
+      settings_defaults.py  commands/   comms/   help/   objects/   locks/   players/   scripts/   server/   typeclasses/   utils/   web/
 
 Most of the folders in ``src/`` are technically "Django apps",
 identified by containing a file ``models.py`` and usually

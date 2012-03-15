@@ -12,6 +12,7 @@ Installation and Early Life
 -  `Starting, stopping, reloading and resetting
    Evennia <StartStopReload.html>`_
 -  `Keeping your game up to date <UpdatingYourGame.html>`_
+-  `Making your game available online <OnlineSetup.html>`_
 
 Customizing the server
 ----------------------

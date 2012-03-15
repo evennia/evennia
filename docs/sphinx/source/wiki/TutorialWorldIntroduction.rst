@@ -56,9 +56,10 @@ see what happens in detail.
 
 To play the tutorial "correctly", you should *not* do so as superuser.
 The reason for this is that many game systems ignore the presence of a
-superuser and will thus not work as normal. Create a new, non-superuser
-character for playing instead. As superuser you can of course examine
-things "under the hood" later if you want.
+superuser and will thus not work as normal. Log out, then reconnect.
+From the login screen, create a new, non-superuser character for playing
+instead. As superuser you can of course examine things "under the hood"
+later if you want.
 
 Gameplay
 --------
@@ -102,8 +103,7 @@ and objects it consists of. First, move out of the tutorial area.
 
 ::
 
-    @find tut#01
-     @find tut#17
+    @find tut#01  @find tut#17
 
 This should locate the first and last rooms created by ``build.ev`` -
 *Intro* and *Outro*. If you installed normally, everything created

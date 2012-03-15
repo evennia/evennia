@@ -43,8 +43,7 @@ You can also start the two components one at a time.
 
 ::
 
-    python evennia.py start server
-     python evennia.py start portal
+    python evennia.py start server  python evennia.py start portal
 
 Adding -i to either of these explicit commands will start that component
 in interactive mode so it logs to the terminal rather than to log file.
@@ -85,8 +84,7 @@ A reset is equivalent to
 
 ::
 
-    python evennia.py stop server
-     python evennia.py start server
+    python evennia.py stop server  python evennia.py start server
 
 Shutting down
 -------------

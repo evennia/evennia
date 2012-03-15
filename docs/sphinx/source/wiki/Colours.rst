@@ -26,8 +26,7 @@ mark colour:
 
 ::
 
-    This is a %crRed text%cn This is normal text again.
-     %cRThis text has red background%cn this is normal text.
+    This is a %crRed text%cn This is normal text again.  %cRThis text has red background%cn this is normal text.
 
 ``%c#`` - markup works like a switch that is on until you actively turn
 it off with ``%cn`` (this returns the text to your default setting).

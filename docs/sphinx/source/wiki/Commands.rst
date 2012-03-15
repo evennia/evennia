@@ -111,24 +111,46 @@ Defining your own command classes
 Beyond the properties Evennia always assigns to the command at runtime
 (listed above), your job is to define the following class properties:
 
--  ``key`` - the identifier for the command, like ``look``. This should
-   (ideally) be unique. it can be more than one word long in a string,
-   like "press button". Maximum number of space-separated words that can
-   be part of a command name is given by ``settings.CMD_MAXLEN``.
--  ``aliases`` (optional) - a list of alternate names for the command
-   (``["l", "glance", "see"]``). Same name rules as for ``key`` applies.
--  ``locks`` - a `lock definition <Locks.html>`_, usually on the form
-   ``cmd:<lockfuncs>``. Locks is a rather big topic, so until you learn
-   more about locks, stick to giving the lockstring ``"cmd:all()"`` to
-   make the command available to everyone.
--  ``help_category`` (optional) - setting this helps to structure the
-   auto-help into categories. If none is set, this will be set to
+-  ``key`` (string) - the identifier for the command, like ``look``.
+   This should (ideally) be unique. it can be more than one word long in
+   a string, like "press button". Maximum number of space-separated
+   words that can be part of a command name is given by
+   ``settings.CMD_MAXLEN``.
+-  ``aliases`` (optional list) - a list of alternate names for the
+   command (``["l", "glance", "see"]``). Same name rules as for ``key``
+   applies.
+-  ``locks`` (string) - a `lock definition <Locks.html>`_, usually on
+   the form ``cmd:<lockfuncs>``. Locks is a rather big topic, so until
+   you learn more about locks, stick to giving the lockstring
+   ``"cmd:all()"`` to make the command available to everyone.
+-  ``help_category`` (optional string) - setting this helps to structure
+   the auto-help into categories. If none is set, this will be set to
    *General*.
--  ``save_for_next`` (optional). This defaults to ``False``. If
+-  ``save_for_next`` (optional boolean). This defaults to ``False``. If
    ``True``, this command object (along with any changes you have done
    to it) will be stored by the system and can be accessed by the next
    command called by retrieving ``self.caller.ndb.last_cmd``. The next
    run command will either clear or replace the storage.
+-  'arg*regex' (optional raw string): This should be given as a `raw
+   regular expression string <http://docs.python.org/library/re.html>`_.
+   This will be compiled by the system at runtime. This allows you to
+   customize how the part*immediately following the command name (or
+   alias) must look in order for the parser to match for this command.
+   Normally the parser is highly efficient in picking out the command
+   name, also as the beginning of a longer word (as long as the longer
+   word is not a command name in it self). So ``"lookme"`` will be
+   parsed as the command ``"look"`` followed by the argument ``"me"``.
+   By using ``arg_regex`` you could for example force the parser to
+   require an optional space following the command name (regex string
+   for this would be ``r"\s.*?|$"``). In that case, ``"lookme"`` will
+   lead to an "command not found" error while ``"look me"`` will work as
+   expected.
+-  autohelp (optional boolean). Defaults to ``True``. This allows for
+   turning off the `auto-help
+   system <HelpSystem#Command%3Ci%3EAuto-help%3C/i%3Esystem.html>`_ on a
+   per-command basis. This could be useful if you either want to write
+   your help entries manually or hide the existence of a command from
+   ``help``'s generated list.
 
 You should also implement at least two methods, ``parse()`` and
 ``func()`` (You could also implement ``perm()``, but that's not needed
@@ -155,31 +177,7 @@ Below is how you define a simple alternative "``look at``" command:
 
 ::
 
-    from game.gamesrc.commands.basecommand import Commandclass CmdLookAt(Command):
-        """
-        An alternative (and silly) look command    Usage: 
-          look at <what>    Where <what> may only be 'here' in this example.    This initial string (the __doc__ string)
-        is also used to auto-generate the help 
-        for this command ...
-        """ 
-        
-        key = "look at" # this is the command name to use
-        aliases = ["la", "look a"] # aliases to the command name
-        locks = "cmd:all()"
-        help_category = "General"    def parse(self):
-            "Very trivial parser" 
-            self.what = self.args.strip()     def func(self):
-            "This actually does things"
-            caller = self.caller
-            if not self.what:
-                caller.msg("Look at what?")
-            elif self.what == 'here':
-                # look at the current location
-                description = caller.location.db.desc  
-                caller.msg(description)
-            else:
-                # we don't add any more functionality in this example
-                caller.msg("Sorry, you can only look 'here'...")
+    from game.gamesrc.commands.basecommand import Commandclass CmdLookAt(Command):     """     An alternative (and silly) look command    Usage:        look at <what>    Where <what> may only be 'here' in this example.    This initial string (the __doc__ string)     is also used to auto-generate the help      for this command ...     """           key = "look at" # this is the command name to use     aliases = ["la", "look a"] # aliases to the command name     locks = "cmd:all()"     help_category = "General"    def parse(self):         "Very trivial parser"          self.what = self.args.strip()     def func(self):         "This actually does things"         caller = self.caller         if not self.what:             caller.msg("Look at what?")         elif self.what == 'here':             # look at the current location             description = caller.location.db.desc               caller.msg(description)         else:             # we don't add any more functionality in this example             caller.msg("Sorry, you can only look 'here'...")
 
 The power of having commands as classes and to separate ``parse()`` and
 ``func()`` lies in the ability to inherit functionality without having
@@ -236,17 +234,7 @@ rules <Commands#Merge_rules.html>`_ section).
 
 ::
 
-    from src.commands.cmdset import CmdSet
-    from game.gamesrc.commands import mycommandsclass MyCmdSet(CmdSet):
-        
-        def at_cmdset_creation(self):
-            """
-            The only thing this method should need
-            to do is to add commands to the set.                                        
-            """     
-            self.add(mycommands.MyCommand1())
-            self.add(mycommands.MyCommand2())
-            self.add(mycommands.MyCommand3())
+    from src.commands.cmdset import CmdSet from game.gamesrc.commands import mycommandsclass MyCmdSet(CmdSet):          def at_cmdset_creation(self):         """         The only thing this method should need         to do is to add commands to the set.                                                 """              self.add(mycommands.MyCommand1())         self.add(mycommands.MyCommand2())         self.add(mycommands.MyCommand3())
 
 The !CmdSet's ``add()`` method can also take another CmdSet as input. In
 this case all the commands from that CmdSet will be appended to this one
@@ -254,10 +242,7 @@ as if you added them line by line:
 
 ::
 
-    at_cmdset_creation(): 
-           ...
-           self.add(AdditionalCmdSet) # adds all command from this set
-           ...
+    at_cmdset_creation():         ...        self.add(AdditionalCmdSet) # adds all command from this set        ...
 
 If you added your command to an existing cmdset (like to the default
 cmdset), that set is already loaded into memory. You need to make the
@@ -320,19 +305,7 @@ look:
 
 ::
 
-    from game.gamesrc.commands.basecommand import MuxCommandclass MyCommand(MuxCommand):
-        """
-        Simple command example    Usage: 
-          mycommand <text>    This command simply echoes text back to the caller.
-        (this string is also the help text for the command)
-        """    key = "mycommand"
-        locks = "cmd:all()"    def func(self):
-            "This actually does things"
-     
-            if not self.args:
-                self.caller.msg("You didn't enter anything!")           
-            else:
-                self.caller.msg("You gave the string: '%s'" % self.args)
+    from game.gamesrc.commands.basecommand import MuxCommandclass MyCommand(MuxCommand):     """     Simple command example    Usage:        mycommand <text>    This command simply echoes text back to the caller.     (this string is also the help text for the command)     """    key = "mycommand"     locks = "cmd:all()"    def func(self):         "This actually does things"           if not self.args:             self.caller.msg("You didn't enter anything!")                    else:             self.caller.msg("You gave the string: '%s'" % self.args)
 
 Next we want to make this command available to us. There are many ways
 to do this, but all of them involves putting this command in a *Command
@@ -349,10 +322,7 @@ This is what we have now:
 ::
 
     from game.gamesrc.commands.basecmdset import CmdSet
-    from game.gamesrc.commands import mycommandclass MyCmdSet(CmdSet):
-        
-        key = "MyCmdSet"    def at_cmdset_creation(self):        
-            self.add(mycommand.MyCommand())
+    from game.gamesrc.commands import mycommandclass MyCmdSet(CmdSet):          key = "MyCmdSet"    def at_cmdset_creation(self):                 self.add(mycommand.MyCommand())
 
 This new command set could of course contain any number of commands. We
 will now temporarily *merge* this command set to your current set. This
@@ -416,15 +386,7 @@ class and you will in fact append it to the existing command set.
 
 ::
 
-    # file gamesrc/commands/basecmdset.py
-    ...
-    from game.gamesrc.commands import mycommandclass DefaultSet(BaseDefaultSet):
-        
-        key = DefaultMUX    def at_cmdset_creation(self):        # this first adds all default commands
-            super(DefaultSet, self).at_cmdset_creation()        # all commands added after this point will extend or 
-            # overwrite the default commands.
-           
-            self.add(mycommand.MyCommand())
+    # file gamesrc/commands/basecmdset.py ... from game.gamesrc.commands import mycommandclass DefaultSet(BaseDefaultSet):          key = DefaultMUX    def at_cmdset_creation(self):        # this first adds all default commands         super(DefaultSet, self).at_cmdset_creation()        # all commands added after this point will extend or          # overwrite the default commands.                 self.add(mycommand.MyCommand())
 
 Again, you need to run the ``@reload`` command to make these changes
 available.
@@ -513,8 +475,7 @@ Same-key commands are merged by priority.
 
 ::
 
-    # Union
-    A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4
+    # Union A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4
 
 **Intersect** - Only commands found in *both* cmdsets (i.e. which have
 the same keys) end up in the merged cmdset, with the higher-priority
@@ -522,8 +483,7 @@ cmdset replacing the lower one's commands.
 
 ::
 
-    # Intersect 
-    A1,A3,A5 + B1,B2,B4,B5 = A1,A5
+    # Intersect  A1,A3,A5 + B1,B2,B4,B5 = A1,A5
 
 **Replace** - The commands of the higher-prio cmdset completely replaces
 the lower-priority cmdset's commands, regardless of if same-key commands
@@ -531,8 +491,7 @@ exist or not.
 
 ::
 
-    # Replace
-    A1,A3 + B1,B2,B4,B5 = A1,A3
+    # Replace A1,A3 + B1,B2,B4,B5 = A1,A3
 
 **Remove** - The high-priority command sets removes same-key commands
 from the lower-priority cmdset. They are not replaced with anything, so
@@ -541,8 +500,7 @@ high-prio one as a template.
 
 ::
 
-    # Remove
-    A1,A3 + B1,B2,B3,B4,B5 = B2,B4,B5
+    # Remove A1,A3 + B1,B2,B3,B4,B5 = B2,B4,B5
 
 Besides ``priority`` and ``mergetype``, a command set also takes a few
 other variables to control how they merge:
@@ -569,17 +527,7 @@ More advanced cmdset example:
 
 ::
 
-    class MyCmdSet(CmdSet):    key = "MyCmdSet"
-        priority = 4
-        mergetype = "Replace"
-        key_mergetype = 'MyOtherCmdSet':'Union'      def at_cmdset_creation(self):
-            """
-            The only thing this method should need
-            to do is to add commands to the set.                                        
-            """     
-            self.add(mycommands.MyCommand1())
-            self.add(mycommands.MyCommand2())
-            self.add(mycommands.MyCommand3())
+    class MyCmdSet(CmdSet):    key = "MyCmdSet"     priority = 4     mergetype = "Replace"     key_mergetype = 'MyOtherCmdSet':'Union'      def at_cmdset_creation(self):         """         The only thing this method should need         to do is to add commands to the set.                                                 """              self.add(mycommands.MyCommand1())         self.add(mycommands.MyCommand2())         self.add(mycommands.MyCommand3())
 
 System commands
 ---------------
@@ -633,12 +581,7 @@ command must be added to a cmdset as well before it will work.
 
 ::
 
-    from src.commands import cmdhandler
-    from game.gamesrc.commands.basecommand import Commandclass MyNoInputCommand(Command):
-        "Usage: Just press return, I dare you"
-        key = cmdhandler.CMD_NOINPUT
-        def func(self):
-            self.caller.msg("Don't just press return like that, talk to me!")
+    from src.commands import cmdhandler from game.gamesrc.commands.basecommand import Commandclass MyNoInputCommand(Command):     "Usage: Just press return, I dare you"     key = cmdhandler.CMD_NOINPUT     def func(self):         self.caller.msg("Don't just press return like that, talk to me!")
 
 Exits
 -----
