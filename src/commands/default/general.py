@@ -497,9 +497,10 @@ class CmdPose(MuxCommand):
         "Hook function"        
         if not self.args:
             msg = "Do what?"
+            self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-        self.caller.location.msg_contents(msg)
+            self.caller.location.msg_contents(msg)
         
 class CmdEncoding(MuxCommand):
     """
