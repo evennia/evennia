@@ -7,6 +7,8 @@ from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
+from src.utils.utils import to_unicode
+from src.utils import logger
 
 # Try to use a custom way to parse id-tagged multimatches.
 
@@ -58,7 +60,7 @@ class ObjectManager(TypedObjectManager):
         the search criterion (e.g. in local_and_global_search). 
         search_string:  (string) The name or dbref to search for.
         """
-        search_string = utils.to_unicode(search_string).lstrip('*')        
+        search_string = to_unicode(search_string).lstrip('*')        
         dbref = self.dbref(search_string)
         if not dbref:           
             # not a dbref. Search by name.
@@ -104,7 +106,7 @@ class ObjectManager(TypedObjectManager):
         if exact:            
             return [attr.obj for attr in attrs if attribute_value == attr.value]
         else:
-            return [attr.obj for attr in attrs if utils.to_unicode(attribute_value) in str(attr.value)]
+            return [attr.obj for attr in attrs if to_unicode(attribute_value) in str(attr.value)]
     
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, location=None):
@@ -208,15 +210,16 @@ class ObjectManager(TypedObjectManager):
 
         if location and ostring == 'here':
             return [location]                        
-        if caller and ostring in ['me', 'self']:
+        if caller and to_unicode(ostring) in ('me', 'self'):
             return [caller]
-        if caller and ostring in ['*me', '*self']:            
+        if caller and to_unicode(ostring) in ('*me', '*self'):            
             return [caller]                    
         
         # Test if we are looking for an object controlled by a
         # specific player
 
-        if utils.to_unicode(ostring).startswith("*"):
+        #logger.log_infomsg(str(type(ostring)))
+        if to_unicode(ostring).startswith("*"):
             # Player search - try to find obj by its player's name
             player_match = self.get_object_with_player(ostring)
             if player_match is not None:
