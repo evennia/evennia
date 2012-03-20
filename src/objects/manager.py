@@ -191,7 +191,7 @@ class ObjectManager(TypedObjectManager):
                                  If None, the default 'key' attribute is used.        
         location: If None, character.location will be used. 
         """
-        #ostring = str(ostring).strip()
+        ostring = to_unicode(ostring, force_string=True)
 
         if not ostring:
             return [] 
@@ -210,16 +210,16 @@ class ObjectManager(TypedObjectManager):
 
         if location and ostring == 'here':
             return [location]                        
-        if caller and to_unicode(ostring) in ('me', 'self'):
+        if caller and ostring in ('me', 'self'):
             return [caller]
-        if caller and to_unicode(ostring) in ('*me', '*self'):            
+        if caller and ostring in ('*me', '*self'):            
             return [caller]                    
         
         # Test if we are looking for an object controlled by a
         # specific player
 
         #logger.log_infomsg(str(type(ostring)))
-        if to_unicode(ostring).startswith("*"):
+        if ostring.startswith("*"):
             # Player search - try to find obj by its player's name
             player_match = self.get_object_with_player(ostring)
             if player_match is not None:

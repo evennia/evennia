@@ -147,6 +147,7 @@ from src.utils import utils
 from game import settings as settings_module
 
 ENCODINGS = settings.ENCODINGS
+CODE_INFO_HEADER = re.compile(r"\(.*?\)")
 
 #------------------------------------------------------------
 # Helper function
@@ -327,29 +328,24 @@ class BatchCodeProcessor(object):
             Identifies the line type: block command, comment, empty or normal code.          
 
             """    
-            line = line.strip()
+            parseline = line.strip()
 
-            if line.startswith("#HEADER"):
+            if parseline.startswith("#HEADER"):
                 return ("header", "", "")
-            elif line.startswith("#CODE"):
+            elif parseline.startswith("#CODE"):
                 # parse code command
                 line = line.lstrip("#CODE").strip()
-                objs = []
-                info = ""
-                if line and '(' in line and ')' in line:
-                    # a code description
-                    lp = line.find('(')
-                    rp = line.find(')')
-                    info = line[lp:rp+1]
-                    line = line[rp+1:] 
-                if line:
-                    objs = [obj.strip() for obj in line.split(',')]                
+                info = CODE_INFO_HEADER.findall(line) or ""
+                if info:
+                    info = info[0]
+                    line = line.replace(info, "")
+                objs = [o.strip() for o in line.split(",") if o.strip()]                
                 return ("codeheader", info, objs)
-            elif line.startswith('#'):
-                return ('comment', "", "\n%s" % line)
+            elif parseline.startswith('#'):
+                return ('comment', "", "%s" % line)
             else:
                 #normal line - return it with a line break.
-                return ('line', "", "\n%s" % line)
+                return ('line', "", "%s" % line)
 
         # read indata
 
@@ -398,10 +394,13 @@ class BatchCodeProcessor(object):
 
         # last, we merge the headers with all codes.
         for codedict in codes:
-            codedict["code"] = "#CODE %s %s\n%s\n\n%s" % (codedict['info'],
-                                                          ", ".join(codedict["objs"]),
-                                                          header.strip(), 
-                                                          codedict["code"].strip())
+            objs = ", ".join(codedict["objs"])
+            if objs: 
+                objs = "[%s]" % objs
+            codedict["code"] = "#CODE %s %s \n%s\n\n%s" % (codedict['info'],
+                                                           objs,
+                                                           header.strip(),
+                                                           codedict["code"].strip())
         return codes
 
     def code_exec(self, codedict, extra_environ=None, debug=False):
@@ -429,7 +428,7 @@ class BatchCodeProcessor(object):
         # execute the block 
         try:
             exec(code, environdict)
-        except Exception:
+        except Exception, e:
             errlist = format_exc().split('\n')
             if len(errlist) > 4:
                 errlist = errlist[4:]

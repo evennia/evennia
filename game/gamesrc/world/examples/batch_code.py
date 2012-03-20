@@ -43,7 +43,7 @@ from src.utils import create, search
 from game.gamesrc.objects.examples import red_button
 from game.gamesrc.objects import baseobjects
 
-limbo = search.objects(caller, 'Limbo', global_search=True)[0]
+limbo = search.objects('Limbo', global_search=True)[0]
 
 
 #CODE (create red button)

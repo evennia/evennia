@@ -31,16 +31,20 @@ class Object(TypeClass):
 
     def __eq__(self, other):
         """
+        Checks for equality against an id string or another object or user.
+
         This has be located at this level, having it in the
         parent doesn't work.
         """
-        
-        result = other and other.id == self.id
-        try:
-            uresult = other and (other.user.id == self.user.id) 
-        except AttributeError:
-            uresult = False 
-        return result or uresult 
+        result = self.id == other
+        if not result and hasattr(other, "id"):
+            result = self.id == other.id 
+        if not result:
+            try:
+                result = other and self.user.id == other.user.id
+            except AttributeError:
+                pass
+        return result
 
     # hooks called by the game engine
 

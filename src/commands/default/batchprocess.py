@@ -151,7 +151,7 @@ def show_curr(caller, showall=False):
     string += "{G(hh for help)"
     if showall:
         for line in codeall.split('\n'):
-            string += "\n{n>>> %s" % line
+            string += "\n{G|{n %s" % line
     caller.msg(string)
 
 def purge_processor(caller):
@@ -296,8 +296,8 @@ class CmdBatchCode(MuxCommand):
 
         if not codes:
             string = "'%s' not found.\nYou have to supply the python path "
-            string += "of the file relative to \nyour batch-file directory (%s)."
-            caller.msg(string % (python_path, settings.BASE_BATCHPROCESS_PATH))
+            string += "of the file relative to \nyour batch-file directories (%s)."
+            caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         switches = self.switches
 
