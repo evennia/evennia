@@ -32,12 +32,21 @@ recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.
 
 
+=======================================================================
+
 Batch-command processor file syntax
 
-The batch-command processor accepts 'batchcommand files' e.g 'batch.ev',
-containing a sequence of valid evennia commands in a simple
-format. The engine runs each command in sequence, as if they had been
-run at the game prompt.
+The batch-command processor accepts 'batchcommand files' e.g
+'batch.ev', containing a sequence of valid evennia commands in a
+simple format. The engine runs each command in sequence, as if they
+had been run at the game prompt.
+
+Each evennia command must be delimited by a line comment to mark its
+end. 
+
+#INSERT path.batchcmdfile - this as the first entry on a line will
+      import and run a batch.ev file in this position, as if it was 
+      written in this file. 
 
 This way entire game worlds can be created and planned offline; it is
 especially useful in order to create long room descriptions where a
@@ -72,6 +81,9 @@ It seems the bottom of the box is a bit loose.
 # (Assuming #221 is a warehouse or something.)
 # (remember, this comment ends the @teleport command! Don'f forget it)
 
+# Example of importing another file at this point. 
+#IMPORT examples.batch
+
 @drop box
 
 # Done, the box is in the warehouse! (this last comment is not necessary to
@@ -81,31 +93,45 @@ It seems the bottom of the box is a bit loose.
 An example batch file is game/gamesrc/commands/examples/batch_example.ev. 
 
 
+==========================================================================
+
 
 Batch-code processor file syntax
 
-The Batch-code processor accepts full python modules (e.g. "batch.py") that
-looks identical to normal Python files with a few exceptions that allows them
-to the executed in blocks. This way of working assures a sequential execution
-of the file and allows for features like stepping from block to block
-(without executing those coming before), as well as automatic deletion
-of created objects etc. You can however also run a batch-code python file
-directly using Python (and can also be de). 
+The Batch-code processor accepts full python modules (e.g. "batch.py")
+that looks identical to normal Python files with a few exceptions that
+allows them to the executed in blocks. This way of working assures a
+sequential execution of the file and allows for features like stepping
+from block to block (without executing those coming before), as well
+as automatic deletion of created objects etc. You can however also run
+a batch-code python file directly using Python (and can also be de).
 
-Code blocks are separated by python comments starting with special code words. 
+Code blocks are separated by python comments starting with special
+code words.
 
 #HEADER - this denotes commands global to the entire file, such as
           import statements and global variables. They will
-          automatically be pasted at the top of all code blocks. Observe
-          that changes to these variables made in one block is not
-          preserved between blocks!
-#CODE [objname, objname, ...] - This designates a code block that will be executed like a 
+          automatically be pasted at the top of all code
+          blocks. Observe that changes to these variables made in one
+          block is not preserved between blocks!
+#CODE 
+#CODE (info)
+#CODE (info) objname1, objname1, ... - 
+           This designates a code block that will be executed like a
            stand-alone piece of code together with any #HEADER
-           defined. <objname>s mark the (variable-)names of objects created in the code, 
-           and which may be auto-deleted by the processor if desired (such as when 
-           debugging the script). E.g., if the code contains the command 
-           myobj = create.create_object(...), you could put 'myobj' in the #CODE header
-           regardless of what the created object is actually called in-game. 
+           defined. (info) text is used by the interactive mode to
+           display info about the node to run.  <objname>s mark the
+           (variable-)names of objects created in the code, and which
+           may be auto-deleted by the processor if desired (such as
+           when debugging the script). E.g., if the code contains the
+           command myobj = create.create_object(...), you could put
+           'myobj' in the #CODE header regardless of what the created
+           object is actually called in-game.
+#INSERT path.filename - This imports another batch_code.py file and
+          runs it in the given position.  paths are given as python
+          path. The inserted file will retain its own HEADERs which
+          will not be mixed with the HEADERs of the file importing
+          this file.
 
 The following variables are automatically made available for the script:
 
@@ -130,6 +156,8 @@ obj2 = create.create_object(basetypes.Object)
 obj.location = caller.location
 obj.db.gold = GOLD
 caller.msg("The object was created!")
+
+#INSERT another_batch_file
 
 #CODE
 
@@ -237,13 +265,16 @@ class BatchCommandProcessor(object):
           1) # at the beginning of a line marks the end of the command before it.
                It is also a comment and any number of # can exist on subsequent
                lines (but not inside comments).
-          2) Commands are placed alone at the beginning of a line and their
+          2) #INSERT at the beginning of a line imports another
+             batch-cmd file file and pastes it into the batch file as if 
+             it was written there. 
+          3) Commands are placed alone at the beginning of a line and their
              arguments are considered to be everything following (on any
              number of lines) until the next comment line beginning with #.
-          3) Newlines are ignored in command definitions
-          4) A completely empty line in a command line definition is condered
+          4) Newlines are ignored in command definitions
+          5) A completely empty line in a command line definition is condered
              a newline (so two empty lines is a paragraph).
-          5) Excess spaces and indents inside arguments are stripped. 
+          6) Excess spaces and indents inside arguments are stripped. 
 
         """
 
@@ -253,8 +284,10 @@ class BatchCommandProcessor(object):
             Identifies the line type (comment, commanddef or empty)
             """
             try:
-                if line.strip()[0] == '#':
-                    return "comment"
+                if line.strip().startswith("#INSERT"):
+                    return "insert"
+                elif line.strip()[0] == '#':
+                    return "comment"                
                 else:
                     return "commanddef"
             except IndexError:
@@ -278,10 +311,22 @@ class BatchCommandProcessor(object):
         for line in lines:
                         
             typ = identify_line(line)
+ 
             if typ == "commanddef":
                 curr_cmd += line
             elif typ == "empty" and curr_cmd:
                 curr_cmd += "\r\n"
+            elif typ == "insert":
+                # note that we are not safeguarding for 
+                # cyclic imports here!
+                if curr_cmd:
+                    commands.append(curr_cmd.strip())
+                curr_cmd = ""
+                filename = line.lstrip("#INSERT").strip() 
+                insert_commands = self.parse_file(filename)
+                if insert_commands == None:
+                    insert_commands = ["{rINSERT ERROR: %s{n" % filename]
+                commands.extend(insert_commands)                
             else: #comment
                 if curr_cmd:
                     commands.append(curr_cmd.strip())                

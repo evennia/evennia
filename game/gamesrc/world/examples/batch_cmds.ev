@@ -48,7 +48,7 @@ know you want to!
 # Now let's place the button where it belongs (let's say limbo #2 is 
 # the evil lair in our example)
 
-teleport #2
+@teleport #2
 
 #... and drop it (remember, this comment ends input to @teleport, so don't
 #forget it!) The very last command in the file need not be ended with #.
