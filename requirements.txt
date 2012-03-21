@@ -1,0 +1,4 @@
+django
+twisted
+pil
+south
