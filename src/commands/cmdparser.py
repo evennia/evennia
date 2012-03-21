@@ -5,6 +5,8 @@ replacing cmdparser function. The replacement parser must
 return a CommandCandidates object.
 """
 
+from src.utils.logger import log_trace
+
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
     This function is called by the cmdhandler once it has 
@@ -46,11 +48,15 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     # match everything that begins with a matching cmdname.
     l_raw_string = raw_string.lower()
     for cmd in cmdset:        
-        matches.extend([create_match(cmdname, raw_string, cmd)
-                        for cmdname in [cmd.key] + cmd.aliases
-                        if cmdname and l_raw_string.startswith(cmdname.lower())
-                        and (not cmd.arg_regex or
-                             cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
+        try:
+            matches.extend([create_match(cmdname, raw_string, cmd)
+                            for cmdname in [cmd.key] + cmd.aliases
+                            if cmdname and l_raw_string.startswith(cmdname.lower())
+                            and (not cmd.arg_regex or
+                                 cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
+        except Exception:
+            log_trace()
+
     if not matches:
         # no matches found. 
         if '-' in raw_string:

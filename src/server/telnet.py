@@ -133,23 +133,23 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         generic hook method for engine to call in order to send data 
         through the telnet connection. 
-        Data Evennia -> Player. 'data' argument is not used 
+        Data Evennia -> Player. 
+        data argument may contain a dict with output flags.
         """
         try:                                                                                                           
             string = utils.to_str(string, encoding=self.encoding)                                                      
         except Exception, e:                                                                                           
             self.sendLine(str(e))                                                                                      
             return 
-        xterm256 = self.protocol_flags.get('TTYPE', {}).get('256 COLORS')
-        nomarkup = not (xterm256 or not self.protocol_flags.get('TTYPE') 
-                        or self.protocol_flags.get('TTYPE', {}).get('ANSI'))
-        raw = False                                                                                                    
+        ttype = self.protocol_flags.get('TTYPE', {})
+        nomarkup = not (ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))
+        raw = False
         if type(data) == dict:                                                                                         
             # check if we want escape codes to go through unparsed.
             raw = data.get("raw", False)
-            # check if we want to remove all markup
+            # check if we want to remove all markup (TTYPE override)
             nomarkup = data.get("nomarkup", False)
         if raw:                                                                                                        
             self.sendLine(string)                                                                                      
         else:
-            self.sendLine(ansi.parse_ansi(string, strip_ansi=nomarkup, xterm256=xterm256))
+            self.sendLine(ansi.parse_ansi(string, strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))

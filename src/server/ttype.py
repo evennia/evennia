@@ -41,7 +41,7 @@ class Ttype(object):
         """
         self.ttype_step = 0 
         self.protocol = protocol
-        self.protocol.protocol_flags['TTYPE'] = {}
+        self.protocol.protocol_flags['TTYPE'] = {"init_done":False}
 
         # setup protocol to handle ttype initialization and negotiation
         self.protocol.negotiationMap[TTYPE] = self.do_ttype                
@@ -52,7 +52,7 @@ class Ttype(object):
         """
         Callback if ttype is not supported by client. 
         """
-        pass
+        self.protocol.protocol_flags['TTYPE'] = False 
 
     def do_ttype(self, option):
         """
@@ -64,6 +64,9 @@ class Ttype(object):
         certain piece of information about the client. All data is
         stored on protocol.protocol_flags under the TTYPE key.
         """
+
+        if self.protocol.protocol_flags['TTYPE']['init_done']:
+            return 
 
         self.ttype_step += 1
 
@@ -89,5 +92,7 @@ class Ttype(object):
                     self.protocol.protocol_flags['TTYPE'][standard] = status
                     if status: 
                         option = option % codenum
+                self.protocol.protocol_flags['TTYPE']['init_done'] = True
+
             #print "ttype results:", self.protocol.protocol_flags['TTYPE']
             
