@@ -139,6 +139,7 @@ script = create.create_script()
 
 import re
 import codecs
+import traceback, sys
 from traceback import format_exc
 from django.conf import settings
 from django.core.management import setup_environ
@@ -302,6 +303,13 @@ class BatchCommandProcessor(object):
 #
 #------------------------------------------------------------
 
+def tb_filename(tb):
+    "Helper to get filename from traceback"
+    return tb.tb_frame.f_code.co_filename
+def tb_iter(tb):
+    while tb is not None:
+        yield tb
+        tb = tb.tb_next
 
 class BatchCodeProcessor(object):
     """
@@ -316,7 +324,8 @@ class BatchCodeProcessor(object):
 
         1) Lines starting with #HEADER starts a header block (ends other blocks)
         2) Lines starting with #CODE begins a code block (ends other blocks)
-        3) #CODE headers may be of the following form: #CODE (info) objname, objname2, ...
+        3) #CODE headers may be of the following form: #CODE (info) objname, objname2, ...        
+        4) Lines starting with #INSERT are on form #INSERT filename. 
         3) All lines outside blocks are stripped.
         4) All excess whitespace beginning/ending a block is stripped.
 
@@ -332,6 +341,12 @@ class BatchCodeProcessor(object):
 
             if parseline.startswith("#HEADER"):
                 return ("header", "", "")
+            if parseline.startswith("#INSERT"):
+                filename = line.lstrip("#INSERT").strip()
+                if filename:
+                    return ('insert', "", filename)
+                else:
+                    return ('comment', "", "{r#INSERT <None>{n")
             elif parseline.startswith("#CODE"):
                 # parse code command
                 line = line.lstrip("#CODE").strip()
@@ -368,7 +383,16 @@ class BatchCodeProcessor(object):
             #     print "::", in_header, in_code, mode, line.strip() 
             # except:
             #     print "::", in_header, in_code, mode, line             
-            if mode == 'header':
+            if mode == 'insert': 
+                # recursive load of inserted code files - note that we
+                # are not checking for cyclic imports!
+                in_header = False
+                in_code = False
+                inserted_codes = self.parse_file(line) or [{'objs':"", 'info':line, 'code':""}]
+                for codedict in inserted_codes: 
+                    codedict["inserted"] = True                
+                codes.extend(inserted_codes)
+            elif mode == 'header':
                 in_header = True
                 in_code = False
             elif mode == 'codeheader':                
@@ -376,9 +400,7 @@ class BatchCodeProcessor(object):
                 in_code = True
                 # the line is a list of object variable names
                 # (or an empty list) at this point.
-                codedict = {'objs':line,
-                            'info':info,
-                            'code':""}
+                codedict = {'objs':line, 'info':info, 'code':""}
                 codes.append(codedict)
             elif mode == 'comment' and in_header:
                 continue
@@ -394,13 +416,21 @@ class BatchCodeProcessor(object):
 
         # last, we merge the headers with all codes.
         for codedict in codes:
-            objs = ", ".join(codedict["objs"])
-            if objs: 
-                objs = "[%s]" % objs
-            codedict["code"] = "#CODE %s %s \n%s\n\n%s" % (codedict['info'],
-                                                           objs,
-                                                           header.strip(),
-                                                           codedict["code"].strip())
+            #print "codedict:", codedict
+            if codedict and "inserted" in codedict:
+                # we don't need to merge code+header in this case
+                # since that was already added in the recursion. We
+                # just check for errors.
+                if not codedict['code']:
+                    codedict['code'] = "{r#INSERT ERROR: %s{n" % codedict['info']
+            else:                
+                objs = ", ".join(codedict["objs"])
+                if objs: 
+                    objs = "[%s]" % objs
+                codedict["code"] = "#CODE %s %s \n%s\n\n%s" % (codedict['info'],
+                                                               objs,
+                                                               header.strip(),
+                                                               codedict["code"].strip())
         return codes
 
     def code_exec(self, codedict, extra_environ=None, debug=False):
@@ -409,7 +439,6 @@ class BatchCodeProcessor(object):
 
         extra_environ - dict with environment variables
         """
-
         # define the execution environment
         environ = "setup_environ(settings_module)"
         environdict = {"setup_environ":setup_environ, 
@@ -419,7 +448,7 @@ class BatchCodeProcessor(object):
                 environdict[key] = value
 
         # merge all into one block
-        code = "%s\n%s" % (environ, codedict['code'])
+        code = "%s # auto-added by Evennia\n%s" % (environ, codedict['code'])
         if debug:
             # try to delete marked objects
             for obj in codedict['objs']:
@@ -428,11 +457,27 @@ class BatchCodeProcessor(object):
         # execute the block 
         try:
             exec(code, environdict)
-        except Exception, e:
-            errlist = format_exc().split('\n')
-            if len(errlist) > 4:
-                errlist = errlist[4:]
-            err = "\n".join(" %s" % line for line in errlist if line)
+        except Exception:
+            etype, value, tb = sys.exc_info()                       
+
+            fname = tb_filename(tb)
+            for tb in tb_iter(tb):
+                if fname != tb_filename(tb):
+                    break
+            lineno = tb.tb_lineno - 1
+            err = ""
+            for iline, line in enumerate(code.split("\n")):
+                if iline == lineno: 
+                    err += "\n{w%02i{n: %s" % (iline + 1, line) 
+                elif lineno - 5 < iline < lineno + 5: 
+                    err += "\n%02i: %s" % (iline + 1, line) 
+
+            err += "\n".join(traceback.format_exception(etype, value, tb))            
+            #errlist = format_exc().split('\n')
+            #if len(errlist) > 4:
+            #    errlist = errlist[4:]            
+            #err = "\n".join(" %s" % line for line in errlist if line)
+
             if debug:
                 # try to delete objects again.
                 try:
