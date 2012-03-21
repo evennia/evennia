@@ -272,7 +272,7 @@ class CmdBatchCode(MuxCommand):
     """
     key = "@batchcode"
     aliases = ["@batchcodes"]
-    locks = "cmd:perm(batchcommands) or superuser()"    
+    locks = "cmd:superuser()"    
     help_category = "Building"
 
     def func(self):
