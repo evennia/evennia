@@ -2,24 +2,31 @@
 
 Central API for Evennia MUD/MUX/MU* system.
 
-A simple way to explore Evennia's capabilities is to 
-import it in a python interpreter where all environment
-variables have been set. Easiest is to do the following: 
+Import this from ./manage.py shell or set DJANGO_SETTINGS_MODULE manually for proper
+functionality.
 
-game/manage.py shell 
->>> import ev 
+This module tries to group the most commonly useful modules in a flat(ter) structure. 
+Some notes: 
 
-Using ipython is recommended since you will then have tab-completion
-and the ability to view docstrings much easier than with the regular
-python interpreter. 
+ 1) db_* are shortcuts to initiated versions of Evennia's django database managers (e.g.
+    db_objects is an alias for ObjectDB.objects). These allows for exploring the database in 
+    various ways. Please note that 
+    the evennia-specific methods in the managers return typeclasses (or lists of 
+    typeclasses), whereas the default django ones (filter etc) return database objects.
+    You can convert between the two easily via dbobj.typeclass and typeclass.dbobj, but
+    it's worth to remember.  
+ 2) You -have- to use the methods of the "create" module to create new Typeclassed game
+    entities (Objects, Scripts or Players). Just initializing e.g. the Player class will 
+    -not- set up Typeclasses correctly and will lead to errors. Other types of database objects 
+    can be created normally, but the "create" module offers convenient methods for those too. 
+ 3) The API accesses all relevant methods/classes, but might not always include all helper-methods
+    referenced from each such entity. To get to those, access the modules in src/ directly. You
+    can always do this anyway, if you do not want to go through this API. 
 
-In code, just import via ev.<item>
+Philosophy is to keep the API as flat as possible, so as to not have to remember which nested 
+packages to traverse. Most of the important stuff should be made visible from this module.
 
-Philosophy is to keep the API as flat as possible, so as to not have
-to remember which nested packages to traverse. Most of the important
-stuff should be made visible from this module.
-
-One can of course still import from src/ directly should one prefer!
+As said, one can of course still import from src/ directly should one prefer!
 
 """
 
