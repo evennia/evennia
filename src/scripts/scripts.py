@@ -101,6 +101,8 @@ class ScriptClass(TypeClass):
         except Exception:
             logger.log_trace()        
 
+            
+    # Public methods 
 
     def time_until_next_repeat(self):
         """
@@ -250,6 +252,32 @@ class Script(ScriptClass):
     This is the class you should inherit from, it implements
     the hooks called by the script machinery.
     """
+
+    ## available properties 
+
+    # key (string) - name of object 
+    # name (string)- same as key
+    # aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
+    # dbref (int, read-only) - unique #id-number. Also "id" can be used.
+    # dbobj (Object, read-only) - link to database model. dbobj.typeclass points back to this class
+    # typeclass (Object, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
+    # date_created (string) - time stamp of object creation
+    # permissions (list of strings) - list of permission strings 
+
+    # desc (string)      - optional description of script, shown in listings
+    # obj (Object)       - optional object that this script is connected to and acts on (set automatically by obj.scripts.add()) 
+    # interval (int)     - how often script should run, in seconds. <0 turns off ticker
+    # start_delay (bool) - if the script should start repeating right away or wait self.interval seconds
+    # repeats (int)      - how many times the script should repeat before stopping. 0 means infinite repeats
+    # persistent (bool)  - if script should survive a server shutdown or not
+    # is_active (bool)   - if script is currently running      
+
+    ## Handlers
+
+    # locks - lock-handler: use locks.add() to add new lock strings
+    # db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
+    # ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data 
+
 
     def at_script_creation(self):
         """

@@ -10,7 +10,7 @@ that are protected, so as to not overwrite property names
 used by the typesystem or django itself. 
 """
 
-from src.utils import logger
+from src.utils.logger import log_trace, log_errmsg
 from django.conf import settings
 
 # these are called so many times it's worth to avoid lookup calls
@@ -92,14 +92,8 @@ class TypeClass(object):
         property on the class, it will NOT be
         accessible through getattr. 
         """
-        try:
-            dbobj = GA(self, 'dbobj')
-        except AttributeError:
-            dbobj = None 
-            logger.log_trace("This is probably due to an unsafe reload.")            
-            raise 
         if propname == 'dbobj':
-            return dbobj
+            return GA(self, 'dbobj')
         if propname.startswith('__') and propname.endswith('__'):
             # python specials are parsed as-is (otherwise things like
             # isinstance() fail to identify the typeclass)
@@ -109,19 +103,18 @@ class TypeClass(object):
             return GA(self, propname)
         except AttributeError:
             try:
+                dbobj = GA(self, 'dbobj')
+            except AttributeError:
+                log_trace("Typeclass CRITICAL ERROR! dbobj not found for Typeclass %s!" % self)
+                raise 
+            try:
                 return GA(dbobj, propname)
             except AttributeError:
                 try:
-                    if propname == 'ndb':
-                        # get non-persistent data (getattr raises AttributeError)
-                        return getattr(GA(dbobj, 'ndb'), propname)
-                    else: 
-                        return GA(dbobj,"get_attribute_raise")(propname)
+                    return GA(dbobj,"get_attribute_raise")(propname)
                 except AttributeError:
                     string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
-                    raise AttributeError(string % (propname, dbobj,
-                                                   dbobj.dbref,
-                                                   dbobj.typeclass_path,))
+                    raise AttributeError(string % (propname, dbobj, dbobj.dbref, dbobj.typeclass_path))
                     
     def __setattr__(self, propname, value):
         """
@@ -135,14 +128,14 @@ class TypeClass(object):
         if propname in PROTECTED:
             string = "%s: '%s' is a protected attribute name." 
             string += " (protected: [%s])" % (", ".join(PROTECTED))
-            logger.log_errmsg(string % (self.name, propname))
+            log_errmsg(string % (self.name, propname))
             return 
 
         try:
             dbobj = GA(self, 'dbobj')
         except AttributeError:
             dbobj = None 
-            logger.log_trace("This is probably due to an unsafe reload.")            
+            log_trace("This is probably due to an unsafe reload.")            
  
         if dbobj: 
             try:
@@ -175,7 +168,7 @@ class TypeClass(object):
         if propname in PROTECTED:
             string = "%s: '%s' is a protected attribute name." 
             string += " (protected: [%s])" % (", ".join(PROTECTED))
-            logger.log_errmsg(string % (self.name, propname))
+            log_errmsg(string % (self.name, propname))
             return 
 
         try:
@@ -185,7 +178,7 @@ class TypeClass(object):
             try:
                 dbobj = GA(self, 'dbobj')
             except AttributeError:
-                logger.log_trace("This is probably due to an unsafe reload.")            
+                log_trace("This is probably due to an unsafe reload.")            
                 return # ignore delete                
             try:
                 dbobj.del_attribute_raise(propname) 

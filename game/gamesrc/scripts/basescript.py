@@ -22,27 +22,43 @@ class Script(BaseScript):
     All scripts should inherit from this class and implement
     some or all of its hook functions and variables.
 
-    Important variables controlling the script object:
-     self.key - the name of all scripts inheriting from this class
-                (defaults to <unnamed>), used in lists and searches.
-     self.desc - a description of the script, used in lists
-     self.interval (seconds) - How often the event is triggered and calls self.at_repeat()
-                 (see below) Defaults to 0 - that is, never calls at_repeat().
-     self.start_delay (True/False). If True, will wait self.interval seconds
-                befor calling self.at_repeat() for the first time. Defaults to False.
-     self.repeats - The number of times at_repeat() should be called before automatically
-                  stopping the script. Default is 0, which means infinitely many repeats.
-     self.persistent (True/False). If True, the script will survive a server restart 
-                (defaults to False). 
+    * available properties 
 
-     self.obj (game Object)- this ties this script to a particular object. It is
-          usually not needed to set this parameter explicitly; it's set in the 
-          create methods. 
+     key (string) - name of object 
+     name (string)- same as key
+     aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
+     dbref (int, read-only) - unique #id-number. Also "id" can be used.
+     dbobj (Object, read-only) - link to database model. dbobj.typeclass points back to this class
+     typeclass (Object, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
+     date_created (string) - time stamp of object creation
+     permissions (list of strings) - list of permission strings 
 
+     desc (string)      - optional description of script, shown in listings
+     obj (Object)       - optional object that this script is connected to and acts on (set automatically by obj.scripts.add()) 
+     interval (int)     - how often script should run, in seconds. <0 turns off ticker
+     start_delay (bool) - if the script should start repeating right away or wait self.interval seconds
+     repeats (int)      - how many times the script should repeat before stopping. 0 means infinite repeats
+     persistent (bool)  - if script should survive a server shutdown or not
+     is_active (bool)   - if script is currently running      
 
-    Hook methods (should also include self as the first argument):
-     at_script_creation() - called only once, when an object of this class
-                            is first created.
+    * Handlers
+
+     locks - lock-handler: use locks.add() to add new lock strings
+     db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
+     ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data 
+
+    * Helper methods 
+
+     start() - start script (this usually happens automatically at creation and obj.script.add() etc)
+     stop()  - stop script, and delete it
+     pause() - put the script on hold, until unpause() is called. If script is persistent, the pause state will survive a shutdown.
+     unpause() - restart a previously paused script. The script will continue as if it was never paused.
+     time_until_next_repeat() - if a timed script (interval>0), returns time until next tick
+
+    * Hook methods (should also include self as the first argument):
+
+     at_script_creation() - called only once, when an object of this
+                            class is first created.
      is_valid() - is called to check if the script is valid to be running
                   at the current time. If is_valid() returns False, the running
                   script is stopped and removed from the game. You can use this
@@ -59,5 +75,9 @@ class Script(BaseScript):
                   self.interval==0, this method will never be called. 
       at_stop() - Called as the script object is stopped and is about to be removed from
                   the game, e.g. because is_valid() returned False.
+      at_server_reload() - Called when server reloads. Can be used to save temporary 
+                  variables you want should survive a reload.
+      at_server_shutdown() - called at a full server shutdown. 
+
     """
     pass 

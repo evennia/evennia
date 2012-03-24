@@ -491,6 +491,10 @@ class ObjectDB(TypedObject):
                         This will also find players that don't
                         currently have a character.
 
+        Returns - a unique Object/Player match or None. All error
+                  messages are handled by system-commands and the parser-handlers
+                  specified in settings. 
+
         Use *<string> to search for objects controlled by a specific
         player. Note that the object controlled by the player will be
         returned, not the player object itself. This also means that
@@ -538,13 +542,20 @@ class ObjectDB(TypedObject):
     def execute_cmd(self, raw_string):
         """
         Do something as this object. This command transparently
-        lets its typeclass execute the command. 
-        raw_string - raw command input coming from the command line. 
+        lets its typeclass execute the command. Evennia also calls
+        this method whenever the player sends a command on the command line.
 
-        The return from this method is None for all default commands
-        (it's the return value of cmd.func()) and is not used in any
-        way by the engine. It might be useful for admins wanting to
-        implement some sort of 'nested' command structure though,
+        Argument: 
+        raw_string (string) - raw command input
+
+        Returns Deferred - this is an asynchronous Twisted object that will
+            not fire until the command has actually finished executing. To overload
+            this one needs to attach callback functions to it, with addCallback(function). 
+            This function will be called with an eventual return value from the command
+            execution. 
+
+            This return is not used at all by Evennia by default, but might be useful
+            for coders intending to implement some sort of nested command structure. 
         """        
         # nick replacement - we require full-word matching.
         
@@ -599,15 +610,27 @@ class ObjectDB(TypedObject):
         self.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
             
     def move_to(self, destination, quiet=False,
-                emit_to_obj=None):
+                emit_to_obj=None, use_destination=True):
         """
         Moves this object to a new location.
+
+        Moves this object to a new location. Note that if <destination> is an
+        exit object (i.e. it has "destination"!=None), the move_to will
+        happen to this destination and -not- into the exit object itself, unless
+        use_destination=False. Note that no lock checks are done by this function,
+        such things are assumed to have been handled before calling move_to. 
         
         destination: (Object) Reference to the object to move to. This
                      can also be an exit object, in which case the destination
                      property is used as destination. 
         quiet:  (bool)    If true, don't emit left/arrived messages.
         emit_to_obj: (Object) object to receive error messages
+        use_destination (bool): Default is for objects to use the "destination" property
+                              of destinations as the target to move to. Turning off this
+                              keyword allows objects to move "inside" exit objects. 
+
+        Returns True/False depending on if there were problems with the move. This method
+                may also return various error messages to the emit_to_obj. 
         """
         def logerr(string=""):
             trc = traceback.format_exc()
@@ -765,10 +788,12 @@ class ObjectDB(TypedObject):
 
     def copy(self, new_key=None):
         """ 
-        Makes an identical copy of this object and returns
-        it. The copy will be named <key>_copy by default. If you
-        want to customize the copy by changing some settings, use
-        the manager method copy_object directly.  
+        Makes an identical copy of this object. If you want to customize the copy by
+        changing some settings, use ObjectDB.object.copy_object() directly.
+
+        new_key (string) - new key/name of copied object. If new_key is not specified, the copy will be named
+                           <old_key>_copy by default. 
+        Returns: Object (copy of this one)                          
         """
         if not new_key:
             new_key = "%s_copy" % self.key
