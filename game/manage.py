@@ -113,7 +113,10 @@ try:
 except Exception:
     import traceback
     string = "\n" + traceback.format_exc()
-    string += _("""\n
+
+    # note - if this fails, ugettext will also fail, so we cannot translate this string.
+
+    string += """\n
     Error: Couldn't import the file 'settings.py' in the directory 
     containing %(file)r. There are usually two reasons for this: 
     1) You moved your settings.py elsewhere. In that case move it back or 
@@ -124,7 +127,7 @@ except Exception:
        set up django wrong in some way. If you run a virtual machine, it might be worth
        to restart it to see if this resolves the issue. Evennia should not require you 
        to define any environment variables manually. 
-    """) % {'file': __file__}
+    """ % {'file': __file__} 
     print string 
     sys.exit(1)
 

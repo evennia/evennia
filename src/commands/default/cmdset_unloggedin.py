@@ -15,8 +15,8 @@ class UnloggedinCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         "Populate the cmdset"
-        self.add(unloggedin.CmdConnect())
-        self.add(unloggedin.CmdCreate())
-        self.add(unloggedin.CmdQuit())
+        self.add(unloggedin.CmdUnconnectedConnect())
+        self.add(unloggedin.CmdUnconnectedCreate())
+        self.add(unloggedin.CmdUnconnectedQuit())
         self.add(unloggedin.CmdUnconnectedLook())
         self.add(unloggedin.CmdUnconnectedHelp())

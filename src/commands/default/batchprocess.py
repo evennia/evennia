@@ -28,6 +28,9 @@ from src.commands.cmdset import CmdSet
 from src.commands.default.muxcommand import MuxCommand
 from src.utils import utils
 
+# limit symbols for API inclusion
+__all__ = ("CmdBatchCommands", "CmdBatchCode")
+
 HEADER_WIDTH = 70
 UTF8_ERROR = \
 """

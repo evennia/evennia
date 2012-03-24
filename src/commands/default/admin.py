@@ -15,6 +15,11 @@ from src.commands.default.muxcommand import MuxCommand
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
+# limit members for API inclusion
+__all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer", "CmdEmit", "CmdNewPassword", 
+           "CmdPerm", "CmdWall")
+
+
 class CmdBoot(MuxCommand):
     """
     @boot 

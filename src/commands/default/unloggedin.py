@@ -15,9 +15,12 @@ from src.utils import create, logger, utils, ansi
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import CMD_LOGINSTART
 
+# limit symbol import for API
+__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate", "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
+
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
-class CmdConnect(MuxCommand):
+class CmdUnconnectedConnect(MuxCommand):
     """
     Connect to the game.
 
@@ -86,7 +89,7 @@ class CmdConnect(MuxCommand):
             player.execute_cmd("look")
 
 
-class CmdCreate(MuxCommand):
+class CmdUnconnectedCreate(MuxCommand):
     """
     Create a new account.
 
@@ -215,7 +218,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             session.msg(string % (traceback.format_exc()))
             logger.log_errmsg(traceback.format_exc())            
 
-class CmdQuit(MuxCommand):
+class CmdUnconnectedQuit(MuxCommand):
     """
     We maintain a different version of the quit command
     here for unconnected players for the sake of simplicity. The logged in

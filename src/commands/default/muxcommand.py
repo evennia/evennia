@@ -5,6 +5,9 @@ The command template for the default MUX-style command set
 from src.utils import utils 
 from src.commands.command import Command
 
+# limit symbol import for API
+__all__ = ("MuxCommand",)
+
 class MuxCommand(Command):
     """
     This sets up the basis for a MUX command. The idea

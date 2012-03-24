@@ -9,6 +9,12 @@ from src.utils import utils
 from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand
 
+# limit symbol import for API
+__all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
+           "CmdInventory", "CmdGet", "CmdDrop", "CmdQuit", "CmdWho",
+           "CmdSay", "CmdPose", "CmdEncoding", "CmdAccess",
+           "CmdOOCLook", "CmdIC", "CmdOOC")
+
 AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 

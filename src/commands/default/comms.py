@@ -14,6 +14,13 @@ from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand            
 
+# limit symbol import for API
+__all__ = ("CommCommand", "CmdAddCom", "CmdDelCom", "CmdAllCom",
+           "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
+           "CmdCWho", "CmdChannelCreate", "CmdCset", "CmdCdesc",
+           "CmdPage", "CmdIRC2Chan", "CmdIMC2Chan", "CmdIMCInfo",
+           "CmdIMCTell", "CmdRSS2Chan")
+
 def find_channel(caller, channelname, silent=False, noaliases=False):
     """
     Helper function for searching for a single channel with

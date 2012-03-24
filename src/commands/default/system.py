@@ -18,6 +18,10 @@ from src.server.models import ServerConfig
 from src.utils import create, logger, utils, gametime
 from src.commands.default.muxcommand import MuxCommand
 
+# limit symbol import for API
+__all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
+           "CmdScripts", "CmdObjects", "CmdService", "CmdVersion",
+           "CmdTime", "CmdServerLoad", "CmdPs")
 
 class CmdReload(MuxCommand):
     """

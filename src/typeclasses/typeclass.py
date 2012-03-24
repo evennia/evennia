@@ -44,6 +44,9 @@ class MetaTypeClass(type):
         super(MetaTypeClass, mcs).__init__(*args, **kwargs)
         mcs.typename = mcs.__name__
         mcs.path = "%s.%s" % (mcs.__module__, mcs.__name__)
+
+
+
         
     def __str__(cls):
         return "%s" % cls.__name__

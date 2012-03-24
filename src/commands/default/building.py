@@ -11,6 +11,16 @@ from src.utils import create, utils, debug
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
 
+# limit symbol import for API
+__all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
+           "CmdCpAttr", "CmdMvAttr", "CmdCreate", "CmdDebug",
+           "CmdDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
+           "CmdUnLink", "CmdHome", "CmdListCmdSets", "CmdName",
+           "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
+           "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
+           "CmdScript")
+
+
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 

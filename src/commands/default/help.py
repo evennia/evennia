@@ -12,6 +12,10 @@ from src.help.models import HelpEntry
 from src.utils import create 
 from src.commands.default.muxcommand import MuxCommand
 
+# limit symbol import for API
+__all__ = ("CmdHelp", "CmdSetHelp")
+
+
 LIST_ARGS = ("list", "all")
 SEP = "{C" + "-"*78 + "{n"
  
