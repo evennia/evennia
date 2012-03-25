@@ -1,4 +1,7 @@
 """
+
+** OBS This module is not yet used by Evennia **
+
  Example module holding functions for out-of-band protocols to
  import and map to given commands from the client. This module 
  is selected by settings.OOB_FUNC_MODULE. 

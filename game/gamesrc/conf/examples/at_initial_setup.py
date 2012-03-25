@@ -1,4 +1,12 @@
 """
+At_initial_setup module template
+
+Copy this module up one level to /gamesrc/conf, name it what you like
+and then use it as a template to modify. 
+
+Then edit settings.AT_INITIAL_SETUP_HOOK_MODULE to point to your new
+module.
+
 Custom at_initial_setup method. This allows you to hook special
 modifications to the initial server startup process. Note that this
 will only be run once - when the server starts up for the very first
@@ -10,7 +18,6 @@ will be called without arguments. Note that tracebacks in this module
 will be QUIETLY ignored, so make sure to check it well to make sure it
 does what you expect it to.
 
-This module is selected by settings.AT_INITIAL_SETUP_HOOK_MODULE.
 """
 
 def at_initial_setup():

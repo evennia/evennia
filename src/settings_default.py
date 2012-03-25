@@ -157,19 +157,20 @@ SEARCH_AT_MULTIMATCH_INPUT = "src.commands.cmdparser.at_multimatch_input"
 # The module holding text strings for the connection screen. 
 # This module should contain one or more variables 
 # with strings defining the look of the screen.
-CONNECTION_SCREEN_MODULE = "game.gamesrc.conf.connection_screens"
+CONNECTION_SCREEN_MODULE = "src.commands.connection_screen"
 # An option al module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load. 
-AT_INITIAL_SETUP_HOOK_MODULE = "game.gamesrc.conf.at_initial_setup"
+AT_INITIAL_SETUP_HOOK_MODULE = ""
 # Module holding at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and  resets/stops.
-AT_SERVER_STARTSTOP_MODULE = "game.gamesrc.conf.at_server_startstop"
+AT_SERVER_STARTSTOP_MODULE = ""
 # Module holding server-side functions for out-of-band protocols to call.
-OOB_FUNC_MODULE = "game.gamesrc.conf.oobfuncs"
-
+OOB_FUNC_MODULE = ""
+# Module holding MSSP meta data 
+MSSP_META_MODULE = ""
 
 ###################################################
 # Default command sets 
@@ -258,7 +259,7 @@ PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immort
 PERMISSION_PLAYER_DEFAULT = "Players"
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
-LOCK_FUNC_MODULES = ("src.locks.lockfuncs","game.gamesrc.conf.lockfuncs")
+LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 
 
 ###################################################

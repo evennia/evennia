@@ -566,6 +566,8 @@ def mod_import(mod_path, propname=None):
             for line in errmsg.splitlines():
                 log.msg('[EE] %s' % line)
 
+    if not mod_path:
+        return None
     # first try to import as a python path
     try:        
         mod = __import__(mod_path, fromlist=["None"])
@@ -610,6 +612,8 @@ def variable_from_module(modpath, variable, default=None):
     If module cannot be imported or variable not found, default
     is returned.
     """
+    if not modpath:
+        return None
     try:
         mod = __import__(modpath, fromlist=["None"])
         return mod.__dict__.get(variable, default)

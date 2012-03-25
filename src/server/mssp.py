@@ -20,7 +20,7 @@ MSSP_VAL = chr(2)
 
 
 # try to get the customized mssp info, if it exists. 
-MSSPTable_CUSTOM = utils.variable_from_module("game.gamesrc.conf.mssp", "MSSPTable", default={}) 
+MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={}) 
 
 class Mssp(object):
     """
@@ -167,7 +167,8 @@ class Mssp(object):
         "XTERM 256 COLORS":   "0"}
 
         # update the static table with the custom one
-        self.mssp_table.update(MSSPTable_CUSTOM)
+        if MSSPTable_CUSTOM:
+            self.mssp_table.update(MSSPTable_CUSTOM)
 
         varlist = ''
         for variable, value in self.mssp_table.items():

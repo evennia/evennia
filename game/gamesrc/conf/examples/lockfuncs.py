@@ -1,8 +1,12 @@
 """
 
-This is an example module for holding custom lock funcs, used in
-in-game locks.  The modules available to use as lockfuncs are defined
-in the tuple settings.LOCK_FUNC_MODULES.
+Lockfuncs module template
+
+Copy this module one level up, to gamesrc/conf/, name it what
+you will and edit it to your liking. 
+
+Then add the new module's path to the end of the tuple 
+defined in settings.LOCK_FUNC_MODULES.
 
 All functions defined globally in this module are assumed to be
 available for use in lockstrings to determine access. See

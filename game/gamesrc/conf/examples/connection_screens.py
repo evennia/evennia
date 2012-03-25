@@ -1,4 +1,13 @@
 """
+Connect screen module template 
+
+Copy this module one level up, to gamesrc/conf/, name it what
+you want and modify it to your liking. 
+
+Then you set settings.CONNECTION_SCREEN_MODULE to point to your
+new module.
+
+
  This module holds textual connection screen definitions.  All global
  string variables (only) in this module are read by Evennia and
  assumed to define a Connection screen.  
@@ -13,9 +22,6 @@
 
  After adding new connection screens to this module you must either
  reboot or reload the server to make them available.
-
-You can change which module is used with
-settings.CONNECTION_SCREEN_MODULE.
 
 """
 

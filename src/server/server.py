@@ -163,7 +163,8 @@ class Evennia(object):
         [(p.typeclass, p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
         # call server hook.
-        SERVER_HOOK_MODULE.at_server_start()         
+        if SERVER_HOOK_MODULE:
+            SERVER_HOOK_MODULE.at_server_start()         
 
     def terminal_output(self):
         """
