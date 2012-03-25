@@ -3,7 +3,7 @@ This defines some generally useful scripts for the tutorial world.
 """
 
 import random
-from game.gamesrc.scripts.basescript import Script
+from ev import Script
 
 #------------------------------------------------------------
 #

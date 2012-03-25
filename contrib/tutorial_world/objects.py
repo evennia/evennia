@@ -21,11 +21,8 @@ WeaponRack
 
 import time, random 
 
-from src.utils import utils, create
-from game.gamesrc.objects.baseobjects import Object, Exit
-from game.gamesrc.commands.basecommand import Command
-from game.gamesrc.commands.basecmdset import CmdSet
-from game.gamesrc.scripts.basescript import Script 
+from ev import utils, create_object
+from ev import Object, Exit, Command, CmdSet, Script
 
 #------------------------------------------------------------
 #
@@ -816,7 +813,7 @@ class CmdGetWeapon(Command):
             self.caller.msg("%s has no more to offer." % self.obj.name)
         else:
             dmg, name, aliases, desc, magic = self.obj.randomize_type()
-            new_weapon = create.create_object(Weapon, key=name, aliases=aliases,location=self.caller)
+            new_weapon = create_object(Weapon, key=name, aliases=aliases,location=self.caller)
             new_weapon.db.rack_id = rack_id
             new_weapon.db.damage = dmg
             new_weapon.db.desc = desc

@@ -30,7 +30,7 @@ Example: To reach the search method 'get_object_with_user'
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
-__all__ = ("search_objects", "search_players", "search_scripts", "search_messages", "search_channels", "search_help_entries")
+__all__ = ("search_object", "search_player", "search_script", "search_message", "search_channel", "search_help_entry")
 
 
 # import objects this way to avoid circular import problems
@@ -62,7 +62,8 @@ HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_c
 #                                 If None, the default 'name' attribute is used.        
 #        """
 
-search_objects = ObjectDB.objects.object_search
+search_object = ObjectDB.objects.object_search
+search_objects = search_object
 objects = search_objects
 #
 # Search for players 
@@ -80,7 +81,8 @@ objects = search_objects
 #     ostring = a string or database id.
 #     """
 
-search_players = PlayerDB.objects.player_search 
+search_player = PlayerDB.objects.player_search 
+search_players = search_player
 players = search_players
 
 #
@@ -96,7 +98,8 @@ players = search_players
 #                  on a timer.         
 #     """
 
-search_scripts = ScriptDB.objects.script_search
+search_script = ScriptDB.objects.script_search
+search_scripts = search_script
 scripts = search_scripts
 #
 # Searching for communication messages
@@ -115,7 +118,8 @@ scripts = search_scripts
 #                one of the other arguments to limit the search.                     
 #     """        
 
-search_messages = Msg.objects.message_search
+search_message = Msg.objects.message_search
+search_messages = search_message
 messages = search_messages
 
 #
@@ -128,7 +132,8 @@ messages = search_messages
 #     ostring - the key or database id of the channel.
 #     """
 
-search_channels = Channel.objects.channel_search
+search_channel = Channel.objects.channel_search
+search_channels = search_channel
 channels = search_channels
 
 #
@@ -142,5 +147,6 @@ channels = search_channels
 #     category - limit the search to a particular help topic
 #     """
 
-search_help_entries = HelpEntry.objects.search_help 
+search_help_entry = HelpEntry.objects.search_help 
+search_help_entries = search_help_entry
 help_entries = search_help_entries

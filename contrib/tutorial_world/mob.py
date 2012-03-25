@@ -8,9 +8,7 @@ object based on that mobile class.
 import random, time
 from django.conf import settings
 
-from src.objects.models import ObjectDB
-from src.utils import utils
-from game.gamesrc.scripts.basescript import Script 
+from ev import search_object, utils, Script
 from contrib.tutorial_world import objects as tut_objects
 from contrib.tutorial_world import scripts as tut_scripts
 
@@ -228,7 +226,7 @@ class Enemy(Mob):
             # analyze result.
             if target.db.health <= 0:
                 # we reduced enemy to 0 health. Whisp them off to the prison room.
-                tloc = ObjectDB.objects.object_search(self.db.defeat_location, global_search=True)
+                tloc = search_object(self.db.defeat_location, global_search=True)
                 tstring = self.db.defeat_text
                 if not tstring:
                     tstring = "You feel your conciousness slip away ... you fall to the ground as "

@@ -5,13 +5,8 @@ Room Typeclasses for the TutorialWorld.
 """
 
 import random
-from src.commands.cmdset import CmdSet
-from src.utils import create, utils
-from src.objects.models import ObjectDB
-from game.gamesrc.scripts.basescript import Script
-from game.gamesrc.commands.basecommand import Command
-from game.gamesrc.objects.baseobjects import Room
-
+from ev import CmdSet, Script, Command, Room
+from ev import utils, create_object, search_object
 from contrib.tutorial_world import scripts as tut_scripts
 from contrib.tutorial_world.objects import LightSource, TutorialObject
 
@@ -185,7 +180,7 @@ class CmdLookDark(Command):
                 lightsource = lightsources[0]
             else:
                 # create the light source from scratch.
-                lightsource = create.create_object(LightSource, key="torch")            
+                lightsource = create_object(LightSource, key="torch")            
             lightsource.location = caller 
             string = "Your fingers bump against a piece of wood in a corner. Smelling it you sense the faint smell of tar. A {c%s{n!"
             string += "\nYou pick it up, holding it firmly. Now you just need to {wlight{n it using the flint and steel you carry with you."
@@ -370,7 +365,7 @@ class TeleportRoom(TutorialRoom):
             # passed the puzzle
             teleport_to = self.db.success_teleport_to # this is a room name                   
 
-        results = ObjectDB.objects.object_search(teleport_to, global_search=True)
+        results = search_object(teleport_to, global_search=True)
         if not results or len(results) > 1:
             # we cannot move anywhere since no valid target was found. 
             print "no valid teleport target for %s was found." % teleport_to
@@ -418,7 +413,7 @@ class CmdEast(Command):
 
         if bridge_step > 4:
             # we have reached the far east end of the bridge. Move to the east room.            
-            eexit = ObjectDB.objects.object_search(self.obj.db.east_exit)
+            eexit = search_object(self.obj.db.east_exit)
             if eexit:
                 caller.move_to(eexit[0])
             else:
@@ -446,7 +441,7 @@ class CmdWest(Command):
 
         if bridge_step < 0:
             # we have reached the far west end of the bridge. Move to the west room.
-            wexit = ObjectDB.objects.object_search(self.obj.db.west_exit)
+            wexit = search_object(self.obj.db.west_exit)
             if wexit:
                 caller.move_to(wexit[0])
             else:
@@ -494,7 +489,7 @@ class CmdLookBridge(Command):
         # there is a chance that we fall if we are on the western or central part of the bridge.  
         if bridge_position < 3 and random.random() < 0.05 and not self.caller.is_superuser:
             # we fall on 5% of the times. 
-            fexit = ObjectDB.objects.object_search(self.obj.db.fall_exit)
+            fexit = search_object(self.obj.db.fall_exit)
             if fexit:            
                 string = "\n Suddenly the plank you stand on gives way under your feet! You fall!"
                 string += "\n You try to grab hold of an adjoining plank, but all you manage to do is to "
@@ -597,9 +592,9 @@ class BridgeRoom(TutorialRoom):
         if character.has_player:
             # we only run this if the entered object is indeed a player object.
             # check so our east/west exits are correctly defined.
-            wexit = ObjectDB.objects.object_search(self.db.west_exit)
-            eexit = ObjectDB.objects.object_search(self.db.east_exit)
-            fexit = ObjectDB.objects.object_search(self.db.fall_exit)
+            wexit = search_object(self.db.west_exit)
+            eexit = search_object(self.db.east_exit)
+            fexit = search_object(self.db.fall_exit)
             if not wexit or not eexit or not fexit:
                 character.msg("The bridge's exits are not properly configured. Contact an admin. Forcing west-end placement.")
                 character.db.tutorial_bridge_position = 0
