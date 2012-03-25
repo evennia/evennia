@@ -17,11 +17,12 @@ Features of the editor:
 """
 
 import re
-from src.commands.command import Command
-from src.commands.cmdset import CmdSet
-from src.commands.cmdhandler import CMD_NOMATCH, CMD_NOINPUT
-from src.utils import utils
+from ev import Command, CmdSet, utils
+from ev import syscmdkeys
 from contrib.menusystem import prompt_yesno
+
+CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
+CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
 RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
 

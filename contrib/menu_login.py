@@ -31,15 +31,16 @@ the initial splash screen.
 import re
 import traceback
 from django.conf import settings 
-from src.players.models import PlayerDB
-from src.server.models import ServerConfig
-from src.comms.models import Channel
+from ev import db_players, db_serverconfs, db_channels
+from ev import utils, logger, create_player
+from ev import Command, CmdSet
+from ev import syscmdkeys
 
-from src.utils import create, logger, utils
-from src.commands.command import Command
-from src.commands.cmdset import CmdSet
-from src.commands.cmdhandler import CMD_LOGINSTART
-from contrib.menusystem import MenuNode, MenuTree, CMD_NOINPUT, CMD_NOMATCH
+from contrib.menusystem import MenuNode, MenuTree
+
+CMD_LOGINSTART = syscmdkeys.CMD_LOGINSTART
+CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
+CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
@@ -74,7 +75,7 @@ class CmdUsernameSelect(Command):
     locks = "cmd:all()"
     def func(self):
         "Execute the command"        
-        player = PlayerDB.objects.get_player_from_name(self.args)
+        player = db_players.get_player_from_name(self.args)
         if not player:
             self.caller.msg("{rThis account name couldn't be found. Did you create it? If you did, make sure you spelled it right (case doesn't matter).{n")
             self.menutree.goto("node1a")
@@ -114,7 +115,7 @@ class CmdPasswordSelect(Command):
             return 
 
         # before going on, check eventual bans
-        bans = ServerConfig.objects.conf("server_bans")
+        bans = db_serverconfs.conf("server_bans")
         if bans and (any(tup[0]==player.name for tup in bans) 
                      or 
                      any(tup[2].match(player.sessions[0].address[0]) for tup in bans if tup[2])):
@@ -159,7 +160,7 @@ class CmdUsernameCreate(Command):
 its and @/./+/-/_ only.{n") # this echoes the restrictions made by django's auth module. 
             self.menutree.goto("node2a")
             return
-        if PlayerDB.objects.get_player_from_name(playername):
+        if db_players.get_player_from_name(playername):
             self.caller.msg("\n\r {rAccount name %s already exists.{n" % playername)
             self.menutree.goto("node2a")
             return 
@@ -202,10 +203,10 @@ class CmdPasswordCreate(Command):
         try:
             permissions = settings.PERMISSION_PLAYER_DEFAULT
             typeclass = settings.BASE_PLAYER_TYPECLASS
-            new_player = create.create_player(playername, None, password,
-                                              typeclass=typeclass,
-                                              permissions=permissions,
-                                              create_character=False)
+            new_player = create_player(playername, None, password,
+                                       typeclass=typeclass,
+                                       permissions=permissions,
+                                       create_character=False)
             if not new_player:
                 self.msg("There was an error creating the Player. This error was logged. Contact an admin.")
                 self.menutree.goto("START")
@@ -215,7 +216,7 @@ class CmdPasswordCreate(Command):
             # join the new player to the public channel                
             pchanneldef = settings.CHANNEL_PUBLIC
             if pchanneldef:
-                pchannel = Channel.objects.get_channel(pchanneldef[0])
+                pchannel = db_channels.get_channel(pchanneldef[0])
                 if not pchannel.connect_to(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)

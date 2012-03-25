@@ -23,15 +23,12 @@ add the following line to the end of OOCCmdSet's at_cmdset_creation():
 """
 
 from django.conf import settings 
-from src.commands.command import Command
-from src.commands.default.general import CmdLook 
-from src.commands.default.cmdset_ooc import OOCCmdSet
-from src.objects.models import ObjectDB
-from src.utils import utils, create
+from ev import Command, create_object, utils
+from ev import default_cmds, db_objects
 
 CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
-class CmdOOCLook(CmdLook):
+class CmdOOCLook(default_cmds.CmdLook):
     """
     ooc look
 
@@ -82,7 +79,7 @@ class CmdOOCLook(CmdLook):
                 if not avail_chars: 
                     self.caller.msg("You have no characters to look at. Why not create one?")
                     return                                             
-                objs = ObjectDB.objects.get_objs_with_key_and_typeclass(self.args.strip(), CHARACTER_TYPECLASS)
+                objs = db_objects.get_objs_with_key_and_typeclass(self.args.strip(), CHARACTER_TYPECLASS)
                 objs = [obj for obj in objs if obj.id in avail_chars]
                 if not objs: 
                     self.caller.msg("You cannot see this Character.")
@@ -95,7 +92,7 @@ class CmdOOCLook(CmdLook):
             charnames = []
             if self.caller.db._character_dbrefs:
                 dbrefs = self.caller.db._character_dbrefs                
-                charobjs = [ObjectDB.objects.get_id(dbref) for dbref in dbrefs]
+                charobjs = [db_objects.get_id(dbref) for dbref in dbrefs]
                 charnames = [charobj.key for charobj in charobjs if charobj]
             if charnames: 
                 charlist = "The following Character(s) are available:\n\n"
@@ -152,13 +149,13 @@ class CmdOOCCharacterCreate(Command):
             self.caller.msg("Usage: create <character name>")
             return 
         charname = self.args.strip()
-        old_char = ObjectDB.objects.get_objs_with_key_and_typeclass(charname, CHARACTER_TYPECLASS)
+        old_char = db_objects.get_objs_with_key_and_typeclass(charname, CHARACTER_TYPECLASS)
         if old_char:
             self.caller.msg("Character {c%s{n already exists." % charname)
             return 
         # create the character
         
-        new_character = create.create_object(CHARACTER_TYPECLASS, key=charname)
+        new_character = create_object(CHARACTER_TYPECLASS, key=charname)
         if not new_character:
             self.caller.msg("{rThe Character couldn't be created. This is a bug. Please contact an admin.")
             return 
@@ -176,7 +173,7 @@ class CmdOOCCharacterCreate(Command):
 
         self.caller.msg("{gThe Character {c%s{g was successfully created!" % charname) 
 
-class OOCCmdSetCharGen(OOCCmdSet):
+class OOCCmdSetCharGen(default_cmds.OOCCmdSet):
     """
     Extends the default OOC cmdset.
     """    

@@ -78,6 +78,31 @@ from src.commands.command import Command
 from src.commands.cmdset import CmdSet
 from src.commands import default as default_cmds
 
+class SystemCmds(object):
+    """
+    Creating commands with keys set to these constants will make
+    them system commands called as a replacement by the parser when 
+    special situations occur. If not defined, the hard-coded 
+    responses in the server are used.
+
+    CMD_NOINPUT - no input was given on command line
+    CMD_NOMATCH - no valid command key was found
+    CMD_MULTIMATCH - multiple command matches were found
+    CMD_CHANNEL - the command name is a channel name
+    CMD_LOGINSTART - this command will be called as the very
+                     first command when a player connects to
+                     the server. 
+
+    """
+    from src.commands import cmdhandler
+    CMD_NOINPUT = cmdhandler.CMD_NOINPUT
+    CMD_NOMATCH = cmdhandler.CMD_NOMATCH
+    CMD_MULTIMATCH = cmdhandler.CMD_MULTIMATCH
+    CMD_CHANNEL = cmdhandler.CMD_CHANNEL
+    CMD_LOGINSTART = cmdhandler.CMD_LOGINSTART
+    del cmdhandler 
+syscmdkeys = SystemCmds()
+
 # locks
 from src.locks import lockfuncs
 

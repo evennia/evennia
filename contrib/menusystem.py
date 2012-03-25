@@ -23,16 +23,16 @@ game.gamesrc.commands.basecmdset. The test command is also a good
 example of how to use this module in code.
 
 """
-from src.commands.cmdhandler import CMD_NOMATCH, CMD_NOINPUT
-from src.commands.command import Command
-from src.commands.cmdset import CmdSet
-from src.commands.default.general import CmdLook 
-from src.commands.default.help import CmdHelp 
-from src.utils import utils
+from ev import syscmdkeys 
 
-# imported only to make them available during execution of code blocks
-from src.objects.models import ObjectDB
-from src.players.models import PlayerDB
+from ev import Command, CmdSet, utils
+from ev import default_cmds
+
+# imported only to make it available during execution of code blocks
+import ev
+
+CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
+CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
 
 #
@@ -61,7 +61,7 @@ class CmdMenuNode(Command):
         else:
             self.caller.msg("{rThis option is not available.{n")
 
-class CmdMenuLook(CmdLook):
+class CmdMenuLook(default_cmds.CmdLook):
     """
     ooc look
 
@@ -88,7 +88,7 @@ class CmdMenuLook(CmdLook):
         # otherwise we use normal look 
         super(CmdMenuLook, self).func()
 
-class CmdMenuHelp(CmdHelp):
+class CmdMenuHelp(default_cmds.CmdHelp):
     """
     help 
 
@@ -241,7 +241,7 @@ class MenuNode(object):
                     commands have access to self.menutree and so can be used to select nodes. 
         code      - functional code. This will be executed just before this node is loaded (i.e. 
                     as soon after it's been selected from another node). self.caller is available
-                    to call from this code block, as well as ObjectDB and PlayerDB. 
+                    to call from this code block, as well as ev.
         nodefaultcmds - if true, don't offer the default help and look commands in the node                    
         separator - this string will be put on the line between menu nodes5B. 
         """
