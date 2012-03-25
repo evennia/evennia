@@ -113,12 +113,7 @@ class CmdPy(MuxCommand):
     Available variables in @py environment: 
       self, me                   : caller
       here                       : caller.location
-      obj                        : dummy obj instance
-      script                     : dummy script instance
-      config                     : dummy conf instance                    
-      ObjectDB                   : ObjectDB class
-      ScriptDB                   : ScriptDB class
-      ServerConfig               : ServerConfig class
+      ev                         : the evennia API       
       inherits_from(obj, parent) : check object inheritance
 
     {rNote: In the wrong hands this command is a severe security risk.
@@ -140,25 +135,14 @@ class CmdPy(MuxCommand):
             string = "Usage: @py <code>"
             caller.msg(string)
             return
-        # create temporary test objects for playing with
-        script = create.create_script("src.scripts.scripts.DoNothing",
-                                      key='testscript')
-        obj = create.create_object("src.objects.objects.Object",
-                                   key='testobject')
-        conf = ServerConfig() # used to access conf values
 
-        # import useful checker
-
+        # import useful variables
+        import ev
         available_vars = {'self':caller,
                           'me':caller,
                           'here':caller.location,
-                          'obj':obj,
-                          'script':script,
-                          'config':conf,
-                          'inherits_from':utils.inherits_from,
-                          'ObjectDB':ObjectDB,
-                          'ScriptDB':ScriptDB,
-                          'ServerConfig':ServerConfig}
+                          'ev':ev,
+                          'inherits_from':utils.inherits_from}
 
         caller.msg(">>> %s" % pycode)
         try:
@@ -174,12 +158,6 @@ class CmdPy(MuxCommand):
                     errlist = errlist[4:]
                 ret = "\n".join("<<< %s" % line for line in errlist if line)
         caller.msg(ret)
-        obj.delete()
-        try:
-            script.delete()
-        except AssertionError: # this is a strange thing; the script looses its id somehow..?
-            pass
-
 
 # helper function. Kept outside so it can be imported and run
 # by other commands. 

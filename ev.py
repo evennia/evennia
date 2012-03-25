@@ -2,9 +2,9 @@
 
 Central API for Evennia MUD/MUX/MU* system.
 
-This basically a set of shortcuts to the main modules in src/. 
-Import this from ./manage.py shell or set DJANGO_SETTINGS_MODULE manually for proper
-functionality.
+This basically a set of shortcuts to the main modules in src/. Import this 
+from your code or eplore it interactively from ./manage.py shell (or a normal 
+python shell if you set DJANGO_SETTINGS_MODULE manually).
 
  1) You should import things explicitly from the root of this module - you can generally 
     not use dot-notation to import deeper. Hence, to access a default command, you can do
@@ -24,13 +24,15 @@ functionality.
     typeclasses (or lists of typeclasses), whereas the default django ones (filter etc) 
     return database objects. You can convert between the two easily via dbobj.typeclass and 
     typeclass.dbobj, but it's worth to remember this difference.  
- 3) You -have- to use the methods of the "create" module to create new Typeclassed game
-    entities (Objects, Scripts or Players). Just initializing e.g. the Player class will 
+ 3) You -have- to use the create_* functions (shortcuts to src.utils.create) to create new 
+    Typeclassed game entities (Objects, Scripts or Players). Just initializing e.g. the Player class will 
     -not- set up Typeclasses correctly and will lead to errors. Other types of database objects 
-    can be created normally, but the "create" module offers convenient methods for those too. 
- 4) The API accesses all relevant methods/classes, but might not always include all helper-methods
-    referenced from each such entity. To get to those, access the modules in src/ directly. You
-    can always do this anyway, if you do not want to go through this API. 
+    can be created normally, but there are conveniant create_* functions for those too, making
+    some more error checking. 
+ 4) The API accesses all relevant and most-neeeded functions/classes from src/, but might not 
+    always include all helper-functions referenced from each such entity. To get to those, access 
+    the modules in src/ directly. You can always do this anyway, if you do not want to go through 
+    this API. 
 
 """
 
