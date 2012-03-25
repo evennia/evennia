@@ -186,9 +186,12 @@ def at_initial_setup():
     run a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail
     silently if this does not exist or fails to load.
     """
-    try:
-        mod = __import__(settings.AT_INITIAL_SETUP_HOOK_MODULE, fromlist=[None])
-    except ImportError:
+    modname = settings.AT_INITIAL_SETUP_HOOK_MODULE
+    if not modname:
+        return 
+    try:        
+        mod = __import__(modname, fromlist=[None])
+    except ImportError, ValueError:
         return 
     print _(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):

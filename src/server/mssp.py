@@ -11,7 +11,7 @@ active players and so on.
 Most of these settings are de
 
 """
-
+from django.conf import settings
 from src.utils import utils
 
 MSSP = chr(70)
