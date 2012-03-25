@@ -12,7 +12,7 @@ or you won't see any messages!
 
 """
 import random 
-from game.gamesrc.scripts.basescript import Script
+from ev import Script
 
 class BodyFunctions(Script):
     """

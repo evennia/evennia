@@ -43,7 +43,7 @@
 # everything in this block will be appended to the beginning of 
 # all other #CODE blocks when they are executed.
 
-from src.utils import create, search
+from ev import create, search
 from game.gamesrc.objects.examples import red_button
 from game.gamesrc.objects import baseobjects
 

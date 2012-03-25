@@ -11,7 +11,7 @@ Create this button with
 Note that if you must drop the button before you can see its messages! 
 """
 import random 
-from game.gamesrc.objects.baseobjects import Object
+from ev import Object
 from game.gamesrc.scripts.examples import red_button_scripts as scriptexamples
 from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
 

@@ -8,8 +8,8 @@ cmdset - this way you can often re-use the commands too.
 """
 
 import random 
-from src.commands.cmdset import CmdSet
-from game.gamesrc.commands.basecommand import Command
+from ev import CmdSet
+from ev import Command
 
 # Some simple commands for the red button
 

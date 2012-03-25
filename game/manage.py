@@ -15,7 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Get Evennia version
 #------------------------------------------------------------
 try:
-    VERSION = open("%s%s%s" % (os.pardir, os.sep, 'VERSION')).readline().strip()
+    with open(os.pardir + os.sep + 'VERSION') as f:
+        VERSION = "%s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
 except IOError:
     VERSION = "Unknown version"
 

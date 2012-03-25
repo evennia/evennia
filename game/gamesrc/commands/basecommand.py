@@ -8,11 +8,11 @@ See src/commands/default/muxcommand.py for an example.
 
 """
 
-from src.commands.command import Command as BaseCommand
-from src.commands.default.muxcommand import MuxCommand as BaseMuxCommand
-from src.utils import utils 
+from ev import Command as BaseCommand
+from ev import default_cmd
+from ev import utils
 
-class MuxCommand(BaseMuxCommand):
+class MuxCommand(default_cmd.MuxCommand):
     """
     This sets up the basis for a Evennia's 'MUX-like' command
     style. The idea is that most other Mux-related commands should

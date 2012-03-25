@@ -20,11 +20,11 @@ New instances of Objects (inheriting from these typeclasses)
 are created with src.utils.create.create_object(typeclass, ...)
 where typeclass is the python path to the class you want to use. 
 """
-from src.objects.objects import Object as BaseObject
-from src.objects.objects import Character as BaseCharacter
-from src.objects.objects import Room as BaseRoom
-from src.objects.objects import Exit as BaseExit
-from src.players.player import Player as BasePlayer
+from ev import Object as BaseObject
+from ev import Character as BaseCharacter
+from ev import Room as BaseRoom
+from ev import Exit as BaseExit
+from ev import Player as BasePlayer
 
 class Object(BaseObject):
     """

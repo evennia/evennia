@@ -6,7 +6,7 @@ red_button object type in gamesrc/types/examples. A few variations
 on uses of scripts are included.
 
 """
-from game.gamesrc.scripts.basescript import Script
+from ev import Script
 from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
 
 #

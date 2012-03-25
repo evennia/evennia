@@ -2,33 +2,39 @@
 
 Central API for Evennia MUD/MUX/MU* system.
 
+This basically a set of shortcuts to the main modules in src/. 
 Import this from ./manage.py shell or set DJANGO_SETTINGS_MODULE manually for proper
 functionality.
 
-This module tries to group the most commonly useful modules in a flat(ter) structure. 
-Some notes: 
+ 1) You should import things excplicitly from the root of this module - you can generally 
+    not use dot-notation to import deeper. Hence, to access a default command, you can do
+    the following: 
 
- 1) db_* are shortcuts to initiated versions of Evennia's django database managers (e.g.
+       import ev
+       ev.default_cmds.CmdLook
+    or 
+       from ev import default_cmds
+       default_cmds.CmdLook
+   
+    But trying to import CmdLook directly with "from ev.default_cmds import CmdLook" will 
+    not work since default_cmds is a property on the "ev" module, not a module of its own. 
+ 2) db_* are shortcuts to initiated versions of Evennia's django database managers (e.g.
     db_objects is an alias for ObjectDB.objects). These allows for exploring the database in 
-    various ways. Please note that 
-    the evennia-specific methods in the managers return typeclasses (or lists of 
-    typeclasses), whereas the default django ones (filter etc) return database objects.
-    You can convert between the two easily via dbobj.typeclass and typeclass.dbobj, but
-    it's worth to remember.  
- 2) You -have- to use the methods of the "create" module to create new Typeclassed game
+    various ways. Please note that the evennia-specific methods in the managers return 
+    typeclasses (or lists of typeclasses), whereas the default django ones (filter etc) 
+    return database objects. You can convert between the two easily via dbobj.typeclass and 
+    typeclass.dbobj, but it's worth to remember this difference.  
+ 3) You -have- to use the methods of the "create" module to create new Typeclassed game
     entities (Objects, Scripts or Players). Just initializing e.g. the Player class will 
     -not- set up Typeclasses correctly and will lead to errors. Other types of database objects 
     can be created normally, but the "create" module offers convenient methods for those too. 
- 3) The API accesses all relevant methods/classes, but might not always include all helper-methods
+ 4) The API accesses all relevant methods/classes, but might not always include all helper-methods
     referenced from each such entity. To get to those, access the modules in src/ directly. You
     can always do this anyway, if you do not want to go through this API. 
 
-Philosophy is to keep the API as flat as possible, so as to not have to remember which nested 
-packages to traverse. Most of the important stuff should be made visible from this module.
-
-As said, one can of course still import from src/ directly should one prefer!
-
 """
+
+import sys, os
 
 # Stop erroneous direct run (would give a traceback since django is
 #  not yet initialized)
@@ -41,11 +47,19 @@ if __name__ == "__main__":
     To start the server, see game/manage.py and game/evennia.py. 
     More help can be found at http://www.evennia.com. 
 """
-    import sys
     sys.exit()
-
+try:
+    f = open(os.path.dirname(os.path.abspath(__file__)) + os.sep + "VERSION", 'r')
+    __version__ = "Evennia %s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
+    f.close()
+    del f
+except IOError:
+    __version__ = "Evennia (unknown version)"
+del sys, os
 
 # Start Evennia API (easiest is to import this module interactively to explore it)
+
+README = "Evennia flat API. See the module header for usage information."
 
 # help entries 
 from src.help.models import HelpEntry

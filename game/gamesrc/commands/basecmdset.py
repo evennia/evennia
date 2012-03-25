@@ -18,15 +18,14 @@ new cmdset class.
 
 """
 
-from src.commands.cmdset import CmdSet
-from src.commands.default import cmdset_default, cmdset_unloggedin, cmdset_ooc
-from game.gamesrc.commands.basecommand import Command
+from ev import CmdSet, Command
+from ev import default_cmds
 
 #from contrib import menusystem, lineeditor
 #from contrib import misc_commands
 #from contrib import chargen
 
-class DefaultCmdSet(cmdset_default.DefaultCmdSet):
+class DefaultCmdSet(default_cmds.DefaultCmdSet):
     """
     This is an example of how to overload the default command 
     set defined in src/commands/default/cmdset_default.py.
@@ -52,7 +51,7 @@ class DefaultCmdSet(cmdset_default.DefaultCmdSet):
         #self.add(lineeditor.CmdEditor())        
         #self.add(misc_commands.CmdQuell())                
 
-class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
+class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """
     This is an example of how to overload the command set of the
     unlogged in commands, defined in
@@ -76,7 +75,7 @@ class UnloggedinCmdSet(cmdset_unloggedin.UnloggedinCmdSet):
         # any commands you add below will overload the default ones.
         #
 
-class OOCCmdSet(cmdset_ooc.OOCCmdSet):
+class OOCCmdSet(default_cmds.OOCCmdSet):
     """
     This is set is available to the player when they have no 
     character connected to them (i.e. they are out-of-character, ooc).

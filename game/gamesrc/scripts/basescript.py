@@ -15,7 +15,7 @@ src.utils.create.create_script(scriptclass, ...) where scriptclass
 is the python path to the specific class of script you want to use. 
 """
 
-from src.scripts.scripts import Script as BaseScript
+from ev import Script as BaseScript
 
 class Script(BaseScript):
     """
