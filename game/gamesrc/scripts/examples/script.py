@@ -20,9 +20,9 @@ dropped connections etc.
 
 """
 
-from ev import Script as BaseScript
+from ev import Script
 
-class Script(BaseScript):
+class ExampleScript(BaseScript):
     """
     A script type is customized by redefining some or all of its hook methods and variables.
 

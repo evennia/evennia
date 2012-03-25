@@ -6,7 +6,7 @@ This basically a set of shortcuts to the main modules in src/.
 Import this from ./manage.py shell or set DJANGO_SETTINGS_MODULE manually for proper
 functionality.
 
- 1) You should import things excplicitly from the root of this module - you can generally 
+ 1) You should import things explicitly from the root of this module - you can generally 
     not use dot-notation to import deeper. Hence, to access a default command, you can do
     the following: 
 

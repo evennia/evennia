@@ -32,9 +32,12 @@ from src.utils.utils import is_iter, has_parent, inherits_from
 # limit symbol import from API
 __all__ = ("object", "script", "help_entry", "message", "channel", "player")
 
+GA = object.__getattribute__
+
 #
 # Game Object creation 
 #
+
 
 def create_object(typeclass, key=None, location=None,
                   home=None, player=None, permissions=None, locks=None, 
@@ -81,7 +84,7 @@ def create_object(typeclass, key=None, location=None,
     new_object = new_db_object.typeclass
 
 
-    if not object.__getattribute__(new_db_object, "is_typeclass")(typeclass, exact=True):
+    if not GA(new_db_object, "is_typeclass")(typeclass, exact=True):
         # this will fail if we gave a typeclass as input and it still gave us a default
         SharedMemoryModel.delete(new_db_object)
         return None 
@@ -190,7 +193,7 @@ def create_script(typeclass, key=None, obj=None, locks=None,
     # this will either load the typeclass or the default one
     new_script = new_db_script.typeclass
 
-    if not object.__getattribute__(new_db_script, "is_typeclass")(typeclass, exact=True):
+    if not GA(new_db_script, "is_typeclass")(typeclass, exact=True):
         # this will fail if we gave a typeclass as input and it still gave us a default
         print "failure:", new_db_script, typeclass
         SharedMemoryModel.delete(new_db_script)
@@ -462,7 +465,7 @@ def create_player(name, email, password,
         # this will either load the typeclass or the default one
         new_player = new_db_player.typeclass
 
-        if not object.__getattribute__(new_db_player, "is_typeclass")(typeclass, exact=True):
+        if not GA(new_db_player, "is_typeclass")(typeclass, exact=True):
             # this will fail if we gave a typeclass as input and it still gave us a default
             SharedMemoryModel.delete(new_db_player)
             return None 
@@ -494,7 +497,6 @@ def create_player(name, email, password,
         return new_player
     except Exception,e:
         # a failure in creating the character
-        print e
         if not user:
             # in there was a failure we clean up everything we can
             logger.log_trace()
@@ -510,6 +512,7 @@ def create_player(name, email, password,
                 del new_character
             except Exception:
                 pass 
+        raise 
 
 # alias
 player = create_player

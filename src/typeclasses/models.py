@@ -1066,6 +1066,7 @@ class TypedObject(SharedMemoryModel):
         to create a new object and just swap the player over to
         that one instead. 
 
+        Arguments: 
         new_typeclass (path/classobj) - type to switch to        
         clean_attributes (bool/list) - will delete all attributes
                            stored on this object (but not any
@@ -1079,6 +1080,9 @@ class TypedObject(SharedMemoryModel):
                      swapping to a default typeclass in case the given
                      one fails for some reason. Instead the old one
                      will be preserved.                           
+        Returns: 
+          boolean True/False depending on if the swap worked or not.
+
         """
         if callable(new_typeclass):
             # this is an actual class object - build the path
