@@ -30,7 +30,7 @@ from src.utils import logger, utils, idmapper
 from src.utils.utils import is_iter, has_parent, inherits_from
 
 # limit symbol import from API
-__all__ = ("object", "script", "help_entry", "message", "channel", "player")
+__all__ = ("create_object", "create_script", "create_help_entry", "create_message", "create_channel", "create_player")
 
 GA = object.__getattribute__
 
