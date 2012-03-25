@@ -236,7 +236,8 @@ class Evennia(object):
             ServerConfig.objects.conf("server_restart_mode", "reset")
                     
         if not _abrupt:
-            SERVER_HOOK_MODULE.at_server_stop()
+            if SERVER_HOOK_MODULE:
+                SERVER_HOOK_MODULE.at_server_stop()
             reactor.callLater(0, reactor.stop)
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually            
