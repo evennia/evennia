@@ -122,7 +122,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 object.__getattribute__(emit_to_obj, "msg")(errstring)            
         logger.log_errmsg("Error: %s" % errstring)
-        raise # have to raise, or we will not see any errors in some situations!
+        #cannot raise - it kills the server if no base cmdset exists!
 
 # classes 
 
