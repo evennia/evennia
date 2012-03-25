@@ -8,8 +8,7 @@ cmdset - this way you can often re-use the commands too.
 """
 
 import random 
-from ev import CmdSet
-from ev import Command
+from ev import Command, CmdSet
 
 # Some simple commands for the red button
 

@@ -131,7 +131,7 @@ del ObjAttribute, Alias, ObjectNick, ObjectDB
 
 # server 
 from src.server.models import ServerConfig
-db_serverconfs = ServerConfig.objects
+db_serverconfigs = ServerConfig.objects
 del ServerConfig
 
 # utils

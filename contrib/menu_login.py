@@ -31,7 +31,7 @@ the initial splash screen.
 import re
 import traceback
 from django.conf import settings 
-from ev import db_players, db_serverconfs, db_channels
+from ev import db_players, db_serverconfigs, db_channels
 from ev import utils, logger, create_player
 from ev import Command, CmdSet
 from ev import syscmdkeys
@@ -115,7 +115,7 @@ class CmdPasswordSelect(Command):
             return 
 
         # before going on, check eventual bans
-        bans = db_serverconfs.conf("server_bans")
+        bans = db_serverconfigs.conf("server_bans")
         if bans and (any(tup[0]==player.name for tup in bans) 
                      or 
                      any(tup[2].match(player.sessions[0].address[0]) for tup in bans if tup[2])):
