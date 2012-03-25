@@ -1,13 +1,17 @@
 """
 This module gathers all the essential database-creation
-methods for the game engine's various object types.
-Only objects created 'stand-alone' are in here,
-e.g. object Attributes are always created directly through their
-respective objects.
+functions for the game engine's various object types.
 
-The respective object managers hold more methods for
-manipulating and searching objects already existing in
-the database. 
+Only objects created 'stand-alone' are in here, e.g. object Attributes
+are always created directly through their respective objects.
+
+Each creation_* function also has an alias named for the entity being
+created, such as create_object() and object().  This is for
+consistency with the utils.search module and allows you to do the
+shorter "create.object()".
+
+The respective object managers hold more methods for manipulating and
+searching objects already existing in the database.
 
 Models covered: 
  Objects
@@ -24,6 +28,9 @@ from django.db import IntegrityError
 from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import logger, utils, idmapper
 from src.utils.utils import is_iter, has_parent, inherits_from
+
+# limit symbol import from API
+__all__ = ("object", "script", "help_entry", "message", "channel", "player")
 
 #
 # Game Object creation 
@@ -122,6 +129,9 @@ def create_object(typeclass, key=None, location=None,
     new_object.save()
     return new_object
 
+#alias for create_object
+object = create_object
+
 #
 # Script creation 
 #
@@ -217,6 +227,8 @@ def create_script(typeclass, key=None, obj=None, locks=None,
     
     new_db_script.save()
     return new_script 
+#alias
+script = create_script
 
 #
 # Help entry creation
@@ -248,7 +260,8 @@ def create_help_entry(key, entrytext, category="General", locks=None):
     except Exception:
         logger.log_trace()
         return None 
-
+# alias
+help_entry = create_help_entry
 
 #
 # Comm system methods 
@@ -317,6 +330,8 @@ def create_message(senderobj, message, channels=None,
     new_message.save()
     return new_message
 
+message = create_message
+
 def create_channel(key, aliases=None, desc=None,
                    locks=None, keep_log=True):
     """
@@ -352,6 +367,8 @@ def create_channel(key, aliases=None, desc=None,
     new_channel.save()
     channelhandler.CHANNELHANDLER.add_channel(new_channel)
     return new_channel 
+
+channel = create_channel 
     
 #
 # Player creation methods 
@@ -494,3 +511,5 @@ def create_player(name, email, password,
             except Exception:
                 pass 
 
+# alias
+player = create_player
