@@ -21,7 +21,7 @@ from src.commands.default.muxcommand import MuxCommand
 # limit symbol import for API
 __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
            "CmdScripts", "CmdObjects", "CmdService", "CmdVersion",
-           "CmdTime", "CmdServerLoad", "CmdPs")
+           "CmdTime", "CmdServerLoad")
 
 class CmdReload(MuxCommand):
     """
@@ -604,45 +604,45 @@ class CmdServerLoad(MuxCommand):
 
         caller.msg(string)
 
-class CmdPs(MuxCommand):
-    """
-    list processes
+# class CmdPs(MuxCommand):
+#     """
+#     list processes
     
-    Usage
-      @ps 
+#     Usage
+#       @ps 
 
-    Shows the process/event table.
-    """
-    key = "@ps"
-    locks = "cmd:perm(ps) or perm(Builders)"
-    help_category = "System"
+#     Shows the process/event table.
+#     """
+#     key = "@ps"
+#     locks = "cmd:perm(ps) or perm(Builders)"
+#     help_category = "System"
 
-    def func(self):
-        "run the function."
+#     def func(self):
+#         "run the function."
 
-        all_scripts = ScriptDB.objects.get_all_scripts()
-        repeat_scripts = [script for script in all_scripts if script.interval > 0]
-        nrepeat_scripts = [script for script in all_scripts if script.interval <= 0]
+#         nscripts = ScriptDB.objects.count()
+#         repeat_scripts = ScriptDB.objects.filter(db_interval__gt=0)
+#         nrepeat_scripts = ScriptDB.objects.filter(db_interval__le=0)
 
-        string = "\n{wNon-timed scripts:{n -- PID name desc --"
-        if not nrepeat_scripts:
-            string += "\n <None>"
-        for script in nrepeat_scripts:
-            string += "\n {w%i{n %s %s" % (script.id, script.key, script.desc)
+#         string = "\n{wNon-timed scripts:{n -- PID name desc --"
+#         if not nrepeat_scripts:
+#             string += "\n <None>"
+#         for script in nrepeat_scripts:
+#             string += "\n {w%i{n %s %s" % (script.id, script.key, script.desc)
 
-        string += "\n{wTimed scripts:{n -- PID name [time/interval][repeats] desc --"
-        if not repeat_scripts:
-            string += "\n <None>"
-        for script in repeat_scripts:
-            repeats = "[inf] "
-            if script.repeats:
-                repeats = "[%i] " % script.repeats
-            time_next = "[inf/inf]"
-            if script.time_until_next_repeat() != None:
-                time_next = "[%d/%d]" % (script.time_until_next_repeat(), script.interval)
-            string += "\n {w%i{n %s %s%s%s" % (script.id, script.key,
-                                           time_next, repeats, script.desc)
-        string += "\n{wTotal{n: %d scripts." % len(all_scripts)
-        self.caller.msg(string)
+#         string += "\n{wTimed scripts:{n -- PID name [time/interval][repeats] desc --"
+#         if not repeat_scripts:
+#             string += "\n <None>"
+#         for script in repeat_scripts:
+#             repeats = "[inf] "
+#             if script.repeats:
+#                 repeats = "[%i] " % script.repeats
+#             time_next = "[inf/inf]"
+#             if script.time_until_next_repeat() != None:
+#                 time_next = "[%d/%d]" % (script.time_until_next_repeat(), script.interval)
+#             string += "\n {w%i{n %s %s%s%s" % (script.id, script.key,
+#                                            time_next, repeats, script.desc)
+#         string += "\n{wTotal{n: %d scripts." % len(all_scripts)
+#         self.caller.msg(string)
 
 

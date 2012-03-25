@@ -45,7 +45,7 @@ class DefaultCmdSet(CmdSet):
         self.add(system.CmdVersion())
         self.add(system.CmdTime())
         self.add(system.CmdServerLoad())
-        self.add(system.CmdPs())
+        #self.add(system.CmdPs())
         
         # Admin commands
         self.add(admin.CmdBoot())
