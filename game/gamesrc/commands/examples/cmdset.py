@@ -11,11 +11,17 @@ To extend the default command set:
     DefaultCmdSet
   - import/add commands at the end of DefaultCmdSet's add() method.
 
-To add a new command set
+To extend OOC cmdset:
+  - like default set, but point settings.CMDSET_OOC on your new cmdset.
+
+To extend Unloggedin cmdset:
+  - like default set, but point settings.CMDSET_UNLOGGEDIN on your new cmdset.
+
+To add a wholly new command set:
   - copy this file up one level to gamesrc/commands and name it
     something fitting.
   - add a new cmdset class
-  - add it objects with obj.cmdset.add(path.to.the.module.and.class)
+  - add it to objects e.g. with obj.cmdset.add(path.to.the.module.and.class)
 
 """
 

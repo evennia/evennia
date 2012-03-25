@@ -182,11 +182,11 @@ OOB_FUNC_MODULE = "game.gamesrc.conf.oobfuncs"
 # these existing sets instead.
 
 # Command set used before player has logged in
-CMDSET_UNLOGGEDIN = "game.gamesrc.commands.basecmdset.UnloggedinCmdSet"
+CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
 # Default set for logged in player with characters (fallback)
-CMDSET_DEFAULT = "game.gamesrc.commands.basecmdset.DefaultCmdSet"
+CMDSET_DEFAULT = "src.commands.default.cmdset_default.DefaultCmdSet"
 # Command set for players without a character (ooc)
-CMDSET_OOC = "game.gamesrc.commands.basecmdset.OOCCmdSet"
+CMDSET_OOC = "src.commands.default.cmdset_ooc.OOCCmdSet"
 
 ###################################################
 # Typeclasses
@@ -200,15 +200,15 @@ SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples
 PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "game.gamesrc.objects.baseobjects.Player"
+BASE_PLAYER_TYPECLASS = "src.objects.players.Player"
 # Typeclass and base for all objects (fallback)
-BASE_OBJECT_TYPECLASS = "game.gamesrc.objects.baseobjects.Object"
+BASE_OBJECT_TYPECLASS = "src.objects.objects.Object"
 # Typeclass for character objects linked to a player (fallback)
-BASE_CHARACTER_TYPECLASS = "game.gamesrc.objects.baseobjects.Character"
+BASE_CHARACTER_TYPECLASS = "src.objects.objects.Character"
 # Typeclass for rooms (fallback)
-BASE_ROOM_TYPECLASS = "game.gamesrc.objects.baseobjects.Room"
+BASE_ROOM_TYPECLASS = "src.objects.objects.Room"
 # Typeclass for Exit objects (fallback)
-BASE_EXIT_TYPECLASS = "game.gamesrc.objects.baseobjects.Exit"
+BASE_EXIT_TYPECLASS = "src.objects.objects.Exit"
 # Typeclass for Scripts (fallback)
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # The home location for new characters. This must be a unique 
