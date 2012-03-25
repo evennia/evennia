@@ -200,7 +200,7 @@ SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples
 PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "src.objects.players.Player"
+BASE_PLAYER_TYPECLASS = "src.players.player.Player"
 # Typeclass and base for all objects (fallback)
 BASE_OBJECT_TYPECLASS = "src.objects.objects.Object"
 # Typeclass for character objects linked to a player (fallback)
