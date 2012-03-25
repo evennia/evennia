@@ -109,7 +109,7 @@ class CmdUnconnectedCreate(MuxCommand):
         name enclosed in quotes:
         connect "Long name with many words" my@myserv.com mypassw
         """
-        super(CmdCreate, self).parse()
+        super(CmdUnconnectedCreate, self).parse()
 
         self.playerinfo = []
         if len(self.arglist) < 3:
