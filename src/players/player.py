@@ -10,9 +10,10 @@ character object, so you should customize that
 instead for most things).
 
 """
+from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
 
-from settings import CMDSET_OOC
+CMDSET_OOC = settings.CMDSET_OOC
 
 class Player(TypeClass):
     """

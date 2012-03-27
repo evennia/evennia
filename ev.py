@@ -1,14 +1,16 @@
 """
 
-Central API for Evennia MUD/MUX/MU* system.
+Central API for the Evennia MUD/MUX/MU* creation system.
 
 This basically a set of shortcuts to the main modules in src/. Import this 
-from your code or eplore it interactively from ./manage.py shell (or a normal 
+from your code or explore it interactively from ./manage.py shell (or a normal 
 python shell if you set DJANGO_SETTINGS_MODULE manually).
 
- 1) You should import things explicitly from the root of this module - you can generally 
-    not use dot-notation to import deeper. Hence, to access a default command, you can do
-    the following: 
+Notes: 
+
+ 1) You should import things explicitly from the root of this module - you can not use 
+    dot-notation to import deeper. Hence, to access a default command, you can do the 
+    following:
 
        import ev
        ev.default_cmds.CmdLook
@@ -29,7 +31,10 @@ python shell if you set DJANGO_SETTINGS_MODULE manually).
     -not- set up Typeclasses correctly and will lead to errors. Other types of database objects 
     can be created normally, but there are conveniant create_* functions for those too, making
     some more error checking. 
- 4) The API accesses all relevant and most-neeeded functions/classes from src/, but might not 
+ 4) "settings" links to Evennia's game/settings file. "settings_full" shows all of django's available
+    settings. Note that you cannot change settings from here in a meaningful way, you need to update 
+    game/settings.py and restart the server.
+ 5) The API accesses all relevant and most-neeeded functions/classes from src/, but might not 
     always include all helper-functions referenced from each such entity. To get to those, access 
     the modules in src/ directly. You can always do this anyway, if you do not want to go through 
     this API. 
@@ -42,14 +47,30 @@ import sys, os
 #  not yet initialized)
 
 if __name__ == "__main__":
-    print \
+    info = __doc__ + \
 """
-    This module gives access to Evennia's programming API. 
-    It should not be run on its own, but be imported and accessed as you develop your game.
-    To start the server, see game/manage.py and game/evennia.py. 
-    More help can be found at http://www.evennia.com. 
+  | This module gives access to Evennia's programming API.  It should
+  | not be run on its own, but be imported and accessed as described
+  | above.
+  |
+  | To start the Evennia server, see game/manage.py and game/evennia.py.  
+  | More help can be found at http://www.evennia.com.
 """
+    print info
     sys.exit()
+
+# make sure settings is available, also if starting this API stand-alone
+# make settings available, and also the full django settings
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from django.core.management import setup_environ
+from game import settings
+setup_environ(settings)
+del setup_environ
+from django.conf import settings as settings_full
+
+# set Evennia version in __version__ property
+
 try:
     f = open(os.path.dirname(os.path.abspath(__file__)) + os.sep + "VERSION", 'r')
     __version__ = "Evennia %s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
@@ -59,9 +80,11 @@ except IOError:
     __version__ = "Evennia (unknown version)"
 del sys, os
 
+#
 # Start Evennia API (easiest is to import this module interactively to explore it)
+#
 
-README = "Evennia flat API. See the module header for usage information."
+README = __doc__
 
 # help entries 
 from src.help.models import HelpEntry

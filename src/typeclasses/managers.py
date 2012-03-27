@@ -3,6 +3,7 @@ This implements the common managers that are used by the
 abstract models in dbobjects.py (and which are thus shared by
 all Attributes and TypedObjects). 
 """
+from functools import update_wrapper
 from django.db import models
 from src.utils import idmapper
 from src.utils.utils import make_iter
@@ -39,9 +40,10 @@ def returns_typeclass_list(method):
     """        
     def func(self, *args, **kwargs):
         "decorator. Returns a list."        
+        self.__doc__ = method.__doc__
         matches = method(self, *args, **kwargs)        
         return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj for dbobj in make_iter(matches)]
-    return func    
+    return update_wrapper(func, method)    
 
 def returns_typeclass(method):
     """
@@ -49,12 +51,13 @@ def returns_typeclass(method):
     """
     def func(self, *args, **kwargs):
         "decorator. Returns result or None."
+        self.__doc__ = method.__doc__
         rfunc = returns_typeclass_list(method)
         try:
             return rfunc(self, *args, **kwargs)[0]
         except IndexError: 
             return None 
-    return func
+    return update_wrapper(func, method)
 
 
 #class TypedObjectManager(idmap.CachingManager):
