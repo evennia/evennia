@@ -268,15 +268,14 @@ class ServerSession(Session):
         String representation of the user session class. We use
         this a lot in the server logs.
         """
-        if self.logged_in:
-            symbol = '#'
-        else:
-            symbol = '?'
+        symbol = ""
+        if self.logged_in and hasattr(self, "player") and self.player:            
+            symbol = "(#%s)" % self.player.id                
         try:
             address = ":".join([str(part) for part in self.address])            
         except Exception:
             address = self.address            
-        return "<%s> %s@%s" % (symbol, self.uname, address)
+        return "%s%s@%s" % (self.uname, symbol, address)
 
     def __unicode__(self):
         """
