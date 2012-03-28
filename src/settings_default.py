@@ -382,9 +382,10 @@ LOGOUT_URL = '/accounts/login'
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
-# to use a trailing slash. This should match the position defined 
-# by ADMIN_MEDIA_ROOT. 
-STATIC_URL = '/media/admin/'
+# to use a trailing slash. Django1.4+ will look for admin files under
+# STATIC_URL/admin. 
+STATIC_URL = '/media/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/" # needed for backwards compatibility django < 1.4
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'
