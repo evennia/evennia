@@ -384,7 +384,7 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
 # to use a trailing slash. This should match the position defined 
 # by ADMIN_MEDIA_ROOT. 
-ADMIN_MEDIA_PREFIX = '/media/admin/'
+STATIC_URL = '/media/admin/'
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'
