@@ -166,8 +166,7 @@ AT_INITIAL_SETUP_HOOK_MODULE = ""
 # Module holding at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and  resets/stops.
-AT_SERVER_STARTSTOP_MODULE = ""
-# Module holding server-side functions for out-of-band protocols to call.
+AT_SERVER_STARTSTOP_MODULE = ""# Module holding server-side functions for out-of-band protocols to call.
 OOB_FUNC_MODULE = ""
 # Module holding MSSP meta data 
 MSSP_META_MODULE = ""
@@ -395,8 +394,8 @@ TEMPLATE_DIRS = (
     os.path.join(SRC_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',)
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',)
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
@@ -412,7 +411,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.request',
-    'django.core.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.media',
     'django.core.context_processors.debug',
     'src.web.utils.general_context.general_context',)
