@@ -119,8 +119,10 @@ class ObjectManager(TypedObjectManager):
         from src.objects.models import ObjAttribute
         lstring = ""
         if location:
-            lstring = ", db_obj__db_location=location"    
+            lstring = ", db_obj__db_location=location"
         attrs = eval("ObjAttribute.objects.filter(db_key=attribute_name%s)" % lstring)
+        # since attribute values are pickled in database, we cannot search directly, but
+        # must loop through the results. .
         if exact:            
             return [attr.obj for attr in attrs if attribute_value == attr.value]
         else:

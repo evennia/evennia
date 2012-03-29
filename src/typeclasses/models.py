@@ -307,24 +307,24 @@ class Attribute(SharedMemoryModel):
     #@property
     def obj_get(self):
         "Getter. Allows for value = self.obj"
-        return get_cache(self, "db_obj")
+        return get_cache(self, "obj")
     #@obj.setter
     def obj_set(self, value):
         "Setter. Allows for self.obj = value"
-        set_cache(self, "db_obj", value)        
+        set_cache(self, "obj", value)        
     #@obj.deleter
     def obj_del(self):
         "Deleter. Allows for del self.obj"
         self.db_obj = None
         self.save()
-        del_cache(self, "db_obj")
+        del_cache(self, "obj")
     obj = property(obj_get, obj_set, obj_del)   
 
     # date_created property (wraps db_date_created)
     #@property
     def date_created_get(self):
         "Getter. Allows for value = self.date_created"
-        return get_cache(self, "db_date_created")
+        return get_cache(self, "date_created")
     #@date_created.setter
     def date_created_set(self, value):
         "Setter. Allows for self.date_created = value"
