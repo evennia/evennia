@@ -94,8 +94,8 @@ db_helpentries = HelpEntry.objects
 from src.players.player import Player
 from src.players.models import PlayerDB, PlayerAttribute, PlayerNick
 db_players = PlayerDB.objects
-db_playerattrs = PlayerAttribute.objects
-db_playernicks = PlayerNick.objects
+#db_playerattrs = PlayerAttribute.objects
+#db_playernicks = PlayerNick.objects
 del PlayerDB, PlayerAttribute, PlayerNick
 
 # commands
@@ -135,7 +135,7 @@ from src.locks import lockfuncs
 from src.scripts.scripts import Script
 from src.scripts.models import ScriptDB, ScriptAttribute
 db_scripts = ScriptDB.objects
-db_scriptattrs = ScriptAttribute.objects
+#db_scriptattrs = ScriptAttribute.objects
 del ScriptDB, ScriptAttribute
 
 # comms
@@ -149,9 +149,9 @@ db_externalconnections = ExternalChannelConnection.objects
 from src.objects.objects import Object, Character, Room, Exit
 from src.objects.models import ObjAttribute, Alias, ObjectNick, ObjectDB
 db_objects = ObjectDB.objects
-db_aliases = Alias.objects
-db_objnicks = ObjectNick.objects
-db_objattrs = ObjAttribute.objects
+#db_aliases = Alias.objects
+#db_objnicks = ObjectNick.objects
+#db_objattrs = ObjAttribute.objects
 del ObjAttribute, Alias, ObjectNick, ObjectDB
 
 # server 

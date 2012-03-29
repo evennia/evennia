@@ -5,10 +5,18 @@ from django.db import models
 
 class ServerConfigManager(models.Manager):
     """
-    This gives some access methods to search and edit
-    the configvalue database. 
+    This ServerConfigManager implements methods for searching 
+    and manipulating ServerConfigs directly from the database.
 
-    If no match is found, return default. 
+    These methods will all return database objects 
+    (or QuerySets) directly.
+
+    ServerConfigs are used to store certain persistent settings for the 
+    server at run-time.
+
+    Evennia-specific:
+    conf 
+
     """
     def conf(self, key=None, value=None, delete=False, default=None):
         """

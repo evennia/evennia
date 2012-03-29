@@ -3,6 +3,7 @@ The managers for the custom Player object and permissions.
 """
 
 import datetime 
+from functools import update_wrapper
 from django.db import models
 from django.contrib.auth.models import User
 from src.typeclasses.managers import returns_typeclass_list, returns_typeclass, TypedObjectManager
@@ -43,7 +44,7 @@ def returns_player_list(method):
                 else:
                     logger.log_trace("No connection User<->Player, maybe database was partially reset?")                
         return players
-    return func 
+    return update_wrapper(func, method) 
 
 def returns_player(method):
     """
@@ -57,15 +58,32 @@ def returns_player(method):
             return match[0]
         else:
             return None 
-    return func
+    return update_wrapper(func, method)
 
 class PlayerManager(TypedObjectManager):
     """
-    Custom manager for the player profile model. We use this
-    to wrap users in general in evennia, and supply some useful
-    search/statistics methods. 
+    This PlayerManager implements methods for searching 
+    and manipulating Players directly from the database.
 
-    Note how ALL these commands return character objects if possible. 
+    Evennia-specific search methods (will return Characters if
+    possible or a Typeclass/list of Typeclassed objects, whereas
+    Django-general methods will return Querysets or database objects):
+    
+    dbref (converter)
+    dbref_search
+    get_dbref_range
+    object_totals
+    typeclass_search
+    num_total_players
+    get_connected_players
+    get_recently_created_players
+    get_recently_connected_players
+    get_player_from_email
+    get_player_from_uid
+    get_player_from_name
+    player_search (equivalent to ev.search_player)
+    swap_character
+    
     """
     def num_total_players(self):
         """

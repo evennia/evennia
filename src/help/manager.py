@@ -6,7 +6,20 @@ from src.utils import logger, utils
 
 class HelpEntryManager(models.Manager):
     """
-    This implements different ways to search for help entries.
+    This HelpEntryManager implements methods for searching 
+    and manipulating HelpEntries directly from the database.
+
+    These methods will all return database objects 
+    (or QuerySets) directly.
+
+    Evennia-specific:
+    find_topicmatch
+    find_apropos
+    find_topicsuggestions
+    find_topics_with_category
+    all_to_category
+    search_help (equivalent to ev.search_helpentry)
+
     """
     def find_topicmatch(self, topicstr, exact=False):
         """

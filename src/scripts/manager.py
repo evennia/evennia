@@ -9,7 +9,26 @@ VALIDATE_ITERATION = 0
 
 class ScriptManager(TypedObjectManager):
     """
-    ScriptManager get methods
+    This Scriptmanager implements methods for searching 
+    and manipulating Scripts directly from the database.
+
+    Evennia-specific search methods (will return Typeclasses or
+    lists of Typeclasses, whereas Django-general methods will return
+    Querysets or database objects). 
+    
+    dbref (converter)
+    dbref_search
+    get_dbref_range
+    object_totals
+    typeclass_search
+    get_all_scripts_on_obj
+    get_all_scripts
+    delete_script
+    remove_non_persistent
+    validate
+    script_search (equivalent to ev.search_script)
+    copy_script
+
     """
     @returns_typeclass_list
     def get_all_scripts_on_obj(self, obj, key=None):

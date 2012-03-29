@@ -56,7 +56,24 @@ def to_object(inp, objtype='player'):
 
 class MsgManager(models.Manager):
     """
-    Handle msg database
+    This MsgManager implements methods for searching 
+    and manipulating Messages directly from the database.
+
+    These methods will all return database objects 
+    (or QuerySets) directly.
+
+    A Message represents one unit of communication, be it over a 
+    Channel or via some form of in-game mail system. Like an e-mail,
+    it always has a sender and can have any number of receivers (some
+    of which may be Channels). 
+    
+    Evennia-specific:
+     get_message_by_id
+     get_messages_by_sender
+     get_messages_by_receiver
+     get_messages_by_channel
+     text_search
+     message_search (equivalent to ev.search_messages)
     """
     
     def get_message_by_id(self, idnum):
@@ -202,7 +219,24 @@ class MsgManager(models.Manager):
 
 class ChannelManager(models.Manager):
     """
-    Handle channel database
+    This ChannelManager implements methods for searching 
+    and manipulating Channels directly from the database.
+
+    These methods will all return database objects 
+    (or QuerySets) directly.
+
+    A Channel is an in-game venue for communication. It's 
+    essentially representation of a re-sender: Users sends
+    Messages to the Channel, and the Channel re-sends those
+    messages to all users subscribed to the Channel.
+
+    Evennia-specific:
+    get_all_channels
+    get_channel
+    del_channel
+    get_all_connections
+    channel_search (equivalent to ev.search_channel)
+
     """
 
     def get_all_channels(self):
@@ -281,8 +315,23 @@ class ChannelManager(models.Manager):
 #
 class PlayerChannelConnectionManager(models.Manager):
     """
-    This handles all connections between a player and
-    a channel. 
+    This PlayerChannelConnectionManager implements methods for searching 
+    and manipulating PlayerChannelConnections directly from the database.
+
+    These methods will all return database objects 
+    (or QuerySets) directly.
+
+    A PlayerChannelConnection defines a user's subscription to an in-game
+    channel - deleting the connection object will disconnect the player
+    from the channel.
+
+    Evennia-specific:
+    get_all_player_connections
+    has_connection
+    get_all_connections
+    create_connection
+    break_connection
+
     """
     
     def get_all_player_connections(self, player):
@@ -330,12 +379,26 @@ class PlayerChannelConnectionManager(models.Manager):
 
 class ExternalChannelConnectionManager(models.Manager):
     """
-    This handles all connections between a external and
-    a channel. 
+    This ExternalChannelConnectionManager implements methods for searching 
+    and manipulating HelpEntries directly from the database.
+
+    These methods will all return database objects 
+    (or QuerySets) directly.
+
+    An ExternalChannelConnetion describes the connection between an in-game 
+    channel and some external source, such as an IRC or IMC channel.
+
+    Evennia-specific:
+    get_all_external_connections
+    has_connection
+    get_all_connections
+    create_connection
+    break_connection
+    
     """
     
     def get_all_external_connections(self, external):
-        "Get all connections that the given external."
+        "Get all connections that the given as external."
         external = to_object(external, objtype='external')
         return self.filter(db_external_key=external)
 

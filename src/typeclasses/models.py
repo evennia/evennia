@@ -52,6 +52,8 @@ DA = object.__delattr__
 PLOADS = pickle.loads
 PDUMPS = pickle.dumps 
 
+# Property Cache mechanism.
+
 def get_cache(obj, name):
     "On-model Cache handler."
     try:
@@ -588,11 +590,32 @@ class TypeNickHandler(object):
     NickClass = TypeNick 
 
     def __init__(self, obj):
-        "Setup"
+        """
+        This handler allows for accessing and setting nicks -
+        on-the-fly replacements for various text input passing through
+        this object (most often a Character)
+
+        The default nick types used by Evennia are: 
+
+        inputline (default) - match against all input
+        player - match against player searches
+        obj - match against object searches 
+        channel - used to store own names for channels
+
+        You can define other nicktypes by using the add() method of
+        this handler and set nick_type to whatever you want. It's then
+        up to you to somehow make use of this nick_type in your game
+        (such as for a "recog" system).
+
+        """
         self.obj = obj
 
     def add(self, nick, realname, nick_type="inputline"):
-        "We want to assign a new nick"
+        """
+        Assign a new nick for realname. 
+          nick_types used by Evennia are 
+            'inputline', 'player', 'obj' and 'channel'
+        """
         if not nick or not nick.strip():
             return 
         nick = nick.strip()        
@@ -606,25 +629,38 @@ class TypeNickHandler(object):
             new_nick = self.NickClass(db_nick=nick, db_real=real, db_type=nick_type, db_obj=self.obj)
             new_nick.save()                
     def delete(self, nick, nick_type="inputline"):        
-        "Removes a nick"
+        "Removes a previously stored nick"
         nick = nick.strip()        
         query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
         if query.count():
             # remove the found nick(s)
             query.delete()           
-    def get(self, nick=None, nick_type="inputline"):
+    def get(self, nick=None, nick_type="inputline", obj=None):
+        """Retrieves a given nick (with a specified nick_type) on an object. If no nick is given, returns a list
+        of all nicks on the object, or the empty list. 
+        Defaults to searching the current object."""
+        if not obj:
+            # defaults to the current object
+            obj = self.obj
         if nick:
-            query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
+            query = self.NickClass.objects.filter(db_obj=obj, db_nick__iexact=nick, db_type__iexact=nick_type)        
             query = query.values_list("db_real", flat=True)
             if query.count():
                 return query[0]
             else:
                 return nick
         else:
-            return self.NickClass.objects.filter(db_obj=self.obj)
-    def has(self, nick, nick_type="inputline"):
-        "Returns true/false if this nick is defined or not"
-        return self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type).count()
+            return self.NickClass.objects.filter(db_obj=obj)
+    def has(self, nick, nick_type="inputline", obj=None):
+        """
+        Returns true/false if this nick and nick_type is defined on the given
+        object or not. If no obj is given, default to the current object the 
+        handler is defined on. 
+
+        """
+        if not obj:
+            obj = self.obj
+        return self.NickClass.objects.filter(db_obj=obj, db_nick__iexact=nick, db_type__iexact=nick_type).count()
 
 
 #------------------------------------------------------------

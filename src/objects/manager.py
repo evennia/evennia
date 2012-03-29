@@ -16,12 +16,30 @@ AT_MULTIMATCH_INPUT = utils.mod_import(*settings.SEARCH_AT_MULTIMATCH_INPUT.rspl
 
 class ObjectManager(TypedObjectManager):
     """
-    This is the main ObjectManager for all in-game objects. It
-    implements search functions specialized for objects of this
-    type, such as searches based on user, contents or location. 
+    This ObjectManager implementes methods for searching
+    and manipulating Objects directly from the database. 
 
-    See src.dbobjects.TypedObjectManager for more general
-    search methods. 
+    Evennia-specific search methods (will return Typeclasses or
+    lists of Typeclasses, whereas Django-general methods will return
+    Querysets or database objects). 
+
+    dbref (converter)
+    dbref_search
+    get_dbref_range
+    object_totals
+    typeclass_search
+    get_object_with_user
+    get_object_with_player
+    get_objs_with_key_and_typeclass
+    get_objs_with_attr
+    get_objs_with_attr_match
+    get_objs_with_db_property
+    get_objs_with_db_property_match
+    get_objs_with_key_or_alias
+    get_contents
+    object_search (interface to many of the above methods, equivalent to ev.search_object)
+    copy_object
+
     """
     
     #
