@@ -12,7 +12,7 @@ your new class, e.g.
 settings.BASE_EXIT_TYPECLASS = "game.gamesrc.objects.myexit.MyExit"
 
 Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the 
+this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
@@ -21,8 +21,8 @@ from ev import Exit
 class ExampleExit(Exit):
     """
     Exits are connectors between rooms. Exits are normal Objects except
-    they defines the 'destination' property. It also does work in the 
-    following methods: 
+    they defines the 'destination' property. It also does work in the
+    following methods:
 
      basetype_setup() - sets default exit locks (to change, use at_object_creation instead)
      at_cmdset_get() - this auto-creates and caches a command and a command set on itself
@@ -33,11 +33,11 @@ class ExampleExit(Exit):
                             go there") if exit traversal fails and an
                             attribute err_traverse is not defined.
 
-    Relevant hooks to overload (compared to other types of Objects): 
+    Relevant hooks to overload (compared to other types of Objects):
     at_before_traverse(traveller) - called just before traversing
     at_after_traverse(traveller, source_loc) - called just after traversing
     at_failed_traverse(traveller) - called if traversal failed for some reason. Will
-                                    not be called if the attribute 'err_traverse' is 
+                                    not be called if the attribute 'err_traverse' is
                                     defined, in which case that will simply be echoed.
     """
     pass

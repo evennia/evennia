@@ -1,13 +1,13 @@
 """
-This defines a the Server's generic session object. This object represents 
-a connection to the outside world but don't know any details about how the 
+This defines a the Server's generic session object. This object represents
+a connection to the outside world but don't know any details about how the
 connection actually happens (so it's the same for telnet, web, ssh etc).
 
 It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
 
-import time 
+import time
 from datetime import datetime
 from django.conf import settings
 from src.scripts.models import ScriptDB
@@ -16,7 +16,7 @@ from src.utils import logger, utils
 from src.commands import cmdhandler, cmdsethandler
 from src.server.session import Session
 
-IDLE_COMMAND = settings.IDLE_COMMAND 
+IDLE_COMMAND = settings.IDLE_COMMAND
 
 # load optional out-of-band function module
 OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
@@ -33,14 +33,14 @@ from django.utils.translation import ugettext as _
 
 class ServerSession(Session):
     """
-    This class represents a player's session and is a template for 
-    individual protocols to communicate with Evennia. 
+    This class represents a player's session and is a template for
+    individual protocols to communicate with Evennia.
 
     Each player gets a session assigned to them whenever they connect
     to the game server. All communication between game and player goes
     through their session.
 
-    """        
+    """
     def at_sync(self):
         """
         This is called whenever a session has been resynced with the portal.
@@ -48,13 +48,13 @@ class ServerSession(Session):
         been assigned (if applicable).
 
         Since this is often called after a server restart we need to set up
-        the session as it was. 
+        the session as it was.
         """
         if not self.logged_in:
             # assign the unloggedin-command set.
             self.cmdset = cmdsethandler.CmdSetHandler(self)
             self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
-            self.cmdset.update(init_mode=True)            
+            self.cmdset.update(init_mode=True)
             self.cmdset.update(init_mode=True)
             return
 
@@ -80,29 +80,29 @@ class ServerSession(Session):
         self.uname = self.user.username
         self.logged_in = True
         self.conn_time = time.time()
-        
+
         # Update account's last login time.
-        self.user.last_login = datetime.now()        
-        self.user.save()        
-        
+        self.user.last_login = datetime.now()
+        self.user.save()
+
         # player init
         #print "at_init() - player"
         player.at_init()
-        
-        # Check if this is the first time the *player* logs in 
+
+        # Check if this is the first time the *player* logs in
         if player.db.FIRST_LOGIN:
             player.at_first_login()
             del player.db.FIRST_LOGIN
-        player.at_pre_login()        
+        player.at_pre_login()
 
         character = player.character
-        if character: 
+        if character:
             # this player has a character. Check if it's the
             # first time *this character* logs in
             character.at_init()
             if character.db.FIRST_LOGIN:
                 character.at_first_login()
-                del character.db.FIRST_LOGIN            
+                del character.db.FIRST_LOGIN
             # run character login hook
             character.at_pre_login()
 
@@ -110,12 +110,12 @@ class ServerSession(Session):
 
         # start (persistent) scripts on this object
         ScriptDB.objects.validate(obj=self.player.character)
-        
+
         #add session to connected list
         self.sessionhandler.login(self)
 
-        # post-login hooks 
-        player.at_post_login()        
+        # post-login hooks
+        player.at_post_login()
         if character:
             character.at_post_login()
 
@@ -125,15 +125,15 @@ class ServerSession(Session):
         accounting. This method is used also for non-loggedin
         accounts.
         """
-        if self.logged_in:            
+        if self.logged_in:
             player = self.get_player()
             character = self.get_character()
             if character:
                 character.at_disconnect()
             uaccount = player.user
             uaccount.last_login = datetime.now()
-            uaccount.save()            
-            self.logged_in = False                                        
+            uaccount.save()
+            self.logged_in = False
         self.sessionhandler.disconnect(self)
 
     def get_player(self):
@@ -143,8 +143,8 @@ class ServerSession(Session):
         if self.logged_in:
             return self.player
         else:
-            return None 
-                       
+            return None
+
     def get_character(self):
         """
         Returns the in-game character associated with this session.
@@ -153,12 +153,12 @@ class ServerSession(Session):
         player = self.get_player()
         if player:
             return player.character
-        return None 
+        return None
 
     def log(self, message, channel=True):
         """
         Emits session info to the appropriate outputs and info channels.
-        """        
+        """
         if channel:
             try:
                 cchan = settings.CHANNEL_CONNECTINFO
@@ -171,7 +171,7 @@ class ServerSession(Session):
     def update_session_counters(self, idle=False):
         """
         Hit this when the user enters a command in order to update idle timers
-        and command counters. 
+        and command counters.
         """
         # Store the timestamp of the user's last command.
         self.cmd_last = time.time()
@@ -187,24 +187,24 @@ class ServerSession(Session):
         """
         # handle the 'idle' command
         if str(command_string).strip() == IDLE_COMMAND:
-            self.update_session_counters(idle=True)            
-            return 
-        
+            self.update_session_counters(idle=True)
+            return
+
         # all other inputs, including empty inputs
-        character = self.get_character()        
-    
+        character = self.get_character()
+
 
         if character:
             character.execute_cmd(command_string)
         else:
             if self.logged_in:
                 # there is no character, but we are logged in. Use player instead.
-                self.get_player().execute_cmd(command_string)                    
-            else:            
-                # we are not logged in. Use the session directly 
+                self.get_player().execute_cmd(command_string)
+            else:
+                # we are not logged in. Use the session directly
                 # (it uses the settings.UNLOGGEDIN cmdset)
                 cmdhandler.cmdhandler(self, command_string)
-        self.update_session_counters()            
+        self.update_session_counters()
 
     def data_out(self, msg, data=None):
         """
@@ -218,25 +218,25 @@ class ServerSession(Session):
         This receives out-of-band data from the Portal.
 
         This method parses the data input (a dict) and uses
-        it to launch correct methods from those plugged into 
-        the system. 
-        
+        it to launch correct methods from those plugged into
+        the system.
+
         data = {funcname: ( [args], {kwargs]),
                 funcname: ( [args], {kwargs}), ...}
 
-        example: 
+        example:
            data = {"get_hp": ([], {}),
                    "update_counter", (["counter1"], {"now":True}) }
         """
 
         print "server: "
         outdata = {}
-        
+
         entity = self.get_character()
         if not entity:
             entity = self.get_player()
         if not entity:
-            entity = self 
+            entity = self
 
         for funcname, argtuple in data.items():
             # loop through the data, calling available functions.
@@ -262,19 +262,19 @@ class ServerSession(Session):
     def __eq__(self, other):
         return self.address == other.address
 
-    
+
     def __str__(self):
         """
         String representation of the user session class. We use
         this a lot in the server logs.
         """
         symbol = ""
-        if self.logged_in and hasattr(self, "player") and self.player:            
-            symbol = "(#%s)" % self.player.id                
+        if self.logged_in and hasattr(self, "player") and self.player:
+            symbol = "(#%s)" % self.player.id
         try:
-            address = ":".join([str(part) for part in self.address])            
+            address = ":".join([str(part) for part in self.address])
         except Exception:
-            address = self.address            
+            address = self.address
         return "%s%s@%s" % (self.uname, symbol, address)
 
     def __unicode__(self):
@@ -298,7 +298,7 @@ class ServerSession(Session):
 
 
     # Dummy API hooks for use a non-loggedin operation
-        
+
     def at_cmdset_get(self):
         "dummy hook all objects with cmdsets need to have"
         pass
@@ -306,11 +306,11 @@ class ServerSession(Session):
     # Mock db/ndb properties for allowing easy storage on the session
     # (note that no databse is involved at all here. session.db.attr =
     # value just saves a normal property in memory, just like ndb).
-    
+
     #@property
     def ndb_get(self):
         """
-        A non-persistent store (ndb: NonDataBase). Everything stored 
+        A non-persistent store (ndb: NonDataBase). Everything stored
         to this is guaranteed to be cleared when a server is shutdown.
         Syntax is same as for the _get_db_holder() method and
         property, e.g. obj.ndb.attr = value etc.
@@ -321,14 +321,14 @@ class ServerSession(Session):
             class NdbHolder(object):
                 "Holder for storing non-persistent attributes."
                 def all(self):
-                    return [val for val in self.__dict__.keys() 
-                            if not val.startswith['_']]                    
+                    return [val for val in self.__dict__.keys()
+                            if not val.startswith['_']]
                 def __getattribute__(self, key):
-                    # return None if no matching attribute was found. 
+                    # return None if no matching attribute was found.
                     try:
                         return object.__getattribute__(self, key)
                     except AttributeError:
-                        return None 
+                        return None
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
     #@ndb.setter
@@ -348,4 +348,4 @@ class ServerSession(Session):
     # at this stage, so we just present a uniform API)
     def access(self, *args, **kwargs):
         "Dummy method."
-        return True 
+        return True

@@ -4,17 +4,17 @@ Web client server resource.
 The Evennia web client consists of two components running
 on twisted and django. They are both a part of the Evennia
 website url tree (so the testing website might be located
-on http://localhost:8000/, whereas the webclient can be 
-found on http://localhost:8000/webclient.) 
+on http://localhost:8000/, whereas the webclient can be
+found on http://localhost:8000/webclient.)
 
 /webclient - this url is handled through django's template
              system and serves the html page for the client
              itself along with its javascript chat program.
 /webclientdata - this url is called by the ajax chat using
                  POST requests (long-polling when necessary)
-                 The WebClient resource in this module will 
-                 handle these requests and act as a gateway 
-                 to sessions connected over the webclient. 
+                 The WebClient resource in this module will
+                 handle these requests and act as a gateway
+                 to sessions connected over the webclient.
 """
 import time
 from hashlib import md5
@@ -25,7 +25,7 @@ from twisted.internet import defer, reactor
 from django.utils import simplejson
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
-from django.conf import settings 
+from django.conf import settings
 from src.utils import utils, logger, ansi
 from src.utils.text2html import parse_html
 from src.server import session
@@ -34,7 +34,7 @@ SERVERNAME = settings.SERVERNAME
 ENCODINGS = settings.ENCODINGS
 
 # defining a simple json encoder for returning
-# django data to the client. Might need to 
+# django data to the client. Might need to
 # extend this if one wants to send more
 # complex database objects too.
 
@@ -51,36 +51,36 @@ def jsonify(obj):
 # WebClient resource - this is called by the ajax client
 # using POST requests to /webclientdata.
 #
-    
+
 class WebClient(resource.Resource):
     """
-    An ajax/comet long-polling transport 
+    An ajax/comet long-polling transport
     """
-    isLeaf = True 
+    isLeaf = True
     allowedMethods = ('POST',)
 
     def __init__(self):
         self.requests = {}
         self.databuffer = {}
-        
+
     def getChild(self, path, request):
         """
         This is the place to put dynamic content.
         """
-        return self                 
-    
+        return self
+
     def _responseFailed(self, failure, suid, request):
-        "callback if a request is lost/timed out"                        
+        "callback if a request is lost/timed out"
         try:
             self.requests.get(suid, []).remove(request)
         except ValueError:
-            pass 
-        
+            pass
+
     def lineSend(self, suid, string, data=None):
         """
         This adds the data to the buffer and/or sends it to
         the client as soon as possible.
-        """    
+        """
         requests = self.requests.get(suid, None)
         if requests:
             request = requests.pop(0)
@@ -88,22 +88,22 @@ class WebClient(resource.Resource):
             request.write(jsonify({'msg':string, 'data':data}))
             request.finish()
             self.requests[suid] = requests
-        else:            
+        else:
             # no waiting request. Store data in buffer
             dataentries = self.databuffer.get(suid, [])
             dataentries.append(jsonify({'msg':string, 'data':data}))
             self.databuffer[suid] = dataentries
-    
+
     def client_disconnect(self, suid):
         """
         Disconnect session with given suid.
-        """        
+        """
         if self.requests.has_key(suid):
             for request in self.requests.get(suid, []):
                 request.finish()
                 del self.requests[suid]
         if self.databuffer.has_key(suid):
-            del self.databuffer[suid]                
+            del self.databuffer[suid]
 
     def mode_init(self, request):
         """
@@ -120,10 +120,10 @@ class WebClient(resource.Resource):
             # creating a unique id hash string
             suid = md5(str(time.time())).hexdigest()
             self.requests[suid] = []
-            self.databuffer[suid] = []        
+            self.databuffer[suid] = []
 
             sess = WebClientSession()
-            sess.client = self        
+            sess.client = self
             sess.init_session("comet", remote_addr, self.sessionhandler)
             sess.suid = suid
             sess.sessionhandler.connect(sess)
@@ -154,22 +154,22 @@ class WebClient(resource.Resource):
         available.
         """
         suid = request.args.get('suid', ['0'])[0]
-        if suid == '0':            
+        if suid == '0':
             return ''
-        
+
         dataentries = self.databuffer.get(suid, [])
         if dataentries:
             return dataentries.pop(0)
         reqlist = self.requests.get(suid, [])
         request.notifyFinish().addErrback(self._responseFailed, suid, request)
-        reqlist.append(request)                
+        reqlist.append(request)
         self.requests[suid] = reqlist
         return server.NOT_DONE_YET
 
     def mode_close(self, request):
         """
         This is called by render_POST when the client is signalling
-        that it is about to be closed. 
+        that it is about to be closed.
         """
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
@@ -184,8 +184,8 @@ class WebClient(resource.Resource):
         initializing or sending/receving data through the request. It
         uses a long-polling mechanism to avoid sending data unless
         there is actual data available.
-        """ 
-        dmode = request.args.get('mode', [None])[0]        
+        """
+        dmode = request.args.get('mode', [None])[0]
         if dmode == 'init':
             # startup. Setup the server.
             return self.mode_init(request)
@@ -201,11 +201,11 @@ class WebClient(resource.Resource):
         else:
             # this should not happen if client sends valid data.
             return ''
-    
+
 #
-# A session type handling communication over the 
-# web client interface. 
-# 
+# A session type handling communication over the
+# web client interface.
+#
 
 class WebClientSession(session.Session):
     """
@@ -215,38 +215,38 @@ class WebClientSession(session.Session):
     def disconnect(self, reason=None):
         """
         Disconnect from server
-        """                        
+        """
         if reason:
             self.client.lineSend(self.suid, reason)
         self.client.client_disconnect(self.suid)
 
     def data_out(self, string='', data=None):
         """
-        Data Evennia -> Player access hook. 
+        Data Evennia -> Player access hook.
 
         data argument may be used depending on
-        the client-server implementation. 
+        the client-server implementation.
         """
-        
+
         if data:
             # treat data?
             pass
 
         # string handling is similar to telnet
         try:
-            string = utils.to_str(string, encoding=self.encoding)                
-            
+            string = utils.to_str(string, encoding=self.encoding)
+
             nomarkup = False
-            raw = False 
+            raw = False
             if type(data) == dict:
                 # check if we want escape codes to go through unparsed.
                 raw = data.get("raw", False)
-                # check if we want to remove all markup 
-                nomarkup = data.get("nomarkup", False)            
+                # check if we want to remove all markup
+                nomarkup = data.get("nomarkup", False)
             if raw:
                 self.client.lineSend(self.suid, string)
             else:
                 self.client.lineSend(self.suid, parse_html(ansi.parse_ansi(string, strip_ansi=nomarkup)))
-            return 
-        except Exception, e:            
+            return
+        except Exception, e:
             logger.log_trace()

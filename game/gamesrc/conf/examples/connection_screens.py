@@ -1,8 +1,8 @@
 """
-Connect screen module template 
+Connect screen module template
 
 Copy this module one level up, to gamesrc/conf/, name it what
-you want and modify it to your liking. 
+you want and modify it to your liking.
 
 Then you set settings.CONNECTION_SCREEN_MODULE to point to your
 new module.
@@ -10,7 +10,7 @@ new module.
 
  This module holds textual connection screen definitions.  All global
  string variables (only) in this module are read by Evennia and
- assumed to define a Connection screen.  
+ assumed to define a Connection screen.
 
  The names of the string variables doesn't matter (except they
  shouldn't start with _), but each should hold a string defining a
@@ -25,13 +25,13 @@ new module.
 
 """
 
-from src.utils import utils 
+from src.utils import utils
 from src.commands.connection_screen import DEFAULT_SCREEN
 
 #
 # CUSTOM_SCREEN = \
 # """{b=============================================================={n
-# Welcome to {gEvennia{n, version %s! 
+# Welcome to {gEvennia{n, version %s!
 #
 # If you have an existing account, connect to it by typing:
 #      {wconnect <email> <password>{n
@@ -45,5 +45,5 @@ from src.commands.connection_screen import DEFAULT_SCREEN
 
 # MENU_SCREEN = \
 # """{b=============================================================={n
-#  Welcome to {gEvennnia{n, version %s! 
+#  Welcome to {gEvennnia{n, version %s!
 # {b=============================================================={n""" % utils.get_evennia_version()

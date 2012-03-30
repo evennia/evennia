@@ -3,7 +3,7 @@
 At_server_startstop module template
 
 Copy this module one level up, to gamesrc/conf/, name it what you
-will and use it as a template for your modifications. 
+will and use it as a template for your modifications.
 
 Then edit settings.AT_SERVER_STARTSTOP_MODULE to point to your new
 module.
@@ -15,10 +15,10 @@ already been executed. The main purpose of this is module is to have a
 safe place to initialize eventual custom modules that your game needs
 to start up or load.
 
-The module should define at least these global functions: 
+The module should define at least these global functions:
 
-at_server_start() 
-at_server_stop() 
+at_server_start()
+at_server_stop()
 
 """
 

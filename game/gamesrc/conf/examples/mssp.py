@@ -1,22 +1,22 @@
 """
 
-MSSP module template 
+MSSP module template
 
 Copy this module one level up, to gamesrc/conf/, name it
-what you want and edit it to your satisfaction. 
+what you want and edit it to your satisfaction.
 
 Then change settings.MSSP_META_MODULE to point to your new module.
 
- MSSP (Mud Server Status Protocol) meta information 
+ MSSP (Mud Server Status Protocol) meta information
 
  MUD website listings (that you have registered with) can use this
  information to keep up-to-date with your game stats as you change
  them. Also number of currently active players and uptime will
  automatically be reported. You don't have to fill in everything
  (and most are not used by all crawlers); leave the default
- if so needed. You need to @reload the game before updated 
- information is made available to crawlers (reloading does not 
- affect uptime). 
+ if so needed. You need to @reload the game before updated
+ information is made available to crawlers (reloading does not
+ affect uptime).
 """
 
 MSSPTable =  {
@@ -29,16 +29,16 @@ MSSPTable =  {
 
     "CRAWL DELAY":        "-1",     # limit how often crawler updates the listing. -1 for no limit
 
-    "HOSTNAME":           "",       # current or new hostname 
+    "HOSTNAME":           "",       # current or new hostname
     "PORT":               ["4000"], # most important port should be last in list
     "CODEBASE":           "Evennia",
     "CONTACT":            "",       # email for contacting the mud
     "CREATED":            "",       # year MUD was created
-    "ICON":               "",       # url to icon 32x32 or larger; <32kb. 
+    "ICON":               "",       # url to icon 32x32 or larger; <32kb.
     "IP":                 "",       # current or new IP address
     "LANGUAGE":           "",       # name of language used, e.g. English
     "LOCATION":           "",       # full English name of server country
-    "MINIMUM AGE":        "0",      # set to 0 if not applicable 
+    "MINIMUM AGE":        "0",      # set to 0 if not applicable
     "WEBSITE":            "www.evennia.com",
 
     # Categorisation
@@ -50,14 +50,14 @@ MSSPTable =  {
                                       # Roleplaying, Simulation, Social or Strategy
     "STATUS":             "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
     "GAMESYSTEM":         "Custom", # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
-    "INTERMUD":           "IMC2",   # evennia supports IMC2. 
-    "SUBGENRE":           "None",   # LASG, Medieval Fantasy, World War II, Frankenstein, 
+    "INTERMUD":           "IMC2",   # evennia supports IMC2.
+    "SUBGENRE":           "None",   # LASG, Medieval Fantasy, World War II, Frankenstein,
                                       # Cyberpunk, Dragonlance, etc. Or None if not available.
 
     # World
 
-    "AREAS":              "0",       
-    "HELPFILES":          "0",      
+    "AREAS":              "0",
+    "HELPFILES":          "0",
     "MOBILES":            "0",
     "OBJECTS":            "0",
     "ROOMS":              "0",      # use 0 if room-less
@@ -121,7 +121,7 @@ MSSPTable =  {
     # Protocols (only change if you added/removed something manually)
 
     "ATCP":               "0",
-    "MSDP":               "0", 
+    "MSDP":               "0",
     "MCCP":               "1",
     "SSL":                "1",
     "UTF-8":              "1",

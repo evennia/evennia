@@ -2,7 +2,7 @@
 """
 EVENNIA SERVER STARTUP SCRIPT
 
-This is the start point for running Evennia. 
+This is the start point for running Evennia.
 
 Sets the appropriate environmental variables and launches the server
 and portal through the runner. Run without arguments to get a
@@ -47,12 +47,12 @@ if not os.path.exists('settings.py'):
     When you are set up, run evennia.py again to start the server."""
     sys.exit()
 
-# signal processing 
+# signal processing
 SIG = signal.SIGINT
 
 HELPENTRY = \
 """
-                                                 (version %s) 
+                                                 (version %s)
 
 This program launches Evennia with various options. You can access all
 this functionality directly from the command line; for example option
@@ -83,7 +83,7 @@ directly see tracebacks on standard output, so starting with options
 server (option 5) to make it available to users.
 
 Reload and stop is not well supported in Windows. If you have issues, log
-into the game to stop or restart the server instead. 
+into the game to stop or restart the server instead.
 """
 
 MENU = \
@@ -160,7 +160,7 @@ except DatabaseError:
     Your database does not seem to be set up correctly.
 
     Please run:
-      
+
          python manage.py syncdb
 
     (make sure to create an admin user when prompted). If you use
@@ -231,7 +231,7 @@ if os.name == 'nt':
 
 
 # Functions
-    
+
 def get_pid(pidfile):
     """
     Get the PID (Process ID) by trying to access
@@ -319,7 +319,7 @@ def run_menu():
             if inp == 5:
                 if os.name == 'nt':
                     print "This operation is not supported under Windows. Log into the game to restart/reload the server."
-                    return 
+                    return
                 kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server")
             elif inp == 6:
                 if os.name == 'nt':
@@ -353,8 +353,8 @@ def handle_args(options, mode, service):
     errmsg = "The %s does not seem to be running."
 
     if mode == 'start':
-        
-        # launch the error checker. Best to catch the errors already here. 
+
+        # launch the error checker. Best to catch the errors already here.
         error_check_python_modules()
 
         # starting one or many services
@@ -376,13 +376,13 @@ def handle_args(options, mode, service):
         # restarting services
         if os.name == 'nt':
             print "Restarting from command line is not supported under Windows. Log into the game to restart."
-            return 
+            return
         if service == 'server':
             kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server')
         elif service == 'portal':
             print """
           Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode.
-          If Portal was running in default Daemon mode, it cannot be restarted. In that case you have 
+          If Portal was running in default Daemon mode, it cannot be restarted. In that case you have
           to restart it manually with 'evennia.py start portal'
           """
             kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART)
@@ -408,7 +408,7 @@ def error_check_python_modules():
     with exceptions in the engine (since they are formatting errors in
     the python source files themselves). Best they fail already here
     before we get any further.
-    """    
+    """
     def imp(path, split=True):
         mod, fromlist = path, "None"
         if split:
@@ -473,12 +473,12 @@ def main():
         # handle command-line arguments
         cmdstr = handle_args(options, mode, service)
     if cmdstr:
-        # call the runner. 
+        # call the runner.
         cmdstr.append('start')
         Popen(cmdstr)
 
 if __name__ == '__main__':
-    # start Evennia 
+    # start Evennia
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
         main()

@@ -6,7 +6,7 @@ This depends on a generic session module that implements
 the actual login procedure of the game, tracks
 sessions etc.
 
-Using standard ssh client, 
+Using standard ssh client,
 
 """
 import os
@@ -65,11 +65,11 @@ class SshProtocol(Manhole, session.Session):
 
         # initialize the session
         client_address = self.getClientAddress()
-        self.init_session("ssh", client_address, self.cfactory.sessionhandler)        
+        self.init_session("ssh", client_address, self.cfactory.sessionhandler)
 
-        # since we might have authenticated already, we might set this here.        
+        # since we might have authenticated already, we might set this here.
         if self.authenticated_player:
-            self.logged_in = True 
+            self.logged_in = True
             self.uid = self.authenticated_player.user.id
         self.sessionhandler.connect(self)
 
@@ -82,8 +82,8 @@ class SshProtocol(Manhole, session.Session):
         self.keyHandlers[CTRL_C] = self.handle_INT
         self.keyHandlers[CTRL_D] = self.handle_EOF
         self.keyHandlers[CTRL_L] = self.handle_FF
-        self.keyHandlers[CTRL_BACKSLASH] = self.handle_QUIT        
-        
+        self.keyHandlers[CTRL_BACKSLASH] = self.handle_QUIT
+
         # initalize
 
     def handle_INT(self):
@@ -128,8 +128,8 @@ class SshProtocol(Manhole, session.Session):
     def connectionLost(self, reason=None):
         """
         This is executed when the connection is lost for
-        whatever reason. It can also be called directly, 
-        from the disconnect method. 
+        whatever reason. It can also be called directly,
+        from the disconnect method.
 
         """
         insults.TerminalProtocol.connectionLost(self, reason)
@@ -186,7 +186,7 @@ class SshProtocol(Manhole, session.Session):
             self.lineSend(str(e))
             return
         nomarkup = False
-        raw = False 
+        raw = False
         if type(data) == dict:
             # check if we want escape codes to go through unparsed.
             raw = data.get("raw", False)
@@ -230,7 +230,7 @@ class PlayerDBPasswordChecker(object):
         username = up.username
         password = up.password
         player = PlayerDB.objects.get_player_from_name(username)
-        res = (None, self.factory)            
+        res = (None, self.factory)
         if player and player.user.check_password(password):
             res = (player, self.factory)
         return defer.succeed(res)
@@ -290,13 +290,13 @@ class TerminalSessionTransport_getPeer:
 def getKeyPair(pubkeyfile, privkeyfile):
     """
     This function looks for RSA keypair files in the current directory. If they
-    do not exist, the keypair is created. 
+    do not exist, the keypair is created.
     """
 
     if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
         print _("  Generating SSH RSA keypair ..."),
-        from Crypto.PublicKey import RSA        
+        from Crypto.PublicKey import RSA
 
         KEY_LENGTH = 1024
         rsaKey = Key(RSA.generate(KEY_LENGTH))

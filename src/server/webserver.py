@@ -14,7 +14,7 @@ a great example/aid on how to do this.)
 from twisted.web import resource
 from twisted.python import threadpool
 from twisted.internet import reactor
-from twisted.application import service, internet 
+from twisted.application import service, internet
 
 from twisted.web.wsgi import WSGIResource
 from django.core.handlers.wsgi import WSGIHandler
@@ -26,19 +26,19 @@ from django.core.handlers.wsgi import WSGIHandler
 class DjangoWebRoot(resource.Resource):
     """
     This creates a web root (/) that Django
-    understands by tweaking the way the 
-    child instancee are recognized. 
+    understands by tweaking the way the
+    child instancee are recognized.
     """
     def __init__(self, pool):
         """
         Setup the django+twisted resource
         """
-        resource.Resource.__init__(self)                
+        resource.Resource.__init__(self)
         self.wsgi_resource = WSGIResource(reactor, pool , WSGIHandler())
 
     def getChild(self, path, request):
         """
-        To make things work we nudge the 
+        To make things work we nudge the
         url tree to make this the root.
         """
         path0 = request.prepath.pop(0)
@@ -62,9 +62,9 @@ class WSGIWebServer(internet.TCPServer):
         internet.TCPServer.__init__(self, *args, **kwargs)
     def startService(self):
         "Start the pool after the service"
-        internet.TCPServer.startService(self)    
-        self.pool.start()    
-    def stopService(self):        
+        internet.TCPServer.startService(self)
+        self.pool.start()
+    def stopService(self):
         "Safely stop the pool after service stop."
-        internet.TCPServer.stopService(self)       
+        internet.TCPServer.stopService(self)
         self.pool.stop()

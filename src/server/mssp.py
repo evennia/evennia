@@ -4,9 +4,9 @@ MSSP - Mud Server Status Protocol
 
 This implements the MSSP telnet protocol as per
 http://tintin.sourceforge.net/mssp/.  MSSP allows web portals and
-listings to have their crawlers find the mud and automatically 
-extract relevant information about it, such as genre, how many 
-active players and so on. 
+listings to have their crawlers find the mud and automatically
+extract relevant information about it, such as genre, how many
+active players and so on.
 
 Most of these settings are de
 
@@ -19,23 +19,23 @@ MSSP_VAR = chr(1)
 MSSP_VAL = chr(2)
 
 
-# try to get the customized mssp info, if it exists. 
-MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={}) 
+# try to get the customized mssp info, if it exists.
+MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
 
 class Mssp(object):
     """
-    Implements the MSSP protocol. Add this to a 
-    variable on the telnet protocol to set it up. 
+    Implements the MSSP protocol. Add this to a
+    variable on the telnet protocol to set it up.
     """
     def __init__(self, protocol):
         """
         initialize MSSP by storing protocol on ourselves
         and calling the client to see if it supports
-        MSSP. 
+        MSSP.
         """
         self.protocol = protocol
         self.protocol.will(MSSP).addCallbacks(self.do_mssp, self.no_mssp)
-                
+
     def get_player_count(self):
         "Get number of logged-in players"
         return str(self.protocol.sessionhandler.count_loggedin())
@@ -52,31 +52,31 @@ class Mssp(object):
 
     def do_mssp(self, option):
         """
-        Negotiate all the information. 
+        Negotiate all the information.
         """
 
         self.mssp_table =  {
 
-        # Required fields 
+        # Required fields
 
         "NAME":               "Evennia",
-        "PLAYERS":            self.get_player_count, 
-        "UPTIME" :            self.get_uptime, 
+        "PLAYERS":            self.get_player_count,
+        "UPTIME" :            self.get_uptime,
 
         # Generic
 
         "CRAWL DELAY":        "-1",
 
-        "HOSTNAME":           "",       # current or new hostname 
+        "HOSTNAME":           "",       # current or new hostname
         "PORT":               ["4000"], # most important port should be last in list
         "CODEBASE":           "Evennia",
         "CONTACT":            "",       # email for contacting the mud
         "CREATED":            "",       # year MUD was created
-        "ICON":               "",       # url to icon 32x32 or larger; <32kb. 
+        "ICON":               "",       # url to icon 32x32 or larger; <32kb.
         "IP":                 "",       # current or new IP address
         "LANGUAGE":           "",       # name of language used, e.g. English
         "LOCATION":           "",       # full English name of server country
-        "MINIMUM AGE":        "0",      # set to 0 if not applicable 
+        "MINIMUM AGE":        "0",      # set to 0 if not applicable
         "WEBSITE":            "www.evennia.com",
 
         # Categorisation
@@ -88,14 +88,14 @@ class Mssp(object):
                                         # Roleplaying, Simulation, Social or Strategy
         "STATUS":             "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
         "GAMESYSTEM":         "Custom", # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
-        "INTERMUD":           "IMC2",   # evennia supports IMC2. 
-        "SUBGENRE":           "None",   # LASG, Medieval Fantasy, World War II, Frankenstein, 
+        "INTERMUD":           "IMC2",   # evennia supports IMC2.
+        "SUBGENRE":           "None",   # LASG, Medieval Fantasy, World War II, Frankenstein,
                                         # Cyberpunk, Dragonlance, etc. Or None if not available.
 
         # World
 
-        "AREAS":              "0",       
-        "HELPFILES":          "0",      
+        "AREAS":              "0",
+        "HELPFILES":          "0",
         "MOBILES":            "0",
         "OBJECTS":            "0",
         "ROOMS":              "0",      # use 0 if room-less
@@ -128,7 +128,7 @@ class Mssp(object):
         "HIRING BUILDERS":    "0",
         "HIRING CODERS":      "0",
 
-        # Extended variables 
+        # Extended variables
 
         # World
 

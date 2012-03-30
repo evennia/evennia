@@ -2,7 +2,7 @@
 At_initial_setup module template
 
 Copy this module up one level to /gamesrc/conf, name it what you like
-and then use it as a template to modify. 
+and then use it as a template to modify.
 
 Then edit settings.AT_INITIAL_SETUP_HOOK_MODULE to point to your new
 module.
@@ -21,4 +21,4 @@ does what you expect it to.
 """
 
 def at_initial_setup():
-    pass 
+    pass

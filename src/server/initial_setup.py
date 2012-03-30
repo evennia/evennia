@@ -11,7 +11,7 @@ from django.core import management
 from django.conf import settings
 from src.server.models import ServerConfig
 from src.help.models import HelpEntry
-from src.utils import create 
+from src.utils import create
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -19,7 +19,7 @@ from django.utils.translation import ugettext as _
 def create_config_values():
     """
     Creates the initial config values.
-    """    
+    """
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
@@ -33,28 +33,28 @@ def create_objects():
     """
     Creates the #1 player and Limbo room.
     """
-    
+
     print _(" Creating objects (Player #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
-    # This object is pure django and only holds name, email and password. 
+    # This object is pure django and only holds name, email and password.
     god_user = get_god_user()
 
     # Create a Player 'user profile' object to hold eventual
     # mud-specific settings for the bog standard User object. This is
     # accessed by user.get_profile() and can also store attributes.
     # It also holds mud permissions, but for a superuser these
-    # have no effect anyhow. 
+    # have no effect anyhow.
 
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
 
     # Create the Player object as well as the in-game god-character
     # for user #1. We can't set location and home yet since nothing
     # exists. Also, all properties (name, email, password, is_superuser)
-    # is inherited from the user so we don't specify it again here. 
+    # is inherited from the user so we don't specify it again here.
 
-    god_character = create.create_player(god_user.username, None, None, 
-                                         user=god_user,   
+    god_character = create.create_player(god_user.username, None, None,
+                                         user=god_user,
                                          create_character=True,
                                          character_typeclass=character_typeclass)
 
@@ -66,7 +66,7 @@ def create_objects():
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
 
     god_character.save()
-   
+
     # Limbo is the default "nowhere" starting room
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
@@ -83,11 +83,11 @@ def create_objects():
 
     # Now that Limbo exists, try to set the user up in Limbo (unless
     # the creation hooks already fixed this).
-    if not god_character.location:        
+    if not god_character.location:
         god_character.location = limbo_obj
     if not god_character.home:
         god_character.home = limbo_obj
-    
+
 def create_channels():
     """
     Creates some sensible default channels.
@@ -97,7 +97,7 @@ def create_channels():
     # public channel
     key, aliases, desc, locks = settings.CHANNEL_PUBLIC
     pchan = create.create_channel(key, aliases, desc, locks=locks)
-    # mudinfo channel 
+    # mudinfo channel
     key, aliases, desc, locks = settings.CHANNEL_MUDINFO
     ichan = create.create_channel(key, aliases, desc, locks=locks)
     # connectinfo channel
@@ -110,29 +110,29 @@ def create_channels():
     PlayerChannelConnection.objects.create_connection(goduser, pchan)
     PlayerChannelConnection.objects.create_connection(goduser, ichan)
     PlayerChannelConnection.objects.create_connection(goduser, cchan)
-         
+
 def import_MUX_help_files():
     """
     Imports the MUX help files.
-    """ 
+    """
     print _(" Importing MUX help database (devel reference only) ...")
-    management.call_command('loaddata', '../src/help/mux_help_db.json', verbosity=0)    
+    management.call_command('loaddata', '../src/help/mux_help_db.json', verbosity=0)
     # categorize the MUX help files into its own category.
     default_category = "MUX"
     print _(" Moving imported help db to help category '%(default)s'." \
                                                    % {'default': default_category})
     HelpEntry.objects.all_to_category(default_category)
-    
+
 def create_system_scripts():
     """
     Setup the system repeat scripts. They are automatically started
-    by the create_script function. 
+    by the create_script function.
     """
     from src.scripts import scripts
 
     print _(" Creating and starting global scripts ...")
 
-    # check so that all sessions are alive. 
+    # check so that all sessions are alive.
     script1 = create.create_script(scripts.CheckSessions)
     # validate all scripts in script table.
     script2 = create.create_script(scripts.ValidateScripts)
@@ -140,7 +140,7 @@ def create_system_scripts():
     script3 = create.create_script(scripts.ValidateChannelHandler)
     if not script1 or not script2 or not script3:
         print _(" Error creating system scripts.")
-     
+
 def start_game_time():
     """
     This starts a persistent script that keeps track of the
@@ -155,7 +155,7 @@ def start_game_time():
 def create_admin_media_links():
     """
     This traverses to src/web/media and tries to create a symbolic
-    link to the django media files from within the MEDIA_ROOT. 
+    link to the django media files from within the MEDIA_ROOT.
     These are files we normally don't
     want to mess with (use templates to customize the admin
     look). Linking is needed since the Twisted webserver otherwise has no
@@ -168,8 +168,8 @@ def create_admin_media_links():
     apath = os.path.join(settings.ADMIN_MEDIA_ROOT)
     if os.path.isdir(apath):
         print _(" ADMIN_MEDIA_ROOT already exists. Ignored.")
-        return 
-    if os.name == 'nt':        
+        return
+    if os.name == 'nt':
         print _(" Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode).")
         os.mkdir(apath)
         os.system('xcopy "%s" "%s" /e /q /c' % (dpath, apath))
@@ -188,34 +188,34 @@ def at_initial_setup():
     """
     modname = settings.AT_INITIAL_SETUP_HOOK_MODULE
     if not modname:
-        return 
-    try:        
+        return
+    try:
         mod = __import__(modname, fromlist=[None])
     except ImportError, ValueError:
-        return 
+        return
     print _(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
-        mod.at_initial_setup()                   
-        
+        mod.at_initial_setup()
+
 def handle_setup(last_step):
     """
     Main logic for the module. It allows for restarting
-    the initialization at any point if one of the modules 
-    should crash. 
+    the initialization at any point if one of the modules
+    should crash.
     """
 
     if last_step < 0:
         # this means we don't need to handle setup since
-        # it already ran sucessfully once.         
+        # it already ran sucessfully once.
         return
     elif last_step == None:
         # config doesn't exist yet. First start of server
         last_step = 0
-        
-    # setting up the list of functions to run    
+
+    # setting up the list of functions to run
     setup_queue = [
-        create_config_values,    
-        create_objects,          
+        create_config_values,
+        create_objects,
         create_channels,
         create_system_scripts,
         start_game_time,
@@ -224,17 +224,17 @@ def handle_setup(last_step):
         at_initial_setup]
 
     if not settings.IMPORT_MUX_HELP:
-        # skip importing of the MUX helpfiles, they are 
+        # skip importing of the MUX helpfiles, they are
         # not interesting except for developers.
         del setup_queue[-2]
 
-    #print " Initial setup: %s steps." % (len(setup_queue)) 
+    #print " Initial setup: %s steps." % (len(setup_queue))
 
     # step through queue, from last completed function
-    for num, setup_func in enumerate(setup_queue[last_step:]):  
+    for num, setup_func in enumerate(setup_queue[last_step:]):
         # run the setup function. Note that if there is a
         # traceback we let it stop the system so the config
-        # step is not saved.                
+        # step is not saved.
         #print "%s..." % num
 
         try:
@@ -255,10 +255,10 @@ def handle_setup(last_step):
                     chan.delete()
                 for conn in PlayerChannelConnection.objects.all():
                     conn.delete()
-                
 
-            raise 
-        ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1) 
+
+            raise
+        ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1)
     # We got through the entire list. Set last_step to -1 so we don't
     # have to run this again.
-    ServerConfig.objects.conf("last_initial_setup_step", -1) 
+    ServerConfig.objects.conf("last_initial_setup_step", -1)

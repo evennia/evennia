@@ -4,11 +4,11 @@ to service the MUD portal proxy.
 
 The separation works like this:
 
-Portal - (AMP client) handles protocols. It contains a list of connected sessions in a 
+Portal - (AMP client) handles protocols. It contains a list of connected sessions in a
          dictionary for identifying the respective player connected. If it looses the AMP connection
-         it will automatically try to reconnect. 
-         
-Server - (AMP server) Handles all mud operations. The server holds its own list 
+         it will automatically try to reconnect.
+
+Server - (AMP server) Handles all mud operations. The server holds its own list
          of sessions tied to player objects. This is synced against the portal at startup
          and when a session connects/disconnects
 
@@ -32,15 +32,15 @@ from src.server.serversession import ServerSession
 PORTAL_RESTART = os.path.join(settings.GAME_DIR, "portal.restart")
 SERVER_RESTART = os.path.join(settings.GAME_DIR, "server.restart")
 
-# communication bits 
+# communication bits
 
 PCONN = chr(1)       # portal session connect
 PDISCONN = chr(2)    # portal session disconnect
 PSYNC = chr(3)       # portal session sync
 SLOGIN = chr(4)      # server session login
-SDISCONN = chr(5)    # server session disconnect  
+SDISCONN = chr(5)    # server session disconnect
 SDISCONNALL = chr(6) # server session disconnect all
-SSHUTD = chr(7)      # server shutdown 
+SSHUTD = chr(7)      # server shutdown
 SSYNC = chr(8)       # server session sync
 
 # i18n
@@ -54,7 +54,7 @@ def get_restart_mode(restart_file):
     if os.path.exists(restart_file):
         flag = open(restart_file, 'r').read()
         return flag == "True"
-    return False 
+    return False
 
 class AmpServerFactory(protocol.ServerFactory):
     """
@@ -66,8 +66,8 @@ class AmpServerFactory(protocol.ServerFactory):
         server: The Evennia server service instance
         protocol: The protocol the factory creates instances of.
         """
-        self.server = server 
-        self.protocol = AMPProtocol        
+        self.server = server
+        self.protocol = AMPProtocol
 
     def buildProtocol(self, addr):
         """
@@ -91,7 +91,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     maxDelay = 1
 
     def __init__(self, portal):
-        self.portal = portal 
+        self.portal = portal
         self.protocol = AMPProtocol
 
     def startedConnecting(self, connector):
@@ -100,10 +100,10 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
         """
         pass
         #print 'AMP started to connect:', connector
-        
+
     def buildProtocol(self, addr):
         """
-        Creates an AMPProtocol instance when connecting to the server. 
+        Creates an AMPProtocol instance when connecting to the server.
         """
         #print "Portal connected to Evennia server at %s." % addr
         self.resetDelay()
@@ -114,7 +114,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def clientConnectionLost(self, connector, reason):
         """
         Called when the AMP connection to the MUD server is lost.
-        """        
+        """
         if not get_restart_mode(SERVER_RESTART):
             self.portal.sessions.announce_all(_(" Portal lost connection to Server."))
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
@@ -128,7 +128,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
 
 class MsgPortal2Server(amp.Command):
-    """ 
+    """
     Message portal -> server
     """
     arguments = [('sessid', amp.Integer()),
@@ -138,7 +138,7 @@ class MsgPortal2Server(amp.Command):
     response = []
 
 class MsgServer2Portal(amp.Command):
-    """ 
+    """
     Message server -> portal
     """
     arguments = [('sessid', amp.Integer()),
@@ -155,7 +155,7 @@ class OOBPortal2Server(amp.Command):
                  ('data', amp.String())]
     errors = [(Exception, "EXCEPTION")]
     response = []
-    
+
 class OOBServer2Portal(amp.Command):
     """
     OOB data server -> portal
@@ -164,13 +164,13 @@ class OOBServer2Portal(amp.Command):
                  ('data', amp.String())]
     errors = [(Exception, "EXCEPTION")]
     response = []
-    
+
 class ServerAdmin(amp.Command):
     """
     Portal -> Server
 
     Sent when the portal needs to perform admin
-     operations on the server, such as when a new 
+     operations on the server, such as when a new
      session connects or resyncs
     """
     arguments = [('sessid', amp.Integer()),
@@ -178,13 +178,13 @@ class ServerAdmin(amp.Command):
                  ('data', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
-    
+
 class PortalAdmin(amp.Command):
     """
     Server -> Portal
 
     Sent when the server needs to perform admin
-     operations on the portal. 
+     operations on the portal.
     """
     arguments = [('sessid', amp.Integer()),
                  ('operation', amp.String()),
@@ -209,27 +209,27 @@ class AMPProtocol(amp.AMP):
     subclasses that specify the datatypes of the input/output of these methods.
     """
 
-    # helper methods 
+    # helper methods
 
     def connectionMade(self):
         """
         This is called when a connection is established
         between server and portal. It is called on both sides,
         so we need to make sure to only trigger resync from the
-        server side. 
+        server side.
         """
         if hasattr(self.factory, "portal"):
             sessdata = self.factory.portal.sessions.get_all_sync_data()
             #print sessdata
-            self.call_remote_ServerAdmin(0, 
-                                         PSYNC, 
+            self.call_remote_ServerAdmin(0,
+                                         PSYNC,
                                          data=sessdata)
             if get_restart_mode(SERVER_RESTART):
                 msg = _(" ... Server restarted.")
                 self.factory.portal.sessions.announce_all(msg)
             self.factory.portal.sessions.at_server_connection()
-          
-    # Error handling 
+
+    # Error handling
 
     def errback(self, e, info):
         "error handler, to avoid dropping connections on server tracebacks."
@@ -240,8 +240,8 @@ class AMPProtocol(amp.AMP):
     # Message definition + helper methods to call/create each message type
 
     # Portal -> Server Msg
-    
-    def amp_msg_portal2server(self, sessid, msg, data):        
+
+    def amp_msg_portal2server(self, sessid, msg, data):
         """
         Relays message to server. This method is executed on the Server.
         """
@@ -253,14 +253,14 @@ class AMPProtocol(amp.AMP):
     def call_remote_MsgPortal2Server(self, sessid, msg, data=""):
         """
         Access method called by the Portal and executed on the Portal.
-        """        
+        """
         #print "msg portal->server (portal side):", sessid, msg
         self.callRemote(MsgPortal2Server,
                         sessid=sessid,
                         msg=msg,
                         data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
 
-    # Server -> Portal message 
+    # Server -> Portal message
 
     def amp_msg_server2portal(self, sessid, msg, data):
         """
@@ -281,11 +281,11 @@ class AMPProtocol(amp.AMP):
                         msg=to_str(msg),
                         data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
 
-    # OOB Portal -> Server 
-        
+    # OOB Portal -> Server
+
     # Portal -> Server Msg
-    
-    def amp_oob_portal2server(self, sessid, data):        
+
+    def amp_oob_portal2server(self, sessid, data):
         """
         Relays out-of-band data to server. This method is executed on the Server.
         """
@@ -297,13 +297,13 @@ class AMPProtocol(amp.AMP):
     def call_remote_OOBPortal2Server(self, sessid, data=""):
         """
         Access method called by the Portal and executed on the Portal.
-        """        
+        """
         #print "oob portal->server (portal side):", sessid, data
         self.callRemote(OOBPortal2Server,
-                        sessid=sessid,                        
+                        sessid=sessid,
                         data=dumps(data)).addErrback(self.errback, "OOBPortal2Server")
 
-    # Server -> Portal message 
+    # Server -> Portal message
 
     def amp_oob_server2portal(self, sessid, data):
         """
@@ -318,13 +318,13 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Server and executed on the Server.
         """
-        #print "oob server->portal (server side):", sessid, data        
+        #print "oob server->portal (server side):", sessid, data
         self.callRemote(OOBServer2Portal,
-                        sessid=sessid,                        
+                        sessid=sessid,
                         data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
-        
 
-    # Server administration from the Portal side 
+
+    # Server administration from the Portal side
     def amp_server_admin(self, sessid, operation, data):
         """
         This allows the portal to perform admin
@@ -334,12 +334,12 @@ class AMPProtocol(amp.AMP):
         data = loads(data)
 
         #print "serveradmin (server side):", sessid, operation, data
-        
+
         if operation == PCONN: #portal_session_connect
             # create a new session and sync it
             sess = ServerSession()
             sess.sessionhandler = self.factory.server.sessions
-            sess.load_sync_data(data)            
+            sess.load_sync_data(data)
             if sess.logged_in and sess.uid:
                 # this can happen in the case of auto-authenticating protocols like SSH
                 sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
@@ -348,24 +348,24 @@ class AMPProtocol(amp.AMP):
             self.factory.server.sessions.portal_connect(sessid, sess)
 
         elif operation == PDISCONN: #'portal_session_disconnect'
-            # session closed from portal side 
+            # session closed from portal side
             self.factory.server.sessions.portal_disconnect(sessid)
 
         elif operation == PSYNC: #'portal_session_sync'
-            # force a resync of sessions when portal reconnects to server (e.g. after a server reboot)            
+            # force a resync of sessions when portal reconnects to server (e.g. after a server reboot)
             # the data kwarg contains a dict {sessid: {arg1:val1,...}} representing the attributes
             # to sync for each session.
             sesslist = []
             server_sessionhandler = self.factory.server.sessions
-            for sessid, sessdict in data.items():                
+            for sessid, sessdict in data.items():
                 sess = ServerSession()
                 sess.sessionhandler = server_sessionhandler
                 sess.load_sync_data(sessdict)
                 if sess.uid:
                     sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
-                sesslist.append(sess)                                
+                sesslist.append(sess)
             # replace sessions on server
-            server_sessionhandler.portal_session_sync(sesslist)            
+            server_sessionhandler.portal_session_sync(sesslist)
             # after sync is complete we force-validate all scripts (this starts everything)
             init_mode = ServerConfig.objects.conf("server_restart_mode", default=None)
             ScriptDB.objects.validate(init_mode=init_mode)
@@ -373,7 +373,7 @@ class AMPProtocol(amp.AMP):
 
         else:
             raise Exception(_("operation %(op)s not recognized.") % {'op': operation})
-            
+
         return {}
     ServerAdmin.responder(amp_server_admin)
 
@@ -393,7 +393,7 @@ class AMPProtocol(amp.AMP):
 
     def amp_portal_admin(self, sessid, operation, data):
         """
-        This allows the server to perform admin 
+        This allows the server to perform admin
         operations on the portal. This is executed on the Portal.
         """
         data = loads(data)
@@ -401,7 +401,7 @@ class AMPProtocol(amp.AMP):
         #print "portaladmin (portal side):", sessid, operation, data
         if operation == SLOGIN: # 'server_session_login'
             # a session has authenticated; sync it.
-            sess = self.factory.portal.sessions.get_session(sessid)            
+            sess = self.factory.portal.sessions.get_session(sessid)
             sess.load_sync_data(data)
 
         elif operation == SDISCONN: #'server_session_disconnect'
@@ -415,14 +415,14 @@ class AMPProtocol(amp.AMP):
         elif operation == SSHUTD: #server_shutdown'
             # the server orders the portal to shut down
             self.factory.portal.shutdown(restart=False)
-            
+
         elif operation == SSYNC: #'server_session_sync'
             # server wants to save session data to the portal, maybe because
-            # it's about to shut down. We don't overwrite any sessions, 
-            # just update data on them and remove eventual ones that are 
-            # out of sync (shouldn't happen normally). 
+            # it's about to shut down. We don't overwrite any sessions,
+            # just update data on them and remove eventual ones that are
+            # out of sync (shouldn't happen normally).
 
-            portal_sessionhandler = self.factory.portal.sessions.sessions            
+            portal_sessionhandler = self.factory.portal.sessions.sessions
 
             to_save = [sessid for sessid in data if sessid in portal_sessionhandler.sessions]
             to_delete = [sessid for sessid in data if sessid not in to_save]
@@ -449,10 +449,3 @@ class AMPProtocol(amp.AMP):
                         sessid=sessid,
                         operation=operation,
                         data=data).addErrback(self.errback, "PortalAdmin")
-
-
-
-
-
-
-

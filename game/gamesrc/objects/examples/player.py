@@ -3,16 +3,16 @@
 Template module for Players
 
 Copy this module up one level and name it as you like, then
-use it as a template to create your own Player class. 
+use it as a template to create your own Player class.
 
-To make the default account login default to using a Player 
+To make the default account login default to using a Player
 of your new type, change settings.BASE_PLAYER_TYPECLASS to point to
 your new class, e.g.
 
 settings.BASE_PLAYER_TYPECLASS = "game.gamesrc.objects.myplayer.MyPlayer"
 
 Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the 
+this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
@@ -20,19 +20,19 @@ from ev import Player
 
 class ExamplePlayer(Player):
     """
-    This class describes the actual OOC player (i.e. the user connecting 
+    This class describes the actual OOC player (i.e. the user connecting
     to the MUD). It does NOT have visual appearance in the game world (that
     is handled by the character which is connected to this). Comm channels
-    are attended/joined using this object. 
-    
-    It can be useful e.g. for storing configuration options for your game, but 
+    are attended/joined using this object.
+
+    It can be useful e.g. for storing configuration options for your game, but
     should generally not hold any character-related info (that's best handled
     on the character level).
 
     Can be set using BASE_PLAYER_TYPECLASS.
 
 
-    * available properties 
+    * available properties
 
      key (string) - name of player
      name (string)- wrapper for user.username
@@ -41,18 +41,18 @@ class ExamplePlayer(Player):
      dbobj (Player, read-only) - link to database model. dbobj.typeclass points back to this class
      typeclass (Player, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
      date_created (string) - time stamp of object creation
-     permissions (list of strings) - list of permission strings 
+     permissions (list of strings) - list of permission strings
 
      user (User, read-only) - django User authorization object
      obj (Object) - game object controlled by player. 'character' can also be used.
      sessions (list of Sessions) - sessions connected to this player
      is_superuser (bool, read-only) - if the connected user is a superuser
 
-    * Handlers 
+    * Handlers
 
      locks - lock-handler: use locks.add() to add new lock strings
      db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
-     ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data 
+     ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data
      scripts - script-handler. Add new scripts to object with scripts.add()
      cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
      nicks - nick-handler. New nicks with nicks.add().
@@ -71,12 +71,12 @@ class ExamplePlayer(Player):
     * Hook methods (when re-implementation, remember methods need to have self as first arg)
 
      basetype_setup()
-     at_player_creation() 
+     at_player_creation()
 
      - note that the following hooks are also found on Objects and are
        usually handled on the character level:
 
-     at_init() 
+     at_init()
      at_cmdset_get()
      at_first_login()
      at_post_login()

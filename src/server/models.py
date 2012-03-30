@@ -4,8 +4,8 @@ Server Configuration flags
 
 This holds persistent server configuration flags.
 
-Config values should usually be set through the 
-manager's conf() method. 
+Config values should usually be set through the
+manager's conf() method.
 
 """
 try:
@@ -26,10 +26,10 @@ from django.utils.translation import ugettext as _
 # ServerConfig
 #
 #------------------------------------------------------------
-            
+
 class ServerConfig(SharedMemoryModel):
     """
-    On-the fly storage of global settings. 
+    On-the fly storage of global settings.
 
     Properties defined on ServerConfig:
       key - main identifier
@@ -50,15 +50,15 @@ class ServerConfig(SharedMemoryModel):
     db_value = models.TextField(blank=True)
 
     objects = ServerConfigManager()
-        
+
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
     # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value, 
-    # value = self.attr and del self.attr respectively (where self 
+    # defined that allows the user to do self.attr = value,
+    # value = self.attr and del self.attr respectively (where self
     # is the object in question).
-        
+
     # key property (wraps db_key)
     #@property
     def key_get(self):
@@ -86,12 +86,12 @@ class ServerConfig(SharedMemoryModel):
         if utils.has_parent('django.db.models.base.Model', value):
             # we have to protect against storing db objects.
             logger.log_errmsg(_("ServerConfig cannot store db objects! (%s)" % value))
-            return 
+            return
         self.db_value = pickle.dumps(value)
         self.save()
     #@value.deleter
     def value_del(self):
-        "Deleter. Allows for del self.value. Deletes entry."        
+        "Deleter. Allows for del self.value. Deletes entry."
         self.delete()
     value = property(value_get, value_set, value_del)
 
@@ -100,8 +100,8 @@ class ServerConfig(SharedMemoryModel):
         verbose_name = "Server Config value"
         verbose_name_plural = "Server Config values"
 
-    # 
-    # ServerConfig other methods 
+    #
+    # ServerConfig other methods
     #
 
     def __unicode__(self):

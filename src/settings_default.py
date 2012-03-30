@@ -16,19 +16,19 @@ always be sure of what you have changed and what is default behaviour.
 import os
 
 ###################################################
-# Evennia base server config 
+# Evennia base server config
 ###################################################
 
 # This is the name of your game. Make it catchy!
-SERVERNAME = "Evennia" 
+SERVERNAME = "Evennia"
 # Activate telnet service
-TELNET_ENABLED = True 
+TELNET_ENABLED = True
 # A list of ports the Evennia telnet server listens on
 # Can be one or many.
 TELNET_PORTS = [4000]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 TELNET_INTERFACES = ['0.0.0.0']
-# Start the evennia django+twisted webserver so you can 
+# Start the evennia django+twisted webserver so you can
 # browse the evennia website and the admin interface
 # (Obs - further web configuration can be found below
 # in the section  'Config for Django web features')
@@ -42,21 +42,21 @@ WEBSERVER_INTERFACES = ['0.0.0.0']
 WEBCLIENT_ENABLED = True
 # Activate SSH protocol (SecureShell)
 SSH_ENABLED = False
-# Ports to use for SSH 
+# Ports to use for SSH
 SSH_PORTS = [8022]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 SSH_INTERFACES = ['0.0.0.0']
 # Actiave SSL protocol (SecureSocketLibrary)
 SSL_ENABLED = False
-# Ports to use for SSL 
+# Ports to use for SSL
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 SSL_INTERFACES = ['0.0.0.0']
 # If multisessions are allowed, a user can log into the game
 # from several different computers/clients at the same time.
-# All feedback from the game will be echoed to all sessions. 
+# All feedback from the game will be echoed to all sessions.
 # If false, only one session is allowed, all other are logged off
-# when a new connects. 
+# when a new connects.
 ALLOW_MULTISESSION = True
 # Make this unique, and don't share it with anybody.
 # NOTE: If you change this after creating any accounts, your users won't be
@@ -72,8 +72,8 @@ GAME_DIR = os.path.join(BASE_PATH, 'game')
 LOG_DIR = os.path.join(GAME_DIR, 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
-# Where to log server requests to the web server. This is VERY spammy, so this 
-# file should be removed at regular intervals. 
+# Where to log server requests to the web server. This is VERY spammy, so this
+# file should be removed at regular intervals.
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -81,57 +81,57 @@ TIME_ZONE = 'UTC'
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'
-# Should the default MUX help files be imported? This might be  
-# interesting to developers for reference, but is frustrating to users 
-# since it creates a lot of help entries that has nothing to do 
+# Should the default MUX help files be imported? This might be
+# interesting to developers for reference, but is frustrating to users
+# since it creates a lot of help entries that has nothing to do
 # with what is actually available in the game.
-IMPORT_MUX_HELP = False 
+IMPORT_MUX_HELP = False
 # How long time (in seconds) a user may idle before being logged
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
 # at regular intervals. Set <=0 to deactivate idle timout completely.
 IDLE_TIMEOUT = 3600
-# The idle command can be sent to keep your session active without actually 
+# The idle command can be sent to keep your session active without actually
 # having to spam normal commands regularly. It gives no feedback, only updates
 # the idle timer.
 IDLE_COMMAND = "idle"
-# The set of encodings tried. A Player object may set an attribute "encoding" on 
+# The set of encodings tried. A Player object may set an attribute "encoding" on
 # itself to match the client used. If not set, or wrong encoding is
-# given, this list is tried, in order, aborting on the first match. 
+# given, this list is tried, in order, aborting on the first match.
 # Add sets for languages/regions your players are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
-# The game server opens an AMP port so that the portal can 
+# The game server opens an AMP port so that the portal can
 # communicate with it. This is an internal functionality of Evennia, usually
-# operating between the two processes on the same machine. Don't change unless 
-# you know what you are doing. 
+# operating between the two processes on the same machine. Don't change unless
+# you know what you are doing.
 AMP_HOST = 'localhost'
 AMP_PORT = 5000
 
 ###################################################
-# Evennia Database config 
+# Evennia Database config
 ###################################################
 
-# Database config syntax for Django 1.2+. You can add several 
-# database engines in the dictionary (untested). 
+# Database config syntax for Django 1.2+. You can add several
+# database engines in the dictionary (untested).
 # ENGINE - path to the the database backend (replace
 #          sqlite3 in the example with the one you want.
-#          Supported database engines are 
+#          Supported database engines are
 #            'postgresql_psycopg2', 'postgresql', 'mysql',
 #             'sqlite3' and 'oracle').
 # NAME - database name, or path the db file for sqlite3
 # USER - db admin (unused in sqlite3)
 # PASSWORD - db admin password (unused in sqlite3)
 # HOST - empty string is localhost (unused in sqlite3)
-# PORT - empty string defaults to localhost (unused in sqlite3) 
+# PORT - empty string defaults to localhost (unused in sqlite3)
 DATABASES = {
     'default':{
-        'ENGINE':'django.db.backends.sqlite3', 
-        'NAME':os.path.join(GAME_DIR, 'evennia.db3'), 
+        'ENGINE':'django.db.backends.sqlite3',
+        'NAME':os.path.join(GAME_DIR, 'evennia.db3'),
         'USER':'',
         'PASSWORD':'',
         'HOST':'',
-        'PORT':''    
+        'PORT':''
         }}
 # Engine Config style for Django versions < 1.2. See above.
 DATABASE_ENGINE = 'sqlite3'
@@ -142,10 +142,10 @@ DATABASE_HOST = ''
 DATABASE_PORT = ''
 
 ###################################################
-# Evennia pluggable modules 
+# Evennia pluggable modules
 ###################################################
 
-# An alternate command parser module to use 
+# An alternate command parser module to use
 COMMAND_PARSER = "src.commands.cmdparser.cmdparser"
 # The handler that outputs errors when searching
 # objects using object.search().
@@ -154,25 +154,25 @@ SEARCH_AT_RESULT = "src.commands.cmdparser.at_search_result"
 # object matches (so you can separate between same-named
 # objects without using dbrefs).
 SEARCH_AT_MULTIMATCH_INPUT = "src.commands.cmdparser.at_multimatch_input"
-# The module holding text strings for the connection screen. 
-# This module should contain one or more variables 
+# The module holding text strings for the connection screen.
+# This module should contain one or more variables
 # with strings defining the look of the screen.
 CONNECTION_SCREEN_MODULE = "src.commands.connection_screen"
 # An option al module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
-# The check will fail quietly if module doesn't exist or fails to load. 
+# The check will fail quietly if module doesn't exist or fails to load.
 AT_INITIAL_SETUP_HOOK_MODULE = ""
 # Module holding at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and  resets/stops.
 AT_SERVER_STARTSTOP_MODULE = ""# Module holding server-side functions for out-of-band protocols to call.
 OOB_FUNC_MODULE = ""
-# Module holding MSSP meta data 
+# Module holding MSSP meta data
 MSSP_META_MODULE = ""
 
 ###################################################
-# Default command sets 
+# Default command sets
 ###################################################
 # Note that with the exception of the unloggedin set (which is not
 # stored anywhere), changing these paths will only affect NEW created
@@ -211,9 +211,9 @@ BASE_ROOM_TYPECLASS = "src.objects.objects.Room"
 BASE_EXIT_TYPECLASS = "src.objects.objects.Exit"
 # Typeclass for Scripts (fallback)
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
-# The home location for new characters. This must be a unique 
+# The home location for new characters. This must be a unique
 # dbref (default is Limbo #2). If you want more advanced control over
-# start locations, copy the "create" command from 
+# start locations, copy the "create" command from
 # src/commands/default/unloggedin.py and customize.
 CHARACTER_DEFAULT_HOME = "2"
 
@@ -221,7 +221,7 @@ CHARACTER_DEFAULT_HOME = "2"
 # Batch processors
 ###################################################
 
-# Python path to a directory to be searched for batch scripts 
+# Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
 BASE_BATCHPROCESS_PATHS = ['game.gamesrc.world', 'contrib']
 
@@ -236,8 +236,8 @@ BASE_BATCHPROCESS_PATHS = ['game.gamesrc.world', 'contrib']
 
 #The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
-TIME_FACTOR = 2.0 
-# The tick is the smallest unit of time in the game. Smallest value is 1s. 
+TIME_FACTOR = 2.0
+# The tick is the smallest unit of time in the game. Smallest value is 1s.
 TIME_TICK = 1.0
 # These measures might or might not make sense to your game world.
 TIME_MIN_PER_HOUR = 60
@@ -248,7 +248,7 @@ TIME_MONTH_PER_YEAR = 12
 
 
 ###################################################
-# In-Game access 
+# In-Game access
 ###################################################
 
 # The access hiearchy, in climbing order. A higher permission in the
@@ -268,7 +268,7 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # Defines a dict with one key for each from-start
 # channel. Each key points to a tuple containing
 # (name, aliases, description, locks)
-# where aliases may be a tuple too, and locks is 
+# where aliases may be a tuple too, and locks is
 # a valid lockstring definition.
 # Default user channel for communication
 CHANNEL_PUBLIC = ("Public", ('ooc',), 'Public discussion',
@@ -281,17 +281,17 @@ CHANNEL_CONNECTINFO = ("MUDconnections", '', 'Connection log',
                        "control:perm(Immortals);listen:perm(Wizards);send:false()")
 
 ###################################################
-# External Channel connections 
+# External Channel connections
 ###################################################
 
 # Note: You do *not* have to make your MUD open to
 # the public to use the external connections, they
 # operate as long as you have an internet connection,
-# just like stand-alone chat clients. IRC and IMC2 
-# requires that you have twisted.words installed. 
+# just like stand-alone chat clients. IRC and IMC2
+# requires that you have twisted.words installed.
 
-# Evennia can connect to external IRC channels and 
-# echo what is said on the channel to IRC and vice 
+# Evennia can connect to external IRC channels and
+# echo what is said on the channel to IRC and vice
 # versa. Obs - make sure the IRC network allows bots.
 # When enabled, command @irc2chan will be available in-game
 IRC_ENABLED = False
@@ -307,7 +307,7 @@ IRC_ENABLED = False
 # command @imc2chan becomes available in-game and allows you to
 # connect Evennia channels to IMC channels on the network. The Evennia
 # discussion channel 'ievennia' is on server01.mudbytes.net:5000.
-IMC2_ENABLED = False 
+IMC2_ENABLED = False
 IMC2_NETWORK = "server01.mudbytes.net"
 IMC2_PORT = 5000
 IMC2_CLIENT_PWD = ""
@@ -316,7 +316,7 @@ IMC2_SERVER_PWD = ""
 # an in-game channel. The channel will be updated when the rss feed
 # updates. Use @rss2chan in game to connect if this setting is
 # active. OBS: RSS support requires the python-feedparser package to
-# be installed (through package manager or from the website 
+# be installed (through package manager or from the website
 # http://code.google.com/p/feedparser/)
 RSS_ENABLED=False
 RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
@@ -366,7 +366,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 USE_I18N = False
 # Where to find locales (no need to change this, most likely)
 LOCALE_PATHS = ["../locale/"]
-# This should be turned off unless you want to do tests with Django's 
+# This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
 # The master urlconf file that contains all of the sub-branches to the
@@ -383,7 +383,7 @@ LOGOUT_URL = '/accounts/login'
 MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
 # to use a trailing slash. Django1.4+ will look for admin files under
-# STATIC_URL/admin. 
+# STATIC_URL/admin.
 STATIC_URL = '/media/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/" # needed for backwards compatibility django < 1.4
 # The name of the currently selected web template. This corresponds to the
@@ -431,26 +431,26 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.flatpages',
-    'src.server',    
+    'src.server',
     'src.players',
     'src.objects',
-    'src.comms',    
+    'src.comms',
     'src.help',
     'src.scripts',
     'src.web.news',
     'src.web.website',)
 # The user profile extends the User object with more functionality;
-# This should usually not be changed. 
+# This should usually not be changed.
 AUTH_PROFILE_MODULE = "players.PlayerDB"
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
 
 ###################################################
-# Django extensions 
+# Django extensions
 ###################################################
 
 # Django extesions are useful third-party tools that are not
-# always included in the default django distro. 
+# always included in the default django distro.
 try:
     import django_extensions
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)

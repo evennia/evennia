@@ -14,7 +14,7 @@ upon returning, or not. A process returning != 0 will always stop, no
 matter the value of this file.
 
 """
-import os  
+import os
 import sys
 from optparse import OptionParser
 from subprocess import Popen, call
@@ -22,7 +22,7 @@ import Queue, thread, subprocess
 
 #
 # System Configuration
-# 
+#
 
 
 SERVER_PIDFILE = "server.pid"
@@ -39,7 +39,7 @@ if not os.path.exists('settings.py'):
 
     print "No settings.py file found. Run evennia.py to create it."
     sys.exit()
-                     
+
 # Get the settings
 from django.conf import settings
 
@@ -58,26 +58,26 @@ if 'PYTHONPATH' in os.environ:
 else:
     os.environ['PYTHONPATH'] = currpath
 
-TWISTED_BINARY = 'twistd' 
+TWISTED_BINARY = 'twistd'
 if os.name == 'nt':
     TWISTED_BINARY = 'twistd.bat'
-    err = False 
+    err = False
     try:
         import win32api  # Test for for win32api
     except ImportError:
-        err = True 
+        err = True
     if not os.path.exists(TWISTED_BINARY):
-        err = True 
+        err = True
     if err:
         print "Twisted binary for Windows is not ready to use. Please run evennia.py."
         sys.exit()
 
-# Functions 
+# Functions
 
 def set_restart_mode(restart_file, flag=True):
     """
-    This sets a flag file for the restart mode. 
-    """    
+    This sets a flag file for the restart mode.
+    """
     f = open(restart_file, 'w')
     f.write(str(flag))
     f.close()
@@ -89,24 +89,24 @@ def get_restart_mode(restart_file):
     if os.path.exists(restart_file):
         flag = open(restart_file, 'r').read()
         return flag == "True"
-    return False 
+    return False
 
 def get_pid(pidfile):
     """
     Get the PID (Process ID) by trying to access
-    an PID file. 
+    an PID file.
     """
-    pid = None 
+    pid = None
     if os.path.exists(pidfile):
         f = open(pidfile, 'r')
         pid = f.read()
-    return pid 
+    return pid
 
 def cycle_logfile(logfile):
     """
     Move the old log files to <filename>.old
 
-    """    
+    """
     logfile_old = logfile + '.old'
     if os.path.exists(logfile):
         # Cycle the old logfiles to *.old
@@ -122,70 +122,70 @@ def cycle_logfile(logfile):
         if os.path.exists(logfile_old):
             # E.g. Windows don't support rename-replace
             os.remove(logfile_old)
-        os.rename(logfile, logfile_old)    
+        os.rename(logfile, logfile_old)
 
 
-# Start program management 
+# Start program management
 
 SERVER = None
-PORTAL = None 
+PORTAL = None
 
 def start_services(server_argv, portal_argv):
     """
     This calls a threaded loop that launces the Portal and Server
-    and then restarts them when they finish. 
+    and then restarts them when they finish.
     """
-    global SERVER, PORTAL 
+    global SERVER, PORTAL
 
     processes = Queue.Queue()
 
-    def server_waiter(queue):                
-        try: 
+    def server_waiter(queue):
+        try:
             rc = Popen(server_argv).wait()
         except Exception, e:
             print "Server process error: %(e)s" % {'e': e}
         queue.put(("server_stopped", rc)) # this signals the controller that the program finished
 
-    def portal_waiter(queue):                
-        try: 
+    def portal_waiter(queue):
+        try:
             rc = Popen(portal_argv).wait()
         except Exception, e:
             print "Portal process error: %(e)s" % {'e': e}
         queue.put(("portal_stopped", rc)) # this signals the controller that the program finished
-                    
+
     if server_argv:
-        # start server as a reloadable thread 
+        # start server as a reloadable thread
         SERVER = thread.start_new_thread(server_waiter, (processes, ))
 
-    if portal_argv: 
+    if portal_argv:
         if get_restart_mode(PORTAL_RESTART):
-            # start portal as interactive, reloadable thread 
+            # start portal as interactive, reloadable thread
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
         else:
             # normal operation: start portal as a daemon; we don't care to monitor it for restart
             PORTAL = Popen(portal_argv)
             if not SERVER:
                 # if portal is daemon and no server is running, we have no reason to continue to the loop.
-                return 
+                return
 
-    # Reload loop 
+    # Reload loop
     while True:
-        
+
         # this blocks until something is actually returned.
-        message, rc = processes.get()                    
+        message, rc = processes.get()
 
         # restart only if process stopped cleanly
         if message == "server_stopped" and int(rc) == 0 and get_restart_mode(SERVER_RESTART):
-            print "Evennia Server stopped. Restarting ..."            
+            print "Evennia Server stopped. Restarting ..."
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
-            continue 
+            continue
 
         # normally the portal is not reloaded since it's run as a daemon.
         if message == "portal_stopped" and int(rc) == 0 and get_restart_mode(PORTAL_RESTART):
             print "Evennia Portal stopped in interactive mode. Restarting ..."
-            PORTAL = thread.start_new_thread(portal_waiter, (processes, ))                            
-            continue 
-        break 
+            PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
+            continue
+        break
 
 # Setup signal handling
 
@@ -193,19 +193,19 @@ def main():
     """
     This handles the command line input of the runner (it's most often called by evennia.py)
     """
-    
+
     parser = OptionParser(usage="%prog [options] start",
                           description="This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism).")
-    parser.add_option('-s', '--noserver', action='store_true', 
+    parser.add_option('-s', '--noserver', action='store_true',
                       dest='noserver', default=False,
                       help='Do not start Server process')
-    parser.add_option('-p', '--noportal', action='store_true', 
+    parser.add_option('-p', '--noportal', action='store_true',
                       dest='noportal', default=False,
                       help='Do not start Portal process')
-    parser.add_option('-i', '--iserver', action='store_true', 
+    parser.add_option('-i', '--iserver', action='store_true',
                       dest='iserver', default=False,
                       help='output server log to stdout instead of logfile')
-    parser.add_option('-d', '--iportal', action='store_true', 
+    parser.add_option('-d', '--iportal', action='store_true',
                       dest='iportal', default=False,
                       help='output portal log to stdout. Does not make portal a daemon.')
     parser.add_option('-S', '--profile-server', action='store_true',
@@ -222,17 +222,17 @@ def main():
         parser.print_help()
         sys.exit()
 
-    # set up default project calls 
-    server_argv = [TWISTED_BINARY, 
+    # set up default project calls
+    server_argv = [TWISTED_BINARY,
                    '--nodaemon',
                    '--logfile=%s' % SERVER_LOGFILE,
-                   '--pidfile=%s' % SERVER_PIDFILE, 
+                   '--pidfile=%s' % SERVER_PIDFILE,
                    '--python=%s' % SERVER_PY_FILE]
     portal_argv = [TWISTED_BINARY,
                    '--logfile=%s' % PORTAL_LOGFILE,
-                   '--pidfile=%s' % PORTAL_PIDFILE, 
-                   '--python=%s' % PORTAL_PY_FILE]    
-    
+                   '--pidfile=%s' % PORTAL_PIDFILE,
+                   '--python=%s' % PORTAL_PY_FILE]
+
     # Profiling settings (read file from python shell e.g with
     # p = pstats.Stats('server.prof')
     sprof_argv = ['--savestats',
@@ -242,14 +242,14 @@ def main():
                   '--profiler=cprofile',
                   '--profile=portal.prof']
 
-    # Server 
-    
+    # Server
+
     pid = get_pid(SERVER_PIDFILE)
     if pid and not options.noserver:
             print "\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid}
             options.noserver = True
     if options.noserver:
-        server_argv = None         
+        server_argv = None
     else:
         set_restart_mode(SERVER_RESTART, True)
         if options.iserver:
@@ -264,19 +264,19 @@ def main():
 
         cycle_logfile(SERVER_LOGFILE)
 
-    # Portal 
+    # Portal
 
     pid = get_pid(PORTAL_PIDFILE)
     if pid and not options.noportal:
-        print "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid}    
-        options.noportal = True             
+        print "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid}
+        options.noportal = True
     if options.noportal:
-        portal_argv = None 
+        portal_argv = None
     else:
         if options.iportal:
             # make portal interactive
             portal_argv[1] = '--nodaemon'
-            PORTAL_INTERACTIVE = True                     
+            PORTAL_INTERACTIVE = True
             set_restart_mode(PORTAL_RESTART, True)
             print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
         else:
@@ -297,7 +297,7 @@ def main():
 
     # Start processes
     start_services(server_argv, portal_argv)
-          
+
 if __name__ == '__main__':
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
