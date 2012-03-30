@@ -9,9 +9,9 @@ from src.utils.logger import log_trace
 
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
-    This function is called by the cmdhandler once it has 
+    This function is called by the cmdhandler once it has
     gathered all valid cmdsets for the calling player. raw_string
-    is the unparsed text entered by the caller. 
+    is the unparsed text entered by the caller.
 
     The cmdparser understand the following command combinations (where
     [] marks optional parts.
@@ -19,20 +19,20 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     [cmdname[ cmdname2 cmdname3 ...] [the rest]
 
     A command may consist of any number of space-separated words of any
-    length, and contain any character. 
+    length, and contain any character.
 
     The parser makes use of the cmdset to find command candidates. The
     parser return a list of matches. Each match is a tuple with its
-    first three elements being the parsed cmdname (lower case), 
-    the remaining arguments, and the matched cmdobject from the cmdset. 
+    first three elements being the parsed cmdname (lower case),
+    the remaining arguments, and the matched cmdobject from the cmdset.
     """
-    
+
     def create_match(cmdname, string, cmdobj):
         """
-        Evaluates the quality of a match by counting how many chars of cmdname 
+        Evaluates the quality of a match by counting how many chars of cmdname
         matches string (counting from beginning of string). We also calculate
-        a ratio from 0-1 describing how much cmdname matches string.         
-        We return a tuple (cmdname, count, ratio, args, cmdobj). 
+        a ratio from 0-1 describing how much cmdname matches string.
+        We return a tuple (cmdname, count, ratio, args, cmdobj).
 
         """
         cmdlen, strlen = len(cmdname), len(string)
@@ -41,13 +41,13 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         return (cmdname, args, cmdobj, cmdlen, mratio)
 
     if not raw_string:
-        return None 
+        return None
 
     matches = []
 
     # match everything that begins with a matching cmdname.
     l_raw_string = raw_string.lower()
-    for cmd in cmdset:        
+    for cmd in cmdset:
         try:
             matches.extend([create_match(cmdname, raw_string, cmd)
                             for cmdname in [cmd.key] + cmd.aliases
@@ -58,13 +58,13 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             log_trace()
 
     if not matches:
-        # no matches found. 
+        # no matches found.
         if '-' in raw_string:
             # This could be due to the user trying to identify the
             # command with a #num-<command> style syntax.
             mindex, new_raw_string = raw_string.split("-", 1)
             if mindex.isdigit():
-                mindex = int(mindex) - 1 
+                mindex = int(mindex) - 1
                 # feed result back to parser iteratively
                 return cmdparser(new_raw_string, cmdset, caller, match_index=mindex)
 
@@ -85,22 +85,22 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     if len(matches) > 1:
         # still multiple matches. Fall back to ratio-based quality.
         matches = sorted(matches, key=lambda m: m[4])
-        # only pick the highest rated ratio match 
+        # only pick the highest rated ratio match
         quality = [mat[4] for mat in matches]
         matches = matches[-quality.count(quality[-1]):]
 
     if len(matches) > 1 and match_index != None and 0 <= match_index < len(matches):
         # We couldn't separate match by quality, but we have an index argument to
         # tell us which match to use.
-        matches = [matches[match_index]]    
+        matches = [matches[match_index]]
 
     # no matter what we have at this point, we have to return it.
-    return matches 
+    return matches
 
-        
+
 
 #------------------------------------------------------------
-# Search parsers and support methods 
+# Search parsers and support methods
 #------------------------------------------------------------
 #
 # Default functions for formatting and processing searches.
@@ -109,7 +109,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 # replace from the settings file by setting the variables
 #
 # SEARCH_AT_RESULTERROR_HANDLER
-# SEARCH_MULTIMATCH_PARSER 
+# SEARCH_MULTIMATCH_PARSER
 #
 # The the replacing modules must have the same inputs and outputs as
 # those in this module.
@@ -118,57 +118,57 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 def at_search_result(msg_obj, ostring, results, global_search=False):
     """
     Called by search methods after a result of any type has been found.
-    
+
     Takes a search result (a list) and
     formats eventual errors.
 
-    msg_obj - object to receive feedback. 
-    ostring - original search string 
+    msg_obj - object to receive feedback.
+    ostring - original search string
     results - list of found matches (0, 1 or more)
     global_search - if this was a global_search or not
             (if it is, there might be an idea of supplying
             dbrefs instead of only numbers)
 
     Multiple matches are returned to the searching object
-    as 
+    as
      1-object
-     2-object 
-     3-object 
+     2-object
+     3-object
        etc
 
     """
     string = ""
-    if not results: 
-        # no results. 
+    if not results:
+        # no results.
         string = "Could not find '%s'." % ostring
-        results = None         
+        results = None
 
     elif len(results) > 1:
         # we have more than one match. We will display a
-        # list of the form 1-objname, 2-objname etc.        
+        # list of the form 1-objname, 2-objname etc.
 
         # check if the msg_object may se dbrefs
         show_dbref = global_search
 
         string += "More than one match for '%s'" % ostring
-        string += " (please narrow target):" 
+        string += " (please narrow target):"
         for num, result in enumerate(results):
-            invtext = ""            
+            invtext = ""
             dbreftext = ""
             if hasattr(result, "location") and result.location == msg_obj:
-                invtext = " (carried)"                    
+                invtext = " (carried)"
             if show_dbref:
-                dbreftext = "(#%i)" % result.id 
-            string += "\n %i-%s%s%s" % (num+1, result.name, 
-                                        dbreftext, invtext)        
-        results = None 
+                dbreftext = "(#%i)" % result.id
+            string += "\n %i-%s%s%s" % (num+1, result.name,
+                                        dbreftext, invtext)
+        results = None
     else:
         # we have exactly one match.
         results = results[0]
 
-    if string: 
+    if string:
         msg_obj.msg(string.strip())
-    return results 
+    return results
 
 def at_multimatch_input(ostring):
     """
@@ -186,9 +186,9 @@ def at_multimatch_input(ostring):
     the lowest number, rather than 0 as in Python).
 
     This parser version will identify search strings on the following
-    forms 
+    forms
 
-      2-object 
+      2-object
 
     This will be parsed to (2, "object") and, if applicable, will tell
     the engine to pick the second from a list of same-named matches of
@@ -197,7 +197,7 @@ def at_multimatch_input(ostring):
     Ex for use in a game session:
 
      > look
-    You see: ball, ball, ball and ball. 
+    You see: ball, ball, ball and ball.
      > get ball
     There where multiple matches for ball:
         1-ball
@@ -205,7 +205,7 @@ def at_multimatch_input(ostring):
         3-ball
         4-ball
      > get 3-ball
-     You get the ball. 
+     You get the ball.
 
     """
 
@@ -213,7 +213,7 @@ def at_multimatch_input(ostring):
         return (None, ostring)
     if not '-' in ostring:
         return (None, ostring)
-    try: 
+    try:
         index  = ostring.find('-')
         number = int(ostring[:index])-1
         return (number, ostring[index+1:])
@@ -229,7 +229,7 @@ def at_multimatch_cmd(caller, matches):
     Format multiple command matches to a useful error.
     """
     string = "There where multiple matches:"
-    for num, match in enumerate(matches): 
+    for num, match in enumerate(matches):
         # each match is a tuple (candidate, cmd)
         cmdname, arg, cmd, dum, dum = match
 
@@ -237,7 +237,7 @@ def at_multimatch_cmd(caller, matches):
         if is_channel:
             is_channel = " (channel)"
         else:
-            is_channel = ""        
+            is_channel = ""
         if cmd.is_exit and cmd.destination:
             is_exit =  " (exit to %s)" % cmd.destination
         else:

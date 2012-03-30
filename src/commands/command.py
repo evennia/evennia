@@ -1,7 +1,7 @@
 """
 The base Command class.
 
-All commands in Evennia inherit from the 'Command' class in this module. 
+All commands in Evennia inherit from the 'Command' class in this module.
 
 """
 
@@ -12,19 +12,19 @@ from src.utils.utils import is_iter
 class CommandMeta(type):
     """
     This metaclass makes some minor on-the-fly convenience fixes to the command
-    class in case the admin forgets to put things in lowercase etc. 
-    """    
+    class in case the admin forgets to put things in lowercase etc.
+    """
     def __init__(mcs, *args, **kwargs):
         """
         Simply make sure all data are stored as lowercase and
         do checking on all properties that should be in list form.
-        Sets up locks to be more forgiving. 
+        Sets up locks to be more forgiving.
         """
         mcs.key = mcs.key.lower()
         if mcs.aliases and not is_iter(mcs.aliases):
             try:
                 mcs.aliases = mcs.aliases.split(',')
-            except Exception: 
+            except Exception:
                 mcs.aliases = []
         mcs.aliases = [str(alias).strip() for alias in mcs.aliases]
         if not hasattr(mcs, "save_for_next"):
@@ -61,19 +61,19 @@ class CommandMeta(type):
 #    define their own parser method to handle the input. The
 #    advantage of this is inheritage; commands that have similar
 #    structure can parse the input string the same way, minimizing
-#    parsing errors. 
- 
+#    parsing errors.
+
 class Command(object):
     """
     Base command
 
     Usage:
       command [args]
-    
+
     This is the base command class. Inherit from this
-    to create new commands.         
-    
-    The cmdhandler makes the following variables available to the 
+    to create new commands.
+
+    The cmdhandler makes the following variables available to the
     command methods (so you can always assume them to be there):
     self.caller - the game object calling the command
     self.cmdstring - the command name used to trigger this command (allows
@@ -84,10 +84,20 @@ class Command(object):
                 seldomly, notably for help-type commands, to create dynamic
                 help entries and lists)
     cmd.obj - the object on which this command is defined. If a default command,
-                 this is usually the same as caller. 
+                 this is usually the same as caller.
 
-    (Note that this initial string is also used by the system to create the help
-    entry for the command, so it's a good idea to format it similar to this one)
+    The following class properties can/should be defined on your child class:
+
+    key - identifier for command (e.g. "look")
+    aliases - (optional) list of aliases (e.g. ["l", "loo"])
+    locks - lock string (default is "cmd:all()")
+    help_category - how to organize this help entry in help system (default is "General")
+    auto_help - defaults to True. Allows for turning off auto-help generation
+    arg_regex - (optional) raw string regex defining how the argument part of the command should look
+                in order to match for this command (e.g. must it be a space between cmdname and arg?)
+
+    (Note that if auto_help is on, this initial string is also used by the system
+    to create the help entry for the command, so it's a good idea to format it similar to this one)
     """
     # Tie our metaclass, for some convenience cleanup
     __metaclass__ = CommandMeta
@@ -103,20 +113,20 @@ class Command(object):
 
     # this normally does not need to be changed. It allows to turn off
     # auto-help entry creation for individual commands.
-    auto_help = True 
-    # There is also the property 'obj'. This gets set by the system 
+    auto_help = True
+    # There is also the property 'obj'. This gets set by the system
     # on the fly to tie this particular command to a certain in-game entity.
-    # self.obj should NOT be defined here since it will not be overwritten 
-    # if it already exists. 
-    
+    # self.obj should NOT be defined here since it will not be overwritten
+    # if it already exists.
+
 
     def __init__(self):
         self.lockhandler = LockHandler(self)
-    
+
     def __str__(self):
         "Print the command"
         return self.key
-    
+
     def __eq__(self, cmd):
         """
         Compare two command instances to each other by matching their
@@ -132,7 +142,7 @@ class Command(object):
         """
         This implements searches like 'if query in cmd'. It's a fuzzy matching
         used by the help system, returning True if query can be found
-        as a substring of the commands key or its aliases. 
+        as a substring of the commands key or its aliases.
 
         input can be either a command object or a command name.
         """
@@ -156,11 +166,11 @@ class Command(object):
         This hook is called by the cmdhandler to determine if srcobj
         is allowed to execute this command. It should return a boolean
         value and is not normally something that need to be changed since
-        it's using the Evennia permission system directly. 
+        it's using the Evennia permission system directly.
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
-    # Common Command hooks         
+    # Common Command hooks
 
     def at_pre_cmd(self):
         """
@@ -170,7 +180,7 @@ class Command(object):
 
     def at_post_cmd(self):
         """
-        This hook is called after the command has finished executing 
+        This hook is called after the command has finished executing
         (after self.func()).
         """
         pass
@@ -181,31 +191,31 @@ class Command(object):
         want, this function is run. If many of your commands have
         a similar syntax (for example 'cmd arg1 = arg2') you should simply
         define this once and just let other commands of the same form
-        inherit from this. See the docstring of this module for 
-        which object properties are available to use 
+        inherit from this. See the docstring of this module for
+        which object properties are available to use
         (notably self.args).
-        """        
+        """
         pass
-        
+
     def func(self):
         """
-        This is the actual executing part of the command. 
+        This is the actual executing part of the command.
         It is called directly after self.parse(). See the docstring
         of this module for which object properties are available
-        (beyond those set in self.parse()) 
-        """        
+        (beyond those set in self.parse())
+        """
                 # a simple test command to show the available properties
         string = "-" * 50
-        string += "\n{w%s{n - Command variables from evennia:\n" % self.key 
+        string += "\n{w%s{n - Command variables from evennia:\n" % self.key
         string += "-" * 50
-        string += "\nname of cmd (self.key): {w%s{n\n" % self.key 
+        string += "\nname of cmd (self.key): {w%s{n\n" % self.key
         string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
         string += "cmd perms (self.permissions): {w%s{n\n" % self.permissions
         string += "help category (self.help_category): {w%s{n\n" % self.help_category
         string += "object calling (self.caller): {w%s{n\n" % self.caller
         string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
-        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring        
+        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
         string += utils.fill("current cmdset (self.cmdset): {w%s{n\n" % self.cmdset)
-        
+
         self.caller.msg(string)

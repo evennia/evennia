@@ -7,19 +7,19 @@ a higher layer module.
 """
 from traceback import format_exc
 from twisted.python import log
-from src.utils import utils 
+from src.utils import utils
 
 def log_trace(errmsg=None):
     """
     Log a traceback to the log. This should be called
     from within an exception. errmsg is optional and
-    adds an extra line with added info. 
+    adds an extra line with added info.
     """
     tracestring = format_exc()
     try:
         if tracestring:
             for line in tracestring.splitlines():
-                log.msg('[::] %s' % line)    
+                log.msg('[::] %s' % line)
         if errmsg:
             try:
                 errmsg = utils.to_str(errmsg)
@@ -29,7 +29,7 @@ def log_trace(errmsg=None):
                 log.msg('[EE] %s' % line)
     except Exception:
         log.msg('[EE] %s' % errmsg )
-               
+
 def log_errmsg(errmsg):
     """
     Prints/logs an error message to the server log.
@@ -37,7 +37,7 @@ def log_errmsg(errmsg):
     errormsg: (string) The message to be logged.
     """
     try:
-        errmsg = utils.to_str(errmsg)    
+        errmsg = utils.to_str(errmsg)
     except Exception, e:
         errmsg = str(e)
     for line in errmsg.splitlines():
@@ -47,7 +47,7 @@ def log_errmsg(errmsg):
 def log_warnmsg(warnmsg):
     """
     Prints/logs any warnings that aren't critical but should be noted.
-    
+
     warnmsg: (string) The message to be logged.
     """
     try:

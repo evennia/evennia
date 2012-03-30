@@ -6,10 +6,10 @@ from src.utils import logger, utils
 
 class HelpEntryManager(models.Manager):
     """
-    This HelpEntryManager implements methods for searching 
+    This HelpEntryManager implements methods for searching
     and manipulating HelpEntries directly from the database.
 
-    These methods will all return database objects 
+    These methods will all return database objects
     (or QuerySets) directly.
 
     Evennia-specific:
@@ -24,33 +24,33 @@ class HelpEntryManager(models.Manager):
     def find_topicmatch(self, topicstr, exact=False):
         """
         Searches for matching topics based on player's input.
-        """        
+        """
         if utils.dbref(topicstr):
             return self.filter(id=utils.dbref(topicstr))
         topics = self.filter(db_key__iexact=topicstr)
-        if not topics and not exact: 
-            topics = self.filter(db_key__istartswith=topicstr)            
+        if not topics and not exact:
+            topics = self.filter(db_key__istartswith=topicstr)
             if not topics:
-                topics = self.filter(db_key__icontains=topicstr)            
+                topics = self.filter(db_key__icontains=topicstr)
         return topics
 
     def find_apropos(self, topicstr):
         """
         Do a very loose search, returning all help entries containing
-        the search criterion in their titles. 
+        the search criterion in their titles.
         """
         return self.filter(db_key__icontains=topicstr)
-        
+
     def find_topicsuggestions(self, topicstr):
         """
         Do a fuzzy match, preferably within the category of the
         current topic.
-        """                
-        topics = self.find_apropos(topicstr)       
+        """
+        topics = self.find_apropos(topicstr)
         # we need to clean away the given help entry.
         return [topic for topic in topics
                 if topic.key.lower() != topicstr.lower()]
-                    
+
     def find_topics_with_category(self, help_category):
         """
         Search topics having a particular category
@@ -76,7 +76,7 @@ class HelpEntryManager(models.Manager):
         Shifts all help entries in database to default_category.
         This action cannot be reverted. It is used primarily by
         the engine when importing a default help database, making
-        sure this ends up in one easily separated category. 
+        sure this ends up in one easily separated category.
         """
         topics = self.all()
         for topic in topics:
@@ -92,7 +92,7 @@ class HelpEntryManager(models.Manager):
         ostring - the help topic to look for
         category - limit the search to a particular help topic
         """
-        ostring = ostring.strip().lower() 
+        ostring = ostring.strip().lower()
         help_entries = self.filter(db_topicstr=ostring)
         if help_category:
             help_entries.filter(db_help_category=help_category)

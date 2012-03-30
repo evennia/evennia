@@ -1,5 +1,5 @@
-# This specifies file types that mercurial should 
-# ignore, defined on glob format. 
+# This specifies file types that mercurial should
+# ignore, defined on glob format.
 
 syntax: glob
 

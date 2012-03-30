@@ -41,20 +41,20 @@ class HelpEntry(SharedMemoryModel):
     # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
-    # title of the help 
+    # title of the help
     db_key = models.CharField('help key', max_length=255, unique=True, help_text='key to search for')
-    # help category 
-    db_help_category = models.CharField("help category", max_length=255, default="General", 
+    # help category
+    db_help_category = models.CharField("help category", max_length=255, default="General",
         help_text='organizes help entries in lists')
-    # the actual help entry text, in any formatting. 
-    db_entrytext = models.TextField('help entry', blank=True, help_text='the main body of help text')  
+    # the actual help entry text, in any formatting.
+    db_entrytext = models.TextField('help entry', blank=True, help_text='the main body of help text')
     # a string of permissionstrings, separated by commas. Not used by help entries.
-    db_permissions = models.CharField('permissions', max_length=255, blank=True)    
+    db_permissions = models.CharField('permissions', max_length=255, blank=True)
     # lock string storage
     db_lock_storage = models.CharField('locks', max_length=512, blank=True, help_text='normally view:all().')
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
-    # TODO: remove this when not needed anymore. 
-    db_staff_only = models.BooleanField(default=False) 
+    # TODO: remove this when not needed anymore.
+    db_staff_only = models.BooleanField(default=False)
 
     # Database manager
     objects = HelpEntryManager()
@@ -62,7 +62,7 @@ class HelpEntry(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
-        
+
     class Meta:
         "Define Django meta options"
         verbose_name = "Help Entry"
@@ -72,10 +72,10 @@ class HelpEntry(SharedMemoryModel):
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
     # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value, 
-    # value = self.attr and del self.attr respectively (where self 
+    # defined that allows the user to do self.attr = value,
+    # value = self.attr and del self.attr respectively (where self
     # is the object in question).
-        
+
     # key property (wraps db_key)
     #@property
     def key_get(self):
@@ -137,7 +137,7 @@ class HelpEntry(SharedMemoryModel):
         if is_iter(value):
             value = ",".join([str(val).strip().lower() for val in value])
         self.db_permissions = value
-        self.save()        
+        self.save()
     #@permissions.deleter
     def permissions_del(self):
         "Deleter. Allows for del self.permissions"
@@ -146,7 +146,7 @@ class HelpEntry(SharedMemoryModel):
     permissions = property(permissions_get, permissions_set, permissions_del)
 
         # lock_storage property (wraps db_lock_storage)
-    #@property 
+    #@property
     def lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
         return self.db_lock_storage
@@ -161,13 +161,13 @@ class HelpEntry(SharedMemoryModel):
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
     lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
 
-    
+
     #
     #
     # HelpEntry main class methods
     #
     #
-        
+
     def __str__(self):
         return self.key
 
@@ -180,5 +180,5 @@ class HelpEntry(SharedMemoryModel):
         accessing_obj - object trying to access this one
         access_type - type of access sought
         default - what to return if no lock of access_type was found
-        """        
+        """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)

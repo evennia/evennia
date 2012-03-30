@@ -19,7 +19,7 @@ try:
     from django.utils.unittest import TestCase
 except ImportError:
     from django.test import TestCase
-try:    
+try:
     from django.utils import unittest
 except ImportError:
     import unittest
@@ -47,10 +47,10 @@ class TestObjAttrs(TestCase):
         self.obj1.db.testattr = self.obj2
         self.assertEqual(self.obj2 ,self.obj1.db.testattr)
         self.assertEqual(self.obj2.location, self.obj1.db.testattr.location)
-        
+
 def suite():
     """
-    This function is called automatically by the django test runner. 
+    This function is called automatically by the django test runner.
     This also runs the command tests defined in src/commands/default/tests.py.
     """
     tsuite = unittest.TestSuite()

@@ -1,6 +1,6 @@
 """
-This special Python config file sets the default encoding for 
-the codebase to UTF-8 instead of ascii. This allows for just 
+This special Python config file sets the default encoding for
+the codebase to UTF-8 instead of ascii. This allows for just
 about any language to be used in-game.
 
 It is not advisable to change the value set below, as

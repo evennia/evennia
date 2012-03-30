@@ -1,13 +1,13 @@
 #
-# This is Evennia's default connection screen. It is imported 
-# and run from game/gamesrc/world/connection_screens.py. 
+# This is Evennia's default connection screen. It is imported
+# and run from game/gamesrc/world/connection_screens.py.
 #
 
-from src.utils import utils 
+from src.utils import utils
 
 DEFAULT_SCREEN = \
 """{b=============================================================={n
- Welcome to {gEvennia{n, version %s! 
+ Welcome to {gEvennia{n, version %s!
 
  If you have an existing account, connect to it by typing:
       {wconnect <email> <password>{n
