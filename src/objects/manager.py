@@ -10,9 +10,11 @@ from src.utils import utils
 from src.utils.utils import to_unicode
 from src.utils import logger
 
+__all__ = ("ObjectManager",)
+
 # Try to use a custom way to parse id-tagged multimatches.
 
-AT_MULTIMATCH_INPUT = utils.mod_import(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
+_AT_MULTIMATCH_INPUT = utils.mod_import(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
 
 class ObjectManager(TypedObjectManager):
     """
@@ -288,7 +290,7 @@ class ObjectManager(TypedObjectManager):
         matches = local_and_global_search(ostring, exact=True)
         if not matches:
             # if we have no match, check if we are dealing with an "N-keyword" query - if so, strip it.
-            match_number, ostring = AT_MULTIMATCH_INPUT(ostring)
+            match_number, ostring = _AT_MULTIMATCH_INPUT(ostring)
             if match_number != None and ostring:
                 # Run search again, without match number:
                 matches = local_and_global_search(ostring, exact=True)

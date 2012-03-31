@@ -2,7 +2,7 @@
 
 """
 This is part of Evennia's unittest framework, for testing
-the stability and integrrity of the codebase during updates. 
+the stability and integrrity of the codebase during updates.
 
 This module tests the lock functionality of Evennia.
 
@@ -49,7 +49,7 @@ class TestLockfuncs(LockTest):
     def testrun(self):
         self.obj2.permissions = ['Wizards']
         self.assertEquals(True, lockfuncs.true(self.obj2, self.obj1))
-        self.assertEquals(False, lockfuncs.false(self.obj2, self.obj1))        
+        self.assertEquals(False, lockfuncs.false(self.obj2, self.obj1))
         self.assertEquals(True, lockfuncs.perm(self.obj2, self.obj1, 'Wizards'))
         self.assertEquals(True, lockfuncs.perm_above(self.obj2, self.obj1, 'Builders'))
         dbref = self.obj2.dbref

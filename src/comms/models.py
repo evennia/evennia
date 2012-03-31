@@ -4,7 +4,7 @@ Models for the comsystem.
 The comsystem's main component is the Message, which
 carries the actual information between two parties.
 Msgs are stored in the database and usually not
-deleted. 
+deleted.
 A Msg always have one sender (a user), but can have
 any number targets, both users and channels.
 
@@ -16,7 +16,7 @@ be able to delete connections on the fly).
 
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
-from src.comms import managers 
+from src.comms import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import is_iter, to_str
@@ -35,18 +35,18 @@ def obj_to_id(inp):
     """
     dbref = is_dbref(inp)
     if dbref:
-        return str(dbref) 
+        return str(dbref)
     if hasattr(inp, 'id'):
         return str(inp.id)
     if hasattr(inp, 'dbobj') and hasattr(inp.dbobj, 'id'):
         return str(inp.dbobj.id)
-    return str(inp) 
+    return str(inp)
 
 def id_to_obj(dbref, db_model='PlayerDB'):
     """
     loads from dbref to object. Uses the db_model to search
-    for the id. 
-    """    
+    for the id.
+    """
     if db_model == 'PlayerDB':
         from src.players.models import PlayerDB as db_model
     else:
@@ -55,7 +55,7 @@ def id_to_obj(dbref, db_model='PlayerDB'):
         dbref = int(dbref.strip())
         return db_model.objects.get(id=dbref)
     except Exception:
-        return None 
+        return None
 
 #------------------------------------------------------------
 #
@@ -67,18 +67,18 @@ class Msg(SharedMemoryModel):
     """
     A single message. This model describes all ooc messages
     sent in-game, both to channels and between players.
-    
+
     The Msg class defines the following properties:
       sender - sender of message
       receivers - list of target objects for message
       channels - list of channels message was sent to
       message - the text being sent
       date_sent - time message was sent
-      hide_from_sender - bool if message should be hidden from sender 
+      hide_from_sender - bool if message should be hidden from sender
       hide_from_receivers - list of receiver objects to hide message from
       hide_from_channels - list of channels objects to hide message from
       permissions - perm strings
-        
+
     """
     #
     # Msg database model setup
@@ -90,24 +90,24 @@ class Msg(SharedMemoryModel):
     # There must always be one sender of the message.
     db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set', null=True, verbose_name='sender')
     # in the case of external senders, no Player object might be available
-    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, 
+    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True,
           help_text="identifier for external sender, for example a sender over an IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
-    db_receivers = models.CharField('receivers', max_length=255, null=True, blank=True, 
-           help_text='comma-separated list of object dbrefs this message is aimed at.')                                       
+    db_receivers = models.CharField('receivers', max_length=255, null=True, blank=True,
+           help_text='comma-separated list of object dbrefs this message is aimed at.')
     # The channels this message was sent to. Stored as a
     # comma-separated string of channel dbrefs. A message can both
     # have channel targets and destination objects.
-    db_channels = models.CharField('channels', max_length=255, null=True, blank=True, 
+    db_channels = models.CharField('channels', max_length=255, null=True, blank=True,
            help_text='comma-separated list of channel dbrefs this message is aimed at.')
     # The actual message and a timestamp. The message field
-    # should itself handle eventual headers etc. 
+    # should itself handle eventual headers etc.
     db_message = models.TextField('messsage')
     db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True)
     # lock storage
-    db_lock_storage = models.CharField('locks', max_length=512, blank=True, 
+    db_lock_storage = models.CharField('locks', max_length=512, blank=True,
                                        help_text='access locks on this message.')
     # These are settable by senders/receivers/channels respectively.
     # Stored as a comma-separated string of dbrefs. Can be used by the
@@ -117,9 +117,9 @@ class Msg(SharedMemoryModel):
     db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
     db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
     # Storage of lock strings
-    #db_lock_storage = models.TextField(null=True)    
- 
-    # Database manager 
+    #db_lock_storage = models.TextField(null=True)
+
+    # Database manager
     objects = managers.MsgManager()
 
     def __init__(self, *args, **kwargs):
@@ -134,8 +134,8 @@ class Msg(SharedMemoryModel):
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
     # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value, 
-    # value = self.attr and del self.attr respectively (where self 
+    # defined that allows the user to do self.attr = value,
+    # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
     # sender property (wraps db_sender)
@@ -183,7 +183,7 @@ class Msg(SharedMemoryModel):
         if is_iter(value):
             value = ",".join([obj_to_id(val) for val in value])
         self.db_receivers = obj_to_id(value)
-        self.save()        
+        self.save()
     #@receivers.deleter
     def receivers_del(self):
         "Deleter. Allows for del self.receivers"
@@ -204,7 +204,7 @@ class Msg(SharedMemoryModel):
         if is_iter(value):
             value = ",".join([obj_to_id(val) for val in value])
         self.db_channels = obj_to_id(value)
-        self.save()        
+        self.save()
     #@channels.deleter
     def channels_del(self):
         "Deleter. Allows for del self.channels"
@@ -253,7 +253,7 @@ class Msg(SharedMemoryModel):
     def hide_from_sender_set(self, value):
         "Setter. Allows for self.hide_from_senders = value."
         self.db_hide_from_sender = value
-        self.save()        
+        self.save()
     #@hide_from_sender.deleter
     def hide_from_sender_del(self):
         "Deleter. Allows for del self.hide_from_senders"
@@ -274,7 +274,7 @@ class Msg(SharedMemoryModel):
         if is_iter(value):
             value = ",".join([obj_to_id(val) for val in value])
         self.db_hide_from_receivers = obj_to_id(value)
-        self.save()        
+        self.save()
     #@hide_from_receivers.deleter
     def hide_from_receivers_del(self):
         "Deleter. Allows for del self.hide_from_receivers"
@@ -286,7 +286,7 @@ class Msg(SharedMemoryModel):
     #@property
     def hide_from_channels_get(self):
         "Getter. Allows for value = self.hide_from_channels. Returns a list of hide_from_channels."
-        if self.db_hide_from_channels:            
+        if self.db_hide_from_channels:
             return [id_to_obj(dbref) for dbref in self.db_hide_from_channels.split(',')]
         return []
     #@hide_from_channels.setter
@@ -295,7 +295,7 @@ class Msg(SharedMemoryModel):
         if is_iter(value):
             value = ",".join([obj_to_id(val) for val in value])
         self.db_hide_from_channels = obj_to_id(value)
-        self.save()        
+        self.save()
     #@hide_from_channels.deleter
     def hide_from_channels_del(self):
         "Deleter. Allows for del self.hide_from_channels"
@@ -304,7 +304,7 @@ class Msg(SharedMemoryModel):
     hide_from_channels = property(hide_from_channels_get, hide_from_channels_set, hide_from_channels_del)
 
     # lock_storage property (wraps db_lock_storage)
-    #@property 
+    #@property
     def lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
         return self.db_lock_storage
@@ -321,15 +321,15 @@ class Msg(SharedMemoryModel):
 
     db_model_name = "msg" # used by attributes to safely store objects
 
-    # 
+    #
     # Msg class methods
-    # 
+    #
 
     def __str__(self):
         "Print text"
-        if self.channels:            
-            return "%s -> %s: %s" % (self.sender.key, 
-                                       ", ".join([chan.key for chan in self.channels]), 
+        if self.channels:
+            return "%s -> %s: %s" % (self.sender.key,
+                                       ", ".join([chan.key for chan in self.channels]),
                                        self.message)
         else:
             return "%s -> %s: %s" % (self.sender.key,
@@ -341,7 +341,7 @@ class Msg(SharedMemoryModel):
         accessing_obj - object trying to access this one
         access_type - type of access sought
         default - what to return if no lock of access_type was found
-        """        
+        """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
 
@@ -353,61 +353,61 @@ class Msg(SharedMemoryModel):
 
 class TempMsg(object):
     """
-    This is a non-persistent object for sending 
-    temporary messages that will not be stored. 
-    It mimics the "real" Msg object, but don't require 
-    sender to be given. 
-    
+    This is a non-persistent object for sending
+    temporary messages that will not be stored.
+    It mimics the "real" Msg object, but don't require
+    sender to be given.
+
     """
     def __init__(self, sender=None, receivers=[], channels=[], message="", permissions=[]):
         self.sender = sender
-        self.receivers = receivers 
+        self.receivers = receivers
         self.message = message
         self.permissions = permissions
         self.hide_from_sender = False
         self.hide_from_sender = receivers = False
-        self.hide_from_channels = False 
+        self.hide_from_channels = False
 
 #------------------------------------------------------------
 #
 # Channel
 #
 #------------------------------------------------------------
-        
+
 class Channel(SharedMemoryModel):
     """
     This is the basis of a comm channel, only implementing
-    the very basics of distributing messages. 
-    
+    the very basics of distributing messages.
+
     The Channel class defines the following properties:
       key - main name for channel
       desc - optional description of channel
       aliases - alternative names for the channel
       keep_log - bool if the channel should remember messages
       permissions - perm strings
-    
+
     """
-    
+
     #
     # Channel database model setup
     #
     #
     # These databse fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
-    
+
     # unique identifier for this channel
     db_key = models.CharField('key', max_length=255, unique=True, db_index=True)
-    # optional description of channel 
-    db_desc = models.CharField('description', max_length=80, blank=True, null=True)       
+    # optional description of channel
+    db_desc = models.CharField('description', max_length=80, blank=True, null=True)
     # aliases for the channel. These are searched by cmdhandler
     # as well to determine if a command is the name of a channel.
-    # Several aliases are separated by commas. 
-    db_aliases = models.CharField('aliases', max_length=255) 
+    # Several aliases are separated by commas.
+    db_aliases = models.CharField('aliases', max_length=255)
     # Whether this channel should remember its past messages
     db_keep_log = models.BooleanField(default=True)
     # Storage of lock definitions
     db_lock_storage = models.CharField('locks', max_length=512, blank=True)
- 
+
     # Database manager
     objects = managers.ChannelManager()
 
@@ -416,15 +416,15 @@ class Channel(SharedMemoryModel):
         verbose_name = "Channel"
 
     def __init__(self, *args, **kwargs):
-        SharedMemoryModel.__init__(self, *args, **kwargs) 
+        SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
- 
+
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
     # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value, 
-    # value = self.attr and del self.attr respectively (where self 
+    # defined that allows the user to do self.attr = value,
+    # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
     # key property (wraps db_key)
@@ -473,14 +473,14 @@ class Channel(SharedMemoryModel):
         if is_iter(value):
             value = ",".join([str(val).strip().lower() for val in value])
         self.db_aliases = value
-        self.save()        
+        self.save()
     #@aliases_del.deleter
     def aliases_del(self):
         "Deleter. Allows for del self.aliases"
         self.db_aliases = ""
         self.save()
     aliases = property(aliases_get, aliases_set, aliases_del)
- 
+
     # keep_log property (wraps db_keep_log)
     #@property
     def keep_log_get(self):
@@ -499,7 +499,7 @@ class Channel(SharedMemoryModel):
     keep_log = property(keep_log_get, keep_log_set, keep_log_del)
 
     # lock_storage property (wraps db_lock_storage)
-    #@property 
+    #@property
     def lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
         return self.db_lock_storage
@@ -527,11 +527,11 @@ class Channel(SharedMemoryModel):
 
     def __str__(self):
         return "Channel '%s' (%s)" % (self.key, self.desc)
-    
+
     def has_connection(self, player):
         """
         Checks so this player is actually listening
-        to this channel. 
+        to this channel.
         """
         return PlayerChannelConnection.objects.has_connection(player, self)
 
@@ -539,54 +539,54 @@ class Channel(SharedMemoryModel):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
-        done before calling this method. 
+        done before calling this method.
 
-        msgobj - a Msg instance or a message string. In the latter case a Msg will be created. 
+        msgobj - a Msg instance or a message string. In the latter case a Msg will be created.
         from_obj - if msgobj is not an Msg-instance, this is used to create
                    a message on the fly. If from_obj is None, no Msg object will
-                   be created and the message will be sent without being logged. 
-        """        
+                   be created and the message will be sent without being logged.
+        """
         if isinstance(msgobj, basestring):
             # given msgobj is a string
             if from_obj:
                 if isinstance(from_obj, basestring):
                     msgobj = Msg(db_sender_external=from_obj, db_message=msgobj)
                 else:
-                    msgobj = Msg(db_sender=from_obj, db_message=msgobj) 
-                # try to use 
+                    msgobj = Msg(db_sender=from_obj, db_message=msgobj)
+                # try to use
                 msgobj.save()
-                msgobj.channels = [self]                                                
-                msg = msgobj.message 
+                msgobj.channels = [self]
+                msg = msgobj.message
             else:
-                # this just sends a message, without any sender 
+                # this just sends a message, without any sender
                 # (and without storing it in a persistent Msg object)
                 msg = to_str(msgobj)
         else:
             msg = msgobj.message
 
         # get all players connected to this channel and send to them
-        for conn in Channel.objects.get_all_connections(self):            
+        for conn in Channel.objects.get_all_connections(self):
             try:
                 conn.player.msg(msg, from_obj)
             except AttributeError:
-                try:                    
+                try:
                     conn.to_external(msg, from_obj, from_channel=self)
                 except Exception:
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
-        return True 
+        return True
 
     def tempmsg(self, message):
         """
         A wrapper for sending non-persistent messages. Nothing
-        will be stored in the database. 
+        will be stored in the database.
 
-        message - a Msg object or a text string. 
+        message - a Msg object or a text string.
         """
-        if type(msgobj) == Msg:      
-            # extract only the string 
-            message = message.message   
+        if type(msgobj) == Msg:
+            # extract only the string
+            message = message.message
         return self.msg(message)
-            
+
     def connect_to(self, player):
         "Connect the user to this channel"
         if not self.access(player, 'listen'):
@@ -594,7 +594,7 @@ class Channel(SharedMemoryModel):
         conn = PlayerChannelConnection.objects.create_connection(player, self)
         if conn:
             return True
-        return False 
+        return False
 
     def disconnect_from(self, player):
         "Disconnect user from this channel."
@@ -611,14 +611,14 @@ class Channel(SharedMemoryModel):
         accessing_obj - object trying to access this one
         access_type - type of access sought
         default - what to return if no lock of access_type was found
-        """        
+        """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
 class PlayerChannelConnection(SharedMemoryModel):
     """
     This connects a player object to a particular comm channel.
     The advantage of making it like this is that one can easily
-    break the connection just by deleting this object. 
+    break the connection just by deleting this object.
     """
 
     # Player connected to a channel
@@ -672,19 +672,19 @@ class PlayerChannelConnection(SharedMemoryModel):
 
 class ExternalChannelConnection(SharedMemoryModel):
     """
-    This defines an external protocol connecting to 
+    This defines an external protocol connecting to
     a channel, while storing some critical info about
-    that connection. 
+    that connection.
     """
     # evennia channel connecting to
-    db_channel = models.ForeignKey(Channel, verbose_name='channel', 
+    db_channel = models.ForeignKey(Channel, verbose_name='channel',
                                    help_text='which channel this connection is tied to.')
     # external connection identifier
-    db_external_key = models.CharField('external key', max_length=128, 
+    db_external_key = models.CharField('external key', max_length=128,
                                        help_text='external connection identifier, used by calling protocol.')
     # eval-code to use when the channel tries to send a message
-    # to the external protocol. 
-    db_external_send_code = models.TextField('executable code', blank=True, 
+    # to the external protocol.
+    db_external_send_code = models.TextField('executable code', blank=True,
            help_text='this is a custom snippet of Python code to connect the external protocol to the in-game channel.')
     # custom config for the connection
     db_external_config = models.TextField('external config', blank=True,
@@ -693,10 +693,10 @@ class ExternalChannelConnection(SharedMemoryModel):
     db_is_enabled = models.BooleanField('is enabled', default=True, help_text='turn on/off the connection.')
 
     objects = managers.ExternalChannelConnectionManager()
-        
+
     class Meta:
         verbose_name = "External Channel Connection"
-        
+
     def __str__(self):
         return "%s <-> external %s" % (self.channel.key, self.db_external_key)
 
@@ -778,7 +778,7 @@ class ExternalChannelConnection(SharedMemoryModel):
         self.save()
     #@is_enabled.deleter
     def is_enabled_del(self):
-        "Deleter. Allows for del self.is_enabled. Deletes connection."        
+        "Deleter. Allows for del self.is_enabled. Deletes connection."
         self.delete()
     is_enabled = property(is_enabled_get, is_enabled_set, is_enabled_del)
 
@@ -789,23 +789,22 @@ class ExternalChannelConnection(SharedMemoryModel):
     def to_channel(self, message, from_obj=None):
         "Send external -> channel"
         if not from_obj:
-            from_obj = self.external_key        
+            from_obj = self.external_key
         self.channel.msg(message, from_obj=from_obj)
 
     def to_external(self, message, from_obj=None, from_channel=None):
         "Send channel -> external"
 
-        # make sure we are not echoing back our own message to ourselves 
-        # (this would result in a nasty infinite loop)        
+        # make sure we are not echoing back our own message to ourselves
+        # (this would result in a nasty infinite loop)
         if from_obj == self.external_key:
-            return 
-        
+            return
+
         try:
-            # we execute the code snippet that should make it possible for the 
+            # we execute the code snippet that should make it possible for the
             # connection to contact the protocol correctly (as set by the protocol).
             # Note that the code block has access to the variables here, such
-            # as message, from_obj and from_channel. 
+            # as message, from_obj and from_channel.
             exec(to_str(self.external_send_code))
         except Exception:
             logger.log_trace("Channel %s could not send to External %s" % (self.channel, self.external_key))
-            

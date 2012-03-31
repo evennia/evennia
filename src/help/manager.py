@@ -3,6 +3,7 @@ Custom manager for HelpEntry objects.
 """
 from django.db import models
 from src.utils import logger, utils
+__all__ = ("HelpEntryManager",)
 
 class HelpEntryManager(models.Manager):
     """

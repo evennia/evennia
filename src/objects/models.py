@@ -32,7 +32,8 @@ from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
 from src.utils.utils import make_iter, to_unicode, to_str, mod_import
 
-#PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
+#__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
+
 
 _AT_SEARCH_RESULT = mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
@@ -211,7 +212,7 @@ class ObjectDB(TypedObject):
 
     # aliases property (wraps (db_aliases)
     #@property
-    def aliases_get(self):
+    def __aliases_get(self):
         "Getter. Allows for value = self.aliases"
         try:
             return _GA(self, "_cached_aliases")
@@ -220,23 +221,23 @@ class ObjectDB(TypedObject):
             _SA(self, "_cached_aliases", aliases)
             return aliases
     #@aliases.setter
-    def aliases_set(self, aliases):
+    def __aliases_set(self, aliases):
         "Setter. Allows for self.aliases = value"
         for alias in make_iter(aliases):
             new_alias = Alias(db_key=alias, db_obj=self)
             new_alias.save()
         _SA(self, "_cached_aliases", aliases)
     #@aliases.deleter
-    def aliases_del(self):
+    def __aliases_del(self):
         "Deleter. Allows for del self.aliases"
         for alias in Alias.objects.filter(db_obj=self):
             alias.delete()
         _DA(self, "_cached_aliases")
-    aliases = property(aliases_get, aliases_set, aliases_del)
+    aliases = property(__aliases_get, __aliases_set, __aliases_del)
 
     # player property (wraps db_player)
     #@property
-    def player_get(self):
+    def __player_get(self):
         """
         Getter. Allows for value = self.player.
         We have to be careful here since Player is also
@@ -244,29 +245,29 @@ class ObjectDB(TypedObject):
         """
         return _get_cache(self, "player")
     #@player.setter
-    def player_set(self, player):
+    def __player_set(self, player):
         "Setter. Allows for self.player = value"
         if isinstance(player, TypeClass):
             player = player.dbobj
         _set_cache(self, "player", player)
     #@player.deleter
-    def player_del(self):
+    def __player_del(self):
         "Deleter. Allows for del self.player"
         self.db_player = None
         self.save()
         _del_cache(self, "player")
-    player = property(player_get, player_set, player_del)
+    player = property(__player_get, __player_set, __player_del)
 
     # location property (wraps db_location)
     #@property
-    def location_get(self):
+    def __location_get(self):
         "Getter. Allows for value = self.location."
         loc = _get_cache(self, "location")
         if loc:
             return loc.typeclass
         return None
     #@location.setter
-    def location_set(self, location):
+    def __location_set(self, location):
         "Setter. Allows for self.location = location"
         try:
             if location == None or type(location) == ObjectDB:
@@ -289,23 +290,23 @@ class ObjectDB(TypedObject):
             logger.log_trace(string)
             raise
     #@location.deleter
-    def location_del(self):
+    def __location_del(self):
         "Deleter. Allows for del self.location"
         self.db_location = None
         self.save()
         _del_cache(self, "location")
-    location = property(location_get, location_set, location_del)
+    location = property(__location_get, __location_set, __location_del)
 
     # home property (wraps db_home)
     #@property
-    def home_get(self):
+    def __home_get(self):
         "Getter. Allows for value = self.home"
         home = _get_cache(self, "home")
         if home:
             return home.typeclass
         return None
     #@home.setter
-    def home_set(self, home):
+    def __home_set(self, home):
         "Setter. Allows for self.home = value"
         try:
             if home == None or type(home) == ObjectDB:
@@ -326,23 +327,23 @@ class ObjectDB(TypedObject):
             logger.log_trace(string)
             #raise
     #@home.deleter
-    def home_del(self):
+    def __home_del(self):
         "Deleter. Allows for del self.home."
         self.db_home = None
         self.save()
         _del_cache(self, "home")
-    home = property(home_get, home_set, home_del)
+    home = property(__home_get, __home_set, __home_del)
 
     # destination property (wraps db_destination)
     #@property
-    def destination_get(self):
+    def __destination_get(self):
         "Getter. Allows for value = self.destination."
         dest = _get_cache(self, "destination")
         if dest:
             return dest.typeclass
         return None
     #@destination.setter
-    def destination_set(self, destination):
+    def __destination_set(self, destination):
         "Setter. Allows for self.destination = destination"
         try:
             if destination == None or type(destination) == ObjectDB:
@@ -365,33 +366,33 @@ class ObjectDB(TypedObject):
             logger.log_trace(string)
             raise
     #@destination.deleter
-    def destination_del(self):
+    def __destination_del(self):
         "Deleter. Allows for del self.destination"
         self.db_destination = None
         self.save()
         _del_cache(self, "destination")
-    destination = property(destination_get, destination_set, destination_del)
+    destination = property(__destination_get, __destination_set, __destination_del)
 
     # cmdset_storage property.
     # This seems very sensitive to caching, so leaving it be for now. /Griatch
     #@property
-    def cmdset_storage_get(self):
+    def __cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
         if self.db_cmdset_storage:
             return [path.strip() for path  in self.db_cmdset_storage.split(',')]
         return []
     #@cmdset_storage.setter
-    def cmdset_storage_set(self, value):
+    def __cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
         value = ",".join(str(val).strip() for val in make_iter(value))
         self.db_cmdset_storage = value
         self.save()
     #@cmdset_storage.deleter
-    def cmdset_storage_del(self):
+    def __cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
         self.db_cmdset_storage = ""
         self.save()
-    cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
+    cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
     class Meta:
         "Define Django meta options"
@@ -409,7 +410,7 @@ class ObjectDB(TypedObject):
     _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
     #@property
-    def sessions_get(self):
+    def __sessions_get(self):
         """
         Retrieve sessions connected to this object.
         """
@@ -417,42 +418,43 @@ class ObjectDB(TypedObject):
         if self.player:
             return self.player.sessions
         return []
-    sessions = property(sessions_get)
+    sessions = property(__sessions_get)
 
     #@property
-    def has_player_get(self):
+    def __has_player_get(self):
         """
         Convenience function for checking if an active player is
         currently connected to this object
         """
         return any(self.sessions)
-    has_player = property(has_player_get)
-    is_player = property(has_player_get)
+    has_player = property(__has_player_get)
+    is_player = property(__has_player_get)
 
     #@property
-    def is_superuser_get(self):
+    def __is_superuser_get(self):
         "Check if user has a player, and if so, if it is a superuser."
         return any(self.sessions) and self.player.is_superuser
-    is_superuser = property(is_superuser_get)
+    is_superuser = property(__is_superuser_get)
 
     #@property
     def contents_get(self, exclude=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
+        This should be publically available.
         """
         return ObjectDB.objects.get_contents(self, excludeobj=exclude)
     contents = property(contents_get)
 
     #@property
-    def exits_get(self):
+    def __exits_get(self):
         """
         Returns all exits from this object, i.e. all objects
         at this location having the property destination != None.
         """
         return [exi for exi in self.contents
                 if exi.destination]
-    exits = property(exits_get)
+    exits = property(__exits_get)
 
 
     #

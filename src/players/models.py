@@ -53,6 +53,8 @@ from src.utils import logger, utils
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 
+__all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
+
 _AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 #------------------------------------------------------------

@@ -13,6 +13,8 @@ used by the typesystem or django itself.
 from src.utils.logger import log_trace, log_errmsg
 from django.conf import settings
 
+__all__ = ("TypeClass",)
+
 # these are called so many times it's worth to avoid lookup calls
 _GA = object.__getattribute__
 _SA = object.__setattr__

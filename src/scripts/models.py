@@ -30,6 +30,8 @@ from src.typeclasses.models import Attribute, TypedObject
 from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
 
+__all__ = ("ScriptAttribute", "ScriptDB")
+
 #------------------------------------------------------------
 #
 # ScriptAttribute
@@ -121,122 +123,122 @@ class ScriptDB(TypedObject):
 
     # desc property (wraps db_desc)
     #@property
-    def desc_get(self):
+    def __desc_get(self):
         "Getter. Allows for value = self.desc"
         return self.db_desc
     #@desc.setter
-    def desc_set(self, value):
+    def __desc_set(self, value):
         "Setter. Allows for self.desc = value"
         self.db_desc = value
         self.save()
     #@desc.deleter
-    def desc_del(self):
+    def __desc_del(self):
         "Deleter. Allows for del self.desc"
         self.db_desc = ""
         self.save()
-    desc = property(desc_get, desc_set, desc_del)
+    desc = property(__desc_get, __desc_set, __desc_del)
 
     # obj property (wraps db_obj)
     #@property
-    def obj_get(self):
+    def __obj_get(self):
         "Getter. Allows for value = self.obj"
         return self.db_obj
     #@obj.setter
-    def obj_set(self, value):
+    def __obj_set(self, value):
         "Setter. Allows for self.obj = value"
         self.db_obj = value
         self.save()
     #@obj.deleter
-    def obj_del(self):
+    def __obj_del(self):
         "Deleter. Allows for del self.obj"
         self.db_obj = None
         self.save()
-    obj = property(obj_get, obj_set, obj_del)
+    obj = property(__obj_get, __obj_set, __obj_del)
 
     # interval property (wraps db_interval)
     #@property
-    def interval_get(self):
+    def __interval_get(self):
         "Getter. Allows for value = self.interval"
         return self.db_interval
     #@interval.setter
-    def interval_set(self, value):
+    def __interval_set(self, value):
         "Setter. Allows for self.interval = value"
         self.db_interval = int(value)
         self.save()
     #@interval.deleter
-    def interval_del(self):
+    def __interval_del(self):
         "Deleter. Allows for del self.interval"
         self.db_interval = 0
         self.save()
-    interval = property(interval_get, interval_set, interval_del)
+    interval = property(__interval_get, __interval_set, __interval_del)
 
     # start_delay property (wraps db_start_delay)
     #@property
-    def start_delay_get(self):
+    def __start_delay_get(self):
         "Getter. Allows for value = self.start_delay"
         return self.db_start_delay
     #@start_delay.setter
-    def start_delay_set(self, value):
+    def __start_delay_set(self, value):
         "Setter. Allows for self.start_delay = value"
         self.db_start_delay = value
         self.save()
     #@start_delay.deleter
-    def start_delay_del(self):
+    def __start_delay_del(self):
         "Deleter. Allows for del self.start_delay"
         self.db_start_delay = False
         self.save()
-    start_delay = property(start_delay_get, start_delay_set, start_delay_del)
+    start_delay = property(__start_delay_get, __start_delay_set, __start_delay_del)
 
     # repeats property (wraps db_repeats)
     #@property
-    def repeats_get(self):
+    def __repeats_get(self):
         "Getter. Allows for value = self.repeats"
         return self.db_repeats
     #@repeats.setter
-    def repeats_set(self, value):
+    def __repeats_set(self, value):
         "Setter. Allows for self.repeats = value"
         self.db_repeats = int(value)
         self.save()
     #@repeats.deleter
-    def repeats_del(self):
+    def __repeats_del(self):
         "Deleter. Allows for del self.repeats"
         self.db_repeats = 0
         self.save()
-    repeats = property(repeats_get, repeats_set, repeats_del)
+    repeats = property(__repeats_get, __repeats_set, __repeats_del)
 
     # persistent property (wraps db_persistent)
     #@property
-    def persistent_get(self):
+    def __persistent_get(self):
         "Getter. Allows for value = self.persistent"
         return self.db_persistent
     #@persistent.setter
-    def persistent_set(self, value):
+    def __persistent_set(self, value):
         "Setter. Allows for self.persistent = value"
         self.db_persistent = value
         self.save()
     #@persistent.deleter
-    def persistent_del(self):
+    def __persistent_del(self):
         "Deleter. Allows for del self.persistent"
         self.db_persistent = False
         self.save()
-    persistent = property(persistent_get, persistent_set, persistent_del)
+    persistent = property(__persistent_get, __persistent_set, __persistent_del)
 
     # is_active property (wraps db_is_active)
     #@property
-    def is_active_get(self):
+    def __is_active_get(self):
         "Getter. Allows for value = self.is_active"
         return self.db_is_active
     #@is_active.setter
-    def is_active_set(self, value):
+    def __is_active_set(self, value):
         "Setter. Allows for self.is_active = value"
         self.db_is_active = value
         self.save()
     #@is_active.deleter
-    def is_active_del(self):
+    def __is_active_del(self):
         "Deleter. Allows for del self.is_active"
         self.db_is_active = False
         self.save()
-    is_active = property(is_active_get, is_active_set, is_active_del)
+    is_active = property(__is_active_get, __is_active_set, __is_active_del)
 
     #
     #

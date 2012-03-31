@@ -17,6 +17,7 @@ they control by simply linking to a new object's user property.
 
 from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
+__all__ = ("Object", "Character", "Room", "Exit")
 
 #
 # Base class to inherit from.
@@ -24,11 +25,10 @@ from src.commands import cmdset, command
 
 class Object(TypeClass):
     """
-    This is the base class for all in-game objects.
-    Inherit from this to create different types of
-    objects in the game.
+    This is the base class for all in-game objects.  Inherit from this
+    to create different types of objects in the game.
     """
-
+    # __init__ is only defined here in order to present docstring to API.
     def __init__(self, dbobj):
         """
         This is the root typeclass object, implementing an in-game Evennia

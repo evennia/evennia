@@ -7,7 +7,7 @@ from functools import update_wrapper
 from django.db import models
 from src.utils import idmapper
 from src.utils.utils import make_iter
-#from src.typeclasses import idmap
+__all__ = ("AttributeManager", "TypedObjectManager")
 
 # Managers
 

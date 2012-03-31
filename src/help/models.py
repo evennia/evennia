@@ -15,6 +15,7 @@ from src.help.manager import HelpEntryManager
 from src.utils import ansi
 from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter
+__all__ = ("HelpEntry",)
 
 #------------------------------------------------------------
 #
@@ -31,6 +32,9 @@ class HelpEntry(SharedMemoryModel):
       help_category - which category entry belongs to (defaults to General)
       entrytext - the actual help text
       permissions - perm strings
+
+    Method:
+      access
 
     """
 
@@ -78,88 +82,88 @@ class HelpEntry(SharedMemoryModel):
 
     # key property (wraps db_key)
     #@property
-    def key_get(self):
+    def __key_get(self):
         "Getter. Allows for value = self.key"
         return self.db_key
     #@key.setter
-    def key_set(self, value):
+    def __key_set(self, value):
         "Setter. Allows for self.key = value"
         self.db_key = value
         self.save()
     #@key.deleter
-    def key_del(self):
+    def __key_del(self):
         "Deleter. Allows for del self.key. Deletes entry."
         self.delete()
-    key = property(key_get, key_set, key_del)
+    key = property(__key_get, __key_set, __key_del)
 
     # help_category property (wraps db_help_category)
     #@property
-    def help_category_get(self):
+    def __help_category_get(self):
         "Getter. Allows for value = self.help_category"
         return self.db_help_category
     #@help_category.setter
-    def help_category_set(self, value):
+    def __help_category_set(self, value):
         "Setter. Allows for self.help_category = value"
         self.db_help_category = value
         self.save()
     #@help_category.deleter
-    def help_category_del(self):
+    def __help_category_del(self):
         "Deleter. Allows for del self.help_category"
         self.db_help_category = "General"
         self.save()
-    help_category = property(help_category_get, help_category_set, help_category_del)
+    help_category = property(__help_category_get, __help_category_set, __help_category_del)
 
     # entrytext property (wraps db_entrytext)
     #@property
-    def entrytext_get(self):
+    def __entrytext_get(self):
         "Getter. Allows for value = self.entrytext"
         return self.db_entrytext
     #@entrytext.setter
-    def entrytext_set(self, value):
+    def __entrytext_set(self, value):
         "Setter. Allows for self.entrytext = value"
         self.db_entrytext = value
         self.save()
     #@entrytext.deleter
-    def entrytext_del(self):
+    def __entrytext_del(self):
         "Deleter. Allows for del self.entrytext"
         self.db_entrytext = ""
         self.save()
-    entrytext = property(entrytext_get, entrytext_set, entrytext_del)
+    entrytext = property(__entrytext_get, __entrytext_set, __entrytext_del)
 
     # permissions property
     #@property
-    def permissions_get(self):
+    def __permissions_get(self):
         "Getter. Allows for value = self.permissions. Returns a list of permissions."
         return [perm.strip() for perm in self.db_permissions.split(',')]
     #@permissions.setter
-    def permissions_set(self, value):
+    def __permissions_set(self, value):
         "Setter. Allows for self.permissions = value. Stores as a comma-separated string."
         if is_iter(value):
             value = ",".join([str(val).strip().lower() for val in value])
         self.db_permissions = value
         self.save()
     #@permissions.deleter
-    def permissions_del(self):
+    def __permissions_del(self):
         "Deleter. Allows for del self.permissions"
         self.db_permissions = ""
         self.save()
-    permissions = property(permissions_get, permissions_set, permissions_del)
+    permissions = property(__permissions_get, __permissions_set, __permissions_del)
 
         # lock_storage property (wraps db_lock_storage)
     #@property
-    def lock_storage_get(self):
+    def __lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
         return self.db_lock_storage
     #@nick.setter
-    def lock_storage_set(self, value):
+    def __lock_storage_set(self, value):
         """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
         self.db_lock_storage = value
         self.save()
     #@nick.deleter
-    def lock_storage_del(self):
+    def __lock_storage_del(self):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
 
     #

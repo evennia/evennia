@@ -2,27 +2,29 @@
 This module contains the base Script class that all
 scripts are inheriting from.
 
-It also defines a few common scripts. 
+It also defines a few common scripts.
 """
 
-from time import time 
+from time import time
 from twisted.internet.defer import maybeDeferred
 from twisted.internet.task import LoopingCall
-from twisted.internet import task 
+from twisted.internet import task
 from src.server.sessionhandler import SESSIONS
 from src.typeclasses.typeclass import TypeClass
 from src.scripts.models import ScriptDB
-from src.comms import channelhandler 
+from src.comms import channelhandler
 from src.utils import logger
 
+__all__ = ("Script", "DoNothing", "CheckSessions", "ValidateScripts", "ValidateChannelHandler", "AddCmdSet")
+
 #
-# Base script, inherit from Script below instead. 
+# Base script, inherit from Script below instead.
 #
 class ScriptClass(TypeClass):
     """
     Base class for scripts. Don't inherit from this, inherit from Script instead.
     """
-    # private methods 
+    # private methods
 
     def __eq__(self, other):
         """
@@ -32,7 +34,7 @@ class ScriptClass(TypeClass):
         try:
             return other.id == self.id
         except Exception:
-            return False 
+            return False
 
     def _start_task(self, start_now=True):
         "start task runner"
@@ -43,17 +45,17 @@ class ScriptClass(TypeClass):
             #print " start with paused time:", self.key, self.ndb._paused_time
             self.ndb.twisted_task.start(self.ndb._paused_time, now=False)
         else:
-            # starting script anew. 
+            # starting script anew.
             #print "_start_task: self.interval:", self.key, self.dbobj.interval
             self.ndb.twisted_task.start(self.dbobj.interval, now=start_now and not self.start_delay)
-        self.ndb.time_last_called = int(time())    
-        
+        self.ndb.time_last_called = int(time())
+
     def _stop_task(self):
         "stop task runner"
         try:
             #print "stopping twisted task:", id(self.ndb.twisted_task), self.obj
             if self.ndb.twisted_task and self.ndb.twisted_task.running:
-                self.ndb.twisted_task.stop()            
+                self.ndb.twisted_task.stop()
         except Exception:
             logger.log_trace()
     def _step_err_callback(self, e):
@@ -69,14 +71,14 @@ class ScriptClass(TypeClass):
         "step task runner. No try..except needed due to defer wrap."
         if not self.is_valid():
             self.stop()
-            return 
+            return
         self.at_repeat()
         repeats = self.dbobj.db_repeats
         if repeats <= 0:
             pass # infinite repeat
         elif repeats == 1:
             self.stop()
-            return 
+            return
         else:
             self.dbobj.db_repeats -= 1
         self.ndb.time_last_called = int(time())
@@ -84,7 +86,7 @@ class ScriptClass(TypeClass):
 
         if self.ndb._paused_time:
             # this means we were running an unpaused script, for the time remaining
-            # after the pause. Now we start a normal-running timer again. 
+            # after the pause. Now we start a normal-running timer again.
             #print "switching to normal run:", self.key
             del self.ndb._paused_time
             self._stop_task()
@@ -93,23 +95,23 @@ class ScriptClass(TypeClass):
 
     def _step_task(self):
         "step task"
-        try:            
+        try:
             d = maybeDeferred(self._step_succ_callback)
-            d.addErrback(self._step_err_callback)            
+            d.addErrback(self._step_err_callback)
             return d
         except Exception:
-            logger.log_trace()        
+            logger.log_trace()
 
-            
-    # Public methods 
+
+    # Public methods
 
     def time_until_next_repeat(self):
         """
         Returns the time in seconds until the script will be
-        run again. If this is not a stepping script, returns None. 
+        run again. If this is not a stepping script, returns None.
         This is not used in any way by the script's stepping
         system; it's only here for the user to be able to
-        check in on their scripts and when they will next be run. 
+        check in on their scripts and when they will next be run.
         """
         try:
             if self.ndb._paused_time:
@@ -117,7 +119,7 @@ class ScriptClass(TypeClass):
             else:
                 return max(0, (self.ndb.time_last_called + self.dbobj.db_interval) - int(time()))
         except Exception:
-            return None 
+            return None
 
     def start(self, force_restart=False):
         """
@@ -125,33 +127,33 @@ class ScriptClass(TypeClass):
         persistent scripts, this is usually once every server start)
 
         force_restart - if True, will always restart the script, regardless
-                        of if it has started before. 
-                        
-        returns 0 or 1 to indicated the script has been started or not. Used in counting.                         
+                        of if it has started before.
+
+        returns 0 or 1 to indicated the script has been started or not. Used in counting.
         """
-        #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj), 
-        #                                                          self.is_active, force_restart)        
+        #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj),
+        #                                                          self.is_active, force_restart)
 
         if self.dbobj.is_active and not force_restart:
             # script already runs and should not be restarted.
-            return 0 
+            return 0
 
         obj = self.obj
-        if obj:            
-            # check so the scripted object is valid and initalized 
+        if obj:
+            # check so the scripted object is valid and initalized
             try:
-                dummy = object.__getattribute__(obj, 'cmdset')                
+                dummy = object.__getattribute__(obj, 'cmdset')
             except AttributeError:
                 # this means the object is not initialized.
                 self.dbobj.is_active = False
-                return 0 
+                return 0
 
-        # try to restart a paused script 
+        # try to restart a paused script
         if self.unpause():
             return 1
 
-        # try to start the script from scratch 
-        try:            
+        # try to start the script from scratch
+        try:
             self.dbobj.is_active = True
             self.at_start()
             if self.dbobj.db_interval > 0:
@@ -159,15 +161,15 @@ class ScriptClass(TypeClass):
             return 1
         except Exception:
             logger.log_trace()
-            self.dbobj.is_active = False 
+            self.dbobj.is_active = False
             return 0
 
     def stop(self, kill=False):
         """
         Called to stop the script from running.
-        This also deletes the script. 
+        This also deletes the script.
 
-        kill - don't call finishing hooks. 
+        kill - don't call finishing hooks.
         """
         #print "stopping script %s" % self.key
         #import pdb
@@ -197,29 +199,29 @@ class ScriptClass(TypeClass):
         #print "pausing", self.key, self.time_until_next_repeat()
         dt = self.time_until_next_repeat()
         if dt == None:
-            return 
-        self.db._paused_time = dt 
+            return
+        self.db._paused_time = dt
         self._stop_task()
-    
+
     def unpause(self):
         """
-        Restart a paused script. This WILL call at_start(). 
+        Restart a paused script. This WILL call at_start().
         """
         #print "unpausing", self.key, self.db._paused_time
-        dt = self.db._paused_time 
+        dt = self.db._paused_time
         if dt == None:
             return False
         try:
             self.dbobj.is_active = True
             self.at_start()
-            self.ndb._paused_time = dt 
+            self.ndb._paused_time = dt
             self._start_task(start_now=False)
             del self.db._paused_time
         except Exception, e:
             logger.log_trace()
             self.dbobj.is_active = False
             return False
-        return True 
+        return True
 
     # hooks
     def at_script_creation(self):
@@ -230,7 +232,7 @@ class ScriptClass(TypeClass):
         pass
     def at_start(self):
         "placeholder."
-        pass        
+        pass
     def at_stop(self):
         "placeholder"
         pass
@@ -240,7 +242,7 @@ class ScriptClass(TypeClass):
     def at_init(self):
         "called when typeclass re-caches. Usually not used for scripts."
         pass
-    
+
 
 #
 # Base Script - inherit from this
@@ -255,36 +257,36 @@ class Script(ScriptClass):
     def __init__(self, dbobj):
         """
         This is the base TypeClass for all Scripts. Scripts describe events, timers and states in game,
-        they can have a time component or describe a state that changes under certain conditions. 
+        they can have a time component or describe a state that changes under certain conditions.
 
         Script API:
 
         * Available properties (only available on initiated Typeclass objects)
 
-         key (string) - name of object 
+         key (string) - name of object
          name (string)- same as key
          aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
          dbref (int, read-only) - unique #id-number. Also "id" can be used.
          dbobj (Object, read-only) - link to database model. dbobj.typeclass points back to this class
          typeclass (Object, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
          date_created (string) - time stamp of object creation
-         permissions (list of strings) - list of permission strings 
+         permissions (list of strings) - list of permission strings
 
          desc (string)      - optional description of script, shown in listings
-         obj (Object)       - optional object that this script is connected to and acts on (set automatically by obj.scripts.add()) 
-         interval (int)     - how often script should run, in seconds. <0 turns off ticker
+         obj (Object)       - optional object that this script is connected to and acts on (set automatically by obj.scripts.add())
+         interval (int)     - how often script should run, in seconds. <=0 turns off ticker
          start_delay (bool) - if the script should start repeating right away or wait self.interval seconds
-         repeats (int)      - how many times the script should repeat before stopping. 0 means infinite repeats
+         repeats (int)      - how many times the script should repeat before stopping. <=0 means infinite repeats
          persistent (bool)  - if script should survive a server shutdown or not
-         is_active (bool)   - if script is currently running      
+         is_active (bool)   - if script is currently running
 
         * Handlers
 
          locks - lock-handler: use locks.add() to add new lock strings
          db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
-         ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data 
+         ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data
 
-        * Helper methods 
+        * Helper methods
 
          start() - start script (this usually happens automatically at creation and obj.script.add() etc)
          stop()  - stop script, and delete it
@@ -292,48 +294,48 @@ class Script(ScriptClass):
          unpause() - restart a previously paused script. The script will continue as if it was never paused.
          time_until_next_repeat() - if a timed script (interval>0), returns time until next tick
 
-        * Hook methods 
+        * Hook methods
 
          at_script_creation() - called only once, when an object of this
                                 class is first created.
          is_valid() - is called to check if the script is valid to be running
                       at the current time. If is_valid() returns False, the running
                       script is stopped and removed from the game. You can use this
-                      to check state changes (i.e. an script tracking some combat 
-                      stats at regular intervals is only valid to run while there is 
-                      actual combat going on). 
+                      to check state changes (i.e. an script tracking some combat
+                      stats at regular intervals is only valid to run while there is
+                      actual combat going on).
           at_start() - Called every time the script is started, which for persistent
                       scripts is at least once every server start. Note that this is
                       unaffected by self.delay_start, which only delays the first call
-                      to at_repeat(). 
+                      to at_repeat().
           at_repeat() - Called every self.interval seconds. It will be called immediately
                       upon launch unless self.delay_start is True, which will delay
-                      the first call of this method by self.interval seconds. If 
-                      self.interval==0, this method will never be called. 
+                      the first call of this method by self.interval seconds. If
+                      self.interval<=0, this method will never be called.
           at_stop() - Called as the script object is stopped and is about to be removed from
                       the game, e.g. because is_valid() returned False.
-          at_server_reload() - Called when server reloads. Can be used to save temporary 
+          at_server_reload() - Called when server reloads. Can be used to save temporary
                       variables you want should survive a reload.
-          at_server_shutdown() - called at a full server shutdown. 
+          at_server_shutdown() - called at a full server shutdown.
 
-          
-          """        
+
+          """
         super(Script, self).__init__(dbobj)
 
     def at_script_creation(self):
         """
         Only called once, by the create function.
         """
-        self.key = "<unnamed>"           
+        self.key = "<unnamed>"
         self.desc = ""
         self.interval = 0 # infinite
         self.start_delay = False
         self.repeats = 0  # infinite
-        self.persistent = False             
-    
+        self.persistent = False
+
     def is_valid(self):
         """
-        Is called to check if the script is valid to run at this time. 
+        Is called to check if the script is valid to run at this time.
         Should return a boolean. The method is assumed to collect all needed
         information from its related self.obj.
         """
@@ -342,7 +344,7 @@ class Script(ScriptClass):
     def at_start(self):
         """
         Called whenever the script is started, which for persistent
-        scripts is at least once every server start. It will also be called 
+        scripts is at least once every server start. It will also be called
         when starting again after a pause (such as after a server reload)
         """
         pass
@@ -350,10 +352,10 @@ class Script(ScriptClass):
     def at_repeat(self):
         """
         Called repeatedly if this Script is set to repeat
-        regularly. 
+        regularly.
         """
         pass
-    
+
     def at_stop(self):
         """
         Called whenever when it's time for this script to stop
@@ -363,38 +365,38 @@ class Script(ScriptClass):
 
     def at_server_reload(self):
         """
-        This hook is called whenever the server is shutting down for restart/reboot. 
+        This hook is called whenever the server is shutting down for restart/reboot.
         If you want to, for example, save non-persistent properties across a restart,
-        this is the place to do it. 
+        this is the place to do it.
         """
         pass
 
     def at_server_shutdown(self):
         """
-        This hook is called whenever the server is shutting down fully (i.e. not for 
-        a restart). 
+        This hook is called whenever the server is shutting down fully (i.e. not for
+        a restart).
         """
         pass
 
 
 
-# Some useful default Script types used by Evennia. 
+# Some useful default Script types used by Evennia.
 
 class DoNothing(Script):
-    "An script that does nothing. Used as default fallback."    
-    def at_script_creation(self):    
+    "An script that does nothing. Used as default fallback."
+    def at_script_creation(self):
          "Setup the script"
          self.key = "sys_do_nothing"
-         self.desc = "This is a placeholder script."         
-    
+         self.desc = "This is a placeholder script."
+
 class CheckSessions(Script):
     "Check sessions regularly."
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_session_check"
-        self.desc = "Checks sessions so they are live."        
-        self.interval = 60  # repeat every 60 seconds        
-        self.persistent = True            
+        self.desc = "Checks sessions so they are live."
+        self.interval = 60  # repeat every 60 seconds
+        self.persistent = True
 
     def at_repeat(self):
         "called every 60 seconds"
@@ -403,7 +405,7 @@ class CheckSessions(Script):
         SESSIONS.validate_sessions()
 
 class ValidateScripts(Script):
-    "Check script validation regularly"    
+    "Check script validation regularly"
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_scripts_validate"
@@ -412,31 +414,31 @@ class ValidateScripts(Script):
         self.persistent = True
 
     def at_repeat(self):
-        "called every hour"        
+        "called every hour"
         #print "ValidateScripts run."
         ScriptDB.objects.validate()
 
 class ValidateChannelHandler(Script):
-    "Update the channelhandler to make sure it's in sync." 
+    "Update the channelhandler to make sure it's in sync."
 
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_channels_validate"
-        self.desc = "Updates the channel handler"    
+        self.desc = "Updates the channel handler"
         self.interval = 3700 # validate a little later than ValidateScripts
         self.persistent = True
-    
+
     def at_repeat(self):
         "called every hour+"
         #print "ValidateChannelHandler run."
         channelhandler.CHANNELHANDLER.update()
-                
+
 class AddCmdSet(Script):
     """
     This script permanently assigns a command set
     to an object whenever it is started. This is not
     used by the core system anymore, it's here mostly
-    as an example. 
+    as an example.
     """
     def at_script_creation(self):
         "Setup the script"
@@ -444,12 +446,12 @@ class AddCmdSet(Script):
             self.key = "add_cmdset"
         if not self.desc:
             self.desc = "Adds a cmdset to an object."
-        self.persistent = True 
+        self.persistent = True
 
         # this needs to be assigned to upon creation.
         # It should be a string pointing to the right
-        # cmdset module and cmdset class name, e.g.  
-        # 'examples.cmdset_redbutton.RedButtonCmdSet'        
+        # cmdset module and cmdset class name, e.g.
+        # 'examples.cmdset_redbutton.RedButtonCmdSet'
         # self.db.cmdset = <cmdset_path>
         # self.db.add_default = <bool>
 
@@ -461,12 +463,12 @@ class AddCmdSet(Script):
                 self.obj.cmdset.add_default(cmdset)
             else:
                 self.obj.cmdset.add(cmdset)
-        
+
     def at_stop(self):
         """
         This removes the cmdset when the script stops
         """
-        cmdset = self.db.cmdset        
+        cmdset = self.db.cmdset
         if cmdset:
             if self.db.add_default:
                 self.obj.cmdset.delete_default()
