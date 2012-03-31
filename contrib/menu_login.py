@@ -1,5 +1,5 @@
 """
-Menu-driven login system  
+Menu-driven login system
 
 Contribution - Griatch 2011
 
@@ -11,7 +11,7 @@ with the same name as the Player (instead assuming some sort of
 character-creation to come next).
 
 
-Install is simple: 
+Install is simple:
 
 To your settings file, add/edit the line:
 
@@ -30,8 +30,8 @@ the initial splash screen.
 
 import re
 import traceback
-from django.conf import settings 
-from ev import db_players, db_serverconfigs, db_channels
+from django.conf import settings
+from ev import managers
 from ev import utils, logger, create_player
 from ev import Command, CmdSet
 from ev import syscmdkeys
@@ -48,13 +48,13 @@ CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 # Commands run on the unloggedin screen. Note that this is not using settings.UNLOGGEDIN_CMDSET but
 # the menu system, which is why some are named for the numbers in the menu.
 #
-# Also note that the menu system will automatically assign all 
+# Also note that the menu system will automatically assign all
 # commands used in its structure a property "menutree" holding a reference
 # back to the menutree. This allows the commands to do direct manipulation
-# for example by triggering a conditional jump to another node. 
+# for example by triggering a conditional jump to another node.
 #
 
-# Menu entry 1a - Entering a Username 
+# Menu entry 1a - Entering a Username
 
 class CmdBackToStart(Command):
     """
@@ -68,14 +68,14 @@ class CmdBackToStart(Command):
 
 class CmdUsernameSelect(Command):
     """
-    Handles the entering of a username and 
-    checks if it exists. 
+    Handles the entering of a username and
+    checks if it exists.
     """
-    key = CMD_NOMATCH 
+    key = CMD_NOMATCH
     locks = "cmd:all()"
     def func(self):
-        "Execute the command"        
-        player = db_players.get_player_from_name(self.args)
+        "Execute the command"
+        player = managers.players.get_player_from_name(self.args)
         if not player:
             self.caller.msg("{rThis account name couldn't be found. Did you create it? If you did, make sure you spelled it right (case doesn't matter).{n")
             self.menutree.goto("node1a")
@@ -83,7 +83,7 @@ class CmdUsernameSelect(Command):
             self.menutree.player = player # store the player so next step can find it
             self.menutree.goto("node1b")
 
-# Menu entry 1b - Entering a Password 
+# Menu entry 1b - Entering a Password
 
 class CmdPasswordSelectBack(Command):
     """
@@ -97,7 +97,7 @@ class CmdPasswordSelectBack(Command):
 
 class CmdPasswordSelect(Command):
     """
-    Handles the entering of a password and logs into the game. 
+    Handles the entering of a password and logs into the game.
     """
     key = CMD_NOMATCH
     locks = "cmd:all()"
@@ -107,24 +107,24 @@ class CmdPasswordSelect(Command):
         if not hasattr(self.menutree, "player"):
             self.caller.msg("{rSomething went wrong! The player was not remembered from last step!{n")
             self.menutree.goto("node1a")
-            return 
+            return
         player = self.menutree.player
         if not player.user.check_password(self.args):
             self.caller.msg("{rIncorrect password.{n")
             self.menutree.goto("node1b")
-            return 
+            return
 
         # before going on, check eventual bans
-        bans = db_serverconfigs.conf("server_bans")
-        if bans and (any(tup[0]==player.name for tup in bans) 
-                     or 
+        bans = managers.serverconfigs.conf("server_bans")
+        if bans and (any(tup[0]==player.name for tup in bans)
+                     or
                      any(tup[2].match(player.sessions[0].address[0]) for tup in bans if tup[2])):
-            # this is a banned IP or name! 
+            # this is a banned IP or name!
             string = "{rYou have been banned and cannot continue from here."
             string += "\nIf you feel this ban is in error, please email an admin.{x"
             self.caller.msg(string)
             self.caller.session_disconnect()
-            return 
+            return
 
         # we are ok, log us in.
         self.caller.msg("{gWelcome %s! Logging in ...{n" % player.key)
@@ -139,8 +139,8 @@ class CmdPasswordSelect(Command):
             character.execute_cmd("look")
         else:
             # we have no character yet; use player's look, if it exists
-            player.execute_cmd("look")        
-        
+            player.execute_cmd("look")
+
 # Menu entry 2a - Creating a Username
 
 class CmdUsernameCreate(Command):
@@ -154,17 +154,17 @@ class CmdUsernameCreate(Command):
         "Execute the command"
         playername = self.args
 
-        # sanity check on the name 
+        # sanity check on the name
         if not re.findall('^[\w. @+-]+$', playername) or not (3 <= len(playername) <= 30):
             self.caller.msg("\n\r {rAccount name should be between 3 and 30 characters. Letters, spaces, dig\
-its and @/./+/-/_ only.{n") # this echoes the restrictions made by django's auth module. 
+its and @/./+/-/_ only.{n") # this echoes the restrictions made by django's auth module.
             self.menutree.goto("node2a")
             return
-        if db_players.get_player_from_name(playername):
+        if managers.players.get_player_from_name(playername):
             self.caller.msg("\n\r {rAccount name %s already exists.{n" % playername)
             self.menutree.goto("node2a")
-            return 
-        # store the name for the next step 
+            return
+        # store the name for the next step
         self.menutree.playername = playername
         self.menutree.goto("node2b")
 
@@ -182,14 +182,14 @@ class CmdPasswordCreate(Command):
     "Handle the creation of a password. This also creates the actual Player/User object."
     key = CMD_NOMATCH
     locks = "cmd:all()"
-    
+
     def func(self):
         "Execute  the command"
         password = self.args
         if not hasattr(self.menutree, 'playername'):
             self.caller.msg("{rSomething went wrong! Playername not remembered from previous step!{n")
             self.menutree.goto("node2a")
-            return 
+            return
         playername = self.menutree.playername
         if len(password) < 3:
             # too short password
@@ -198,8 +198,8 @@ class CmdPasswordCreate(Command):
             string += "avoid making it a real word and mix numbers into it.{n"
             self.caller.msg(string)
             self.menutree.goto("node2b")
-            return         
-        # everything's ok. Create the new player account. Don't create a Character here. 
+            return
+        # everything's ok. Create the new player account. Don't create a Character here.
         try:
             permissions = settings.PERMISSION_PLAYER_DEFAULT
             typeclass = settings.BASE_PLAYER_TYPECLASS
@@ -210,34 +210,34 @@ class CmdPasswordCreate(Command):
             if not new_player:
                 self.msg("There was an error creating the Player. This error was logged. Contact an admin.")
                 self.menutree.goto("START")
-                return 
+                return
             utils.init_new_player(new_player)
-            
-            # join the new player to the public channel                
+
+            # join the new player to the public channel
             pchanneldef = settings.CHANNEL_PUBLIC
             if pchanneldef:
-                pchannel = db_channels.get_channel(pchanneldef[0])
+                pchannel = managers.channels.get_channel(pchanneldef[0])
                 if not pchannel.connect_to(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
-                
-            # tell the caller everything went well. 
+
+            # tell the caller everything went well.
             string = "{gA new account '%s' was created. Now go log in from the menu!{n"
             self.caller.msg(string % (playername))
             self.menutree.goto("START")
         except Exception:
-            # We are in the middle between logged in and -not, so we have to handle tracebacks 
+            # We are in the middle between logged in and -not, so we have to handle tracebacks
             # ourselves at this point. If we don't, we won't see any errors at all.
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             self.caller.msg(string % (traceback.format_exc()))
-            logger.log_errmsg(traceback.format_exc())            
+            logger.log_errmsg(traceback.format_exc())
 
 
 # Menu entry 3 - help screen
 
 LOGIN_SCREEN_HELP = \
-    """    
-    Welcome to %s! 
+    """
+    Welcome to %s!
 
     To login you need to first create an account. This is easy and
     free to do: Choose option {w(1){n in the menu and enter an account
@@ -279,20 +279,20 @@ class CmdUnloggedinQuit(Command):
 
 # The login menu tree, using the commands above
 
-START = MenuNode("START", text=utils.string_from_module(CONNECTION_SCREEN_MODULE), 
-                 links=["node1a", "node2a", "node3", "END"], 
-                 linktexts=["Log in with an existing account", 
-                            "Create a new account", 
-                            "Help", 
+START = MenuNode("START", text=utils.string_from_module(CONNECTION_SCREEN_MODULE),
+                 links=["node1a", "node2a", "node3", "END"],
+                 linktexts=["Log in with an existing account",
+                            "Create a new account",
+                            "Help",
                             "Quit",],
                  selectcmds=[None, None, None, CmdUnloggedinQuit])
 
-node1a = MenuNode("node1a", text="Please enter your account name (empty to abort).", 
+node1a = MenuNode("node1a", text="Please enter your account name (empty to abort).",
                   links=["START", "node1b"],
                   helptext=["Enter the account name you previously registered with."],
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
                   selectcmds=[CmdBackToStart, CmdUsernameSelect],
-                  nodefaultcmds=True) # if we don't, default help/look will be triggered by names starting with l/h ...                  
+                  nodefaultcmds=True) # if we don't, default help/look will be triggered by names starting with l/h ...
 node1b = MenuNode("node1b", text="Please enter your password (empty to go back).",
                   links=["node1a", "END"],
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
@@ -318,7 +318,7 @@ node3 = MenuNode("node3", text=LOGIN_SCREEN_HELP,
                  selectcmds=[CmdBackToStart])
 
 
-# access commands 
+# access commands
 
 class UnloggedInCmdSet(CmdSet):
     "Cmdset for the unloggedin state"
@@ -330,13 +330,13 @@ class UnloggedInCmdSet(CmdSet):
 class CmdUnloggedinLook(Command):
     """
     An unloggedin version of the look command. This is called by the server when the player
-    first connects. It sets up the menu before handing off to the menu's own look command.. 
+    first connects. It sets up the menu before handing off to the menu's own look command..
     """
     key = CMD_LOGINSTART
     aliases = ["look", "l"]
     locks = "cmd:all()"
-    
+
     def func(self):
-        "Execute the menu"        
+        "Execute the menu"
         menu = MenuTree(self.caller, nodes=(START, node1a, node1b, node2a, node2b, node3), exec_end=None)
-        menu.start() 
+        menu.start()

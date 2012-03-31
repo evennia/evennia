@@ -4,10 +4,10 @@ Building and world design commands
 
 """
 
-from django.conf import settings 
+from django.conf import settings
 from src.objects.models import ObjectDB, ObjAttribute
 from src.players.models import PlayerAttribute
-from src.utils import create, utils, debug 
+from src.utils import create, utils, debug
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
 
@@ -31,33 +31,33 @@ class ObjManipCommand(MuxCommand):
 
     Each object definition can have several components. First is
     always a name, followed by an optional alias list and finally an
-    some optional data, such as a typeclass or a location. A comma ',' 
+    some optional data, such as a typeclass or a location. A comma ','
     separates different objects. Like this:
-    
+
         name1;alias;alias;alias:option, name2;alias;alias ...
 
-    Spaces between all components are stripped. 
+    Spaces between all components are stripped.
 
     A second situation is attribute manipulation. Such commands
     are simpler and offer combinations
 
-        objname/attr/attr/attr, objname/attr, ...             
+        objname/attr/attr/attr, objname/attr, ...
 
     """
-    # OBS - this is just a parent - it's not intended to actually be 
+    # OBS - this is just a parent - it's not intended to actually be
     # included in a commandset on its own!
-    
+
     def parse(self):
         """
-        We need to expand the default parsing to get all 
-        the cases, see the module doc.         
+        We need to expand the default parsing to get all
+        the cases, see the module doc.
         """
         # get all the normal parsing done (switches etc)
         super(ObjManipCommand, self).parse()
 
-        obj_defs = ([],[])    # stores left- and right-hand side of '=' 
+        obj_defs = ([],[])    # stores left- and right-hand side of '='
         obj_attrs = ([], [])  #                   "
-        
+
         for iside, arglist in enumerate((self.lhslist, self.rhslist)):
             # lhslist/rhslist is already split by ',' at this point
             for objdef in arglist:
@@ -70,7 +70,7 @@ class ObjManipCommand(MuxCommand):
                 if '/' in objdef:
                     objdef, attrs = [part.strip() for part in objdef.split('/', 1)]
                     attrs = [part.strip().lower() for part in attrs.split('/') if part.strip()]
-                # store data 
+                # store data
                 obj_defs[iside].append({"name":objdef, 'option':option, 'aliases':aliases})
                 obj_attrs[iside].append({"name":objdef, 'attrs':attrs})
 
@@ -81,35 +81,35 @@ class ObjManipCommand(MuxCommand):
         self.rhs_objattr = obj_attrs[1]
 
 
-class CmdSetObjAlias(MuxCommand):   
+class CmdSetObjAlias(MuxCommand):
     """
     Adding permanent aliases
 
     Usage:
       @alias <obj> [= [alias[,alias,alias,...]]]
 
-    Assigns aliases to an object so it can be referenced by more 
+    Assigns aliases to an object so it can be referenced by more
     than one name. Assign empty to remove all aliases from object.
-    Observe that this is not the same thing as aliases 
-    created with the 'alias' command! Aliases set with @alias are 
-    changing the object in question, making those aliases usable 
-    by everyone. 
+    Observe that this is not the same thing as aliases
+    created with the 'alias' command! Aliases set with @alias are
+    changing the object in question, making those aliases usable
+    by everyone.
     """
 
     key  = "@alias"
     aliases = "@setobjalias"
     locks = "cmd:perm(setobjalias) or perm(Builders)"
     help_category = "Building"
-    
+
     def func(self):
         "Set the aliases."
 
-        caller = self.caller    
+        caller = self.caller
 
         if not self.lhs:
             string = "Usage: @alias <obj> [= [alias[,alias ...]]]"
             self.caller.msg(string)
-            return 
+            return
         objname = self.lhs
 
         # Find the object to receive aliases
@@ -123,47 +123,47 @@ class CmdSetObjAlias(MuxCommand):
                 caller.msg("Aliases for '%s': %s" % (obj.key, ", ".join(aliases)))
             else:
                 caller.msg("No aliases exist for '%s'." % obj.key)
-            return 
-        
+            return
+
         if not obj.access(caller, 'edit'):
             caller.msg("You don't have permission to do that.")
-            return 
-        
+            return
+
         if not self.rhs:
             # we have given an empty =, so delete aliases
             old_aliases = obj.aliases
             if old_aliases:
                 caller.msg("Cleared aliases from %s: %s" % (obj.key, ", ".join(old_aliases)))
-                del obj.dbobj.aliases 
+                del obj.dbobj.aliases
             else:
                 caller.msg("No aliases to clear.")
-            return 
+            return
 
         # merge the old and new aliases (if any)
         old_aliases = obj.aliases
         new_aliases = [alias.strip().lower() for alias in self.rhs.split(',') if alias.strip()]
-        # make the aliases only appear once 
+        # make the aliases only appear once
         old_aliases.extend(new_aliases)
-        aliases = list(set(old_aliases))        
+        aliases = list(set(old_aliases))
         # save back to object.
-        obj.aliases = aliases 
+        obj.aliases = aliases
         # we treat this as a re-caching (relevant for exits to re-build their exit commands with the correct aliases)
         caller.msg("Aliases for '%s' are now set to %s." % (obj.key, ", ".join(obj.aliases)))
 
-class CmdCopy(ObjManipCommand):    
+class CmdCopy(ObjManipCommand):
     """
     @copy - copy objects
-    
+
     Usage:
-      @copy[/reset] <original obj> [= new_name][;alias;alias..][:new_location] [,new_name2 ...] 
+      @copy[/reset] <original obj> [= new_name][;alias;alias..][:new_location] [,new_name2 ...]
 
     switch:
       reset - make a 'clean' copy off the object, thus
               removing any changes that might have been made to the original
-              since it was first created. 
+              since it was first created.
 
     Create one or more copies of an object. If you don't supply any targets, one exact copy
-    of the original object will be created with the name *_copy. 
+    of the original object will be created with the name *_copy.
     """
 
     key = "@copy"
@@ -176,31 +176,31 @@ class CmdCopy(ObjManipCommand):
         caller = self.caller
         args = self.args
         if not args:
-            caller.msg("Usage: @copy <obj> [=new_name[;alias;alias..]][:new_location] [, new_name2...]") 
+            caller.msg("Usage: @copy <obj> [=new_name[;alias;alias..]][:new_location] [, new_name2...]")
             return
-    
+
         if not self.rhs:
-            # this has no target =, so an identical new object is created. 
-            from_obj_name = self.args            
+            # this has no target =, so an identical new object is created.
+            from_obj_name = self.args
             from_obj = caller.search(from_obj_name)
             if not from_obj:
-                return             
+                return
             to_obj_name = "%s_copy" % from_obj_name
             to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases]
-            copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name, 
+            copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name,
                                                      new_aliases=to_obj_aliases)
             if copiedobj:
                 string = "Identical copy of %s, named '%s' was created." % (from_obj_name, to_obj_name)
             else:
                 string = "There was an error copying %s."
         else:
-            # we have specified =. This might mean many object targets 
+            # we have specified =. This might mean many object targets
             from_obj_name = self.lhs_objs[0]['name']
             from_obj = caller.search(from_obj_name)
             if not from_obj:
-                return             
-            for objdef in self.rhs_objs:                
-                # loop through all possible copy-to targets                
+                return
+            for objdef in self.rhs_objs:
+                # loop through all possible copy-to targets
                 to_obj_name = objdef['name']
                 to_obj_aliases = objdef['aliases']
                 to_obj_location = objdef['option']
@@ -209,13 +209,13 @@ class CmdCopy(ObjManipCommand):
                     if not to_obj_location:
                         return
 
-                copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name, 
-                                                         new_location=to_obj_location, new_aliases=to_obj_aliases)                 
+                copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name,
+                                                         new_location=to_obj_location, new_aliases=to_obj_aliases)
                 if copiedobj:
                     string = "Copied %s to '%s' (aliases: %s)." % (from_obj_name, to_obj_name,
                                                                    to_obj_aliases)
                 else:
-                    string = "There was an error copying %s to '%s'." % (from_obj_name, 
+                    string = "There was an error copying %s to '%s'." % (from_obj_name,
                                                                          to_obj_name)
         # we are done, echo to user
         caller.msg(string)
@@ -224,34 +224,34 @@ class CmdCpAttr(ObjManipCommand):
     """
     @cpattr - copy attributes
 
-    Usage:    
+    Usage:
       @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       @cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
       @cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       @cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
 
     Switches:
-      move - delete the attribute from the source object after copying. 
+      move - delete the attribute from the source object after copying.
 
     Example:
       @cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety
       ->
       copies the coolness attribute (defined on yourself), to attributes
-      on Anna and Tom. 
+      on Anna and Tom.
 
     Copy the attribute one object to one or more attributes on another object. If
-    you don't supply a source object, yourself is used. 
+    you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
     locks = "cmd:perm(cpattr) or perm(Builders)"
     help_category = "Building"
-    
+
     def func(self):
         """
         Do the copying.
-        """        
+        """
         caller = self.caller
-    
+
         if not self.rhs:
             string = """Usage:
             @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
@@ -275,7 +275,7 @@ class CmdCpAttr(ObjManipCommand):
             from_obj = caller.search(from_obj_name)
         if not from_obj or not to_objs:
             caller.msg("You have to supply both source object and target(s).")
-            return 
+            return
         if not from_obj.has_attribute(from_obj_attrs[0]):
             caller.msg("%s doesn't have an attribute %s." % (from_obj_name, from_obj_attrs[0]))
             return
@@ -287,10 +287,10 @@ class CmdCpAttr(ObjManipCommand):
         else:
             string = "Copying "
         string += "%s/%s (with value %s) ..." % (from_obj_name, from_obj_attrs[0], srcvalue)
-                   
-        for to_obj in to_objs:            
+
+        for to_obj in to_objs:
             to_obj_name = to_obj['name']
-            to_obj_attrs = to_obj['attrs']            
+            to_obj_attrs = to_obj['attrs']
             to_obj = caller.search(to_obj_name)
             if not to_obj:
                 string += "\nCould not find object '%s'" % to_obj_name
@@ -299,7 +299,7 @@ class CmdCpAttr(ObjManipCommand):
                 try:
                     to_attr = to_obj_attrs[inum]
                 except IndexError:
-                    # if there are too few attributes given 
+                    # if there are too few attributes given
                     # on the to_obj, we copy the original name instead.
                     to_attr = from_attr
                 to_obj.set_attribute(to_attr, srcvalue)
@@ -316,36 +316,36 @@ class CmdMvAttr(ObjManipCommand):
     """
     @mvattr - move attributes
 
-    Usage:    
+    Usage:
       @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       @mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
       @mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       @mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
 
     Switches:
-      copy - Don't delete the original after moving. 
+      copy - Don't delete the original after moving.
 
     Move an attribute from one object to one or more attributes on another object. If
-    you don't supply a source object, yourself is used. 
+    you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
     locks = "cmd:perm(mvattr) or perm(Builders)"
     help_category = "Building"
-    
+
     def func(self):
         """
         Do the moving
-        """        
+        """
         if not self.rhs:
-            string = """Usage:    
+            string = """Usage:
       @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       @mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
       @mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       @mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
             self.caller.msg(string)
-            return 
+            return
 
-        # simply use @cpattr for all the functionality 
+        # simply use @cpattr for all the functionality
         if "copy" in self.switches:
             self.caller.execute_cmd("@cpattr %s" % self.args)
         else:
@@ -368,44 +368,44 @@ class CmdCreate(ObjManipCommand):
     directory structure is given in Python notation. So if you have a
     correct typeclass object defined in
     game/gamesrc/types/examples/red_button.py, you could create a new
-    object of this type like this: 
+    object of this type like this:
 
-       @create button;red : examples.red_button.RedButton       
+       @create button;red : examples.red_button.RedButton
 
     """
 
     key = "@create"
     locks = "cmd:perm(create) or perm(Builders)"
     help_category = "Building"
-            
+
     def func(self):
         """
         Creates the object.
         """
-    
+
         caller = self.caller
 
         if not self.args:
             string = "Usage: @create[/drop] <newname>[;alias;alias...] [:typeclass_path]"
-            caller.msg(string)    
+            caller.msg(string)
             return
-            
+
         # create the objects
-        for objdef in self.lhs_objs:            
+        for objdef in self.lhs_objs:
             string = ""
             name = objdef['name']
             aliases = objdef['aliases']
-            typeclass = objdef['option']            
-            
+            typeclass = objdef['option']
+
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
             lockstring = "control:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards);get:all()" % (caller.id, caller.id)
-            obj = create.create_object(typeclass, name, caller, 
+            obj = create.create_object(typeclass, name, caller,
                                        home=caller, aliases=aliases, locks=lockstring)
             if not obj:
                 string = "Error when creating object."
                 continue
-            if aliases: 
+            if aliases:
                 string = "You create a new %s: %s (aliases: %s)."
                 string = string % (obj.typeclass.typename, obj.name, ", ".join(aliases))
             else:
@@ -414,9 +414,9 @@ class CmdCreate(ObjManipCommand):
             # set a default desc
             if not obj.db.desc:
                 obj.db.desc = "You see nothing special."
-            if 'drop' in self.switches:    
+            if 'drop' in self.switches:
                 if caller.location:
-                    obj.home = caller.location 
+                    obj.home = caller.location
                     obj.move_to(caller.location, quiet=True)
             if string:
                 caller.msg(string)
@@ -439,7 +439,7 @@ class CmdDebug(MuxCommand):
       @debug/obj examples.red_button.RedButton
 
     This command helps when debugging the codes of objects and scripts.
-    It creates the given object and runs tests on its hooks. 
+    It creates the given object and runs tests on its hooks.
     """
 
     key = "@debug"
@@ -452,7 +452,7 @@ class CmdDebug(MuxCommand):
         if not self.args or not self.switches:
             self.caller.msg("Usage: @debug[/obj][/script] <path>")
             return
-        
+
         path = self.args
 
         if 'obj' in self.switches or 'object' in self.switches:
@@ -471,9 +471,9 @@ class CmdDesc(MuxCommand):
     Usage:
       @desc [<obj> =] >description>
 
-    Setts the "desc" attribute on an 
+    Setts the "desc" attribute on an
     object. If an object is not given,
-    describe the current room. 
+    describe the current room.
     """
     key = "@desc"
     aliases = "@describe"
@@ -486,13 +486,13 @@ class CmdDesc(MuxCommand):
         caller = self.caller
         if not self.args:
             caller.msg("Usage: @desc [<obj> =] >description>")
-            return 
+            return
 
         if self.rhs:
             # We have an =
             obj = caller.search(self.lhs)
             if not obj:
-                return 
+                return
             desc = self.rhs
         else:
             obj = caller.location
@@ -505,19 +505,19 @@ class CmdDesc(MuxCommand):
 class CmdDestroy(MuxCommand):
     """
     @destroy - remove objects from the game
-    
-    Usage: 
+
+    Usage:
        @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
-              
+
     switches:
        override - The @destroy command will usually avoid accidentally destroying
-                  player objects. This switch overrides this safety.            
+                  player objects. This switch overrides this safety.
     examples:
        @destroy house, roof, door, 44-78
        @destroy 5-10, flower, 45
 
     Destroys one or many objects. If dbrefs are used, a range to delete can be
-    given, e.g. 4-10. Also the end points will be deleted. 
+    given, e.g. 4-10. Also the end points will be deleted.
     """
 
     key = "@destroy"
@@ -538,7 +538,7 @@ class CmdDestroy(MuxCommand):
             # helper function for deleting a single object
             string = ""
             obj = caller.search(objname)
-            if not obj:                
+            if not obj:
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
                 return ""
             objname = obj.name
@@ -547,8 +547,8 @@ class CmdDestroy(MuxCommand):
             if obj.player and not 'override' in self.switches:
                 return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
 
-            had_exits = hasattr(obj, "exits") and obj.exits 
-            had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents 
+            had_exits = hasattr(obj, "exits") and obj.exits
+            had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents
                                                         if not (hasattr(obj, "exits") and obj not in obj.exits))
             # do the deletion
             okay = obj.delete()
@@ -556,14 +556,14 @@ class CmdDestroy(MuxCommand):
                 string += "\nERROR: %s not deleted, probably because at_obj_delete() returned False." % objname
             else:
                 string += "\n%s was destroyed." % objname
-                if had_exits: 
+                if had_exits:
                     string += " Exits to and from %s were destroyed as well." % objname
                 if had_objs:
                     string += " Objects inside %s were moved to their homes." % objname
-            return string 
-    
+            return string
+
         string = ""
-        for objname in self.lhslist:            
+        for objname in self.lhslist:
             if '-' in objname:
                 # might be a range of dbrefs
                 dmin, dmax = [utils.dbref(part) for part in objname.split('-', 1)]
@@ -576,16 +576,16 @@ class CmdDestroy(MuxCommand):
                 string += delobj(objname)
         if string:
             caller.msg(string.strip())
-                    
+
 
 class CmdDig(ObjManipCommand):
     """
     @dig - build and connect new rooms to the current one
 
-    Usage: 
-      @dig[/switches] roomname[;alias;alias...][:typeclass] 
-            [= exit_to_there[;alias][:typeclass]] 
-               [, exit_to_here[;alias][:typeclass]] 
+    Usage:
+      @dig[/switches] roomname[;alias;alias...][:typeclass]
+            [= exit_to_there[;alias][:typeclass]]
+               [, exit_to_here[;alias][:typeclass]]
 
     Switches:
        tel or teleport - move yourself to the new room
@@ -605,7 +605,7 @@ class CmdDig(ObjManipCommand):
 
     def func(self):
         "Do the digging. Inherits variables from ObjManipCommand.parse()"
-        
+
         caller = self.caller
 
         if not self.lhs:
@@ -614,21 +614,21 @@ class CmdDig(ObjManipCommand):
             string += "[, exit_back_here[;alias;alias..][:parent]]"
             caller.msg(string)
             return
-        
+
         room = self.lhs_objs[0]
 
         if not room["name"]:
-            caller.msg("You must supply a new room name.")            
+            caller.msg("You must supply a new room name.")
             return
-        location = caller.location         
+        location = caller.location
 
-        # Create the new room 
+        # Create the new room
         typeclass = room['option']
         if not typeclass:
             typeclass = settings.BASE_ROOM_TYPECLASS
 
-        # create room 
-        lockstring = "control:id(%s) or perm(Immortals); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)" 
+        # create room
+        lockstring = "control:id(%s) or perm(Immortals); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)"
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
 
         new_room = create.create_object(typeclass, room["name"],
@@ -639,59 +639,59 @@ class CmdDig(ObjManipCommand):
             alias_string = " (%s)" % ", ".join(new_room.aliases)
         room_string = "Created room %s(%s)%s of type %s." % (new_room, new_room.dbref, alias_string, typeclass)
 
-        
-        # create exit to room 
+
+        # create exit to room
 
         exit_to_string = ""
         exit_back_string = ""
-                
+
         if self.rhs_objs:
-            to_exit = self.rhs_objs[0]             
+            to_exit = self.rhs_objs[0]
             if not to_exit["name"]:
                 exit_to_string = \
                     "\nNo exit created to new room."
             elif not location:
                 exit_to_string = \
-                  "\nYou cannot create an exit from a None-location."    
+                  "\nYou cannot create an exit from a None-location."
             else:
                 # Build the exit to the new room from the current one
                 typeclass = to_exit["option"]
                 if not typeclass:
-                    typeclass = settings.BASE_EXIT_TYPECLASS                            
+                    typeclass = settings.BASE_EXIT_TYPECLASS
 
                 new_to_exit = create.create_object(typeclass, to_exit["name"], location,
-                                                   aliases=to_exit["aliases"], 
+                                                   aliases=to_exit["aliases"],
                                                    locks=lockstring, destination=new_room)
                 alias_string = ""
                 if new_to_exit.aliases:
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases)
                 exit_to_string = "\nCreated Exit from %s to %s: %s(%s)%s."
-                exit_to_string = exit_to_string % (location.name, new_room.name, new_to_exit, 
+                exit_to_string = exit_to_string % (location.name, new_room.name, new_to_exit,
                                                    new_to_exit.dbref, alias_string)
 
-        # Create exit back from new room 
-                
+        # Create exit back from new room
+
         if len(self.rhs_objs) > 1:
-            # Building the exit back to the current room 
+            # Building the exit back to the current room
             back_exit = self.rhs_objs[1]
             if not back_exit["name"]:
                 exit_back_string = \
-                    "\nNo back exit created."            
+                    "\nNo back exit created."
             elif not location:
                 exit_back_string = \
-                   "\nYou cannot create an exit back to a None-location." 
+                   "\nYou cannot create an exit back to a None-location."
             else:
                 typeclass = back_exit["option"]
                 if not typeclass:
                     typeclass = settings.BASE_EXIT_TYPECLASS
                 new_back_exit = create.create_object(typeclass, back_exit["name"],
-                                                     new_room, aliases=back_exit["aliases"], 
+                                                     new_room, aliases=back_exit["aliases"],
                                                      locks=lockstring, destination=location)
                 alias_string = ""
                 if new_back_exit.aliases:
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases)
-                exit_back_string = "\nCreated Exit back from %s to %s: %s(%s)%s." 
-                exit_back_string = exit_back_string % (new_room.name, location.name, 
+                exit_back_string = "\nCreated Exit back from %s to %s: %s(%s)%s."
+                exit_back_string = exit_back_string % (new_room.name, location.name,
                                                        new_back_exit, new_back_exit.dbref, alias_string)
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
         if new_room and ('teleport' in self.switches or "tel" in self.switches):
@@ -701,20 +701,20 @@ class CmdTunnel(MuxCommand):
     """
     dig in often-used directions
 
-    Usage: 
+    Usage:
       @tunnel[/switch] <direction> [= roomname[;alias;alias;...][:typeclass]]
 
     Switches:
       oneway - do not create an exit back to the current location
-      tel - teleport to the newly created room 
+      tel - teleport to the newly created room
 
     Example:
       @tunnel n
       @tunnel n = house;mike's place;green building
-    
-    This is a simple way to build using pre-defined directions: 
+
+    This is a simple way to build using pre-defined directions:
      {wn,ne,e,se,s,sw,w,nw{n (north, northeast etc)
-     {wu,d{n (up and down) 
+     {wu,d{n (up and down)
      {wi,o{n (in and out)
     The full names (north, in, southwest, etc) will always be put as
     main name for the exit, using the abbreviation as an alias (so an
@@ -723,7 +723,7 @@ class CmdTunnel(MuxCommand):
     created back from the new room unless the /oneway switch is given.
     For more flexibility and power in creating rooms, use @dig.
     """
-    
+
     key = "@tunnel"
     aliases = ["@tun"]
     locks = "cmd: perm(tunnel) or perm(Builders)"
@@ -742,25 +742,25 @@ class CmdTunnel(MuxCommand):
                   "d" : ("down", "u"),
                   "i" : ("in", "o"),
                   "o" : ("out", "i")}
-    
+
     def func(self):
         "Implements the tunnel command"
-    
+
         if not self.args or not self.lhs:
             string = "Usage: @tunnel[/switch] <direction> [= roomname[;alias;alias;...][:typeclass]]"
             self.caller.msg(string)
-            return 
+            return
         if self.lhs not in self.directions:
             string = "@tunnel can only understand the following directions: %s." % ",".join(sorted(self.directions.keys()))
             string += "\n(use @dig for more freedom)"
             self.caller.msg(string)
-            return 
-        # retrieve all input and parse it 
+            return
+        # retrieve all input and parse it
         exitshort = self.lhs
         exitname, backshort = self.directions[exitshort]
         backname = self.directions[backshort][0]
-    
-        roomname = "Some place" 
+
+        roomname = "Some place"
         if self.rhs:
             roomname = self.rhs # this may include aliases; that's fine.
 
@@ -770,27 +770,27 @@ class CmdTunnel(MuxCommand):
         backstring = ""
         if not "oneway" in self.switches:
             backstring = ", %s;%s" % (backname, backshort)
-        
+
         # build the string we will use to call @dig
         digstring = "@dig%s %s = %s;%s%s" % (telswitch, roomname, exitname, exitshort, backstring)
         self.caller.execute_cmd(digstring)
-        
-class CmdLink(MuxCommand):    
+
+class CmdLink(MuxCommand):
     """
     @link - connect objects
 
     Usage:
       @link[/switches] <object> = <target>
-      @link[/switches] <object> = 
-      @link[/switches] <object> 
-     
+      @link[/switches] <object> =
+      @link[/switches] <object>
+
     Switch:
       twoway - connect two exits. For this to work, BOTH <object>
-               and <target> must be exit objects. 
+               and <target> must be exit objects.
 
     If <object> is an exit, set its destination to <target>. Two-way operation
     instead sets the destination to the *locations* of the respective given
-    arguments. 
+    arguments.
     The second form (a lone =) sets the destination to None (same as the @unlink command)
     and the third form (without =) just shows the currently set destination.
     """
@@ -802,45 +802,45 @@ class CmdLink(MuxCommand):
     def func(self):
         "Perform the link"
         caller = self.caller
-        
+
         if not self.args:
             caller.msg("Usage: @link[/twoway] <object> = <target>")
             return
-    
+
         object_name = self.lhs
 
         # get object
-        obj = caller.search(object_name, global_search=True)        
+        obj = caller.search(object_name, global_search=True)
         if not obj:
-            return 
+            return
 
         string = ""
         if self.rhs:
             # this means a target name was given
             target = caller.search(self.rhs, global_search=True)
             if not target:
-                return             
+                return
 
             string = ""
-            if not obj.destination: 
+            if not obj.destination:
                 string += "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (obj.name,obj.dbref)
-            if "twoway" in self.switches:                    
-                if not (target.location and obj.location): 
+            if "twoway" in self.switches:
+                if not (target.location and obj.location):
                     string = "To create a two-way link, %s and %s must both have a location" % (obj, target)
-                    string += " (i.e. they cannot be rooms, but should be exits)." 
+                    string += " (i.e. they cannot be rooms, but should be exits)."
                     self.caller.msg(string)
-                    return 
+                    return
                 if not target.destination:
                     string += "\nNote: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (target.name, target.dbref)
-                obj.destination = target.location     
-                target.destination = obj.location                
+                obj.destination = target.location
+                target.destination = obj.location
                 string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." % (obj.name, obj.location, target.name, target.location)
             else:
                 obj.destination = target
-                string += "\nLink created %s -> %s (one way)." % (obj.name, target)   
+                string += "\nLink created %s -> %s (one way)." % (obj.name, target)
 
         elif self.rhs == None:
-            # this means that no = was given (otherwise rhs 
+            # this means that no = was given (otherwise rhs
             # would have been an empty string). So we inspect
             # the home/destination on object
             dest = obj.destination
@@ -874,23 +874,23 @@ class CmdUnLink(CmdLink):
 
     key = "@unlink"
     locks = "cmd:perm(unlink) or perm(Builders)"
-    help_key = "Building"    
+    help_key = "Building"
 
     def func(self):
         """
         All we need to do here is to set the right command
         and call func in CmdLink
         """
-        
+
         caller = self.caller
-    
-        if not self.args:    
+
+        if not self.args:
             caller.msg("Usage: @unlink <object>")
             return
 
         # This mimics '@link <obj> = ' which is the same as @unlink
         self.rhs = ""
-        
+
         # call the @link functionality
         super(CmdUnLink, self).func()
 
@@ -903,40 +903,40 @@ class CmdHome(CmdLink):
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
-    objects should always have a home location for this reason. 
-    It is also a convenient target of the "home" command. 
+    objects should always have a home location for this reason.
+    It is also a convenient target of the "home" command.
 
-    If no location is given, just view the object's home location. 
+    If no location is given, just view the object's home location.
     """
 
     key = "@home"
     locks = "cmd:perm(@home) or perm(Builders)"
     help_category = "Building"
-    
+
     def func(self):
         "implement the command"
         if not self.args:
             string = "Usage: @home <obj> [= home_location]"
             self.caller.msg(string)
-            return 
+            return
 
         obj = self.caller.search(self.lhs, global_search=True)
         if not obj:
-            return 
-        if not self.rhs: 
-            # just view 
-            home = obj.home 
+            return
+        if not self.rhs:
+            # just view
+            home = obj.home
             if not home:
                 string = "This object has no home location set!"
             else:
                 string = "%s's current home is %s(%s)." % (obj, home, home.dbref)
         else:
-            # set a home location 
+            # set a home location
             new_home = self.caller.search(self.rhs, global_search=True)
             if not new_home:
-                return 
+                return
             old_home = obj.home
-            obj.home = new_home 
+            obj.home = new_home
             if old_home:
                 string = "%s's home location was changed from %s(%s) to %s(%s)." % (obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
@@ -957,31 +957,31 @@ class CmdListCmdSets(MuxCommand):
     aliases = "@listcmsets"
     locks = "cmd:perm(listcmdsets) or perm(Builders)"
     help_category = "Building"
-    
+
     def func(self):
         "list the cmdsets"
 
         caller = self.caller
         if self.arglist:
-            obj = caller.search(self.arglist[0]) 
+            obj = caller.search(self.arglist[0])
             if not obj:
-                return 
+                return
         else:
             obj = caller
-        string = "%s" % obj.cmdset 
+        string = "%s" % obj.cmdset
         caller.msg(string)
 
 class CmdName(ObjManipCommand):
     """
     cname - change the name and/or aliases of an object
-    
-    Usage: 
-      @name obj = name;alias1;alias2     
-    
+
+    Usage:
+      @name obj = name;alias1;alias2
+
     Rename an object to something new.
 
     """
-    
+
     key = "@name"
     aliases = ["@rename"]
     locks = "cmd:perm(rename) or perm(Builders)"
@@ -994,51 +994,51 @@ class CmdName(ObjManipCommand):
         if not self.args:
             string = "Usage: @name <obj> = <newname>[;alias;alias;...]"
             caller.msg(string)
-            return 
-        
-        if self.lhs_objs:            
+            return
+
+        if self.lhs_objs:
             objname = self.lhs_objs[0]['name']
             obj = caller.search(objname)
             if not obj:
-                return 
+                return
         if self.rhs_objs:
             newname = self.rhs_objs[0]['name']
             aliases = self.rhs_objs[0]['aliases']
         else:
             newname = self.rhs
-            aliases = None 
+            aliases = None
         if not newname and not aliases:
-            caller.msg("No names or aliases defined!")            
-            return 
+            caller.msg("No names or aliases defined!")
+            return
         # change the name and set aliases:
         if newname:
             obj.name = newname
         astring = ""
         if aliases:
-            obj.aliases = aliases 
+            obj.aliases = aliases
             astring = " (%s)" % (", ".join(aliases))
         caller.msg("Object's name changed to '%s'%s." % (newname, astring))
 
 
-class CmdOpen(ObjManipCommand):            
-    """    
+class CmdOpen(ObjManipCommand):
+    """
     @open - create new exit
-    
+
     Usage:
-      @open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination> 
+      @open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination>
 
     Handles the creation of exits. If a destination is given, the exit
     will point there. The <return exit> argument sets up an exit at the
     destination leading back to the current room. Destination name
     can be given both as a #dbref and a name, if that name is globally
-    unique. 
+    unique.
 
     """
     key = "@open"
     locks = "cmd:perm(open) or perm(Builders)"
     help_category = "Building"
 
-    # a custom member method to chug out exits and do checks 
+    # a custom member method to chug out exits and do checks
     def create_exit(self, exit_name, location, destination, exit_aliases=None, typeclass=None):
         """
         Helper function to avoid code duplication.
@@ -1072,18 +1072,18 @@ class CmdOpen(ObjManipCommand):
                     exit_obj.destination = destination
                     exit_obj.aliases = exit_aliases
                     string += " Rerouted its old destination '%s' to '%s' and changed aliases." % \
-                        (old_destination.name, destination.name)                
+                        (old_destination.name, destination.name)
                 else:
                     string += " It already points to the correct place."
 
         else:
-            # exit does not exist before. Create a new one.            
+            # exit does not exist before. Create a new one.
             if not typeclass:
                 typeclass = settings.BASE_EXIT_TYPECLASS
             exit_obj = create.create_object(typeclass, key=exit_name,
                                             location=location,
                                             aliases=exit_aliases)
-            if exit_obj:  
+            if exit_obj:
                 # storing a destination is what makes it an exit!
                 exit_obj.destination = destination
                 string = "Created new Exit '%s' from %s to %s (aliases: %s)." % (exit_name,location.name,
@@ -1091,66 +1091,66 @@ class CmdOpen(ObjManipCommand):
                                                                                  ", ".join([str(e) for e in exit_aliases]))
             else:
                 string = "Error: Exit '%s' not created." % (exit_name)
-        # emit results 
+        # emit results
         caller.msg(string)
-        return exit_obj 
+        return exit_obj
 
     def func(self):
         """
         This is where the processing starts.
-        Uses the ObjManipCommand.parser() for pre-processing 
+        Uses the ObjManipCommand.parser() for pre-processing
         as well as the self.create_exit() method.
-        """        
-        caller = self.caller    
-        
+        """
+        caller = self.caller
+
         if not self.args or not self.rhs:
             string = "Usage: @open <new exit>[;alias...][:typeclass][,<return exit>[;alias..][:typeclass]]] "
             string += "= <destination>"
             caller.msg(string)
             return
-        
+
         # We must have a location to open an exit
         location = caller.location
         if not location:
             caller.msg("You cannot create an exit from a None-location.")
             return
-            
-        # obtain needed info from cmdline 
+
+        # obtain needed info from cmdline
 
         exit_name = self.lhs_objs[0]['name']
         exit_aliases = self.lhs_objs[0]['aliases']
         exit_typeclass = self.lhs_objs[0]['option']
         dest_name = self.rhs
-        
+
         # first, check so the destination exists.
         destination = caller.search(dest_name, global_search=True)
         if not destination:
-            return 
+            return
 
-        # Create exit        
+        # Create exit
         ok = self.create_exit(exit_name, location, destination, exit_aliases, exit_typeclass)
         if not ok:
             # an error; the exit was not created, so we quit.
-            return 
+            return
         # Create back exit, if any
         if len(self.lhs_objs) > 1:
             back_exit_name = self.lhs_objs[1]['name']
             back_exit_aliases = self.lhs_objs[1]['aliases']
-            back_exit_typeclass = self.lhs_objs[1]['option']        
+            back_exit_typeclass = self.lhs_objs[1]['option']
             ok = self.create_exit(back_exit_name, destination, location, back_exit_aliases, back_exit_typeclass)
-        
+
 class CmdSetAttribute(ObjManipCommand):
     """
     @set - set attributes
 
     Usage:
       @set <obj>/<attr> = <value>
-      @set <obj>/<attr> =  
+      @set <obj>/<attr> =
       @set <obj>/<attr>
-   
+
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
-    inspects the current value of the attribute 
+    inspects the current value of the attribute
     (if any). You can also set lists [...] and dicts {...}
     on attributes with @set (but not nested combinations). Also
     note that such lists/dicts will always hold strings (never numbers).
@@ -1164,11 +1164,11 @@ class CmdSetAttribute(ObjManipCommand):
     def convert_from_string(self, strobj):
         """
         Converts a single object in *string form* to its equivalent python
-        type. Handles floats, ints, and limited nested lists and dicts 
-        (can't handle lists in a dict, for example, this is mainly due to 
+        type. Handles floats, ints, and limited nested lists and dicts
+        (can't handle lists in a dict, for example, this is mainly due to
         the complexity of parsing this rather than any technical difficulty -
-        if there is a need for @set-ing such complex structures on the 
-        command line we might consider adding it). 
+        if there is a need for @set-ing such complex structures on the
+        command line we might consider adding it).
 
         We need to convert like this since all data being sent over the
         telnet connection by the Player is text - but we will want to
@@ -1180,17 +1180,17 @@ class CmdSetAttribute(ObjManipCommand):
             """
             Helper function of recursive conversion calls.
             """
-            # simple types 
+            # simple types
             try: return int(obj)
             except ValueError: pass
             try: return float(obj)
             except ValueError: pass
             # iterables
             if obj.startswith('[') and obj.endswith(']'):
-                "A list. Traverse recursively." 
+                "A list. Traverse recursively."
                 return [rec_convert(val) for val in obj[1:-1].split(',')]
             if obj.startswith('(') and obj.endswith(')'):
-                "A tuple. Traverse recursively." 
+                "A tuple. Traverse recursively."
                 return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
             if obj.startswith('{') and obj.endswith('}') and ':' in obj:
                 "A dict. Traverse recursively."
@@ -1199,14 +1199,14 @@ class CmdSetAttribute(ObjManipCommand):
             # if nothing matches, return as-is
             return obj
         return rec_convert(strobj.strip())
-   
+
     def func(self):
         "Implement the set attribute - a limited form of @py."
 
         caller = self.caller
         if not self.args:
             caller.msg("Usage: @set obj/attr = value. Use empty value to clear.")
-            return        
+            return
 
         # get values prepared by the parser
         value = self.rhs
@@ -1215,10 +1215,10 @@ class CmdSetAttribute(ObjManipCommand):
 
         obj = caller.search(objname)
         if not obj:
-            return        
+            return
 
         string = ""
-        if not value:            
+        if not value:
             if self.rhs == None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
@@ -1228,44 +1228,44 @@ class CmdSetAttribute(ObjManipCommand):
                         string += "\nAttribute %s/%s = %s" % (obj.name, attr, obj.get_attribute(attr))
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)
-                    # we view it without parsing markup. 
+                    # we view it without parsing markup.
                 self.caller.msg(string.strip(), data={"raw":True})
-                return 
-            else:                
-                # deleting the attribute(s)            
+                return
+            else:
+                # deleting the attribute(s)
                 for attr in attrs:
                     if obj.has_attribute(attr):
                         val = obj.get_attribute(attr)
-                        obj.del_attribute(attr)                        
-                        string += "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)                
+                        obj.del_attribute(attr)
+                        string += "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)
                     else:
-                        string += "\n%s has no attribute '%s'." % (obj.name, attr)            
+                        string += "\n%s has no attribute '%s'." % (obj.name, attr)
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
              for attr in attrs:
                 obj.set_attribute(attr, self.convert_from_string(value))
                 string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
         # send feedback
-        caller.msg(string.strip('\n')) 
+        caller.msg(string.strip('\n'))
 
 
 class CmdTypeclass(MuxCommand):
     """
-    @typeclass - set object typeclass 
+    @typeclass - set object typeclass
 
-    Usage:     
+    Usage:
       @typclass[/switch] <object> [= <typeclass path>]
       @type           ''
       @parent         ''
 
     Switch:
-      reset - clean out *all* the attributes on the object - 
-              basically making this a new clean object. 
+      reset - clean out *all* the attributes on the object -
+              basically making this a new clean object.
       force - change to the typeclass also if the object
-              already has a typeclass of the same name.      
+              already has a typeclass of the same name.
     Example:
       @type button = examples.red_button.RedButton
-      
+
     Sets an object's typeclass. The typeclass must be identified
     by its location using python dot-notation pointing to the correct
     module and class. If no typeclass is given (or a wrong typeclass
@@ -1292,29 +1292,29 @@ class CmdTypeclass(MuxCommand):
         # get object to swap on
         obj = caller.search(self.lhs)
         if not obj:
-            return 
+            return
 
         if not self.rhs:
-            # we did not supply a new typeclass, view the 
+            # we did not supply a new typeclass, view the
             # current one instead.
-            if hasattr(obj, "typeclass"):                
+            if hasattr(obj, "typeclass"):
                 string = "%s's current typeclass is '%s'." % (obj.name, obj.typeclass.typename)
             else:
                 string = "%s is not a typed object." % obj.name
             caller.msg(string)
-            return 
+            return
 
         # we have an =, a typeclass was supplied.
         typeclass = self.rhs
 
         if not obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
-            return 
+            return
 
         if not hasattr(obj, 'swap_typeclass') or not hasattr(obj, 'typeclass'):
             caller.msg("This object cannot have a type at all!")
-            return 
-        
+            return
+
         old_path = obj.typeclass_path
         if obj.is_typeclass(typeclass) and not 'force' in self.switches:
             string = "%s already has the typeclass '%s'." % (obj.name, typeclass)
@@ -1323,19 +1323,19 @@ class CmdTypeclass(MuxCommand):
             old_typeclass_name = obj.typeclass.typename
             ok = obj.swap_typeclass(typeclass, clean_attributes=reset)
             if ok:
-                string = "%s's type is now %s (instead of %s).\n" % (obj.name, 
+                string = "%s's type is now %s (instead of %s).\n" % (obj.name,
                                                                      obj.typeclass.typename,
                                                                      old_typeclass_name)
                 if reset:
-                    string += "All attributes where reset."                                                               
-                else:    
+                    string += "All attributes where reset."
+                else:
                     string += "Note that the new class type could have overwritten "
-                    string += "same-named attributes on the existing object."            
+                    string += "same-named attributes on the existing object."
             else:
                 string = "Could not swap '%s' (%s) to typeclass '%s'." % (obj.name,
                                                                                   old_typeclass_name,
                                                                                   typeclass)
-                
+
         caller.msg(string)
 
 
@@ -1347,16 +1347,16 @@ class CmdWipe(ObjManipCommand):
       @wipe <object>[/attribute[/attribute...]]
 
     Example:
-      @wipe box 
+      @wipe box
       @wipe box/colour
 
     Wipes all of an object's attributes, or optionally only those
-    matching the given attribute-wildcard search string. 
+    matching the given attribute-wildcard search string.
     """
     key = "@wipe"
     locks = "cmd:perm(wipe) or perm(Builders)"
     help_category = "Building"
-                
+
     def func(self):
         """
         inp is the dict produced in ObjManipCommand.parse()
@@ -1366,27 +1366,27 @@ class CmdWipe(ObjManipCommand):
 
         if not self.args:
             caller.msg("Usage: @wipe <object>[/attribute/attribute...]")
-            return        
+            return
 
         # get the attributes set by our custom parser
         objname = self.lhs_objattr[0]['name']
         attrs = self.lhs_objattr[0]['attrs']
-        
+
         obj = caller.search(objname)
         if not obj:
             return
         if not obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
-            return 
+            return
         if not attrs:
-            # wipe everything 
+            # wipe everything
             for attr in obj.get_all_attributes():
-                attr.delete()            
+                attr.delete()
             string = "Wiped all attributes on %s." % obj.name
-        else:            
+        else:
             for attrname in attrs:
                 obj.attr(attrname, delete=True )
-            string = "Wiped attributes %s on %s." 
+            string = "Wiped attributes %s on %s."
             string = string % (",".join(attrs), obj.name)
         caller.msg(string)
 
@@ -1396,27 +1396,27 @@ class CmdLock(ObjManipCommand):
 
     Usage:
       @lock <object>[ = <lockstring>]
-      or 
+      or
       @lock[/switch] object/<access_type>
-      
+
     Switch:
       del - delete given access type
       view - view lock associated with given access type (default)
-    
+
     If no lockstring is given, shows all locks on
-    object. 
+    object.
 
     Lockstring is on the form
        'access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]
-    Where func1, func2 ... valid lockfuncs with or without arguments. 
+    Where func1, func2 ... valid lockfuncs with or without arguments.
     Separator expressions need not be capitalized.
 
-    For example: 
+    For example:
        'get: id(25) or perm(Wizards)'
     The 'get' access_type is checked by the get command and will
-    an object locked with this string will only be possible to 
+    an object locked with this string will only be possible to
     pick up by Wizards or by object with id 25.
-    
+
     You can add several access_types after oneanother by separating
     them by ';', i.e:
        'get:id(25);delete:perm(Builders)'
@@ -1430,67 +1430,67 @@ class CmdLock(ObjManipCommand):
         "Sets up the command"
 
         caller = self.caller
-        if not self.args: 
-            string = "@lock <object>[ = <lockstring>] or @lock[/switch] object/<access_type>"            
+        if not self.args:
+            string = "@lock <object>[ = <lockstring>] or @lock[/switch] object/<access_type>"
             caller.msg(string)
-            return 
-        if '/' in self.lhs: 
+            return
+        if '/' in self.lhs:
             # call on the form @lock obj/access_type
-            objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]            
+            objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
             obj = caller.search(objname)
             if not obj:
-                return 
+                return
             lockdef = obj.locks.get(access_type)
-            if lockdef: 
+            if lockdef:
                 string = lockdef[2]
                 if 'del' in self.switches:
                     if not obj.access(caller, 'control'):
                         caller.msg("You are not allowed to do that.")
-                        return 
+                        return
                     obj.locks.delete(access_type)
-                    string = "deleted lock %s" % string 
+                    string = "deleted lock %s" % string
             else:
                 string = "%s has no lock of access type '%s'." % (obj, access_type)
             caller.msg(string)
-            return 
+            return
 
-        if self.rhs: 
+        if self.rhs:
             # we have a = separator, so we are assigning a new lock
             objname, lockdef = self.lhs, self.rhs
             obj = caller.search(objname)
             if not obj:
-                return 
+                return
             if not obj.access(caller, 'control'):
                 caller.msg("You are not allowed to do that.")
-                return 
+                return
             ok = obj.locks.add(lockdef, caller)
             if ok:
                 caller.msg("Added lock '%s' to %s." % (lockdef, obj))
-            return 
+            return
 
         # if we get here, we are just viewing all locks
         obj = caller.search(self.lhs)
         if not obj:
-            return 
+            return
         caller.msg(obj.locks)
-            
+
 class CmdExamine(ObjManipCommand):
-    """    
+    """
     examine - detailed info on objects
 
-    Usage: 
+    Usage:
       examine [<object>[/attrname]]
       examine [*<player>[/attrname]]
 
     Switch:
       player - examine a Player (same as adding *)
-      raw - don't parse escape codes for data. 
+      raw - don't parse escape codes for data.
 
     The examine command shows detailed game info about an
-    object and optionally a specific attribute on it. 
-    If object is not specified, the current location is examined. 
+    object and optionally a specific attribute on it.
+    If object is not specified, the current location is examined.
 
-    Append a * before the search string to examine a player. 
+    Append a * before the search string to examine a player.
 
     """
     key = "@examine"
@@ -1498,7 +1498,7 @@ class CmdExamine(ObjManipCommand):
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
 
-    player_mode = False 
+    player_mode = False
 
     def format_attributes(self, obj, attrname=None, crop=True, raw=False):
         """
@@ -1512,7 +1512,7 @@ class CmdExamine(ObjManipCommand):
                           "nonpersistent":"\nNon-persistent attributes:"}
         if raw:
             headers = headers_noansi
-        
+
         if attrname:
             db_attr = [(attrname, obj.attr(attrname))]
             try:
@@ -1532,7 +1532,7 @@ class CmdExamine(ObjManipCommand):
         if db_attr and db_attr[0]:
             #self.caller.msg(db_attr)
             string += headers["persistent"]
-            for attr, value in db_attr:         
+            for attr, value in db_attr:
                 if crop and isinstance(value, basestring):
                     value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
@@ -1542,8 +1542,8 @@ class CmdExamine(ObjManipCommand):
                 if crop and isinstance(value, basestring):
                     value = utils.crop(value)
                 string += "\n %s = %s" % (attr, value)
-        return string 
-    
+        return string
+
     def format_output(self, obj, avail_cmdset, raw=False):
         """
         Helper function that creates a nice report about an object.
@@ -1583,11 +1583,11 @@ class CmdExamine(ObjManipCommand):
                    "contents":"\nContents: "}
         if raw:
             headers = headers_noansi
-        
+
         if hasattr(obj, "has_player") and obj.has_player:
-            string = headers["name"] % (obj.name, obj.dbref)        
+            string = headers["name"] % (obj.name, obj.dbref)
         else:
-            string = headers["name"] % (obj.name, obj.dbref)        
+            string = headers["name"] % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases:
             string += headers["aliases"] % (", ".join(obj.aliases))
         if hasattr(obj, "has_player") and obj.has_player:
@@ -1596,8 +1596,8 @@ class CmdExamine(ObjManipCommand):
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
-                perms = ["<None>"]                
-            string += headers["playerperms"] % (", ".join(perms))         
+                perms = ["<None>"]
+            string += headers["playerperms"] % (", ".join(perms))
         string += headers["typeclass"] % (obj.typeclass.typename, obj.typeclass_path)
 
         if hasattr(obj, "location") and obj.location:
@@ -1605,92 +1605,92 @@ class CmdExamine(ObjManipCommand):
         if hasattr(obj, "destination") and obj.destination:
             string += headers["destination"]  % (obj.destination, obj.destination.id)
         perms = obj.permissions
-        if perms:            
-            string += headers["perms"] % (", ".join(perms)) 
+        if perms:
+            string += headers["perms"] % (", ".join(perms))
         locks = str(obj.locks)
         if locks:
             string += headers["locks"] + utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
 
-        if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):            
-            # list the current cmdsets 
+        if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
+            # list the current cmdsets
             cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])
             string += headers["cmdset"] % cmdsetstr
-    
+
             # list the actually available commands
             #from src.commands.cmdhandler import get_and_merge_cmdsets
             #avail_cmdset = get_and_merge_cmdsets(obj)
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
-            
-            cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)                            
+
+            cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
             string += headers["cmdset_avail"] % (obj.key, cmdsetstr)
 
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
             string += headers["scripts"] % obj.scripts
-        # add the attributes                    
+        # add the attributes
         string += self.format_attributes(obj, raw=raw)
-        # add the contents                     
+        # add the contents
         exits = []
         pobjs = []
         things = []
         if hasattr(obj, "contents"):
             for content in obj.contents:
-                if content.destination: 
+                if content.destination:
                     exits.append(content)
                 elif content.player:
                     pobjs.append(content)
                 else:
                     things.append(content)
             if exits:
-                string += headers["exits"] + ", ".join([exit.name for exit in exits]) 
+                string += headers["exits"] + ", ".join([exit.name for exit in exits])
             if pobjs:
                 string += headers["characters"] + ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
             if things:
-                string += headers["contents"] + ", ".join([cont.name for cont in obj.contents 
+                string += headers["contents"] + ", ".join([cont.name for cont in obj.contents
                                                            if cont not in exits and cont not in pobjs])
         #output info
         return "-"*78 + '\n' + string.strip() + "\n" + '-'*78
-    
+
     def func(self):
         "Process command"
         caller = self.caller
-        
+
         msgdata = None
         if "raw" in self.switches:
             msgdata = {"raw":True}
 
         def get_cmdset_callback(cmdset):
             """
-            We make use of the cmdhandeler.get_and_merge_cmdsets below. This 
+            We make use of the cmdhandeler.get_and_merge_cmdsets below. This
             is an asynchronous function, returning a Twisted deferred.
-            So in order to properly use this we need use this callback; 
+            So in order to properly use this we need use this callback;
             it is called with the result of get_and_merge_cmdsets, whenever
             that function finishes. Taking the resulting cmdset, we continue
-            to format and output the result. 
+            to format and output the result.
             """
             string = self.format_output(obj, cmdset, raw=msgdata)
             caller.msg(string.strip(), data=msgdata)
-            
+
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
             obj = caller.location
             if not obj.access(caller, 'examine'):
             #If we don't have special info access, just look at the object instead.
                 caller.execute_cmd('look %s' % obj.name)
-                return              
-            # using callback for printing result whenever function returns. 
+                return
+            # using callback for printing result whenever function returns.
             get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
             return
 
-        # we have given a specific target object 
+        # we have given a specific target object
         for objdef in self.lhs_objattr:
 
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            
+
             self.player_mode = "player" in self.switches or obj_name.startswith('*')
-            
-            obj = caller.search(obj_name, player=self.player_mode)                
+
+            obj = caller.search(obj_name, player=self.player_mode)
             if not obj:
                 continue
 
@@ -1701,10 +1701,10 @@ class CmdExamine(ObjManipCommand):
 
             if obj_attrs:
                 for attrname in obj_attrs:
-                    # we are only interested in specific attributes                    
+                    # we are only interested in specific attributes
                     caller.msg(self.format_attributes(obj, attrname, crop=False, raw=msgdata))
             else:
-                # using callback to print results whenever function returns. 
+                # using callback to print results whenever function returns.
                 get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
 
 
@@ -1722,23 +1722,23 @@ class CmdFind(MuxCommand):
 
     Searches the database for an object of a particular name or dbref.
     Use *playername to search for a player. The switches allows for
-    limiting object matches to certain game entities. Dbrefmin and dbrefmax 
-    limits matches to within the given dbrefs, or above/below if only one is given. 
-    """ 
+    limiting object matches to certain game entities. Dbrefmin and dbrefmax
+    limits matches to within the given dbrefs, or above/below if only one is given.
+    """
 
     key = "@find"
     aliases = "find, @search, search, @locate, locate"
     locks = "cmd:perm(find) or perm(Builders)"
     help_category = "Building"
-            
+
     def func(self):
-        "Search functionality"            
+        "Search functionality"
         caller = self.caller
         switches = self.switches
 
         if not self.args:
             caller.msg("Usage: @find <string> [= low [-high]]")
-            return        
+            return
 
         searchstring = self.lhs
         low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
@@ -1747,8 +1747,8 @@ class CmdFind(MuxCommand):
                 # also support low-high syntax
                 limlist = [part.strip() for part in self.rhs.split("-", 1)]
             else:
-                # otherwise split by space 
-                limlist = self.rhs.split(None, 1)        
+                # otherwise split by space
+                limlist = self.rhs.split(None, 1)
             if limlist and limlist[0].isdigit():
                 low = max(low, int(limlist[0]))
             if len(limlist) > 1 and limlist[1].isdigit():
@@ -1757,27 +1757,27 @@ class CmdFind(MuxCommand):
         high = max(low, high)
 
         if searchstring.startswith("*") or utils.dbref(searchstring):
-            # A player/dbref search.  
+            # A player/dbref search.
             # run a normal player- or dbref search. This should be unique.
 
             string = "{wMatch{n(#%i-#%i):" % (low, high)
 
             result = caller.search(searchstring, global_search=True)
             if not result:
-                return        
+                return
             if not low <= int(result.id) <= high:
                 string += "\n   {RNo match found for '%s' within the given dbref limits.{n" % searchstring
             else:
-                string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref, result.typeclass.path)                            
+                string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref, result.typeclass.path)
         else:
-            # Not a player/dbref search but a wider search; build a queryset. 
-        
-            results = ObjectDB.objects.filter(db_key__istartswith=searchstring, id__gte=low, id__lte=high)            
+            # Not a player/dbref search but a wider search; build a queryset.
+
+            results = ObjectDB.objects.filter(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
             if "room" in switches:
-                results = results.filter(db_location__isnull=True) 
+                results = results.filter(db_location__isnull=True)
             if "exit" in switches:
                 results = results.filter(db_destination__isnull=False)
-            if "char" in switches:            
+            if "char" in switches:
                 results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
             nresults = results.count()
             if not nresults:
@@ -1795,22 +1795,22 @@ class CmdFind(MuxCommand):
 
             restrictions = ""
             if self.switches:
-                restrictions = ", %s" % (",".join(self.switches))                
+                restrictions = ", %s" % (",".join(self.switches))
             if nresults:
-                # convert result to typeclasses. 
-                results = [result.typeclass for result in results]                 
-                if nresults > 1:                    
+                # convert result to typeclasses.
+                results = [result.typeclass for result in results]
+                if nresults > 1:
                     string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)
                     for res in results:
                         string += "\n   {g%s(%s) - %s{n" % (res.key, res.dbref, res.path)
                 else:
-                    string = "{wOne Match{n(#%i-#%i%s):" % (low, high, restrictions)                    
-                    string += "\n   {g%s(%s) - %s{n" % (results[0].key, results[0].dbref, results[0].path)            
+                    string = "{wOne Match{n(#%i-#%i%s):" % (low, high, restrictions)
+                    string += "\n   {g%s(%s) - %s{n" % (results[0].key, results[0].dbref, results[0].path)
             else:
-                string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)                    
+                string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)
                 string += "\n   {RNo matches found for '%s'{n" % searchstring
 
-        # send result 
+        # send result
         caller.msg(string.strip())
 
 
@@ -1823,10 +1823,10 @@ class CmdTeleport(MuxCommand):
 
     Switches:
       quiet  - don't inform the source and target
-               locations about the move. 
-              
+               locations about the move.
+
     Teleports an object somewhere. If no object is
-    given we are teleporting ourselves. 
+    given we are teleporting ourselves.
     """
     key = "@tel"
     aliases = "@teleport"
@@ -1837,13 +1837,13 @@ class CmdTeleport(MuxCommand):
         "Performs the teleport"
 
         caller = self.caller
-        args = self.args 
+        args = self.args
         lhs, rhs = self.lhs, self.rhs
         switches = self.switches
 
         if not args:
             caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>|home")
-            return    
+            return
         # The quiet switch suppresses leaving and arrival messages.
         if "quiet" in switches:
             tel_quietly = True
@@ -1865,8 +1865,8 @@ class CmdTeleport(MuxCommand):
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
-        # try the teleport 
-        if obj_to_teleport.move_to(destination, quiet=tel_quietly, emit_to_obj=caller):            
+        # try the teleport
+        if obj_to_teleport.move_to(destination, quiet=tel_quietly, emit_to_obj=caller):
             if obj_to_teleport == caller:
                 caller.msg("Teleported to %s." % destination.key)
             else:
@@ -1879,19 +1879,19 @@ class CmdScript(MuxCommand):
 
     Usage:
       @script[/switch] <obj> [= <script.path or scriptkey>]
-    
+
     Switches:
       start - start all non-running scripts on object, or a given script only
       stop - stop all scripts on objects, or a given script only
 
     If no script path/key is given, lists all scripts active on the given
-    object. 
+    object.
     Script path can be given from the base location for scripts as given in
     settings. If adding a new script, it will be started automatically (no /start
-    switch is needed). Using the /start or /stop switches on an object without 
-    specifying a script key/path will start/stop ALL scripts on the object. 
+    switch is needed). Using the /start or /stop switches on an object without
+    specifying a script key/path will start/stop ALL scripts on the object.
     """
-    
+
     key = "@script"
     aliases = "@addscript"
     locks = "cmd:perm(script) or perm(Wizards)"
@@ -1905,8 +1905,8 @@ class CmdScript(MuxCommand):
         if not self.args:
             string = "Usage: @script[/switch] <obj> [= <script.path or script key>]"
             caller.msg(string)
-            return 
-        
+            return
+
         obj = caller.search(self.lhs)
         if not obj:
             return
@@ -1921,16 +1921,16 @@ class CmdScript(MuxCommand):
                 # view all scripts
                 from src.commands.default.system import format_script_list
                 string += format_script_list(scripts)
-            elif "start" in self.switches:                
+            elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
                 string += "%s scripts started on %s." % (num, obj.key)
-            elif "stop" in self.switches:               
+            elif "stop" in self.switches:
                 for script in scripts:
                     string += "Stopping script %s on %s." % (script.key, obj.key)
                     script.stop()
                 string = string.strip()
             obj.scripts.validate()
-        else: # rhs exists            
+        else: # rhs exists
             if not self.switches:
                 # adding a new script, and starting it
                 ok = obj.scripts.add(self.rhs, autostart=True)
@@ -1940,19 +1940,19 @@ class CmdScript(MuxCommand):
                     string = "Script {w%s{n successfully added and started on %s." % (self.rhs, obj.key)
 
             else:
-                paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs) 
-                                      for prefix in settings.SCRIPT_TYPECLASS_PATHS]            
+                paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs)
+                                      for prefix in settings.SCRIPT_TYPECLASS_PATHS]
                 if "stop" in self.switches:
-                    # we are stopping an already existing script            
+                    # we are stopping an already existing script
                     for path in paths:
-                        ok = obj.scripts.stop(path)                        
+                        ok = obj.scripts.stop(path)
                         if not ok:
                             string += "\nScript %s could not be stopped. Does it exist?" % path
                         else:
                             string = "Script stopped and removed from object."
-                            break 
+                            break
                 if "start" in self.switches:
-                    # we are starting an already existing script 
+                    # we are starting an already existing script
                     for path in paths:
                         ok = obj.scripts.start(path)
                         if not ok:
