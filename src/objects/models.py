@@ -21,7 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
-from src.typeclasses.models import get_cache, set_cache, del_cache
+from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
@@ -34,11 +34,11 @@ from src.utils.utils import make_iter, to_unicode, to_str, mod_import
 
 #PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
 
-AT_SEARCH_RESULT = mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_AT_SEARCH_RESULT = mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
-GA = object.__getattribute__
-SA = object.__setattr__
-DA = object.__delattr__
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
 
 #------------------------------------------------------------
 #
@@ -214,10 +214,10 @@ class ObjectDB(TypedObject):
     def aliases_get(self):
         "Getter. Allows for value = self.aliases"
         try:
-            return GA(self, "_cached_aliases")
+            return _GA(self, "_cached_aliases")
         except AttributeError:
             aliases = list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
-            SA(self, "_cached_aliases", aliases)
+            _SA(self, "_cached_aliases", aliases)
             return aliases
     #@aliases.setter
     def aliases_set(self, aliases):
@@ -225,13 +225,13 @@ class ObjectDB(TypedObject):
         for alias in make_iter(aliases):
             new_alias = Alias(db_key=alias, db_obj=self)
             new_alias.save()
-        SA(self, "_cached_aliases", aliases)
+        _SA(self, "_cached_aliases", aliases)
     #@aliases.deleter
     def aliases_del(self):
         "Deleter. Allows for del self.aliases"
         for alias in Alias.objects.filter(db_obj=self):
             alias.delete()
-        DA(self, "_cached_aliases")
+        _DA(self, "_cached_aliases")
     aliases = property(aliases_get, aliases_set, aliases_del)
 
     # player property (wraps db_player)
@@ -242,26 +242,26 @@ class ObjectDB(TypedObject):
         We have to be careful here since Player is also
         a TypedObject, so as to not create a loop.
         """
-        return get_cache(self, "player")
+        return _get_cache(self, "player")
     #@player.setter
     def player_set(self, player):
         "Setter. Allows for self.player = value"
         if isinstance(player, TypeClass):
             player = player.dbobj
-        set_cache(self, "player", player)
+        _set_cache(self, "player", player)
     #@player.deleter
     def player_del(self):
         "Deleter. Allows for del self.player"
         self.db_player = None
         self.save()
-        del_cache(self, "player")
+        _del_cache(self, "player")
     player = property(player_get, player_set, player_del)
 
     # location property (wraps db_location)
     #@property
     def location_get(self):
         "Getter. Allows for value = self.location."
-        loc = get_cache(self, "location")
+        loc = _get_cache(self, "location")
         if loc:
             return loc.typeclass
         return None
@@ -281,7 +281,7 @@ class ObjectDB(TypedObject):
                     loc = location.dbobj
             else:
                 loc = location.dbobj
-            set_cache(self, "location", loc)
+            _set_cache(self, "location", loc)
         except Exception:
             string = "Cannot set location: "
             string += "%s is not a valid location."
@@ -293,14 +293,14 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.location"
         self.db_location = None
         self.save()
-        del_cache()
+        _del_cache(self, "location")
     location = property(location_get, location_set, location_del)
 
     # home property (wraps db_home)
     #@property
     def home_get(self):
         "Getter. Allows for value = self.home"
-        home = get_cache(self, "home")
+        home = _get_cache(self, "home")
         if home:
             return home.typeclass
         return None
@@ -318,7 +318,7 @@ class ObjectDB(TypedObject):
                     hom = home.dbobj
             else:
                 hom = home.dbobj
-            set_cache(self, "home", hom)
+            _set_cache(self, "home", hom)
         except Exception:
             string = "Cannot set home: "
             string += "%s is not a valid home."
@@ -330,14 +330,14 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.home."
         self.db_home = None
         self.save()
-        del_cache(self, "home")
+        _del_cache(self, "home")
     home = property(home_get, home_set, home_del)
 
     # destination property (wraps db_destination)
     #@property
     def destination_get(self):
         "Getter. Allows for value = self.destination."
-        dest = get_cache(self, "destination")
+        dest = _get_cache(self, "destination")
         if dest:
             return dest.typeclass
         return None
@@ -357,7 +357,7 @@ class ObjectDB(TypedObject):
                     dest = destination.dbobj
             else:
                 dest = destination.dbobj
-            set_cache(self, "destination", dest)
+            _set_cache(self, "destination", dest)
         except Exception:
             string = "Cannot set destination: "
             string += "%s is not a valid destination."
@@ -369,7 +369,7 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.destination"
         self.db_destination = None
         self.save()
-        del_cache(self, "destination")
+        _del_cache(self, "destination")
     destination = property(destination_get, destination_set, destination_del)
 
     # cmdset_storage property.
@@ -403,17 +403,10 @@ class ObjectDB(TypedObject):
     #
 
     # this is required to properly handle attributes and typeclass loading.
-    #attribute_model_path = "src.objects.models"
-    #attribute_model_name = "ObjAttribute"
-    typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    attribute_class = ObjAttribute
-    db_model_name = "objectdb" # used by attributes to safely store objects
-
-    # this is used by all typedobjects as a fallback
-    try:
-        default_typeclass_path = settings.BASE_OBJECT_TYPECLASS
-    except Exception:
-        default_typeclass_path = "src.objects.objects.Object"
+    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
+    _attribute_class = ObjAttribute
+    _db_model_name = "objectdb" # used by attributes to safely store objects
+    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
     #@property
     def sessions_get(self):
@@ -533,7 +526,7 @@ class ObjectDB(TypedObject):
         if ignore_errors:
             return results
         # this import is cache after the first call.
-        return AT_SEARCH_RESULT(self, ostring, results, global_search)
+        return _AT_SEARCH_RESULT(self, ostring, results, global_search)
 
     #
     # Execution/action methods

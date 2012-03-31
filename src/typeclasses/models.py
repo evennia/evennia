@@ -43,35 +43,35 @@ from src.locks.lockhandler import LockHandler
 from src.utils import logger, utils
 from src.utils.utils import make_iter, is_iter, has_parent, to_unicode, to_str
 
-PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
+_PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
-CTYPEGET = ContentType.objects.get
-GA = object.__getattribute__
-SA = object.__setattr__
-DA = object.__delattr__
-PLOADS = pickle.loads
-PDUMPS = pickle.dumps
+_CTYPEGET = ContentType.objects.get
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
+_PLOADS = pickle.loads
+_PDUMPS = pickle.dumps
 
 # Property Cache mechanism.
 
-def get_cache(obj, name):
+def _get_cache(obj, name):
     "On-model Cache handler."
     try:
-        return GA(obj, "_cached_db_%s" % name)
+        return _GA(obj, "_cached_db_%s" % name)
     except AttributeError:
-        val = GA(obj, "db_%s" % name)
-        if val: SA(obj, "_cached_db_%s" % name, val)
+        val = _GA(obj, "db_%s" % name)
+        if val: _SA(obj, "_cached_db_%s" % name, val)
         return val
-def set_cache(obj, name, val):
+def _set_cache(obj, name, val):
     "On-model Cache setter"
-    SA(obj, "db_%s" % name, val)
-    GA(obj, "save")()
-    SA(obj, "_cached_db_%s" % name, val)
+    _SA(obj, "db_%s" % name, val)
+    _GA(obj, "save")()
+    _SA(obj, "_cached_db_%s" % name, val)
 
-def del_cache(obj, name):
+def _del_cache(obj, name):
     "On-model cache deleter"
     try:
-        DA(obj, "_cached_db_%s" % name)
+        _DA(obj, "_cached_db_%s" % name)
     except AttributeError:
         pass
 
@@ -290,61 +290,61 @@ class Attribute(SharedMemoryModel):
 
     # key property (wraps db_key)
     #@property
-    def key_get(self):
+    def __key_get(self):
         "Getter. Allows for value = self.key"
-        return get_cache(self, "key")
+        return _get_cache(self, "key")
     #@key.setter
-    def key_set(self, value):
+    def __key_set(self, value):
         "Setter. Allows for self.key = value"
-        set_cache(self, "key", value)
+        _set_cache(self, "key", value)
     #@key.deleter
-    def key_del(self):
+    def __key_del(self):
         "Deleter. Allows for del self.key"
         raise Exception("Cannot delete attribute key!")
-    key = property(key_get, key_set, key_del)
+    key = property(__key_get, __key_set, __key_del)
 
     # obj property (wraps db_obj)
     #@property
-    def obj_get(self):
+    def __obj_get(self):
         "Getter. Allows for value = self.obj"
-        return get_cache(self, "obj")
+        return _get_cache(self, "obj")
     #@obj.setter
-    def obj_set(self, value):
+    def __obj_set(self, value):
         "Setter. Allows for self.obj = value"
-        set_cache(self, "obj", value)
+        _set_cache(self, "obj", value)
     #@obj.deleter
-    def obj_del(self):
+    def __obj_del(self):
         "Deleter. Allows for del self.obj"
         self.db_obj = None
         self.save()
-        del_cache(self, "obj")
-    obj = property(obj_get, obj_set, obj_del)
+        _del_cache(self, "obj")
+    obj = property(__obj_get, __obj_set, __obj_del)
 
     # date_created property (wraps db_date_created)
     #@property
-    def date_created_get(self):
+    def __date_created_get(self):
         "Getter. Allows for value = self.date_created"
-        return get_cache(self, "date_created")
+        return _get_cache(self, "date_created")
     #@date_created.setter
-    def date_created_set(self, value):
+    def __date_created_set(self, value):
         "Setter. Allows for self.date_created = value"
         raise Exception("Cannot edit date_created!")
     #@date_created.deleter
-    def date_created_del(self):
+    def __date_created_del(self):
         "Deleter. Allows for del self.date_created"
         raise Exception("Cannot delete date_created!")
-    date_created = property(date_created_get, date_created_set, date_created_del)
+    date_created = property(__date_created_get, __date_created_set, __date_created_del)
 
     # value property (wraps db_value)
     #@property
-    def value_get(self):
+    def __value_get(self):
         """
         Getter. Allows for value = self.value. Reads from cache if possible.
         """
         if self.no_cache:
             # re-create data from database and cache it
             try:
-                value = self.from_attr(PLOADS(to_str(self.db_value)))
+                value = self.__from_attr(_PLOADS(to_str(self.db_value)))
             except pickle.UnpicklingError:
                 value = self.db_value
             self.cached_value = value
@@ -355,36 +355,36 @@ class Attribute(SharedMemoryModel):
             return self.cached_value
 
     #@value.setter
-    def value_set(self, new_value):
+    def __value_set(self, new_value):
         """
         Setter. Allows for self.value = value. We make sure to cache everything.
         """
-        new_value = self.to_attr(new_value)
-        self.cached_value = self.from_attr(new_value)
+        new_value = self.__to_attr(new_value)
+        self.cached_value = self.__from_attr(new_value)
         self.no_cache = False
-        self.db_value = to_unicode(PDUMPS(to_str(new_value)))
+        self.db_value = to_unicode(_PDUMPS(to_str(new_value)))
         self.save()
     #@value.deleter
-    def value_del(self):
+    def __value_del(self):
         "Deleter. Allows for del attr.value. This removes the entire attribute."
         self.delete()
-    value = property(value_get, value_set, value_del)
+    value = property(__value_get, __value_set, __value_del)
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def lock_storage_get(self):
+    def __lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
-        return get_cache(self, "lock_storage")
+        return _get_cache(self, "lock_storage")
     #@lock_storage.setter
-    def lock_storage_set(self, value):
+    def __lock_storage_set(self, value):
         """Saves the lock_storage. This is usually not called directly, but through self.lock()"""
         self.db_lock_storage = value
         self.save()
     #@lock_storage.deleter
-    def lock_storage_del(self):
+    def __lock_storage_del(self):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
 
     #
@@ -401,7 +401,7 @@ class Attribute(SharedMemoryModel):
 
     # operators on various data
 
-    def to_attr(self, data):
+    def __to_attr(self, data):
         """
         Convert data to proper attr data format before saving
 
@@ -434,10 +434,10 @@ class Attribute(SharedMemoryModel):
             dtype = type(item)
             if dtype in (basestring, int, float): # check the most common types first, for speed
                 return item
-            elif hasattr(item, "id") and hasattr(item, "db_model_name") and hasattr(item, "db_key"):
-                db_model_name = item.db_model_name
+            elif hasattr(item, "id") and hasattr(item, "_db_model_name") and hasattr(item, "db_key"):
+                db_model_name = item._db_model_name # don't use _GA here, could be typeclass
                 if db_model_name == "typeclass":
-                    db_model_name = GA(item.dbobj, "db_model_name")
+                    db_model_name = _GA(item.dbobj, "_db_model_name")
                 return PackedDBobject(item.id, db_model_name, item.db_key)
             elif dtype == tuple:
                 return tuple(iter_db2id(val) for val in item)
@@ -452,13 +452,13 @@ class Attribute(SharedMemoryModel):
 
         if dtype in (basestring, int, float):
             return ("simple",data)
-        elif hasattr(data, "id") and hasattr(data, "db_model_name") and hasattr(data, 'db_key'):
+        elif hasattr(data, "id") and hasattr(data, "_db_model_name") and hasattr(data, 'db_key'):
             # all django models (objectdb,scriptdb,playerdb,channel,msg,typeclass)
-            # have the protected property db_model_name hardcoded on themselves for speed.
-            db_model_name = data.db_model_name
+            # have the protected property _db_model_name hardcoded on themselves for speed.
+            db_model_name = data._db_model_name # don't use _GA here, could be typeclass
             if db_model_name == "typeclass":
                 # typeclass cannot help us, we want the actual child object model name
-                db_model_name = GA(data.dbobj, "db_model_name")
+                db_model_name = _GA(data.dbobj,"_db_model_name")
             return ("dbobj", PackedDBobject(data.id, db_model_name, data.db_key))
         elif hasattr(data, "__iter__"):
             return ("iter", iter_db2id(data))
@@ -466,7 +466,7 @@ class Attribute(SharedMemoryModel):
             return ("simple", data)
 
 
-    def from_attr(self, datatuple):
+    def __from_attr(self, datatuple):
         """
         Retrieve data from a previously stored attribute. This
         is always a dict with keys type and data.
@@ -488,7 +488,7 @@ class Attribute(SharedMemoryModel):
             """
             Convert db-stored dbref back to object
             """
-            mclass = CTYPEGET(model=data.db_model).model_class()
+            mclass = _CTYPEGET(model=data.db_model).model_class()
             try:
                 return mclass.objects.dbref_search(data.id)
 
@@ -636,9 +636,11 @@ class TypeNickHandler(object):
             # remove the found nick(s)
             query.delete()
     def get(self, nick=None, nick_type="inputline", obj=None):
-        """Retrieves a given nick (with a specified nick_type) on an object. If no nick is given, returns a list
+        """
+        Retrieves a given nick (with a specified nick_type) on an object. If no nick is given, returns a list
         of all nicks on the object, or the empty list.
-        Defaults to searching the current object."""
+        Defaults to searching the current object.
+        """
         if not obj:
             # defaults to the current object
             obj = self.obj
@@ -739,101 +741,101 @@ class TypedObject(SharedMemoryModel):
 
     # key property (wraps db_key)
     #@property
-    def key_get(self):
+    def __key_get(self):
         "Getter. Allows for value = self.key"
-        return get_cache(self, "key")
+        return _get_cache(self, "key")
     #@key.setter
-    def key_set(self, value):
+    def __key_set(self, value):
         "Setter. Allows for self.key = value"
-        set_cache(self, "key", value)
+        _set_cache(self, "key", value)
     #@key.deleter
-    def key_del(self):
+    def __key_del(self):
         "Deleter. Allows for del self.key"
         raise Exception("Cannot delete objectdb key!")
-    key = property(key_get, key_set, key_del)
+    key = property(__key_get, __key_set, __key_del)
 
     # name property (wraps db_key too - alias to self.key)
     #@property
-    def name_get(self):
+    def __name_get(self):
         "Getter. Allows for value = self.name"
-        return get_cache(self, "key")
+        return _get_cache(self, "key")
     #@name.setter
-    def name_set(self, value):
+    def __name_set(self, value):
         "Setter. Allows for self.name = value"
-        set_cache(self, "key", value)
+        _set_cache(self, "key", value)
     #@name.deleter
-    def name_del(self):
+    def __name_del(self):
         "Deleter. Allows for del self.name"
         raise Exception("Cannot delete name!")
-    name = property(name_get, name_set, name_del)
+    name = property(__name_get, __name_set, __name_del)
 
     # typeclass_path property
     #@property
-    def typeclass_path_get(self):
+    def __typeclass_path_get(self):
         "Getter. Allows for value = self.typeclass_path"
-        return get_cache(self, "typeclass_path")
+        return _get_cache(self, "typeclass_path")
     #@typeclass_path.setter
-    def typeclass_path_set(self, value):
+    def __typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
-        set_cache(self, "typeclass_path", value)
+        _set_cache(self, "typeclass_path", value)
     #@typeclass_path.deleter
-    def typeclass_path_del(self):
+    def __typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
         self.db_typeclass_path = ""
         self.save()
-        del_cache(self, "typeclass_path")
-    typeclass_path = property(typeclass_path_get, typeclass_path_set, typeclass_path_del)
+        _del_cache(self, "typeclass_path")
+    typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
 
     # date_created property
     #@property
-    def date_created_get(self):
+    def __date_created_get(self):
         "Getter. Allows for value = self.date_created"
-        return get_cache(self, "date_created")
+        return _get_cache(self, "date_created")
     #@date_created.setter
-    def date_created_set(self, value):
+    def __date_created_set(self, value):
         "Setter. Allows for self.date_created = value"
         raise Exception("Cannot change date_created!")
     #@date_created.deleter
-    def date_created_del(self):
+    def __date_created_del(self):
         "Deleter. Allows for del self.date_created"
         raise Exception("Cannot delete date_created!")
-    date_created = property(date_created_get, date_created_set, date_created_del)
+    date_created = property(__date_created_get, __date_created_set, __date_created_del)
 
     # permissions property
     #@property
-    def permissions_get(self):
+    def __permissions_get(self):
         "Getter. Allows for value = self.name. Returns a list of permissions."
-        perms = get_cache(self, "permissions")
+        perms = _get_cache(self, "permissions")
         if perms:
             return [perm.strip() for perm in perms.split(',')]
         return []
     #@permissions.setter
-    def permissions_set(self, value):
+    def __permissions_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
         value = ",".join([utils.to_unicode(val).strip() for val in make_iter(value)])
-        set_cache(self, "permissions", value)
+        _set_cache(self, "permissions", value)
     #@permissions.deleter
-    def permissions_del(self):
+    def __permissions_del(self):
         "Deleter. Allows for del self.name"
         self.db_permissions = ""
         self.save()
-        del_cache(self, "permissions")
-    permissions = property(permissions_get, permissions_set, permissions_del)
+        _del_cache(self, "permissions")
+    permissions = property(__permissions_get, __permissions_set, __permissions_del)
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def lock_storage_get(self):
+    def __lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
-        return get_cache(self, "lock_storage")
+        return _get_cache(self, "lock_storage")
     #@lock_storage.setter
-    def lock_storage_set(self, value):
+    def __lock_storage_set(self, value):
         """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        set_cache(self, "lock_storage", value)
+        _set_cache(self, "lock_storage", value)
     #@lock_storage.deleter
-    def lock_storage_del(self):
+    def __lock_storage_del(self):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
 
 
@@ -844,9 +846,9 @@ class TypedObject(SharedMemoryModel):
     #
 
     # these are identifiers for fast Attribute access and caching
-    typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    attribute_class = Attribute # replaced by relevant attribute class for child
-    db_model_name = "typeclass" # used by attributes to safely store objects
+    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
+    _attribute_class = Attribute # replaced by relevant attribute class for child
+    _db_model_name = "typeclass" # used by attributes to safely store objects
 
     def __eq__(self, other):
         return other and hasattr(other, 'id') and self.id == other.id
@@ -866,31 +868,31 @@ class TypedObject(SharedMemoryModel):
         have to be very careful to avoid loops.
         """
         try:
-            return GA(self, propname)
+            return _GA(self, propname)
         except AttributeError:
             # check if the attribute exists on the typeclass instead
             # (we make sure to not incur a loop by not triggering the
             # typeclass' __getattribute__, since that one would
             # try to look back to this very database object.)
-            typeclass = GA(self, 'typeclass')
+            typeclass = _GA(self, 'typeclass')
             if typeclass:
-                return GA(typeclass, propname)
+                return _GA(typeclass, propname)
             else:
                 raise AttributeError
 
     #@property
-    def dbref_get(self):
+    def __dbref_get(self):
         """
         Returns the object's dbref id on the form #NN.
         Alternetively, use obj.id directly to get dbref
         without any #.
         """
-        return "#%s" % str(GA(self, "id"))
-    dbref = property(dbref_get)
+        return "#%s" % str(_GA(self, "id"))
+    dbref = property(__dbref_get)
 
     # typeclass property
     #@property
-    def typeclass_get(self):
+    def __typeclass_get(self):
         """
         Getter. Allows for value = self.typeclass.
         The typeclass is a class object found at self.typeclass_path;
@@ -898,15 +900,15 @@ class TypedObject(SharedMemoryModel):
         types of objects that the game needs. This property
         handles loading and initialization of the typeclass on the fly.
 
-        Note: The liberal use of GA and __setattr__ (instead
+        Note: The liberal use of _GA and __setattr__ (instead
               of normal dot notation) is due to optimization: it avoids calling
               the custom self.__getattribute__ more than necessary.
         """
 
-        path = GA(self, "typeclass_path")
-        typeclass = GA(self, "_cached_typeclass")
+        path = _GA(self, "typeclass_path")
+        typeclass = _GA(self, "_cached_typeclass")
         try:
-            if typeclass and GA(typeclass, "path") == path:
+            if typeclass and _GA(typeclass, "path") == path:
                 # don't call at_init() when returning from cache
                 return typeclass
         except AttributeError:
@@ -915,25 +917,25 @@ class TypedObject(SharedMemoryModel):
         errstring = ""
         if not path:
             # this means we should get the default obj without giving errors.
-            return GA(self, "get_default_typeclass")(cache=True, silent=True, save=True)
+            return _GA(self, "_get_default_typeclass")(cache=True, silent=True, save=True)
         else:
             # handle loading/importing of typeclasses, searching all paths.
-            # (self.typeclass_paths is a shortcut to settings.TYPECLASS_*_PATHS
+            # (self._typeclass_paths is a shortcut to settings.TYPECLASS_*_PATHS
             # where '*' is either OBJECT, SCRIPT or PLAYER depending on the typed
             # entities).
-            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in GA(self, 'typeclass_paths')]
+            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in _GA(self, '_typeclass_paths')]
 
             for tpath in typeclass_paths:
 
                 # try to import and analyze the result
-                typeclass = GA(self, "_path_import")(tpath)
+                typeclass = _GA(self, "_path_import")(tpath)
                 if callable(typeclass):
                     # we succeeded to import. Cache and return.
-                    SA(self, 'db_typeclass_path', tpath)
-                    GA(self, 'save')()
-                    SA(self, "_cached_db_typeclass_path", tpath)
+                    _SA(self, 'db_typeclass_path', tpath)
+                    _GA(self, 'save')()
+                    _SA(self, "_cached_db_typeclass_path", tpath)
                     typeclass = typeclass(self)
-                    SA(self, "_cached_typeclass", typeclass)
+                    _SA(self, "_cached_typeclass", typeclass)
                     try:
                         typeclass.at_init()
                     except Exception:
@@ -946,16 +948,16 @@ class TypedObject(SharedMemoryModel):
                     errstring += "\n%s" % typeclass # this will hold a growing error message.
         # If we reach this point we couldn't import any typeclasses. Return default. It's up to the calling
         # method to use e.g. self.is_typeclass() to detect that the result is not the one asked for.
-        GA(self, "_display_errmsg")(errstring)
-        return GA(self, "get_default_typeclass")(cache=False, silent=False, save=False)
+        _GA(self, "_display_errmsg")(errstring)
+        return _GA(self, "_get_default_typeclass")(cache=False, silent=False, save=False)
 
     #@typeclass.deleter
-    def typeclass_del(self):
+    def __typeclass_del(self):
         "Deleter. Disallow 'del self.typeclass'"
         raise Exception("The typeclass property should never be deleted, only changed in-place!")
 
     # typeclass property
-    typeclass = property(typeclass_get, fdel=typeclass_del)
+    typeclass = property(__typeclass_get, fdel=__typeclass_del)
 
     def _path_import(self, path):
         """
@@ -1014,7 +1016,7 @@ class TypedObject(SharedMemoryModel):
             else:
                 logger.log_trace(cmessage)
 
-    def get_default_typeclass(self, cache=False, silent=False, save=False):
+    def _get_default_typeclass(self, cache=False, silent=False, save=False):
         """
         This is called when a typeclass fails to
         load for whatever reason.
@@ -1022,34 +1024,34 @@ class TypedObject(SharedMemoryModel):
 
         Default operation is to load a default typeclass.
         """
-        defpath = GA(self, "default_typeclass_path")
-        typeclass = GA(self, "_path_import")(defpath)
+        defpath = _GA(self, "_default_typeclass_path")
+        typeclass = _GA(self, "_path_import")(defpath)
         # if not silent:
         #     #errstring = "\n\nUsing Default class '%s'." % defpath
-        #     GA(self, "_display_errmsg")(errstring)
+        #     _GA(self, "_display_errmsg")(errstring)
 
         if not callable(typeclass):
             # if typeclass still doesn't exist at this point, we're in trouble.
             # fall back to hardcoded core class which is wrong for e.g. scripts/players etc.
             failpath = defpath
             defpath = "src.objects.objects.Object"
-            typeclass = GA(self, "_path_import")(defpath)
+            typeclass = _GA(self, "_path_import")(defpath)
             if not silent:
                 #errstring = "  %s\n%s" % (typeclass, errstring)
                 errstring = "  Default class '%s' failed to load." % failpath
                 errstring += "\n  Using Evennia's default class '%s'." % defpath
-                GA(self, "_display_errmsg")(errstring)
+                _GA(self, "_display_errmsg")(errstring)
         if not callable(typeclass):
             # if this is still giving an error, Evennia is wrongly configured or buggy
             raise Exception("CRITICAL ERROR: The final fallback typeclass %s cannot load!!" % defpath)
         typeclass = typeclass(self)
         if save:
-            SA(self, 'db_typeclass_path', defpath)
-            GA(self, 'save')()
+            _SA(self, 'db_typeclass_path', defpath)
+            _GA(self, 'save')()
         if cache:
-            SA(self, "_cached_db_typeclass_path", defpath)
+            _SA(self, "_cached_db_typeclass_path", defpath)
 
-            SA(self, "_cached_typeclass", typeclass)
+            _SA(self, "_cached_typeclass", typeclass)
         try:
             typeclass.at_init()
         except Exception:
@@ -1070,17 +1072,17 @@ class TypedObject(SharedMemoryModel):
                parents.
         """
         try:
-            typeclass = GA(typeclass, "path")
+            typeclass = _GA(typeclass, "path")
         except AttributeError:
             pass
-        typeclasses = [typeclass] + ["%s.%s" % (path, typeclass) for path in GA(self, "typeclass_paths")]
+        typeclasses = [typeclass] + ["%s.%s" % (path, typeclass) for path in _GA(self, "_typeclass_paths")]
         if exact:
-            current_path = GA(self, "_cached_db_typeclass_path")
+            current_path = _GA(self, "_cached_db_typeclass_path")
             return typeclass and any((current_path == typec for typec in typeclasses))
         else:
             # check parent chain
             return any((cls for cls in self.typeclass.__class__.mro()
-                        if any(("%s.%s" % (GA(cls,"__module__"), GA(cls,"__name__")) == typec for typec in typeclasses))))
+                        if any(("%s.%s" % (_GA(cls,"__module__"), _GA(cls,"__name__")) == typec for typec in typeclasses))))
 
     #
     # Object manipulation methods
@@ -1135,13 +1137,13 @@ class TypedObject(SharedMemoryModel):
         new_typeclass = self.typeclass
         if self.typeclass_path == new_typeclass.path:
             # the typeclass loading worked as expected
-            DA(self, "_cached_db_typeclass_path")
-            SA(self, "_cached_typeclass", None)
+            _DA(self, "_cached_db_typeclass_path")
+            _SA(self, "_cached_typeclass", None)
         elif no_default:
             # something went wrong; the default was loaded instead,
             # and we don't allow that; instead we return to previous.
-            SA(self, "typeclass_path", old_typeclass_path)
-            SA(self, "_cached_typeclass", None)
+            _SA(self, "typeclass_path", old_typeclass_path)
+            _SA(self, "_cached_typeclass", None)
             return False
 
         if clean_attributes:
@@ -1181,7 +1183,7 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        return GA(self, "attribute_class").objects.filter(db_obj=self).filter(
+        return _GA(self, "_attribute_class").objects.filter(db_obj=self).filter(
             db_key__iexact=attribute_name).count()
 
     def set_attribute(self, attribute_name, new_value=None):
@@ -1194,7 +1196,7 @@ class TypedObject(SharedMemoryModel):
                                 a str, the object will be stored as a pickle.
         """
         attrib_obj = None
-        attrclass = GA(self, "attribute_class")
+        attrclass = _GA(self, "_attribute_class")
         try:
             # use old attribute
             attrib_obj = attrclass.objects.filter(
@@ -1216,7 +1218,7 @@ class TypedObject(SharedMemoryModel):
         """
         attrib_obj = default
         try:
-            attrib_obj = self.attribute_class.objects.filter(
+            attrib_obj = _GA(self, "_attribute_class").objects.filter(
                 db_obj=self).filter(db_key__iexact=attribute_name)[0]
         except IndexError:
             return default
@@ -1230,7 +1232,7 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         """
         try:
-            return self.attribute_class.objects.filter(
+            return _GA(self, "_attribute_class").objects.filter(
                 db_obj=self).filter(db_key__iexact=attribute_name)[0].value
         except IndexError:
             raise AttributeError
@@ -1242,7 +1244,7 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         """
         try:
-            self.attribute_class.objects.filter(
+            _GA(self, "_attribute_class").objects.filter(
                 db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
         except IndexError:
             pass
@@ -1255,7 +1257,7 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         """
         try:
-            self.attribute_class.objects.filter(
+            _GA(self, "_attribute_class").objects.filter(
                 db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
         except IndexError:
             raise AttributeError
@@ -1264,7 +1266,7 @@ class TypedObject(SharedMemoryModel):
         """
         Returns all attributes defined on the object.
         """
-        return list(self.attribute_class.objects.filter(db_obj=self))
+        return list(_GA(self,"_attribute_class").objects.filter(db_obj=self))
 
     def attr(self, attribute_name=None, value=None, delete=False):
         """
@@ -1291,7 +1293,7 @@ class TypedObject(SharedMemoryModel):
             self.set_attribute(attribute_name, value)
 
     #@property
-    def db_get(self):
+    def __db_get(self):
         """
         A second convenience wrapper for the the attribute methods. It
         allows for the syntax
@@ -1310,35 +1312,35 @@ class TypedObject(SharedMemoryModel):
             class DbHolder(object):
                 "Holder for allowing property access of attributes"
                 def __init__(self, obj):
-                    SA(self, 'obj', obj)
+                    _SA(self, 'obj', obj)
                 def __getattribute__(self, attrname):
                     if attrname == 'all':
                         # we allow for overwriting the all() method
                         # with an attribute named 'all'.
-                        attr = GA(self, 'obj').get_attribute("all")
+                        attr = _GA(self, 'obj').get_attribute("all")
                         if attr:
                             return attr
-                        return GA(self, 'all')
-                    return GA(self, 'obj').get_attribute(attrname)
+                        return _GA(self, 'all')
+                    return _GA(self, 'obj').get_attribute(attrname)
                 def __setattr__(self, attrname, value):
-                    GA(self, 'obj').set_attribute(attrname, value)
+                    _GA(self, 'obj').set_attribute(attrname, value)
                 def __delattr__(self, attrname):
-                    GA(self, 'obj').del_attribute(attrname)
+                    _GA(self, 'obj').del_attribute(attrname)
                 def all(self):
-                    return GA(self, 'obj').get_all_attributes()
+                    return _GA(self, 'obj').get_all_attributes()
             self._db_holder = DbHolder(self)
             return self._db_holder
     #@db.setter
-    def db_set(self, value):
+    def __db_set(self, value):
         "Stop accidentally replacing the db object"
         string = "Cannot assign directly to db object! "
         string += "Use db.attr=value instead."
         raise Exception(string)
     #@db.deleter
-    def db_del(self):
+    def __db_del(self):
         "Stop accidental deletion."
         raise Exception("Cannot delete the db object!")
-    db = property(db_get, db_set, db_del)
+    db = property(__db_get, __db_set, __db_del)
 
     #
     # NON-PERSISTENT storage methods
@@ -1358,19 +1360,19 @@ class TypedObject(SharedMemoryModel):
                         if not val.startswith['_']]
         elif delete == True:
             if hasattr(self.ndb, attribute_name):
-                DA(self.db, attribute_name)
+                _DA(self.db, attribute_name)
         elif value == None:
             # act as a getter.
             if hasattr(self.ndb, attribute_name):
-                GA(self.ndb, attribute_name)
+                _GA(self.ndb, attribute_name)
             else:
                 return None
         else:
             # act as a setter
-            SA(self.db, attribute_name, value)
+            _SA(self.db, attribute_name, value)
 
     #@property
-    def ndb_get(self):
+    def __ndb_get(self):
         """
         A non-persistent store (ndb: NonDataBase). Everything stored
         to this is guaranteed to be cleared when a server is shutdown.
@@ -1388,22 +1390,22 @@ class TypedObject(SharedMemoryModel):
                 def __getattribute__(self, key):
                     # return None if no matching attribute was found.
                     try:
-                        return GA(self, key)
+                        return _GA(self, key)
                     except AttributeError:
                         return None
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
     #@ndb.setter
-    def ndb_set(self, value):
+    def __ndb_set(self, value):
         "Stop accidentally replacing the db object"
         string = "Cannot assign directly to ndb object! "
         string = "Use ndb.attr=value instead."
         raise Exception(string)
     #@ndb.deleter
-    def ndb_del(self):
+    def __ndb_del(self):
         "Stop accidental deletion."
         raise Exception("Cannot delete the ndb object!")
-    ndb = property(ndb_get, ndb_set, ndb_del)
+    ndb = property(__ndb_get, __ndb_set, __ndb_del)
 
     #
     # Lock / permission methods
@@ -1437,9 +1439,9 @@ class TypedObject(SharedMemoryModel):
         if perm in [p.lower() for p in self.permissions]:
             # simplest case - we have a direct match
             return True
-        if perm in PERMISSION_HIERARCHY:
+        if perm in _PERMISSION_HIERARCHY:
             # check if we have a higher hierarchy position
-            ppos = PERMISSION_HIERARCHY.index(perm)
-            return any(True for hpos, hperm in enumerate(PERMISSION_HIERARCHY)
+            ppos = _PERMISSION_HIERARCHY.index(perm)
+            return any(True for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                        if hperm in [p.lower() for p in self.permissions] and hpos > ppos)
         return False

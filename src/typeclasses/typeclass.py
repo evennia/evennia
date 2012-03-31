@@ -14,9 +14,9 @@ from src.utils.logger import log_trace, log_errmsg
 from django.conf import settings
 
 # these are called so many times it's worth to avoid lookup calls
-GA = object.__getattribute__
-SA = object.__setattr__
-DA = object.__delattr__
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
 
 # To ensure the sanity of the model, there are a
 # few property names we won't allow the admin to
@@ -75,13 +75,13 @@ class TypeClass(object):
         """
         # typecheck of dbobj - we can't allow it to be added here
         # unless it's really a TypedObject.
-        dbobj_cls = GA(dbobj, '__class__')
-        dbobj_mro = GA(dbobj_cls, '__mro__')
+        dbobj_cls = _GA(dbobj, '__class__')
+        dbobj_mro = _GA(dbobj_cls, '__mro__')
         if not any('src.typeclasses.models.TypedObject' in str(mro) for mro in dbobj_mro):
             raise Exception("dbobj is not a TypedObject: %s: %s" % (dbobj_cls, dbobj_mro))
 
         # store the reference to the database model instance
-        SA(self, 'dbobj', dbobj)
+        _SA(self, 'dbobj', dbobj)
 
     def __getattribute__(self, propname):
         """
@@ -93,25 +93,25 @@ class TypeClass(object):
         accessible through getattr.
         """
         if propname == 'dbobj':
-            return GA(self, 'dbobj')
+            return _GA(self, 'dbobj')
         if propname.startswith('__') and propname.endswith('__'):
             # python specials are parsed as-is (otherwise things like
             # isinstance() fail to identify the typeclass)
-            return GA(self, propname)
+            return _GA(self, propname)
         #print "get %s (dbobj:%s)" % (propname, type(dbobj))
         try:
-            return GA(self, propname)
+            return _GA(self, propname)
         except AttributeError:
             try:
-                dbobj = GA(self, 'dbobj')
+                dbobj = _GA(self, 'dbobj')
             except AttributeError:
                 log_trace("Typeclass CRITICAL ERROR! dbobj not found for Typeclass %s!" % self)
                 raise
             try:
-                return GA(dbobj, propname)
+                return _GA(dbobj, propname)
             except AttributeError:
                 try:
-                    return GA(dbobj,"get_attribute_raise")(propname)
+                    return _GA(dbobj,"get_attribute_raise")(propname)
                 except AttributeError:
                     string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
                     raise AttributeError(string % (propname, dbobj, dbobj.dbref, dbobj.typeclass_path))
@@ -132,7 +132,7 @@ class TypeClass(object):
             return
 
         try:
-            dbobj = GA(self, 'dbobj')
+            dbobj = _GA(self, 'dbobj')
         except AttributeError:
             dbobj = None
             log_trace("This is probably due to an unsafe reload.")
@@ -141,19 +141,19 @@ class TypeClass(object):
             try:
                 # only set value on propname if propname already exists
                 # on dbobj. __getattribute__ will raise attribute error otherwise.
-                GA(dbobj, propname)
-                SA(dbobj, propname, value)
+                _GA(dbobj, propname)
+                _SA(dbobj, propname, value)
             except AttributeError:
                 dbobj.set_attribute(propname, value)
         else:
-            SA(self, propname, value)
+            _SA(self, propname, value)
 
         def __eq__(self, other):
             """
             dbobj-recognized comparison
             """
             try:
-                return other == self or other == GA(self, dbobj) or other == GA(self, dbobj).user
+                return other == self or other == _GA(self, dbobj) or other == _GA(self, dbobj).user
             except AttributeError:
                 # if self.dbobj.user fails it means the two previous comparisons failed already
                 return False
@@ -172,11 +172,11 @@ class TypeClass(object):
             return
 
         try:
-            DA(self, propname)
+            _DA(self, propname)
         except AttributeError:
             # not on typeclass, try to delete on db/ndb
             try:
-                dbobj = GA(self, 'dbobj')
+                dbobj = _GA(self, 'dbobj')
             except AttributeError:
                 log_trace("This is probably due to an unsafe reload.")
                 return # ignore delete

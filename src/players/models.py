@@ -47,13 +47,13 @@ from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
 from src.server.sessionhandler import SESSIONS
-from src.players import manager 
+from src.players import manager
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.utils import logger, utils
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 
-AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 #------------------------------------------------------------
 #
@@ -67,7 +67,7 @@ class PlayerAttribute(Attribute):
     but are intended to store OOC information specific to each user
     and game (example would be configurations etc).
     """
-    db_obj = models.ForeignKey("PlayerDB")    
+    db_obj = models.ForeignKey("PlayerDB")
 
     class Meta:
         "Define Django meta options"
@@ -81,11 +81,11 @@ class PlayerAttribute(Attribute):
 
 class PlayerNick(TypeNick):
     """
-    
-    The default nick types used by Evennia are: 
+
+    The default nick types used by Evennia are:
     inputline (default) - match against all input
     player - match against player searches
-    obj - match against object searches 
+    obj - match against object searches
     channel - used to store own names for channels
     """
     db_obj = models.ForeignKey("PlayerDB", verbose_name="player")
@@ -99,7 +99,7 @@ class PlayerNick(TypeNick):
 class PlayerNickHandler(TypeNickHandler):
     """
     Handles nick access and setting. Accessed through ObjectDB.nicks
-    """    
+    """
     NickClass = PlayerNick
 
 
@@ -112,52 +112,52 @@ class PlayerNickHandler(TypeNickHandler):
 class PlayerDB(TypedObject):
     """
     This is a special model using Django's 'profile' functionality
-    and extends the default Django User model. It is defined as such 
-    by use of the variable AUTH_PROFILE_MODULE in the settings. 
-    One accesses the fields/methods. We try use this model as much 
+    and extends the default Django User model. It is defined as such
+    by use of the variable AUTH_PROFILE_MODULE in the settings.
+    One accesses the fields/methods. We try use this model as much
     as possible rather than User, since we can customize this to
-    our liking. 
+    our liking.
 
     The TypedObject supplies the following (inherited) properties:
       key - main name
       typeclass_path - the path to the decorating typeclass
       typeclass - auto-linked typeclass
       date_created - time stamp of object creation
-      permissions - perm strings 
-      dbref - #id of object 
+      permissions - perm strings
+      dbref - #id of object
       db - persistent attribute storage
-      ndb - non-persistent attribute storage 
+      ndb - non-persistent attribute storage
 
-    The PlayerDB adds the following properties: 
-      user - Connected User object. django field, needs to be save():d. 
+    The PlayerDB adds the following properties:
+      user - Connected User object. django field, needs to be save():d.
       obj - game object controlled by player
-      character - alias for obj 
+      character - alias for obj
       name - alias for user.username
       sessions - sessions connected to this player
       is_superuser - bool if this player is a superuser
-      
+
     """
-    
+
     #
-    # PlayerDB Database model setup 
-    # 
-    # inherited fields (from TypedObject): 
+    # PlayerDB Database model setup
+    #
+    # inherited fields (from TypedObject):
     # db_key, db_typeclass_path, db_date_created, db_permissions
 
     # this is the one-to-one link between the customized Player object and
-    # this profile model. It is required by django. 
+    # this profile model. It is required by django.
     user = models.ForeignKey(User, unique=True, db_index=True,
       help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
-    # the in-game object connected to this player (if any). 
-    # Use the property 'obj' to access. 
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, 
+    # the in-game object connected to this player (if any).
+    # Use the property 'obj' to access.
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True,
                                verbose_name="character", help_text='In-game object.')
-    
+
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, 
+    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
                                          help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_DEFAULT.")
 
-    # Database manager 
+    # Database manager
     objects = manager.PlayerManager()
 
     class Meta:
@@ -166,18 +166,18 @@ class PlayerDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         "Parent must be initiated first"
-        TypedObject.__init__(self, *args, **kwargs) 
+        TypedObject.__init__(self, *args, **kwargs)
         # handlers
         self.cmdset = CmdSetHandler(self)
         self.cmdset.update(init_mode=True)
-        self.nicks = PlayerNickHandler(self)    
+        self.nicks = PlayerNickHandler(self)
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
     # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value, 
-    # value = self.attr and del self.attr respectively (where self 
+    # defined that allows the user to do self.attr = value,
+    # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
     # obj property (wraps db_obj)
@@ -190,13 +190,13 @@ class PlayerDB(TypedObject):
         "Setter. Allows for self.obj = value"
         from src.typeclasses.typeclass import TypeClass
         if isinstance(value, TypeClass):
-            value = value.dbobj    
+            value = value.dbobj
         try:
             self.db_obj = value
             self.save()
         except Exception:
             logger.log_trace()
-            raise Exception("Cannot assign %s as a player object!" % value)   
+            raise Exception("Cannot assign %s as a player object!" % value)
     #@obj.deleter
     def obj_del(self):
         "Deleter. Allows for del self.obj"
@@ -204,8 +204,8 @@ class PlayerDB(TypedObject):
         self.save()
     obj = property(obj_get, obj_set, obj_del)
 
-    # whereas the name 'obj' is consistent with the rest of the code, 
-    # 'character' is a more intuitive property name, so we 
+    # whereas the name 'obj' is consistent with the rest of the code,
+    # 'character' is a more intuitive property name, so we
     # define this too, as an alias to player.obj.
     #@property
     def character_get(self):
@@ -234,7 +234,7 @@ class PlayerDB(TypedObject):
         if utils.is_iter(value):
             value = ",".join([str(val).strip() for val in value])
         self.db_cmdset_storage = value
-        self.save()        
+        self.save()
     #@cmdset_storage.deleter
     def cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
@@ -249,26 +249,19 @@ class PlayerDB(TypedObject):
 
     #
     # PlayerDB main class properties and methods
-    # 
+    #
 
     def __str__(self):
         return smart_str("%s(player %i)" % (self.name, self.id))
-        
+
     def __unicode__(self):
         return u"%s(player#%i)" % (self.name, self.id)
 
-    # this is used by all typedobjects as a fallback
-    try:
-        default_typeclass_path = settings.BASE_PLAYER_TYPECLASS
-    except Exception:
-        default_typeclass_path = "src.players.player.Player"
-
     # this is required to properly handle attributes and typeclass loading
-    #attribute_model_path = "src.players.models"
-    #attribute_model_name = "PlayerAttribute"
-    typeclass_paths = settings.PLAYER_TYPECLASS_PATHS 
-    attribute_class = PlayerAttribute
-    db_model_name = "playerdb" # used by attributes to safely store objects
+    _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS
+    _attribute_class = PlayerAttribute
+    _db_model_name = "playerdb" # used by attributes to safely store objects
+    _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
 
         # name property (wraps self.user.username)
     #@property
@@ -299,7 +292,7 @@ class PlayerDB(TypedObject):
     #@sessions.deleter
     def sessions_del(self):
         "Deleter. Protects the sessions property from deletion"
-        raise Exception("Cannot delete sessions manually!")        
+        raise Exception("Cannot delete sessions manually!")
     sessions = property(sessions_get, sessions_set, sessions_del)
 
     #@property
@@ -309,12 +302,12 @@ class PlayerDB(TypedObject):
     is_superuser = property(is_superuser_get)
 
     #
-    # PlayerDB class access methods 
-    # 
-    
+    # PlayerDB class access methods
+    #
+
     def msg(self, outgoing_string, from_obj=None, data=None):
         """
-        Evennia -> User 
+        Evennia -> User
         This is the main route for sending data back to the user from the server.
         """
 
@@ -324,10 +317,10 @@ class PlayerDB(TypedObject):
             except Exception:
                 pass
 
-        if (object.__getattribute__(self, "character") 
+        if (object.__getattribute__(self, "character")
             and not self.character.at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
             # the at_msg_receive() hook may block receiving of certain messages
-            return 
+            return
 
         outgoing_string = utils.to_str(outgoing_string, force_string=True)
 
@@ -340,31 +333,31 @@ class PlayerDB(TypedObject):
         Swaps character, if possible
         """
         return self.__class__.objects.swap_character(self, new_character, delete_old_character=delete_old_character)
-    
+
 
     #
     # Execution/action methods
     #
-        
+
     def execute_cmd(self, raw_string):
         """
         Do something as this playe. This command transparently
-        lets its typeclass execute the command. 
-        raw_string - raw command input coming from the command line. 
-        """        
+        lets its typeclass execute the command.
+        raw_string - raw command input coming from the command line.
+        """
         # nick replacement - we require full-word matching.
-        
+
         raw_string = utils.to_unicode(raw_string)
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        for nick in PlayerNick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):           
+        for nick in PlayerNick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):
             if nick.db_nick in raw_list:
-                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1) 
-                break        
+                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
+                break
         return cmdhandler.cmdhandler(self.typeclass, raw_string)
 
-    def search(self, ostring, global_search=False, attribute_name=None, use_nicks=False, 
+    def search(self, ostring, global_search=False, attribute_name=None, use_nicks=False,
                location=None, ignore_errors=False, player=False):
         """
         A shell method mimicking the ObjectDB equivalent, for easy inclusion from
@@ -373,8 +366,8 @@ class PlayerDB(TypedObject):
 
         if self.character:
             # run the normal search
-            return self.character.search(ostring, global_search=global_search, attribute_name=attribute_name, 
-                                         use_nicks=use_nicks, location=location, 
+            return self.character.search(ostring, global_search=global_search, attribute_name=attribute_name,
+                                         use_nicks=use_nicks, location=location,
                                          ignore_errors=ignore_errors, player=player)
         if player:
             # seach for players
@@ -383,7 +376,6 @@ class PlayerDB(TypedObject):
             # more limited player-only search. Still returns an Object.
             ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
             matches = ObjectDB.objects.object_search(ostring, caller=self, global_search=global_search)
-        # deal with results 
-        matches = AT_SEARCH_RESULT(self, ostring, matches, global_search=global_search)
-        return matches 
-
+        # deal with results
+        matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=global_search)
+        return matches
