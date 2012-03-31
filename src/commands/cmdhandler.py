@@ -81,7 +81,7 @@ class ExecSystemCommand(Exception):
 # Helper function
 
 @inlineCallbacks
-def _get_and_merge_cmdsets(caller):
+def get_and_merge_cmdsets(caller):
     """
     Gather all relevant cmdsets and merge them. Note
     that this is only relevant for logged-in callers.
@@ -171,7 +171,7 @@ def cmdhandler(caller, raw_string, testing=False):
     try: # catch bugs in cmdhandler itself
         try: # catch special-type commands
 
-            cmdset = yield _get_and_merge_cmdsets(caller)
+            cmdset = yield get_and_merge_cmdsets(caller)
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
