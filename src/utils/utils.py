@@ -603,48 +603,38 @@ def mod_import(mod_path, propname=None):
         return mod_prop
     return mod
 
-def variable_from_module(modpath, variable, default=None):
+def variable_from_module(modpath, variable=None, default=None):
     """
-    Retrieve a given variable from a module. The variable must be
-    defined globally in the module. This can be used to implement
-    arbitrary plugin imports in the server.
+    Retrieve a variable from a module. The variable must be defined
+    globally in the module. If no variable is given, a random variable
+    is returned from the module.
 
-    If module cannot be imported or variable not found, default
+    If module cannot be imported or given variable not found, default
     is returned.
     """
     if not modpath:
-        return None
+        return default
     try:
         mod = __import__(modpath, fromlist=["None"])
-        return mod.__dict__.get(variable, default)
     except ImportError:
         return default
+    if variable:
+        # try to pick a named variable
+        return mod.__dict__.get(variable, default)
+    else:
+        # random selection
+        mvars = [val for key, val in mod.__dict__.items() if not key.startswith("_")]
+        return mvars and random.choice(mvars)
 
 def string_from_module(modpath, variable=None, default=None):
     """
-    This is a variation used primarily to get login screens randomly
-    from a module.
-
-    This obtains a string from a given module python path.  Using a
-    specific variable name will also retrieve non-strings.
-
-    The variable must be global within that module - that is, defined
-    in the outermost scope of the module. The value of the variable
-    will be returned. If not found, default is returned. If no variable is
-    given, a random string variable is returned.
-
-    This is useful primarily for storing various game strings in a
-    module and extract them by name or randomly.
+    This is a wrapper for variable_from_module that requires return
+    value to be a string to pass. It's primarily used by login screen.
     """
-    mod = __import__(modpath, fromlist=[None])
-    if variable:
-        return mod.__dict__.get(variable, default)
-    else:
-        mvars = [val for key, val in mod.__dict__.items()
-                 if not key.startswith('_') and isinstance(val, basestring)]
-        if not mvars:
-            return default
-        return mvars[random.randint(0, len(mvars)-1)]
+    val = variable_from_module(modpath, variable=variable, default=default)
+    if isinstance(val, basestring):
+        return val
+    return default
 
 def init_new_player(player):
     """
