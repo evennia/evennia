@@ -67,8 +67,9 @@ import traceback
 from src.utils import logger, utils
 from src.commands.cmdset import CmdSet
 from src.server.models import ServerConfig
+__all__ = ("import_cmdset", "CmdSetHandler")
 
-CACHED_CMDSETS = {}
+_CACHED_CMDSETS = {}
 
 def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
@@ -87,9 +88,9 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
     try:
         try:
-            #print "importing %s: CACHED_CMDSETS=%s" % (python_path, CACHED_CMDSETS)
+            #print "importing %s: _CACHED_CMDSETS=%s" % (python_path, _CACHED_CMDSETS)
             wanted_cache_key = python_path
-            cmdsetclass = CACHED_CMDSETS.get(wanted_cache_key, None)
+            cmdsetclass = _CACHED_CMDSETS.get(wanted_cache_key, None)
             errstring = ""
             if not cmdsetclass:
                 #print "cmdset '%s' not in cache. Reloading %s on %s." % (wanted_cache_key, python_path, cmdsetobj)
@@ -97,7 +98,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 modulepath, classname = python_path.rsplit('.', 1)
                 module = __import__(modulepath, fromlist=[True])
                 cmdsetclass = module.__dict__[classname]
-                CACHED_CMDSETS[wanted_cache_key] = cmdsetclass
+                _CACHED_CMDSETS[wanted_cache_key] = cmdsetclass
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj)
@@ -115,13 +116,15 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             errstring = "\n%s\nCompile/Run error when loading cmdset '%s'."
             errstring = errstring % (traceback.format_exc(), python_path)
             raise
-    except Exception:
+    except Exception, e:
         if errstring and not no_logging:
             print errstring
             logger.log_trace()
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 object.__getattribute__(emit_to_obj, "msg")(errstring)
-        logger.log_errmsg("Error: %s" % errstring)
+        if not errstring:
+            errstring = "Error in import cmdset: %s" % e
+        logger.log_errmsg(errstring)
         #cannot raise - it kills the server if no base cmdset exists!
 
 # classes
@@ -198,6 +201,17 @@ class CmdSetHandler(object):
                                                    ", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key)))
         return string.strip()
 
+    def _import_cmdset(self, cmdset_path, emit_to_obj=None):
+        """
+        Method wrapper for import_cmdset.
+        load a cmdset from a module.
+        cmdset_path - the python path to an cmdset object.
+        emit_to_obj - object to send error messages to
+        """
+        if not emit_to_obj:
+            emit_to_obj = self.obj
+        return import_cmdset(cmdset_path, self.obj, emit_to_obj)
+
     def update(self, init_mode=False):
         """
         Re-adds all sets in the handler to have an updated
@@ -216,7 +230,7 @@ class CmdSetHandler(object):
                     if pos == 0 and not path:
                         self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
                     elif path:
-                        cmdset = self.import_cmdset(path)
+                        cmdset = self._import_cmdset(path)
                         if cmdset:
                             cmdset.permanent = True
                             self.cmdset_stack.append(cmdset)
@@ -232,17 +246,6 @@ class CmdSetHandler(object):
                 continue
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
-
-    def import_cmdset(self, cmdset_path, emit_to_obj=None):
-        """
-        Method wrapper for import_cmdset.
-        load a cmdset from a module.
-        cmdset_path - the python path to an cmdset object.
-        emit_to_obj - object to send error messages to
-        """
-        if not emit_to_obj:
-            emit_to_obj = self.obj
-        return import_cmdset(cmdset_path, self.obj, emit_to_obj)
 
     def add(self, cmdset, emit_to_obj=None, permanent=False):
         """
@@ -271,7 +274,7 @@ class CmdSetHandler(object):
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
-            cmdset = self.import_cmdset(cmdset)
+            cmdset = self._import_cmdset(cmdset)
         if cmdset:
             if permanent:
                 # store the path permanently
@@ -303,7 +306,7 @@ class CmdSetHandler(object):
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
-            cmdset = self.import_cmdset(cmdset)
+            cmdset = self._import_cmdset(cmdset)
         if cmdset:
             if self.cmdset_stack:
                 self.cmdset_stack[0] = cmdset
@@ -430,7 +433,7 @@ class CmdSetHandler(object):
     def reset(self):
         """
         Force reload of all cmdsets in handler. This should be called
-        after CACHED_CMDSETS have been cleared (normally by @reload).
+        after _CACHED_CMDSETS have been cleared (normally by @reload).
         """
         new_cmdset_stack = []
         new_mergetype_stack = []
@@ -439,7 +442,7 @@ class CmdSetHandler(object):
                 new_cmdset_stack.append(cmdset)
                 new_mergetype_stack.append("Union")
             else:
-                new_cmdset_stack.append(self.import_cmdset(cmdset.path))
+                new_cmdset_stack.append(self._import_cmdset(cmdset.path))
                 new_mergetype_stack.append(cmdset.mergetype)
         self.cmdset_stack = new_cmdset_stack
         self.mergetype_stack = new_mergetype_stack

@@ -21,7 +21,7 @@ from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import is_iter, to_str
 from src.utils.utils import dbref as is_dbref
-
+__all__ = ("Msg", "TempMsg", "Channel", "PlayerChannelConnection", "ExternalChannelConnection")
 
 #------------------------------------------------------------
 #
@@ -29,7 +29,7 @@ from src.utils.utils import dbref as is_dbref
 #
 #------------------------------------------------------------
 
-def obj_to_id(inp):
+def _obj_to_id(inp):
     """
     Converts input object to an id string.
     """
@@ -42,7 +42,7 @@ def obj_to_id(inp):
         return str(inp.dbobj.id)
     return str(inp)
 
-def id_to_obj(dbref, db_model='PlayerDB'):
+def _id_to_obj(dbref, db_model='PlayerDB'):
     """
     loads from dbref to object. Uses the db_model to search
     for the id.
@@ -140,186 +140,186 @@ class Msg(SharedMemoryModel):
 
     # sender property (wraps db_sender)
     #@property
-    def sender_get(self):
+    def __sender_get(self):
         "Getter. Allows for value = self.sender"
         return self.db_sender
     #@sender.setter
-    def sender_set(self, value):
+    def __sender_set(self, value):
         "Setter. Allows for self.sender = value"
         self.db_sender = value
         self.save()
     #@sender.deleter
-    def sender_del(self):
+    def __sender_del(self):
         "Deleter. Allows for del self.sender"
         raise Exception("You cannot delete the sender of a message!")
-    sender = property(sender_get, sender_set, sender_del)
+    sender = property(__sender_get, __sender_set, __sender_del)
 
     # sender_external property (wraps db_sender_external)
     #@property
-    def sender_external_get(self):
+    def __sender_external_get(self):
         "Getter. Allows for value = self.sender_external"
         return self.db_sender_external
     #@sender_external.setter
-    def sender_external_set(self, value):
+    def __sender_external_set(self, value):
         "Setter. Allows for self.sender_external = value"
         self.db_sender_external = value
         self.save()
     #@sender_external.deleter
-    def sender_external_del(self):
+    def __sender_external_del(self):
         "Deleter. Allows for del self.sender_external"
         raise Exception("You cannot delete the sender_external of a message!")
-    sender_external = property(sender_external_get, sender_external_set, sender_external_del)
+    sender_external = property(__sender_external_get, __sender_external_set, __sender_external_del)
 
     # receivers property
     #@property
-    def receivers_get(self):
+    def __receivers_get(self):
         "Getter. Allows for value = self.receivers. Returns a list of receivers."
         if self.db_receivers:
-            return [id_to_obj(dbref) for dbref in self.db_receivers.split(',')]
+            return [_id_to_obj(dbref) for dbref in self.db_receivers.split(',')]
         return []
     #@receivers.setter
-    def receivers_set(self, value):
+    def __receivers_set(self, value):
         "Setter. Allows for self.receivers = value. Stores as a comma-separated string."
         if is_iter(value):
-            value = ",".join([obj_to_id(val) for val in value])
-        self.db_receivers = obj_to_id(value)
+            value = ",".join([_obj_to_id(val) for val in value])
+        self.db_receivers = _obj_to_id(value)
         self.save()
     #@receivers.deleter
-    def receivers_del(self):
+    def __receivers_del(self):
         "Deleter. Allows for del self.receivers"
         self.db_receivers = ""
         self.save()
-    receivers = property(receivers_get, receivers_set, receivers_del)
+    receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
     # channels property
     #@property
-    def channels_get(self):
+    def __channels_get(self):
         "Getter. Allows for value = self.channels. Returns a list of channels."
         if self.db_channels:
-            return [id_to_obj(dbref, 'Channel') for dbref in self.db_channels.split(',')]
+            return [_id_to_obj(dbref, 'Channel') for dbref in self.db_channels.split(',')]
         return []
     #@channels.setter
-    def channels_set(self, value):
+    def __channels_set(self, value):
         "Setter. Allows for self.channels = value. Stores as a comma-separated string."
         if is_iter(value):
-            value = ",".join([obj_to_id(val) for val in value])
-        self.db_channels = obj_to_id(value)
+            value = ",".join([_obj_to_id(val) for val in value])
+        self.db_channels = _obj_to_id(value)
         self.save()
     #@channels.deleter
-    def channels_del(self):
+    def __channels_del(self):
         "Deleter. Allows for del self.channels"
         self.db_channels = ""
         self.save()
-    channels = property(channels_get, channels_set, channels_del)
+    channels = property(__channels_get, __channels_set, __channels_del)
 
     # message property (wraps db_message)
     #@property
-    def message_get(self):
+    def __message_get(self):
         "Getter. Allows for value = self.message"
         return self.db_message
     #@message.setter
-    def message_set(self, value):
+    def __message_set(self, value):
         "Setter. Allows for self.message = value"
         self.db_message = value
         self.save()
     #@message.deleter
-    def message_del(self):
+    def __message_del(self):
         "Deleter. Allows for del self.message"
         self.db_message = ""
         self.save()
-    message = property(message_get, message_set, message_del)
+    message = property(__message_get, __message_set, __message_del)
 
     # date_sent property (wraps db_date_sent)
     #@property
-    def date_sent_get(self):
+    def __date_sent_get(self):
         "Getter. Allows for value = self.date_sent"
         return self.db_date_sent
     #@date_sent.setter
-    def date_sent_set(self, value):
+    def __date_sent_set(self, value):
         "Setter. Allows for self.date_sent = value"
         raise Exception("You cannot edit date_sent!")
     #@date_sent.deleter
-    def date_sent_del(self):
+    def __date_sent_del(self):
         "Deleter. Allows for del self.date_sent"
         raise Exception("You cannot delete the date_sent property!")
-    date_sent = property(date_sent_get, date_sent_set, date_sent_del)
+    date_sent = property(__date_sent_get, __date_sent_set, __date_sent_del)
 
     # hide_from_sender property
     #@property
-    def hide_from_sender_get(self):
+    def __hide_from_sender_get(self):
         "Getter. Allows for value = self.hide_from_sender."
         return self.db_hide_from_sender
     #@hide_from_sender.setter
-    def hide_from_sender_set(self, value):
+    def __hide_from_sender_set(self, value):
         "Setter. Allows for self.hide_from_senders = value."
         self.db_hide_from_sender = value
         self.save()
     #@hide_from_sender.deleter
-    def hide_from_sender_del(self):
+    def __hide_from_sender_del(self):
         "Deleter. Allows for del self.hide_from_senders"
         self.db_hide_from_sender = False
         self.save()
-    hide_from_sender = property(hide_from_sender_get, hide_from_sender_set, hide_from_sender_del)
+    hide_from_sender = property(__hide_from_sender_get, __hide_from_sender_set, __hide_from_sender_del)
 
     # hide_from_receivers property
     #@property
-    def hide_from_receivers_get(self):
+    def __hide_from_receivers_get(self):
         "Getter. Allows for value = self.hide_from_receivers. Returns a list of hide_from_receivers."
         if self.db_hide_from_receivers:
-            return [id_to_obj(dbref) for dbref in self.db_hide_from_receivers.split(',')]
+            return [_id_to_obj(dbref) for dbref in self.db_hide_from_receivers.split(',')]
         return []
     #@hide_from_receivers.setter
-    def hide_from_receivers_set(self, value):
+    def __hide_from_receivers_set(self, value):
         "Setter. Allows for self.hide_from_receivers = value. Stores as a comma-separated string."
         if is_iter(value):
-            value = ",".join([obj_to_id(val) for val in value])
-        self.db_hide_from_receivers = obj_to_id(value)
+            value = ",".join([_obj_to_id(val) for val in value])
+        self.db_hide_from_receivers = _obj_to_id(value)
         self.save()
     #@hide_from_receivers.deleter
-    def hide_from_receivers_del(self):
+    def __hide_from_receivers_del(self):
         "Deleter. Allows for del self.hide_from_receivers"
         self.db_hide_from_receivers = ""
         self.save()
-    hide_from_receivers = property(hide_from_receivers_get, hide_from_receivers_set, hide_from_receivers_del)
+    hide_from_receivers = property(__hide_from_receivers_get, __hide_from_receivers_set, __hide_from_receivers_del)
 
     # hide_from_channels property
     #@property
-    def hide_from_channels_get(self):
+    def __hide_from_channels_get(self):
         "Getter. Allows for value = self.hide_from_channels. Returns a list of hide_from_channels."
         if self.db_hide_from_channels:
-            return [id_to_obj(dbref) for dbref in self.db_hide_from_channels.split(',')]
+            return [_id_to_obj(dbref) for dbref in self.db_hide_from_channels.split(',')]
         return []
     #@hide_from_channels.setter
-    def hide_from_channels_set(self, value):
+    def __hide_from_channels_set(self, value):
         "Setter. Allows for self.hide_from_channels = value. Stores as a comma-separated string."
         if is_iter(value):
-            value = ",".join([obj_to_id(val) for val in value])
-        self.db_hide_from_channels = obj_to_id(value)
+            value = ",".join([_obj_to_id(val) for val in value])
+        self.db_hide_from_channels = _obj_to_id(value)
         self.save()
     #@hide_from_channels.deleter
-    def hide_from_channels_del(self):
+    def __hide_from_channels_del(self):
         "Deleter. Allows for del self.hide_from_channels"
         self.db_hide_from_channels = ""
         self.save()
-    hide_from_channels = property(hide_from_channels_get, hide_from_channels_set, hide_from_channels_del)
+    hide_from_channels = property(__hide_from_channels_get, __hide_from_channels_set, __hide_from_channels_del)
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def lock_storage_get(self):
+    def __lock_storage_get(self):
         "Getter. Allows for value = self.lock_storage"
         return self.db_lock_storage
     #@nick.setter
-    def lock_storage_set(self, value):
+    def __lock_storage_set(self, value):
         """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
         self.db_lock_storage = value
         self.save()
     #@nick.deleter
-    def lock_storage_del(self):
+    def __lock_storage_del(self):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
-    db_model_name = "msg" # used by attributes to safely store objects
+    _db_model_name = "msg" # used by attributes to safely store objects
 
     #
     # Msg class methods

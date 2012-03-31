@@ -72,6 +72,9 @@ class HelpEntry(SharedMemoryModel):
         verbose_name = "Help Entry"
         verbose_name_plural = "Help Entries"
 
+    # used by Attributes to safely retrieve stored object
+    _db_model_name = "helpentry"
+
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()

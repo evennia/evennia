@@ -44,25 +44,29 @@ from src.commands.cmdsethandler import import_cmdset
 from src.utils import logger, utils
 from src.commands.cmdparser import at_multimatch_cmd
 
-#This switches the command parser to a user-defined one.
-# You have to restart the server for this to take effect.
-COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
+__all__ = ("cmdhandler",)
 
-# There are a few system-hardcoded command names. These
-# allow for custom behaviour when the command handler hits
-# special situations -- it then calls a normal Command
-# that you can customize!
-# Import these variables and use them rather than trying
-# to remember the actual string constants.
+# This decides which command parser is to be used.
+# You have to restart the server for changes to take effect.
+_COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
 
+# System command names - import these variables rather than trying to
+# remember the actual string constants. If not defined, Evennia
+# hard-coded defaults are used instead.
+
+# command to call if user just presses <return> with no input
 CMD_NOINPUT = "__noinput_command"
+# command to call if no command match was found
 CMD_NOMATCH = "__nomatch_command"
+# command to call if multiple command matches were found
 CMD_MULTIMATCH = "__multimatch_command"
+# command to call if found command is the name of a channel
 CMD_CHANNEL = "__send_to_channel_command"
-# this is the name of the command the engine calls when the player
-# connects. It is expected to show the login screen.
+# command to call as the very first one when the user connects.
+# (is expected to display the login screen)
 CMD_LOGINSTART = "__unloggedin_look_command"
 
+# custom Exceptions
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
@@ -74,11 +78,15 @@ class ExecSystemCommand(Exception):
         self.syscmd = syscmd
         self.sysarg = sysarg
 
+# Helper function
+
 @inlineCallbacks
-def get_and_merge_cmdsets(caller):
+def _get_and_merge_cmdsets(caller):
     """
     Gather all relevant cmdsets and merge them. Note
     that this is only relevant for logged-in callers.
+
+    Note that this function returns a deferred!
     """
     # The calling object's cmdset
     try:
@@ -163,7 +171,7 @@ def cmdhandler(caller, raw_string, testing=False):
     try: # catch bugs in cmdhandler itself
         try: # catch special-type commands
 
-            cmdset = yield get_and_merge_cmdsets(caller)
+            cmdset = yield _get_and_merge_cmdsets(caller)
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
@@ -177,7 +185,7 @@ def cmdhandler(caller, raw_string, testing=False):
             # Parse the input string and match to available cmdset.
             # This also checks for permissions, so all commands in match
             # are commands the caller is allowed to call.
-            matches = yield COMMAND_PARSER(raw_string, cmdset, caller)
+            matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
             # Deal with matches
             if not matches:
                 # No commands match our entered command
@@ -302,5 +310,3 @@ def cmdhandler(caller, raw_string, testing=False):
         string += " Please contact an admin and/or file a bug report."
         logger.log_trace(string)
         caller.msg(string % format_exc())
-
-#----------------------------------------------------- end cmdhandler

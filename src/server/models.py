@@ -51,6 +51,9 @@ class ServerConfig(SharedMemoryModel):
 
     objects = ServerConfigManager()
 
+    # used by Attributes eventually storing this safely
+    _db_model_name = "serverconfig"
+
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
@@ -61,27 +64,27 @@ class ServerConfig(SharedMemoryModel):
 
     # key property (wraps db_key)
     #@property
-    def key_get(self):
+    def __key_get(self):
         "Getter. Allows for value = self.key"
         return self.db_key
     #@key.setter
-    def key_set(self, value):
+    def __key_set(self, value):
         "Setter. Allows for self.key = value"
         self.db_key = value
         self.save()
     #@key.deleter
-    def key_del(self):
+    def __key_del(self):
         "Deleter. Allows for del self.key. Deletes entry."
         self.delete()
-    key = property(key_get, key_set, key_del)
+    key = property(__key_get, __key_set, __key_del)
 
     # value property (wraps db_value)
     #@property
-    def value_get(self):
+    def __value_get(self):
         "Getter. Allows for value = self.value"
         return pickle.loads(str(self.db_value))
     #@value.setter
-    def value_set(self, value):
+    def __value_set(self, value):
         "Setter. Allows for self.value = value"
         if utils.has_parent('django.db.models.base.Model', value):
             # we have to protect against storing db objects.
@@ -90,10 +93,10 @@ class ServerConfig(SharedMemoryModel):
         self.db_value = pickle.dumps(value)
         self.save()
     #@value.deleter
-    def value_del(self):
+    def __value_del(self):
         "Deleter. Allows for del self.value. Deletes entry."
         self.delete()
-    value = property(value_get, value_set, value_del)
+    value = property(__value_get, __value_set, __value_del)
 
     class Meta:
         "Define Django meta options"
