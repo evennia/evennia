@@ -193,6 +193,9 @@ class SystemCmds(object):
     To access in code, do 'from ev import syscmdkeys' then
     access the properties on the imported syscmdkeys object.
 
+    For example, try objects.all() to get all
+    ObjectDB objects in the database.
+
     """
     from src.commands import cmdhandler
     CMD_NOINPUT = cmdhandler.CMD_NOINPUT
