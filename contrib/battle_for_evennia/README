@@ -9,6 +9,7 @@ simple yet still reasonably playable and not-quite-bog-standard
 starting game in Evennia. The tutorial text itself will eventually be
 found from the Dev blog and from the wiki.
 
+
 Ideas & Initial Brainstorm
 ---------------------------
 
@@ -34,6 +35,7 @@ Inventory of code we need:
 - 'Give' mechanism (should require consent by receiver)
 - No quests, for simplicity. Use gold as a highscore.
 - Death respawn mechanism
+
 
 Elaboration based on Brainstorm
 -------------------------------
@@ -87,7 +89,7 @@ Elaboration based on Brainstorm
    influences the discount/higher price offered for selling/buying.
 
  * Attacking another player or NPC will start a combat queue.
-   Combat happens in turns. Each turn each player may do two actions,
+   Combat happens in turns. Each turn each player may enter two actions,
    picking among the following:
      - attack
      - parry (with weapon)
@@ -96,6 +98,7 @@ Elaboration based on Brainstorm
      - dodge
      - flee <direction>
      - block (anti-flee)
+     - switch <weapon>
    Emoting is free in each round, but movement is forbidden unless one
    tries to flee (agi challenge, or cancelled by block action).  All
    combattants involved in a fight submits their actions, then combat
@@ -137,3 +140,32 @@ Elaboration based on Brainstorm
    but no loss of gold. Otherwise death is cheap - one respawns at a
    random starting position (probably needing special-aliased rooms to
    use for this - maybe with one-way exits).
+
+
+Rough plan for order of implementation
+--------------------------------------
+
+1) Conflict resolution system - work out how basic challenges should work, what format ingoing Skills
+   should have and how generic bonuses from attributes and equipment affect things. Make a generic
+   API for it. Try to list all supported plus/minues equipment may offer.
+2) Using skills - create XP and automatic skill improvement code
+3) Define new Character typeclass that stores skills/attributes in a way that the conflict
+   system understands. Chars should also have the ability to "wear" things, so some
+   sort of slot system is needed. Gold needs to be stored in a separate variable.
+4) Create "sell/buy" command stump, for testing the Skill resolution code with fixed on-character values.
+5) Create Combat queue code for turn-taking combat. Reiterate so that it works with the generic form of
+   Skills and conflict resolution.
+6) Create all included skills and their associated commands.
+7) Test commands manually with two PC characters in the Combat queue and in other challenge situations.
+8) Create loot-creation mechanism based on equipment lists, for spawning semi-random items and gear.
+9) Create Death-respawn mechanism, including loss of equipment and transfer of same to the winner.
+10) Create NPC/mobile object runner Script. Use a copy of Character typeclass for mobiles, except some
+    automation hooks and AI states. Tie loot creation to the death of NPCs.
+11) Test PC vs NPC combat and other challenges.
+12) Create merchants as interactive, immortal NPCs with the "barter" skill.
+13) Create Character creation module, for assigning attributes/skills when first starting.
+    Add appropriate commands to ooccmdset.
+14) Add "give" command to command set. Remove unused commands like "drop" (or make it admin-only). Possibly
+    expand "look" command to allow to look across exits into the next room. Also add "highscore" command for
+    viewing game statistics.
+15) <starting building of game world>
