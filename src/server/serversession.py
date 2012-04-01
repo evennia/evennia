@@ -272,7 +272,10 @@ class ServerSession(Session):
         if self.logged_in and hasattr(self, "player") and self.player:
             symbol = "(#%s)" % self.player.id
         try:
-            address = ":".join([str(part) for part in self.address])
+            if hasattr(self.address, '__iter__'):
+                address = ":".join([str(part) for part in self.address])
+            else:
+                address = self.address
         except Exception:
             address = self.address
         return "%s%s@%s" % (self.uname, symbol, address)

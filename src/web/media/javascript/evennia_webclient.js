@@ -40,7 +40,7 @@ $.fn.appendCaret = function() {
     /* jQuery extension that will forward the caret to the end of the input, and
        won't harm other elements (although calling this on multiple inputs might
        not have the expected consequences).
-       
+
        Thanks to
        http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
        for the good starting point.  */
@@ -58,7 +58,7 @@ $.fn.appendCaret = function() {
             setTimeout(function() {
                 self.setSelectionRange(end, end);
             }, 0);
-        } 
+        }
         else if (self.createTextRange) {
             // IE
             end = self.value.length - 1;
@@ -105,9 +105,10 @@ function webclient_receive(){
     });
 };
 
-function webclient_input(arg){
+function webclient_input(arg, no_update){
     // Send an input from the player to the server
-    
+    // no_update is used for sending idle messages behind the scenes.
+
     var outmsg = typeof(arg) != 'undefined' ? arg : $("#inputfield").val();
 
     $.ajax({
@@ -122,9 +123,11 @@ function webclient_input(arg){
 
         success: function(data){
             //if (outmsg.length > 0 ) msg_display("inp", outmsg) // echo input on command line
-            history_add(outmsg);
-            HISTORY_POS = 0;
-            $('#inputform')[0].reset();                     // clear input field
+            if (no_update == undefined) {
+                history_add(outmsg);
+                HISTORY_POS = 0;
+                $('#inputform')[0].reset();                     // clear input field
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             msg_display("err", "Error: Server returned an error or timed out. Try resending or reloading the page.");
@@ -235,7 +238,7 @@ $(document).keydown( function(event) {
     // Get the pressed key (normalized by jQuery)
     var code = event.which,
         inputField = $("#inputfield");
-        
+
     // always focus input field no matter which key is pressed
     inputField.focus();
 
@@ -284,7 +287,7 @@ $(document).ready(function(){
     }, 500);
     // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
     setInterval(function() {
-        webclient_input("idle");
+        webclient_input("idle", true);
     }, 60000*3);
 });
 
