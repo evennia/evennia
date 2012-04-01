@@ -216,7 +216,7 @@ if os.name == 'nt':
     created for you. This is a simple batch file that tries to call
     the twisted executable. Evennia determined this to be:
 
-       %{twistd_path}s
+       %(twistd_path)s
 
     If you run into errors at startup you might need to edit
     twistd.bat to point to the actual location of the Twisted
