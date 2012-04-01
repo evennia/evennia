@@ -21,7 +21,9 @@ That's it. The cmdset in this module will now be used instead of the
 default one.
 
 The initial login "graphic" is taken from strings in the module given
-by settings.CONNECTION_SCREEN_MODULE. You will want to edit the string
+by settings.CONNECTION_SCREEN_MODULE. You will want to copy the
+template file in game/gamesrc/conf/examples up one level and re-point
+the settings file to this custom module. you can then edit the string
 in that module (at least comment out the default string that mentions
 commands that are not available) and add something more suitable for
 the initial splash screen.
