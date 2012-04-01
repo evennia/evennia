@@ -174,8 +174,11 @@ def create_admin_media_links():
         os.mkdir(apath)
         os.system('xcopy "%s" "%s" /e /q /c' % (dpath, apath))
     if os.name == 'posix':
-        os.symlink(dpath, apath)
-        print _(" Admin-media symlinked to ADMIN_MEDIA_ROOT.")
+        try:
+            os.symlink(dpath, apath)
+            print _(" Admin-media symlinked to ADMIN_MEDIA_ROOT.")
+        except OSError:
+            print _(" There was an error symlinking Admin-media to ADMIN_MEDIA_ROOT. If you see issues, link manually.")
     else:
         print _(" Admin-media files should be copied manually to ADMIN_MEDIA_ROOT.")
 
