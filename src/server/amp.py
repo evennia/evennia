@@ -20,7 +20,7 @@ try:
 except ImportError:
     import pickle
 from twisted.protocols import amp
-from twisted.internet import protocol, defer
+from twisted.internet import protocol
 from django.conf import settings
 from src.utils.utils import to_str
 
@@ -303,7 +303,7 @@ class AMPProtocol(amp.AMP):
                         sessid=sessid,
                         data=dumps(data)).addErrback(self.errback, "OOBPortal2Server")
 
-    # Server -> Portal message
+    # OOB Server -> Portal message
 
     def amp_oob_server2portal(self, sessid, data):
         """
@@ -316,7 +316,7 @@ class AMPProtocol(amp.AMP):
 
     def call_remote_OOBServer2Portal(self, sessid, data=""):
         """
-        Access method called by the Server and executed on the Server.
+        Access method called by the Server and executed on the Portal.
         """
         #print "oob server->portal (server side):", sessid, data
         self.callRemote(OOBServer2Portal,

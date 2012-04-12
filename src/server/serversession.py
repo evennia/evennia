@@ -193,7 +193,6 @@ class ServerSession(Session):
         # all other inputs, including empty inputs
         character = self.get_character()
 
-
         if character:
             character.execute_cmd(command_string)
         else:
@@ -211,7 +210,6 @@ class ServerSession(Session):
         Send Evennia -> Player
         """
         self.sessionhandler.data_out(self, msg, data)
-
 
     def oob_data_in(self, data):
         """
@@ -285,7 +283,6 @@ class ServerSession(Session):
         Unicode representation
         """
         return u"%s" % str(self)
-
 
     # easy-access functions
 

@@ -7,7 +7,7 @@ sessions etc.
 
 """
 
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, DO, DONT
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
 from src.server.session import Session
 from src.server import ttype, mssp
 from src.server.mccp import Mccp, mccp_compress, MCCP
@@ -27,10 +27,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # initialize the session
         client_address = self.transport.client
         self.init_session("telnet", client_address, self.factory.sessionhandler)
-
         # negotiate mccp (data compression)
         self.mccp = Mccp(self)
-
         # negotiate ttype (client info)
         self.ttype = ttype.Ttype(self)
 
@@ -142,7 +140,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.sendLine(str(e))
             return
         ttype = self.protocol_flags.get('TTYPE', {})
-        nomarkup = not (ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))
+        nomarkup = not (ttype or ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))
         raw = False
         if type(data) == dict:
             # check if we want escape codes to go through unparsed.
