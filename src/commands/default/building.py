@@ -3,7 +3,6 @@
 Building and world design commands
 
 """
-
 from django.conf import settings
 from src.objects.models import ObjectDB, ObjAttribute
 from src.players.models import PlayerAttribute
@@ -19,7 +18,6 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
            "CmdScript")
-
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -1139,6 +1137,7 @@ class CmdOpen(ObjManipCommand):
             back_exit_typeclass = self.lhs_objs[1]['option']
             ok = self.create_exit(back_exit_name, destination, location, back_exit_aliases, back_exit_typeclass)
 
+
 class CmdSetAttribute(ObjManipCommand):
     """
     @set - set attributes
@@ -1176,6 +1175,7 @@ class CmdSetAttribute(ObjManipCommand):
         comparisons later (e.g.  obj.db.value = 2, if value is stored as a
         string this will always fail).
         """
+
         def rec_convert(obj):
             """
             Helper function of recursive conversion calls.
@@ -1198,7 +1198,14 @@ class CmdSetAttribute(ObjManipCommand):
                              for pair in obj[1:-1].split(',') if ":" in pair])
             # if nothing matches, return as-is
             return obj
-        return rec_convert(strobj.strip())
+
+        try:
+            # under python 2.6, literal_eval can do this for us.
+            from ast import literal_eval
+            return literal_eval(strobj)
+        except ImportError:
+            # fall back to old recursive solution (don't support nested lists/dicts)
+            return rec_convert(strobj.strip())
 
     def func(self):
         "Implement the set attribute - a limited form of @py."
@@ -1315,7 +1322,6 @@ class CmdTypeclass(MuxCommand):
             caller.msg("This object cannot have a type at all!")
             return
 
-        old_path = obj.typeclass_path
         if obj.is_typeclass(typeclass) and not 'force' in self.switches:
             string = "%s already has the typeclass '%s'." % (obj.name, typeclass)
         else:
