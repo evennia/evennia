@@ -25,6 +25,16 @@ MTTS = [(128,'PROXY'),
         (4, 'UTF-8'),
         (2, 'VT100'),
         (1, 'ANSI')]
+# some clients sends erroneous strings instead
+# of capability numbers. We try to convert back.
+MTTS_invert = {"PROXY":128,
+               "SCREEN COLOR PALETTE":64,
+               "OSC COLOR PALETTE": 32,
+               "MOUSE TRACKING": 16,
+               "256 COLORS": 8,
+               "UTF-8": 4,
+               "VT100": 2,
+               "ANSI": 1}
 
 class Ttype(object):
     """
@@ -81,7 +91,17 @@ class Ttype(object):
                 self.protocol.protocol_flags['TTYPE']['TERM'] = option
                 self.protocol.requestNegotiation(TTYPE, SEND)
             elif self.ttype_step == 4:
-                option = int(option.strip('MTTS '))
+                try:
+                    option = int(option.strip('MTTS '))
+                except ValueError:
+                    # it seems some clients don't send MTTS according to protocol
+                    # specification, but instead just sends the data as plain
+                    # strings. We try to convert back.
+                    option = MTTS_invert.get(option.strip('MTTS ').upper())
+                    if not option:
+                        # no conversion possible. Give up.
+                        self.protocol.protocol_flags['TTYPE']['init_done'] = True
+                        return
                 self.protocol.protocol_flags['TTYPE']['MTTS'] = option
                 for codenum, standard in MTTS:
                     if option == 0:

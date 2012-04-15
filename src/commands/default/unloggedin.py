@@ -24,8 +24,7 @@ try:
 except Exception:
     pass
 if not CONNECTION_SCREEN:
-    CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE. Connect screen not found. Enter 'help' for aid."
-
+    CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
 
 class CmdUnconnectedConnect(MuxCommand):
     """

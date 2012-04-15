@@ -11,7 +11,7 @@ from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
 from src.server.session import Session
 from src.server import ttype, mssp
 from src.server.mccp import Mccp, mccp_compress, MCCP
-from src.utils import utils, ansi
+from src.utils import utils, ansi, logger
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -25,6 +25,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         established.
         """
         # initialize the session
+        self.iaw_mode = False
         client_address = self.transport.client
         self.init_session("telnet", client_address, self.factory.sessionhandler)
         # negotiate mccp (data compression)
@@ -76,26 +77,32 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         This method will split the incoming data depending on if it
         starts with IAC (a telnet command) or not. All other data will
-        be handled in line mode.
+        be handled in line mode. Some clients also sends an erroneous
+        line break after IAC, which we must watch out for.
         """
-        print "dataRcv (%s):" % data,
-        try:
-            for b in data:
-                print ord(b),
-            print ""
-        except Exception, e:
-            print str(e) + ":", str(data)
+        #print "dataRcv (%s):" % data,
+        #try:
+        #    for b in data:
+        #        print ord(b),
+        #    print ""
+        #except Exception, e:
+        #    print str(e) + ":", str(data)
 
-        if data and data[0] == IAC:
+        if data and data[0] == IAC or self.iaw_mode:
             try:
-                print "IAC mode"
+                #print "IAC mode"
                 super(TelnetProtocol, self).dataReceived(data)
+                if len(data) == 1:
+                    self.iaw_mode = True
+                else:
+                    self.iaw_mode = False
                 return
             except Exception:
-                pass
+                logger.log_trace()
         # if we get to this point the command must end with a linebreak.
-        #data = data.rstrip("\r\n") + "\r\n"
-        print "line mode: (%s)" % data
+        # We make sure to add it, to fix some clients messing this up.
+        data = data.rstrip("\r\n") + "\r\n"
+        #print "line mode: (%s)" % data
         StatefulTelnetProtocol.dataReceived(self, data)
 
     def _write(self, data):
