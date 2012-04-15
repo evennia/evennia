@@ -41,7 +41,7 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger, utils
-from src.utils.utils import make_iter, is_iter, has_parent, to_unicode, to_str
+from src.utils.utils import make_iter, is_iter, to_unicode, to_str
 
 __all__ = ("Attribute", "TypeNick", "TypedObject")
 
@@ -1447,3 +1447,11 @@ class TypedObject(SharedMemoryModel):
             return any(True for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                        if hperm in [p.lower() for p in self.permissions] and hpos > ppos)
         return False
+
+    def flush_from_cache(self):
+        """
+        Flush this object instance from cache, forcing an object reload. Note that this
+        will kill all temporary attributes on this object since it will be recreated
+        as a new Typeclass instance.
+        """
+        self.__class__.flush_cached_instance(self)
