@@ -17,7 +17,6 @@ transparently through the decorating TypeClass.
 import traceback
 from django.db import models
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
@@ -25,12 +24,11 @@ from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
-from src.server.models import ServerConfig
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_unicode, to_str, mod_import
+from src.utils.utils import make_iter, to_unicode, mod_import
 
 #__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
 
@@ -640,7 +638,7 @@ class ObjectDB(TypedObject):
         if not destination:
             emit_to_obj.msg("The destination doesn't exist.")
             return
-        if destination.destination:
+        if destination.destination and use_destination:
             # traverse exits
             destination = destination.destination
 

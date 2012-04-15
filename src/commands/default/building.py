@@ -1831,11 +1831,12 @@ class CmdTeleport(MuxCommand):
       @tel/switch [<object> =] <location>
 
     Switches:
-      quiet  - don't inform the source and target
-               locations about the move.
+      quiet  - don't echo leave/arrive messages to the source/target
+               locations for the move.
+      intoexit - if target is an exit, teleport INTO
+                 the exit object instead of to its destination
 
-    Teleports an object somewhere. If no object is
-    given we are teleporting ourselves.
+    Teleports an object or yourself somewhere.
     """
     key = "@tel"
     aliases = "@teleport"
@@ -1874,8 +1875,11 @@ class CmdTeleport(MuxCommand):
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
+        use_destination = True
+        if "intoexit" in self.switches:
+            use_destination = False
         # try the teleport
-        if obj_to_teleport.move_to(destination, quiet=tel_quietly, emit_to_obj=caller):
+        if obj_to_teleport.move_to(destination, quiet=tel_quietly, emit_to_obj=caller, use_destination=use_destination):
             if obj_to_teleport == caller:
                 caller.msg("Teleported to %s." % destination.key)
             else:
