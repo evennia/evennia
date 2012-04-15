@@ -55,7 +55,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
                             and (not cmd.arg_regex or
                                  cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
         except Exception:
-            log_trace()
+            log_trace("raw_input:%s" % raw_string)
 
     if not matches:
         # no matches found.

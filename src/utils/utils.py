@@ -6,6 +6,7 @@ be of use when designing your own game.
 
 
 """
+from inspect import ismodule
 import os, sys, imp
 import textwrap
 import datetime
@@ -623,7 +624,7 @@ def variable_from_module(modpath, variable=None, default=None):
         return mod.__dict__.get(variable, default)
     else:
         # random selection
-        mvars = [val for key, val in mod.__dict__.items() if not key.startswith("_")]
+        mvars = [val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))]
         return mvars and random.choice(mvars)
 
 def string_from_module(modpath, variable=None, default=None):

@@ -78,20 +78,24 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         starts with IAC (a telnet command) or not. All other data will
         be handled in line mode.
         """
-        # print "dataRcv:", data,
-        # try:
-        #     for b in data:
-        #         print ord(b),
-        #     print ""
-        # except Exception, e:
-        #     print str(e) + ":", str(data)
+        print "dataRcv (%s):" % data,
+        try:
+            for b in data:
+                print ord(b),
+            print ""
+        except Exception, e:
+            print str(e) + ":", str(data)
 
         if data and data[0] == IAC:
             try:
+                print "IAC mode"
                 super(TelnetProtocol, self).dataReceived(data)
                 return
             except Exception:
                 pass
+        # if we get to this point the command must end with a linebreak.
+        #data = data.rstrip("\r\n") + "\r\n"
+        print "line mode: (%s)" % data
         StatefulTelnetProtocol.dataReceived(self, data)
 
     def _write(self, data):

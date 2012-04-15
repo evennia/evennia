@@ -16,7 +16,6 @@ import time
 from django.conf import settings
 from django.contrib.auth.models import User
 from src.server.models import ServerConfig
-from src.utils import utils
 
 from src.commands.cmdhandler import CMD_LOGINSTART
 
@@ -210,7 +209,7 @@ class ServerSessionHandler(SessionHandler):
                             if sess.logged_in
                             and sess.get_character() == curr_char
                             and sess != curr_session]
-        for sessid in doublet_sessions:
+        for session in doublet_sessions:
             self.disconnect(session, reason)
             self.session_count(-1)
 
@@ -414,6 +413,7 @@ class PortalSessionHandler(SessionHandler):
         in from the protocol to the server. data is
         serialized before passed on.
         """
+        print "portal_data_in:", string
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=string,
                                                               data=data)
@@ -437,6 +437,7 @@ class PortalSessionHandler(SessionHandler):
         """
         OOB (Out-of-band) data Portal -> Server
         """
+        print "portal_oob_data_in:", data
         self.portal.amp_protocol.call_remote_OOBPortal2Server(session.sessid,
                                                               data=data)
 
@@ -444,6 +445,7 @@ class PortalSessionHandler(SessionHandler):
         """
         OOB (Out-of-band) data Server -> Portal
         """
+        print "portal_oob_data_out:", data
         session = self.sessions.get(sessid, None)
         if session:
             session.oob_data_out(data)

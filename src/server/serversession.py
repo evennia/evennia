@@ -55,7 +55,6 @@ class ServerSession(Session):
             self.cmdset = cmdsethandler.CmdSetHandler(self)
             self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
             self.cmdset.update(init_mode=True)
-            self.cmdset.update(init_mode=True)
             return
 
         character = self.get_character()
@@ -192,7 +191,6 @@ class ServerSession(Session):
 
         # all other inputs, including empty inputs
         character = self.get_character()
-
         if character:
             character.execute_cmd(command_string)
         else:
@@ -227,7 +225,6 @@ class ServerSession(Session):
                    "update_counter", (["counter1"], {"now":True}) }
         """
 
-        print "server: "
         outdata = {}
 
         entity = self.get_character()

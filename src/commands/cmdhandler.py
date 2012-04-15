@@ -40,7 +40,6 @@ from traceback import format_exc
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
-from src.commands.cmdsethandler import import_cmdset
 from src.utils import logger, utils
 from src.commands.cmdparser import at_multimatch_cmd
 
@@ -150,7 +149,6 @@ def get_and_merge_cmdsets(caller):
 
     for cset in (cset for cset in local_objects_cmdsets if cset):
         cset.duplicates = cset.old_duplicates
-
     returnValue(cmdset)
 
 
@@ -255,7 +253,6 @@ def cmdhandler(caller, raw_string, testing=False):
                 caller.ndb.last_cmd = yield copy(cmd)
             else:
                 caller.ndb.last_cmd = None
-
             # Done! This returns a deferred. By default, Evennia does
             # not use this at all.
             returnValue(ret)
