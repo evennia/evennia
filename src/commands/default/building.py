@@ -1161,7 +1161,7 @@ class CmdSetAttribute(ObjManipCommand):
     the functionality of certain custom objects).  This is indicated
     by you starting your value with one of {c'{n, {c"{n, {c({n, {c[{n  or {c{ {n.
     Note that you should leave a space after starting a dictionary ('{ ')
-    so as to not confuse the dictionary start with a colour code.
+    so as to not confuse the dictionary start with a colour code like \{g.
     Remember that if you use Python primitives like this, you must
     write proper Python syntax too - notably you must include quotes
     around your strings or you will get an error.
