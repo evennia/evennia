@@ -1153,10 +1153,19 @@ class CmdSetAttribute(ObjManipCommand):
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
     inspects the current value of the attribute
-    (if any). You can also set lists [...] and dicts {...}
-    on attributes with @set (but not nested combinations). Also
-    note that such lists/dicts will always hold strings (never numbers).
-    Use @py if you need to set arbitrary lists and dicts.
+    (if any).
+
+    The most common data to save with this command are strings and
+    numbers. You can however also set Python primities such as lists,
+    dictionaries and tuples on objects (this might be important for
+    the functionality of certain custom objects).  This is indicated
+    by you starting your value with one of {c'{n, {c"{n, {c({n, {c[{n  or {c{ {n.
+    Note that you should leave a space after starting a dictionary ('{ ')
+    so as to not confuse the dictionary start with a colour code.
+    Remember that if you use Python primitives like this, you must
+    write proper Python syntax too - notably you must include quotes
+    around your strings or you will get an error.
+
     """
 
     key = "@set"
@@ -1201,14 +1210,17 @@ class CmdSetAttribute(ObjManipCommand):
                              for pair in obj[1:-1].split(',') if ":" in pair])
             # if nothing matches, return as-is
             return obj
+        if strobj.strip() and strobj.strip()[0] in ("'", '"', "(", "{ ", "["):
+            # this is a structure starting with a proper python structure,
+            # so treat it as such.
+            try:
+                # under python 2.6, literal_eval can do this for us.
+                from ast import literal_eval
+                return literal_eval(strobj)
+            except ImportError:
+                # fall back to old recursive solution (don't support nested lists/dicts)
+                return rec_convert(strobj.strip())
 
-        try:
-            # under python 2.6, literal_eval can do this for us.
-            from ast import literal_eval
-            return literal_eval(strobj)
-        except ImportError:
-            # fall back to old recursive solution (don't support nested lists/dicts)
-            return rec_convert(strobj.strip())
 
     def func(self):
         "Implement the set attribute - a limited form of @py."
@@ -1253,8 +1265,15 @@ class CmdSetAttribute(ObjManipCommand):
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
              for attr in attrs:
-                obj.set_attribute(attr, self.convert_from_string(value))
-                string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
+                try:
+                    obj.set_attribute(attr, self.convert_from_string(value))
+                    string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
+                except SyntaxError:
+                    # this means literal_eval tried to parse a faulty string
+                    string = "{RPython syntax error in your value. By assigning a value starting with"
+                    string += "\none of {r'{R, {r\"{R, {r[{R, {r({R or {r{{R we assume you are entering a proper Python"
+                    string += "\nprimitive such as a list or a dictionary. You must then also use correct"
+                    string += "\nPython syntax. Remember especially to put quotes around all strings.{n"
         # send feedback
         caller.msg(string.strip('\n'))
 
