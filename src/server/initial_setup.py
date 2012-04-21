@@ -58,9 +58,6 @@ def create_objects():
                                          create_character=True,
                                          character_typeclass=character_typeclass)
 
-    if not god_character:
-        raise Exception(_("#1 could not be created. Check the Player/Character typeclass for bugs."))
-
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
@@ -164,7 +161,11 @@ def create_admin_media_links():
     on system.
     """
     import django, os
-    dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'media')
+
+    if django.get_version() < 1.4:
+        dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'media')
+    else:
+        dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'static', 'admin')
     apath = os.path.join(settings.ADMIN_MEDIA_ROOT)
     if os.path.isdir(apath):
         print _(" ADMIN_MEDIA_ROOT already exists. Ignored.")
@@ -177,8 +178,8 @@ def create_admin_media_links():
         try:
             os.symlink(dpath, apath)
             print _(" Admin-media symlinked to ADMIN_MEDIA_ROOT.")
-        except OSError:
-            print _(" There was an error symlinking Admin-media to ADMIN_MEDIA_ROOT. If you see issues, link manually.")
+        except OSError, e:
+            print _(" There was an error symlinking Admin-media to ADMIN_MEDIA_ROOT:\n  %s\n   -> \n  %s\n  (%s)\n  If you see issues, link manually." % (dpath, apath, e))
     else:
         print _(" Admin-media files should be copied manually to ADMIN_MEDIA_ROOT.")
 
@@ -194,7 +195,7 @@ def at_initial_setup():
         return
     try:
         mod = __import__(modname, fromlist=[None])
-    except ImportError, ValueError:
+    except (ImportError, ValueError):
         return
     print _(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):

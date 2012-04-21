@@ -182,13 +182,14 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
-            new_character = create.create_player(playername, email, password,
-                                                 permissions=permissions,
-                                                 character_typeclass=typeclass,
-                                                 character_location=default_home,
-                                                 character_home=default_home)
-            if not new_character:
-                session.msg("There was an error creating the default Character/Player. This error was logged. Contact an admin.")
+            try:
+                new_character = create.create_player(playername, email, password,
+                                                     permissions=permissions,
+                                                     character_typeclass=typeclass,
+                                                     character_location=default_home,
+                                                     character_home=default_home)
+            except Exception, e:
+                session.msg("There was an error creating the default Character/Player:\n%s\n If this problem persists, contact an admin.")
                 return
             new_player = new_character.player
 

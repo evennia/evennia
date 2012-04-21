@@ -951,6 +951,7 @@ class TypedObject(SharedMemoryModel):
         # If we reach this point we couldn't import any typeclasses. Return default. It's up to the calling
         # method to use e.g. self.is_typeclass() to detect that the result is not the one asked for.
         _GA(self, "_display_errmsg")(errstring)
+        _SA(self, "typeclass_lasterrmsg", errstring)
         return _GA(self, "_get_default_typeclass")(cache=False, silent=False, save=False)
 
     #@typeclass.deleter
@@ -960,6 +961,11 @@ class TypedObject(SharedMemoryModel):
 
     # typeclass property
     typeclass = property(__typeclass_get, fdel=__typeclass_del)
+
+    # the last error string will be stored here for accessing methods to access.
+    # It is set by _display_errmsg, which will print to log if error happens
+    # during server startup.
+    typeclass_last_errmsg = ""
 
     def _path_import(self, path):
         """
@@ -973,17 +979,19 @@ class TypedObject(SharedMemoryModel):
             return None
         try:
             modpath, class_name = path.rsplit('.', 1)
-            module =  __import__(modpath, fromlist=[class_name])
+            module =  __import__(modpath, fromlist=["none"])
             return module.__dict__[class_name]
         except ImportError:
             trc = sys.exc_traceback
             if not trc.tb_next:
                 # we separate between not finding the module, and finding a buggy one.
-                errstring += "(Tried path '%s')." % path
+                errstring = "Typeclass not found trying path '%s'." % path
             else:
                 # a bug in the module is reported normally.
                 trc = traceback.format_exc()
-                errstring += "\n%sError importing '%s'." % (trc, path)
+                errstring = "\n%sError importing '%s'." % (trc, path)
+        except (ValueError, TypeError):
+            errstring = "Malformed typeclass path '%s'." % path
         except KeyError:
             errstring = "No class '%s' was found in module '%s'."
             errstring = errstring % (class_name, modpath)
@@ -997,26 +1005,32 @@ class TypedObject(SharedMemoryModel):
         """
         Helper function to display error.
         """
-        infochan = None
-        cmessage = message
-        try:
-            from src.comms.models import Channel
-            infochan = settings.CHANNEL_MUDINFO
-            infochan = Channel.objects.get_channel(infochan[0])
-            if infochan:
-                cname = infochan.key
-                cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n') if line])
-                cmessage = cmessage.strip()
-                infochan.msg(cmessage)
-            else:
-                # no mudinfo channel is found. Log instead.
-                cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
-            logger.log_errmsg(cmessage)
-        except Exception:
-            if ServerConfig.objects.conf("server_starting_mode"):
-                print cmessage
-            else:
-                logger.log_trace(cmessage)
+        if ServerConfig.objects.conf("server_starting_mode"):
+            print message.strip()
+        else:
+            _SA(self, "typeclass_last_errmsg", message.strip())
+        return
+
+        #infochan = None
+        #cmessage = message
+        #try:
+        #    from src.comms.models import Channel
+        #    infochan = settings.CHANNEL_MUDINFO
+        #    infochan = Channel.objects.get_channel(infochan[0])
+        #    if infochan:
+        #        cname = infochan.key
+        #        cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n') if line])
+        #        cmessage = cmessage.strip()
+        #        infochan.msg(cmessage)
+        #    else:
+        #        # no mudinfo channel is found. Log instead.
+        #        cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
+        #    logger.log_errmsg(cmessage)
+        #except Exception:
+        #    if ServerConfig.objects.conf("server_starting_mode"):
+        #        print cmessage
+        #    else:
+        #        logger.log_trace(cmessage)
 
     def _get_default_typeclass(self, cache=False, silent=False, save=False):
         """
@@ -1064,7 +1078,9 @@ class TypedObject(SharedMemoryModel):
         """
         Returns true if this object has this type
           OR has a typeclass which is an subclass of
-          the given typeclass.
+          the given typeclass. This operates on the actually
+          loaded typeclass (this is important since a failing
+          typeclass may instead have its default currently loaded)
 
         typeclass - can be a class object or the
                 python path to such an object to match against.
@@ -1079,7 +1095,7 @@ class TypedObject(SharedMemoryModel):
             pass
         typeclasses = [typeclass] + ["%s.%s" % (path, typeclass) for path in _GA(self, "_typeclass_paths")]
         if exact:
-            current_path = _GA(self, "_cached_db_typeclass_path")
+            current_path = _GA(self.typeclass, "path") #"_GA(self, "_cached_db_typeclass_path")
             return typeclass and any((current_path == typec for typec in typeclasses))
         else:
             # check parent chain
@@ -1158,10 +1174,9 @@ class TypedObject(SharedMemoryModel):
                         self.nattr(nattr, delete=True)
             else:
                 #print "deleting attrs ..."
-                self.get_all_attributes()
                 for attr in self.get_all_attributes():
                     attr.delete()
-                for nattr in self.ndb.all():
+                for nattr in self.ndb.all:
                     del nattr
 
         # run hooks for this new typeclass
@@ -1328,8 +1343,9 @@ class TypedObject(SharedMemoryModel):
                     _GA(self, 'obj').set_attribute(attrname, value)
                 def __delattr__(self, attrname):
                     _GA(self, 'obj').del_attribute(attrname)
-                def all(self):
+                def get_all(self):
                     return _GA(self, 'obj').get_all_attributes()
+                all = property(get_all)
             self._db_holder = DbHolder(self)
             return self._db_holder
     #@db.setter
@@ -1386,9 +1402,10 @@ class TypedObject(SharedMemoryModel):
         except AttributeError:
             class NdbHolder(object):
                 "Holder for storing non-persistent attributes."
-                def all(self):
+                def get_all(self):
                     return [val for val in self.__dict__.keys()
-                            if not val.startswith['_']]
+                            if not val.startswith('_')]
+                all = property(get_all)
                 def __getattribute__(self, key):
                     # return None if no matching attribute was found.
                     try:

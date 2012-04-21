@@ -399,9 +399,8 @@ class CmdCreate(ObjManipCommand):
             # object typeclass will automatically be used)
             lockstring = "control:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards);get:all()" % (caller.id, caller.id)
             obj = create.create_object(typeclass, name, caller,
-                                       home=caller, aliases=aliases, locks=lockstring)
+                                       home=caller, aliases=aliases, locks=lockstring, report_to=caller)
             if not obj:
-                string = "Error when creating object."
                 continue
             if aliases:
                 string = "You create a new %s: %s (aliases: %s)."
@@ -416,8 +415,8 @@ class CmdCreate(ObjManipCommand):
                 if caller.location:
                     obj.home = caller.location
                     obj.move_to(caller.location, quiet=True)
-            if string:
-                caller.msg(string)
+        if string:
+           caller.msg(string)
 
 
 class CmdDebug(MuxCommand):
@@ -630,7 +629,7 @@ class CmdDig(ObjManipCommand):
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
 
         new_room = create.create_object(typeclass, room["name"],
-                                        aliases=room["aliases"])
+                                        aliases=room["aliases"], report_to=caller)
         new_room.locks.add(lockstring)
         alias_string = ""
         if new_room.aliases:
@@ -659,7 +658,7 @@ class CmdDig(ObjManipCommand):
 
                 new_to_exit = create.create_object(typeclass, to_exit["name"], location,
                                                    aliases=to_exit["aliases"],
-                                                   locks=lockstring, destination=new_room)
+                                                   locks=lockstring, destination=new_room, report_to=caller)
                 alias_string = ""
                 if new_to_exit.aliases:
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases)
@@ -684,7 +683,7 @@ class CmdDig(ObjManipCommand):
                     typeclass = settings.BASE_EXIT_TYPECLASS
                 new_back_exit = create.create_object(typeclass, back_exit["name"],
                                                      new_room, aliases=back_exit["aliases"],
-                                                     locks=lockstring, destination=location)
+                                                     locks=lockstring, destination=location, report_to=caller)
                 alias_string = ""
                 if new_back_exit.aliases:
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases)
@@ -1083,7 +1082,7 @@ class CmdOpen(ObjManipCommand):
                 typeclass = settings.BASE_EXIT_TYPECLASS
             exit_obj = create.create_object(typeclass, key=exit_name,
                                             location=location,
-                                            aliases=exit_aliases)
+                                            aliases=exit_aliases, report_to=caller)
             if exit_obj:
                 # storing a destination is what makes it an exit!
                 exit_obj.destination = destination
@@ -1283,9 +1282,9 @@ class CmdTypeclass(MuxCommand):
     @typeclass - set object typeclass
 
     Usage:
-      @typclass[/switch] <object> [= <typeclass path>]
-      @type           ''
-      @parent         ''
+      @typclass[/switch] <object> [= <typeclass.path>]
+      @type                     ''
+      @parent                   ''
 
     Switch:
       reset - clean out *all* the attributes on the object -
@@ -1295,12 +1294,18 @@ class CmdTypeclass(MuxCommand):
     Example:
       @type button = examples.red_button.RedButton
 
-    Sets an object's typeclass. The typeclass must be identified
-    by its location using python dot-notation pointing to the correct
-    module and class. If no typeclass is given (or a wrong typeclass
-    is given), the object will be set to the default typeclass.
-    The location of the typeclass module is searched from
-    the default typeclass directory, as defined in the server settings.
+    View or set an object's typeclass. If setting, the creation hooks
+    of the new typeclass will be run on the object. If you have
+    clashing properties on the old class, use /reset. By default you
+    are protected from changing to a typeclass of the same name as the
+    one you already have, use /force to override this protection.
+
+    The given typeclass must be identified by its location using
+    python dot-notation pointing to the correct module and class. If
+    no typeclass is given (or a wrong typeclass is given). Errors in
+    the path or new typeclass will lead to the old typeclass being
+    kept. The location of the typeclass module is searched from the
+    default typeclass directory, as defined in the server settings.
 
     """
 
@@ -1327,7 +1332,7 @@ class CmdTypeclass(MuxCommand):
             # we did not supply a new typeclass, view the
             # current one instead.
             if hasattr(obj, "typeclass"):
-                string = "%s's current typeclass is '%s'." % (obj.name, obj.typeclass.typename)
+                string = "%s's current typeclass is '%s' (%s)." % (obj.name, obj.typeclass.typename, obj.typeclass.path)
             else:
                 string = "%s is not a typed object." % obj.name
             caller.msg(string)
@@ -1344,25 +1349,31 @@ class CmdTypeclass(MuxCommand):
             caller.msg("This object cannot have a type at all!")
             return
 
-        if obj.is_typeclass(typeclass) and not 'force' in self.switches:
-            string = "%s already has the typeclass '%s'." % (obj.name, typeclass)
+        is_same = obj.is_typeclass(typeclass)
+        if is_same and not 'force' in self.switches:
+            string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, typeclass)
         else:
             reset = "reset" in self.switches
-            old_typeclass_name = obj.typeclass.typename
+            old_typeclass_path = obj.typeclass.path
             ok = obj.swap_typeclass(typeclass, clean_attributes=reset)
             if ok:
-                string = "%s's type is now %s (instead of %s).\n" % (obj.name,
-                                                                     obj.typeclass.typename,
-                                                                     old_typeclass_name)
-                if reset:
-                    string += "All attributes where reset."
+                if is_same:
+                    string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.typeclass.path)
                 else:
-                    string += "Note that the new class type could have overwritten "
-                    string += "same-named attributes on the existing object."
+                    string = "%s's changed typeclass from %s to %s.\n" % (obj.name,
+                                                                         old_typeclass_path,
+                                                                         obj.typeclass.path)
+                string += "Creation hooks were run."
+                if reset:
+                    string += " All old attributes where deleted before the swap."
+                else:
+                    string += " Note that the typeclassed object could have ended up with a mixture of old"
+                    string += "\nand new attributes. Use /reset to remove old attributes if you don't want this."
             else:
-                string = "Could not swap '%s' (%s) to typeclass '%s'." % (obj.name,
-                                                                                  old_typeclass_name,
-                                                                                  typeclass)
+                string = obj.typeclass_last_errmsg
+                string += "\nCould not swap '%s' (%s) to typeclass '%s'." % (obj.name,
+                                                                          old_typeclass_path,
+                                                                          typeclass)
 
         caller.msg(string)
 

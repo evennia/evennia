@@ -323,7 +323,7 @@ class Object(TypeClass):
 
 
         """
-        self.dbobj.swap_typeclass(new_typeclass, clean_attributes=clean_attributes, no_default=no_default)
+        return self.dbobj.swap_typeclass(new_typeclass, clean_attributes=clean_attributes, no_default=no_default)
 
     def access(self, accessing_obj, access_type='read', default=False):
         """

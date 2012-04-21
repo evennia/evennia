@@ -12,6 +12,7 @@ etc.
 """
 import re
 from src.utils.utils import make_iter
+from src.utils import logger
 
 # variables
 MSDP = chr(69)
@@ -24,7 +25,7 @@ MSDP_ARRAY_CLOSE = chr(6)
 
 regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)) # return 2-tuple
 regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
-regex_varval = re.compile(r"%s(.*?)%s(.*?)[%s]" % (MSDP_VAR, MSDP_VAL, ENDING)) # return 2-tuple
+regex_varval = re.compile(r"%s(.*?)%s(.*?)" % (MSDP_VAR, MSDP_VAL)) # return 2-tuple
 
 class Msdp(object):
     """
@@ -111,8 +112,8 @@ class Msdp(object):
             tables[table[0]] = dict(regex_varval(table[1]))
         for array in regex_array.findall(data):
             arrays[array[0]] = dict(regex_varval(array[1]))
-        variables = dict(regex._varval(regex_array.sub("", regex_table.sub("", data))))
-
+        variables = dict(regex_varval(regex_array.sub("", regex_table.sub("", data))))
+        print variables
 
 
     # MSDP Commands
@@ -125,7 +126,7 @@ class Msdp(object):
         The List command allows for retrieving various info about the server/client
         """
         if arg == 'COMMANDS':
-            return self.func_to_msdp(arg, MSDP_COMMANDS.keys())
+            return self.func_to_msdp(arg, self.MSDP_COMMANDS.keys())
         elif arg == 'LISTS':
             return self.func_to_msdp(arg, ("COMMANDS", "LISTS",
                                            "CONFIGURABLE_VARIABLES",
@@ -133,11 +134,11 @@ class Msdp(object):
         elif arg == 'CONFIGURABLE_VARIABLES':
             return self.func_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
         elif arg == 'REPORTABLE_VARIABLES':
-            return self.func_to_msdp(arg, MSDP_REPORTABLE.keys())
+            return self.func_to_msdp(arg, self.MSDP_REPORTABLE.keys())
         elif arg == 'REPORTED_VARIABLES':
-            return self.func_to_msdp(arg, MSDP_REPORTED.keys())
+            return self.func_to_msdp(arg, self.MSDP_REPORTED.keys())
         elif arg == 'SENDABLE_VARIABLES':
-            return self.func_to_msdp(arg, MSDP_SEND.keys())
+            return self.func_to_msdp(arg, self.MSDP_SEND.keys())
         else:
             return self.func_to_msdp("LIST", arg)
 
@@ -147,7 +148,7 @@ class Msdp(object):
         reportable variable to the client.
         """
         try:
-            MSDP_REPORTABLE[arg](report=True)
+            self.MSDP_REPORTABLE[arg](report=True)
         except Exception:
             logger.log_trace()
 
@@ -156,16 +157,16 @@ class Msdp(object):
         Unreport a previously reported variable
         """
         try:
-            MSDP_REPORTABLE[arg](eport=False)
+            self.MSDP_REPORTABLE[arg](eport=False)
         except Exception:
-            logger.log_trace()
+            self.logger.log_trace()
 
     def msdp_cmd_reset(self, arg):
         """
         The reset command resets a variable to its initial state.
         """
         try:
-            MSDP_REPORTABLE[arg](reset=True)
+            self.MSDP_REPORTABLE[arg](reset=True)
         except Exception:
             logger.log_trace()
 
@@ -177,20 +178,21 @@ class Msdp(object):
         arg - this is a list of variables the client wants.
         """
         ret = []
-        for var in makeiter(arg):
+        for var in make_iter(arg):
             try:
-                ret.append(MSDP_REPORTABLE[arg](send=True))
+                ret.append(self.MSDP_REPORTABLE[arg](send=True))
             except Exception:
                 logger.log_trace()
         return ret
 
     MSDP_COMMANDS = {
-        "LIST": self.msdp_list,
+        "LIST": "msdp_list",
         "REPORT":"mspd_report",
         "RESET":"mspd_reset",
         "SEND":"mspd_send",
         "UNREPORT":"mspd_unreport"
         }
+
 
     # MSDP_MAP is a standard suggestions for making it easy to create generic guis.
     # this maps MSDP command names to Evennia commands found in OOB_FUNC_MODULE. It

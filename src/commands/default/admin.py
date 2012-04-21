@@ -16,13 +16,13 @@ from src.commands.default.muxcommand import MuxCommand
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 # limit members for API inclusion
-__all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer", "CmdEmit", "CmdNewPassword", 
+__all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer", "CmdEmit", "CmdNewPassword",
            "CmdPerm", "CmdWall")
 
 
 class CmdBoot(MuxCommand):
     """
-    @boot 
+    @boot
 
     Usage
       @boot[/switches] <player obj> [: reason]
@@ -30,11 +30,11 @@ class CmdBoot(MuxCommand):
     Switches:
       quiet - Silently boot without informing player
       port - boot by port number instead of name or dbref
-      
+
     Boot a player object from the server. If a reason is
-    supplied it will be echoed to the user unless /quiet is set. 
+    supplied it will be echoed to the user unless /quiet is set.
     """
-    
+
     key = "@boot"
     locks = "cmd:perm(boot) or perm(Wizards)"
     help_category = "Admin"
@@ -43,7 +43,7 @@ class CmdBoot(MuxCommand):
         "Implementing the function"
         caller = self.caller
         args = self.args
-        
+
         if not args:
             caller.msg("Usage: @boot[/switches] <player> [:reason]")
             return
@@ -67,12 +67,12 @@ class CmdBoot(MuxCommand):
             # Boot by player object
             pobj = caller.search("*%s" % args, global_search=True, player=True)
             if not pobj:
-                return            
+                return
             if pobj.character.has_player:
                 if not pobj.access(caller, 'boot'):
                     string = "You don't have the permission to boot %s."
                     pobj.msg(string)
-                    return 
+                    return
                 # we have a bootable object with a connected user
                 matches = SESSIONS.sessions_from_player(pobj)
                 for match in matches:
@@ -87,7 +87,7 @@ class CmdBoot(MuxCommand):
 
         # Carry out the booting of the sessions in the boot list.
 
-        feedback = None 
+        feedback = None
         if not 'quiet' in self.switches:
             feedback = "You have been disconnected by %s.\n" % caller.name
             if reason:
@@ -108,16 +108,16 @@ def list_bans(banlist):
     Helper function to display a list of active bans. Input argument
     is the banlist read into the two commands @ban and @undban below.
     """
-    if not banlist: 
+    if not banlist:
         return "No active bans were found."
 
     table = [["id"], ["name/ip"], ["date"], ["reason"]]
     table[0].extend([str(i+1) for i in range(len(banlist))])
-    for ban in banlist: 
-        if ban[0]: 
+    for ban in banlist:
+        if ban[0]:
             table[1].append(ban[0])
-        else: 
-            table[1].append(ban[1])        
+        else:
+            table[1].append(ban[1])
     table[2].extend([ban[3] for ban in banlist])
     table[3].extend([ban[4] for ban in banlist])
     ftable = utils.format_table(table, 4)
@@ -128,8 +128,8 @@ def list_bans(banlist):
             srow = "{w%s{n" % srow.rstrip()
         else:
             srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
-        string += srow.rstrip()        
-    return string 
+        string += srow.rstrip()
+    return string
 
 class CmdBan(MuxCommand):
     """
@@ -137,34 +137,34 @@ class CmdBan(MuxCommand):
 
     Usage:
       @ban [<name or ip> [: reason]]
-      
-    Without any arguments, shows numbered list of active bans. 
-      
+
+    Without any arguments, shows numbered list of active bans.
+
     This command bans a user from accessing the game. Supply an
     optional reason to be able to later remember why the ban was put in
     place
-    
+
     It is often to
     prefer over deleting a player with @delplayer. If banned by name,
     that player account can no longer be logged into.
 
     IP (Internet Protocol) address banning allows to block all access
     from a specific address or subnet. Use the asterisk (*) as a
-    wildcard. 
+    wildcard.
 
-    Examples: 
+    Examples:
       @ban thomas             - ban account 'thomas'
       @ban/ip 134.233.2.111   - ban specific ip address
-      @ban/ip 134.233.2.*     - ban all in a subnet 
-      @ban/ip 134.233.*.*     - even wider ban 
- 
+      @ban/ip 134.233.2.*     - ban all in a subnet
+      @ban/ip 134.233.*.*     - even wider ban
+
     A single IP filter is easy to circumvent by changing the computer
     (also, some ISPs assign only temporary IPs to their users in the
     first placer. Widening the IP block filter with wildcards might be
     tempting, but remember that blocking too much may accidentally
     also block innocent users connecting from the same country and
     region.
-     
+
     """
     key = "@ban"
     aliases = ["@bans"]
@@ -173,25 +173,25 @@ class CmdBan(MuxCommand):
 
     def func(self):
         """
-        Bans are stored in a serverconf db object as a list of 
-        dictionaries: 
+        Bans are stored in a serverconf db object as a list of
+        dictionaries:
           [ (name, ip, ipregex, date, reason),
             (name, ip, ipregex, date, reason),...  ]
         where name and ip are set by the user and are shown in
         lists. ipregex is a converted form of ip where the * is
         replaced by an appropriate regex pattern for fast
         matching. date is the time stamp the ban was instigated and
-        'reason' is any optional info given to the command. Unset 
+        'reason' is any optional info given to the command. Unset
         values in each tuple is set to the empty string.
-        """        
+        """
         banlist = ServerConfig.objects.conf('server_bans')
         if not banlist:
             banlist = []
-        
-        if not self.args or (self.switches 
-                             and not any(switch in ('ip', 'name') for switch in self.switches)): 
+
+        if not self.args or (self.switches
+                             and not any(switch in ('ip', 'name') for switch in self.switches)):
             self.caller.msg(list_bans(banlist))
-            return 
+            return
 
         now = time.ctime()
         reason = ""
@@ -199,13 +199,13 @@ class CmdBan(MuxCommand):
             ban, reason = self.args.rsplit(':',1)
         else:
             ban = self.args
-        ban = ban.lower()        
+        ban = ban.lower()
         ipban = IPREGEX.findall(ban)
         if not ipban:
-            # store as name 
+            # store as name
             typ = "Name"
-            bantup = (ban, "", "", now, reason)            
-        else: 
+            bantup = (ban, "", "", now, reason)
+        else:
             # an ip address.
             typ = "IP"
             ban = ipban[0]
@@ -215,16 +215,16 @@ class CmdBan(MuxCommand):
             print "regex:",ipregex
             ipregex = re.compile(r"%s" % ipregex)
             bantup = ("", ban, ipregex, now, reason)
-        # save updated banlist 
+        # save updated banlist
         banlist.append(bantup)
-        ServerConfig.objects.conf('server_bans', banlist)        
+        ServerConfig.objects.conf('server_bans', banlist)
         self.caller.msg("%s-Ban {w%s{x was added." % (typ, ban))
 
-class CmdUnban(MuxCommand): 
+class CmdUnban(MuxCommand):
     """
     remove a ban
 
-    Usage: 
+    Usage:
       @unban <banid>
 
     This will clear a player name/ip ban previously set with the @ban
@@ -236,26 +236,26 @@ class CmdUnban(MuxCommand):
     key = "@unban"
     locks = "cmd:perm(unban) or perm(Immortals)"
     help_category="Admin"
-    
+
     def func(self):
         "Implement unbanning"
 
         banlist = ServerConfig.objects.conf('server_bans')
 
-        if not self.args: 
+        if not self.args:
             self.caller.msg(list_bans(banlist))
-            return 
+            return
 
-        try: 
+        try:
             num = int(self.args)
         except Exception:
             self.caller.msg("You must supply a valid ban id to clear.")
-            return 
+            return
 
-        if not banlist: 
+        if not banlist:
             self.caller.msg("There are no bans to clear.")
         elif not (0 < num < len(banlist) + 1):
-            self.caller.msg("Ban id {w%s{x was not found." % self.args)            
+            self.caller.msg("Ban id {w%s{x was not found." % self.args)
         else:
             # all is ok, clear ban
             ban = banlist[num-1]
@@ -263,20 +263,20 @@ class CmdUnban(MuxCommand):
             ServerConfig.objects.conf('server_bans', banlist)
             self.caller.msg("Cleared ban %s: %s" % (num, " ".join([s for s in ban[:2]])))
 
-        
+
 class CmdDelPlayer(MuxCommand):
     """
     delplayer - delete player from server
 
     Usage:
       @delplayer[/switch] <name> [: reason]
-      
+
     Switch:
       delobj - also delete the player's currently
-               assigned in-game object.   
+               assigned in-game object.
 
     Completely deletes a user from the server database,
-    making their nick and e-mail again available.    
+    making their nick and e-mail again available.
     """
 
     key = "@delplayer"
@@ -287,10 +287,10 @@ class CmdDelPlayer(MuxCommand):
         "Implements the command."
 
         caller = self.caller
-        args = self.args 
+        args = self.args
 
         if hasattr(caller, 'player'):
-            caller = caller.player 
+            caller = caller.player
 
         if not args:
             caller.msg("Usage: @delplayer[/delobj] <player/user name or #id> [: reason]")
@@ -309,26 +309,26 @@ class CmdDelPlayer(MuxCommand):
             except ValueError:
                 pass
 
-        if not players:            
+        if not players:
             # try to find a user instead of a Player
             try:
                 user = User.objects.get(id=args)
-            except Exception:            
+            except Exception:
                 try:
-                    user = User.objects.get(username__iexact=args)                        
+                    user = User.objects.get(username__iexact=args)
                 except Exception:
                     string = "No Player nor User found matching '%s'." % args
                     caller.msg(string)
-                    return                     
+                    return
             try:
                 player = user.get_profile()
             except Exception:
-                player = None 
-                                
+                player = None
+
             if player and not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete this player."
                 caller.msg(string)
-                return 
+                return
 
             string = ""
             name = user.username
@@ -340,13 +340,13 @@ class CmdDelPlayer(MuxCommand):
             else:
                 string += "The User %s was deleted. It had no Player associated with it." % name
             caller.msg(string)
-            return 
-    
+            return
+
         elif utils.is_iter(players):
             string = "There were multiple matches:"
             for player in players:
-                string += "\n %s %s" % (player.id, player.key) 
-            return 
+                string += "\n %s %s" % (player.id, player.key)
+            return
         else:
             # one single match
 
@@ -357,10 +357,10 @@ class CmdDelPlayer(MuxCommand):
             if not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete that player."
                 caller.msg(string)
-                return 
+                return
 
             uname = user.username
-            # boot the player then delete 
+            # boot the player then delete
             if character and character.has_player:
                 caller.msg("Booting and informing player ...")
                 string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
@@ -368,30 +368,30 @@ class CmdDelPlayer(MuxCommand):
                     string += " Reason given:\n  '%s'" % reason
                 character.msg(string)
                 caller.execute_cmd("@boot %s" % uname)
-                
+
             player.delete()
-            user.delete()    
+            user.delete()
             caller.msg("Player %s was successfully deleted." % uname)
 
 
-class CmdEmit(MuxCommand):                    
+class CmdEmit(MuxCommand):
     """
     @emit
 
     Usage:
       @emit[/switches] [<obj>, <obj>, ... =] <message>
-      @remit           [<obj>, <obj>, ... =] <message> 
-      @pemit           [<obj>, <obj>, ... =] <message> 
+      @remit           [<obj>, <obj>, ... =] <message>
+      @pemit           [<obj>, <obj>, ... =] <message>
 
     Switches:
       room : limit emits to rooms only (default)
-      players : limit emits to players only 
+      players : limit emits to players only
       contents : send to the contents of matched objects too
-      
+
     Emits a message to the selected objects or to
     your immediate surroundings. If the object is a room,
-    send to its contents. @remit and @pemit are just 
-    limited forms of @emit, for sending to rooms and 
+    send to its contents. @remit and @pemit are just
+    limited forms of @emit, for sending to rooms and
     to players respectively.
     """
     key = "@emit"
@@ -401,7 +401,7 @@ class CmdEmit(MuxCommand):
 
     def func(self):
         "Implement the command"
-        
+
         caller = self.caller
         args = self.args
 
@@ -411,12 +411,12 @@ class CmdEmit(MuxCommand):
             string += "\n@remit           [<obj>, <obj>, ... =] <message>"
             string += "\n@pemit           [<obj>, <obj>, ... =] <message>"
             caller.msg(string)
-            return 
+            return
 
         rooms_only = 'rooms' in self.switches
         players_only = 'players' in self.switches
         send_to_contents = 'contents' in self.switches
-        
+
         # we check which command was used to force the switches
         if self.cmdstring == '@remit':
             rooms_only = True
@@ -429,12 +429,12 @@ class CmdEmit(MuxCommand):
         else:
             message = self.rhs
             objnames = self.lhslist
-            
+
         # send to all objects
         for objname in objnames:
             obj = caller.search(objname, global_search=True)
             if not obj:
-                return 
+                return
             if rooms_only and not obj.location == None:
                 caller.msg("%s is not a room. Ignored." % objname)
                 continue
@@ -463,7 +463,7 @@ class CmdNewPassword(MuxCommand):
 
     Set a player's password.
     """
-    
+
     key = "@userpassword"
     locks = "cmd:perm(newpassword) or perm(Wizards)"
     help_category = "Admin"
@@ -475,12 +475,12 @@ class CmdNewPassword(MuxCommand):
 
         if not self.rhs:
             caller.msg("Usage: @userpassword <user obj> = <new password>")
-            return 
-        
-        # the player search also matches 'me' etc. 
-        player = caller.search("*%s" % self.lhs, global_search=True, player=True)            
+            return
+
+        # the player search also matches 'me' etc.
+        player = caller.search("*%s" % self.lhs, global_search=True, player=True)
         if not player:
-            return     
+            return
         player.user.set_password(self.rhs)
         player.user.save()
         caller.msg("%s - new password set to '%s'." % (player.name, self.rhs))
@@ -495,12 +495,12 @@ class CmdPerm(MuxCommand):
     Usage:
       @perm[/switch] <object> [= <permission>[,<permission>,...]]
       @perm[/switch] *<player> [= <permission>[,<permission>,...]]
-      
+
     Switches:
       del : delete the given permission from <object> or <player>.
       player : set permission on a player (same as adding * to name)
 
-    This command sets/clears individual permission strings on an object 
+    This command sets/clears individual permission strings on an object
     or player. If no permission is given, list all permissions on <object>.
     """
     key = "@perm"
@@ -515,19 +515,19 @@ class CmdPerm(MuxCommand):
         switches = self.switches
         lhs, rhs = self.lhs, self.rhs
 
-        if not self.args:            
-            string = "Usage: @perm[/switch] object [ = permission, permission, ...]" 
+        if not self.args:
+            string = "Usage: @perm[/switch] object [ = permission, permission, ...]"
             caller.msg(string)
             return
-        
+
         playermode = 'player' in self.switches or lhs.startswith('*')
-        
-        # locate the object        
+
+        # locate the object
         obj = caller.search(lhs, global_search=True, player=playermode)
         if not obj:
-            return         
-                
-        if not rhs: 
+            return
+
+        if not rhs:
             if not obj.access(caller, 'examine'):
                 caller.msg("You are not allowed to examine this object.")
                 return
@@ -539,15 +539,15 @@ class CmdPerm(MuxCommand):
                 string += ", ".join(obj.permissions)
                 if hasattr(obj, 'player') and hasattr(obj.player, 'is_superuser') and obj.player.is_superuser:
                     string += "\n(... but this object is currently controlled by a SUPERUSER! "
-                    string += "All access checks are passed automatically.)"            
+                    string += "All access checks are passed automatically.)"
             caller.msg(string)
-            return 
-            
+            return
+
         # we supplied an argument on the form obj = perm
 
         if not obj.access(caller, 'control'):
             caller.msg("You are not allowed to edit this object's permissions.")
-            return         
+            return
 
         cstring = ""
         tstring = ""
@@ -561,24 +561,24 @@ class CmdPerm(MuxCommand):
                     continue
                 permissions = obj.permissions
                 del permissions[index]
-                obj.permissions = permissions 
+                obj.permissions = permissions
                 cstring += "\nPermission '%s' was removed from %s." % (perm, obj.name)
                 tstring += "\n%s revokes the permission '%s' from you." % (caller.name, perm)
         else:
-            # add a new permission             
+            # add a new permission
             permissions = obj.permissions
 
-            caller.permissions 
-            
+            caller.permissions
+
 
 
             for perm in self.rhslist:
-                
+
                 # don't allow to set a permission higher in the hierarchy than the one the
                 # caller has (to prevent self-escalation)
                 if perm.lower() in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm):
                     caller.msg("You cannot assign a permission higher than the one you have yourself.")
-                    return 
+                    return
 
                 if perm in permissions:
                     cstring += "\nPermission '%s' is already defined on %s." % (rhs, obj.name)
@@ -586,7 +586,7 @@ class CmdPerm(MuxCommand):
                     permissions.append(perm)
                     obj.permissions = permissions
                     cstring += "\nPermission '%s' given to %s." % (rhs, obj.name)
-                    tstring += "\n%s gives you the permission '%s'." % (caller.name, rhs)        
+                    tstring += "\n%s gives you the permission '%s'." % (caller.name, rhs)
         caller.msg(cstring.strip())
         if tstring:
             obj.msg(tstring.strip())
@@ -597,7 +597,7 @@ class CmdWall(MuxCommand):
 
     Usage:
       @wall <message>
-      
+
     Announces a message to all connected players.
     """
     key = "@wall"

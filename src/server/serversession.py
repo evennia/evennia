@@ -244,6 +244,7 @@ class ServerSession(Session):
             else:
                 logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % funcname)
         if outdata:
+            # we have a result, send it back
             self.oob_data_out(outdata)
 
 

@@ -8,14 +8,12 @@ import traceback
 import os, datetime, time
 import django, twisted
 
-from django.contrib.auth.models import User
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
-from src.server.models import ServerConfig
-from src.utils import create, logger, utils, gametime
+from src.utils import logger, utils, gametime
 from src.commands.default.muxcommand import MuxCommand
 
 # limit symbol import for API
@@ -40,7 +38,7 @@ class CmdReload(MuxCommand):
 
     def func(self):
         """
-        Reload the system. 
+        Reload the system.
         """
         SESSIONS.announce_all(" Server restarting ...")
         SESSIONS.server.shutdown(mode='reload')
@@ -64,7 +62,7 @@ class CmdReset(MuxCommand):
 
     def func(self):
         """
-        Reload the system. 
+        Reload the system.
         """
         SESSIONS.announce_all(" Server restarting ...")
         SESSIONS.server.shutdown(mode='reset')
@@ -101,7 +99,7 @@ class CmdShutdown(MuxCommand):
 
 class CmdPy(MuxCommand):
     """
-    Execute a snippet of python code 
+    Execute a snippet of python code
 
     Usage:
       @py <cmd>
@@ -110,10 +108,10 @@ class CmdPy(MuxCommand):
     available for convenience in order to offer access to the system
     (you can import more at execution time).
 
-    Available variables in @py environment: 
+    Available variables in @py environment:
       self, me                   : caller
       here                       : caller.location
-      ev                         : the evennia API       
+      ev                         : the evennia API
       inherits_from(obj, parent) : check object inheritance
 
     {rNote: In the wrong hands this command is a severe security risk.
@@ -160,7 +158,7 @@ class CmdPy(MuxCommand):
         caller.msg(ret)
 
 # helper function. Kept outside so it can be imported and run
-# by other commands. 
+# by other commands.
 
 def format_script_list(scripts):
     "Takes a list of scripts and formats the output."
@@ -216,7 +214,7 @@ class CmdScripts(MuxCommand):
 
     Usage:
       @scripts[/switches] [<obj or scriptid>]
-      
+
     Switches:
       stop - stops an existing script
       kill - kills a script - without running its cleanup hooks
@@ -232,7 +230,7 @@ class CmdScripts(MuxCommand):
     aliases = "@listscripts"
     locks = "cmd:perm(listscripts) or perm(Wizards)"
     help_category = "System"
-    
+
     def func(self):
         "implement method"
 
@@ -247,7 +245,7 @@ class CmdScripts(MuxCommand):
             if not scripts:
                 # try to find an object instead.
                 objects = ObjectDB.objects.object_search(args, caller=caller, global_search=True)
-                if objects:                    
+                if objects:
                     scripts = []
                     for obj in objects:
                         # get all scripts on the object(s)
@@ -267,7 +265,7 @@ class CmdScripts(MuxCommand):
                 string = "No scripts/objects matching '%s'. " % args
                 string += "Be more specific."
             elif len(scripts) == 1:
-                # we have a unique match! 
+                # we have a unique match!
                 if 'kill' in self.switches:
                     string = "Killing script '%s'" % scripts[0].key
                     scripts[0].stop(kill=True)
@@ -300,8 +298,8 @@ class CmdObjects(MuxCommand):
     Usage:
       @objects [<nr>]
 
-    Gives statictics on objects in database as well as 
-    a list of <nr> latest objects in database. If not 
+    Gives statictics on objects in database as well as
+    a list of <nr> latest objects in database. If not
     given, <nr> defaults to 10.
     """
     key = "@objects"
@@ -379,7 +377,7 @@ class CmdService(MuxCommand):
       list   - shows all available services (default)
       start  - activates a service
       stop   - stops a service
-      
+
     Service management system. Allows for the listing,
     starting, and stopping of services. If no switches
     are given, services will be listed.
@@ -487,8 +485,8 @@ class CmdTime(MuxCommand):
     @time
 
     Usage:
-      @time 
-    
+      @time
+
     Server local time.
     """
     key = "@time"
@@ -498,12 +496,12 @@ class CmdTime(MuxCommand):
 
     def func(self):
         "Show times."
-        
+
         table = [["Current server uptime:",
                   "Total server running time:",
                   "Total in-game time (realtime x %g):" % (gametime.TIMEFACTOR),
                   "Server time stamp:"
-                  ],                 
+                  ],
                  [utils.time_format(time.time() - SESSIONS.server.start_time, 3),
                   utils.time_format(gametime.runtime(format=False), 2),
                   utils.time_format(gametime.gametime(format=False), 2),
@@ -523,13 +521,13 @@ class CmdTime(MuxCommand):
         self.caller.msg(string)
 
 class CmdServerLoad(MuxCommand):
-    """ 
+    """
     server load statistics
 
     Usage:
        @serverload
 
-    Show server load statistics in a table. 
+    Show server load statistics in a table.
     """
     key = "@serverload"
     locks = "cmd:perm(list) or perm(Immortals)"
@@ -607,9 +605,9 @@ class CmdServerLoad(MuxCommand):
 # class CmdPs(MuxCommand):
 #     """
 #     list processes
-    
+
 #     Usage
-#       @ps 
+#       @ps
 
 #     Shows the process/event table.
 #     """
