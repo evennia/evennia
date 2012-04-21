@@ -28,8 +28,8 @@ from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
 
-#------------------------------------------------------------ 
-# Command testing 
+#------------------------------------------------------------
+# Command testing
 # ------------------------------------------------------------
 
 # print all feedback from test commands (can become very verbose!)
@@ -38,10 +38,10 @@ VERBOSE = False
 
 def cleanup():
     User.objects.all().delete()
-    PlayerDB.objects.all().delete() 
+    PlayerDB.objects.all().delete()
     ObjectDB.objects.all().delete()
     Channel.objects.all().delete()
-    Msg.objects.all().delete() 
+    Msg.objects.all().delete()
     PlayerChannelConnection.objects.all().delete()
     ExternalChannelConnection.objects.all().delete()
     ServerConfig.objects.all().delete()
@@ -63,25 +63,25 @@ class FakeSessionHandler(sessionhandler.ServerSessionHandler):
 
 SESSIONS = FakeSessionHandler()
 
-class FakeSession(serversession.ServerSession): 
-    """ 
+class FakeSession(serversession.ServerSession):
+    """
     A fake session that
     implements dummy versions of the real thing; this is needed to
-    mimic a logged-in player.  
-    """ 
+    mimic a logged-in player.
+    """
     protocol_key = "TestProtocol"
-    sessdict = {'protocol_key':'telnet', 'address':('0.0.0.0','5000'), 'sessid':2, 'uid':2, 'uname':None, 
-                'logged_in':False, 'cid':None, 'ndb':{}, 'encoding':'utf-8', 
-                'conn_time':time.time(), 'cmd_last':time.time(), 'cmd_last_visible':time.time(), 'cmd_total':1}  
-    
+    sessdict = {'protocol_key':'telnet', 'address':('0.0.0.0','5000'), 'sessid':2, 'uid':2, 'uname':None,
+                'logged_in':False, 'cid':None, 'ndb':{}, 'encoding':'utf-8',
+                'conn_time':time.time(), 'cmd_last':time.time(), 'cmd_last_visible':time.time(), 'cmd_total':1}
+
     def connectionMade(self):
         self.load_sync_data(self.sessdict)
         self.sessionhandler = SESSIONS
-    def disconnectClient(self): 
-        pass 
-    def lineReceived(self, raw_string): 
-        pass 
-    def msg(self, message, data=None):             
+    def disconnectClient(self):
+        pass
+    def lineReceived(self, raw_string):
+        pass
+    def msg(self, message, data=None):
         if message.startswith("Traceback (most recent call last):"):
             #retval = "Traceback last line: %s" % message.split('\n')[-4:]
             raise AssertionError(message)
@@ -97,7 +97,7 @@ class FakeSession(serversession.ServerSession):
             rstring = rstring.strip()
             if not message_noansi.startswith(rstring):
                 sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
-                sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"                
+                sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
                 sep3 = "\n" + "="*78
                 retval = sep1 + rstring + sep2 + message_noansi + sep3
                 raise AssertionError(retval)
@@ -115,13 +115,13 @@ class CommandTest(TestCase):
     NOMANGLE = True # mangle command input for extra testing
 
     def setUp(self):
-        "sets up the testing environment"                
+        "sets up the testing environment"
         #ServerConfig.objects.conf("default_home", 2)
 
         self.addCleanup(cleanup)
-        
+
         self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
-        self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")        
+        self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
         # create a faux player/character for testing.
         self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", character_location=self.room1)
         self.char1.player.user.is_superuser = True
@@ -133,28 +133,28 @@ class CommandTest(TestCase):
         sess.session_login(self.char1.player)
         # create second player
         self.char2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", character_location=self.room1)
-        self.char2.player.user.is_superuser = False 
+        self.char2.player.user.is_superuser = False
         self.char2.lock_storage = ""
         self.char2.locks = LockHandler(self.char2)
         self.char2.ndb.return_string = None
         sess2 = FakeSession()
         sess2.connectionMade()
         sess2.session_login(self.char2.player)
-        # A non-player-controlled character 
-        self.char3 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="TestChar3", location=self.room1) 
-        # create some objects  
+        # A non-player-controlled character
+        self.char3 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="TestChar3", location=self.room1)
+        # create some objects
         self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=self.room1)
-        self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1) 
+        self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1)
         self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
-        self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)        
-       
+        self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)
+
     def tearDown(self):
         "Cleans up testing environment after test has run."
         User.objects.all().delete()
-        PlayerDB.objects.all().delete() 
+        PlayerDB.objects.all().delete()
         ObjectDB.objects.all().delete()
         Channel.objects.all().delete()
-        Msg.objects.all().delete() 
+        Msg.objects.all().delete()
         PlayerChannelConnection.objects.all().delete()
         ExternalChannelConnection.objects.all().delete()
         ServerConfig.objects.all().delete()
@@ -163,7 +163,7 @@ class CommandTest(TestCase):
         """
         Obtain a cmd instance from a class and an input string
         Note: This does not make use of the cmdhandler functionality.
-        """        
+        """
         cmd = cmd_class()
         cmd.caller = self.char1
         cmd.cmdstring = cmd_class.key
@@ -171,22 +171,22 @@ class CommandTest(TestCase):
         cmd.cmdset = None
         cmd.obj = self.char1
         return cmd
-    
+
     def execute_cmd(self, raw_string, wanted_return_string=None, nomangle=False):
         """
-        Creates the command through faking a normal command call; 
+        Creates the command through faking a normal command call;
         This also mangles the input in various ways to test if the command
         will be fooled.
-        """ 
+        """
         if not nomangle and not VERBOSE and not self.NOMANGLE:
             # only mangle if not VERBOSE, to make fewer return lines
             test1 = re.sub(r'\s', '', raw_string) # remove all whitespace inside it
             test2 = "%s/åäö öäö;-:$£@*~^' 'test" % raw_string # inserting weird characters in call
-            test3 = "%s %s" % (raw_string, raw_string) # multiple calls 
+            test3 = "%s %s" % (raw_string, raw_string) # multiple calls
             self.char1.execute_cmd(test1)
             self.char1.execute_cmd(test2)
             self.char1.execute_cmd(test3)
-        # actual call, we potentially check so return is ok. 
+        # actual call, we potentially check so return is ok.
         self.char1.ndb.return_string = wanted_return_string
         try:
             self.char1.execute_cmd(raw_string)
@@ -197,9 +197,9 @@ class CommandTest(TestCase):
 class BuildTest(CommandTest):
     """
     We need to turn of mangling for build commands since
-    it creates arbitrary objects that mess up tests later. 
+    it creates arbitrary objects that mess up tests later.
     """
-    NOMANGLE = True 
+    NOMANGLE = True
 
 
 
@@ -232,43 +232,43 @@ class TestPose(CommandTest):
         self.execute_cmd("pose is testing","TestChar is testing")
 class TestNick(CommandTest):
     def test_call(self):
-        self.char1.player.user.is_superuser = False 
-        self.execute_cmd("nickname testalias = testaliasedstring1")        
-        self.execute_cmd("nickname/player testalias = testaliasedstring2")        
-        self.execute_cmd("nickname/object testalias = testaliasedstring3")        
+        self.char1.player.user.is_superuser = False
+        self.execute_cmd("nickname testalias = testaliasedstring1")
+        self.execute_cmd("nickname/player testalias = testaliasedstring2")
+        self.execute_cmd("nickname/object testalias = testaliasedstring3")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
         self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias",nick_type="player"))
         self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias",nick_type="object"))
 class TestGet(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.obj1.location = self.room1
         self.execute_cmd("get obj1", "You pick up obj1.")
 class TestDrop(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.obj1.location = self.char1
         self.execute_cmd("drop obj1", "You drop obj1.")
 class TestWho(CommandTest):
-    def test_call(self):                
+    def test_call(self):
         self.execute_cmd("who")
 class TestSay(CommandTest):
-    def test_call(self):                
+    def test_call(self):
         self.execute_cmd("say Hello", 'You say, "Hello')
 class TestAccess(CommandTest):
-    def test_call(self):                
+    def test_call(self):
         self.execute_cmd("access")
 class TestEncoding(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         global NOMANGLE
-        NOMANGLE = True 
+        NOMANGLE = True
         self.char1.db.encoding="utf-8"
         self.execute_cmd("@encoding", "Default encoding:")
-        NOMANGLE = False 
+        NOMANGLE = False
 
 # help.py command tests
 
 class TestHelpSystem(CommandTest):
-    def test_call(self):                
-        self.NOMANGLE = True 
+    def test_call(self):
+        self.NOMANGLE = True
         sep = "-"*78 + "\n"
         self.execute_cmd("@help/add TestTopic,TestCategory = Test1", )
         self.execute_cmd("help TestTopic",sep + "Help topic for Testtopic\nTest1" + "\n" + sep)
@@ -327,12 +327,12 @@ class TestPerm(CommandTest):
 # cannot test this here; screws up the test suite
 #class TestPuppet(CommandTest):
 #   def test_call(self):
-#       self.execute_cmd("@puppet TestChar3", "You now control TestChar3.")       
-#       self.execute_cmd("@puppet TestChar", "You now control TestChar.")       
+#       self.execute_cmd("@puppet TestChar3", "You now control TestChar3.")
+#       self.execute_cmd("@puppet TestChar", "You now control TestChar.")
 class TestWall(CommandTest):
     def test_call(self):
         self.execute_cmd("@wall = This is a test message", "TestChar shouts")
-        
+
 
 # building.py command tests
 
@@ -442,14 +442,14 @@ class TestScript(BuildTest):
     def test_call(self):
         self.execute_cmd("@script TestChar = examples.bodyfunctions.BodyFunctions", "Script successfully added")
 
-# Comms commands 
+# Comms commands
 
 class TestChannelCreate(CommandTest):
     def test_call(self):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("testchan1 Hello", "[testchannel1] TestChar: Hello")
 class TestAddCom(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("addcom chan1 = testchannel1")
@@ -472,32 +472,32 @@ class TestAllCom(CommandTest):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("allcom off")
         self.execute_cmd("allcom on")
-        self.execute_cmd("allcom destroy")        
+        self.execute_cmd("allcom destroy")
 class TestChannels(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
 class TestCBoot(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.execute_cmd("@cdestroy testchannel1", "Channel 'testchannel1'")
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("addcom testchan = testchannel1")
         self.execute_cmd("@cboot testchannel1 = TestChar", "TestChar boots TestChar from channel.")
 class TestCemit(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("@cemit testchan1 = Testing!", "[testchannel1] Testing!")
 class TestCwho(CommandTest):
-    def test_call(self):        
+    def test_call(self):
         self.execute_cmd("@ccreate testchannel1;testchan1;testchan1b = This is a test channel")
         self.execute_cmd("@cwho testchan1b", "Channel subscriptions")
-        
-# OOC commands 
+
+# OOC commands
 
 #class TestOOC_and_IC(CommandTest): # can't be tested it seems, causes errors in other commands (?)
-#    def test_call(self):        
+#    def test_call(self):
 #        self.execute_cmd("@ooc", "\nYou go OOC.")
 #        self.execute_cmd("@ic", "\nYou become TestChar")
 
 # Unloggedin commands
-# these cannot be tested from here. 
+# these cannot be tested from here.

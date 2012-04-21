@@ -1219,7 +1219,8 @@ class CmdSetAttribute(ObjManipCommand):
             except ImportError:
                 # fall back to old recursive solution (don't support nested lists/dicts)
                 return rec_convert(strobj.strip())
-
+        else:
+            return strobj
 
     def func(self):
         "Implement the set attribute - a limited form of @py."
