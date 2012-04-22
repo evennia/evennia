@@ -713,8 +713,7 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     Returns:
         list of suggestions from vocabulary (could be empty if there are no matches)
     """
-    if string in vocabulary:
-        return [string]
-    # no exact match. Determine suggestions and return sorted with highest match first.
+    #if string in vocabulary:
+    #    return [string]
     return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg) for sugg in vocabulary],
                                       key=lambda tup: tup[0], reverse=True) if tup[0] >= cutoff][:maxnum]
