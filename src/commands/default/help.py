@@ -11,13 +11,13 @@ from src.utils.utils import fill, dedent
 from src.commands.command import Command
 from src.help.models import HelpEntry
 from src.utils import create
+from src.utils.utils import string_suggestions
 from src.commands.default.muxcommand import MuxCommand
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
 
 
-LIST_ARGS = ("list", "all")
 SEP = "{C" + "-"*78 + "{n"
 
 def format_help_entry(title, help_text, aliases=None, suggested=None):
@@ -26,7 +26,7 @@ def format_help_entry(title, help_text, aliases=None, suggested=None):
     """
     string = SEP + "\n"
     if title:
-        string += "{CHelp topic for {w%s{n" % (title.capitalize())
+        string += "{CHelp topic for {w%s{n" % title
     if aliases:
         string += " {C(aliases: {w%s{n{C){n" % (", ".join(aliases))
     if help_text:
@@ -45,12 +45,12 @@ def format_help_list(hdict_cmds, hdict_db):
     resectively.
     """
     string = ""
-    if hdict_cmds and hdict_cmds.values():
+    if hdict_cmds and any(hdict_cmds.values()):
         string += "\n" + SEP + "\n   {CCommand help entries{n\n" + SEP
         for category in sorted(hdict_cmds.keys()):
             string += "\n  {w%s{n:\n" % (str(category).capitalize())
             string += "{G" + fill(", ".join(sorted(hdict_cmds[category]))) + "{n"
-    if hdict_db and hdict_db.values():
+    if hdict_db and any(hdict_db.values()):
         string += "\n\n" + SEP + "\n\r  {COther help entries{n\n" + SEP
         for category in sorted(hdict_db.keys()):
             string += "\n\r  {w%s{n:\n" % (str(category).capitalize())
@@ -90,6 +90,9 @@ class CmdHelp(Command):
         query, cmdset = self.args, self.cmdset
         caller = self.caller
 
+        suggestion_cutoff = 0.6
+        suggestion_maxnum = 5
+
         if not query:
             query = "all"
 
@@ -97,79 +100,53 @@ class CmdHelp(Command):
         # having to allow doublet commands to manage exits etc.
         cmdset.make_unique(caller)
 
-        # Listing all help entries
+        # retrieve all available commands and topics
+        all_cmds = [cmd for cmd in cmdset if cmd.auto_help and cmd.access(caller)]
+        all_topics = [topic for topic in HelpEntry.objects.all() if topic.access(caller, 'view', default=True)]
+        all_categories = list(set([cmd.help_category.lower() for cmd in all_cmds] + [topic.help_category.lower() for topic in all_topics]))
 
-        if query in LIST_ARGS:
-            # we want to list all available help entries, grouped by category.
+        if query in ("list", "all"):
+            # we want to list all available help entries, grouped by category
             hdict_cmd = defaultdict(list)
-            for cmd in (cmd for cmd in cmdset if cmd.auto_help and not cmd.is_exit
-                        and not cmd.key.startswith('__') and cmd.access(caller)):
-                hdict_cmd[cmd.help_category].append(cmd.key)
-            hdict_db = defaultdict(list)
-            for topic in (topic for topic in HelpEntry.objects.get_all_topics()
-                          if topic.access(caller, 'view', default=True)):
-                hdict_db[topic.help_category].append(topic.key)
-            help_entry = format_help_list(hdict_cmd, hdict_db)
-            caller.msg(help_entry)
+            hdict_topic = defaultdict(list)
+            # create the dictionaries {category:[topic, topic ...]} required by format_help_list
+            [hdict_cmd[cmd.help_category].append(cmd.key) for cmd in all_cmds]
+            [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
+            # report back
+            caller.msg(format_help_list(hdict_cmd, hdict_topic))
             return
 
-        # Look for a particular help entry
+        # Try to access a particular command
 
-        # Cmd auto-help dynamic entries
-        cmdmatches = [cmd for cmd in cmdset if query in cmd and cmd.auto_help and cmd.access(caller)]
-        if len(cmdmatches) > 1:
-            # multiple matches. Try to limit it down to exact match
-            cmdmatches = [cmd for cmd in cmdmatches if cmd == query] or cmdmatches
+        # build vocabulary of suggestions and rate them by string similarity.
+        vocabulary = [cmd.key for cmd in all_cmds if cmd] + [topic.key for topic in all_topics] + all_categories
+        [vocabulary.extend(cmd.aliases) for cmd in all_cmds]
+        suggestions = [sugg for sugg in string_suggestions(query, set(vocabulary), cutoff=suggestion_cutoff, maxnum=suggestion_maxnum)
+                       if sugg != query]
+        if not suggestions:
+            suggestions = [sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)]
 
-        # Help-database static entries
-        dbmatches = [topic for topic in
-                     HelpEntry.objects.find_topicmatch(query, exact=False)
-                     if topic.access(caller, 'view', default=True)]
-        if len(dbmatches) > 1:
-            # try to get unique match
-            dbmatches = [topic for topic in HelpEntry.objects.find_topicmatch(query, exact=True)
-                         if topic.access(caller, 'view', default=True)] or dbmatches
 
-        # Handle result
-        if (not cmdmatches) and (not dbmatches):
-            # no normal match. Check if this is a category match instead
-            categ_cmdmatches = [cmd.key for cmd in cmdset if query == cmd.help_category and cmd.access(caller)]
-            categ_dbmatches = [topic.key for topic in HelpEntry.objects.find_topics_with_category(query)
-                               if topic.access(caller, 'view', default=True)]
-            cmddict = None
-            dbdict = None
+        # try an exact command auto-help match
+        match = [cmd for cmd in all_cmds if cmd == query]
+        if len(match) == 1:
+            caller.msg(format_help_entry(match[0].key, match[0].__doc__, aliases=match[0].aliases, suggested=suggestions))
+            return
 
-            if categ_cmdmatches:
-                cmddict = {query:categ_cmdmatches}
-            if categ_dbmatches:
-                dbdict = {query:categ_dbmatches}
-            if cmddict or dbdict:
-                help_entry = format_help_list(cmddict, dbdict)
-            else:
-                help_entry = "No help entry found for '%s'" % self.original_args
+        # try a database help entry match
+        match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
+        if len(match) == 1:
+            caller.msg(format_help_entry(match[0].key, match[0].entrytext, suggested=suggestions))
+            return
 
-        elif len(cmdmatches) == 1:
-            # we matched against a unique command name or alias. Show its help entry.
-            suggested = []
-            if dbmatches:
-                suggested = [entry.key for entry in dbmatches]
-            cmd = cmdmatches[0]
-            help_entry = format_help_entry(cmd.key, cmd.__doc__,
-                                           aliases=cmd.aliases,
-                                           suggested=suggested)
-        elif len(dbmatches) == 1:
-            # matched against a database entry
-            entry = dbmatches[0]
-            help_entry = format_help_entry(entry.key, entry.entrytext)
-        else:
-            # multiple matches of either type
-            cmdalts = [cmd.key for cmd in cmdmatches]
-            dbalts = [entry.key for entry in dbmatches]
-            helptext = "Multiple help entries match your search ..."
-            help_entry = format_help_entry("", helptext, None, cmdalts + dbalts)
+        # try to see if a category name was entered
+        if query in all_categories:
+            caller.msg(format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
+                                        {query:[topic.key for topic in all_topics if topic.help_category==query]}))
+            return
 
-        # send result to user
-        caller.msg(help_entry)
+        # no exact matches found. Just give suggestions.
+        caller.msg(format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 class CmdSetHelp(MuxCommand):
     """
@@ -189,8 +166,13 @@ class CmdSetHelp(MuxCommand):
 
     Examples:
       @sethelp/add throw = This throws something at ...
-      @sethelp/append pickpocketing,Thievery,is_thief, is_staff) = This steals ...
-      @sethelp/append pickpocketing, ,is_thief, is_staff) = This steals ...
+      @sethelp/append pickpocketing,Thievery = This steals ...
+      @sethelp/append pickpocketing, ,attr(is_thief) = This steals ...
+
+    This command manipulates the help database. A help entry can be created,
+    appended/merged to and deleted. If you don't assign a category, the "General"
+    category will be used. If no lockstring is specified, default is to let everyone read
+    the help file.
 
     """
     key = "@help"
@@ -204,81 +186,74 @@ class CmdSetHelp(MuxCommand):
         caller = self.caller
         switches = self.switches
         lhslist = self.lhslist
-        rhs = self.rhs
 
         if not self.args:
-            caller.msg("Usage: @sethelp/[add|del|append|merge] <topic>[,category[,locks,..] = <text>]")
+            caller.msg("Usage: @sethelp/[add|del|append|merge] <topic>[,category[,locks,..] = <text>")
             return
 
         topicstr = ""
-        category = ""
-        lockstring = ""
+        category = "General"
+        lockstring = "view:all()"
         try:
             topicstr = lhslist[0]
             category = lhslist[1]
             lockstring = ",".join(lhslist[2:])
         except Exception:
             pass
+
         if not topicstr:
             caller.msg("You have to define a topic!")
             return
-        string = ""
-        #print topicstr, category, lockstring
-
-        if switches and switches[0] in ('append', 'app','merge'):
-            # add text to the end of a help topic
-            # find the topic to append to
-            old_entry = HelpEntry.objects.filter(db_key__iexact=topicstr)
-            if not old_entry:
-                string = "Could not find topic '%s'. You must give an exact name." % topicstr
-            else:
-                old_entry = old_entry[0]
-                entrytext = old_entry.entrytext
-                if switches[0] == 'merge':
-                    old_entry.entrytext = "%s %s" % (entrytext, self.rhs)
-                    string = "Added the new text right after the old one (merge)."
-                else:
-                    old_entry.entrytext = "%s\n\n%s" % (entrytext, self.rhs)
-                    string = "Added the new text as a new paragraph after the old one (append)"
-                old_entry.save()
-
-        elif switches and switches[0] in ('delete','del'):
-            #delete a help entry
-            old_entry = HelpEntry.objects.filter(db_key__iexact=topicstr)
-            if not old_entry:
-                string = "Could not find topic '%s'." % topicstr
-            else:
-                old_entry[0].delete()
-                string = "Deleted the help entry '%s'." % topicstr
-
-        else:
-            # add a new help entry.
-            force_create = ('for' in switches) or ('force' in switches)
+        # check if we have an old entry with the same name
+        try:
+            old_entry = HelpEntry.objects.get(db_key__iexact=topicstr)
+        except Exception:
             old_entry = None
-            try:
-                old_entry = HelpEntry.objects.get(key=topicstr)
-            except Exception:
-                pass
-            if old_entry:
-                if force_create:
-                    old_entry.key = topicstr
-                    old_entry.entrytext = self.rhs
-                    old_entry.help_category = category
-                    old_entry.locks.clear()
-                    old_entry.locks.add(lockstring)
-                    old_entry.save()
-                    string = "Overwrote the old topic '%s' with a new one." % topicstr
-                else:
-                    string = "Topic '%s' already exists. Use /force to overwrite it." % topicstr
+
+        if 'append' in switches or "merge" in switches:
+            # merge/append operations
+            if not old_entry:
+                caller.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
+                return
+            if not self.rhs:
+                caller.msg("You must supply text to append/merge.")
+                return
+            if 'merge' in switches:
+                old_entry.entrytext += " " + self.rhs
             else:
-                # no old entry. Create a new one.
-                new_entry = create.create_help_entry(topicstr,
-                                                     rhs, category, lockstring)
+                old_entry.entrytext += "\n\n%s" % self.rhs
+            caller.msg("Entry updated:\n%s" % old_entry.entrytext)
+            return
+        if 'delete' in switches or 'del' in switches:
+            # delete the help entry
+            if not old_entry:
+                caller.msg("Could not find topic '%s'" % topicstr)
+                return
+            old_entry.delete()
+            caller.msg("Deleted help entry '%s'." % topicstr)
+            return
 
-                if new_entry:
-                    string = "Topic '%s' was successfully created." % topicstr
-                else:
-                    string = "Error when creating topic '%s'! Maybe it already exists?" % topicstr
-
-        # give feedback
-        caller.msg(string)
+        # at this point it means we want to add a new help entry.
+        if not self.rhs:
+            caller.msg("You must supply a help text to add.")
+            return
+        if old_entry:
+            if 'for' in switches or 'force' in switches:
+                # overwrite old entry
+                old_entry.key = topicstr
+                old_entry.entrytext = self.rhs
+                old_entry.help_category = category
+                old_entry.locks.clear()
+                old_entry.locks.add(lockstring)
+                old_entry.save()
+                caller.msg("Overwrote the old topic '%s' with a new one." % topicstr)
+            else:
+                caller.msg("Topic '%s' already exists. Use /force to overwrite or /append or /merge to add text to it." % topicstr)
+        else:
+            # no old entry. Create a new one.
+            new_entry = create.create_help_entry(topicstr,
+                                                 self.rhs, category, lockstring)
+            if new_entry:
+                caller.msg("Topic '%s' was successfully created." % topicstr)
+            else:
+                caller.msg("Error when creating topic '%s'! Maybe it already exists?" % topicstr)
