@@ -25,7 +25,7 @@ class CmdHome(MuxCommand):
     Usage:
       home
 
-    Teleports the player to their home.
+    Teleports you to your home location.
     """
 
     key = "home"
@@ -36,7 +36,9 @@ class CmdHome(MuxCommand):
         caller = self.caller
         home = caller.home
         if not home:
-            caller.msg("You have no home set.")
+            caller.msg("You have no home!")
+        elif home == caller.location:
+            caller.msg("You are already home!")
         else:
             caller.move_to(home)
             caller.msg("There's no place like home ...")
@@ -135,20 +137,24 @@ class CmdNick(MuxCommand):
       object   - alias an object
       player   - alias a player
       clearall - clear all your aliases
-      list     - show all defined aliases
+      list     - show all defined aliases (also "nicks" works)
 
-    If no switch is given, a command alias is created, used
-    to replace strings before sending the command. Give an empty
-    right-hand side to clear the nick
+    Examples:
+      nick hi = say Hello, I'm Sarah!
+      nick/object tom = the tall man
 
-    Creates a personal nick for some in-game object or
-    string. When you enter that string, it will be replaced
-    with the alternate string. The switches dictate in what
-    situations the nick is checked and substituted. If string
-    is None, the alias (if it exists) will be cleared.
-    Obs - no objects are actually changed with this command,
-    if you want to change the inherent aliases of an object,
-    use the @alias command instead.
+    A 'nick' is a personal shortcut you create for your own use. When
+    you enter the nick, the alternative string will be sent instead.
+    The switches control in which situations the substitution will
+    happen. The default is that it will happen when you enter a
+    command. The 'object' and 'player' nick-types kick in only when
+    you use commands that requires an object or player as a target -
+    you can then use the nick to refer to them.
+
+    Note that no objects are actually renamed or changed by this
+    command - the nick is only available to you. If you want to
+    permanently add keywords to an object for everyone to use, you
+    need build privileges and to use the @alias command.
     """
     key = "nick"
     aliases = ["nickname", "nicks", "@nick", "alias"]
@@ -220,7 +226,7 @@ class CmdInventory(MuxCommand):
       inventory
       inv
 
-    Shows a player's inventory.
+    Shows your inventory.
     """
     key = "inventory"
     aliases = ["inv", "i"]
@@ -477,9 +483,9 @@ class CmdPose(MuxCommand):
     Example:
       pose is standing by the wall, smiling.
        -> others will see:
-     Tom is standing by the wall, smiling.
+      Tom is standing by the wall, smiling.
 
-    Describe an script being taken. The pose text will
+    Describe an action being taken. The pose text will
     automatically begin with your name.
     """
     key = "pose"
@@ -502,7 +508,7 @@ class CmdPose(MuxCommand):
     def func(self):
         "Hook function"
         if not self.args:
-            msg = "Do what?"
+            msg = "What do you want to do?"
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)

@@ -606,7 +606,7 @@ class CmdDig(ObjManipCommand):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage:@ dig[/teleport] roomname[;alias;alias...][:parent] [= exit_there"
+            string = "Usage: @dig[/teleport] roomname[;alias;alias...][:parent] [= exit_there"
             string += "[;alias;alias..][:parent]] "
             string += "[, exit_back_here[;alias;alias..][:parent]]"
             caller.msg(string)
