@@ -28,12 +28,12 @@ from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_unicode, mod_import
+from src.utils.utils import make_iter, to_unicode, variable_from_module
 
 #__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
 
 
-_AT_SEARCH_RESULT = mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 _GA = object.__getattribute__
 _SA = object.__setattr__

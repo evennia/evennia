@@ -47,7 +47,7 @@ __all__ = ("cmdhandler",)
 
 # This decides which command parser is to be used.
 # You have to restart the server for changes to take effect.
-_COMMAND_PARSER = utils.mod_import(*settings.COMMAND_PARSER.rsplit('.', 1))
+_COMMAND_PARSER = utils.variable_from_module(*settings.COMMAND_PARSER.rsplit('.', 1))
 
 # System command names - import these variables rather than trying to
 # remember the actual string constants. If not defined, Evennia

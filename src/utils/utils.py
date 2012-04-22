@@ -7,7 +7,7 @@ be of use when designing your own game.
 
 """
 from inspect import ismodule
-import os, sys, imp
+import os, sys, imp, types
 import textwrap
 import datetime
 import random
@@ -538,11 +538,19 @@ def has_parent(basepath, obj):
         # instance. Not sure if one should defend against this.
         return False
 
-def mod_import(mod_path, propname=None):
+def mod_import(module):
     """
-    Takes filename of a module (a python path or a full pathname)
-    and imports it. If property is given, return the named
-    property from this module instead of the module itself.
+    A generic Python module loader.
+
+    Args:
+        module - this can be either a Python path (dot-notation like src.objects.models),
+                 an absolute path (e.g. /home/eve/evennia/src/objects.models.py)
+                 or an already import module object (e.g. models)
+    Returns:
+        an imported module. If the input argument was already a model, this is returned as-is,
+        otherwise the path is parsed and imported.
+    Error:
+        returns None. The error is also logged.
     """
 
     def log_trace(errmsg=None):
@@ -567,74 +575,83 @@ def mod_import(mod_path, propname=None):
             for line in errmsg.splitlines():
                 log.msg('[EE] %s' % line)
 
-    if not mod_path:
+    if not module:
         return None
-    # first try to import as a python path
-    try:
-        mod = __import__(mod_path, fromlist=["None"])
-    except ImportError:
 
-        # try absolute path import instead
-
-        if not os.path.isabs(mod_path):
-            mod_path = os.path.abspath(mod_path)
-        path, filename = mod_path.rsplit(os.path.sep, 1)
-        modname = filename.rstrip('.py')
-
+    if type(module) == types.ModuleType:
+        # if this is already a module, we are done
+        mod = module
+    else:
+        # first try to import as a python path
         try:
-            result = imp.find_module(modname, [path])
+            mod = __import__(module, fromlist=["None"])
         except ImportError:
-            log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
-            return
-        try:
-            mod = imp.load_module(modname, *result)
-        except ImportError:
-            log_trace("Could not find or import module %s at path '%s'" % (modname, path))
-            mod = None
-        # we have to close the file handle manually
-        result[0].close()
 
-    if mod and propname:
-        # we have a module, extract the sought property from it.
-        try:
-            mod_prop = mod.__dict__[to_str(propname)]
-        except KeyError:
-            log_trace("Could not import property '%s' from module %s." % (propname, mod_path))
-            return None
-        return mod_prop
+            # try absolute path import instead
+
+            if not os.path.isabs(module):
+                module = os.path.abspath(module)
+            path, filename = module.rsplit(os.path.sep, 1)
+            modname = filename.rstrip('.py')
+
+            try:
+                result = imp.find_module(modname, [path])
+            except ImportError:
+                log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
+                return
+            try:
+                mod = imp.load_module(modname, *result)
+            except ImportError:
+                log_trace("Could not find or import module %s at path '%s'" % (modname, path))
+                mod = None
+            # we have to close the file handle manually
+            result[0].close()
     return mod
 
-def variable_from_module(modpath, variable=None, default=None):
+def variable_from_module(module, variable=None, default=None):
     """
-    Retrieve a variable from a module. The variable must be defined
-    globally in the module. If no variable is given, a random variable
-    is returned from the module.
+    Retrieve a variable or list of variables from a module. The variable(s) must be defined
+    globally in the module. If no variable is given (or a list entry is None), a random variable
+    is extracted from the module.
 
     If module cannot be imported or given variable not found, default
     is returned.
-    """
-    if not modpath:
-        return default
-    try:
-        mod = __import__(modpath, fromlist=["None"])
-    except ImportError:
-        return default
-    if variable:
-        # try to pick a named variable
-        return mod.__dict__.get(variable, default)
-    else:
-        # random selection
-        mvars = [val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))]
-        return mvars and random.choice(mvars)
 
-def string_from_module(modpath, variable=None, default=None):
+    Args:
+      module (string or module)- python path, absolute path or a module
+      variable (string or iterable) - single variable name or iterable of variable names to extract
+      default (string) - default value to use if a variable fails to be extracted.
+    Returns:
+      a single value or a list of values depending on the type of 'variable' argument. Errors in lists
+      are replaced by the 'default' argument."""
+
+    if not module:
+        return default
+    mod = mod_import(module)
+
+    result = []
+    for var in make_iter(variable):
+        if var:
+            # try to pick a named variable
+            result.append(mod.__dict__.get(var, default))
+        else:
+            # random selection
+            mvars = [val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))]
+            result.append((mvars and random.choice(mvars)) or default)
+    if len(result) == 1:
+        return result[0]
+    return result
+
+def string_from_module(module, variable=None, default=None):
     """
     This is a wrapper for variable_from_module that requires return
     value to be a string to pass. It's primarily used by login screen.
     """
-    val = variable_from_module(modpath, variable=variable, default=default)
+    val = variable_from_module(module, variable=variable, default=default)
     if isinstance(val, basestring):
         return val
+    elif is_iter(val):
+        return [(isinstance(v, basestring) and v or default) for v in val]
     return default
 
 def init_new_player(player):

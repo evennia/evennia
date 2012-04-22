@@ -35,9 +35,6 @@ class DefaultCmdSet(CmdSet):
         self.add(help.CmdSetHelp())
 
         # System commands
-        self.add(system.CmdReload())
-        self.add(system.CmdReset())
-        self.add(system.CmdShutdown())
         self.add(system.CmdPy())
         self.add(system.CmdScripts())
         self.add(system.CmdObjects())
@@ -51,9 +48,7 @@ class DefaultCmdSet(CmdSet):
         self.add(admin.CmdBoot())
         self.add(admin.CmdBan())
         self.add(admin.CmdUnban())
-        self.add(admin.CmdDelPlayer())
         self.add(admin.CmdEmit())
-        self.add(admin.CmdNewPassword())
         self.add(admin.CmdPerm())
         self.add(admin.CmdWall())
 

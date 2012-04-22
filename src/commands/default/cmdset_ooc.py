@@ -6,20 +6,20 @@ a Player object as caller rather than a Character.
 
 """
 from src.commands.cmdset import CmdSet
-from src.commands.default import help, comms, general, admin
+from src.commands.default import help, comms, general, admin, system
 
 class OOCCmdSet(CmdSet):
     """
     Implements the player command set.
     """
-    
+
     key = "DefaultOOC"
     priority = -5
 
     def at_cmdset_creation(self):
         "Populates the cmdset"
 
-        # general commands 
+        # General commands
         self.add(general.CmdOOCLook())
         self.add(general.CmdIC())
         self.add(general.CmdOOC())
@@ -27,11 +27,15 @@ class OOCCmdSet(CmdSet):
         self.add(general.CmdQuit())
         self.add(general.CmdPassword())
 
-        # help command
+        # Help command
         self.add(help.CmdHelp())
 
-        # admin commands
-        self.add(admin.CmdBoot())
+        # system commands
+        self.add(system.CmdReload())
+        self.add(system.CmdReset())
+        self.add(system.CmdShutdown())
+
+        # Admin commands
         self.add(admin.CmdDelPlayer())
         self.add(admin.CmdNewPassword())
 

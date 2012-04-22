@@ -6,13 +6,13 @@ an Evennia game. It will launch any number of fake clients. These
 clients will log into the server and start doing random operations.
 Customizing and weighing these operations differently depends on
 which type of game is tested. The module contains a testing module
-for plain Evennia. 
+for plain Evennia.
 
-Please note that you shouldn't run this on a production server! 
-Launch the program without any arguments or options to see a 
-full step-by-step setup help. 
+Please note that you shouldn't run this on a production server!
+Launch the program without any arguments or options to see a
+full step-by-step setup help.
 
-Basically (for testing default Evennia): 
+Basically (for testing default Evennia):
 
  - Use an empty/testing database.
  - set PERMISSION_PLAYER_DEFAULT = "Builders"
@@ -22,7 +22,7 @@ Basically (for testing default Evennia):
 If you want to customize the runner's client actions
 (because you changed the cmdset or needs to better
 match your use cases or add more actions), you can
-change which actions by adding a path to 
+change which actions by adding a path to
 
    DUMMYRUNNER_ACTIONS_MODULE = <path.to.your.module>
 
@@ -31,13 +31,13 @@ for instructions on how to define this module.
 
 """
 
-import os, sys, time, random 
+import os, sys, time, random
 from optparse import OptionParser
 from twisted.conch import telnet
 from twisted.internet import reactor, protocol
 # from twisted.application import internet, service
 # from twisted.web import client
-from twisted.internet.task import LoopingCall 
+from twisted.internet.task import LoopingCall
 
 # Tack on the root evennia directory to the python path and initialize django settings
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -49,7 +49,7 @@ from django.conf import settings
 from src.utils import utils
 
 HELPTEXT = """
-DO NOT RUN THIS ON A PRODUCTION SERVER! USE A CLEAN/TESTING DATABASE! 
+DO NOT RUN THIS ON A PRODUCTION SERVER! USE A CLEAN/TESTING DATABASE!
 
 This stand-alone program launches dummy telnet clients against a
 running Evennia server. The idea is to mimic real players logging in
@@ -61,28 +61,28 @@ running clients will create new objects and rooms all over the place
 as part of their running, so using a clean/testing database is
 strongly recommended.
 
-Setup: 
+Setup:
   1) setup a fresh/clean database (if using sqlite, just safe-copy
      away your real evennia.db3 file and create a new one with
      manage.py)
-  2) in game/settings.py, add 
-      
+  2) in game/settings.py, add
+
         PERMISSION_PLAYER_DEFAULT="Builders"
 
-  3a) Start Evennia like normal. 
+  3a) Start Evennia like normal.
   3b) If you want profiling, start Evennia like this instead:
 
-        python runner.py -S start 
+        python runner.py -S start
 
      this will start Evennia under cProfiler with output server.prof.
-  4) run this dummy runner: 
+  4) run this dummy runner:
 
         python dummyclients.py <nr_of_clients> [timestep] [port]
 
      Default is to connect one client to port 4000, using a 5 second
      timestep.  Increase the number of clients and shorten the
      timestep (minimum is 1s) to further stress the game.
-     
+
      You can stop the dummy runner with Ctrl-C.
 
   5) Log on and determine if game remains responsive despite the
@@ -98,12 +98,12 @@ DEFAULT_NCLIENTS = 1
 # time between each 'tick', in seconds, if not set on command
 # line. All launched clients will be called upon to possibly do an
 # action with this frequency.
-DEFAULT_TIMESTEP = 5 
+DEFAULT_TIMESTEP = 5
 # Port to use, if not specified on command line
 DEFAULT_PORT = settings.TELNET_PORTS[0]
 # chance of an action happening, per timestep. This helps to
 # spread out usage randomly, like it would be in reality.
-CHANCE_OF_ACTION = 0.1 
+CHANCE_OF_ACTION = 0.1
 
 
 #------------------------------------------------------------
@@ -111,37 +111,37 @@ CHANCE_OF_ACTION = 0.1
 #------------------------------------------------------------
 
 def idcounter():
-    "generates subsequent id numbers" 
-    idcount = 0 
+    "generates subsequent id numbers"
+    idcount = 0
     while True:
-        idcount += 1 
+        idcount += 1
         yield idcount
-OID = idcounter() 
+OID = idcounter()
 CID = idcounter()
 
-def makeiter(obj): 
+def makeiter(obj):
     "makes everything iterable"
     if not hasattr(obj, '__iter__'):
         return [obj]
-    return obj 
-    
+    return obj
+
 #------------------------------------------------------------
 # Client classes
 #------------------------------------------------------------
 
 class DummyClient(telnet.StatefulTelnetProtocol):
     """
-    Handles connection to a running Evennia server, 
-    mimicking a real player by sending commands on 
-    a timer. 
+    Handles connection to a running Evennia server,
+    mimicking a real player by sending commands on
+    a timer.
     """
-    
-    def connectionMade(self):                
+
+    def connectionMade(self):
 
         # public properties
-        self.cid = CID.next() 
+        self.cid = CID.next()
         self.istep = 0
-        self.exits = [] # exit names created 
+        self.exits = [] # exit names created
         self.objs = [] # obj names created
 
         self._actions = self.factory.actions
@@ -150,16 +150,16 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         #print " ** client %i connected." % self.cid
 
         reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
-        
+
         # start client tick
         d = LoopingCall(self.step)
         d.start(self.factory.timestep, now=True).addErrback(self.error)
-    
+
     def dataReceived(self, data):
         "Echo incoming data to stdout"
         if self._echo_all:
             print data
-            
+
     def connectionLost(self, reason):
         "loosing the connection"
         #print " ** client %i lost connection." % self.cid
@@ -175,25 +175,25 @@ class DummyClient(telnet.StatefulTelnetProtocol):
     def logout(self):
         "Causes the client to log out of the server. Triggered by ctrl-c signal."
         cmd, report = self._actions[1](self)
-        print "client %i %s (%s actions)" % (self.cid, report, self.istep)        
+        print "client %i %s (%s actions)" % (self.cid, report, self.istep)
         self.sendLine(cmd)
 
     def step(self):
         """
         Perform a step. This is called repeatedly by the runner
         and causes the client to issue commands to the server.
-        This holds all "intelligence" of the dummy client. 
+        This holds all "intelligence" of the dummy client.
         """
-        if random.random() > CHANCE_OF_ACTION: 
-            return 
-        if self.istep == 0:            
+        if random.random() > CHANCE_OF_ACTION:
+            return
+        if self.istep == 0:
             cfunc = self._actions[0]
         else: # random selection using cumulative probabilities
             rand = random.random()
             cfunc = [func for cprob, func in self._actions[2] if cprob >= rand][0]
         # launch the action (don't hide tracebacks)
         cmd, report = cfunc(self)
-        # handle the result 
+        # handle the result
         cmd = "\n".join(makeiter(cmd))
         if self.istep == 0 or self._echo_brief or self._echo_all:
             print "client %i %s" % (self.cid, report)
@@ -205,74 +205,74 @@ class DummyFactory(protocol.ClientFactory):
 
     def __init__(self, actions, timestep, verbose):
         "Setup the factory base (shared by all clients)"
-        self.actions = actions 
+        self.actions = actions
         self.timestep = timestep
         self.verbose = verbose
 
 #------------------------------------------------------------
-# Access method: 
+# Access method:
 # Starts clients and connects them to a running server.
 #------------------------------------------------------------
 
 def start_all_dummy_clients(actions, nclients=1, timestep=5, telnet_port=4000, verbose=0):
 
     # validating and preparing the action tuple
-    
+
     # make sure the probabilities add up to 1
     pratio = 1.0 / sum(tup[0] for tup in actions[2:])
     flogin, flogout, probs, cfuncs = actions[0], actions[1], [tup[0] * pratio for tup in actions[2:]], [tup[1] for tup in actions[2:]]
-    # create cumulative probabilies for the random actions 
+    # create cumulative probabilies for the random actions
     cprobs = [sum(v for i,v in enumerate(probs) if i<=k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
     actions = (flogin, flogout, zip(cprobs, cfuncs))
-    
+
     # setting up all clients (they are automatically started)
     factory = DummyFactory(actions, timestep, verbose)
     for i in range(nclients):
         reactor.connectTCP("localhost", telnet_port, factory)
-    # start reactor 
+    # start reactor
     reactor.run()
 
 #------------------------------------------------------------
-# Command line interface 
+# Command line interface
 #------------------------------------------------------------
 
 if __name__ == '__main__':
 
     # parsing command line with default vals
-    parser = OptionParser(usage="%prog [options] <nclients> [timestep, [port]]", 
+    parser = OptionParser(usage="%prog [options] <nclients> [timestep, [port]]",
                           description="This program requires some preparations to run properly. Start it without any arguments or options for full help.")
-    parser.add_option('-v', '--verbose', action='store_const', const=1, dest='verbose', 
+    parser.add_option('-v', '--verbose', action='store_const', const=1, dest='verbose',
                       default=0,help="echo brief description of what clients do every timestep.")
-    parser.add_option('-V', '--very-verbose', action='store_const',const=2, dest='verbose', 
+    parser.add_option('-V', '--very-verbose', action='store_const',const=2, dest='verbose',
                       default=0,help="echo all client returns to stdout (hint: use only with nclients=1!)")
 
-    options, args = parser.parse_args() 
+    options, args = parser.parse_args()
 
     nargs = len(args)
     nclients = DEFAULT_NCLIENTS
     timestep = DEFAULT_TIMESTEP
     port = DEFAULT_PORT
     try:
-        if not args : raise Exception 
+        if not args : raise Exception
         if nargs > 0: nclients = max(1, int(args[0]))
         if nargs > 1: timestep = max(1, int(args[1]))
         if nargs > 2: port = int(args[2])
     except Exception:
         print HELPTEXT
-        sys.exit() 
+        sys.exit()
 
     # import the ACTION tuple from a given module
-    try: 
+    try:
         action_modpath = settings.DUMMYRUNNER_ACTIONS_MODULE
     except AttributeError:
         # use default
         action_modpath = "src.utils.dummyrunner_actions"
-    actions = utils.mod_import(action_modpath, "ACTIONS")
-        
+    actions = utils.variable_from_module(action_modpath, "ACTIONS")
+
     print "Connecting %i dummy client(s) to port %i using a %i second timestep ... " % (nclients, port, timestep)
-    t0 = time.time() 
-    start_all_dummy_clients(actions, nclients, timestep, port, 
+    t0 = time.time()
+    start_all_dummy_clients(actions, nclients, timestep, port,
                        verbose=options.verbose)
     ttot = time.time() - t0
     print "... dummy client runner finished after %i seconds." % ttot

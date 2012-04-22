@@ -2,21 +2,18 @@
 
 Central API for the Evennia MUD/MUX/MU* creation system.
 
-This basically a set of shortcuts to the main modules in src/. Import this from your code or
-explore it interactively from a python shell.
+This is basically a set of shortcuts for accessing things in src/ with less boiler plate.
+Import this from your code or explore it interactively from a python shell.
 
 Notes:
 
  1) You should import things explicitly from the root of this module - you can not use
-    dot-notation to import deeper. Hence, to access a default command, you can do the
-    following:
-
+    dot-notation to import deeper. Hence, to access a default command, you can do
        import ev
        ev.default_cmds.CmdLook
-    or
+     or
        from ev import default_cmds
        default_cmds.CmdLook
-
     But trying to import CmdLook directly with "from ev.default_cmds import CmdLook" will
     not work since default_cmds is a property on the "ev" module, not a module of its own.
 
@@ -38,17 +35,29 @@ Notes:
     some more error checking.
 
  5) "settings" links to Evennia's game/settings file. "settings_full" shows all of django's available
-    settings. Note that you cannot change settings from here in a meaningful way, you need to update
-    game/settings.py and restart the server.
+    settings. Note that this is for viewing only - you cannot *change* settings from here in a meaningful
+    way but have to update game/settings.py and restart the server.
 
- 6) The API accesses all relevant and most-neeeded functions/classes from src/, but might not
+ 6) The API accesses all relevant and most-neeeded functions/classes from src/ but might not
     always include all helper-functions referenced from each such entity. To get to those, access
     the modules in src/ directly. You can always do this anyway, if you do not want to go through
     this API.
-
 """
 
+
 import sys, os
+
+######################################################################
+# set Evennia version in __version__ property
+######################################################################
+
+try:
+    f = open(os.path.dirname(os.path.abspath(__file__)) + os.sep + "VERSION", 'r')
+    __version__ = "Evennia %s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
+    f.close()
+    del f
+except IOError:
+    __version__ = "Evennia (unknown version)"
 
 ######################################################################
 # Stop erroneous direct run (would give a traceback since django is
@@ -56,16 +65,18 @@ import sys, os
 ######################################################################
 
 if __name__ == "__main__":
-    info = __doc__ + \
+    print \
 """
-  | This module gives access to Evennia's programming API.  It should
-  | not be run on its own, but be imported and accessed as described
-  | above.
-  |
-  | To start the Evennia server, see game/manage.py and game/evennia.py.
-  | More help can be found at http://www.evennia.com.
-"""
-    print info
+   Evennia MU* creation system (%s)
+
+   This module gives access to Evennia's API (Application Programming
+   Interface). It should *not* be run on its own, but be imported and
+   accessed from your code or explored interactively from a Python
+   shell.
+
+   For help configuring and starting the Evennia server, see the
+   INSTALL file. More help can be found at http://www.evennia.com.
+""" % __version__
     sys.exit()
 
 ######################################################################
@@ -79,18 +90,6 @@ from game import settings
 setup_environ(settings)
 del setup_environ
 from django.conf import settings as settings_full
-
-######################################################################
-# set Evennia version in __version__ property
-######################################################################
-
-try:
-    f = open(os.path.dirname(os.path.abspath(__file__)) + os.sep + "VERSION", 'r')
-    __version__ = "Evennia %s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
-    f.close()
-    del f
-except IOError:
-    __version__ = "Evennia (unknown version)"
 del sys, os
 
 ######################################################################
@@ -110,7 +109,7 @@ from src.players.models import PlayerDB, PlayerAttribute, PlayerNick
 # commands
 from src.commands.command import Command
 from src.commands.cmdset import CmdSet
-from src.commands import default as default_cmds
+# (default_cmds is created below)
 
 # locks
 from src.locks import lockfuncs
@@ -174,6 +173,37 @@ class DBmanagers(object):
     del ExternalChannelConnection, ObjectDB, ServerConfig
 managers = DBmanagers()
 del DBmanagers
+
+class DefaultCmds(object):
+    """
+    This container holds direct shortcuts to all default commands in
+    Evennia.
+    """
+
+    from src.commands.default.cmdset_default import DefaultCmdSet
+    from src.commands.default.cmdset_ooc import OOCCmdSet
+    from src.commands.default.cmdset_unloggedin import UnloggedinCmdSet
+    from src.commands.default.muxcommand import MuxCommand
+
+    def __init__(self):
+        "populate the object with commands"
+
+        def add_cmds(module):
+            "helper method for populating this object with cmds"
+            cmdlist = utils.variable_from_module(module, module.__all__)
+            self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
+
+        from src.commands.default import admin, batchprocess, building, comms, general, help, system, unloggedin
+        add_cmds(building)
+        add_cmds(batchprocess)
+        add_cmds(building)
+        add_cmds(comms)
+        add_cmds(general)
+        add_cmds(help)
+        add_cmds(system)
+        add_cmds(unloggedin)
+default_cmds = DefaultCmds()
+del DefaultCmds
 
 class SystemCmds(object):
     """

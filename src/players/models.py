@@ -55,7 +55,7 @@ from src.commands import cmdhandler
 
 __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
 
-_AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 #------------------------------------------------------------
 #

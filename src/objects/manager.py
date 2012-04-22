@@ -14,7 +14,7 @@ __all__ = ("ObjectManager",)
 
 # Try to use a custom way to parse id-tagged multimatches.
 
-_AT_MULTIMATCH_INPUT = utils.mod_import(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
+_AT_MULTIMATCH_INPUT = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
 
 class ObjectManager(TypedObjectManager):
     """

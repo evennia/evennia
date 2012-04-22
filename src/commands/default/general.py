@@ -15,7 +15,7 @@ __all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
            "CmdSay", "CmdPose", "CmdEncoding", "CmdAccess",
            "CmdOOCLook", "CmdIC", "CmdOOC")
 
-AT_SEARCH_RESULT = utils.mod_import(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 
 class CmdHome(MuxCommand):
