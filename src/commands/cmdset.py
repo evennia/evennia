@@ -382,3 +382,12 @@ class CmdSet(object):
         by use of self.add().
         """
         pass
+
+    def get_all_cmd_keys_and_aliases(self):
+        """
+        Returns a list of all command keys and aliases
+        available in this cmdset.
+        """
+        names = [cmd.key for cmd in self.commands]
+        [names.extend(cmd.aliases) for cmd in self.commands]
+        return names

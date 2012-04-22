@@ -42,6 +42,7 @@ from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import logger, utils
 from src.commands.cmdparser import at_multimatch_cmd
+from src.utils.utils import string_suggestions
 
 __all__ = ("cmdhandler",)
 
@@ -191,7 +192,12 @@ def cmdhandler(caller, raw_string, testing=False):
                 if syscmd:
                     sysarg = raw_string
                 else:
-                    sysarg = "Huh? (Type \"help\" for help)"
+                    sysarg = "Command '%s' is not available." % raw_string
+                    suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(), cutoff=0.7, maxnum=3)
+                    if suggestions:
+                        sysarg += " Did you maybe mean %s?" % utils.list_to_string(suggestions, 'or', addquote=True)
+                    else:
+                        sysarg += " Type \"help\" for help."
                 raise ExecSystemCommand(syscmd, sysarg)
 
             if len(matches) > 1:

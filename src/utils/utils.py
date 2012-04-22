@@ -7,7 +7,7 @@ be of use when designing your own game.
 
 """
 from inspect import ismodule
-import os, sys, imp, types
+import os, sys, imp, types, math
 import textwrap
 import datetime
 import random
@@ -69,6 +69,25 @@ def dedent(text):
     if not text:
         return ""
     return textwrap.dedent(text)
+
+def list_to_string(inlist, endsep="and", addquote=False):
+    """
+    This pretty-formats a list as string output, adding
+    an optional alternative separator to the second to last entry.
+    If addquote is True, the outgoing strints will be surrounded by quotes.
+
+    [1,2,3] -> '1, 2 and 3'
+    """
+    if not inlist:
+        return ""
+    if addquote:
+        if len(inlist) == 1:
+            return "\"%s\"" % inlist[0]
+        return ", ".join("\"%s\"" % v for v in inlist[:-1]) + " %s %s" % (endsep, "\"%s\"" % inlist[-1])
+    else:
+        if len(inlist) == 1:
+            return str(inlist[0])
+        return ", ".join(str(v) for v in inlist[:-1]) + " %s %s" % (endsep, inlist[-1])
 
 def wildcard_to_regexp(instring):
     """
@@ -664,3 +683,38 @@ def init_new_player(player):
     if player.character:
         player.character.db.FIRST_LOGIN = True
     player.db.FIRST_LOGIN = True
+
+def string_similarity(string1, string2):
+    """
+    This implements a "cosine-similarity" algorithm as described for example in
+       Proceedings of the 22nd International Conference on Computation Linguistics
+       (Coling 2008), pages 593-600, Manchester, August 2008
+    The measure vectors used is simply a "bag of words" type histogram (but for letters).
+
+    The function returns a value 0...1 rating how similar the two strings are. The strings can
+    contain multiple words.
+    """
+    vocabulary = set(list(string1 + string2))
+    vec1 = [string1.count(v) for v in vocabulary]
+    vec2 = [string2.count(v) for v in vocabulary]
+    return float(sum(vec1[i]*vec2[i] for i in range(len(vocabulary)))) / \
+           (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
+
+def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
+    """
+    Given a string and a vocabulary, return a match or a list of suggestsion based on
+    string similarity.
+
+    Args:
+        string (str)- a string to search for
+        vocabulary (iterable) - a list of available strings
+        cutoff (int, 0-1) - limit the similarity matches (higher, the more exact is required)
+        maxnum (int) - maximum number of suggestions to return
+    Returns:
+        list of suggestions from vocabulary (could be empty if there are no matches)
+    """
+    if string in vocabulary:
+        return [string]
+    # no exact match. Determine suggestions and return sorted with highest match first.
+    return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg) for sugg in vocabulary],
+                                      key=lambda tup: tup[0], reverse=True) if tup[0] >= cutoff][:maxnum]

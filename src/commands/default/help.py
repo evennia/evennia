@@ -6,6 +6,7 @@ set. The normal, database-tied help system is used for collaborative
 creation of other help topics such as RP help or game-world aides.
 """
 
+from collections import defaultdict
 from src.utils.utils import fill, dedent
 from src.commands.command import Command
 from src.help.models import HelpEntry
@@ -100,20 +101,14 @@ class CmdHelp(Command):
 
         if query in LIST_ARGS:
             # we want to list all available help entries, grouped by category.
-            hdict_cmd = {}
+            hdict_cmd = defaultdict(list)
             for cmd in (cmd for cmd in cmdset if cmd.auto_help and not cmd.is_exit
                         and not cmd.key.startswith('__') and cmd.access(caller)):
-                try:
-                    hdict_cmd[cmd.help_category].append(cmd.key)
-                except KeyError:
-                    hdict_cmd[cmd.help_category] = [cmd.key]
-            hdict_db = {}
+                hdict_cmd[cmd.help_category].append(cmd.key)
+            hdict_db = defaultdict(list)
             for topic in (topic for topic in HelpEntry.objects.get_all_topics()
                           if topic.access(caller, 'view', default=True)):
-                try:
-                    hdict_db[topic.help_category].append(topic.key)
-                except KeyError:
-                    hdict_db[topic.help_category] = [topic.key]
+                hdict_db[topic.help_category].append(topic.key)
             help_entry = format_help_list(hdict_cmd, hdict_db)
             caller.msg(help_entry)
             return
