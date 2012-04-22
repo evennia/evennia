@@ -383,11 +383,16 @@ class CmdSet(object):
         """
         pass
 
-    def get_all_cmd_keys_and_aliases(self):
+    def get_all_cmd_keys_and_aliases(self, caller=None):
         """
         Returns a list of all command keys and aliases
-        available in this cmdset.
+        available in this cmdset. If caller is given, the
+        comands is checked for access on the "call" type
+        before being returned.
         """
-        names = [cmd.key for cmd in self.commands]
-        [names.extend(cmd.aliases) for cmd in self.commands]
+        names = []
+        if caller:
+            [names.extend([cmd.key] + cmd.aliases) for cmd in self.commands if cmd.access(caller)]
+        else:
+            [names.extend([cmd.key] + cmd.aliases) for cmd in self.commands]
         return names

@@ -193,7 +193,7 @@ def cmdhandler(caller, raw_string, testing=False):
                     sysarg = raw_string
                 else:
                     sysarg = "Command '%s' is not available." % raw_string
-                    suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(), cutoff=0.7, maxnum=3)
+                    suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(caller), cutoff=0.7, maxnum=3)
                     if suggestions:
                         sysarg += " Did you maybe mean %s?" % utils.list_to_string(suggestions, 'or', addquote=True)
                     else:

@@ -126,7 +126,6 @@ class CmdHelp(Command):
         if not suggestions:
             suggestions = [sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)]
 
-
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]
         if len(match) == 1:
