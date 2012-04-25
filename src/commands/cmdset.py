@@ -392,7 +392,7 @@ class CmdSet(object):
         """
         names = []
         if caller:
-            [names.extend([cmd.key] + cmd.aliases) for cmd in self.commands if cmd.access(caller)]
+            [names.extend(cmd._keyaliases) for cmd in self.commands if cmd.access(caller)]
         else:
-            [names.extend([cmd.key] + cmd.aliases) for cmd in self.commands]
+            [names.extend(cmd._keyaliases) for cmd in self.commands]
         return names

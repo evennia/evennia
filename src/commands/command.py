@@ -7,7 +7,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 
 import re
 from src.locks.lockhandler import LockHandler
-from src.utils.utils import is_iter
+from src.utils.utils import is_iter, fill
 
 class CommandMeta(type):
     """
@@ -26,7 +26,13 @@ class CommandMeta(type):
                 mcs.aliases = mcs.aliases.split(',')
             except Exception:
                 mcs.aliases = []
-        mcs.aliases = [str(alias).strip() for alias in mcs.aliases]
+        mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases]
+        # optimization - a set is much faster to match against than a list
+        mcs._matchset = set([mcs.key] + mcs.aliases)
+        # optimization for retrieving aliases and key as one list
+        mcs._keyaliases = [mcs.key] + mcs.aliases
+
+        # by default we don't save the command between runs
         if not hasattr(mcs, "save_for_next"):
             mcs.save_for_next = False
 
@@ -134,9 +140,9 @@ class Command(object):
         input can be either a cmd object or the name of a command.
         """
         try:
-            return self.match(cmd.key)
+            return cmd.key in self._matchset
         except AttributeError: # got a string
-            return self.match(cmd)
+            return cmd in self._matchset
 
     def __contains__(self, query):
         """
@@ -144,22 +150,21 @@ class Command(object):
         used by the help system, returning True if query can be found
         as a substring of the commands key or its aliases.
 
-        input can be either a command object or a command name.
+        query (str) - query to match against. Should be lower case.
+
         """
-        try:
-            query = query.key
-        except AttributeError: # we got a string
-            pass
-        return (query in self.key) or any(query in alias for alias in self.aliases)
+        return any(query in keyalias for keyalias in self._matchset)
 
     def match(self, cmdname):
         """
         This is called by the system when searching the available commands,
         in order to determine if this is the one we wanted. cmdname was
         previously extracted from the raw string by the system.
-        cmdname is always lowercase when reaching this point.
+
+        cmdname (str) is always lowercase when reaching this point.
+
         """
-        return cmdname and ((cmdname == self.key) or (cmdname in self.aliases))
+        return cmdname in self._matchset
 
     def access(self, srcobj, access_type="cmd", default=False):
         """
@@ -204,7 +209,7 @@ class Command(object):
         of this module for which object properties are available
         (beyond those set in self.parse())
         """
-                # a simple test command to show the available properties
+        # a simple test command to show the available properties
         string = "-" * 50
         string += "\n{w%s{n - Command variables from evennia:\n" % self.key
         string += "-" * 50
@@ -216,6 +221,6 @@ class Command(object):
         string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
         string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
-        string += utils.fill("current cmdset (self.cmdset): {w%s{n\n" % self.cmdset)
+        string += fill("current cmdset (self.cmdset): {w%s{n\n" % self.cmdset)
 
         self.caller.msg(string)

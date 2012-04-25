@@ -8,6 +8,7 @@ be of use when designing your own game.
 """
 from inspect import ismodule
 import os, sys, imp, types, math
+from collections import Counter
 import textwrap
 import datetime
 import random

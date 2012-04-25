@@ -340,7 +340,7 @@ class LockHandler(object):
 
         """
         if self.reset_flag:
-            # rebuild cache
+            # on-demand cache rebuild
             self._cache_locks(self.obj.lock_storage)
             self.reset_flag = False
 
