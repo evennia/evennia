@@ -247,6 +247,8 @@ class ObjectDB(TypedObject):
         "Setter. Allows for self.player = value"
         if isinstance(player, TypeClass):
             player = player.dbobj
+        self.db_player = player
+        self.save()
         _set_cache(self, "player", player)
     #@player.deleter
     def __player_del(self):

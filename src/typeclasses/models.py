@@ -65,7 +65,7 @@ def _get_cache(obj, name):
         if val: _SA(obj, "_cached_db_%s" % name, val)
         return val
 def _set_cache(obj, name, val):
-    "On-model Cache setter"
+    "On-model Cache setter. Also updates database."
     _SA(obj, "db_%s" % name, val)
     _GA(obj, "save")()
     _SA(obj, "_cached_db_%s" % name, val)

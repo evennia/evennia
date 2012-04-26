@@ -46,6 +46,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
+from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.server.sessionhandler import SESSIONS
 from src.players import manager
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
@@ -56,6 +57,10 @@ from src.commands import cmdhandler
 __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
 
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
 
 #------------------------------------------------------------
 #
@@ -186,7 +191,7 @@ class PlayerDB(TypedObject):
     #@property
     def obj_get(self):
         "Getter. Allows for value = self.obj"
-        return self.db_obj
+        return _get_cache(self, "obj")
     #@obj.setter
     def obj_set(self, value):
         "Setter. Allows for self.obj = value"
@@ -194,16 +199,14 @@ class PlayerDB(TypedObject):
         if isinstance(value, TypeClass):
             value = value.dbobj
         try:
-            self.db_obj = value
-            self.save()
+            _set_cache(self, "obj", value)
         except Exception:
             logger.log_trace()
             raise Exception("Cannot assign %s as a player object!" % value)
     #@obj.deleter
     def obj_del(self):
         "Deleter. Allows for del self.obj"
-        self.db_obj = None
-        self.save()
+        _del_cache(self, "obj")
     obj = property(obj_get, obj_set, obj_del)
 
     # whereas the name 'obj' is consistent with the rest of the code,
@@ -212,18 +215,18 @@ class PlayerDB(TypedObject):
     #@property
     def character_get(self):
         "Getter. Allows for value = self.character"
-        return self.db_obj
+        return _get_cache(self, "obj")
     #@character.setter
     def character_set(self, value):
         "Setter. Allows for self.character = value"
-        self.obj = value
+        _set_cache(self, "obj", value)
     #@character.deleter
     def character_del(self):
         "Deleter. Allows for del self.character"
-        self.db_obj = None
-        self.save()
+        _del_cache(self, "obj")
     character = property(character_get, character_set, character_del)
     # cmdset_storage property
+    # This seems very sensitive to caching, so leaving it be for now /Griatch
     #@property
     def cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
@@ -265,22 +268,39 @@ class PlayerDB(TypedObject):
     _db_model_name = "playerdb" # used by attributes to safely store objects
     _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
 
-        # name property (wraps self.user.username)
+    _name_cache = None
+    # name property (wraps self.user.username)
     #@property
     def name_get(self):
         "Getter. Allows for value = self.name"
-        return self.user.username
+        if not self._name_cache:
+            self._name_cache = self.user.username
+        return self._name_cache
     #@name.setter
     def name_set(self, value):
         "Setter. Allows for player.name = newname"
         self.user.username = value
         self.user.save() # this might be stopped by Django?
+        self._name_cache = value
     #@name.deleter
     def name_del(self):
         "Deleter. Allows for del self.name"
         raise Exception("Player name cannot be deleted!")
     name = property(name_get, name_set, name_del)
     key = property(name_get, name_set, name_del)
+
+    _uid_cache = None
+    #@property
+    def uid_get(self):
+        "Getter. Retrieves the user id"
+        if not self._uid_cache:
+            self._uid_cache = self.user.id
+        return self._uid_cache
+    def uid_set(self, value):
+        raise Exception("User id cannot be set!")
+    def uid_del(self):
+        raise Exception("User id cannot be deleted!")
+    uid = property(uid_get, uid_set, uid_del)
 
     # sessions property
     #@property
@@ -298,9 +318,12 @@ class PlayerDB(TypedObject):
     sessions = property(sessions_get, sessions_set, sessions_del)
 
     #@property
+    _is_superuser_cache = None
     def is_superuser_get(self):
         "Superusers have all permissions."
-        return self.user.is_superuser
+        if self._is_superuser_cache == None:
+            self._is_superuser_cache = self.user.is_superuser
+        return self._is_superuser_cache
     is_superuser = property(is_superuser_get)
 
     #

@@ -410,6 +410,7 @@ class CmdCBoot(MuxCommand):
             nick.delete()
         # disconnect player
         channel.disconnect_from(player)
+        CHANNELHANDLER.update()
 
 class CmdCemit(MuxCommand):
     """

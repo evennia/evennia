@@ -193,7 +193,6 @@ class LockHandler(object):
         locks = {}
         if not storage_lockstring:
             return locks
-        nlocks = storage_lockstring.count(';') + 1
         duplicates = 0
         elist = [] # errors
         wlist = [] # warnings
