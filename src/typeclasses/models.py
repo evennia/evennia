@@ -1213,14 +1213,21 @@ class TypedObject(SharedMemoryModel):
 
     # Helper methods for persistent attributes
 
+    _attribute_cache = {}
     def has_attribute(self, attribute_name):
         """
         See if we have an attribute set on the object.
 
         attribute_name: (str) The attribute's name.
         """
-        return _GA(self, "_attribute_class").objects.filter(db_obj=self).filter(
-            db_key__iexact=attribute_name).count()
+        if attribute_name not in _GA(self, "_attribute_cache"):
+            attrib_obj = _GA(self, "_attribute_class").objects.filter(db_obj=self).filter(
+                            db_key__iexact=attribute_name)
+            if attrib_obj:
+                _GA(self, "_attribute_cache")[attribute_name] = attrib_obj[0]
+            else:
+                return False
+        return True
 
     def set_attribute(self, attribute_name, new_value=None):
         """
@@ -1231,17 +1238,21 @@ class TypedObject(SharedMemoryModel):
         new_value: (python obj) The value to set the attribute to. If this is not
                                 a str, the object will be stored as a pickle.
         """
-        attrib_obj = None
-        attrclass = _GA(self, "_attribute_class")
-        try:
-            # use old attribute
+        attrib_obj = _GA(self, "_attribute_cache").get("attribute_name")
+        if not attrib_obj:
+            attrclass = _GA(self, "_attribute_class")
+            # check if attribute already exists.
             attrib_obj = attrclass.objects.filter(
-                db_obj=self).filter(db_key__iexact=attribute_name)[0]
-        except IndexError:
+                                   db_obj=self).filter(db_key__iexact=attribute_name)
+            if attrib_obj:
+                # use old attribute
+                attrib_obj = attrib_obj[0]
+        else:
             # no match; create new attribute
             attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
         # re-set an old attribute value
         attrib_obj.value = new_value
+        _GA(self,"_attribute_cache")[attribute_name] = attrib_obj
 
     def get_attribute(self, attribute_name, default=None):
         """
@@ -1252,12 +1263,14 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         default: What to return if no attribute is found
         """
-        attrib_obj = default
-        try:
+        attrib_obj = _GA(self,"_attribute_cache").get(attribute_name)
+        if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                db_obj=self).filter(db_key__iexact=attribute_name)[0]
-        except IndexError:
-            return default
+                             db_obj=self).filter(db_key__iexact=attribute_name)
+            if not attrib_obj:
+                return default
+            _GA(self,"_attribute_cache")[attribute_name] = attrib_obj[0] #query is first evaluated here
+            return _GA(self, "_attribute_cache")[attribute_name].value
         return attrib_obj.value
 
     def get_attribute_raise(self, attribute_name):
@@ -1267,11 +1280,15 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        try:
-            return _GA(self, "_attribute_class").objects.filter(
-                db_obj=self).filter(db_key__iexact=attribute_name)[0].value
-        except IndexError:
-            raise AttributeError
+        attrib_obj = _GA(self, "_attribute_cache.get")(attribute_name)
+        if not attrib_obj:
+            attrib_obj = _GA(self, "_attribute_class").objects.filter(
+                    db_obj=self).filter(db_key__iexact=attribute_name)
+            if not attrib_obj:
+                raise AttributeError
+            _GA(self, "_attribute_cache")[attribute_name] = attrib_obj[0] #query is first evaluated here
+            return  _GA(self, "_attribute_cache")[attribute_name].value
+        return attrib_obj.value
 
     def del_attribute(self, attribute_name):
         """
@@ -1279,11 +1296,16 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        try:
-            _GA(self, "_attribute_class").objects.filter(
+        attr_obj = _GA(self, "_attribute_cache").get(attribute_name)
+        if attr_obj:
+            del _GA(self, "_attribute_cache")[attribute_name]
+            attr_obj.delete()
+        else:
+            try:
+                _GA(self, "_attribute_class").objects.filter(
                 db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
-        except IndexError:
-            pass
+            except IndexError:
+                pass
 
     def del_attribute_raise(self, attribute_name):
         """
@@ -1292,11 +1314,17 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        try:
-            _GA(self, "_attribute_class").objects.filter(
+        attr_obj = _GA(self, "_attribute_cache").get(attribute_name)
+        if attr_obj:
+            del _GA(self, "_attribute_cache")[attribute_name]
+            attr_obj.delete()
+        else:
+            try:
+                _GA(self, "_attribute_class").objects.filter(
                 db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
-        except IndexError:
-            raise AttributeError
+            except IndexError:
+                pass
+        raise AttributeError
 
     def get_all_attributes(self):
         """
