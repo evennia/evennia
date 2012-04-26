@@ -1247,9 +1247,9 @@ class TypedObject(SharedMemoryModel):
             if attrib_obj:
                 # use old attribute
                 attrib_obj = attrib_obj[0]
-        else:
-            # no match; create new attribute
-            attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
+            else:
+                # no match; create new attribute
+                attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
         # re-set an old attribute value
         attrib_obj.value = new_value
         _GA(self,"_attribute_cache")[attribute_name] = attrib_obj

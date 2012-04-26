@@ -127,6 +127,7 @@ class Command(object):
 
 
     def __init__(self):
+        "the lockhandler works the same as for objects."
         self.lockhandler = LockHandler(self)
 
     def __str__(self):
