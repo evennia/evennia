@@ -32,7 +32,7 @@ class ScriptClass(TypeClass):
         parent doesn't work.
         """
         try:
-            return other.id == self.id
+            return other.dbid == self.dbid
         except Exception:
             return False
 
@@ -61,7 +61,7 @@ class ScriptClass(TypeClass):
     def _step_err_callback(self, e):
         "callback for runner errors"
         cname = self.__class__.__name__
-        estring = "Script %s(#%i) of type '%s': at_repeat() error '%s'." % (self.key, self.id, cname, e.getErrorMessage())
+        estring = "Script %s(#%i) of type '%s': at_repeat() error '%s'." % (self.key, self.dbid, cname, e.getErrorMessage())
         try:
             self.dbobj.db_obj.msg(estring)
         except Exception:
@@ -183,7 +183,7 @@ class ScriptClass(TypeClass):
             try:
                 self._stop_task()
             except Exception, e:
-                logger.log_trace("Stopping script %s(%s)" % (self.key, self.id))
+                logger.log_trace("Stopping script %s(%s)" % (self.key, self.dbid))
                 pass
         try:
             self.dbobj.delete()

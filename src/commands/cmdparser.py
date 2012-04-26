@@ -158,7 +158,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False):
             if hasattr(result, "location") and result.location == msg_obj:
                 invtext = " (carried)"
             if show_dbref:
-                dbreftext = "(#%i)" % result.id
+                dbreftext = "(#%i)" % result.dbid
             string += "\n %i-%s%s%s" % (num+1, result.name,
                                         dbreftext, invtext)
         results = None

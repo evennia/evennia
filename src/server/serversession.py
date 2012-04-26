@@ -139,10 +139,7 @@ class ServerSession(Session):
         """
         Get the player associated with this session
         """
-        if self.logged_in:
-            return self.player
-        else:
-            return None
+        return self.logged_in and self.player
 
     def get_character(self):
         """

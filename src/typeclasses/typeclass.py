@@ -91,6 +91,8 @@ class TypeClass(object):
         transparently include the properties on
         self.dbobj. Note that dbobj properties have
         priority, so if you define a same-named
+
+
         property on the class, it will NOT be
         accessible through getattr.
         """
@@ -115,8 +117,8 @@ class TypeClass(object):
                 try:
                     return _GA(dbobj,"get_attribute_raise")(propname)
                 except AttributeError:
-                    string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
-                    raise AttributeError(string % (propname, dbobj, dbobj.dbref, dbobj.typeclass_path))
+                    string = "Object: '%s' not found on %s(#%s), nor on its typeclass %s."
+                    raise AttributeError(string % (propname, dbobj, dbobj.dbid, dbobj.typeclass_path))
 
     def __setattr__(self, propname, value):
         """
@@ -185,9 +187,9 @@ class TypeClass(object):
             try:
                 dbobj.del_attribute_raise(propname)
             except AttributeError:
-                string = "Object: '%s' not found on %s(%s), nor on its typeclass %s."
+                string = "Object: '%s' not found on %s(#%s), nor on its typeclass %s."
                 raise AttributeError(string % (propname, dbobj,
-                                               dbobj.dbref,
+                                               dbobj.dbid,
                                                dbobj.typeclass_path,))
 
     def __str__(self):

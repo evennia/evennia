@@ -353,16 +353,14 @@ class Object(TypeClass):
         This has be located at this level, having it in the
         parent doesn't work.
         """
-        result = self.id == other
-        if not result and hasattr(other, "id"):
-            result = self.id == other.id
-        if not result:
+        try:
+            return self.dbref == other or self.dbref == other.dbref
+        except AttributeError:
+           # compare players instead
             try:
-                result = other and self.user.id == other.user.id
+                return self.player.uid == other or self.player.uid == other.player.uid
             except AttributeError:
-                pass
-        return result
-
+                return False
 
     ## hooks called by the game engine
 

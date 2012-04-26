@@ -105,9 +105,10 @@ def get_and_merge_cmdsets(caller):
 
     # Gather cmdsets from location, objects in location or carried
     local_objects_cmdsets = [None]
-    location = None
-    if hasattr(caller, "location"):
+    try:
         location = caller.location
+    except Exception:
+        location = None
     if location and not caller_cmdset.no_objs:
         # Gather all cmdsets stored on objects in the room and
         # also in the caller's inventory and the location itself

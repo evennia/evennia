@@ -247,14 +247,10 @@ class ObjectDB(TypedObject):
         "Setter. Allows for self.player = value"
         if isinstance(player, TypeClass):
             player = player.dbobj
-        self.db_player = player
-        self.save()
         _set_cache(self, "player", player)
     #@player.deleter
     def __player_del(self):
         "Deleter. Allows for del self.player"
-        self.db_player = None
-        self.save()
         _del_cache(self, "player")
     player = property(__player_get, __player_set, __player_del)
 
@@ -747,7 +743,7 @@ class ObjectDB(TypedObject):
         default_home_id = int(settings.CHARACTER_DEFAULT_HOME)
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
-            if default_home.id == self.id:
+            if default_home.dbid == self.dbid:
                 # we are deleting default home!
                 default_home = None
         except Exception:
@@ -758,7 +754,7 @@ class ObjectDB(TypedObject):
         for obj in objs:
             home = obj.home
             # Obviously, we can't send it back to here.
-            if not home or (home and home.id == self.id):
+            if not home or (home and home.dbid == self.dbid):
                 obj.home = default_home
 
             # If for some reason it's still None...
@@ -767,14 +763,14 @@ class ObjectDB(TypedObject):
                 string += "now has a null location."
                 obj.location = None
                 obj.msg("Something went wrong! You are dumped into nowhere. Contact an admin.")
-                logger.log_errmsg(string % (obj.name, obj.id))
+                logger.log_errmsg(string % (obj.name, obj.dbid))
                 return
 
             if obj.has_player:
                 if home:
                     string = "Your current location has ceased to exist,"
                     string += " moving you to %s(#%d)."
-                    obj.msg(string % (home.name, home.id))
+                    obj.msg(string % (home.name, home.dbid))
                 else:
                     # Famous last words: The player should never see this.
                     string = "This place should not exist ... contact an admin."

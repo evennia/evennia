@@ -346,7 +346,7 @@ class LockHandler(object):
         if (not no_superuser_bypass
             and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
                  or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
-                 or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser)))):
+                 or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser)))):
             # we grant access to superusers and also to protocol instances that not yet has any player assigned to them (the
             # latter is a safety feature since superuser cannot be authenticated at some point during the connection).
             return True

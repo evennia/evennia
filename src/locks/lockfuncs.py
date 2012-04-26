@@ -82,7 +82,6 @@ DefaultLock:   Exits:          controls who may traverse the exit to
 """
 
 from django.conf import settings
-from src.utils import search
 from src.utils import utils
 
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
@@ -123,7 +122,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     try:
         perm = args[0].lower()
         permissions = [p.lower() for p in accessing_obj.permissions]
-    except AttributeError, IndexError:
+    except (AttributeError, IndexError):
         return False
 
     if perm in permissions:
@@ -193,8 +192,8 @@ def dbref(accessing_obj, accessed_obj, *args, **kwargs):
         dbref = int(args[0].strip().strip('#'))
     except ValueError:
         return False
-    if hasattr(accessing_obj, 'id'):
-        return dbref == accessing_obj.id
+    if hasattr(accessing_obj, 'dbid'):
+        return dbref == accessing_obj.dbid
     return False
 
 def pdbref(accessing_obj, accessed_obj, *args, **kwargs):
@@ -255,8 +254,7 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
         "compare based on type"
         try:
             return CF_MAPPING.get(typ, 'default')(val1, val2)
-        except Exception, e:
-            #print e
+        except Exception:
             # this might happen if we try to compare two things that cannot be compared
             return False
 
@@ -376,7 +374,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         # helper function. Compares both dbrefs and keys/aliases.
         objid = str(objid)
         dbref = utils.dbref(objid)
-        if dbref and any((True for obj in contents if obj.id == dbref)):
+        if dbref and any((True for obj in contents if obj.dbid == dbref)):
             return True
         objid = objid.lower()
         return any((True for obj in contents
@@ -386,13 +384,13 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         return check_holds(args[0])
     else:
         try:
-            if check_holds(accessed_obj.id):
+            if check_holds(accessed_obj.dbid):
                 #print "holds: accessed_obj.id - True"
                 return True
         except Exception:
             pass
         #print "holds: accessed_obj.obj.id -", hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
-        return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
+        return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.dbid)
 
 def superuser(*args, **kwargs):
     """

@@ -853,7 +853,7 @@ class TypedObject(SharedMemoryModel):
     _db_model_name = "typeclass" # used by attributes to safely store objects
 
     def __eq__(self, other):
-        return other and hasattr(other, 'id') and self.id == other.id
+        return other and hasattr(other, 'dbid') and self.dbid == other.dbid
 
     def __str__(self):
         return smart_str("%s" % self.key)
@@ -881,16 +881,35 @@ class TypedObject(SharedMemoryModel):
                 return _GA(typeclass, propname)
             else:
                 raise AttributeError
+    #@property
+    _dbid_cache = None
+    def __dbid_get(self):
+        """
+        Caches and returns the unique id of the object.
+        Use this instead of self.id, which is not cached.
+        """
+        dbid = _GA(self, "_dbid_cache")
+        if not dbid:
+            dbid = _GA(self, "id")
+            _SA(self, "_dbid_cache", dbid)
+        return dbid
+    def __dbid_set(self, value):
+        raise Exception("dbid cannot be set!")
+    def __dbid_del(self):
+        raise Exception("dbid cannot be deleted!")
+    dbid = property(__dbid_get, __dbid_set, __dbid_del)
 
     #@property
     def __dbref_get(self):
         """
-        Returns the object's dbref id on the form #NN.
-        Alternetively, use obj.id directly to get dbref
-        without any #.
+        Returns the object's dbref on the form #NN.
         """
-        return "#%s" % str(_GA(self, "id"))
-    dbref = property(__dbref_get)
+        return "#%s" % _GA(self, "_TypedObject__dbid_get")()
+    def __dbref_set(self):
+        raise Exception("dbref cannot be set!")
+    def __dbref_del(self):
+        raise Exception("dbref cannot be deleted!")
+    dbref = property(__dbref_get, __dbref_set, __dbref_del)
 
     # typeclass property
     #@property

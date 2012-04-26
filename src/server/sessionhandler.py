@@ -14,7 +14,6 @@ There are two similar but separate stores of sessions:
 
 import time
 from django.conf import settings
-from django.contrib.auth.models import User
 from src.server.models import ServerConfig
 
 from src.commands.cmdhandler import CMD_LOGINSTART
@@ -259,12 +258,7 @@ class ServerSessionHandler(SessionHandler):
         """
         Given a player, return any matching sessions.
         """
-        username = player.user.username
-        try:
-            uobj = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return None
-        uid = uobj.id
+        uid = player.uid
         return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_character(self, character):
