@@ -99,10 +99,15 @@ IDLE_COMMAND = "idle"
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # The game server opens an AMP port so that the portal can
 # communicate with it. This is an internal functionality of Evennia, usually
-# operating between the two processes on the same machine. Don't change unless
-# you know what you are doing.
+# operating between two processes on the same machine. You usually don't need to
+# change this unless you cannot use the default AMP port/host for whatever reason.
 AMP_HOST = 'localhost'
 AMP_PORT = 5000
+# Attributes on objects are cached aggressively for speed. If the number of
+# objects is large (and their attributes are often accessed) this can use up a lot of
+# memory. So every now and then Evennia checks the size of this cache and resets
+# it if it's too big. This variable sets the maximum size (in MB).
+ATTRIBUTE_CACHE_MAXSIZE = 100
 
 ######################################################################
 # Evennia Database config

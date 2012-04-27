@@ -32,6 +32,8 @@ try:
 except ImportError:
     import pickle
 import traceback
+from collections import defaultdict
+
 from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
@@ -76,6 +78,11 @@ def _del_cache(obj, name):
         _DA(obj, "_cached_db_%s" % name)
     except AttributeError:
         pass
+
+# this cache holds the attributes loaded on objects, one dictionary
+# of attributes per object.
+_ATTRIBUTE_CACHE = defaultdict(dict)
+
 
 #------------------------------------------------------------
 #
@@ -673,6 +680,7 @@ class TypeNickHandler(object):
 #
 #------------------------------------------------------------
 
+
 class TypedObject(SharedMemoryModel):
     """
     Abstract Django model.
@@ -1213,18 +1221,17 @@ class TypedObject(SharedMemoryModel):
 
     # Helper methods for persistent attributes
 
-    _attribute_cache = {}
     def has_attribute(self, attribute_name):
         """
         See if we have an attribute set on the object.
 
         attribute_name: (str) The attribute's name.
         """
-        if attribute_name not in _GA(self, "_attribute_cache"):
+        if attribute_name not in _ATTRIBUTE_CACHE[self]:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(db_obj=self).filter(
                             db_key__iexact=attribute_name)
             if attrib_obj:
-                _GA(self, "_attribute_cache")[attribute_name] = attrib_obj[0]
+                _ATTRIBUTE_CACHE[self][attribute_name] = attrib_obj[0]
             else:
                 return False
         return True
@@ -1238,7 +1245,7 @@ class TypedObject(SharedMemoryModel):
         new_value: (python obj) The value to set the attribute to. If this is not
                                 a str, the object will be stored as a pickle.
         """
-        attrib_obj = _GA(self, "_attribute_cache").get("attribute_name")
+        attrib_obj = _ATTRIBUTE_CACHE[self].get("attribute_name")
         if not attrib_obj:
             attrclass = _GA(self, "_attribute_class")
             # check if attribute already exists.
@@ -1252,7 +1259,7 @@ class TypedObject(SharedMemoryModel):
                 attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
         # re-set an old attribute value
         attrib_obj.value = new_value
-        _GA(self,"_attribute_cache")[attribute_name] = attrib_obj
+        _ATTRIBUTE_CACHE[self][attribute_name] = attrib_obj
 
     def get_attribute(self, attribute_name, default=None):
         """
@@ -1263,14 +1270,14 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         default: What to return if no attribute is found
         """
-        attrib_obj = _GA(self,"_attribute_cache").get(attribute_name)
+        attrib_obj = _ATTRIBUTE_CACHE[self].get(attribute_name)
         if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
                              db_obj=self).filter(db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            _GA(self,"_attribute_cache")[attribute_name] = attrib_obj[0] #query is first evaluated here
-            return _GA(self, "_attribute_cache")[attribute_name].value
+            _ATTRIBUTE_CACHE[self][attribute_name] = attrib_obj[0] #query is first evaluated here
+            return _ATTRIBUTE_CACHE[self][attribute_name].value
         return attrib_obj.value
 
     def get_attribute_raise(self, attribute_name):
@@ -1280,14 +1287,14 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        attrib_obj = _GA(self, "_attribute_cache.get")(attribute_name)
+        attrib_obj = _ATTRIBUTE_CACHE[self].get(attribute_name)
         if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
                     db_obj=self).filter(db_key__iexact=attribute_name)
             if not attrib_obj:
                 raise AttributeError
-            _GA(self, "_attribute_cache")[attribute_name] = attrib_obj[0] #query is first evaluated here
-            return  _GA(self, "_attribute_cache")[attribute_name].value
+            _ATTRIBUTE_CACHE[self][attribute_name] = attrib_obj[0] #query is first evaluated here
+            return  _ATTRIBUTE_CACHE[self][attribute_name].value
         return attrib_obj.value
 
     def del_attribute(self, attribute_name):
@@ -1296,9 +1303,9 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        attr_obj = _GA(self, "_attribute_cache").get(attribute_name)
+        attr_obj = _ATTRIBUTE_CACHE[self].get(attribute_name)
         if attr_obj:
-            del _GA(self, "_attribute_cache")[attribute_name]
+            del _ATTRIBUTE_CACHE[self][attribute_name]
             attr_obj.delete()
         else:
             try:
@@ -1314,9 +1321,9 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        attr_obj = _GA(self, "_attribute_cache").get(attribute_name)
+        attr_obj = _ATTRIBUTE_CACHE[self].get(attribute_name)
         if attr_obj:
-            del _GA(self, "_attribute_cache")[attribute_name]
+            del _ATTRIBUTE_CACHE[self][attribute_name]
             attr_obj.delete()
         else:
             try:

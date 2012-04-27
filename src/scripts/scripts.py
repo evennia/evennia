@@ -5,17 +5,22 @@ scripts are inheriting from.
 It also defines a few common scripts.
 """
 
+from sys import getsizeof
 from time import time
+from collections import defaultdict
 from twisted.internet.defer import maybeDeferred
 from twisted.internet.task import LoopingCall
-from twisted.internet import task
+from django.conf import settings
 from src.server.sessionhandler import SESSIONS
 from src.typeclasses.typeclass import TypeClass
+from src.typeclasses.models import _ATTRIBUTE_CACHE
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
 from src.utils import logger
 
-__all__ = ("Script", "DoNothing", "CheckSessions", "ValidateScripts", "ValidateChannelHandler", "AddCmdSet")
+__all__ = ("Script", "DoNothing", "CheckSessions", "ValidateScripts", "ValidateChannelHandler", "ClearAttributeCache")
+
+_ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE # attr-cache size in MB.
 
 #
 # Base script, inherit from Script below instead.
@@ -142,7 +147,7 @@ class ScriptClass(TypeClass):
         if obj:
             # check so the scripted object is valid and initalized
             try:
-                dummy = object.__getattribute__(obj, 'cmdset')
+                object.__getattribute__(obj, 'cmdset')
             except AttributeError:
                 # this means the object is not initialized.
                 self.dbobj.is_active = False
@@ -182,7 +187,7 @@ class ScriptClass(TypeClass):
         if self.dbobj.db_interval > 0:
             try:
                 self._stop_task()
-            except Exception, e:
+            except Exception:
                 logger.log_trace("Stopping script %s(%s)" % (self.key, self.dbid))
                 pass
         try:
@@ -217,7 +222,7 @@ class ScriptClass(TypeClass):
             self.ndb._paused_time = dt
             self._start_task(start_now=False)
             del self.db._paused_time
-        except Exception, e:
+        except Exception:
             logger.log_trace()
             self.dbobj.is_active = False
             return False
@@ -387,7 +392,7 @@ class DoNothing(Script):
     def at_script_creation(self):
          "Setup the script"
          self.key = "sys_do_nothing"
-         self.desc = "This is a placeholder script."
+         self.desc = "This is an empty placeholder script."
 
 class CheckSessions(Script):
     "Check sessions regularly."
@@ -420,7 +425,6 @@ class ValidateScripts(Script):
 
 class ValidateChannelHandler(Script):
     "Update the channelhandler to make sure it's in sync."
-
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_channels_validate"
@@ -433,44 +437,16 @@ class ValidateChannelHandler(Script):
         #print "ValidateChannelHandler run."
         channelhandler.CHANNELHANDLER.update()
 
-class AddCmdSet(Script):
-    """
-    This script permanently assigns a command set
-    to an object whenever it is started. This is not
-    used by the core system anymore, it's here mostly
-    as an example.
-    """
+class ClearAttributeCache(Script):
+    "Clear the attribute cache."
     def at_script_creation(self):
         "Setup the script"
-        if not self.key:
-            self.key = "add_cmdset"
-        if not self.desc:
-            self.desc = "Adds a cmdset to an object."
+        self.key = "sys_cache_clear"
+        self.desc = "Clears the Attribute Cache"
+        self.interval = 3600 * 2
         self.persistent = True
-
-        # this needs to be assigned to upon creation.
-        # It should be a string pointing to the right
-        # cmdset module and cmdset class name, e.g.
-        # 'examples.cmdset_redbutton.RedButtonCmdSet'
-        # self.db.cmdset = <cmdset_path>
-        # self.db.add_default = <bool>
-
-    def at_start(self):
-        "Get cmdset and assign it."
-        cmdset = self.db.cmdset
-        if cmdset:
-            if self.db.add_default:
-                self.obj.cmdset.add_default(cmdset)
-            else:
-                self.obj.cmdset.add(cmdset)
-
-    def at_stop(self):
-        """
-        This removes the cmdset when the script stops
-        """
-        cmdset = self.db.cmdset
-        if cmdset:
-            if self.db.add_default:
-                self.obj.cmdset.delete_default()
-            else:
-                self.obj.cmdset.delete(cmdset)
+    def at_repeat(self):
+        "called every 2 hours. Sets a max attr-cache limit to 100 MB." # enough for normal usage?
+        global _ATTRIBUTE_CACHE
+        if getsizeof(_ATTRIBUTE_CACHE) / 1024.0 > _ATTRIBUTE_CACHE_MAXSIZE:
+            _ATTRIBUTE_CACHE = defaultdict(dict)

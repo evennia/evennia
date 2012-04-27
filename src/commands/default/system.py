@@ -13,7 +13,7 @@ from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
-from src.utils import logger, utils, gametime
+from src.utils import logger, utils, gametime, create
 from src.commands.default.muxcommand import MuxCommand
 
 # limit symbol import for API
@@ -213,9 +213,10 @@ class CmdScripts(MuxCommand):
     Operate on scripts.
 
     Usage:
-      @scripts[/switches] [<obj or scriptid>]
+      @scripts[/switches] [<obj or scriptid or script.path>]
 
     Switches:
+      start - start a script (must supply a script path)
       stop - stops an existing script
       kill - kills a script - without running its cleanup hooks
       validate - run a validation on the script(s)
@@ -225,9 +226,11 @@ class CmdScripts(MuxCommand):
     will be searched for all scripts defined on it, or an script name
     or dbref. For using the /stop switch, a unique script dbref is
     required since whole classes of scripts often have the same name.
+
+    Use @script for managing commands on objects.
     """
     key = "@scripts"
-    aliases = "@listscripts"
+    aliases = ["@globalscript", "@listscripts"]
     locks = "cmd:perm(listscripts) or perm(Wizards)"
     help_category = "System"
 
@@ -239,6 +242,14 @@ class CmdScripts(MuxCommand):
 
         string = ""
         if args:
+            if "start" in self.switches:
+                # global script-start mode
+                new_script = create.create_script(args)
+                if new_script:
+                    caller.msg("Global script %s was started successfully." % args)
+                else:
+                    caller.msg("Global script %s could not start correctly. See logs." % args)
+                return
 
             # test first if this is a script match
             scripts = ScriptDB.objects.get_all_scripts(key=args)

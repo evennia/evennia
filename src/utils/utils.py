@@ -8,7 +8,6 @@ be of use when designing your own game.
 """
 from inspect import ismodule
 import os, sys, imp, types, math
-from collections import Counter
 import textwrap
 import datetime
 import random
@@ -460,7 +459,14 @@ def run_async(async_func, at_return=None, at_err=None):
     Use this function with restrain and only for features/commands
     that you know has no influence on the cause-and-effect order of your
     game (commands given after the async function might be executed before
-    it has finished).
+    it has finished). Accessing the same property from different threads can
+    lead to unpredicted behaviour if you are not careful (this is called a
+    "race condition").
+
+    Also note that some databases, notably sqlite3, don't support access from
+    multiple threads simultaneously, so if you do heavy database access from
+    your async_func under sqlite3 you will probably run very slow or even get
+    tracebacks.
 
     async_func() - function that should be run asynchroneously
     at_return(r) - if given, this function will be called when async_func returns

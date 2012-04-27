@@ -141,8 +141,10 @@ class Command(object):
         input can be either a cmd object or the name of a command.
         """
         try:
+            # first assume input is a command (the most common case)
             return cmd.key in self._matchset
-        except AttributeError: # got a string
+        except AttributeError:
+            # probably got a string
             return cmd in self._matchset
 
     def __contains__(self, query):
@@ -154,7 +156,7 @@ class Command(object):
         query (str) - query to match against. Should be lower case.
 
         """
-        return any(query in keyalias for keyalias in self._matchset)
+        return any(query in keyalias for keyalias in self._keyaliases)
 
     def match(self, cmdname):
         """
