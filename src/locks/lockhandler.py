@@ -168,7 +168,7 @@ class LockHandler(object):
         self.no_errors = True
         self.reset_flag = False
         self._cache_locks(self.obj.lock_storage)
-        # we handle most bypass checks already here. We need to grant access to superusers and
+        # we handle bypass checks already here for efficiency. We need to grant access to superusers and
         # to protocol instances where the superuser status cannot be determined (can happen at
         # some rare cases during login).
         self.lock_bypass = ((hasattr(obj, "is_superuser") and obj.is_superuser)
@@ -306,6 +306,7 @@ class LockHandler(object):
         "Remove all locks"
         self.locks = {}
         self.lock_storage = ""
+
     def reset(self):
         """
         Set the reset flag, so the the lock will be re-cached at next checking.
@@ -346,13 +347,18 @@ class LockHandler(object):
             self._cache_locks(self.obj.lock_storage)
             self.reset_flag = False
 
-        # check if the lock should be bypassed (e.g. superuser status)
         try:
+            # check if the lock should be bypassed (e.g. superuser status)
             if accessing_obj.locks.lock_bypass and not no_superuser_bypass:
                 return True
         except AttributeError:
-            pass
+            # happens before session is initiated.
+            if not no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
+             or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
+             or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
+                return True
 
+        # no superuser or bypass -> normal lock operation
         if access_type in self.locks:
             # we have a lock, test it.
             evalstring, func_tup, raw_string = self.locks[access_type]
@@ -377,8 +383,8 @@ class LockHandler(object):
         except AttributeError:
             if no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
              or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
-             or (hasattr(accessing_obj, 'get_player') and (accessing_obj.get_player()==None or accessing_obj.get_player().is_superuser))):
-                    return True
+             or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
+                return True
 
         locks = self. _parse_lockstring(lockstring)
         for access_type in locks:

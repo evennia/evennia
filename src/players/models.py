@@ -257,10 +257,10 @@ class PlayerDB(TypedObject):
     #
 
     def __str__(self):
-        return smart_str("%s(player %i)" % (self.name, self.dbid))
+        return smart_str("%s(player %s)" % (self.name, self.dbid))
 
     def __unicode__(self):
-        return u"%s(player#%i)" % (self.name, self.dbid)
+        return u"%s(player#%s)" % (self.name, self.dbid)
 
     # this is required to properly handle attributes and typeclass loading
     _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS

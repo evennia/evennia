@@ -189,7 +189,7 @@ def at_initial_setup():
     """
     Custom hook for users to overload some or all parts of the initial
     setup. Called very last in the sequence. It tries to import and
-    run a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail
+    srun a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail
     silently if this does not exist or fails to load.
     """
     modname = settings.AT_INITIAL_SETUP_HOOK_MODULE
@@ -202,6 +202,17 @@ def at_initial_setup():
     print _(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
         mod.at_initial_setup()
+
+def reset_server():
+    """
+    We end the initialization by resetting the server. This
+    makes sure the first login is the same as all the following
+    ones, particularly it cleans all caches for the special objects.
+    It also checks so the warm-reset mechanism works as it should.
+    """
+    from src.server.sessionhandler import SESSIONS
+    print _(" Initial setup finished. Resetting/Reloading Server.")
+    SESSIONS.server.shutdown(mode='reset')
 
 def handle_setup(last_step):
     """
@@ -227,12 +238,13 @@ def handle_setup(last_step):
         start_game_time,
         create_admin_media_links,
         import_MUX_help_files,
-        at_initial_setup]
+        at_initial_setup,
+        reset_server]
 
     if not settings.IMPORT_MUX_HELP:
         # skip importing of the MUX helpfiles, they are
         # not interesting except for developers.
-        del setup_queue[-2]
+        del setup_queue[-3]
 
     #print " Initial setup: %s steps." % (len(setup_queue))
 
@@ -256,13 +268,10 @@ def handle_setup(last_step):
                     profile.delete()
             elif last_step + num == 3:
                 from src.comms.models import Channel, PlayerChannelConnection
-
                 for chan in Channel.objects.all():
                     chan.delete()
                 for conn in PlayerChannelConnection.objects.all():
                     conn.delete()
-
-
             raise
         ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1)
     # We got through the entire list. Set last_step to -1 so we don't

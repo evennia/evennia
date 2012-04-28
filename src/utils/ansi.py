@@ -123,10 +123,10 @@ class ANSIParser(object):
         # xterm256 {123, %c134,
 
         self.xterm256_map = [
-            (r'(?<!\\)%c([1-5]{3})', self.parse_rgb),  # %c123 - foreground colour
-            (r'(?<!\\)%c(b[1-5]{3})', self.parse_rgb), # %cb123 - background colour
-            (r'(?<!\\){([1-5]{3})', self.parse_rgb),   # {123 - foreground colour
-            (r'(?<!\\){(b[1-5]{3})', self.parse_rgb)   # {b123 - background colour
+            (r'(?<!\\)%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
+            (r'(?<!\\)%c(b[0-5]{3})', self.parse_rgb), # %cb123 - background colour
+            (r'(?<!\\){([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
+            (r'(?<!\\){(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
             ]
 
         # obs - order matters here, we want to do the xterms first since
