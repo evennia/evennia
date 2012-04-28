@@ -448,5 +448,6 @@ class ClearAttributeCache(Script):
     def at_repeat(self):
         "called every 2 hours. Sets a max attr-cache limit to 100 MB." # enough for normal usage?
         global _ATTRIBUTE_CACHE
-        if getsizeof(_ATTRIBUTE_CACHE) / 1024.0 > _ATTRIBUTE_CACHE_MAXSIZE:
+        size = sum([sum([getsizeof(obj) for obj in dic.values()]) for dic in _ATTRIBUTE_CACHE.values()])
+        if size / 1024.0 > _ATTRIBUTE_CACHE_MAXSIZE:
             _ATTRIBUTE_CACHE = defaultdict(dict)
