@@ -1938,7 +1938,7 @@ class CmdScript(MuxCommand):
 
     key = "@script"
     aliases = "@addscript"
-    locks = "cmd:perm(script) or perm(Wizards)"
+    locks = "cmd:perm(script) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
