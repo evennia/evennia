@@ -210,7 +210,7 @@ def format_script_list(scripts):
 
 class CmdScripts(MuxCommand):
     """
-    Operate on scripts.
+    Operate and list global scripts, list all scrips.
 
     Usage:
       @scripts[/switches] [<obj or scriptid or script.path>]

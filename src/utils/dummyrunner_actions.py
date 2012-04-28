@@ -144,25 +144,25 @@ def c_moves(client):
 #
 
 # heavy builder definition
-#ACTIONS = ( c_login,
-#            c_logout,
-#            (0.2, c_looks),
-#            (0.1, c_examines),
-#            (0.2, c_help),
-#            (0.1, c_digs),
-#            (0.1, c_creates_obj),
-#            #(0.1, c_creates_button),
-#            (0.2, c_moves))
-# "normal builder" definition
 ACTIONS = ( c_login,
             c_logout,
-            (0.5, c_looks),
-            (0.08, c_examines),
-            (0.1, c_help),
-            (0.01, c_digs),
-            (0.01, c_creates_obj),
+            (0.2, c_looks),
+            (0.1, c_examines),
+            (0.2, c_help),
+            (0.1, c_digs),
+            (0.1, c_creates_obj),
             #(0.1, c_creates_button),
-            (0.3, c_moves))
+            (0.2, c_moves))
+# "normal builder" definition
+#ACTIONS = ( c_login,
+#            c_logout,
+#            (0.5, c_looks),
+#            (0.08, c_examines),
+#            (0.1, c_help),
+#            (0.01, c_digs),
+#            (0.01, c_creates_obj),
+#            #(0.1, c_creates_button),
+#            (0.3, c_moves))
 # "normal player" definition
 #ACTIONS = ( c_login,
 #            c_logout,
