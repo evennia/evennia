@@ -8,7 +8,8 @@ from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
 from src.utils.utils import to_unicode
-from src.utils import logger
+
+ObjAttribute = None
 
 __all__ = ("ObjectManager",)
 
@@ -104,11 +105,13 @@ class ObjectManager(TypedObjectManager):
         """
         Returns all objects having the given attribute_name defined at all.
         """
-        from src.objects.models import ObjAttribute
+        global _ObjAttribute
+        if not ObjAttribute:
+            from src.objects.models import ObjAttribute as _ObjAttribute
         lstring = ""
         if location:
             lstring = ", db_obj__db_location=location"
-        attrs = eval("ObjAttribute.objects.filter(db_key=attribute_name%s)" % lstring)
+        attrs = eval("_ObjAttribute.objects.filter(db_key=attribute_name%s)" % lstring)
         return [attr.obj for attr in attrs]
 
     @returns_typeclass_list
@@ -118,7 +121,9 @@ class ObjectManager(TypedObjectManager):
         attrname set to the given value. Note that no conversion is made
         to attribute_value, and so it can accept also non-strings.
         """
-        from src.objects.models import ObjAttribute
+        global _ObjAttribute
+        if not ObjAttribute:
+            from src.objects.models import ObjAttribute as _ObjAttribute
         lstring = ""
         if location:
             lstring = ", db_obj__db_location=location"

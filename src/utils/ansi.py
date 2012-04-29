@@ -129,6 +129,15 @@ class ANSIParser(object):
             (r'(?<!\\){(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
             ]
 
+        # matching for cleaning out escaped colour codes (used with sub)
+
+        self.clean_escapes = [
+            (r"\\{", "{"),
+            (r"\\%r", "%r"),
+            (r"\\%b", "%b"),
+            (r"\\%c", "%c")
+            ]
+
         # obs - order matters here, we want to do the xterms first since
         # they collide with some of the other mappings otherwise.
         self.ansi_map = self.xterm256_map + self.mux_ansi_map + self.ext_ansi_map
@@ -136,6 +145,9 @@ class ANSIParser(object):
         # prepare regex matching
         self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
                          for sub in self.ansi_map]
+
+        self.escape_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
+                          for sub in self.clean_escapes]
 
         # prepare matching ansi codes overall
         self.ansi_regex = re.compile("\033\[[0-9;]+m")
@@ -160,8 +172,10 @@ class ANSIParser(object):
 
         if self.do_xterm256:
             colval = 16 + (red * 36) + (green * 6) + blue
+            #print "RGB colours:", red, green, blue
             return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval/100, (colval%100)/10, colval%10)
         else:
+            #print "ANSI convert:", red, green, blue
             # xterm256 not supported, convert the rgb value to ansi instead
             if red == green and red == blue and red < 2:
                 if background: return ANSI_BACK_BLACK
@@ -216,11 +230,9 @@ class ANSIParser(object):
         if strip_ansi:
             # remove all ANSI escape codes
             string = self.ansi_regex.sub("", string)
-        # strip the \ in front of escaped colour codes, like \{r.
-        string = re.sub(r"\\{", "{", string)
-        string = re.sub(r"\\%r", "%r", string)
-        string = re.sub(r"\\%b", "%b", string)
-        string = re.sub(r"\\%c", "%c", string)
+        for sub in self.escape_sub:
+            # strip the \ in front of escaped colour codes, like \{r.
+            string = sub[0].sub(sub[1], string)
         return string
 
 

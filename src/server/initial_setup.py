@@ -211,7 +211,7 @@ def reset_server():
     It also checks so the warm-reset mechanism works as it should.
     """
     from src.server.sessionhandler import SESSIONS
-    print _(" Initial setup finished. Resetting/Reloading Server.")
+    print _(" Initial setup complete. Resetting/reloading Server.")
     SESSIONS.server.shutdown(mode='reset')
 
 def handle_setup(last_step):
