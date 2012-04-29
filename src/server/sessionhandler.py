@@ -14,9 +14,9 @@ There are two similar but separate stores of sessions:
 
 import time
 from django.conf import settings
-from src.server.models import ServerConfig
-
 from src.commands.cmdhandler import CMD_LOGINSTART
+
+_ServerConfig = None
 
 # AMP signals
 PCONN = chr(1)       # portal session connect
@@ -31,9 +31,13 @@ SSYNC = chr(8)       # server session sync
 # i18n
 from django.utils.translation import ugettext as _
 
+SERVERNAME = settings.SERVERNAME
 ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
+#-----------------------------------------------------------
+# SessionHandler base class
+#------------------------------------------------------------
 
 class SessionHandler(object):
     """
@@ -96,7 +100,7 @@ class ServerSessionHandler(SessionHandler):
         """
         self.sessions = {}
         self.server = None
-        self.server_data = {"servername":settings.SERVERNAME}
+        self.server_data = {"servername":SERVERNAME}
 
     def portal_connect(self, sessid, session):
         """
@@ -234,17 +238,21 @@ class ServerSessionHandler(SessionHandler):
         num can be a positive or negative value to be added to the current count.
         If 0, the counter will be reset to 0.
         """
+        global _ServerConfig
+        if not _ServerConfig:
+            from src.server.models import ServerConfig as _ServerConfig
+
         if num == None:
             # show the current value. This also syncs it.
-            return int(ServerConfig.objects.conf('nr_sessions', default=0))
+            return int(_ServerConfig.objects.conf('nr_sessions', default=0))
         elif num == 0:
             # reset value to 0
-            ServerConfig.objects.conf('nr_sessions', 0)
+            _ServerConfig.objects.conf('nr_sessions', 0)
         else:
             # add/remove session count from value
-            add = int(ServerConfig.objects.conf('nr_sessions', default=0))
+            add = int(_ServerConfig.objects.conf('nr_sessions', default=0))
             num = max(0, num + add)
-            ServerConfig.objects.conf('nr_sessions', str(num))
+            _ServerConfig.objects.conf('nr_sessions', str(num))
 
     def player_count(self):
         """
@@ -407,7 +415,7 @@ class PortalSessionHandler(SessionHandler):
         in from the protocol to the server. data is
         serialized before passed on.
         """
-        print "portal_data_in:", string
+        #print "portal_data_in:", string
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=string,
                                                               data=data)
