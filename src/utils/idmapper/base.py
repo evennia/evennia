@@ -1,29 +1,24 @@
 """
-This is mostly unmodified from the original idmapper.
+Django ID mapper
 
-Evennia changes:
-  The cache mechanism was changed from a WeakValueDictionary to a
-  normal dictionary. The old way caused very hard-to-diagnose bugs
-  over long periods of time (which Evennia requires)
+Modified for Evennia by making sure that no model references
+leave caching unexpectedly (no use if WeakRefs).
 
-  added save() overloading mechanism to update cache
-
-  added get_all_cached_instances() for convenient access to objects
-
+Also adds cache_size() for monitoring the size of the cache.
 """
 
 from django.db.models.base import Model, ModelBase
+from django.db.models.signals import post_save, pre_delete, \
+  post_syncdb
+
 from manager import SharedMemoryManager
 
+
 class SharedMemoryModelBase(ModelBase):
-    #def __new__(cls, name, bases, attrs):
-    #    super_new = super(ModelBase, cls).__new__
-    #    parents = [b for b in bases if isinstance(b, SharedMemoryModelBase)]
-    #    if not parents:
-    #        # If this isn't a subclass of Model, don't do anything special.
-    #        print "not a subclass of Model", name, bases
-    #        return super_new(cls, name, bases, attrs)
-    #    return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
+    # CL: upstream had a __new__ method that skipped ModelBase's __new__ if
+    # SharedMemoryModelBase was not in the model class's ancestors. It's not
+    # clear what was the intended purpose, but skipping ModelBase.__new__
+    # broke things; in particular, default manager inheritance.
 
     def __call__(cls, *args, **kwargs):
         """
@@ -34,9 +29,6 @@ class SharedMemoryModelBase(ModelBase):
         """
         def new_instance():
             return super(SharedMemoryModelBase, cls).__call__(*args, **kwargs)
-
-        #if _get_full_cache:
-        #    return cls.__instance_cache__.values()
 
         instance_key = cls._get_cache_key(args, kwargs)
         # depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance
@@ -51,16 +43,16 @@ class SharedMemoryModelBase(ModelBase):
         return cached_instance
 
     def _prepare(cls):
-        # this is the core cache
-        cls.__instance_cache__ = {} #WeakValueDictionary()
+        cls.__instance_cache__ = {}  #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
 
 
-
 class SharedMemoryModel(Model):
-    # XXX: this is creating a model and it shouldn't be.. how do we properly
-    # subclass now?
+    # CL: setting abstract correctly to allow subclasses to inherit the default
+    # manager.
     __metaclass__ = SharedMemoryModelBase
+
+    objects = SharedMemoryManager()
 
     class Meta:
         abstract = True
@@ -117,9 +109,11 @@ class SharedMemoryModel(Model):
         return cls.__instance_cache__.values()
     get_all_cached_instances = classmethod(get_all_cached_instances)
 
-
     def _flush_cached_by_key(cls, key):
-        del cls.__instance_cache__[key]
+        try:
+            del cls.__instance_cache__[key]
+        except KeyError:
+            pass
     _flush_cached_by_key = classmethod(_flush_cached_by_key)
 
     def flush_cached_instance(cls, instance):
@@ -128,31 +122,59 @@ class SharedMemoryModel(Model):
         since this is most likely called from delete(), and we want to make sure we don't cache dead objects.
         """
         cls._flush_cached_by_key(instance._get_pk_val())
-        #key = "%s-%s" % (cls, instance.pk)
-        #print "uncached: %s (%s: %s) (total cached: %s)" % (instance, cls.__name__, len(cls.__instance_cache__), len(TCACHE))
-
     flush_cached_instance = classmethod(flush_cached_instance)
 
-    def save(self, *args, **kwargs):
-        #ssave = super(SharedMemoryModel, self).save
-        #reactor.callInThread(ssave, *args, **kwargs)
-        super(SharedMemoryModel, self).save(*args, **kwargs)
-        self.__class__.cache_instance(self)
-
-    # TODO: This needs moved to the prepare stage (I believe?)
-    objects = SharedMemoryManager()
-
-from django.db.models.signals import pre_delete
+    def flush_instance_cache(cls):
+        cls.__instance_cache__ = {} #WeakValueDictionary()
+    flush_instance_cache = classmethod(flush_instance_cache)
 
 # Use a signal so we make sure to catch cascades.
-def flush_singleton_cache(sender, instance, **kwargs):
-    # XXX: Is this the best way to make sure we can flush?
-    if isinstance(instance, SharedMemoryModel):
-        instance.__class__.flush_cached_instance(instance)
-pre_delete.connect(flush_singleton_cache)
+def flush_cache(**kwargs):
+    for model in SharedMemoryModel.__subclasses__():
+        model.flush_instance_cache()
+#request_finished.connect(flush_cache)
+post_syncdb.connect(flush_cache)
 
-# XXX: It's to be determined if we should use this or not.
-# def update_singleton_cache(sender, instance, **kwargs):
-#     if isinstance(instance.__class__, SharedMemoryModel):
-#          instance.__class__.cache_instance(instance)
-# post_save.connect(flush_singleton_cache)
+
+def flush_cached_instance(sender, instance, **kwargs):
+    # XXX: Is this the best way to make sure we can flush?
+    if not hasattr(instance, 'flush_cached_instance'):
+        return
+    sender.flush_cached_instance(instance)
+pre_delete.connect(flush_cached_instance)
+
+def update_cached_instance(sender, instance, **kwargs):
+    if not hasattr(instance, 'cache_instance'):
+        return
+    sender.cache_instance(instance)
+post_save.connect(update_cached_instance)
+
+def cache_size(mb=True):
+    """
+    Returns a dictionary with estimates of the
+    cache size of each subclass.
+
+    mb - return the result in MB.
+    """
+    import sys
+    sizedict = {"_total": [0, 0]}
+    def getsize(model):
+        instances = model.get_all_cached_instances()
+        linst = len(instances)
+        size = sum([sys.getsizeof(o) for o in instances])
+        size = (mb and size/1024.0) or size
+        return (linst, size)
+    def get_recurse(submodels):
+        for submodel in submodels:
+            subclasses = submodel.__subclasses__()
+            if not subclasses:
+                tup = getsize(submodel)
+                sizedict["_total"][0] += tup[0]
+                sizedict["_total"][1] += tup[1]
+                sizedict[submodel.__name__] = tup
+            else:
+                get_recurse(subclasses)
+    get_recurse(SharedMemoryModel.__subclasses__())
+    sizedict["_total"] = tuple(sizedict["_total"])
+    return sizedict
+

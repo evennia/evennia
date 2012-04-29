@@ -1,3 +1,13 @@
+This fork of django-idmapper fixes some bugs that prevented the idmapper from
+being used in many instances. In particular, the caching manager is now inherited
+by SharedMemoryManager subclasses, and it is used when Django uses an automatic
+manager (see http://docs.djangoproject.com/en/dev/topics/db/managers/#controlling-automatic-manager-types). This means access through foreign keys now uses
+identity mapping.
+
+Tested with Django version 1.2 alpha 1 SVN-12375.
+
+My modifications are usually accompanied by comments marked with "CL:".
+
 Django Identity Mapper
 ======================
 
@@ -17,7 +27,7 @@ For example, if you want to simply mark all of your models as a SharedMemoryMode
 	class MyModel(models.SharedMemoryModel):
 	    name = models.CharField(...)
 
-Because the system is isolated, you may mix and match SharedMemoryModel's with regular Model's.
+Because the system is isolated, you may mix and match SharedMemoryModels with regular Models. The module idmapper.models imports everything from django.db.models and only adds SharedMemoryModel, so you can simply replace your import of models from django.db.
 ::
 
 	from idmapper import models

@@ -16,6 +16,10 @@ from src.players.models import PlayerDB
 from src.utils import logger, utils, gametime, create
 from src.commands.default.muxcommand import MuxCommand
 
+_resource = None
+_idmapper = None
+
+
 # limit symbol import for API
 __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
            "CmdScripts", "CmdObjects", "CmdService", "CmdVersion",
@@ -540,7 +544,8 @@ class CmdServerLoad(MuxCommand):
 
     Show server load statistics in a table.
     """
-    key = "@serverload"
+    key = "@server"
+    aliases = ["@serverload", "@serverprocess"]
     locks = "cmd:perm(list) or perm(Immortals)"
     help_category = "System"
 
@@ -554,9 +559,15 @@ class CmdServerLoad(MuxCommand):
         if not utils.host_os_is('posix'):
             string = "Process listings are only available under Linux/Unix."
         else:
+            global _resource, _idmapper
+            if not _resource:
+                import resource as _resource
+            if not _idmapper:
+                from src.utils.idmapper import base as _idmapper
+
             import resource
             loadavg = os.getloadavg()
-            psize = resource.getpagesize()
+            psize = _resource.getpagesize()
             pid = os.getpid()
             rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1024.0
             vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0
@@ -579,8 +590,8 @@ class CmdServerLoad(MuxCommand):
                       "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime),
                       #"%10d shared" % rusage.ru_ixrss,
                       #"%10d pages" % rusage.ru_maxrss,
-                      "%10d Mb" % rmem,
-                      "%10d Mb" % vmem,
+                      "%10.2f MB" % rmem,
+                      "%10.2f MB" % vmem,
                       "%10d hard" % rusage.ru_majflt,
                       "%10d reads" % rusage.ru_inblock,
                       "%10d in" % rusage.ru_msgrcv,
@@ -611,6 +622,18 @@ class CmdServerLoad(MuxCommand):
             for row in ftable:
                 string += "\n " + "{w%s{n" % row[0] + "".join(row[1:])
 
+            # cache size
+            cachedict = _idmapper.cache_size()
+            totcache = cachedict["_total"]
+            string += "\n{w Object cache usage: %5.2f MB (%i items){n" % (totcache[1], totcache[0])
+            sorted_cache = sorted([(key, tup[0], tup[1]) for key, tup in cachedict.items() if key !="_total" and tup[0] > 0],
+                                    key=lambda tup: tup[2], reverse=True)
+            table = [[tup[0] for tup in sorted_cache],
+                     ["%5.2f MB" % tup[2] for tup in sorted_cache],
+                     ["%i item(s)" % tup[1] for tup in sorted_cache]]
+            ftable = utils.format_table(table, 5)
+            for row in ftable:
+                string += "\n  " + row[0] + row[1] + row[2]
         caller.msg(string)
 
 # class CmdPs(MuxCommand):
