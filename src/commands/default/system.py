@@ -7,6 +7,7 @@ System commands
 import traceback
 import os, datetime, time
 from sys import getsizeof
+import sys
 import django, twisted
 
 from django.conf import settings
@@ -474,27 +475,51 @@ class CmdService(MuxCommand):
             caller.msg("Starting service '%s'." % self.args)
             service.startService()
 
-class CmdVersion(MuxCommand):
+class CmdAbout(MuxCommand):
     """
-    @version - game version
+    @about - game engine info
 
     Usage:
-      @version
+      @about
 
-    Display the game version info.
+    Display info about the game engine.
     """
 
-    key = "@version"
+    key = "@about"
+    aliases = "@version"
+    locks = "cmd:all()"
     help_category = "System"
 
     def func(self):
         "Show the version"
-        version = utils.get_evennia_version()
-        string = "-" * 50 + "\n\r"
-        string += " {cEvennia{n %s\n\r" % version
-        string += " (Django %s, " % (django.get_version())
-        string += " Twisted %s)\n\r" % (twisted.version.short())
-        string += "-" * 50
+        try:
+            import south
+            sversion = "{wSouth{n %s" % south.__version__
+        except ImportError:
+            sversion = "{wSouth{n <not installed>"
+
+        string = """
+         {cEvennia{n %s{n
+         MUD/MUX/MU* development system
+
+         {wLicence{n Artistic Licence/GPL
+         {wWeb{n http://www.evennia.com
+         {wIrc{n #evennia on FreeNode
+         {wForum{n http://www.evennia.com/discussions
+         {wMaintainer{n (2010-)   Griatch (griatch AT gmail DOT com)
+         {wMaintainer{n (2006-10) Greg Taylor
+
+         {wOS{n %s
+         {wPython{n %s
+         {wDjango{n %s
+         {wTwisted{n %s
+         %s
+        """ % (utils.get_evennia_version(),
+               os.name,
+               sys.version.split()[0],
+               django.get_version(),
+               twisted.version.short(),
+               sversion)
         self.caller.msg(string)
 
 class CmdTime(MuxCommand):

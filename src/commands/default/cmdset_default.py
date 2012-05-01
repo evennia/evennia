@@ -39,7 +39,7 @@ class DefaultCmdSet(CmdSet):
         self.add(system.CmdScripts())
         self.add(system.CmdObjects())
         self.add(system.CmdService())
-        self.add(system.CmdVersion())
+        self.add(system.CmdAbout())
         self.add(system.CmdTime())
         self.add(system.CmdServerLoad())
         #self.add(system.CmdPs())
