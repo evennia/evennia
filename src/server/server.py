@@ -233,7 +233,6 @@ class Evennia(object):
             if mode == 'reset':
                 # don't call disconnect hooks on reset
                 yield [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
-                yield self.all_sessions_portal_sync()
             else: # shutdown
                 yield [(o.typeclass, o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
 
