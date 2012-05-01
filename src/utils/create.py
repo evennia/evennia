@@ -21,22 +21,36 @@ Models covered:
  Channel
  Players
 """
-
+from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import utils, logger
 
+# delayed imports
+_User = None
+_Object = None
+_ObjectDB = None
+_Script = None
+_ScriptDB = None
+_HelpEntry = None
+_Msg = None
+_Player = None
+_PlayerDB = None
+_to_object = None
+_Channel = None
+_channelhandler = None
+
+
 # limit symbol import from API
 __all__ = ("create_object", "create_script", "create_help_entry", "create_message", "create_channel", "create_player")
 
-GA = object.__getattribute__
+_GA = object.__getattribute__
 
 #
 # Game Object creation
 #
-
 
 def create_object(typeclass, key=None, location=None,
                   home=None, player=None, permissions=None, locks=None,
@@ -57,21 +71,23 @@ def create_object(typeclass, key=None, location=None,
               containing the error message. If set, this method will return
               None upon errors.
     """
-    # deferred import to avoid loops
-    from src.objects.objects import Object
-    from src.objects.models import ObjectDB
+    global _Object, _ObjectDB
+    if not _Object:
+        from src.objects.objects import Object as _Object
+    if not _ObjectDB:
+        from src.objects.models import ObjectDB as _ObjectDB
 
     if not typeclass:
         typeclass = settings.BASE_OBJECT_TYPECLASS
-    elif isinstance(typeclass, ObjectDB):
+    elif isinstance(typeclass, _ObjectDB):
         # this is already an objectdb instance, extract its typeclass
         typeclass = typeclass.typeclass.path
-    elif isinstance(typeclass, Object) or utils.inherits_from(typeclass, Object):
+    elif isinstance(typeclass, _Object) or utils.inherits_from(typeclass, _Object):
         # this is already an object typeclass, extract its path
         typeclass = typeclass.path
 
     # create new database object
-    new_db_object = ObjectDB()
+    new_db_object = _ObjectDB()
 
     # assign the typeclass
     typeclass = utils.to_unicode(typeclass)
@@ -82,20 +98,20 @@ def create_object(typeclass, key=None, location=None,
     if key:
         new_db_object.key = key
     else:
-        new_db_object.key = "#%i" % new_db_object.id
+        new_db_object.key = "#%i" % new_db_object.dbid
 
     # this will either load the typeclass or the default one
     new_object = new_db_object.typeclass
 
-    if not GA(new_object, "is_typeclass")(typeclass, exact=True):
+    if not _GA(new_object, "is_typeclass")(typeclass, exact=True):
         # this will fail if we gave a typeclass as input and it still gave us a default
         SharedMemoryModel.delete(new_db_object)
         if report_to:
-            GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_object.key, typeclass,
-                                                                 GA(new_db_object, "typeclass_last_errmsg")))
+            _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_object.key, typeclass,
+                                                                 _GA(new_db_object, "typeclass_last_errmsg")))
             return None
         else:
-            raise Exception(GA(new_db_object, "typeclass_last_errmsg"))
+            raise Exception(_GA(new_db_object, "typeclass_last_errmsg"))
 
     # from now on we can use the typeclass object
     # as if it was the database object.
@@ -117,7 +133,7 @@ def create_object(typeclass, key=None, location=None,
     if permissions:
         new_object.permissions = permissions
     if locks:
-        new_object.locks.add(locks)
+         new_object.locks.add(locks)
     if aliases:
         new_object.aliases = aliases
 
@@ -125,11 +141,11 @@ def create_object(typeclass, key=None, location=None,
     if home:
         new_object.home = home
     else:
-        new_object.home = settings.CHARACTER_DEFAULT_HOME
+        new_object.home =  settings.CHARACTER_DEFAULT_HOME
 
 
     if location:
-        new_object.move_to(location, quiet=True)
+         new_object.move_to(location, quiet=True)
     else:
         # rooms would have location=None.
         new_object.location = None
@@ -174,23 +190,23 @@ def create_script(typeclass, key=None, obj=None, locks=None,
               error will be raised. If set, this method will
               return None upon errors.
     """
-
-    # deferred import to avoid loops.
-    from src.scripts.scripts import Script
-    #print "in create_script", typeclass
-    from src.scripts.models import ScriptDB
+    global _Script, _ScriptDB
+    if not _Script:
+        from src.scripts.scripts import Script as _Script
+    if not _ScriptDB:
+        from src.scripts.models import ScriptDB as _ScriptDB
 
     if not typeclass:
         typeclass = settings.BASE_SCRIPT_TYPECLASS
-    elif isinstance(typeclass, ScriptDB):
+    elif isinstance(typeclass, _ScriptDB):
         # this is already an scriptdb instance, extract its typeclass
         typeclass = typeclass.typeclass.path
-    elif isinstance(typeclass, Script) or utils.inherits_from(typeclass, Script):
+    elif isinstance(typeclass, _Script) or utils.inherits_from(typeclass, _Script):
         # this is already an object typeclass, extract its path
         typeclass = typeclass.path
 
     # create new database script
-    new_db_script = ScriptDB()
+    new_db_script = _ScriptDB()
 
     # assign the typeclass
     typeclass = utils.to_unicode(typeclass)
@@ -206,15 +222,15 @@ def create_script(typeclass, key=None, obj=None, locks=None,
     # this will either load the typeclass or the default one
     new_script = new_db_script.typeclass
 
-    if not GA(new_db_script, "is_typeclass")(typeclass, exact=True):
+    if not _GA(new_db_script, "is_typeclass")(typeclass, exact=True):
         # this will fail if we gave a typeclass as input and it still gave us a default
         SharedMemoryModel.delete(new_db_script)
         if report_to:
-            GA(report_to, "msg")("Error creating %s (%s): %s" % (new_db_script.key, typeclass,
-                                                                 GA(new_db_script, "typeclass_last_errmsg")))
+            _GA(report_to, "msg")("Error creating %s (%s): %s" % (new_db_script.key, typeclass,
+                                                                 _GA(new_db_script, "typeclass_last_errmsg")))
             return None
         else:
-            raise Exception(GA(new_db_script, "typeclass_last_errmsg"))
+            raise Exception(_GA(new_db_script, "typeclass_last_errmsg"))
 
     if obj:
         try:
@@ -262,10 +278,12 @@ def create_help_entry(key, entrytext, category="General", locks=None):
     general help on the game, more extensive info, in-game setting information
     and so on.
     """
+    global _HelpEntry
+    if not _HelpEntry:
+        from src.help.models import HelpEntry as _HelpEntry
 
-    from src.help.models import HelpEntry
     try:
-        new_help = HelpEntry()
+        new_help = _HelpEntry()
         new_help.key = key
         new_help.entrytext = entrytext
         new_help.help_category = category
@@ -308,13 +326,17 @@ def create_message(senderobj, message, channels=None,
     at the same time, it's up to the command definitions to limit this as
     desired.
     """
-    from src.comms.models import Msg
-    from src.players.models import PlayerDB
-    from src.comms.managers import to_object
+    global _Msg, _PlayerDB, _to_object
+    if not _Msg:
+        from src.comms.models import Msg as _Msg
+    if not _PlayerDB:
+        from src.players.models import PlayerDB as _PlayerDB
+    if not _to_object:
+        from src.comms.managers import to_object as _to_object
 
     def to_player(obj):
         "Make sure the object is a player object"
-        if isinstance(obj, PlayerDB):
+        if isinstance(obj, _PlayerDB):
             return obj
         elif hasattr(obj, 'user'):
             return obj.dbobj
@@ -327,7 +349,7 @@ def create_message(senderobj, message, channels=None,
         # we don't allow empty messages.
         return
 
-    new_message = Msg()
+    new_message = _Msg()
     new_message.sender = to_player(senderobj)
     new_message.message = message
     new_message.save()
@@ -335,7 +357,7 @@ def create_message(senderobj, message, channels=None,
         if not utils.is_iter(channels):
             channels = [channels]
         new_message.channels = [channel for channel in
-                                [to_object(channel, objtype='channel')
+                                [_to_object(channel, objtype='channel')
                                  for channel in channels] if channel]
     if receivers:
         #print "Found receiver:", receivers
@@ -343,7 +365,7 @@ def create_message(senderobj, message, channels=None,
             receivers = [receivers]
         #print "to_player: %s" % to_player(receivers[0])
         new_message.receivers = [to_player(receiver) for receiver in
-                                 [to_object(receiver) for receiver in receivers]
+                                 [_to_object(receiver) for receiver in receivers]
                                  if receiver]
     if locks:
         new_message.locks.add(locks)
@@ -366,11 +388,13 @@ def create_channel(key, aliases=None, desc=None,
     aliases - list of alternative (likely shorter) keynames.
     locks - lock string definitions
     """
-
-    from src.comms.models import Channel
-    from src.comms import channelhandler
+    global _Channel, _channelhandler
+    if not _Channel:
+        from src.comms.models import Channel as _Channel
+    if not _channelhandler:
+        from src.comms import channelhandler as _channelhandler
     try:
-        new_channel = Channel()
+        new_channel = _Channel()
         new_channel.key = key
         if aliases:
             if not utils.is_iter(aliases):
@@ -385,7 +409,7 @@ def create_channel(key, aliases=None, desc=None,
     if locks:
         new_channel.locks.add(locks)
     new_channel.save()
-    channelhandler.CHANNELHANDLER.add_channel(new_channel)
+    _channelhandler.CHANNELHANDLER.add_channel(new_channel)
     return new_channel
 
 channel = create_channel
@@ -445,9 +469,11 @@ def create_player(name, email, password,
     # The system should already have checked so the name/email
     # isn't already registered, and that the password is ok before
     # getting here.
-
-    from src.players.models import PlayerDB
-    from src.players.player import Player
+    global _PlayerDB, _Player
+    if not _PlayerDB:
+        from src.players.models import PlayerDB as _PlayerDB
+    if not _Player:
+        from src.players.player import Player as _Player
 
     if not email:
         email = "dummy@dummy.com"
@@ -462,17 +488,17 @@ def create_player(name, email, password,
     try:
         if not typeclass:
             typeclass = settings.BASE_PLAYER_TYPECLASS
-        elif isinstance(typeclass, PlayerDB):
+        elif isinstance(typeclass, _PlayerDB):
             # this is already an objectdb instance, extract its typeclass
             typeclass = typeclass.typeclass.path
-        elif isinstance(typeclass, Player) or utils.inherits_from(typeclass, Player):
+        elif isinstance(typeclass, _Player) or utils.inherits_from(typeclass, _Player):
             # this is already an object typeclass, extract its path
             typeclass = typeclass.path
 
         if player_dbobj:
             new_db_player = player_dbobj
         else:
-            new_db_player = PlayerDB(db_key=name, user=new_user)
+            new_db_player = _PlayerDB(db_key=name, user=new_user)
             new_db_player.save()
 
         # assign the typeclass
@@ -482,15 +508,15 @@ def create_player(name, email, password,
         # this will either load the typeclass or the default one
         new_player = new_db_player.typeclass
 
-        if not GA(new_db_player, "is_typeclass")(typeclass, exact=True):
+        if not _GA(new_db_player, "is_typeclass")(typeclass, exact=True):
             # this will fail if we gave a typeclass as input and it still gave us a default
             SharedMemoryModel.delete(new_db_player)
             if report_to:
-                GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_player.key, typeclass,
-                                                                      GA(new_db_player, "typeclass_last_errmsg")))
+                _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_player.key, typeclass,
+                                                                      _GA(new_db_player, "typeclass_last_errmsg")))
                 return None
             else:
-                raise Exception(GA(new_db_player, "typeclass_last_errmsg"))
+                raise Exception(_GA(new_db_player, "typeclass_last_errmsg"))
 
         new_player.basetype_setup() # setup the basic locks and cmdset
         # call hook method (may override default permissions)
