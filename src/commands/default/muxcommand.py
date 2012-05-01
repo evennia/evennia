@@ -2,7 +2,7 @@
 The command template for the default MUX-style command set
 """
 
-from src.utils import utils 
+from src.utils import utils
 from src.commands.command import Command
 
 # limit symbol import for API
@@ -18,17 +18,17 @@ class MuxCommand(Command):
 
     Note that the class's __doc__ string (this text) is
     used by Evennia to create the automatic help entry for
-    the command, so make sure to document consistently here. 
+    the command, so make sure to document consistently here.
     """
     def has_perm(self, srcobj):
         """
         This is called by the cmdhandler to determine
         if srcobj is allowed to execute this command.
         We just show it here for completeness - we
-        are satisfied using the default check in Command. 
+        are satisfied using the default check in Command.
         """
         return super(MuxCommand, self).has_perm(srcobj)
-    
+
     def at_pre_cmd(self):
         """
         This hook is called before self.parse() on all commands
@@ -37,7 +37,7 @@ class MuxCommand(Command):
 
     def at_post_cmd(self):
         """
-        This hook is called after the command has finished executing 
+        This hook is called after the command has finished executing
         (after self.func()).
         """
         pass
@@ -55,17 +55,17 @@ class MuxCommand(Command):
            self.aliases - the aliases of this cmd ('l')
            self.permissions - permission string for this command
            self.help_category - overall category of command
-           
+
            self.caller - the object calling this command
            self.cmdstring - the actual command name used to call this
                             (this allows you to know which alias was used,
                              for example)
            self.args - the raw input; everything following self.cmdstring.
            self.cmdset - the cmdset from which this command was picked. Not
-                         often used (useful for commands like 'help' or to 
+                         often used (useful for commands like 'help' or to
                          list all available commands etc)
            self.obj - the object on which this command was defined. It is often
-                         the same as self.caller. 
+                         the same as self.caller.
 
         A MUX command has the following possible syntax:
 
@@ -74,32 +74,32 @@ class MuxCommand(Command):
         The 'name[ with several words]' part is already dealt with by the
         cmdhandler at this point, and stored in self.cmdname (we don't use
         it here). The rest of the command is stored in self.args, which can start
-        with the switch indicator /. 
+        with the switch indicator /.
 
-        This parser breaks self.args into its constituents and stores them in the 
-        following variables:         
+        This parser breaks self.args into its constituents and stores them in the
+        following variables:
           self.switches = [list of /switches (without the /)]
           self.raw = This is the raw argument input, including switches
           self.args = This is re-defined to be everything *except* the switches
-          self.lhs = Everything to the left of = (lhs:'left-hand side'). If 
+          self.lhs = Everything to the left of = (lhs:'left-hand side'). If
                      no = is found, this is identical to self.args.
-          self.rhs: Everything to the right of = (rhs:'right-hand side'). 
+          self.rhs: Everything to the right of = (rhs:'right-hand side').
                     If no '=' is found, this is None.
           self.lhslist - [self.lhs split into a list by comma]
           self.rhslist - [list of self.rhs split into a list by comma]
           self.arglist = [list of space-separated args (stripped, including '=' if it exists)]
-          
-          All args and list members are stripped of excess whitespace around the 
-          strings, but case is preserved.     
+
+          All args and list members are stripped of excess whitespace around the
+          strings, but case is preserved.
         """
-        raw = self.args 
+        raw = self.args
         args = raw.strip()
 
-        # split out switches        
+        # split out switches
         switches = []
         if args and len(args) > 1 and args[0] == "/":
             # we have a switch, or a set of switches. These end with a space.
-            #print "'%s'" % args            
+            #print "'%s'" % args
             switches = args[1:].split(None, 1)
             if len(switches) > 1:
                 switches, args = switches
@@ -108,17 +108,17 @@ class MuxCommand(Command):
                 args = ""
                 switches = switches[0].split('/')
         arglist = [arg.strip() for arg in args.split()]
-        
-        # check for arg1, arg2, ... = argA, argB, ... constructs 
-        lhs, rhs = args, None 
+
+        # check for arg1, arg2, ... = argA, argB, ... constructs
+        lhs, rhs = args, None
         lhslist, rhslist = [arg.strip() for arg in args.split(',')], []
-        if args and '=' in args:            
+        if args and '=' in args:
             lhs, rhs = [arg.strip() for arg in args.split('=', 1)]
             lhslist = [arg.strip() for arg in lhs.split(',')]
             rhslist = [arg.strip() for arg in rhs.split(',')]
 
         # save to object properties:
-        self.raw = raw 
+        self.raw = raw
         self.switches = switches
         self.args = args.strip()
         self.arglist = arglist
@@ -131,26 +131,26 @@ class MuxCommand(Command):
         """
         This is the hook function that actually does all the work. It is called
          by the cmdhandler right after self.parser() finishes, and so has access
-         to all the variables defined therein.         
+         to all the variables defined therein.
         """
         # a simple test command to show the available properties
         string = "-" * 50
-        string += "\n{w%s{n - Command variables from evennia:\n" % self.key 
+        string += "\n{w%s{n - Command variables from evennia:\n" % self.key
         string += "-" * 50
-        string += "\nname of cmd (self.key): {w%s{n\n" % self.key 
+        string += "\nname of cmd (self.key): {w%s{n\n" % self.key
         string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
         string += "cmd locks (self.locks): {w%s{n\n" % self.locks
         string += "help category (self.help_category): {w%s{n\n" % self.help_category
         string += "object calling (self.caller): {w%s{n\n" % self.caller
         string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
-        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring        
+        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
         string += utils.fill("current cmdset (self.cmdset): {w%s{n\n" % self.cmdset)
-        
+
 
         string += "\n" + "-" * 50
         string +=  "\nVariables from MuxCommand baseclass\n"
-        string += "-" * 50 
+        string += "-" * 50
         string += "\nraw argument (self.raw): {w%s{n \n" % self.raw
         string += "cmd args (self.args): {w%s{n\n" % self.args
         string += "cmd switches (self.switches): {w%s{n\n" % self.switches
@@ -159,5 +159,5 @@ class MuxCommand(Command):
         string += "lhs, comma separated (self.lhslist): {w%s{n\n" % self.lhslist
         string += "rhs, right-hand side of '=' (self.rhs): {w%s{n\n" % self.rhs
         string += "rhs, comma separated (self.rhslist): {w%s{n\n" % self.rhslist
-        string += "-" * 50 
+        string += "-" * 50
         self.caller.msg(string)

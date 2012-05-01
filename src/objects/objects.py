@@ -31,17 +31,21 @@ class Object(TypeClass):
     # __init__ is only defined here in order to present docstring to API.
     def __init__(self, dbobj):
         """
-        This is the root typeclass object, implementing an in-game Evennia
-        game object, such as having a location, being able to be
-        manipulated or looked at, etc. If you create a new typeclass, it
-        must always inherit from this object (or any of the other objects
-        in this file, since they all actually inherit from BaseObject, as
-        seen in src.object.objects).
+        This is the root typeclass object representing all entities
+        that has and actual presence in-game. Objects generally has a
+        location, can be manipulated and looked at. Most game entities
+        you define should inherit from Object at some distance.
+        Important subclasses of Object are that Evennia defines by
+        default for you are Characters, Exits and Rooms.
+
+        Note that all Objects and its subclasses *must* always be
+        created using the ev.create_object() function. This is so the
+        typeclass system can be correctly initiated behind the scenes.
 
 
         Object Typeclass API:
 
-        * Available properties (only available on initiated typeclass objects)
+        * Available properties (only available on *initiated* typeclass objects)
 
          key (string) - name of object
          name (string)- same as key
