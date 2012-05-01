@@ -41,6 +41,7 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import logger, utils
+from src.commands.cmdset import CmdSet
 from src.commands.cmdparser import at_multimatch_cmd
 from src.utils.utils import string_suggestions
 
@@ -133,9 +134,11 @@ def get_and_merge_cmdsets(caller):
     except AttributeError:
         player_cmdset = None
 
-    cmdsets = [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_objects_cmdsets
+    cmdsets = yield [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_objects_cmdsets
     # weed out all non-found sets
     cmdsets = yield [cmdset for cmdset in cmdsets if cmdset]
+    # report cmdset errors to user (these should already have been logged)
+    yield [caller.msg(cmdset.message) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
     # sort cmdsets after reverse priority (highest prio are merged in last)
     cmdsets = yield sorted(cmdsets, key=lambda x: x.priority)
 

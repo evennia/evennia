@@ -71,6 +71,11 @@ __all__ = ("import_cmdset", "CmdSetHandler")
 
 _CACHED_CMDSETS = {}
 
+class _ErrorCmdSet(CmdSet):
+    "This is a special cmdset used to report errors"
+    key = "_CMDSET_ERROR"
+    message = "Error when loading cmdset."
+
 def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
     This helper function is used by the cmdsethandler to load a cmdset
@@ -113,19 +118,18 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             errstring = errstring % (classname, modulepath)
             raise
         except Exception:
-            errstring = "\n%s\nCompile/Run error when loading cmdset '%s'."
-            errstring = errstring % (traceback.format_exc(), python_path)
+            errstring = "Compile/Run error when loading cmdset '%s'. Error was logged."
+            errstring = errstring % (python_path)
             raise
-    except Exception, e:
-        if errstring and not no_logging:
-            print errstring
-            logger.log_trace()
+    except Exception:
+        # returning an empty error cmdset
+        if not no_logging:
+            logger.log_trace(errstring)
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 object.__getattribute__(emit_to_obj, "msg")(errstring)
-        if not errstring:
-            errstring = "Error in import cmdset: %s" % e
-        logger.log_errmsg(errstring)
-        #cannot raise - it kills the server if no base cmdset exists!
+        err_cmdset = _ErrorCmdSet()
+        err_cmdset.message = errstring
+        return err_cmdset
 
 # classes
 
