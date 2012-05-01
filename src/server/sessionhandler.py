@@ -69,11 +69,7 @@ class SessionHandler(object):
         Create a dictionary of sessdata dicts representing all
         sessions in store.
         """
-        sessdict = {}
-        for sess in self.sessions.values():
-            # copy all relevant data from all sessions
-            sessdict[sess.sessid] = sess.get_sync_data()
-        return sessdict
+        return dict((sessid, sess.get_sync_data()) for sessid, sess in self.sessions.items())
 
 #------------------------------------------------------------
 # Server-SessionHandler class
@@ -179,14 +175,14 @@ class ServerSessionHandler(SessionHandler):
                                                          operation=SLOGIN,
                                                          data=sessdata)
 
-    def session_sync(self):
+    def all_sessions_portal_sync(self):
         """
         This is called by the server when it reboots. It syncs all session data
-        to the portal.
+        to the portal. Returns a deferred!
         """
         sessdata = self.get_all_sync_data()
-        self.server.amp_protocol.call_remote_PortalAdmin(0,
-                                                         SSYNC,
+        return self.server.amp_protocol.call_remote_PortalAdmin(0,
+                                                         operation=SSYNC,
                                                          data=sessdata)
 
 

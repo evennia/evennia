@@ -95,7 +95,7 @@ class Portal(object):
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _abrupt=True)
+        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _reactor_stopping=True)
 
         self.game_running = False
 
@@ -139,26 +139,33 @@ class Portal(object):
         f.write(str(mode))
         f.close()
 
-    def shutdown(self, restart=None, _abrupt=False):
+    def shutdown(self, restart=None, _reactor_stopping=False):
         """
         Shuts down the server from inside it.
 
         restart - True/False sets the flags so the server will be
                   restarted or not. If None, the current flag setting
                   (set at initialization or previous runs) is used.
-        _abrupt - this is set if server is stopped by a kill command,
-                  in which case the reactor is dead anyway.
+        _reactor_stopping - this is set if server is already in the process of
+                  shutting down; in this case we don't need to stop it again.
 
         Note that restarting (regardless of the setting) will not work
         if the Portal is currently running in daemon mode. In that
         case it always needs to be restarted manually.
         """
+        if _reactor_stopping and hasattr(self, "shutdown_complete"):
+            # we get here due to us calling reactor.stop below. No need
+            # to do the shutdown procedure again.
+            return
         self.set_restart_mode(restart)
-        if not _abrupt:
-            reactor.callLater(0, reactor.stop)
         if os.name == 'nt' and os.path.exists(PORTAL_PIDFILE):
             # for Windows we need to remove pid files manually
             os.remove(PORTAL_PIDFILE)
+        if not _reactor_stopping:
+            # shutting down the reactor will trigger another signal. We set
+            # a flag to avoid loops.
+            self.shutdown_complete = True
+            reactor.callLater(0, reactor.stop)
 
 #------------------------------------------------------------
 #

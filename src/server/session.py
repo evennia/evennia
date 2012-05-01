@@ -33,10 +33,10 @@ class Session(object):
     """
 
     # names of attributes that should be affected by syncing.
-    _attrs_to_sync = ['protocol_key', 'address', 'suid', 'sessid', 'uid', 'uname',
+    _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid', 'uname',
                       'logged_in', 'cid', 'encoding',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
-                      'server_data']
+                      'server_data')
 
     def init_session(self, protocol_key, address, sessionhandler):
         """
@@ -84,18 +84,15 @@ class Session(object):
         """
         Return all data relevant to sync the session
         """
-        sessdata = {}
-        for attrname in self._attrs_to_sync:
-            sessdata[attrname] = self.__dict__.get(attrname, None)
-        return sessdata
+        return dict((key, value) for key, value in self.__dict__.items() if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
         """
         Takes a session dictionary, as created by get_sync_data,
-        and loads it into the correct attributes of the session.
+        and loads it into the correct properties of the session.
         """
-        for attrname, value in sessdata.items():
-            self.__dict__[attrname] = value
+        for propname, value in sessdata.items():
+            self.__dict__[propname] = value
 
     def at_sync(self):
         """

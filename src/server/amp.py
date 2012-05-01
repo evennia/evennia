@@ -1,6 +1,7 @@
 """
-Contains the protocols, commands, and client factory needed for the server
-to service the MUD portal proxy.
+Contains the protocols, commands, and client factory needed for the Server and Portal
+to communicate with each other, letting Portal work as a proxy. Both sides use this
+same protocol.
 
 The separation works like this:
 
@@ -13,24 +14,25 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
          and when a session connects/disconnects
 
 """
-import os
 
+# imports needed on both server and portal side
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 from twisted.protocols import amp
 from twisted.internet import protocol
-from django.conf import settings
 from src.utils.utils import to_str
 
-from src.server.models import ServerConfig
-from src.scripts.models import ScriptDB
-from src.players.models import PlayerDB
-from src.server.serversession import ServerSession
-
-PORTAL_RESTART = os.path.join(settings.GAME_DIR, "portal.restart")
-SERVER_RESTART = os.path.join(settings.GAME_DIR, "server.restart")
+# these are only needed on the server side, so we delay loading of them
+# so as to not have to load them on the portal too. Note: It's doubtful
+# if this really matters, considering many of the
+# protocols require import of django components (at least settings).
+_ServerConfig = None
+_ScriptDB = None
+_PlayerDB = None
+_ServerSession = None
+_ = None #i18n hook
 
 # communication bits
 
@@ -42,10 +44,6 @@ SDISCONN = chr(5)    # server session disconnect
 SDISCONNALL = chr(6) # server session disconnect all
 SSHUTD = chr(7)      # server shutdown
 SSYNC = chr(8)       # server session sync
-
-# i18n
-from django.utils.translation import ugettext as _
-
 
 def get_restart_mode(restart_file):
     """
@@ -87,7 +85,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     """
     # Initial reconnect delay in seconds.
     initialDelay = 1
-    #factor = 1.5
+    factor = 1.5
     maxDelay = 1
 
     def __init__(self, portal):
@@ -115,14 +113,19 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
         """
         Called when the AMP connection to the MUD server is lost.
         """
-        if not get_restart_mode(SERVER_RESTART):
-            self.portal.sessions.announce_all(_(" Portal lost connection to Server."))
+        if not hasattr(self, "server_restart_mode"):
+            # Don't translate this; avoiding loading django on portal side.
+            self.portal.sessions.announce_all(" Portal lost connection to Server.")
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
         """
         Called when an AMP connection attempt to the MUD server fails.
         """
+        if hasattr(self, "server_restart_mode"):
+            self.maxDelay = 1
+        else:
+            self.maxDelay = 10
         self.portal.sessions.announce_all(" ...")
         protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
@@ -214,27 +217,27 @@ class AMPProtocol(amp.AMP):
     def connectionMade(self):
         """
         This is called when a connection is established
-        between server and portal. It is called on both sides,
+        between server and portal. AMP calls it on both sides,
         so we need to make sure to only trigger resync from the
-        server side.
+        portal side.
         """
         if hasattr(self.factory, "portal"):
+            # only the portal has the 'portal' property, so we know we are
+            # on the portal side and can initialize the connection.
             sessdata = self.factory.portal.sessions.get_all_sync_data()
-            #print sessdata
             self.call_remote_ServerAdmin(0,
                                          PSYNC,
                                          data=sessdata)
-            if get_restart_mode(SERVER_RESTART):
-                msg = _(" ... Server restarted.")
-                self.factory.portal.sessions.announce_all(msg)
             self.factory.portal.sessions.at_server_connection()
+            if hasattr(self.factory, "server_restart_mode"):
+                del self.factory.server_restart_mode
 
     # Error handling
 
     def errback(self, e, info):
         "error handler, to avoid dropping connections on server tracebacks."
         e.trap(Exception)
-        print _("AMP Error for %(info)s: %(e)s") % {'info': info, 'e': e.getErrorMessage()}
+        print "AMP Error for %(info)s: %(e)s" % {'info': info, 'e': e.getErrorMessage()}
 
 
     # Message definition + helper methods to call/create each message type
@@ -255,7 +258,7 @@ class AMPProtocol(amp.AMP):
         Access method called by the Portal and executed on the Portal.
         """
         #print "msg portal->server (portal side):", sessid, msg
-        self.callRemote(MsgPortal2Server,
+        return self.callRemote(MsgPortal2Server,
                         sessid=sessid,
                         msg=msg,
                         data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
@@ -276,7 +279,7 @@ class AMPProtocol(amp.AMP):
         Access method called by the Server and executed on the Server.
         """
         #print "msg server->portal (server side):", sessid, msg, data
-        self.callRemote(MsgServer2Portal,
+        return self.callRemote(MsgServer2Portal,
                         sessid=sessid,
                         msg=to_str(msg),
                         data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
@@ -319,7 +322,7 @@ class AMPProtocol(amp.AMP):
         Access method called by the Server and executed on the Portal.
         """
         #print "oob server->portal (server side):", sessid, data
-        self.callRemote(OOBServer2Portal,
+        return self.callRemote(OOBServer2Portal,
                         sessid=sessid,
                         data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
 
@@ -335,14 +338,28 @@ class AMPProtocol(amp.AMP):
 
         #print "serveradmin (server side):", sessid, operation, data
 
+        # late import of django-related stuff. This avoids having to
+        # load these also for the portal side.
+        global _ServerConfig, _ScriptDB, _PlayerDB, _ServerSession, _
+        if not _ServerConfig:
+            from src.server.models import ServerConfig as _ServerConfig
+        if not _ScriptDB:
+            from src.scripts.models import ScriptDB as _ScriptDB
+        if not _PlayerDB:
+            from src.players.models import PlayerDB as _PlayerDB
+        if not _ServerSession:
+            from src.server.serversession import ServerSession as _ServerSession
+        if not _:
+            from django.utils.translation import ugettext as _
+
         if operation == PCONN: #portal_session_connect
             # create a new session and sync it
-            sess = ServerSession()
+            sess = _ServerSession()
             sess.sessionhandler = self.factory.server.sessions
             sess.load_sync_data(data)
             if sess.logged_in and sess.uid:
                 # this can happen in the case of auto-authenticating protocols like SSH
-                sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
+                sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
             sess.at_sync() # this runs initialization without acr
 
             self.factory.server.sessions.portal_connect(sessid, sess)
@@ -358,21 +375,22 @@ class AMPProtocol(amp.AMP):
             sesslist = []
             server_sessionhandler = self.factory.server.sessions
             for sessid, sessdict in data.items():
-                sess = ServerSession()
+                sess = _ServerSession()
                 sess.sessionhandler = server_sessionhandler
                 sess.load_sync_data(sessdict)
                 if sess.uid:
-                    sess.player = PlayerDB.objects.get_player_from_uid(sess.uid)
+                    sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
                 sesslist.append(sess)
             # replace sessions on server
             server_sessionhandler.portal_session_sync(sesslist)
             # after sync is complete we force-validate all scripts (this starts everything)
-            init_mode = ServerConfig.objects.conf("server_restart_mode", default=None)
-            ScriptDB.objects.validate(init_mode=init_mode)
-            ServerConfig.objects.conf("server_restart_mode", delete=True)
-
+            init_mode = _ServerConfig.objects.conf("server_restart_mode", default=None)
+            _ScriptDB.objects.validate(init_mode=init_mode)
+            _ServerConfig.objects.conf("server_restart_mode", delete=True)
+            # let the server announce the reconnection
+            server_sessionhandler.announce_all(_(" ... Server restarted."))
         else:
-            raise Exception(_("operation %(op)s not recognized.") % {'op': operation})
+            raise Exception("operation %(op)s not recognized." % {'op': operation})
 
         return {}
     ServerAdmin.responder(amp_server_admin)
@@ -384,7 +402,7 @@ class AMPProtocol(amp.AMP):
         #print "serveradmin (portal side):", sessid, operation, data
         data = dumps(data)
 
-        self.callRemote(ServerAdmin,
+        return self.callRemote(ServerAdmin,
                         sessid=sessid,
                         operation=operation,
                         data=data).addErrback(self.errback, "ServerAdmin")
@@ -398,7 +416,7 @@ class AMPProtocol(amp.AMP):
         """
         data = loads(data)
 
-        #print "portaladmin (portal side):", sessid, operation, data
+        #print "portaladmin (portal side):", sessid, ord(operation), data
         if operation == SLOGIN: # 'server_session_login'
             # a session has authenticated; sync it.
             sess = self.factory.portal.sessions.get_session(sessid)
@@ -421,20 +439,19 @@ class AMPProtocol(amp.AMP):
             # it's about to shut down. We don't overwrite any sessions,
             # just update data on them and remove eventual ones that are
             # out of sync (shouldn't happen normally).
-
-            portal_sessionhandler = self.factory.portal.sessions.sessions
-
+            portal_sessionhandler = self.factory.portal.sessions
             to_save = [sessid for sessid in data if sessid in portal_sessionhandler.sessions]
             to_delete = [sessid for sessid in data if sessid not in to_save]
-
             # save protocols
             for sessid in to_save:
                 portal_sessionhandler.sessions[sessid].load_sync_data(data[sessid])
             # disconnect missing protocols
             for sessid in to_delete:
                 portal_sessionhandler.server_disconnect(sessid)
+            # save a flag in case connection is soon lost.
+            self.factory.server_restart_mode = True
         else:
-            raise Exception(_("operation %(op)s not recognized.") % {'op': operation})
+            raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
     PortalAdmin.responder(amp_portal_admin)
 
@@ -442,10 +459,10 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the server side.
         """
-        #print "portaladmin (server side):", sessid, operation, data
+        #print "portaladmin (server side):", sessid, ord(operation), data
         data = dumps(data)
 
-        self.callRemote(PortalAdmin,
+        return self.callRemote(PortalAdmin,
                         sessid=sessid,
                         operation=operation,
                         data=data).addErrback(self.errback, "PortalAdmin")

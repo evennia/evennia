@@ -17,8 +17,8 @@ matter the value of this file.
 import os
 import sys
 from optparse import OptionParser
-from subprocess import Popen, call
-import Queue, thread, subprocess
+from subprocess import Popen
+import Queue, thread
 
 #
 # System Configuration
@@ -276,7 +276,6 @@ def main():
         if options.iportal:
             # make portal interactive
             portal_argv[1] = '--nodaemon'
-            PORTAL_INTERACTIVE = True
             set_restart_mode(PORTAL_RESTART, True)
             print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
         else:

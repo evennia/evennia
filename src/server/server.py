@@ -17,8 +17,7 @@ if os.name == 'nt':
                 os.path.dirname(os.path.abspath(__file__)))))
 
 from twisted.application import internet, service
-from twisted.internet import protocol, reactor, defer
-from twisted.web import server, static
+from twisted.internet import reactor, defer
 import django
 from django.db import connection
 from django.conf import settings
@@ -106,7 +105,7 @@ class Evennia(object):
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _abrupt=True)
+        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _reactor_stopping=True)
 
         self.game_running = True
 
@@ -133,6 +132,7 @@ class Evennia(object):
         """
         This attempts to run the initial_setup script of the server.
         It returns if this is not the first time the server starts.
+        Once finished the last_initial_setup_step is set to -1.
         """
         last_initial_setup_step = ServerConfig.objects.conf('last_initial_setup_step')
         if not last_initial_setup_step:
@@ -184,10 +184,12 @@ class Evennia(object):
         returned so the server knows which more it's in.
         """
         if mode == None:
-            if os.path.exists(SERVER_RESTART) and 'True' == open(SERVER_RESTART, 'r').read():
+            f = open(SERVER_RESTART, 'r')
+            if os.path.exists(SERVER_RESTART) and 'True' == f.read():
                 mode = 'reload'
             else:
                 mode = 'shutdown'
+            f.close()
         else:
             restart = mode in ('reload', 'reset')
             f = open(SERVER_RESTART, 'w')
@@ -195,7 +197,8 @@ class Evennia(object):
             f.close()
         return mode
 
-    def shutdown(self, mode=None, _abrupt=False):
+    @defer.inlineCallbacks
+    def shutdown(self, mode=None, _reactor_stopping=False):
         """
         Shuts down the server from inside it.
 
@@ -204,11 +207,15 @@ class Evennia(object):
                'reset' - server restarts, non-persistent scripts stopped, at_shutdown hooks called.
                'shutdown' - like reset, but server will not auto-restart.
                None - keep currently set flag from flag file.
-        _abrupt - this is set if server is stopped by a kill command,
-                  in which case the reactor is dead anyway.
+        _reactor_stopping - this is set if server is stopped by a kill command OR this method was already called
+                  once - in both cases the reactor is dead/stopping already.
         """
-        mode = self.set_restart_mode(mode)
+        if _reactor_stopping and hasattr(self, "shutdown_complete"):
+            # this means we have already passed through this method once; we don't need
+            # to run the shutdown procedure again.
+            defer.returnValue(None)
 
+        mode = self.set_restart_mode(mode)
         # call shutdown hooks on all cached objects
 
         from src.objects.models import ObjectDB
@@ -217,31 +224,34 @@ class Evennia(object):
 
         if mode == 'reload':
             # call restart hooks
-            [(o.typeclass, o.at_server_reload()) for o in ObjectDB.get_all_cached_instances()]
-            [(p.typeclass, p.at_server_reload()) for p in PlayerDB.get_all_cached_instances()]
-            [(s.typeclass, s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
-
+            yield [(o.typeclass, o.at_server_reload()) for o in ObjectDB.get_all_cached_instances()]
+            yield [(p.typeclass, p.at_server_reload()) for p in PlayerDB.get_all_cached_instances()]
+            yield [(s.typeclass, s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
+            yield self.sessions.all_sessions_portal_sync()
             ServerConfig.objects.conf("server_restart_mode", "reload")
-
         else:
             if mode == 'reset':
                 # don't call disconnect hooks on reset
-                [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
+                yield [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
+                yield self.all_sessions_portal_sync()
             else: # shutdown
-                [(o.typeclass, o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
+                yield [(o.typeclass, o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
 
-            [(p.typeclass, p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
-            [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
+            yield [(p.typeclass, p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
+            yield [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
 
             ServerConfig.objects.conf("server_restart_mode", "reset")
 
-        if not _abrupt:
-            if SERVER_HOOK_MODULE:
-                SERVER_HOOK_MODULE.at_server_stop()
-            reactor.callLater(0, reactor.stop)
+        if SERVER_HOOK_MODULE:
+            SERVER_HOOK_MODULE.at_server_stop()
+        # if _reactor_stopping is true, reactor does not need to be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
+        if not _reactor_stopping:
+            # this will also send a reactor.stop signal, so we set a flag to avoid loops.
+            self.shutdown_complete = True
+            reactor.callLater(0, reactor.stop)
 
 #------------------------------------------------------------
 #
