@@ -25,7 +25,7 @@ _attribute_cache = None
 
 # limit symbol import for API
 __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
-           "CmdScripts", "CmdObjects", "CmdService", "CmdVersion",
+           "CmdScripts", "CmdObjects", "CmdService", "CmdAbout",
            "CmdTime", "CmdServerLoad")
 
 class CmdReload(MuxCommand):
