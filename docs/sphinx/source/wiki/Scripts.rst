@@ -51,8 +51,7 @@ intervals (a *ticker*). Scripts not defined directly 'on' objects are
 called *Global* scripts.
 
 Custom script modules are usually stored in ``game/gamesrc/scripts``. As
-a convenience you can inherit all scripts from
-``game.gamesrc.scripts.basescript.Script``.
+a convenience you can inherit sripts from ``ev.Script``.
 
 You can try out scripts an add them to objects by use of the ``@script``
 command (not to the confused with ``@scripts`` which lists scripts). You
@@ -79,12 +78,12 @@ to name your script uniquely before adding it. This can be useful if you
 add many scripts of the same type and later plan to use
 ``myobj.scripts.delete`` to remove individual scripts.
 
-You can create global scripts with ``src.utils.create.create_script()``.
-Just don't supply an object to store it on.
+You can create global scripts with
+``ev.create_script (a shortcut to``\ src.utils.create.create\_script()
 
 ::
 
-    # adding a global script  from src.utils.create import create_script  create_script("game.gamesrc.scripts.globals.MyGlobalEconomy", key="economy", obj=None)
+    ). Just don't supply an object to store it on. # adding a global script  from ev import create_script  create_script("game.gamesrc.scripts.globals.MyGlobalEconomy", key="economy", obj=None)
 
 Assuming the Script ``game.gamesrc.scripts.globals.MyGlobalEconomy``
 exists, this will create and start it as a global script.
@@ -119,7 +118,7 @@ There is one special property:
 
 It's also imperative to know the hook functions. Normally, overriding
 these are all the customization you'll need to do in Scripts. You can
-find longer descriptions of these in ``gamesrc/scripts/basescript.py``.
+find longer descriptions of these in ``src/scripts/scripts.py``.
 
 -  ``at_script_creation()`` - this is usually where the script class
    sets things like ``interval`` and ``repeats``; things that control
@@ -153,7 +152,7 @@ possible to also invoke manually)
    automatically whenever you add a new script to a handler.
    ``at_start()`` will be called.
 -  ``stop()`` - this will stop the script and delete it. Removing a
-   script from a handler will stop it auomatically. ``at_stop()`` will
+   script from a handler will stop it automatically. ``at_stop()`` will
    be called.
 -  ``pause()`` - this pauses a running script, rendering it inactive,
    but not deleting it. All properties are saved and timers can be
@@ -174,7 +173,7 @@ Example script
 ::
 
     import random
-    from game.gamesrc.scripts.basescript import Script
+    from ev import Script
     class Weather(Script): 
         "Displays weather info. Meant to be attached to a room."
         def at_script_creation(self):
@@ -212,7 +211,7 @@ locate the room you want:
 
 ::
 
-    from src.utils.create import create_script create_script('game.gamesrc.scripts.weather.Weather', obj=myroom)
+    from ev import create_script create_script('game.gamesrc.scripts.weather.Weather', obj=myroom)
 
 Or, from in-game, use the ``@script`` command:
 

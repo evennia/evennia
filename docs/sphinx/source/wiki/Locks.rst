@@ -49,8 +49,9 @@ add, delete and check locks.
 One can call ``locks.check()`` to perform a lock check, but to hide the
 underlying implementation all objects also have a convenience function
 called ``access``. This should preferably be used. In the example below,
-``accessing_obj`` is the object requesting the 'delete' access. This is
-how it would (and do) look from inside the ``@delete`` command:
+``accessing_obj`` is the object requesting the 'delete' access whereas
+``obj`` is the object that might get deleted. This is how it would (and
+do) look from inside the ``@delete`` command:
 
 ::
 
@@ -63,7 +64,7 @@ Defining a lock (i.e. an access restriction) in Evennia is done by
 adding simple strings of lock definitions to the object's ``locks``
 property using ``obj.locks.add()``.
 
-Here are some examples of lock strings:
+Here are some examples of lock strings (not including the quotes):
 
 ::
 
@@ -79,7 +80,7 @@ where ``[..]`` marks optional parts. AND, OR and NOT are not case
 sensitive and excess spaces are ignored. ``func1, func2`` etc are
 special *lock functions* available to the lock system.
 
-So, a lockstrings consists of the type of restriction (the
+So, a lockstring consists of the type of restriction (the
 ``access_type``), a colon (``:``) and then a list of function calls that
 determine what is needed to pass the lock. Each function returns either
 ``True`` or ``False``. AND/OR and NOT works like normal Python to
@@ -163,7 +164,8 @@ You are not allowed to use just any function in your lock definition;
 you are infact only allowed to use those functions defined in one of the
 modules given in ``settings.LOCK_FUNC_MODULES``. All functions in any of
 those modules will automatically be considered a valid lock function.
-The default ones are found in ``src/locks/lockfuncs.py``.
+The default ones are found in ``src/locks/lockfuncs.py`` or via
+``ev.lockfuncs``.
 
 A lock function must always accept at least two arguments - the
 *accessing object* (this is the object wanting to get access) and the
@@ -195,7 +197,7 @@ Some useful default lockfuncs (see ``src/locks/lockfuncs.py`` for more):
 -  ``attr(attrname)`` - checks if a certain
    `Attribute <Attributes.html>`_ exists on accessingobject.
 -  ``attr(attrname, value)`` - checks so an attribute exists on
-   accessing*object*and has the given value.
+   accessing\ *object*\ and has the given value.
 -  ``attr_gt(attrname, value)`` - checks so accessingobject has a value
    larger (``>``) than the given value.
 -  ``attr_ge, attr_lt, attr_le, attr_ne`` - corresponding for ``>=``,
@@ -260,9 +262,9 @@ looked for is not in the hierarchy, an exact match is required.
 Superusers
 ----------
 
-There is normally only one *superuser* account and that is the the one
-first created when starting Evennia (User #1). This is sometimes known
-as the "Owner" or "God" user. A superuser has more than full access - it
+There is normally only one *superuser* account and that is the one first
+created when starting Evennia (User #1). This is sometimes known as the
+"Owner" or "God" user. A superuser has more than full access - it
 completely *bypasses* all locks so no checks are even run. This allows
 for the superuser to always have access to everything in an emergency.
 But it also hides any eventual errors you might have made in your lock
@@ -349,7 +351,7 @@ this snippet:
 
 So the ``get`` command looks for a lock with the type *get* (not so
 surprising). It also looks for an `Attribute <Attributes.html>`_ on the
-checked object called *get*err*msg* in order to return a customized
+checked object called *get*\ err\ *msg* in order to return a customized
 error message. Sounds good! Let's start by setting that on the box:
 
 ::
@@ -361,7 +363,7 @@ only be passed if the accessing object has the attribute *strength* of
 the right value. For this we would need to create a lock function that
 checks if attributes have a value greater than a given value. Luckily
 there is already such a one included in evennia (see
-``src/permissions/lockfuncs.py``), called``attr_gt``.
+``src/permissions/lockfuncs.py``), called ``attr_gt``.
 
 So the lock string will look like this: ``get:attr_gt(strength, 50)``.
 We put this on the box now:
@@ -379,14 +381,14 @@ like this:
 
 ::
 
-    from src.utils import create box = create.create_object(None, key="box", locks="get:attr_gt(strength, 50)")# or, if we don't set the locks right awaybox.locks.add("get:attr_gt(strength, 50)")# set the attributesbox.db.desc = "This is a very big and heavy box." box.db.get_err_msg = "You are not strong enough to lift this box."# one heavy box, ready to withstand all but the strongest...
+    from ev import create_objectbox = create_object(None, key="box") box.locks.add("get:attr_gt(strength, 50)")# or we can assign locks right away box = create_object(None, key="box", locks="get:attr_gt(strength, 50)")# set the attributes box.db.desc = "This is a very big and heavy box." box.db.get_err_msg = "You are not strong enough to lift this box."# one heavy box, ready to withstand all but the strongest...
 
 On Django's permission system
 =============================
 
-Django also implements a comprehensive permission/security system out of
-the box. The reason we don't use that is because it is app-centric (app
-in the Django sense). Its permission strings are of the form
+Django also implements a comprehensive permission/security system of its
+own. The reason we don't use that is because it is app-centric (app in
+the Django sense). Its permission strings are of the form
 ``appname.permstring`` and it automatically adds three of them for each
 database model in the app - for the app src/object this would be for
 example 'object.create', 'object.admin' and 'object.edit'. This makes a

@@ -24,16 +24,13 @@ storing data they hide underlying database models ...
 ... and that's basically all you *really* need to know about how
 typeclasses work behind the scenes.
 
-To work with them you should however know that Objects, Scripts and
+To *work* with them you should however know that Objects, Scripts and
 Players all inherit a lot of helper methods from the typeclass system,
 properties you can *always* expect a typeclassed entity to have. In
-addition to these, each of the three sub types also offer a host of help
-methods and properties you can use. The database handling is hidden, but
-it means that typeclasses do some special things with their in-built
-class methods that you shouldn't edit.
+addition to these, each of the three sub types also offer a host of
+additional, subtype-specific helper methods and properties for your use.
 
-Properties available to all typeclassed entities (Players, Objects,
-Scripts)
+Properties available to all typeclassed entities (Players, Objects, Scripts)
 ----------------------------------------------------------------------------
 
 -  ``key`` - the main identifier for the entity, say 'Rose', 'myscript'
@@ -65,7 +62,7 @@ more info.
 Things to remember when using TypeClasses
 -----------------------------------------
 
-Typeclasses mostly behave like normal Python classes - you can
+Typeclasses *mostly* behave like normal Python classes - you can
 add/overload custom methods and inherit your own classes from them -
 most things you'd expect to be able to do with a Python class. There are
 a few things that you need to remember however:
@@ -182,6 +179,7 @@ Below is a schematic of the database/typeclass structure.
 .. figure:: http://d.imagehost.org/0784/typeclasses1.png
    :align: center
    :alt: 
+
 Let's see how object creation looks like in an example.
 
 #. We have defined a Typeclass called *Rose* in
@@ -213,9 +211,8 @@ Let's see how object creation looks like in an example.
 
 Storing properties on the typeclass-instance will in fact transparently
 save to the database object. So ``RedRose.thorns = True`` is the same as
-``RedRose.dbobj.thorns = True`` (note also that depending on your
-``FULL_PERSISTENCE`` setting, this may or may not save ``thorns`` as an
-`Attribute <Attributes.html>`_ behind the scenes).
+``RedRose.dbobj.thorns = True`` (this will in fact be saved in the
+database as an attribute "thorns").
 
 Doing ``ouch = RedRose.thorns`` is however not really as symmetric. The
 system will in this case *first* check the Typeclass instance and only
@@ -228,13 +225,14 @@ are intended to *overload* the default methods on the database object.
 These are thus searched and run first, and you can then safely use
 ``self.dbobj`` from the typeclass to call the original function if you
 want. An example of Typeclass overloading is found
-`here <CommandPrompt#Prompt%3Ci%3Eon%3C/i%3Ethe%3Ci%3Esame%3C/i%3Eline.html>`_.
+`here <CommandPrompt#Prompt<i>on</i>the<i>same</i>line.html>`_.
 
 Another example:
 
 .. figure:: http://b.imagehost.org/0023/typeclasses2.png
    :align: center
    :alt: 
+
 Caveats of the typeclass system
 -------------------------------
 
@@ -261,7 +259,7 @@ Even more important to know for Django affectionados: Evennia's custom
 methods return *lists* where you with normal Django methods would expect
 ``Query`` objects (e.g. from the ``filter()`` method). As long as you
 don't confuse what result type you are dealing with (for example you
-cannot 'link' ``list``s together the way you can ``Querysets``), you
+cannot 'link' ``list``\ s together the way you can ``Querysets``), you
 should be fine.
 
 Read the ``manager.py`` files in each relevant folder under ``src/`` to

@@ -4,6 +4,7 @@ Evennia directory overview
 ::
 
     evennia/  
+      ev.py
       contrib/
       docs/   
       game/
@@ -24,6 +25,12 @@ required by Python so as to be able to find and import modules in other
 directories. When you have run Evennia at least once you will find that
 there will also be ``.pyc`` files appearing, these are pre-compiled
 binary versions of the ``.py`` files to speed up execution.
+
+The file ``ev.py`` is important to remember. This is the home of
+Evennia's flat API, essentially a set of shortcuts to various important
+places in ``src/``. By importing ``ev`` from your code in ``game/`` you
+have access to most important Evennia systems without *having* to know
+where everything is located, as described in the following sections.
 
 The ``docs/`` directory
 -----------------------
@@ -94,29 +101,25 @@ Evennia.
 ^^^^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/commands/`` contains modules for defining
-`Commands <Commands.html>`_. It contains a file ``basecommand.py`` which
-defines the root object from which all your own command classes will
-inherit.The file ``basecmdset.py`` is where you'll inherit your `Command
-Set <Commands.html>`_ classes from. ``commands/examples`` contains the
-main interactive commands and cmdsets of the *Red Button*.
+`Commands <Commands.html>`_. In ``commands/examples`` you will find
+templates for starting to define your own commands and cmdsets. Copy
+these out into the parent ``command`` folder and work from there.
 
 ``gamesrc/scripts/``
 ^^^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/scripts/`` holds everything related to
-`Scripts <Scripts.html>`_. It has a file ``basescript.py`` that hold the
-parent for all scripts and which you should inherit from.
-``scripts/examples`` holds the *Red Button*'s scripts.
+`Scripts <Scripts.html>`_. ``scripts/examples`` holds templates you can
+make copies of and build from to define your own scripts.
 
 ``gamesrc/objects/``
 ^^^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/objects/`` should contain the definitions for all your
-`Objects <Objects.html>`_. ``baseobjects.py`` contains the parent
-classes for the normal *Object* as well as its three basic subclasses
-*Character*, *Room* and *Exit*. Your own objects will inherit from the
-classes in this file. ``objects/examples`` define the example *Red
-Button* object itself.
+`Objects <Objects.html>`_. ``objects/examples`` contain templates for
+*Object* as well as its three basic subclasses *Character*, *Room* and
+*Exit*. Make copies of these templates to have somthing to start from
+when defining your own in-game entities.
 
 ``gamesrc/world/``
 ^^^^^^^^^^^^^^^^^^
@@ -143,21 +146,23 @@ syntax.
 ^^^^^^^^^^^^^^^^^
 
 ``gamesrc/conf/`` holds optional extension modules for the Evennia
-engine. Certain functionality in the server is meant to be extended, and
-in order to allow you to do this without modifying the server itself, it
-imports files from this directory. Modifying these are optional and you
-can usually change a variable in ``game/settings.py`` to change exactly
-which module Evennia actually uses. There are dummy example files in
-here, read their headers for usage instructions.
+engine. It is empty by default, but in ``conf/examples/`` are templates
+for the various config files that the server undertands. Each template
+file contains instructions for how you should use them; copy out the
+ones you want into the ``conf/`` directory and edit them there.
 
 The ``src/`` directory
 ----------------------
 
-``src/`` contains the main running code of the Evennia server. You will
-often need to import modules from here to access the functionality of
-Evennia. You should generally not modify anything in this folder
-directly since it might be changed when we release updates. If you find
-bugs or features missing, file a bug report or send us a message.
+``src/`` contains the main running code of the Evennia server. You can
+import files directly from here, but normally you will probably find it
+easier to use the shortcuts in the top-level ``ev`` module.
+
+You should never modify anything in this folder directly since it might
+be changed when we release updates. If you want to use some code as a
+base for your own work (such as new commands), copy the relevant code
+out into your own modules in ``game/gamesrc`` instead. If you find bugs
+or features missing, file a bug report or send us a message.
 
 ::
 
@@ -196,7 +201,7 @@ Evennia. It defines basic command function, parsing and command-set
 handling.
 
 ``commands/default/`` holds a multitude of modules that together form
-Evennia's default ('`MUX-like <UsingMUXAsAStandard.html>`_') command
+Evennia's default ('`MUX-like <UsingMUXAsAStandard.html>`_\ ') command
 set. The files ``game/gamesrc/basecommand.py`` and
 ``game/gamesrc/basecmdset.py`` both link to their respective parents
 here. If you want to edit a default command, copy&paste the respective

@@ -22,8 +22,8 @@ unless your database is huge.
 
 **Note:** If you for some reason need to use a third-party web server
 like Apache rather than Evennia's internal web server, SQLite is
-probably not be the best choice. This is due to the possibility of
-clashes with file-locking when using SQLite from more than one process.
+probably not the best choice. This is due to the possibility of clashes
+with file-locking when using SQLite from more than one process.
 
 Postgres
 --------

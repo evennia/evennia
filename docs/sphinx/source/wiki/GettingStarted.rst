@@ -96,7 +96,7 @@ Installing pre-requisites
 **All platforms** can set up an *virtual Python environment* and install
 Evennia to that. All you need pre-installed is Python. Setup is
 described in detail
-`here <GettingStarted#Optional:%3Ci%3EA%3C/i%3Eseparate%3Ci%3Einstallation%3C/i%3Eenvironment%3Ci%3Ewith%3C/i%3Evirtualenv.html>`_.
+`here <GettingStarted#Optional:<i>A</i>separate<i>installation</i>environment<i>with</i>virtualenv.html>`_.
 Windows users will probably want to go the ActivePython way instead
 though (see below), there are issues with installing certain extensions
 in Windows.
@@ -113,7 +113,7 @@ Debian-derived systems (such as Ubuntu) you can do something like this
 Few distros actually keep the latest updated security updates (notably
 django and twisted) in their repos though. So it might be worth to use
 Python's
-`easyinstall <http://packages.python.org/distribute/easy%3Ci%3Einstall.html>`_
+`easyinstall <http://packages.python.org/distribute/easy<i>install.html>`_
 or the alternative
 `pip <http://www.pip-installer.org/en/latest/index.html>`_ to get some
 or all of these instead:
@@ -126,6 +126,15 @@ or all of these instead:
 
     pip install django twisted pil mercurial south
 
+If you already have Python and mercurial, and have downloaded Evennia,
+the package comes with a ``requirements.txt`` file. This can be used
+with ``pip`` to install the remaining dependencies (possibly useful for
+automated build systems):
+
+::
+
+    pip install -r requirements.txt
+
 **Mac** users should be able to get most dependencies through
 ``easy_install`` or ``pip`` like Linux users do. There are however
 reports that you might need to get the
@@ -136,9 +145,11 @@ installers or python setups. Some users have reported problems compiling
 the ``PIL`` library on Mac, it's however not strictly required to use
 Django.
 
-**Windows** users may choose to install
+**Windows** users may want to install
 `ActivePython <http://www.activestate.com/activepython/downloads>`_
-instead of the usual Python. If ActivePython is installed, you can use
+instead of the usual Python. Get the 32-bit version (it seems the 64-bit
+one won't let you download any packages without paying for a "Business"
+license). If ActivePython is installed, you can use
 `pypm <http://docs.activestate.com/activepython/2.6/pypm.html>`_ in the
 same manner as ``easy_install``/``pip`` above. This *greatly* simplifies
 getting started on Windows since that platform is by default missing
@@ -156,7 +167,7 @@ Windows users not using ActivePython or virtual environments will have
 to manually download and install the packages in turn (including their
 own dependencies in the list above). Most have normal Windows
 installers, but in some cases you'll need to know how to use the Windows
-command prompt to execute python install scripts (usually it's not
+command prompt to execute python install scripts (it's usually not
 harder than running ``python setup.py install`` from the downloaded
 package's folder).
 
@@ -298,8 +309,10 @@ Optional: A separate installation environment with virtualenv
 Apart from installing the packages and versions as above, you can also
 set up a very easy self-contained Evennia install using the
 `virtualenv <http://pypi.python.org/pypi/virtualenv>`_ program. If you
-are unsure how to get it, just grab the ``virtualenv.py`` file from that
-page and run it directly in the terminal with ``python virtualenv.py``.
+are unsure how to get it, just grab the
+`virtualenv.py <https://raw.github.com/pypa/virtualenv/master/virtualenv.py.html>`_
+file from that page and run it directly in the terminal with
+``python virtualenv.py``.
 
 Virtualenv sets aside a folder on your harddrive as a stand-alone Python
 environment. It should work both on Linux/Unix and Windows. First,

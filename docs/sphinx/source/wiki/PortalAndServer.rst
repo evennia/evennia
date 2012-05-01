@@ -10,7 +10,7 @@ to have players connect to the Portal but keep the MUD running on the
 Server. This way one can restart/reload the game (the Server part)
 without Players getting disconnected.
 
-https://2498159658166209538-a-1802744773732722657-s-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia*server*portal.png
+https://2498159658166209538-a-1802744773732722657-s-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia\ *server*\ portal.png
 
 The Server and Portal are glued together via an AMP (Asynchronous
 Messaging Protocol) connection. This allows the two programs to

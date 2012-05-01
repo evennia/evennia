@@ -13,13 +13,13 @@ An Evennia Object is, per definition, a Python class that includes
 ``src.objects.objects.Object`` among its parents (if you are aware of
 how typeclasses work, this is a typeclass linked to the ``ObjectDB``
 database model). In your code you can however conveniently refer to
-``game.gamesrc.objects.baseobjects.Object`` instead.
+``ev.Object`` instead.
 
 Here's how to define a new Object typeclass in code:
 
 ::
 
-    from game.gamesrc.objects.baseobjects import Objectclass Rose(Object):     """     This creates a simple rose object             """         def at_object_creation(self):         "this is called only once, when object is first created"         # add a persistent attribute 'desc' to object.         self.db.desc = "This is a pretty rose with thorns."
+    from ev import Objectclass Rose(Object):     """     This creates a simple rose object             """         def at_object_creation(self):         "this is called only once, when object is first created"         # add a persistent attribute 'desc' to object.         self.db.desc = "This is a pretty rose with thorns."
 
 Save your class to a module under ``game/gamesrc/objects``, say
 ``flowers.py``. Now you just need to point to the class *Rose* with the
@@ -29,21 +29,21 @@ Save your class to a module under ``game/gamesrc/objects``, say
 
     > @create/drop MyRose:flowers.Rose
 
-To create a new object in code, use the method
-``src.utils.create.create_object()``:
+To create a new object in code, use the method ``ev.create_object`` (a
+shortcut to src.utils.create.create\_object()
 
 ::
 
-    from src.utils import create new_rose = create.create_object("game.gamesrc.objects.flowers.Rose", key="MyRose")
+    ):from ev import create_object new_rose = create_object("game.gamesrc.objects.flowers.Rose", key="MyRose")
 
 (You have to give the full path to the class in this case -
 ``create.create_object`` is a powerful function that should be used for
 all coded creating, for example if you create your own command that
-creates some objects as it runs. Check out the ``src.utils.create``
-module for more info on which arguments you can give the function.)
+creates some objects as it runs. Check out the ``ev.create_*``
+functions.
 
 This particular Rose class doesn't really do much, all it does it make
-sure the attribute ``desc``(which is what the ``look`` command looks
+sure the attribute ``desc``\ (which is what the ``look`` command looks
 for) is pre-set, which is pretty pointless since you will usually want
 to change this at build time (using the ``@describe`` command). The
 ``Object`` typeclass offers many more hooks that is available to use
@@ -108,34 +108,34 @@ The last two properties are special:
    `scripts <Scripts.html>`_ attached to the object (if any).
 
 The Object also has a host of useful utility functions. See the function
-headers in ``src/objects/models.py`` for arguments and more details.
+headers in ``src/objects/objects.py`` for their arguments and more
+details.
 
--  ``msg`` - this function is used to send messages from the server to a
-   player connected to this object.
--  ``msg_contents`` - calls ``msg`` on all objects inside this object.
--  ``search`` - this is a convenient shorthand to search for a specific
-   object, at a given location or globally. It's mainly useful when
-   defining commands (in which case the object executing the command is
-   named ``caller`` and one can do ``caller.search()`` to find objects
-   in the room to operate on).
--  ``execute_cmd`` - Lets the object execute the given string as if it
+-  ``msg()`` - this function is used to send messages from the server to
+   a player connected to this object.
+-  ``msg_contents()`` - calls ``msg`` on all objects inside this object.
+-  ``search()`` - this is a convenient shorthand to search for a
+   specific object, at a given location or globally. It's mainly useful
+   when defining commands (in which case the object executing the
+   command is named ``caller`` and one can do ``caller.search()`` to
+   find objects in the room to operate on).
+-  ``execute_cmd()`` - Lets the object execute the given string as if it
    was given on the command line.
 -  ``move_to`` - perform a full move of this object to a new location.
    This is the main move method and will call all relevant hooks, do all
    checks etc.
--  ``clear_exits`` - will delete all `Exits <Objects#Exits.html>`_ to
+-  ``clear_exits()`` - will delete all `Exits <Objects#Exits.html>`_ to
    *and* from this object.
--  ``clear_contents`` - this will not delete anything, but rather move
+-  ``clear_contents()`` - this will not delete anything, but rather move
    all contents (except Exits) to their designated ``Home`` locations.
--  ``delete`` - deletes this object, first calling ``clear_exits()`` and
-   ``clear_contents()``.
+-  ``delete()`` - deletes this object, first calling ``clear_exits()``
+   and ``clear_contents()``.
 
 The Object Typeclass defines many more *hook methods* beyond
 ``at_object_creation``. Evennia calls these hooks at various points.
 When implementing your custom objects, you will inherit from the base
 parent and overload these hooks with your own custom code. See
-``game.gamesrc.baseobjects`` for an updated list of all the available
-hooks.
+``src.objects.objects`` for an updated list of all the available hooks.
 
 Subclasses of *Object*
 ----------------------
@@ -146,8 +146,7 @@ because these particular object types are fundamental, something you
 will always need and in some cases requires some extra attention in
 order to be recognized by the game engine (there is nothing stopping you
 from redefining them though). In practice they are all pretty similar to
-the base Object. You will import them all from
-``game.gamesrc.objects.baseobjects``.
+the base Object.
 
 Characters
 ~~~~~~~~~~
@@ -158,10 +157,10 @@ object is created and the Player object is assigned to the ``player``
 attribute. A ``Character`` object must have a `Default
 Commandset <Commands#Command_Sets.html>`_ set on itself at creation, or
 the player will not be able to issue any commands! If you just inherit
-your own class from ``baseobjects.Character`` and make sure the parent
-methods are not stopped from running you should not have to worry about
-this. You can change the default typeclass assigned to new Players in
-your settings with ``BASE_CHARACTER_TYPECLASS``.
+your own class from ``ev.Character`` and make sure the parent methods
+are not stopped from running you should not have to worry about this.
+You can change the default typeclass assigned to new Players in your
+settings with ``BASE_CHARACTER_TYPECLASS``.
 
 Rooms
 ~~~~~
@@ -170,8 +169,8 @@ Rooms
 really separating a room from any other object is that they have no
 ``location`` of their own and that default commands like ``@dig``
 creates objects of this class - so if you want to expand your rooms with
-more functionality, just inherit from ``baseobjects.Room``. Change the
-default used by ``@dig`` with ``BASE_ROOM_TYPECLASS``.
+more functionality, just inherit from ``ev.Room``. Change the default
+used by ``@dig`` with ``BASE_ROOM_TYPECLASS``.
 
 Exits
 ~~~~~
@@ -191,10 +190,10 @@ its own to move around, just as you would expect.
 The exit functionality is all defined on the Exit typeclass, so you
 could in principle completely change how exits work in your game (it's
 not recommended though, unless you really know what you are doing).
-Exits are `locked <Locks.html>`_ using an access*type called*traverse\_
-and also make use of a few hook methods for giving feedback if the
-traversal fails. See ``baseobjects.Exit`` for more info, that is also
-what you should inherit from to make custom exit types. Change the
+Exits are `locked <Locks.html>`_ using an access\ *type
+called*\ traverse\_ and also make use of a few hook methods for giving
+feedback if the traversal fails. See ``ev.Exit`` for more info, that is
+also what you should inherit from to make custom exit types. Change the
 default class used by e.g. ``@dig`` and ``@open`` by editing
 ``BASE_EXIT_TYPECLASS`` in your settings.
 

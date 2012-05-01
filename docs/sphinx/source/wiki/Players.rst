@@ -33,23 +33,21 @@ player's typeclass dynamically).
 An Evennia Player is, per definition, a Python class that includes
 ``src.players.player.Player`` among its parents (if you are aware of how
 `Typeclasses <Typeclasses.html>`_ work, this is a typeclass linked to
-the ``PlayerDB`` database model). There is no equivalence to this in the
-``game/gamesrc`` folder, you need to inherit from the base object
-directly.
+the ``PlayerDB`` database model). You can also inherit from
+``ev.Player`` which is a shortcut.
 
 Here's how to define a new Player typeclass in code:
 
 ::
 
-    from src.players.player import Player class ConfigPlayer(Player):     """     This creates a Player with some configuration options     """             at_player_creation(self):         "this is called only once, when player is first created"         self.db.real_name = None      # this is set later         self.db.real_address = None   #        ''         self.db.config_1 = True       # default config         self.db.config_2 = False      #       "         self.db.config_3 = 1          #       "         # ... whatever else our game needs to know
+    from ev import Player class ConfigPlayer(Player):     """     This creates a Player with some configuration options     """             at_player_creation(self):         "this is called only once, when player is first created"         self.db.real_name = None      # this is set later         self.db.real_address = None   #        ''         self.db.config_1 = True       # default config         self.db.config_2 = False      #       "         self.db.config_3 = 1          #       "         # ... whatever else our game needs to know
 
 There is no pre-made folder in ``game/gamesrc`` to store custom player
-typeclasses. Either make your own folder or store it in
-``gamesrc/objects`` (remember that if you make your own folder you need
-to add an empty ``__init__.py`` file so that you can import the file
-later). To change which object becomes the Player object for new
-players, set the variable ``BASE_PLAYER_TYPECLASS`` in your
-``settings.py`` file.
+typeclasses. Make your own folder or store it in ``gamesrc/objects``
+(remember that if you make your own folder you need to add an empty
+``__init__.py`` file so that you can import the file later). To change
+which object becomes the Player object for new players, set the variable
+``BASE_PLAYER_TYPECLASS`` in your ``settings.py`` file.
 
 Properties on Players
 ---------------------
@@ -81,8 +79,8 @@ Special handlers:
 How it all hangs together
 -------------------------
 
-Looking at the above list, it's clear there are more to ``Player``s than
-what first meets the eye.
+Looking at the above list, it's clear there are more to ``Player``\ s
+than what first meets the eye.
 
 What happens when a person connects to Evennia and logs in is that they
 log in as a ``User`` object. This is a Django object that knows all

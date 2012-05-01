@@ -2,8 +2,8 @@ IRC
 ===
 
 `IRC (Internet Relay
-Chat) <http://en.wikipedia.org/wiki/Internet%3Ci%3ERelay%3C/i%3EChat>`_
-is a long standing chat protocol used by many open-source projects for
+Chat) <http://en.wikipedia.org/wiki/Internet<i>Relay</i>Chat>`_ is a
+long standing chat protocol used by many open-source projects for
 communicating in real time. By connecting one of Evennia's
 `Channels <Communications.html>`_ to an IRC channel you can communicate
 also with people not on an mud themselves. Note that you can use IRC

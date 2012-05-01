@@ -52,9 +52,9 @@ function on the database model or if it in fact sat on the script parent
 
 By contrast, a typeclass is a normal python class that inherits from the
 *!TypeClass* parent. There are no other required functions to define.
-This class uses **getattribute** and **setattr** transparently behind
-the scenes to store data onto the persistent django object. Also the
-django model is aware of the typeclass in the reverse direction. The
+This class uses **\ getattribute\ ** and **\ setattr\ ** transparently
+behind the scenes to store data onto the persistent django object. Also
+the django model is aware of the typeclass in the reverse direction. The
 admin don't really have to worry about this connection, they can usually
 consider the two objects (typeclass and django model) to be one.
 
@@ -74,14 +74,15 @@ Command functions + !StateCommands-> Command classes + CmdSets
 --------------------------------------------------------------
 
 In trunk, there was one default group of commands in a list
-GLOBAL*CMD*TABLE. Every player in game used this. There was a second
-dictionary GLOBAL*STATE*TABLE that held commands valid only for certain
-*states* the player might end up in - like entering a dark room, a text
-editor, or whatever. The problem with this state system, was that it was
-limited in its use - every player could ever only be in one state at a
-time for example, never two at the same time. The way the system was set
-up also explicitly made states something unique to players - an object
-could not offer different commands dependent on its state, for example.
+GLOBAL\ *CMD*\ TABLE. Every player in game used this. There was a second
+dictionary GLOBAL\ *STATE*\ TABLE that held commands valid only for
+certain *states* the player might end up in - like entering a dark room,
+a text editor, or whatever. The problem with this state system, was that
+it was limited in its use - every player could ever only be in one state
+at a time for example, never two at the same time. The way the system
+was set up also explicitly made states something unique to players - an
+object could not offer different commands dependent on its state, for
+example.
 
 In devel, *every* command definition is grouped in what's called a
 *!CmdSet* (this is, like most things in Devel, defined as a class). A
@@ -319,7 +320,7 @@ where it might be unclear if you receive a session or a player object
 (especially during login/logout), you can now use simply use ``msg()``
 without having to check (however, you *can* still use ``emit_to`` for
 legacy code, it's an alias to msg() now). Same is true with
-emit*to*contents() -> msg*to*contents().
+emit\ *to*\ contents() -> msg\ *to*\ contents().
 
 ``source_object`` in default commands are now consistently named
 *caller* instead.

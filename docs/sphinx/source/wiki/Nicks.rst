@@ -46,7 +46,7 @@ commands expecting an object reference, such as
 
     look mycar2
 
-becomes equivalent to "``look The red sports car``".
+becomes equivalent to "``look The red sports car``\ ".
 
 ::
 

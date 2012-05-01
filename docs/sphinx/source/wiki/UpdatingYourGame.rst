@@ -62,7 +62,7 @@ components you need to clear the data from all of them:
 
 ::
 
-    python manage.py reset objects players scripts comms help web auth
+    python manage.py reset server objects players scripts comms help web auth
 
 Django also offers an easy way to start the database's own management
 should we want more direct control:
@@ -93,7 +93,7 @@ using the database's command line. This often means adding/removing new
 tables or fields as well as possibly convert existing data to match what
 the new Evennia version expects. It should be quite obvious that this
 quickly becomes cumbersome and error-prone. If your database doesn't
-contain anything critical yet iẗ́'s probably easiest to simply reset it
+contain anything critical yet iẗ́'s probably easiest to simply reset it
 and start over rather than to bother converting.
 
 Enter `South <http://south.aeracode.org/>`_. South keeps track of

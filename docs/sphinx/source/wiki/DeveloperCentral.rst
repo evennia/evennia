@@ -22,6 +22,7 @@ more links to Evennia resources from the `Links <Links.html>`_ page.
 General Evennia development information
 ---------------------------------------
 
+-  `Introduction to coding with Evennia <CodingIntroduction.html>`_
 -  `Evennia Licensing FAQ <Licensing.html>`_
 -  `Contributing to Evennia <Contributing.html>`_
 -  `Evennia Code Style
@@ -33,6 +34,8 @@ General Evennia development information
 
 Evennia Component Documentation
 -------------------------------
+
+-  `ev - the flat API <evAPI.html>`_
 
 `Directory Overview <DirectoryOverview.html>`_
 

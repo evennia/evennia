@@ -80,7 +80,7 @@ send a non-persistent message, also if you send it a ``Msg`` object.
 
 As a more advanced note, sending text to channels is a "special
 exception" as far as commands are concerned, and you may completely
-customize how this works by defining a *system*command\_ with your own
+customize how this works by defining a *system*\ command\_ with your own
 code. See `Commands <Commands.html>`_ for more details.
 
 Properties defined on ``Channel``

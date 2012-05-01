@@ -43,7 +43,7 @@ use of the ``run_async()`` function in ``src/utils/utils.py``.
 
 ::
 
-    from src.utils import utils print "before call ..." utils.run_async(long_running_function) print "after call ..."
+    from ev import utils print "before call ..." utils.run_async(long_running_function) print "after call ..."
 
 Now, when running this you will find that the program will not wait
 around for ``long_running_function`` to finish. Infact you will see
@@ -93,7 +93,7 @@ An example of making an asynchronous call from inside a
 
 ::
 
-    from src.utils import utils from game.gamesrc.commands.basecommand import Command      class CmdAsync(Command):   key = "asynccommand"   def func(self):                     def long_running_function():              #[... lots of time-consuming code              return final_value                def at_return(r):            self.caller.msg("The final value is %s" % r)       def at_err(e):            self.caller.msg("There was an error: %s" % e)       # do the async call, setting all callbacks        utils.run_async(long_running_function, at_return, at_err)
+    from ev import utils from game.gamesrc.commands.basecommand import Command      class CmdAsync(Command):   key = "asynccommand"   def func(self):                     def long_running_function():              #[... lots of time-consuming code              return final_value                def at_return(r):            self.caller.msg("The final value is %s" % r)       def at_err(e):            self.caller.msg("There was an error: %s" % e)       # do the async call, setting all callbacks        utils.run_async(long_running_function, at_return, at_err)
 
 That's it - from here on we can forget about ``long_running_function``
 and go on with what else need to be done. *Whenever* it finishes, the

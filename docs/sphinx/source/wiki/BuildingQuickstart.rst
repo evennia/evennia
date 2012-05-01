@@ -37,17 +37,20 @@ as locks. This can be useful, but it also hides some functionality that
 you might want to test. Let's create a more "normal" Builder player
 account instead.
 
-Log off and choose ``create`` from the login screen. Create a new
-account (don't log in). Let's say we call the new account "Anna". Next
-log in as your superuser account and give the recently created player
-build rights:
+Get to Evennia's login screen (log off with ``@quit`` if you are already
+connected) and choose ``create`` from the login screen. Create a new
+account (don't log in yet). You can use any e-mail address, it doesn't
+have to be an existing one. Let's say we call the new account "Anna".
+Next log in *on your superuser account* and give the recently created
+player build rights:
 
 ::
 
     @perm Anna = Builders
 
-That should do it. Log out again (``@quit``) and finally log back in as
-your builder account.
+You could give the permission "Immortals" instead, if you want to assign
+full admin privileges. Log out of your superuser account (``@quit``) and
+finally log back in again as your new builder account.
 
 Creating an object
 ------------------
@@ -129,8 +132,8 @@ and try to get the box now:
 Think the default error message looks dull? The ``get`` command looks
 for an `Attribute <Attributes.html>`_ named ``get_err_msg`` for
 returning a nicer error message (we just happen to know this, you would
-currently need to peek into the code for the ``get`` command to find
-out. You set attributes using the ``@set`` command:
+need to peek into the code for the ``get`` command to find out). You set
+attributes using the ``@set`` command:
 
 ::
 
@@ -185,11 +188,10 @@ object-based `Commands <Commands.html>`_, you could expand it and other
 items to be as unique, complex and interactive as you want.
 
 Let's take an example. So far we have only created objects that use the
-default object typeclass found in
-``game/gamesrc/objects/baseobjects.py``. It is called simply *Object*.
-Let's create an object that is a little more interesting. Under
-``game/gamesrc/objects/`` there is a directory ``examples`` with a
-module ``red_button.py``. It contains the enigmatic RedButton typeclass.
+default object typeclass named simply ``Object``. Let's create an object
+that is a little more interesting. Under ``game/gamesrc/objects/`` there
+is a directory ``examples`` with a module ``red_button.py``. It contains
+the enigmatic RedButton typeclass.
 
 Let's make us one of *those*!
 

@@ -16,7 +16,7 @@ The batch-command processor is a superuser-only function, invoked by
     > @batchcode path.to.batchcodefile
 
 Where ``path.to.batchcodefile`` is the path to a *batch-code file* with
-the "``.py``" file ending. This path is given like a python path
+the "``.py``\ " file ending. This path is given like a python path
 relative to a folder you define to hold your batch files, set by
 ``BATCH_IMPORT_PATH`` in your settings. Default folder is
 ``game/gamesrc/world``. So if you want to run the example batch file in
@@ -61,10 +61,15 @@ Here are the rules of syntax of the batch-command ``*.py`` file.
    ``obj1, obj2, ...`` parts are optional object labels used by the
    processor's *debug* mode in order to auto-delete objects after a test
    run.
--  A new ``#HEADER`` or ``#CODE`` (or the end of the file) ends the
-   previous block. Text before the first block are ignored.
--  A ``#`` that is not starting a ``#HEADER`` or ``#CODE`` block is
-   considered a comment.
+-  ``#INSERT path.filename`` as the first on a line loads the contents
+   of another batch-code file into this one. Its ``#CODE`` blocks will
+   be executed as if they were defined in this file, but they will not
+   share ``#HEADER``\ s with the current file, but only use its own, if
+   any.
+-  A new ``#HEADER``, ``#CODE`` or ``#INSERT`` (or the end of the file)
+   ends a previous block. Text before the first block are ignored.
+-  A ``#`` that is not starting a ``#HEADER``, ``#CODE`` or ``#INSERT``
+   instruction is considered a comment.
 -  Inside a block, normal Python syntax rules apply. For the sake of
    indentation, each block acts as a separate python module.
 -  The variable ``caller`` is always made available to the script,
@@ -77,7 +82,7 @@ Below is a version of the example file found in
 
     #
     # This is an example batch-code build file for Evennia. 
-    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo) chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again."  caller.msg(string % (table, chair))
+    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")# importing more code from another batch-code file #INSERT examples.batch_code_insert#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo) chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again."  caller.msg(string % (table, chair))
 
 This uses Evennia's Python API to create three objects in sequence.
 

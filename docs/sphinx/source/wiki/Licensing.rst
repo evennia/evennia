@@ -9,8 +9,7 @@ directory. You can also read the full license file
 You should read the full license text to know what it says exactly, but
 here are some answers to common questions.
 
-Q: When creating a game using Evennia, what does the licence permit me
-to do with it?
+Q: When creating a game using Evennia, what does the licence permit me to do with it?
 -------------------------------------------------------------------------------------
 
 **A:** It's your own game world to do with as you please! To summarize,
@@ -38,8 +37,7 @@ is referred to as "The Package, Standard version" in the license.
    of course, if you plan to add new features to the server, the easiest
    way to do so is to simply become an Evennia developer!
 
-Q: Can I re-distribute the Evennia server package along with my custom
-game implementation?
+Q: Can I re-distribute the Evennia server package along with my custom game implementation?
 -------------------------------------------------------------------------------------------
 
 **A:** Sure. This is covered in **§4** - just package the "Standard

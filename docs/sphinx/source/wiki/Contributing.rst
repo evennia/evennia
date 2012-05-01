@@ -70,7 +70,7 @@ To help with Evennia development it's recommended to do so using a clone
 repository as described above. But for small, well isolated fixes you
 are also welcome to submit your suggested Evennia fixes/addendums as
 *patches*. You can use normal
-`patches <https://secure.wikimedia.org/wikipedia/en/wiki/Patch_(computing).html>`_,
+`patches <https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29.html>`_,
 but it might be easier to use mercurial's own patch mechanism. Make sure
 you have committed your latest fixes first, then
 

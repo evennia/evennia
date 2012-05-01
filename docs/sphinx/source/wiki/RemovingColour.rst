@@ -34,7 +34,7 @@ inheriting from ``game.gamesrc.objects.baseobjecs.Character``.
 
 ::
 
-    from game.gamesrc.objects.baseobjects import Characterclass ColourableCharacter(Character):     at_object_creation(self):                       # set a colour config value         self.db.config_colour = True
+    from ev import Characterclass ColourableCharacter(Character):     at_object_creation(self):                       # set a colour config value         self.db.config_colour = True
 
 Above we set a simple config value as an `attribute <Attributes.html>`_.
 
@@ -50,11 +50,13 @@ everything works - you don't want to render your root user unusable!).
 
     @typeclass/reset/force Bob = mycharacter.ColourableCharacter
 
-The ``/reset`` switch clears all attributes and properties back to the
-default for the new typeclass and forces the object to re-run all its
-creation hooks (important in this case). ``/force`` might be needed if
-you edit the typeclass and want to update the object despite the actual
-typeclass name not having changed.
+``@typeclass`` changes Bob's typeclass and runs all its creation hooks
+all over again. The ``/reset`` switch clears all attributes and
+properties back to the default for the new typeclass - this is useful in
+this case to avoid ending up with an object having a "mixture" of
+properties from the old typeclass and the new one. ``/force`` might be
+needed if you edit the typeclass and want to update the object despite
+the actual typeclass name not having changed.
 
 Overload the ``msg()`` method
 -----------------------------
@@ -74,7 +76,7 @@ original. Here's how it could look:
 
 ::
 
-    from src.utils import ansimsg(self, message, from_obj=None, data=None):     "our custom msg()"     if not self.db.config_colour:         message = ansi.parse_ansi(message, strip_ansi=True)     self.dbobj.msg(message, from_obj, data)
+    from ev import ansimsg(self, message, from_obj=None, data=None):     "our custom msg()"     if not self.db.config_colour:         message = ansi.parse_ansi(message, strip_ansi=True)     self.dbobj.msg(message, from_obj, data)
 
 Above we create a custom version of the ``msg()`` method that cleans all
 ansi characters if the config value is not set to True. Once that's
@@ -106,15 +108,27 @@ for configuration down the line).
 
 ::
 
-    from game.gamesrc.commands.basecommand import MuxCommandclass ConfigColourCmd(MuxCommand):     """     Configures your colour    Usage:       @setcolour on|off    This turns ansii-colours on/off.      Default is on.      """    key = "@setcolour"     aliases = ["@setcolor"]    def func(self):         "Implements the command"          if not self.args or not self.args in ("on", "off"):             self.caller.msg("Usage: @setcolour on|off")              return         if self.args == "on":             self.caller.db.config_colour = True         else:             self.caller.db.config_colour = False           self.caller.msg("Colour was turned %s." % self.args)
+    from ev import default_cmds
+    class ConfigColourCmd(default_cmds.MuxCommand):
+        """
+        Configures your colour    Usage:       @setcolour on|off    This turns ansii-colours on/off.      Default is on.      """    key = "@setcolour"     aliases = ["@setcolor"]    def func(self):         "Implements the command"          if not self.args or not self.args in ("on", "off"):             self.caller.msg("Usage: @setcolour on|off")              return         if self.args == "on":             self.caller.db.config_colour = True         else:             self.caller.db.config_colour = False           self.caller.msg("Colour was turned %s." % self.args)
 
 Lastly, we make this command available to the user by adding it to the
-default command set. Easiest is to add it to the end of
-``DefaultCmdSet`` class in gamesrc/commands/basecmdset.py:
+default command set. Easiest is to add it to copy the template file from
+``gamesrc/commands/examples``, set ``settings.CMDSET_DEFAULT`` to point
+to, and then add your module to the end of ``DefaultCmdSet`` in that new
+module.
 
 ::
 
-    from game.gamesrc.commands import configcmds class DefaultCmdSet(cmdset_default.DefaultCmdSet):         key = "DefaultMUX"          def at_cmdset_creation(self):                super(DefaultCmdSet, self).at_cmdset_creation()                 self.add(configcmds.ConfigColourCmd())
+    from game.gamesrc.commands import configcmds
+    class DefaultCmdSet(cmdset_default.DefaultCmdSet):
+       
+        key = "DefaultMUX"
+        
+        def at_cmdset_creation(self):       
+            super(DefaultCmdSet, self).at_cmdset_creation()        
+            self.add(configcmds.ConfigColourCmd())
 
 When adding a new command to a cmdset like this you need to run the
 ``@reload`` command (or reboot the server). From here on out, your users

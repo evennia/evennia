@@ -73,7 +73,7 @@ Resetting
 ---------
 
 *Resetting* is the equivalent of a "cold reboot" of the server - it will
-restart but will behave as it if was fully shut down. You initiate a
+restart but will behave as if it was fully shut down. You initiate a
 reset using the ``@reset`` command from inside the game. As with a
 reload, no players will be disconnected during a shutdown. It will
 however purge all non-persistent scripts and will call

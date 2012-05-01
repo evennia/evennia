@@ -45,12 +45,12 @@ Inside the ``tests.py`` module you create classes inheriting from
 used to test a single aspect or component in various ways. Each test
 case contains one ore more *test methods* - these define the actual
 tests to run. You can name the test methods anything you want as long as
-the name starts with "``test_``". Your ``TestCase`` class can also have
-a method !SetUp(). This is run before each test, setting up whatever
-preparations the test methods need.
+the name starts with "``test_``\ ". Your ``TestCase`` class can also
+have a method !SetUp(). This is run before each test, setting up
+whatever preparations the test methods need.
 
 To test the results, you use special methods of the ``TestCase`` class.
-Many of those start with "``assert``", such as ``assertEqual`` or
+Many of those start with "``assert``\ ", such as ``assertEqual`` or
 ``assertTrue``.
 
 Example of a ``TestCase`` class (inside a file ``tests.py``):

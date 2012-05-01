@@ -111,7 +111,7 @@ NO\_AUTOCHUNK
 Contents are never sent to the client until the encoding mode changes
 (for example, switching from HTML to UNENCODED will send the HTML
 buffer) or the buffering mode changes (for example, one could set
-NO*AUTOCHUNK, send some text, and set NO*AUTOCHUNK again to force a
+NO\ *AUTOCHUNK, send some text, and set NO*\ AUTOCHUNK again to force a
 flush.
 
 AUTOCHUNK

@@ -6,16 +6,16 @@ interactive fiction, and online chat. Players can read or view
 descriptions of rooms, objects, other players, non-player characters,
 and actions performed in the virtual world. Players typically interact
 with each other and the world by typing commands that resemble a natural
-language.*" - `Wikipedia <http://en.wikipedia.org/wiki/MUD>`_
+language.*\ " - `Wikipedia <http://en.wikipedia.org/wiki/MUD>`_
 
 Evennia introduction=
 
 If you are reading this, it's quite likely you are dreaming of creating
 and running a text-based massively-multiplayer game
-(`MUD/MUX/MU <http://en.wikipedia.org/wiki/Mu%3Cstrong%3E>`_ etc) of
-your very own. You might just be starting to think about it, or you
-might have lugged around that *perfect* game in your mind for years ...
-you know *just* how good it would be, if you could only make it come to
+(`MUD/MUX/MU <http://en.wikipedia.org/wiki/Mu<strong>>`_ etc) of your
+very own. You might just be starting to think about it, or you might
+have lugged around that *perfect* game in your mind for years ... you
+know *just* how good it would be, if you could only make it come to
 reality. We know how you feel. That is, after all, why Evennia came to
 be.
 
@@ -132,24 +132,23 @@ instructions <GettingStarted.html>`_) and have gotten as far as to start
 the server and connect to it with the client of your choice, here's what
 you need to know depending on your skills and needs.
 
-I don't know (or don't want to do) any programming - I just want to run
-a game!
+I don't know (or don't want to do) any programming - I just want to run a game!
 -------------------------------------------------------------------------------
 
 Evennia comes with a default set of commands for the Python newbies and
 for those who need to get a game running *now*. Stock Evennia is enough
 for running a simple 'Talker'-type game - you can build and describe
 rooms and basic objects, have chat channels, do emotes and other things
-suitable for a social or free-form MU``*``. Combat, mobs and other game
-elements are not included, so you'll have a very basic game indeed if
-you are not willing to do at least *some* coding.
+suitable for a social or free-form MU\ ``*``. Combat, mobs and other
+game elements are not included, so you'll have a very basic game indeed
+if you are not willing to do at least *some* coding.
 
 I know basic Python, or am willing to learn
 -------------------------------------------
 
 Evennia's source code is extensively documented and `viewable
-online <http://code.google.com/p/evennia/source/browse/trunk>`_. We also
-have a comprehensive `online
+online <http://code.google.com/p/evennia/source/browse/>`_. We also have
+a comprehensive `online
 manual <http://code.google.com/p/evennia/wiki/Index>`_ with lots of
 examples. But while Python is a relatively easy programming language, it
 still represents a learning curve if you are new to programming. You

@@ -80,7 +80,7 @@ A help entry consists of four parts:
 -  The *text* - the help text itself, of any length.
 -  locks - a `lock definition <Locks.html>`_. This can be used to limit
    access to this help entry, maybe because it's staff-only or otherwise
-   meant to be restricted. Help commands check for ``access_type``s
+   meant to be restricted. Help commands check for ``access_type``\ s
    ``view`` and ``edit``. An example of a lock string would be
    ``view:perm(Builders)``.
 

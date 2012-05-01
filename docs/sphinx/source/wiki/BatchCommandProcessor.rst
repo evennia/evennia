@@ -16,7 +16,7 @@ The batch-command processor is a superuser-only function, invoked by
     > @batchcommand path.to.batchcmdfile
 
 Where ``path.to.batchcmdfile`` is the path to a *batch-command file*
-with the "``.ev``" file ending. This path is given like a python path
+with the "``.ev``\ " file ending. This path is given like a python path
 relative to a folder you define to hold your batch files, set with
 ``BATCH_IMPORT_PATH`` in your settings. Default folder is
 ``game/gamesrc/world``. So if you want to run the example batch file in
@@ -52,6 +52,11 @@ really, really simple:
    after one another in the file - separate them with a comment, or the
    second of the two will be considered an argument to the first one.
    Besides, using plenty of comments is good practice anyway.
+-  A line that starts with the word ``#INSERT`` is a comment line but
+   also signifies a special instruction. The syntax is
+   ``#INSERT <path.batchfile>`` and tries to import a given batch-cmd
+   file into this one. The inserted batch file (file ending ``.ev``)
+   will run normally from the point of the ``#INSERT`` instruction.
 -  Extra whitespace in a command definition is *ignored*.
 -  A completely empty line translates in to a line break in texts. Two
    empty lines thus means a new paragraph (this is obviously only
@@ -59,13 +64,18 @@ really, really simple:
    ``@desc`` command).
 -  The very last command in the file is not required to end with a
    comment.
+-  You *cannot* nest another ``@batchcommand`` statement into your batch
+   file. If you want to link many batch-files together, use the
+   ``#INSERT`` batch instruction instead. You also cannot launch the
+   ``@batchcode`` command from your batch file, the two batch processors
+   are not compatible.
 
 Below is a version of the example file found in
 ``game/gamesrc/commands/examples/batch_cmds.ev``.
 
 ::
 
-    # # This is an example batch build file for Evennia.  ## This creates a red button @create button:examples.red_button.RedButton # (This comment ends input for @create) # Next command. Let's create something.  @set button/desc =    This is a large red button. Now and then    it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You  know you want to!     # (This ends the @set command). Note that single line breaks  # and extra whitespace in the argument are ignored. Empty lines  # translate into line breaks in the output. # Now let's place the button where it belongs (let's say limbo #2 is  # the evil lair in our example) @teleport #2 # (This comments ends the @teleport command.)  # Now we drop it so others can see it.  # The very last command in the file needs not be ended with #. drop button
+    # # This is an example batch build file for Evennia.  ## This creates a red button @create button:examples.red_button.RedButton # (This comment ends input for @create) # Next command. Let's create something.  @set button/desc =    This is a large red button. Now and then    it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You  know you want to! # This inserts the commands from another batch-cmd file named # batch_insert_file.ev. #INSERT examples.batch_insert_file   # (This ends the @set command). Note that single line breaks  # and extra whitespace in the argument are ignored. Empty lines  # translate into line breaks in the output. # Now let's place the button where it belongs (let's say limbo #2 is  # the evil lair in our example) @teleport #2 # (This comments ends the @teleport command.)  # Now we drop it so others can see it.  # The very last command in the file needs not be ended with #. drop button
 
 To test this, run ``@batchcommand`` on the file. A button will be
 created, described and dropped in Limbo. All commands will be executed

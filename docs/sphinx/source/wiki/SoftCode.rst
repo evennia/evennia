@@ -3,7 +3,7 @@ On MUX and Softcode: A brief overview
 
 Evennia was originally created in order to provide a MUX/MUSH-style
 development environment without the kludgery of softcode. Although it
-has since grown to be adaptable to any style of MU``*`` it still ships
+has since grown to be adaptable to any style of MU\ ``*`` it still ships
 with 'MUX-like' default commands.
 
 This document will provide a quick overview of what softcode is, why it

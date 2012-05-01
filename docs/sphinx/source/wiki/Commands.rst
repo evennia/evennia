@@ -37,8 +37,7 @@ Defining a Command
 ------------------
 
 All commands are implemented as normal Python classes inheriting from
-the base class ``Command``
-(``game.gamesrc.commands.basecommand.Command``). You will find that this
+the base class ``Command`` (``ev.Command``). You will find that this
 base class is very "bare". The default commands of Evennia actually
 inherit from a child of ``Command`` called ``MuxCommand`` - this is the
 class that knows all the mux-like syntax like ``/switches``, splitting
@@ -48,7 +47,7 @@ class directly.
 ::
 
     # basic Command definition
-    from game.gamesrc.commands.basecommand import Command
+    from ev import Command
     class MyCmd(Command):
        """
        This is the help-text for the command
@@ -86,18 +85,18 @@ assigns it the following properties:
    *Player* object (usually used only when a Player has no character
    assigned to them, like when creating a new one).
 -  ``cmdstring`` - the matched key for the command. This would be
-   "``look``" in our example.
+   "``look``\ " in our example.
 -  ``args`` - this is the rest of the string, except the command name.
    So if the string entered was ``look at sword``, ``args`` would simply
-   be "``at sword``".
+   be "``at sword``\ ".
 -  ``obj`` - the game `Object <Objects.html>`_ on which this command is
    defined. This need not be the caller, but since ``look`` is a common
    (default) command, this is probably defined directly on *!BigGuy* -
    so ``obj`` will point to !BigGuy. Otherwise ``obj`` could be any
    interactive object with commands defined on it, like in the example
    of the "check time" command defined on a "Clock" object or a `red
-   button <https://code.google.com/p/evennia/source/browse/trunk/game/gamesrc/objects/examples/red%3Ci%3Ebutton.py.html>`_
-   that you can "``push``".
+   button <https://code.google.com/p/evennia/source/browse/trunk/game/gamesrc/objects/examples/red<i>button.py.html>`_
+   that you can "``push``\ ".
 -  ``cmdset`` - this is a reference to the merged CmdSet (see below)
    from which this command was matched. This variable is rarely used,
    it's main use is for the `auto-help system <HelpSystem.html>`_
@@ -113,9 +112,7 @@ Beyond the properties Evennia always assigns to the command at runtime
 
 -  ``key`` (string) - the identifier for the command, like ``look``.
    This should (ideally) be unique. it can be more than one word long in
-   a string, like "press button". Maximum number of space-separated
-   words that can be part of a command name is given by
-   ``settings.CMD_MAXLEN``.
+   a string, like "press button" or "pull lever left".
 -  ``aliases`` (optional list) - a list of alternate names for the
    command (``["l", "glance", "see"]``). Same name rules as for ``key``
    applies.
@@ -131,10 +128,10 @@ Beyond the properties Evennia always assigns to the command at runtime
    to it) will be stored by the system and can be accessed by the next
    command called by retrieving ``self.caller.ndb.last_cmd``. The next
    run command will either clear or replace the storage.
--  'arg*regex' (optional raw string): This should be given as a `raw
+-  'arg\ *regex' (optional raw string): This should be given as a `raw
    regular expression string <http://docs.python.org/library/re.html>`_.
    This will be compiled by the system at runtime. This allows you to
-   customize how the part*immediately following the command name (or
+   customize how the part*\ immediately following the command name (or
    alias) must look in order for the parser to match for this command.
    Normally the parser is highly efficient in picking out the command
    name, also as the beginning of a longer word (as long as the longer
@@ -147,7 +144,7 @@ Beyond the properties Evennia always assigns to the command at runtime
    expected.
 -  autohelp (optional boolean). Defaults to ``True``. This allows for
    turning off the `auto-help
-   system <HelpSystem#Command%3Ci%3EAuto-help%3C/i%3Esystem.html>`_ on a
+   system <HelpSystem#Command<i>Auto-help</i>system.html>`_ on a
    per-command basis. This could be useful if you either want to write
    your help entries manually or hide the existence of a command from
    ``help``'s generated list.
@@ -173,11 +170,11 @@ by the `Help system <HelpSystem.html>`_ to create the help entry for
 this command. You should decide on a way to format your help and stick
 to that.
 
-Below is how you define a simple alternative "``look at``" command:
+Below is how you define a simple alternative "``look at``\ " command:
 
 ::
 
-    from game.gamesrc.commands.basecommand import Commandclass CmdLookAt(Command):     """     An alternative (and silly) look command    Usage:        look at <what>    Where <what> may only be 'here' in this example.    This initial string (the __doc__ string)     is also used to auto-generate the help      for this command ...     """           key = "look at" # this is the command name to use     aliases = ["la", "look a"] # aliases to the command name     locks = "cmd:all()"     help_category = "General"    def parse(self):         "Very trivial parser"          self.what = self.args.strip()     def func(self):         "This actually does things"         caller = self.caller         if not self.what:             caller.msg("Look at what?")         elif self.what == 'here':             # look at the current location             description = caller.location.db.desc               caller.msg(description)         else:             # we don't add any more functionality in this example             caller.msg("Sorry, you can only look 'here'...")
+    from ev import Commandclass CmdLookAt(Command):     """     An alternative (and silly) look command    Usage:        look at <what>    Where <what> may only be 'here' in this example.    This initial string (the __doc__ string)     is also used to auto-generate the help      for this command ...     """           key = "look at" # this is the command name to use     aliases = ["la", "look a"] # aliases to the command name     locks = "cmd:all()"     help_category = "General"    def parse(self):         "Very trivial parser"          self.what = self.args.strip()     def func(self):         "This actually does things"         caller = self.caller         if not self.what:             caller.msg("Look at what?")         elif self.what == 'here':             # look at the current location             description = caller.location.db.desc               caller.msg(description)         else:             # we don't add any more functionality in this example             caller.msg("Sorry, you can only look 'here'...")
 
 The power of having commands as classes and to separate ``parse()`` and
 ``func()`` lies in the ability to inherit functionality without having
@@ -201,7 +198,7 @@ number of different !CmdSets. CmdSets can be stored on game
 
 When a user issues a command, it is matched against the contents of all
 cmdsets available at the time, `merged
-together <Commands#Adding%3Ci%3Eand%3C/i%3Emerging%3Ci%3Ecommand%3C/i%3Esets.html>`_.
+together <Commands#Adding<i>and</i>merging<i>command</i>sets.html>`_.
 The currently valid command sets are collected from the following
 sources, in this order:
 
@@ -217,24 +214,25 @@ The default ``CmdSet`` shipping with Evennia is automatically added to
 all new characters and contains commands such as ``look``, ``drop``,
 ``@dig`` etc. You can find it defined in
 ``src/commands/default/cmdset_default.py``, but it is also referenced by
-``game/gamesrc/commands/basecmdset.py``. Players have an
-Out-of-character cmdset called ``cmdset_ooc`` that can also be found
-from the same place. There is finally an "unloggedin" cmdset that is
-used before the Player has authenticated to the game. The path to these
-three standard command sets are defined in settings, as
-``CMDSET_UNLOGGEDIN``, ``CMDSET_DEFAULT`` and ``CMDSET_OOC``. You can
-create any number of command sets besides those to fit your needs.
+importing ``ev.default_cmds`` and accessing its property
+``DefaultCmdset``. Players have an Out-of-character cmdset called
+``cmdset_ooc`` that can also be found from the same place. There is
+finally an "unloggedin" cmdset that is used before the Player has
+authenticated to the game. The path to these three standard command sets
+are defined in settings, as ``CMDSET_UNLOGGEDIN``, ``CMDSET_DEFAULT``
+and ``CMDSET_OOC``. You can create any number of command sets besides
+those to fit your needs.
 
 A CmdSet is, as most things in Evennia, defined as a Python class
-inheriting from the correct parent (``src.commands.cmdset.CmdSet``). The
-CmdSet class only needs to define one method, called
-``at_cmdset_creation()``. All other class parameters are optional, but
-are used for more advanced set manipulation and coding (see the `merge
-rules <Commands#Merge_rules.html>`_ section).
+inheriting from the correct parent (``ev.CmdSet`` or
+``src.commands.cmdset.CmdSet``). The CmdSet class only needs to define
+one method, called ``at_cmdset_creation()``. All other class parameters
+are optional, but are used for more advanced set manipulation and coding
+(see the `merge rules <Commands#Merge_rules.html>`_ section).
 
 ::
 
-    from src.commands.cmdset import CmdSet from game.gamesrc.commands import mycommandsclass MyCmdSet(CmdSet):          def at_cmdset_creation(self):         """         The only thing this method should need         to do is to add commands to the set.                                                 """              self.add(mycommands.MyCommand1())         self.add(mycommands.MyCommand2())         self.add(mycommands.MyCommand3())
+    from ev import CmdSet from game.gamesrc.commands import mycommands class MyCmdSet(CmdSet):         def at_cmdset_creation(self):         """         The only thing this method should need         to do is to add commands to the set.                                                 """              self.add(mycommands.MyCommand1())         self.add(mycommands.MyCommand2())         self.add(mycommands.MyCommand3())
 
 The !CmdSet's ``add()`` method can also take another CmdSet as input. In
 this case all the commands from that CmdSet will be appended to this one
@@ -271,7 +269,7 @@ server, or you run
     @py self.cmdset.delete('game.gamesrc.commands.mycmdset.MyCmdSet')
 
 For more permanent addition, read the `step-by-step
-guide <Commands#Adding%3Ci%3Ea%3C/i%3Enew%3Ci%3Ecommand%3C/i%3E-%3Ci%3Ea%3C/i%3Estep%3Ci%3Eby%3C/i%3Estep_guide.html>`_
+guide <Commands#Adding<i>a</i>new<i>command</i>-<i>a</i>step<i>by</i>step_guide.html>`_
 below. Generally you can customize which command sets are added to your
 objects by using ``self.cmdset.add()`` or ``self.cmdset.add_default()``.
 
@@ -283,36 +281,36 @@ assume you have just downloaded Evennia and wants to try to add a new
 command to use. This is the way to do it.
 
 #. In ``game/gamesrc/commands``, create a new module. Name it, say,
-   ``mycommand.py``.
-#. Import ``game.gamesrc.commands.basecommands.MuxCommand`` (this is a
-   convenient shortcut so you don't have to import from src/ directly).
-   The ``MuxCommand`` class handles command line parsing for you, giving
-   you stuff like /switches, the syntax using '=' etc). In other words,
-   you don't have to implement ``parse()`` on your own.
+   ``mycommand.py``. Copy from the templates in ``examples/`` if you
+   like.
+#. Import ``ev.default_cmds`` and access ``MuxCommand`` from that (this
+   is a convenient shortcut so you don't have to import from src/
+   directly). The ``MuxCommand`` class handles command line parsing for
+   you, giving you stuff like /switches, the syntax using '=' etc). In
+   other words, you don't have to implement ``parse()`` on your own.
 #. Create a new class in ``mycommand`` that inherits from
    ``MuxCommand``.
 #. Set the class variable ``key`` to the name to call your command with,
    say ``mycommand``.
 #. Set the ``locks`` property on the command to a suitable
-   `lockstring <Locks#Defining%3Ci%3Elocks.html>`_. If you are unsure,
-   use "cmd:all()".
+   `lockstring <Locks#Defining<i>locks.html>`_. If you are unsure, use
+   "cmd:all()".
 #. Define a class method ``func()`` that does stuff. See below.
-#. Give your class a useful *doc*\_ string, this acts as the help entry
-   for the command.
+#. Give your class a useful *doc*\ \_ string, this acts as the help
+   entry for the command.
 
 Your command definition is now ready. Here's an example of how it could
 look:
 
 ::
 
-    from game.gamesrc.commands.basecommand import MuxCommandclass MyCommand(MuxCommand):     """     Simple command example    Usage:        mycommand <text>    This command simply echoes text back to the caller.     (this string is also the help text for the command)     """    key = "mycommand"     locks = "cmd:all()"    def func(self):         "This actually does things"           if not self.args:             self.caller.msg("You didn't enter anything!")                    else:             self.caller.msg("You gave the string: '%s'" % self.args)
+    from ev import default_cmdsclass MyCommand(default_cmds.MuxCommand):     """     Simple command example    Usage:        mycommand <text>    This command simply echoes text back to the caller.     (this string is also the help text for the command)     """    key = "mycommand"     locks = "cmd:all()"    def func(self):         "This actually does things"           if not self.args:             self.caller.msg("You didn't enter anything!")                    else:             self.caller.msg("You gave the string: '%s'" % self.args)
 
 Next we want to make this command available to us. There are many ways
 to do this, but all of them involves putting this command in a *Command
 Set*. First, let's try the more involved way.
 
-#. Create a class that inherits from
-   ``game.gamesrc.commands.basecmdset.CmdSet``.
+#. Create a class that inherits from ``ev.CmdSet``.
 #. (Optionally) set a key to name your command set.
 #. Add a method ``at_cmdset_creation()`` and use the ``self.add()``
    method to add your command to the command set.
@@ -321,7 +319,7 @@ This is what we have now:
 
 ::
 
-    from game.gamesrc.commands.basecmdset import CmdSet
+    from ev import CmdSet
     from game.gamesrc.commands import mycommandclass MyCmdSet(CmdSet):          key = "MyCmdSet"    def at_cmdset_creation(self):                 self.add(mycommand.MyCommand())
 
 This new command set could of course contain any number of commands. We
@@ -379,14 +377,16 @@ will be loaded every server start along with all the other default
 commands.
 
 The default command set is found in
-``src/commands/default/cmdset_default.py`` but there is already a
-shortcut to it in ``gamesrc/commands/basecmdset.py`` called
-``DefaultCmdSet``. Add your command to the end of the ``DefaultSet``
-class and you will in fact append it to the existing command set.
+``src/commands/default/cmdset_default.py`` but the template in
+``gamesrc/commands/examples/`` already shows how to extend it. Copy that
+file to ``game/gamesrc/`` and edit ``settings.CMDSET_DEFAULT`` to point
+to this class instead. Next you add your new commands to the end of the
+Default Cmdset in that file and you will in fact append it to the
+existing command set.
 
 ::
 
-    # file gamesrc/commands/basecmdset.py ... from game.gamesrc.commands import mycommandclass DefaultSet(BaseDefaultSet):          key = DefaultMUX    def at_cmdset_creation(self):        # this first adds all default commands         super(DefaultSet, self).at_cmdset_creation()        # all commands added after this point will extend or          # overwrite the default commands.                 self.add(mycommand.MyCommand())
+    # file gamesrc/commands/examples/cmdset.py ... from game.gamesrc.commands import mycommandclass DefaultSet(BaseDefaultSet):          key = DefaultMUX    def at_cmdset_creation(self):        # this first adds all default commands         super(DefaultSet, self).at_cmdset_creation()        # all commands added after this point will extend or          # overwrite the default commands.                 self.add(mycommand.MyCommand())
 
 Again, you need to run the ``@reload`` command to make these changes
 available.
@@ -401,7 +401,7 @@ make sure to set your new command's ``key`` variable to ``look`` as
 well.
 
 If you want to expand/build on the original command, just copy&paste its
-command class from ``src/commands/default``(the ``look`` class is for
+command class from ``src/commands/default``\ (the ``look`` class is for
 example found in ``src/commands/default/general.py``) into
 ``game/gamesrc/commands`` and edit it there.
 
@@ -505,23 +505,24 @@ high-prio one as a template.
 Besides ``priority`` and ``mergetype``, a command set also takes a few
 other variables to control how they merge:
 
--  *allow*duplicates*(bool) - determines what happens when two sets of
-   equal priority merge. Default is that the new set in the merger (i.e.
-   **A** above) automatically takes precedence. But if*allow*duplicates*
-   is true, the result will be a merger with more than one of each name
-   match. This will usually lead to the player receiving a
-   multiple-match error higher up the road, but can be good for things
-   like cmdsets on non-player objects in a room, to allow the system to
-   warn that more than one 'ball' in the room has the same 'kick'
-   command defined on it, so it may offer a chance to select which ball
-   to kick ... Allowing duplicates only makes sense for *Union* and
-   *Intersect*, the setting is ignored for the other mergetypes.
--  *key*mergetype*(dict) - allows the cmdset to define a unique
+-  *allow*\ duplicates\ *(bool) - determines what happens when two sets
+   of equal priority merge. Default is that the new set in the merger
+   (i.e. **A** above) automatically takes precedence. But
+   if*\ allow\ *duplicates* is true, the result will be a merger with
+   more than one of each name match. This will usually lead to the
+   player receiving a multiple-match error higher up the road, but can
+   be good for things like cmdsets on non-player objects in a room, to
+   allow the system to warn that more than one 'ball' in the room has
+   the same 'kick' command defined on it, so it may offer a chance to
+   select which ball to kick ... Allowing duplicates only makes sense
+   for *Union* and *Intersect*, the setting is ignored for the other
+   mergetypes.
+-  *key*\ mergetype\ *(dict) - allows the cmdset to define a unique
    mergetype for particular cmdsets, identified by their cmdset-key.
    Format is ``CmdSetkey:mergetype``. Priorities still apply. Example:
    ``'Myevilcmdset','Replace'`` which would make sure for this set to
    always use 'Replace' on ``Myevilcmdset`` only, no matter
-   what*mergetype\_ is set to.
+   what*\ mergetype\_ is set to.
 
 More advanced cmdset example:
 
@@ -548,29 +549,30 @@ are defined at the top of ``src/commands/cmdhandler.py``). You can find
 ``src/commands/default/system_commands.py``. Since these are not (by
 default) included in any ``CmdSet`` they are not actually used, they are
 just there for show. When the special situation occurs, Evennia will
-look through all valid ``CmdSet``s for your custom system command. Only
-after that will it resort to its own, hard-coded implementation.
+look through all valid ``CmdSet``\ s for your custom system command.
+Only after that will it resort to its own, hard-coded implementation.
 
-Here are the exceptional situations that triggers system commands:
+Here are the exceptional situations that triggers system commands. You
+can find the command keys they use as properties on ``ev.syscmdkeys``
 
--  No input (``cmdhandler.CMD_NOINPUT``) - the player just pressed
+-  No input (``syscmdkeys.CMD_NOINPUT``) - the player just pressed
    return without any input. Default is to do nothing, but it can be
    useful to do something here for certain implementations such as line
    editors that interpret non-commands as text input (an empty line in
    the editing buffer).
--  Command not found (``cmdhandler.CMD_NOMATCH``) - No matching command
+-  Command not found (``syscmdkeys.CMD_NOMATCH``) - No matching command
    was found. Default is to display the "Huh?" error message.
--  Several matching commands where found (``cmdhandler.CMD_MULTIMATCH``)
+-  Several matching commands where found (``syscmdkeys.CMD_MULTIMATCH``)
    - Default is to show a list of matches.
 -  User is not allowed to execute the command
-   (``cmdhandler.CMD_NOPERM``) - Default is to display the "Huh?" error
+   (``syscmdkeys.CMD_NOPERM``) - Default is to display the "Huh?" error
    message.
--  Channel (``cmdhandler.CMD_CHANNEL``) - This is a
+-  Channel (``syscmdkeys.CMD_CHANNEL``) - This is a
    `Channel <Communications.html>`_ name of a channel you are
    subscribing to - Default is to relay the command's argument to that
    channel. Such commands are created by the Comm system on the fly
    depending on your subscriptions.
--  New session connection ('cmdhandler.CMD\_LOGINSTART'). This command
+-  New session connection ('syscmdkeys.CMD\_LOGINSTART'). This command
    name should be put in the ``settings.CMDSET_UNLOGGEDIN``. Whenever a
    new connection is established, this command is always called on the
    server (default is to show the login screen).
@@ -581,7 +583,7 @@ command must be added to a cmdset as well before it will work.
 
 ::
 
-    from src.commands import cmdhandler from game.gamesrc.commands.basecommand import Commandclass MyNoInputCommand(Command):     "Usage: Just press return, I dare you"     key = cmdhandler.CMD_NOINPUT     def func(self):         self.caller.msg("Don't just press return like that, talk to me!")
+    from ev import syscmdkeys, Commandclass MyNoInputCommand(Command):     "Usage: Just press return, I dare you"     key = syscmdkeys.CMD_NOINPUT     def func(self):         self.caller.msg("Don't just press return like that, talk to me!")
 
 Exits
 -----

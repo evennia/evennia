@@ -9,7 +9,7 @@ documentation <Index.html>`_, here's what to do:
 -  If you think the documentation is not clear enough, fill in our quick
    little "https://docs.google.com/spreadsheet/viewform?hl
 
-   en*US&formkey*
+   en\ *US&formkey*
 
    dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid
    ======================================

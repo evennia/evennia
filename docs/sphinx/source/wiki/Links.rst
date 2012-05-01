@@ -49,7 +49,7 @@ General mud/game development ideas and discussions
    aggregator following blogs of current MUD development around the
    'net.
 -  Mud Dev mailing list archive
-   (`mirror1 <http://nilgiri.net/MUD-Dev-archive/>`_),(`mirror2 <http://www.disinterest.org/resource/MUD-Dev/>`_)
+   (`mirror1 <http://nilgiri.net/MUD-Dev-archive/>`_),(\ `mirror2 <http://www.disinterest.org/resource/MUD-Dev/>`_)
    - Influential mailing list active 1996-2004. Advanced game design
    discussions.
 -  `Imaginary
