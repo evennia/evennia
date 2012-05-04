@@ -243,9 +243,8 @@ def get_evennia_version():
     Check for the evennia version info.
     """
     try:
-        with open(settings.BASE_PATH + os.sep + "VERSION") as f:
-            return "%s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
-        return
+        f = open(settings.BASE_PATH + os.sep + "VERSION", 'r')
+        return "%s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
     except IOError:
         return "Unknown version"
 
