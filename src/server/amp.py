@@ -113,9 +113,12 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
         """
         Called when the AMP connection to the MUD server is lost.
         """
-        if not hasattr(self, "server_restart_mode"):
+        if hasattr(self, "server_restart_mode"):
+            self.maxDelay = 1
+        else:
             # Don't translate this; avoiding loading django on portal side.
-            self.portal.sessions.announce_all(" Portal lost connection to Server.")
+            self.maxDelay = 10
+            self.portal.sessions.announce_all(" ... Portal lost connection to Server.")
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):

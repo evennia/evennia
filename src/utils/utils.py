@@ -4,8 +4,8 @@ General helper functions that don't fit neatly under any given category.
 They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
-
 """
+
 from inspect import ismodule
 import os, sys, imp, types, math
 import textwrap
