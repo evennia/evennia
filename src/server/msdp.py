@@ -11,10 +11,13 @@ etc.
 
 """
 import re
-from src.utils.utils import make_iter
+from django.conf import settings
+from src.utils.utils import make_iter, mod_import
 from src.utils import logger
 
-# variables
+OOC_MODULE = mod_import(settings.OOB_FUNC_MODULE)
+
+# MSDP-relevant telnet cmd/opt-codes
 MSDP = chr(69)
 MSDP_VAR = chr(1)
 MSDP_VAL = chr(2)
@@ -23,6 +26,7 @@ MSDP_TABLE_CLOSE = chr(4)
 MSDP_ARRAY_OPEN = chr(5)
 MSDP_ARRAY_CLOSE = chr(6)
 
+# pre-compiled regexes
 regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)) # return 2-tuple
 regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
 regex_varval = re.compile(r"%s(.*?)%s(.*?)" % (MSDP_VAR, MSDP_VAL)) # return 2-tuple
@@ -44,7 +48,7 @@ class Msdp(object):
         self.protocol.will(MSDP).addCallbacks(self.do_msdp, self.no_msdp)
 
     def no_msdp(self, option):
-        "No msdp"
+        "No msdp supported or wanted"
         pass
 
     def do_msdp(self, option):
@@ -52,7 +56,6 @@ class Msdp(object):
         Called when client confirms that it can do MSDP.
         """
         self.protocol.protocol_flags['MSDP'] = True
-
 
     def func_to_msdp(self, cmdname, data):
         """
@@ -96,13 +99,20 @@ class Msdp(object):
             msdp_string = MSDP_VAR + cmdname + MSDP_VAL + data
         return msdp_string
 
+    # MSDP commands supported by Evennia
+    MSDP_COMMANDS = {"LIST": "msdp_list",
+                 "REPORT":"mspd_report",
+                 "RESET":"mspd_reset",
+                 "SEND":"mspd_send",
+                 "UNREPORT":"mspd_unreport"}
+
     def msdp_to_func(self, data):
         """
         Handle a client's requested negotiation, converting
-        it into a function mapping
+        it into a function mapping.
 
-        OBS-this does not support receiving nested tables
-        from the client at this point!
+        This does not support receiving nested tables from the client
+        (and there is no real reason why it should).
         """
         tables = {}
         arrays = {}
@@ -113,7 +123,21 @@ class Msdp(object):
         for array in regex_array.findall(data):
             arrays[array[0]] = dict(regex_varval(array[1]))
         variables = dict(regex_varval(regex_array.sub("", regex_table.sub("", data))))
-        print variables
+        ret = ""
+        if "LIST" in variables:
+            ret = self.msdp_cmd_list(variables["LIST"])
+        if "REPORT" in variables:
+            ret = self.msdp_cmd_report(*(variables["REPORT"],))
+        if "REPORT" in arrays:
+            ret = self.msdp_cmd_report(*arrays["REPORT"])
+        if "RESET" in variables:
+            ret = self.msdp_cmd_reset(*(variables["RESET"],))
+        if "RESET" in arrays:
+            ret = self.msdp_cmd_reset(*arrays["RESET"])
+        if "SEND" in variables:
+            ret = self.msdp_cmd_send((*variables["SEND"],))
+        if "SEND" in arrays:
+            ret = self.msdp_cmd_send(*arrays["SEND"])
 
 
     # MSDP Commands
@@ -142,7 +166,7 @@ class Msdp(object):
         else:
             return self.func_to_msdp("LIST", arg)
 
-    def msdp_cmd_report(self, arg):
+    def msdp_cmd_report(self, *arg):
         """
         The report command instructs the server to start reporting a
         reportable variable to the client.
@@ -157,7 +181,7 @@ class Msdp(object):
         Unreport a previously reported variable
         """
         try:
-            self.MSDP_REPORTABLE[arg](eport=False)
+            self.MSDP_REPORTABLE[arg](report=False)
         except Exception:
             self.logger.log_trace()
 
@@ -185,13 +209,6 @@ class Msdp(object):
                 logger.log_trace()
         return ret
 
-    MSDP_COMMANDS = {
-        "LIST": "msdp_list",
-        "REPORT":"mspd_report",
-        "RESET":"mspd_reset",
-        "SEND":"mspd_send",
-        "UNREPORT":"mspd_unreport"
-        }
 
 
     # MSDP_MAP is a standard suggestions for making it easy to create generic guis.
