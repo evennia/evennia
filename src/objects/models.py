@@ -28,7 +28,7 @@ from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_unicode, variable_from_module
+from src.utils.utils import make_iter, to_unicode, variable_from_module, inherits_from
 
 #__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
 
@@ -245,7 +245,7 @@ class ObjectDB(TypedObject):
     #@player.setter
     def __player_set(self, player):
         "Setter. Allows for self.player = value"
-        if isinstance(player, TypeClass):
+        if inherits_from(player, TypeClass):
             player = player.dbobj
         _set_cache(self, "player", player)
     #@player.deleter

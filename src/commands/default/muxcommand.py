@@ -1,5 +1,6 @@
 """
-The command template for the default MUX-style command set
+The command template for the default MUX-style command set. There
+is also an OOC version that makes sure caller is a Player object.
 """
 
 from src.utils import utils
@@ -11,7 +12,7 @@ __all__ = ("MuxCommand",)
 class MuxCommand(Command):
     """
     This sets up the basis for a MUX command. The idea
-    is that most other Mux-related commands should just
+    is tkhat most other Mux-related commands should just
     inherit from this and don't have to implement much
     parsing of their own unless they do something particularly
     advanced.
@@ -161,3 +162,33 @@ class MuxCommand(Command):
         string += "rhs, comma separated (self.rhslist): {w%s{n\n" % self.rhslist
         string += "-" * 50
         self.caller.msg(string)
+
+class MuxCommandOOC(MuxCommand):
+    """
+    This is an OOC version of the MuxCommand. Since OOC commands sit
+    on Players rather than on Characters/Objects, we need to check
+    this in the parser.
+
+    OOC commands are strictly speaking also available when IC, it's
+    just that they are applied with a lower priority and are always
+    available, also when disconnected from a character (i.e. "ooc").
+
+    This class makes sure that caller is always a Player object, while
+    creating a new property "character" that is set only if a
+    character is actually attached to the Player.
+    """
+    def parse(self):
+        """
+        We run the parent parser as usual, then fix the result
+        """
+        super(MuxCommandOOC, self).parse()
+
+        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+            # caller is an Object/Character
+            self.character = self.caller
+            self.caller = self.caller.player
+        elif hasattr(self.caller, "character"):
+            # caller was already a Player
+            self.character = self.caller.character
+        else:
+            self.character = None

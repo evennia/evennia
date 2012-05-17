@@ -15,7 +15,12 @@ from django.conf import settings
 from src.utils.utils import make_iter, mod_import
 from src.utils import logger
 
+# custom functions
 OOC_MODULE = mod_import(settings.OOB_FUNC_MODULE)
+OOC_FUNCS = dict((key.upper(), var) for key, var in OOC_MODULE if not key.startswith('__') and callable(var))
+
+# MSDP commands supported by Evennia
+MSDP_COMMANDS = ("LIST", "REPORT", "RESET", "SEND", "UNREPORT")
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = chr(69)
@@ -99,46 +104,75 @@ class Msdp(object):
             msdp_string = MSDP_VAR + cmdname + MSDP_VAL + data
         return msdp_string
 
-    # MSDP commands supported by Evennia
-    MSDP_COMMANDS = {"LIST": "msdp_list",
-                 "REPORT":"mspd_report",
-                 "RESET":"mspd_reset",
-                 "SEND":"mspd_send",
-                 "UNREPORT":"mspd_unreport"}
 
     def msdp_to_func(self, data):
         """
         Handle a client's requested negotiation, converting
-        it into a function mapping.
+        it into a function mapping - either one of the MSDP
+        default functions (LIST, SEND etc) or a custom one
+        in OOC_FUNCS dictionary. command names are case-insensitive.
 
-        This does not support receiving nested tables from the client
-        (and there is no real reason why it should).
+        varname, var  --> mapped to function varname(var)
+        arrayname, array --> mapped to function arrayname(*array)
+        tablename, table --> mapped to function tablename(**table)
+
+        Note: Combinations of args/kwargs to one function is not supported
+        in this implementation (it complicates the code for limited
+        gain - arrayname(*array) is usually as complex as anyone should
+        ever need to go anyway (I hope!).
+
         """
         tables = {}
         arrays = {}
         variables = {}
 
         for table in regex_table.findall(data):
-            tables[table[0]] = dict(regex_varval(table[1]))
+            tables[table[0].upper()] = dict(regex_varval(table[1]))
         for array in regex_array.findall(data):
-            arrays[array[0]] = dict(regex_varval(array[1]))
-        variables = dict(regex_varval(regex_array.sub("", regex_table.sub("", data))))
-        ret = ""
-        if "LIST" in variables:
-            ret = self.msdp_cmd_list(variables["LIST"])
-        if "REPORT" in variables:
-            ret = self.msdp_cmd_report(*(variables["REPORT"],))
-        if "REPORT" in arrays:
-            ret = self.msdp_cmd_report(*arrays["REPORT"])
-        if "RESET" in variables:
-            ret = self.msdp_cmd_reset(*(variables["RESET"],))
-        if "RESET" in arrays:
-            ret = self.msdp_cmd_reset(*arrays["RESET"])
-        if "SEND" in variables:
-            ret = self.msdp_cmd_send((*variables["SEND"],))
-        if "SEND" in arrays:
-            ret = self.msdp_cmd_send(*arrays["SEND"])
+            arrays[array[0].upper()] = dict(regex_varval(array[1]))
+        variables = dict((key.upper(), val) for key, val in regex_varval(regex_array.sub("", regex_table.sub("", data))))
 
+        ret = ""
+        # default MSDP functions
+        if "LIST" in variables:
+            ret += self.func_to_msdp("LIST", self.msdp_cmd_list(variables["LIST"]))
+            del variables["LIST"]
+        if "REPORT" in variables:
+            ret += self.func_to_msdp("REPORT", self.msdp_cmd_report(*(variables["REPORT"],)))
+            del variables["REPORT"]
+        if "REPORT" in arrays:
+            ret += self.func_to_msdp("REPORT", self.msdp_cmd_report(*arrays["REPORT"]))
+            del arrays["REPORT"]
+        if "RESET" in variables:
+            ret += self.func_to_msdp("RESET", self.msdp_cmd_reset(*(variables["RESET"],)))
+            del variables["RESET"]
+        if "RESET" in arrays:
+            ret += self.func_to_msdp("RESET", self.msdp_cmd_reset(*arrays["RESET"]))
+            del arrays["RESET"]
+        if "SEND" in variables:
+            ret += self.func_to_msdp("SEND", self.msdp_cmd_send((*variables["SEND"],)))
+            del variables["SEND"]
+        if "SEND" in arrays:
+            ret += self.func_to_msdp("SEND",self.msdp_cmd_send(*arrays["SEND"]))
+            del arrays["SEND"]
+
+        # if there are anything left we look for a custom function
+        for varname, var in variables.items():
+            # a simple function + argument
+            ooc_func = OOC_FUNCS.get(varname.upper())
+            if ooc_func:
+                ret += self.func_to_msdp(varname, ooc_func(var))
+        for arrayname, array in arrays.items():
+            # we assume the array are multiple arguments to the function
+            ooc_func = OOC_FUNCS.get(arrayname.upper())
+            if ooc_func:
+                ret += self.func_to_msdp(arrayname, ooc_func(*array))
+        for tablename, table in tables.items():
+            # we assume tables are keyword arguments to the function
+            ooc_func = OOC_FUNCS.get(arrayname.upper())
+            if ooc_func:
+                ret += self.func_to_msdp(tablename, ooc_func(**table))
+        return ret
 
     # MSDP Commands
     # Some given MSDP (varname, value) pairs can also be treated as command + argument.
@@ -150,10 +184,9 @@ class Msdp(object):
         The List command allows for retrieving various info about the server/client
         """
         if arg == 'COMMANDS':
-            return self.func_to_msdp(arg, self.MSDP_COMMANDS.keys())
+            return self.func_to_msdp(arg, MSDP_COMMANDS))
         elif arg == 'LISTS':
-            return self.func_to_msdp(arg, ("COMMANDS", "LISTS",
-                                           "CONFIGURABLE_VARIABLES",
+            return self.func_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
                                            "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
         elif arg == 'CONFIGURABLE_VARIABLES':
             return self.func_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
@@ -208,7 +241,6 @@ class Msdp(object):
             except Exception:
                 logger.log_trace()
         return ret
-
 
 
     # MSDP_MAP is a standard suggestions for making it easy to create generic guis.

@@ -50,9 +50,11 @@ from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.server.sessionhandler import SESSIONS
 from src.players import manager
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
-from src.utils import logger, utils
+from src.typeclasses.typeclass import TypeClass
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
+from src.utils import logger, utils
+from src.utils.utils import inherits_from
 
 __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
 
@@ -217,9 +219,11 @@ class PlayerDB(TypedObject):
         "Getter. Allows for value = self.character"
         return _get_cache(self, "obj")
     #@character.setter
-    def character_set(self, value):
+    def character_set(self, character):
         "Setter. Allows for self.character = value"
-        _set_cache(self, "obj", value)
+        if inherits_from(character, TypeClass):
+            character = character.dbobj
+        _set_cache(self, "obj", character)
     #@character.deleter
     def character_del(self):
         "Deleter. Allows for del self.character"
@@ -382,25 +386,17 @@ class PlayerDB(TypedObject):
                 break
         return cmdhandler.cmdhandler(self.typeclass, raw_string)
 
-    def search(self, ostring, global_search=False, attribute_name=None, use_nicks=False,
-               location=None, ignore_errors=False, player=False):
+    def search(self, ostring, return_character=False):
         """
-        A shell method mimicking the ObjectDB equivalent, for easy inclusion from
-        commands regardless of if the command is run by a Player or an Object.
-        """
+        This is similar to the ObjectDB search method but will search for Players only. Errors
+        will be echoed, and None returned if no Player is found.
 
-        if self.character:
-            # run the normal search
-            return self.character.search(ostring, global_search=global_search, attribute_name=attribute_name,
-                                         use_nicks=use_nicks, location=location,
-                                         ignore_errors=ignore_errors, player=player)
-        if player:
-            # seach for players
-            matches = self.__class__.objects.player_search(ostring)
-        else:
-            # more limited player-only search. Still returns an Object.
-            ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
-            matches = ObjectDB.objects.object_search(ostring, caller=self, global_search=global_search)
-        # deal with results
-        matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=global_search)
+        return_character - will try to return the character the player controls instead of
+                           the Player object itself. If no Character exists (since Player is
+                           OOC), None will be returned.
+        """
+        matches = self.__class__.objects.player_search(ostring)
+        matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=True)
+        if matches and return_character and hasattr(matches, "character"):
+           return matches.character
         return matches

@@ -203,7 +203,7 @@ class ObjectManager(TypedObjectManager):
     @returns_typeclass_list
     def object_search(self, ostring, caller=None,
                       global_search=False,
-                      attribute_name=None, location=None):
+                      attribute_name=None, location=None, single_result=False):
         """
         Search as an object and return results. The result is always an Object.
         If * is appended (player search, a Character controlled by this Player
@@ -313,7 +313,7 @@ class ObjectManager(TypedObjectManager):
                 matches = [matches[match_number]]
             except IndexError:
                 pass
-        # This is always a list.
+        # We always have a (possibly empty) list at this point.
         return matches
 
     #

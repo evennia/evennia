@@ -28,6 +28,13 @@ TELNET_ENABLED = True
 TELNET_PORTS = [4000]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 TELNET_INTERFACES = ['0.0.0.0']
+# OOB (out-of-band) telnet communication allows Evennia to communicate
+# special commands and data with enabled Telnet clients. This is used
+# to create custom client interfaces over a telnet connection. To make
+# full use of OOB, you need to prepare functions to handle the data
+# server-side (see OOB_FUNC_MODULE). TELNET_ENABLED is required for this
+# to work.
+TELNET_OOB_ENABLED = False # OBS - currently not fully implemented - do not use!
 # Start the evennia django+twisted webserver so you can
 # browse the evennia website and the admin interface
 # (Obs - further web configuration can be found below
@@ -108,6 +115,7 @@ AMP_PORT = 5000
 # memory. So every now and then Evennia checks the size of this cache and resets
 # it if it's too big. This variable sets the maximum size (in MB).
 ATTRIBUTE_CACHE_MAXSIZE = 100
+# OOB (Out-of-band
 
 ######################################################################
 # Evennia Database config
@@ -146,7 +154,8 @@ DATABASE_PORT = ''
 # Evennia pluggable modules
 ######################################################################
 
-# An alternate command parser module to use
+# The command parser module to use. See the default module for which
+# functions it must implement.
 COMMAND_PARSER = "src.commands.cmdparser.cmdparser"
 # The handler that outputs errors when searching
 # objects using object.search().
@@ -159,29 +168,34 @@ SEARCH_AT_MULTIMATCH_INPUT = "src.commands.cmdparser.at_multimatch_input"
 # This module should contain one or more variables
 # with strings defining the look of the screen.
 CONNECTION_SCREEN_MODULE = "src.commands.connection_screen"
-# An option al module that, if existing, must hold a function
+# An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load.
 AT_INITIAL_SETUP_HOOK_MODULE = ""
-# Module holding at_server_start(), at_server_reload() and
+# Module containing your custom at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
-# the server starts, reloads and  resets/stops.
+# the server starts, reloads and resets/stops respectively.
 AT_SERVER_STARTSTOP_MODULE = ""
-# Module holding server-side functions for out-of-band protocols to call.
-OOB_FUNC_MODULE = ""
-# Module holding MSSP meta data
+# Module holding MSSP meta data. This is used by MUD-crawlers to determine
+# what type of game you are running, how many players you have etc.
 MSSP_META_MODULE = ""
+# Module holding server-side custom functions for out-of-band protocols to call.
+# Note that OOB_ENABLED must be True for this to be used.
+OOB_FUNC_MODULE = "" # Not yet available in Evennia - do not use!
 
 ######################################################################
 # Default command sets
 ######################################################################
 # Note that with the exception of the unloggedin set (which is not
-# stored anywhere), changing these paths will only affect NEW created
-# characters, not those already in play. So if you plan to change
-# this, it's recommended you do it on a pristine setup only.  To
-# dynamically add new commands to a running server, extend/overload
-# these existing sets instead.
+# stored anywhere in the databse), changing these paths will only affect NEW created
+# characters/objects, not those already in play. So if you plan to change
+# this, it's recommended you do it before having created a lot of objects
+# (or simply reset the database after the change for simplicity). Remember
+# that you should never edit things in src/. Instead copy out the examples
+# in game/gamesrc/commands/examples up one level and re-point these settings
+# to point to these copies instead - these you can then change as you please
+# (or copy/paste from the default modules in src/ if you prefer).
 
 # Command set used before player has logged in
 CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"

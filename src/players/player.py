@@ -129,16 +129,14 @@ class Player(TypeClass):
             This return is not used at all by Evennia by default, but might be useful
             for coders intending to implement some sort of nested command structure.
         """
-        self.dbobj.execute_cmd(raw_string)
+        return self.dbobj.execute_cmd(raw_string)
 
-    def search(self, ostring, global_search=False, attribute_name=None, use_nicks=False,
-               location=None, ignore_errors=False, player=False):
+    def search(self, ostring, return_character=False):
         """
         This method mimicks object.search if self.character is set. Otherwise only
         other Players can be searched with this method.
         """
-        self.dbobj.search(ostring, global_search=global_search, attribute_name=attribute_name, use_nicks=use_nicks,
-                          location=location, ignore_errors=ignore_errors, player=player)
+        return self.dbobj.search(ostring, return_character=return_character)
 
     def is_typeclass(self, typeclass, exact=False):
         """

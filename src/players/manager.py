@@ -4,7 +4,6 @@ The managers for the custom Player object and permissions.
 
 import datetime
 from functools import update_wrapper
-from django.db import models
 from django.contrib.auth.models import User
 from src.typeclasses.managers import returns_typeclass_list, returns_typeclass, TypedObjectManager
 from src.utils import logger
@@ -181,6 +180,7 @@ class PlayerManager(TypedObjectManager):
                 return matches
         return self.filter(user__username__iexact=ostring)
 
+
     def swap_character(self, player, new_character, delete_old_character=False):
         """
         This disconnects a player from the current character (if any) and connects
@@ -201,9 +201,10 @@ class PlayerManager(TypedObjectManager):
             new_character.player = player
         except Exception:
             # recover old setup
-            old_character.player = player
-            player.character = old_character
+            if old_character:
+                old_character.player = player
+                player.character = old_character
             return False
-        if delete_old_character:
+        if old_character and delete_old_character:
             old_character.delete()
         return True

@@ -12,7 +12,7 @@ from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChan
 from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
-from src.commands.default.muxcommand import MuxCommand
+from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
 # limit symbol import for API
 __all__ = ("CommCommand", "CmdAddCom", "CmdDelCom", "CmdAllCom",
@@ -624,7 +624,7 @@ class CmdCdesc(MuxCommand):
         channel.save()
         caller.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
 
-class CmdPage(MuxCommand):
+class CmdPage(MuxCommandOOC):
     """
     page - send private message
 
@@ -647,18 +647,17 @@ class CmdPage(MuxCommand):
     help_category = "Comms"
 
     def func(self):
-
         "Implement function using the Msg methods"
 
+        # this is a MuxCommandOOC, which means caller will be a Player.
         caller = self.caller
-        player = caller
+        character = self.character
 
         # get the messages we've sent
-        messages_we_sent = list(Msg.objects.get_messages_by_sender(player))
-        pages_we_sent = [msg for msg in messages_we_sent
-                         if msg.receivers]
+        messages_we_sent = list(Msg.objects.get_messages_by_sender(caller))
+        pages_we_sent = [msg for msg in messages_we_sent if msg.receivers]
         # get last messages we've got
-        pages_we_got = list(Msg.objects.get_messages_by_receiver(player))
+        pages_we_got = list(Msg.objects.get_messages_by_receiver(caller))
 
         if 'last' in self.switches:
             if pages_we_sent:
@@ -718,9 +717,7 @@ class CmdPage(MuxCommand):
         recobjs = []
         for receiver in set(receivers):
             if isinstance(receiver, basestring):
-                pobj = caller.search("*%s" % (receiver.lstrip('*')), global_search=True)
-                if not pobj:
-                    return
+                pobj = caller.search(receiver)
             elif hasattr(receiver, 'character'):
                 pobj = receiver.character
             else:
@@ -739,7 +736,7 @@ class CmdPage(MuxCommand):
             message = "%s %s" % (caller.key, message.strip(':').strip())
 
         # create the persistent message object
-        msg = create.create_message(player, message,
+        msg = create.create_message(caller, message,
                                     receivers=recobjs)
 
         # tell the players they got a message.

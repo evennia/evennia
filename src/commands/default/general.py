@@ -5,9 +5,9 @@ now.
 import time
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
-from src.utils import utils
+from src.utils import utils, search
 from src.objects.models import ObjectNick as Nick
-from src.commands.default.muxcommand import MuxCommand
+from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
@@ -611,7 +611,7 @@ class CmdAccess(MuxCommand):
 
 # OOC commands
 
-class CmdOOCLook(CmdLook):
+class CmdOOCLook(MuxCommandOOC, CmdLook):
     """
     ooc look
 
@@ -633,14 +633,6 @@ class CmdOOCLook(CmdLook):
     def func(self):
         "implement the ooc look command"
 
-        self.character = None
-        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
-            # An object of some type is calling. Convert to player.
-            #print self.caller, self.caller.__class__
-            self.character = self.caller
-            if hasattr(self.caller, "player"):
-                self.caller = self.caller.player
-
         if not self.character:
             string = "You are out-of-character (OOC). "
             string += "Use {w@ic{n to get back to the game, {whelp{n for more info."
@@ -649,7 +641,7 @@ class CmdOOCLook(CmdLook):
             self.caller = self.character # we have to put this back for normal look to work.
             super(CmdOOCLook, self).func()
 
-class CmdIC(MuxCommand):
+class CmdIC(MuxCommandOOC):
     """
     Switch control to an object
 
@@ -674,8 +666,7 @@ class CmdIC(MuxCommand):
         Simple puppet method
         """
         caller = self.caller
-        if utils.inherits_from(caller, "src.objects.objects.Object"):
-            caller = caller.player
+        old_character = self.character
 
         new_character = None
         if not self.args:
@@ -685,10 +676,12 @@ class CmdIC(MuxCommand):
                 return
         if not new_character:
             # search for a matching character
-            new_character = caller.search(self.args, global_search=True)
-        if not new_character:
-            # the search method handles error messages etc.
-            return
+            new_character = search.objects(self.args, caller, global_search=True, single_result=True)
+            if new_character:
+                new_character = new_character[0]
+            else:
+                # the search method handles error messages etc.
+                return
         if new_character.player:
             if new_character.player == caller:
                 caller.msg("{RYou already are {c%s{n." % new_character.name)
@@ -698,13 +691,9 @@ class CmdIC(MuxCommand):
         if not new_character.access(caller, "puppet"):
             caller.msg("{rYou may not become %s.{n" % new_character.name)
             return
-        old_char = None
-        if caller.character:
-            # save the old character. We only assign this to last_puppet if swap is successful.
-            old_char = caller.character
         if caller.swap_character(new_character):
             new_character.msg("\n{gYou become {c%s{n.\n" % new_character.name)
-            caller.db.last_puppet = old_char
+            caller.db.last_puppet = old_character
             if not new_character.location:
             # this might be due to being hidden away at logout; check
                 loc = new_character.db.prelogout_location
@@ -718,7 +707,7 @@ class CmdIC(MuxCommand):
         else:
             caller.msg("{rYou cannot become {C%s{n." % new_character.name)
 
-class CmdOOC(MuxCommand):
+class CmdOOC(MuxCommandOOC):
     """
     @ooc - go ooc
 
