@@ -37,7 +37,6 @@ VERBOSE = True
 NOMANGLE = True # mangle command input for extra testing
 
 def cleanup():
-    print "cleaning test database ..."
     User.objects.all().delete()
     PlayerDB.objects.all().delete()
     ObjectDB.objects.all().delete()
@@ -46,7 +45,6 @@ def cleanup():
     PlayerChannelConnection.objects.all().delete()
     ExternalChannelConnection.objects.all().delete()
     ServerConfig.objects.all().delete()
-cleanup()
 
 class FakeSessionHandler(sessionhandler.ServerSessionHandler):
     """
@@ -115,77 +113,38 @@ class CommandTest(TestCase):
 
     Inherit new tests from this.
     """
-    print "creating command testing objects ..."
-    ROOM1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
-    ROOM2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
-    # create a faux player/character for testing.
-    CHAR1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", character_location=ROOM1)
-    CHAR1.player.user.is_superuser = True
-    CHAR1.lock_storage = ""
-    CHAR1.locks = LockHandler(CHAR1)
-    CHAR1.ndb.return_string = None
-    sess = FakeSession()
-    sess.connectionMade()
-    sess.session_login(CHAR1.player)
-    # create second player
-    CHAR2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", character_location=ROOM1)
-    CHAR2.player.user.is_superuser = False
-    CHAR2.lock_storage = ""
-    CHAR2.locks = LockHandler(CHAR2)
-    CHAR2.ndb.return_string = None
-    sess2 = FakeSession()
-    sess2.connectionMade()
-    sess2.session_login(CHAR2.player)
-    # A non-player-controlled character
-    CHAR3 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="TestChar3", location=ROOM1)
-    # create some objects
-    OBJ1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=ROOM1)
-    OBJ2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=ROOM1)
-    EXIT1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=ROOM1)
-    EXIT2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=ROOM2)
 
     def setUp(self):
         "sets up the testing environment"
         #ServerConfig.objects.conf("default_home", 2)
-
-        self.room1 = self.ROOM1
-        self.room2 = self.ROOM2
-        self.char1 = self.CHAR1
-        self.char2 = self.CHAR2
-        self.char3 = self.CHAR3
-        self.obj1 = self.OBJ1
-        self.obj2 = self.OBJ2
-        self.exit1 = self.EXIT1
-        self.exit2 = self.EXIT2
-
-        #self.addCleanup(cleanup)
-        #self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
-        #self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
-        ## create a faux player/character for testing.
-        #self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", character_location=self.room1)
-        #self.char1.player.user.is_superuser = True
-        #self.char1.lock_storage = ""
-        #self.char1.locks = LockHandler(self.char1)
-        #self.char1.ndb.return_string = None
-        #sess = FakeSession()
-        #sess.connectionMade()
-        #sess.session_login(self.char1.player)
-        ## create second player
-        #self.char2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", character_location=self.room1)
-        #self.char2.player.user.is_superuser = False
-        #self.char2.lock_storage = ""
-        #self.char2.locks = LockHandler(self.char2)
-        #self.char2.ndb.return_string = None
-        #sess2 = FakeSession()
-        #sess2.connectionMade()
-        #sess2.session_login(self.char2.player)
-        ## A non-player-controlled character
-        #self.char3 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="TestChar3", location=self.room1)
-        ## create some objects
-        #self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=self.room1)
-        #self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1)
-        #self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
-        #self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)
+        self.addCleanup(cleanup)
+        self.room1 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room1")
+        self.room2 = create.create_object(settings.BASE_ROOM_TYPECLASS, key="room2")
+        # create a faux player/character for testing.
+        self.char1 = create.create_player("TestChar", "testplayer@test.com", "testpassword", character_location=self.room1)
+        self.char1.player.user.is_superuser = True
+        self.char1.lock_storage = ""
+        self.char1.locks = LockHandler(self.char1)
+        self.char1.ndb.return_string = None
+        self.sess1 = FakeSession()
+        self.sess1.connectionMade()
+        self.sess1.session_login(self.char1.player)
+        # create second player
+        self.char2 = create.create_player("TestChar2", "testplayer2@test.com", "testpassword2", character_location=self.room1)
+        self.char2.player.user.is_superuser = False
+        self.char2.lock_storage = ""
+        self.char2.locks = LockHandler(self.char2)
+        self.char2.ndb.return_string = None
+        self.sess2 = FakeSession()
+        self.sess2.connectionMade()
+        self.sess2.session_login(self.char2.player)
+        # A non-player-controlled character
+        self.char3 = create.create_object(settings.BASE_CHARACTER_TYPECLASS, key="TestChar3", location=self.room1)
+        # create some objects
+        self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1", location=self.room1)
+        self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2", location=self.room1)
+        self.exit1 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit1", location=self.room1)
+        self.exit2 = create.create_object(settings.BASE_EXIT_TYPECLASS, key="exit2", location=self.room2)
 
     def get_cmd(self, cmd_class, argument_string=""):
         """
@@ -443,15 +402,15 @@ class TestOpen(BuildTest):
     def test_call(self):
         self.execute_cmd("@dig room4;roomalias4")
         self.execute_cmd("@open testexit4;aliasexit4 = roomalias4", "Created new Exit")
-class TestScript(BuildTest):
+class TestTypeclass(BuildTest):
     def test_call(self):
         self.execute_cmd("@typeclass obj1 = src.objects.objects.Character", "obj's type is now")
         self.assertEqual(self.obj1.db_typeclass_path, u"src.objects.objects.Character")
-class TestScript(BuildTest):
+class TestSet(BuildTest):
     def test_call(self):
         self.execute_cmd("@set box1/test = value")
         self.execute_cmd("@wipe box1", "Wiped")
-        self.assertEqual(self.obj1.db.all(), [])
+        self.assertEqual(self.obj1.db.all, [])
 class TestLock(BuildTest):
     # lock functionality itseld is tested separately
     def test_call(self):
