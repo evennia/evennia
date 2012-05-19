@@ -10,7 +10,6 @@ by game/evennia.py).
 import time
 import sys
 import os
-import signal
 if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
     sys.path.insert(0, os.path.dirname(os.path.dirname(
@@ -128,6 +127,41 @@ class Evennia(object):
             cursor.execute("PRAGMA count_changes=OFF")
             cursor.execute("PRAGMA temp_store=2")
 
+    def update_defaults(self):
+        """
+        We make sure to store the most important object defaults here, so we can catch if they
+        change and update them on-objects automatically. This allows for changing default cmdset locations
+        and default typeclasses in the settings file and have them auto-update all already existing
+        objects.
+        """
+        # setting names
+        settings_names = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
+                          "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS", "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS")
+        # get previous and current settings so they can be compared
+        settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],
+                               [settings.__getattr__(name) for name in settings_names])
+        mismatches = [i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]]
+        if len(mismatches): # can't use any() since mismatches may be [0] which reads as False for any()
+            # we have a changed default. Import relevant objects and run the update
+            from src.objects.models import ObjectDB
+            from src.players.models import PlayerDB
+            for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
+                # update the database
+                print " one or more default cmdset/typeclass settings changed. Updating defaults stored in database ..."
+                if i == 0: [obj.__setattr__("cmdset_storage", curr) for obj in ObjectDB.objects.filter(db_cmdset_storage__exact=prev)]
+                if i == 1: [ply.__setattr__("cmdset_storage", curr) for ply in PlayerDB.objects.filter(db_cmdset_storage__exact=prev)]
+                if i == 2: [ply.__setattr__("typeclass_path", curr) for ply in PlayerDB.objects.filter(db_typeclass_path__exact=prev)]
+                if i in (3,4,5,6): [obj.__setattr__("typeclass_path",curr)
+                                    for obj in ObjectDB.objects.filter(db_typeclass_path__exact=prev)]
+                if i == 7: [scr.__setattr__("typeclass_path", curr) for scr in ScriptDB.objects.filter(db_typeclass_path__exact=prev)]
+                # store the new default and clean caches
+                ServerConfig.objects.conf(settings_names[i], curr)
+                ObjectDB.flush_instance_cache()
+                PlayerDB.flush_instance_cache()
+                ScriptDB.flush_instance_cache()
+        # if this is the first start we might not have a "previous" setup saved. Store it now.
+        [ServerConfig.objects.conf(settings_names[i], tup[1]) for i, tup in enumerate(settings_compare) if not tup[0]]
+
     def run_initial_setup(self):
         """
         This attempts to run the initial_setup script of the server.
@@ -157,6 +191,9 @@ class Evennia(object):
         """
         from src.objects.models import ObjectDB
         from src.players.models import PlayerDB
+
+        #update eventual changed defaults
+        self.update_defaults()
 
         #print "run_init_hooks:", ObjectDB.get_all_cached_instances()
         [(o.typeclass, o.at_init()) for o in ObjectDB.get_all_cached_instances()]
