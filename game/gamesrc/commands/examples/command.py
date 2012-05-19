@@ -9,7 +9,7 @@ examples/cmdset.py)
 """
 
 from ev import Command as BaseCommand
-from ev import default_cmd
+from ev import default_cmds
 from ev import utils
 
 class Command(BaseCommand):
@@ -89,7 +89,7 @@ class Command(BaseCommand):
         pass
 
 
-class MuxCommand(default_cmd.MuxCommand):
+class MuxCommand(default_cmds.MuxCommand):
     """
     This sets up the basis for a Evennia's 'MUX-like' command
     style. The idea is that most other Mux-related commands should
