@@ -107,6 +107,19 @@ def false(*args, **kwargs):
 def none(*args, **kwargs):
     return False
 
+def self(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Check if accessing_obj is the same as accessed_obj
+
+    Usage:
+       self()
+
+    This can be used to lock specifically only to
+    the same object that the lock is defined on.
+    """
+    return accessing_obj == accessed_obj
+
+
 def perm(accessing_obj, accessed_obj, *args, **kwargs):
     """
     The basic permission-checker. Ignores case.
