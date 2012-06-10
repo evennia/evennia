@@ -226,7 +226,7 @@ class LockHandler(object):
             try:
                 # purge the eval string of any superfluos items, then test it
                 evalstring = " ".join(_RE_OK.findall(evalstring))
-                eval(evalstring % tuple(True for func in funclist))
+                eval(evalstring % tuple(True for func in funclist), {}, {})
             except Exception:
                 elist.append("Lock: definition '%s' has syntax errors." % raw_lockstring)
                 continue

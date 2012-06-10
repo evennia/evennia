@@ -17,7 +17,7 @@ from src.utils import logger
 GAME_TIME_SCRIPT = "sys_game_time"
 
 # Speed-up factor of the in-game time compared
-# to real time. 
+# to real time.
 
 TIMEFACTOR = settings.TIME_FACTOR
 
@@ -52,49 +52,49 @@ class GameTime(Script):
         self.key = "sys_game_time"
         self.desc = "Keeps track of the game time"
         self.interval = REAL_MIN # update every minute
-        self.persistent = True         
-        self.start_delay = True 
+        self.persistent = True
+        self.start_delay = True
         self.attr("game_time", 0.0) #IC time
-        self.attr("run_time", 0.0) #OOC time         
-        self.attr("up_time", 0.0) #OOC time 
+        self.attr("run_time", 0.0) #OOC time
+        self.attr("up_time", 0.0) #OOC time
 
     def at_repeat(self):
         """
         Called every minute to update the timers.
-        """        
+        """
         # We store values as floats to avoid drift over time
         game_time = float(self.attr("game_time"))
         run_time = float(self.attr("run_time"))
         up_time = float(self.attr("up_time"))
-        self.attr("game_time", game_time + MIN) 
+        self.attr("game_time", game_time + MIN)
         self.attr("run_time", run_time + REAL_MIN)
         self.attr("up_time", up_time + REAL_MIN)
 
     def at_start(self):
         """
         This is called once every server restart.
-        We reset the up time. 
+        We reset the up time.
         """
         self.attr("up_time", 0.0)
-        
+
 # Access routines
 
 def gametime_format(seconds):
     """
     Converts the count in seconds into an integer tuple of the form
     (years, months, weeks, days, hours, minutes, seconds) where
-    several of the entries may be 0. 
+    several of the entries may be 0.
 
     We want to keep a separate version of this (rather than just
     rescale the real time once and use the normal realtime_format
-    below) since the admin might for example decide to change how many 
+    below) since the admin might for example decide to change how many
     hours a 'day' is in their game etc.
     """
-    # have to re-multiply in the TIMEFACTOR 
+    # have to re-multiply in the TIMEFACTOR
     # do this or we cancel the already counted
     # timefactor in the timer script...
     sec = int(seconds * TIMEFACTOR)
-    years, sec = sec/YEAR, sec % YEAR 
+    years, sec = sec/YEAR, sec % YEAR
     months, sec = sec/MONTH, sec % MONTH
     weeks, sec = sec/WEEK, sec % WEEK
     days, sec = sec/DAY, sec % DAY
@@ -114,16 +114,16 @@ def realtime_format(seconds):
     hours, sec = sec/3600, sec % 3600
     minutes, sec = sec/60, sec % 60
     return (years, months, weeks, days, hours, minutes, sec)
-    
+
 def gametime(format=False):
     """
     Find the current in-game time (in seconds) since the start of the mud.
     The value returned from this function can be used to track the 'true'
     in-game time since only the time the game has actually been active will
-    be adding up (ignoring downtimes). 
-    
+    be adding up (ignoring downtimes).
+
     format - instead of returning result in seconds, format to (game-) time
-    units. 
+    units.
     """
     try:
         script = ScriptDB.objects.get_all_scripts(GAME_TIME_SCRIPT)[0]
@@ -134,7 +134,7 @@ def gametime(format=False):
     game_time = int(script.attr("game_time"))
     if format:
         return gametime_format(game_time)
-    return game_time 
+    return game_time
 
 def runtime(format=False):
     """
@@ -173,11 +173,11 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
     This method helps to figure out the real-world time it will take until a in-game time
     has passed. E.g. if an event should take place a month later in-game, you will be able
     to find the number of real-world seconds this corresponds to (hint: Interval events deal
-    with real life seconds).     
+    with real life seconds).
 
     Example:
      gametime_to_realtime(days=2) -> number of seconds in real life from now after which
-                                     2 in-game days will have passed. 
+                                     2 in-game days will have passed.
     """
     real_time = secs/TIMEFACTOR + mins*MIN + hrs*HOUR + \
            days*DAY + weeks*WEEK + months*MONTH + yrs*YEAR
@@ -187,9 +187,9 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
                          weeks=0, months=0, yrs=0):
     """
     This method calculates how large an in-game time a real-world time interval would
-    correspond to. This is usually a lot less interesting than the other way around. 
+    correspond to. This is usually a lot less interesting than the other way around.
 
-     Example: 
+     Example:
       realtime_to_gametime(days=2) -> number of game-world seconds
                                       corresponding to 2 real days.
     """
@@ -198,12 +198,12 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
     return game_time
 
 
-# Time administration routines 
+# Time administration routines
 
 def init_gametime():
     """
     This is called once, when the server starts for the very first time.
     """
-    # create the GameTime script and start it 
+    # create the GameTime script and start it
     game_time = create_script(GameTime)
     game_time.start()
