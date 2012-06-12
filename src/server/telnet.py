@@ -108,7 +108,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def _write(self, data):
         "hook overloading the one used in plain telnet"
         #print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in data))
-        data = data.rstrip('\r\n') + '\r\n'
+        data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
+        #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
     def sendLine(self, line):

@@ -44,3 +44,7 @@ things you want from here into game/gamesrc and change them there.
       Evennia's ooc mode. Works well with the menu login contrib and 
       is intended as a starting point for building a more full-featured 
       character creation system. 
+
+* Evlang (Griatch 2012) - A heavily restricted version of Python for use
+      as a "softcode" language by Players in-game. Contains a complete 
+      system with examples of objects and commands for coding. 
