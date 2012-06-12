@@ -48,9 +48,10 @@ Quick Example Install
 This is a quick test-setup using the example objects and commands.
 
 1) If you haven't already, make sure you are able to overload the
-   default cmdset: Copy game/gamesrc/commands/examples/cmdset.py up one level,
-   then change settings.CMDSET_DEFAULT to point to DefaultCmdSet in your newly copied module.
-   Restart the server and check so the default commands still work.
+   default cmdset: Copy game/gamesrc/commands/examples/cmdset.py up
+   one level, then change settings.CMDSET_DEFAULT to point to
+   DefaultCmdSet in your newly copied module.  Restart the server and
+   check so the default commands still work.
 2) Import and add
       contrib.evlang.command.CmdCode
       and
@@ -86,9 +87,11 @@ There are a few "safe" objects made available out of the box.
  caller - reference back to the one triggering the script
  scripter - reference to the one creating the script (set by @code)
 
- There is also the 'evl' object that defines "safe" methods to use.
+ There is also the 'evl' object that defines "safe" methods to use:
+
  evl.msg(string, obj=None)                 # default is the send to caller
  evl.msg_contents(string, obj=None)        # default is to send to all except caller
+ evl.msg_home(string, obj=None)            # default is to send to self.location
  delay(delay, function, *args, **kwargs)
  attr(obj, attrname=None, attrvalue=None, delete=False)  # lock-checking attribute accesser
  list()  # display all available methods on evl, with docstrings (including your custom additions)
@@ -101,9 +104,11 @@ try it.
 
 Now look at the crate. :)
 
-You can (in evlang) use evl.list() to get a list of all methods currently stored on the evl object. For testing, let's
-use the same look slot on the crate again. But this time we'll use the /debug mode of @code, which means the script
-will be auto-run immediately and we don't have to look at the create to get a result when developing.
+You can (in evlang) use evl.list() to get a list of all methods
+currently stored on the evl object. For testing, let's use the same
+look slot on the crate again. But this time we'll use the /debug mode
+of @code, which means the script will be auto-run immediately and we
+don't have to look at the create to get a result when developing.
 
 @code/debug crate/look = evl.msg(evl.list())
 
