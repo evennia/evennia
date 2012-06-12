@@ -97,7 +97,7 @@ These all return True after successful execution, which makes
 especially the msg* functions easier to use in a conditional. Let's
 try it.
 
- @code crate/look = if caller.key=='Superman' and evl.msg("Your gaze burns a small hole.") or evl.msg("Looks robust!")
+ @code crate/look = caller.key=='Superman' and evl.msg("Your gaze burns a small hole.") or evl.msg("Looks robust!")
 
 Now look at the crate. :)
 
@@ -105,5 +105,5 @@ You can (in evlang) use evl.list() to get a list of all methods currently stored
 use the same look slot on the crate again. But this time we'll use the /debug mode of @code, which means the script
 will be auto-run immediately and we don't have to look at the create to get a result when developing.
 
-@code/debug create/look = evl.msg(evl.list())
+@code/debug crate/look = evl.msg(evl.list())
 
