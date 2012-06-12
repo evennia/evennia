@@ -29,7 +29,7 @@ following line to the end of OOCCmdSet's at_cmdset_creation():
 
 from django.conf import settings
 from ev import Command, create_object, utils
-from ev import default_cmds, db_objects
+from ev import default_cmds, managers
 
 CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
@@ -84,7 +84,7 @@ class CmdOOCLook(default_cmds.CmdLook):
                 if not avail_chars:
                     self.caller.msg("You have no characters to look at. Why not create one?")
                     return
-                objs = db_objects.get_objs_with_key_and_typeclass(self.args.strip(), CHARACTER_TYPECLASS)
+                objs = managers.objects.get_objs_with_key_and_typeclass(self.args.strip(), CHARACTER_TYPECLASS)
                 objs = [obj for obj in objs if obj.id in avail_chars]
                 if not objs:
                     self.caller.msg("You cannot see this Character.")
@@ -97,7 +97,7 @@ class CmdOOCLook(default_cmds.CmdLook):
             charnames = []
             if self.caller.db._character_dbrefs:
                 dbrefs = self.caller.db._character_dbrefs
-                charobjs = [db_objects.get_id(dbref) for dbref in dbrefs]
+                charobjs = [managers.objects.get_id(dbref) for dbref in dbrefs]
                 charnames = [charobj.key for charobj in charobjs if charobj]
             if charnames:
                 charlist = "The following Character(s) are available:\n\n"
@@ -154,7 +154,7 @@ class CmdOOCCharacterCreate(Command):
             self.caller.msg("Usage: create <character name>")
             return
         charname = self.args.strip()
-        old_char = db_objects.get_objs_with_key_and_typeclass(charname, CHARACTER_TYPECLASS)
+        old_char = managers.objects.get_objs_with_key_and_typeclass(charname, CHARACTER_TYPECLASS)
         if old_char:
             self.caller.msg("Character {c%s{n already exists." % charname)
             return
