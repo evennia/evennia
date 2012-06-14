@@ -30,6 +30,8 @@ from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
 from src.utils.utils import make_iter, to_unicode, variable_from_module, inherits_from
 
+from django.utils.translation import ugettext as _
+
 #__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
 
 
@@ -282,7 +284,7 @@ class ObjectDB(TypedObject):
         except Exception:
             string = "Cannot set location: "
             string += "%s is not a valid location."
-            self.msg(string % location)
+            self.msg(_(string) % location)
             logger.log_trace(string)
             raise
     #@location.deleter
@@ -319,7 +321,7 @@ class ObjectDB(TypedObject):
         except Exception:
             string = "Cannot set home: "
             string += "%s is not a valid home."
-            self.msg(string % home)
+            self.msg(_(string) % home)
             logger.log_trace(string)
             #raise
     #@home.deleter
@@ -358,7 +360,7 @@ class ObjectDB(TypedObject):
         except Exception:
             string = "Cannot set destination: "
             string += "%s is not a valid destination."
-            self.msg(string % destination)
+            self.msg(_(string) % destination)
             logger.log_trace(string)
             raise
     #@destination.deleter
@@ -629,12 +631,12 @@ class ObjectDB(TypedObject):
             logger.log_trace()
             self.msg(errstring)
 
-        errtxt = "Couldn't perform move ('%s'). Contact an admin."
+        errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
         if not emit_to_obj:
             emit_to_obj = self
 
         if not destination:
-            emit_to_obj.msg("The destination doesn't exist.")
+            emit_to_obj.msg(_("The destination doesn't exist."))
             return
         if destination.destination and use_destination:
             # traverse exits
@@ -747,7 +749,7 @@ class ObjectDB(TypedObject):
                 # we are deleting default home!
                 default_home = None
         except Exception:
-            string = "Could not find default home '(#%d)'."
+            string = _("Could not find default home '(#%d)'.")
             logger.log_errmsg(string % default_home_id)
             default_home = None
 
@@ -762,7 +764,7 @@ class ObjectDB(TypedObject):
                 string = "Missing default home, '%s(#%d)' "
                 string += "now has a null location."
                 obj.location = None
-                obj.msg("Something went wrong! You are dumped into nowhere. Contact an admin.")
+                obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
                 logger.log_errmsg(string % (obj.name, obj.dbid))
                 return
 
@@ -770,11 +772,11 @@ class ObjectDB(TypedObject):
                 if home:
                     string = "Your current location has ceased to exist,"
                     string += " moving you to %s(#%d)."
-                    obj.msg(string % (home.name, home.dbid))
+                    obj.msg(_(string) % (home.name, home.dbid))
                 else:
                     # Famous last words: The player should never see this.
                     string = "This place should not exist ... contact an admin."
-                    obj.msg(string)
+                    obj.msg(_(string))
             obj.move_to(home)
 
     def copy(self, new_key=None):
@@ -815,7 +817,7 @@ class ObjectDB(TypedObject):
         # See if we need to kick the player off.
 
         for session in self.sessions:
-            session.msg("Your character %s has been destroyed." % self.name)
+            session.msg(_("Your character %s has been destroyed.") % self.name)
             # no need to disconnect, Player just jumps to OOC mode.
         # sever the connection (important!)
         if object.__getattribute__(self, 'player') and self.player:
