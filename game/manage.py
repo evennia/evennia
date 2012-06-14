@@ -124,8 +124,6 @@ SECRET_KEY = '%s'
 # Test the import of the settings file
 #------------------------------------------------------------
 try:
-    # i18n
-    from django.utils.translation import ugettext as _
     from game import settings
 except Exception:
     import traceback
@@ -157,11 +155,11 @@ if __name__ == "__main__":
 
     # checks if the settings file was created this run
     if _CREATED_SETTINGS:
-        print _("""
+        print """
     Edit your new settings.py file as needed, then run
     'python manage syncdb' and follow the prompts to
     create the database and your superuser account.
-        """)
+        """
         sys.exit()
 
     # run the standard django manager, if dependencies match

@@ -17,6 +17,7 @@ from src.typeclasses.models import _ATTRIBUTE_CACHE
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
 from src.utils import logger
+from django.utils.translation import ugettext as _
 
 __all__ = ("Script", "DoNothing", "CheckSessions", "ValidateScripts", "ValidateChannelHandler", "ClearAttributeCache")
 
@@ -66,7 +67,8 @@ class ScriptClass(TypeClass):
     def _step_err_callback(self, e):
         "callback for runner errors"
         cname = self.__class__.__name__
-        estring = "Script %s(#%i) of type '%s': at_repeat() error '%s'." % (self.key, self.dbid, cname, e.getErrorMessage())
+        estring = _("Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
+                   {"key":self.key, "dbid":self.dbid, "cname":cname, "err":e.getErrorMessage()}
         try:
             self.dbobj.db_obj.msg(estring)
         except Exception:
@@ -392,14 +394,14 @@ class DoNothing(Script):
     def at_script_creation(self):
          "Setup the script"
          self.key = "sys_do_nothing"
-         self.desc = "This is an empty placeholder script."
+         self.desc = _("This is an empty placeholder script.")
 
 class CheckSessions(Script):
     "Check sessions regularly."
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_session_check"
-        self.desc = "Checks sessions so they are live."
+        self.desc = _("Checks sessions so they are live.")
         self.interval = 60  # repeat every 60 seconds
         self.persistent = True
 
@@ -414,7 +416,7 @@ class ValidateScripts(Script):
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_scripts_validate"
-        self.desc = "Validates all scripts regularly."
+        self.desc = _("Validates all scripts regularly.")
         self.interval = 3600 # validate every hour.
         self.persistent = True
 
@@ -428,7 +430,7 @@ class ValidateChannelHandler(Script):
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_channels_validate"
-        self.desc = "Updates the channel handler"
+        self.desc = _("Updates the channel handler")
         self.interval = 3700 # validate a little later than ValidateScripts
         self.persistent = True
 
@@ -442,7 +444,7 @@ class ClearAttributeCache(Script):
     def at_script_creation(self):
         "Setup the script"
         self.key = "sys_cache_clear"
-        self.desc = "Clears the Attribute Cache"
+        self.desc = _("Clears the Attribute Cache")
         self.interval = 3600 * 2
         self.persistent = True
     def at_repeat(self):

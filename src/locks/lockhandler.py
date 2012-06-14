@@ -107,7 +107,10 @@ to any other identifier you can use.
 import re, inspect
 from django.conf import settings
 from src.utils import logger, utils
+from django.utils.translation import ugettext as _
+
 __all__ = ("LockHandler", )
+
 #
 # Exception class
 #
@@ -215,7 +218,7 @@ class LockHandler(object):
                 funcname, rest = (part.strip().strip(')') for part in funcstring.split('(', 1))
                 func = _LOCKFUNCS.get(funcname, None)
                 if not callable(func):
-                    elist.append("Lock: function '%s' is not available." % funcstring)
+                    elist.append(_("Lock: function '%s' is not available.") % funcstring)
                     continue
                 args = list(arg.strip() for arg in rest.split(',') if not '=' in arg)
                 kwargs = dict([arg.split('=', 1) for arg in rest.split(',') if '=' in arg])
@@ -228,12 +231,12 @@ class LockHandler(object):
                 evalstring = " ".join(_RE_OK.findall(evalstring))
                 eval(evalstring % tuple(True for func in funclist), {}, {})
             except Exception:
-                elist.append("Lock: definition '%s' has syntax errors." % raw_lockstring)
+                elist.append(_("Lock: definition '%s' has syntax errors.") % raw_lockstring)
                 continue
             if access_type in locks:
                 duplicates += 1
-                wlist.append("Lock: access type '%s' changed from '%s' to '%s' " % \
-                                 (access_type, locks[access_type][2], raw_lockstring))
+                wlist.append(_("Lock: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' " % \
+                                 {"access_type":access_type, "source":locks[access_type][2], "goal":raw_lockstring}))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
         if wlist and self.log_obj:
             # a warning text was set, it's not an error, so only report if log_obj is available.
@@ -266,17 +269,17 @@ class LockHandler(object):
         # sanity checks
         for lockdef in lockstring.split(';'):
             if not ':' in lockstring:
-                self._log_error("Lock: '%s' contains no colon (:)." % lockdef)
+                self._log_error(_("Lock: '%s' contains no colon (:).") % lockdef)
                 return False
             access_type, rhs = [part.strip() for part in lockdef.split(':', 1)]
             if not access_type:
-                self._log_error("Lock: '%s' has no access_type (left-side of colon is empty)." % lockdef)
+                self._log_error(_("Lock: '%s' has no access_type (left-side of colon is empty).") % lockdef)
                 return False
             if rhs.count('(') != rhs.count(')'):
-                self._log_error("Lock: '%s' has mismatched parentheses." % lockdef)
+                self._log_error(_("Lock: '%s' has mismatched parentheses.") % lockdef)
                 return False
             if not _RE_FUNCS.findall(rhs):
-                self._log_error("Lock: '%s' has no valid lock functions." % lockdef)
+                self._log_error(_("Lock: '%s' has no valid lock functions.") % lockdef)
                 return False
         # get the lock string
         storage_lockstring = self.obj.lock_storage

@@ -172,7 +172,7 @@ class Evennia(object):
         if not last_initial_setup_step:
             # None is only returned if the config does not exist,
             # i.e. this is an empty DB that needs populating.
-            print _(' Server started for the first time. Setting defaults.')
+            print ' Server started for the first time. Setting defaults.'
             initial_setup.handle_setup(0)
             print '-'*50
         elif int(last_initial_setup_step) >= 0:
@@ -180,8 +180,8 @@ class Evennia(object):
             # modules and setup will resume from this step, retrying
             # the last failed module. When all are finished, the step
             # is set to -1 to show it does not need to be run again.
-            print _(' Resuming initial setup from step %(last)s.' % \
-                {'last': last_initial_setup_step})
+            print ' Resuming initial setup from step %(last)s.' % \
+                {'last': last_initial_setup_step}
             initial_setup.handle_setup(int(last_initial_setup_step))
             print '-'*50
 
@@ -207,7 +207,7 @@ class Evennia(object):
         """
         Outputs server startup info to the terminal.
         """
-        print _(' %(servername)s Server (%(version)s) started.') % {'servername': SERVERNAME, 'version': VERSION}
+        print ' %(servername)s Server (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
         print '  amp (Portal): %s' % AMP_PORT
 
     def set_restart_mode(self, mode=None):

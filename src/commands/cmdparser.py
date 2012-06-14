@@ -6,6 +6,7 @@ return a CommandCandidates object.
 """
 
 from src.utils.logger import log_trace
+from django.utils.translation import ugettext as _
 
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
@@ -140,7 +141,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False):
     string = ""
     if not results:
         # no results.
-        string = "Could not find '%s'." % ostring
+        string = _("Could not find '%s'." % ostring)
         results = None
 
     elif len(results) > 1:
@@ -152,11 +153,12 @@ def at_search_result(msg_obj, ostring, results, global_search=False):
 
         string += "More than one match for '%s'" % ostring
         string += " (please narrow target):"
+        string = _(string)
         for num, result in enumerate(results):
             invtext = ""
             dbreftext = ""
-            if hasattr(result, "location") and result.location == msg_obj:
-                invtext = " (carried)"
+            if hasattr(result, _("location")) and result.location == msg_obj:
+                invtext = _(" (carried)")
             if show_dbref:
                 dbreftext = "(#%i)" % result.dbid
             string += "\n %i-%s%s%s" % (num+1, result.name,
@@ -235,11 +237,11 @@ def at_multimatch_cmd(caller, matches):
 
         is_channel = hasattr(cmd, "is_channel") and cmd.is_channel
         if is_channel:
-            is_channel = " (channel)"
+            is_channel = _(" (channel)")
         else:
             is_channel = ""
         if cmd.is_exit and cmd.destination:
-            is_exit =  " (exit to %s)" % cmd.destination
+            is_exit =  _(" (exit to %s)") % cmd.destination
         else:
             is_exit = ""
 

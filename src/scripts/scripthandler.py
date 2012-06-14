@@ -9,6 +9,8 @@ from src.scripts.models import ScriptDB
 from src.utils import create
 from src.utils import logger
 
+from django.utils.translation import ugettext as _
+
 class ScriptHandler(object):
     """
     Implements the handler.  This sits on each game object.
@@ -38,11 +40,8 @@ class ScriptHandler(object):
                     repeats = script.repeats
                 try: next_repeat = script.time_until_next_repeat()
                 except: next_repeat = "?"
-            string += "\n '%s' (%s/%s, %s repeats): %s" % (script.key,
-                                                         next_repeat,
-                                                         interval,
-                                                         repeats,
-                                                         script.desc)
+            string += _("\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s") % \
+              {"key":script.key, "next_repeat":next_repeat, "interval":interval,"repeats":repeats,"desc":script.desc}
         return string.strip()
 
     def add(self, scriptclass, key=None, autostart=True):

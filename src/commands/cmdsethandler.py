@@ -67,6 +67,8 @@ import traceback
 from src.utils import logger, utils
 from src.commands.cmdset import CmdSet
 from src.server.models import ServerConfig
+
+from django.utils.translation import ugettext as _
 __all__ = ("import_cmdset", "CmdSetHandler")
 
 _CACHED_CMDSETS = {}
@@ -110,15 +112,15 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             return cmdsetclass
 
         except ImportError:
-            errstring = "Error loading cmdset: Couldn't import module '%s'."
+            errstring = _("Error loading cmdset: Couldn't import module '%s'.")
             errstring = errstring % modulepath
             raise
         except KeyError:
-            errstring = "Error in loading cmdset: No cmdset class '%s' in %s."
-            errstring = errstring % (classname, modulepath)
+            errstring = _("Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s.")
+            errstring = errstring % {"classname":classname, "modulepath":modulepath}
             raise
         except Exception:
-            errstring = "Compile/Run error when loading cmdset '%s'. Error was logged."
+            errstring = _("Compile/Run error when loading cmdset '%s'. Error was logged.")
             errstring = errstring % (python_path)
             raise
     except Exception:
@@ -194,15 +196,17 @@ class CmdSetHandler(object):
         mergetype = self.mergetype_stack[-1]
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
-            mergetype = "custom %s on cmdset '%s'" % (mergetype, merged_on)
+            mergetype = _("custom %(mergetype)s on cmdset '%(merged_on)s'") % {"mergetype":mergetype, "merged_on":merged_on}
         if mergelist:
-            string += " <Merged %s (%s, prio %i)>: %s" % ("+".join(mergelist), mergetype, self.current.priority, self.current)
+            string += _(" <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s") % \
+                    {"mergelist": "+".join(mergelist), "mergetype":mergetype, "prio":self.current.priority, "current":self.current}
         else:
             permstring = "non-perm"
             if self.current.permanent:
                 permstring = "perm"
-            string += " <%s (%s, prio %i, %s)>: %s" % (self.current.key, mergetype, self.current.priority, permstring,
-                                                   ", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key)))
+            string += _(" <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s") % \
+                     {"key":self.current.key, "mergetype":mergetype, "prio":self.current.priority, "permstring":permstring,
+                                           "keylost":", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key))}
         return string.strip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
@@ -274,7 +278,7 @@ class CmdSetHandler(object):
         """
         if callable(cmdset):
             if not utils.inherits_from(cmdset, CmdSet):
-                raise Exception("Only CmdSets can be added to the cmdsethandler!")
+                raise Exception(_("Only CmdSets can be added to the cmdsethandler!"))
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
@@ -306,7 +310,7 @@ class CmdSetHandler(object):
         """
         if callable(cmdset):
             if not utils.inherits_from(cmdset, CmdSet):
-                raise Exception("Only CmdSets can be added to the cmdsethandler!")
+                raise Exception(_("Only CmdSets can be added to the cmdsethandler!"))
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.

@@ -15,6 +15,7 @@ together to create interesting in-game effects.
 """
 
 import copy
+from django.utils.translation import ugettext as _
 from src.utils.utils import inherits_from, is_iter
 __all__ = ("CmdSet",)
 
@@ -303,9 +304,9 @@ class CmdSet(object):
             try:
                 cmd = self._instantiate(cmd)
             except RuntimeError, e:
-                string = "Adding cmdset %s to %s lead to an infinite loop. When adding a cmdset to another, "
+                string = "Adding cmdset %(cmd)s to %(class)s lead to an infinite loop. When adding a cmdset to another, "
                 string += "make sure they are not themself cyclically added to the new cmdset somewhere in the chain."
-                raise RuntimeError(string % (cmd, self.__class__))
+                raise RuntimeError(_(string) % {"cmd":cmd, "class":self.__class__})
             cmds = cmd.commands
         elif is_iter(cmd):
             cmds = [self._instantiate(c) for c in cmd]

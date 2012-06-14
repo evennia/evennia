@@ -28,9 +28,6 @@ from src.server import session
 from src.players.models import PlayerDB
 from src.utils import ansi, utils, logger
 
-# i18n
-from django.utils.translation import ugettext as _
-
 ENCODINGS = settings.ENCODINGS
 
 CTRL_C = '\x03'
@@ -295,7 +292,7 @@ def getKeyPair(pubkeyfile, privkeyfile):
 
     if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
-        print _("  Generating SSH RSA keypair ..."),
+        print "  Generating SSH RSA keypair ...",
         from Crypto.PublicKey import RSA
 
         KEY_LENGTH = 1024
@@ -340,8 +337,8 @@ def makeFactory(configdict):
         factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
     except Exception, e:
-        print _(" getKeyPair error: %(e)s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead.") % {'e': e}
-        print _(" If this error persists, create game/%(pub)s and game/%(priv)s yourself using third-party tools.") % {'pub': pubkeyfile, 'priv': privkeyfile}
+        print " getKeyPair error: %(e)s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % {'e': e}
+        print " If this error persists, create game/%(pub)s and game/%(priv)s yourself using third-party tools." % {'pub': pubkeyfile, 'priv': privkeyfile}
 
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer

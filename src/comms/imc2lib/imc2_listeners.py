@@ -5,6 +5,8 @@ This module handles some of the -reply packets like whois-reply.
 from src.objects.models import ObjectDB
 from src.comms.imc2lib import imc2_ansi
 
+from django.utils.translation import ugettext as _
+
 def handle_whois_reply(packet):
     """
     When the player sends an imcwhois <playername> request, the outgoing
@@ -15,7 +17,7 @@ def handle_whois_reply(packet):
     try:
         pobject = ObjectDB.objects.get(id=packet.target)
         response_text = imc2_ansi.parse_ansi(packet.optional_data.get('text', 'Unknown'))
-        string = 'Whois reply from %s: %s' % (packet.origin, response_text)
+        string = _('Whois reply from %(origin)s: %(msg)s') % {"origin":packet.origin, "msg":response_text}
         pobject.msg(string.strip())
     except ObjectDB.DoesNotExist:
         # No match found for whois sender. Ignore it.

@@ -18,9 +18,6 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import logger, utils
 from src.server.manager import ServerConfigManager
 
-# i18n
-from django.utils.translation import ugettext as _
-
 #------------------------------------------------------------
 #
 # ServerConfig
@@ -88,7 +85,7 @@ class ServerConfig(SharedMemoryModel):
         "Setter. Allows for self.value = value"
         if utils.has_parent('django.db.models.base.Model', value):
             # we have to protect against storing db objects.
-            logger.log_errmsg(_("ServerConfig cannot store db objects! (%s)" % value))
+            logger.log_errmsg("ServerConfig cannot store db objects! (%s)" % value)
             return
         self.db_value = pickle.dumps(value)
         self.save()

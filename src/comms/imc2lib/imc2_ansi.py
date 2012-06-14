@@ -1,6 +1,6 @@
 """
 ANSI parser - this adds colour to text according to
-special markup strings. 
+special markup strings.
 
 This is a IMC2 complacent version.
 """
@@ -14,9 +14,9 @@ class IMCANSIParser(ansi.ANSIParser):
     """
     def __init__(self):
         normal = ansi.ANSI_NORMAL
-        hilite = ansi.ANSI_HILITE 
+        hilite = ansi.ANSI_HILITE
         self.ansi_map = [
-            (r'~Z', normal), # Random            
+            (r'~Z', normal), # Random
             (r'~x', normal + ansi.ANSI_BLACK),   # Black
             (r'~D', hilite + ansi.ANSI_BLACK),   # Dark Grey
             (r'~z', hilite + ansi.ANSI_BLACK),
@@ -25,21 +25,21 @@ class IMCANSIParser(ansi.ANSIParser):
             (r'~g', normal + ansi.ANSI_GREEN),   # Dark Green
             (r'~G', hilite + ansi.ANSI_GREEN),   # Green
             (r'~p', normal + ansi.ANSI_MAGENTA), # Dark magenta
-            (r'~m', normal + ansi.ANSI_MAGENTA),           
+            (r'~m', normal + ansi.ANSI_MAGENTA),
             (r'~M', hilite + ansi.ANSI_MAGENTA), # Magenta
             (r'~P', hilite + ansi.ANSI_MAGENTA),
             (r'~c', normal + ansi.ANSI_CYAN),    # Cyan
             (r'~y', normal + ansi.ANSI_YELLOW),  # Dark Yellow (brown)
-            (r'~Y', hilite + ansi.ANSI_YELLOW),  # Yellow             
+            (r'~Y', hilite + ansi.ANSI_YELLOW),  # Yellow
             (r'~b', normal + ansi.ANSI_BLUE),    # Dark Blue
             (r'~B', hilite + ansi.ANSI_BLUE),    # Blue
-            (r'~C', hilite + ansi.ANSI_BLUE),    
+            (r'~C', hilite + ansi.ANSI_BLUE),
             (r'~r', normal + ansi.ANSI_RED),     # Dark Red
-            (r'~R', hilite + ansi.ANSI_RED),     # Red 
+            (r'~R', hilite + ansi.ANSI_RED),     # Red
 
             ## Formatting
             (r'~L', hilite),                     # Bold/hilite
-            (r'~!', normal),                     # reset 
+            (r'~!', normal),                     # reset
             (r'\\r', normal),
             (r'\\n', ansi.ANSI_RETURN),
         ]
@@ -51,7 +51,7 @@ class IMCANSIParser(ansi.ANSIParser):
 
 
 ANSI_PARSER = IMCANSIParser()
-        
+
 def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER):
     """
     Shortcut to use the IMC2 ANSI parser.

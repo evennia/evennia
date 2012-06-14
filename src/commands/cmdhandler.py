@@ -45,6 +45,8 @@ from src.commands.cmdset import CmdSet
 from src.commands.cmdparser import at_multimatch_cmd
 from src.utils.utils import string_suggestions
 
+from django.utils.translation import ugettext as _
+
 __all__ = ("cmdhandler",)
 
 # This decides which command parser is to be used.
@@ -196,18 +198,18 @@ def cmdhandler(caller, raw_string, testing=False):
                 if syscmd:
                     sysarg = raw_string
                 else:
-                    sysarg = "Command '%s' is not available." % raw_string
+                    sysarg = _("Command '%s' is not available.") % raw_string
                     suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(caller), cutoff=0.7, maxnum=3)
                     if suggestions:
-                        sysarg += " Maybe you meant %s?" % utils.list_to_string(suggestions, 'or', addquote=True)
+                        sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
                     else:
-                        sysarg += " Type \"help\" for help."
+                        sysarg += _(" Type \"help\" for help.")
                 raise ExecSystemCommand(syscmd, sysarg)
 
             if len(matches) > 1:
                 # We have a multiple-match
                 syscmd = yield cmdset.get(CMD_MULTIMATCH)
-                sysarg = "There where multiple matches."
+                sysarg = _("There where multiple matches.")
                 if syscmd:
                     syscmd.matches = matches
                 else:
@@ -301,19 +303,19 @@ def cmdhandler(caller, raw_string, testing=False):
             string += "If logging out/in doesn't solve the problem, try to "
             string += "contact the server admin through some other means "
             string += "for assistance."
-            caller.msg(string)
+            caller.msg(_(string))
             logger.log_errmsg("No cmdsets found: %s" % caller)
 
         except Exception:
             # We should not end up here. If we do, it's a programming bug.
             string = "%s\nAbove traceback is from an untrapped error."
             string += " Please file a bug report."
-            logger.log_trace(string)
+            logger.log_trace(_(string))
             caller.msg(string % format_exc())
 
     except Exception:
         # This catches exceptions in cmdhandler exceptions themselves
         string = "%s\nAbove traceback is from a Command handler bug."
         string += " Please contact an admin and/or file a bug report."
-        logger.log_trace(string)
+        logger.log_trace(_(string))
         caller.msg(string % format_exc())

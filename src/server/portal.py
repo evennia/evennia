@@ -26,9 +26,6 @@ if os.name == 'nt':
     # For Windows we need to handle pid files manually.
     PORTAL_PIDFILE = os.path.join(settings.GAME_DIR, 'portal.pid')
 
-# i18n
-from django.utils.translation import ugettext as _
-
 #------------------------------------------------------------
 # Evennia Portal settings
 #------------------------------------------------------------
@@ -103,7 +100,7 @@ class Portal(object):
         """
         Outputs server startup info to the terminal.
         """
-        print _(' %(servername)s Portal (%(version)s) started.') % {'servername': SERVERNAME, 'version': VERSION}
+        print ' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
         if AMP_ENABLED:
             print "  amp (Server): %s" % AMP_PORT
         if TELNET_ENABLED:
@@ -135,7 +132,7 @@ class Portal(object):
         if mode == None:
             return
         f = open(PORTAL_RESTART, 'w')
-        print _("writing mode=%(mode)s to %(portal_restart)s") % {'mode': mode, 'portal_restart': PORTAL_RESTART}
+        print "writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART}
         f.write(str(mode))
         f.close()
 

@@ -8,7 +8,7 @@ from twisted.internet import ssl as twisted_ssl
 try:
     import OpenSSL
 except ImportError:
-    print _("  SSL_ENABLED requires PyOpenSSL.")
+    print "  SSL_ENABLED requires PyOpenSSL."
     sys.exit(5)
 
 from src.server.telnet import TelnetProtocol
@@ -33,7 +33,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         from Crypto.PublicKey import RSA
         from twisted.conch.ssh.keys import Key
 
-        print _("  Creating SSL key and certificate ... "),
+        print "  Creating SSL key and certificate ... ",
 
         try:
             # create the RSA key and store it.
@@ -42,8 +42,8 @@ def verify_SSL_key_and_cert(keyfile, certfile):
             keyString = rsaKey.toString(type="OPENSSH")
             file(keyfile, 'w+b').write(keyString)
         except Exception,e:
-            print _("rsaKey error: %(e)s\n WARNING: Evennia could not auto-generate SSL private key.") % {'e': e}
-            print _("If this error persists, create game/%(keyfile)s yourself using third-party tools.") % {'keyfile': keyfile}
+            print "rsaKey error: %(e)s\n WARNING: Evennia could not auto-generate SSL private key." % {'e': e}
+            print "If this error persists, create game/%(keyfile)s yourself using third-party tools." % {'keyfile': keyfile}
             sys.exit(5)
 
         # try to create the certificate
@@ -55,12 +55,14 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         try:
             err = subprocess.call(exestring)#, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         except OSError, e:
-            print "  %s\n" % e
-            print _("  Evennia's SSL context factory could not automatically create an SSL certificate game/%(cert)s.") % {'cert': certfile}
-            print _("  A private key 'ssl.key' was already created. Please create %(cert)s manually using the commands valid") % {'cert': certfile}
-            print _("  for your operating system.")
-            print _("  Example (linux, using the openssl program): ")
-            print "    %s" % exestring
+            string = "\n".join([
+                 "  %s\n" % e,
+                 "  Evennia's SSL context factory could not automatically create an SSL certificate game/%(cert)s." % {'cert': certfile},
+                 "  A private key 'ssl.key' was already created. Please create %(cert)s manually using the commands valid" % {'cert': certfile},
+                 "  for your operating system.",
+                 "  Example (linux, using the openssl program): ",
+                 "    %s" % exestring])
+            print string
             sys.exit(5)
         print "done."
 
