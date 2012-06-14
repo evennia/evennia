@@ -5,16 +5,24 @@ from south.v2 import SchemaMigration
 from django.db import models, utils
 import pickle
 
+HAS_CONFIGVAL = True
+try: from src.server.models import ConfigValue
+except ImportError: HAS_CONFIGVAL = False
+HAS_SERVERCONF = True
+try: from src.server.models import ServerConfig
+except ImportError: HAS_SERVERCONF = False
+
 class Migration(SchemaMigration):
 
     no_dry_run = True
     def forwards(self, orm):
-        try:
+        if HAS_CONFIGVAL:# and not HAS_SERVERCONF:
+            # this means we have to rename the old one
             db.rename_table("config_configvalue", "server_serverconfig")
             for conf in orm.ServerConfig.objects.all():
                 conf.db_value = pickle.dumps(conf.db_value)
                 conf.save()
-        except Exception: #utils.DatabaseError:
+        else:# not HAS_SERVERCONF:
             # this will happen if we start db from scratch (the config
             # app will then already be gone and no data is to be transferred)
             # So instead of renaming the old we instead have to manually create the new model.
