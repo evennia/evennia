@@ -122,12 +122,12 @@ ATTRIBUTE_CACHE_MAXSIZE = 100
 ######################################################################
 
 # Database config syntax for Django 1.2+.
-# ENGINE - path to the the database backend (replace
-#          sqlite3 in the example with the one you want.
-#          Supported database engines are
-#            'postgresql_psycopg2', 'postgresql', 'mysql',
-#             'sqlite3' and 'oracle').
-# NAME - database name, or path the db file for sqlite3
+# ENGINE - path to the the database backend. Possible choices are:
+#            'django.db.backends.sqlite3', (default)
+#            'django.db.backends.mysql',
+#            'django.db.backends.'postgresql_psycopg2' (see Issue 241),
+#            'django.db.backends.oracle' (untested).
+# NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)
 # PASSWORD - db admin password (unused in sqlite3)
 # HOST - empty string is localhost (unused in sqlite3)
