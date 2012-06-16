@@ -121,8 +121,7 @@ ATTRIBUTE_CACHE_MAXSIZE = 100
 # Evennia Database config
 ######################################################################
 
-# Database config syntax for Django 1.2+. You can add several
-# database engines in the dictionary (untested).
+# Database config syntax for Django 1.2+.
 # ENGINE - path to the the database backend (replace
 #          sqlite3 in the example with the one you want.
 #          Supported database engines are
@@ -142,7 +141,7 @@ DATABASES = {
         'HOST':'',
         'PORT':''
         }}
-# Engine Config style for Django versions < 1.2. See above.
+# Engine Config style for Django versions < 1.2 only. See above.
 DATABASE_ENGINE = 'sqlite3'
 DATABASE_NAME = os.path.join(GAME_DIR, 'evennia.db3')
 DATABASE_USER = ''

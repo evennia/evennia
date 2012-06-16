@@ -38,7 +38,7 @@ def returns_player_list(method):
                 # there is a 1-1 relation between Users-Players, so we
                 # try to go the other way instead.
                 from src.players.models import PlayerDB
-                match = PlayerDB.objects.filter(user=user)
+                match = PlayerDB.objects.filter(user__id=user.id)
                 if match:
                     players.append(match[0])
                 else:

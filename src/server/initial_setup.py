@@ -6,6 +6,7 @@ other things.
 Everything starts at handle_setup()
 """
 
+import django
 from django.contrib.auth.models import User
 from django.core import management
 from django.conf import settings
@@ -84,6 +85,7 @@ def create_objects():
     if not god_character.home:
         god_character.home = limbo_obj
 
+
 def create_channels():
     """
     Creates some sensible default channels.
@@ -91,14 +93,32 @@ def create_channels():
     print " Creating default channels ..."
 
     # public channel
-    key, aliases, desc, locks = settings.CHANNEL_PUBLIC
-    pchan = create.create_channel(key, aliases, desc, locks=locks)
+    key1, aliases, desc, locks = settings.CHANNEL_PUBLIC
+    pchan = create.create_channel(key1, aliases, desc, locks=locks)
     # mudinfo channel
-    key, aliases, desc, locks = settings.CHANNEL_MUDINFO
-    ichan = create.create_channel(key, aliases, desc, locks=locks)
+    key2, aliases, desc, locks = settings.CHANNEL_MUDINFO
+    ichan = create.create_channel(key2, aliases, desc, locks=locks)
     # connectinfo channel
-    key, aliases, desc, locks = settings.CHANNEL_CONNECTINFO
-    cchan = create.create_channel(key, aliases, desc, locks=locks)
+    key3, aliases, desc, locks = settings.CHANNEL_CONNECTINFO
+    cchan = create.create_channel(key3, aliases, desc, locks=locks)
+
+
+    # TODO: postgresql-psycopg2 has a strange error when trying to connect the user
+    # to the default channels. It works fine from inside the game, but not from
+    # the initial startup. We are temporarily bypassing the problem with the following
+    # fix. See Evennia Issue 151.
+    if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASE_ENGINE == "postgresql_psycopg2")
+        or (hasattr(settings, 'DATABASES')
+            and settings.DATABASES.get("default", {}).get('ENGINE', None)
+            == 'django.db.backends.postgresql_psycopg2')):
+        warning = """
+        PostgreSQL-psycopg2 compatability fix:
+        The in-game channels %s, %s and %s were created,
+        but the superuser was not yet connected to them. Please use in-game commands to
+        connect Player #1 to those channels when first logging in.
+        """ % (key1, key2, key3)
+        print warning
+        return
 
     # connect the god user to all these channels by default.
     goduser = get_god_user()
@@ -209,7 +229,7 @@ def reset_server():
     It also checks so the warm-reset mechanism works as it should.
     """
     from src.server.sessionhandler import SESSIONS
-    print " Initial setup complete. Resetting/reloading Server."
+    print " Initial setup complete. Restarting Server once."
     SESSIONS.server.shutdown(mode='reset')
 
 def handle_setup(last_step):
@@ -237,7 +257,8 @@ def handle_setup(last_step):
         create_admin_media_links,
         import_MUX_help_files,
         at_initial_setup,
-        reset_server]
+        reset_server
+        ]
 
     if not settings.IMPORT_MUX_HELP:
         # skip importing of the MUX helpfiles, they are
