@@ -1458,7 +1458,7 @@ class TypedObject(SharedMemoryModel):
              and
            del obj.db.attrname
              and
-           all_attr = obj.db.all() (if there is no attribute named 'all', in which
+           all_attr = obj.db.all (unless there is no attribute named 'all', in which
                                     case that will be returned instead).
         """
         try:
@@ -1470,8 +1470,7 @@ class TypedObject(SharedMemoryModel):
                     _SA(self, 'obj', obj)
                 def __getattribute__(self, attrname):
                     if attrname == 'all':
-                        # we allow for overwriting the all() method
-                        # with an attribute named 'all'.
+                        # we allow to overload our default .all
                         attr = _GA(self, 'obj').get_attribute("all")
                         if attr:
                             return attr
