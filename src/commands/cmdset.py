@@ -244,11 +244,15 @@ class CmdSet(object):
         if not cmdset_b:
             return self
 
-        # preserve system __commands
-        sys_commands = self.get_system_cmds() + cmdset_b.get_system_cmds()
+        sys_commands_a = self.get_system_cmds()
+        sys_commands_b = cmdset_b.get_system_cmds()
 
         if self.priority >= cmdset_b.priority:
             # A higher or equal priority than B
+
+            # preserve system __commands
+            sys_commands = sys_commands_a + [cmd for cmd in sys_commands_b if cmd not in sys_commands_a]
+
             mergetype = self.key_mergetypes.get(cmdset_b.key, self.mergetype)
             if mergetype == "Intersect":
                 cmdset_c = self._intersect(self, cmdset_b, cmdset_b.duplicates)
@@ -258,8 +262,16 @@ class CmdSet(object):
                 cmdset_c = self._remove(self, cmdset_b, cmdset_b.duplicates)
             else: # Union
                 cmdset_c = self._union(self, cmdset_b, cmdset_b.duplicates)
+            cmdset_c.no_channels = self.no_channels
+            cmdset_c.no_exits = self.no_exits
+            cmdset_c.no_objs = self.no_objs
+
         else:
             # B higher priority than A
+
+            # preserver system __commands
+            sys_commands = sys_commands_b + [cmd for cmd in sys_commands_a if cmd not in sys_commands_b]
+
             mergetype = cmdset_b.key_mergetypes.get(self.key, cmdset_b.mergetype)
             if mergetype == "Intersect":
                 cmdset_c = self._intersect(cmdset_b, self, self.duplicates)
@@ -269,6 +281,9 @@ class CmdSet(object):
                 cmdset_c = self._remove(self, cmdset_b, self.duplicates)
             else: # Union
                 cmdset_c = self._union(cmdset_b, self, self.duplicates)
+            cmdset_c.no_channels = cmdset_b.no_channels
+            cmdset_c.no_exits = cmdset_b.no_exits
+            cmdset_c.no_objs = cmdset_b.no_objs
 
         # we store actual_mergetype since key_mergetypes
         # might be different from the main mergetype.

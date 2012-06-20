@@ -191,7 +191,30 @@ def cmdhandler(caller, raw_string, testing=False):
             # This also checks for permissions, so all commands in match
             # are commands the caller is allowed to call.
             matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
+
             # Deal with matches
+
+            if len(matches) > 1:
+                # We have a multiple-match
+                syscmd = yield cmdset.get(CMD_MULTIMATCH)
+                sysarg = _("There where multiple matches.")
+                if syscmd:
+                    syscmd.matches = matches
+                else:
+                    sysarg = yield at_multimatch_cmd(caller, matches)
+                raise ExecSystemCommand(syscmd, sysarg)
+
+            if len(matches) == 1:
+                # We have a unique command match.
+                match = matches[0]
+                cmdname, args, cmd = match[0], match[1], match[2]
+
+                # check if we allow this type of command
+                if cmdset.no_channels and hasattr(cmd, "is_channel") and cmd.is_channel:
+                    matches = []
+                if cmdset.no_exits and hasattr(cmd, "is_exit") and cmd.is_exit:
+                    matches = []
+
             if not matches:
                 # No commands match our entered command
                 syscmd = yield cmdset.get(CMD_NOMATCH)
@@ -206,19 +229,6 @@ def cmdhandler(caller, raw_string, testing=False):
                         sysarg += _(" Type \"help\" for help.")
                 raise ExecSystemCommand(syscmd, sysarg)
 
-            if len(matches) > 1:
-                # We have a multiple-match
-                syscmd = yield cmdset.get(CMD_MULTIMATCH)
-                sysarg = _("There where multiple matches.")
-                if syscmd:
-                    syscmd.matches = matches
-                else:
-                    sysarg = yield at_multimatch_cmd(caller, matches)
-                raise ExecSystemCommand(syscmd, sysarg)
-
-            # At this point, we have a unique command match.
-            match = matches[0]
-            cmdname, args, cmd = match[0], match[1], match[2]
 
             # Check if this is a Channel match.
             if hasattr(cmd, 'is_channel') and cmd.is_channel:

@@ -828,6 +828,7 @@ class Exit(Object):
             locks = "cmd:all()" # should always be set to this.
             obj = None
             arg_regex=r"\s.*?|$"
+            is_exit = True      # this helps cmdhandler disable exits in cmdsets with no_exits=True.
 
             def func(self):
                 "Default exit traverse if no syscommand is defined."

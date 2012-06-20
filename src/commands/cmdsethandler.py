@@ -206,7 +206,7 @@ class CmdSetHandler(object):
                 permstring = "perm"
             string += _(" <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s") % \
                      {"key":self.current.key, "mergetype":mergetype, "prio":self.current.priority, "permstring":permstring,
-                                           "keylost":", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key))}
+                                           "keylist":", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key))}
         return string.strip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
