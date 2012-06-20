@@ -408,7 +408,7 @@ class CmdWho(MuxCommand):
                 table[0].append(plr_pobject.name[:25])
                 table[1].append(utils.time_format(delta_conn, 0))
                 table[2].append(utils.time_format(delta_cmd, 1))
-                table[3].append(plr_pobject.location.id)
+                table[3].append(plr_pobject.location and plr_pobject.location.id or "None")
                 table[4].append(session.cmd_total)
                 table[5].append(session.address[0])
             else:

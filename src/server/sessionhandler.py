@@ -379,6 +379,9 @@ class PortalSessionHandler(SessionHandler):
         session = self.sessions.get(sessid, None)
         if session:
             session.disconnect(reason)
+            if sessid in self.sessions:
+                # in case sess.disconnect doesn't delete it
+                del self.sessions[sessid]
             del session
 
     def server_disconnect_all(self, reason=""):
@@ -388,7 +391,7 @@ class PortalSessionHandler(SessionHandler):
         for session in self.sessions.values():
             session.disconnect(reason)
             del session
-
+        self.sessions = {}
 
     def count_loggedin(self, include_unloggedin=False):
         """
