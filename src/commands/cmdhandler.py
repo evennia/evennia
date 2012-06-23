@@ -180,7 +180,7 @@ def cmdhandler(caller, raw_string, testing=False):
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
-
+            unformatted_raw_string = raw_string
             raw_string = raw_string.strip()
             if not raw_string:
                 # Empty input. Test for system command instead.
@@ -248,6 +248,7 @@ def cmdhandler(caller, raw_string, testing=False):
             cmd.cmdstring = cmdname
             cmd.args = args
             cmd.cmdset = cmdset
+            cmd.raw_string = unformatted_raw_string
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
                 # cmd.obj are automatically made available.
@@ -289,6 +290,7 @@ def cmdhandler(caller, raw_string, testing=False):
                 syscmd.cmdstring = syscmd.key
                 syscmd.args = sysarg
                 syscmd.cmdset = cmdset
+                syscmd.raw_string = unformatted_raw_string
 
                 if hasattr(syscmd, 'obj') and hasattr(syscmd.obj, 'scripts'):
                     # cmd.obj is automatically made available.

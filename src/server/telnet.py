@@ -101,8 +101,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 logger.log_trace()
         # if we get to this point the command must end with a linebreak.
         # We make sure to add it, to fix some clients messing this up.
-        data = data.rstrip("\r\n") + "\r\n"
-        #print "line mode: (%s)" % data
+        data = data.rstrip("\r\n") + "\n"
+        #print "line data in:", repr(data)
         StatefulTelnetProtocol.dataReceived(self, data)
 
     def _write(self, data):
