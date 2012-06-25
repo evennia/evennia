@@ -118,7 +118,7 @@ class ExtendedRoom(Room):
         # figure out which slots these represent
         if SEASONAL_BOUNDARIES[0] <= season < SEASONAL_BOUNDARIES[1]: curr_season = "spring"
         elif SEASONAL_BOUNDARIES[1] <= season < SEASONAL_BOUNDARIES[2]: curr_season = "summer"
-        elif SEASONAL_BOUNDARIES[2] <= season < SEASONAL_BOUNDARIES[3]: curr_season = "autumn"
+        elif SEASONAL_BOUNDARIES[2] <= season < 1.0 + SEASONAL_BOUNDARIES[0]: curr_season = "autumn"
         else: curr_season = "winter"
 
         if DAY_BOUNDARIES[0] <= timeslot < DAY_BOUNDARIES[1]: curr_timeslot = "night"
