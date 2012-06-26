@@ -1,5 +1,3 @@
-Summarizes the web feautures of Evennia
-
 Web Features
 ============
 

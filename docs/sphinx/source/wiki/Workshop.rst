@@ -1,5 +1,3 @@
-Devel workshop
-
 rtclient protocol
 =================
 

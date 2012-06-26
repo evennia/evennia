@@ -144,7 +144,7 @@ def wiki2rest():
     #subprocess.call(["python", "get_wiki_as_html.py"])
     # use wikify importer
     print " wikify: converting wiki -> html ..."
-    subprocess.call(["python", "wikify.py", "-e", "-m", "-c", "-a", "-s", "wiki", "-d", "html"])
+    subprocess.call(["python", "wikify.py", "-r", "-e", "-m", "-c", "-a", "-s", "wiki", "-d", "html"])
 
     # convert from html to rest with pandoc
     htmlfilenames = [fn for fn in os.listdir(HTML_DIR)

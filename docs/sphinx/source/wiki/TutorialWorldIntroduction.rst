@@ -1,5 +1,3 @@
-Introducing the Tutorial world area
-
 Tutorial World Introduction
 ===========================
 

@@ -1,5 +1,3 @@
-Script typeclass
-
 Scripts
 =======
 

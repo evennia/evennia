@@ -1,5 +1,3 @@
-Handling of ooc communications in game
-
 Communications
 ==============
 

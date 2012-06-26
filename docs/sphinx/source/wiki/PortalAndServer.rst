@@ -1,5 +1,3 @@
-Portal and Server
-
 Portal and Server layout
 ========================
 

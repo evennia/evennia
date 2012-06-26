@@ -1,6 +1,3 @@
-A brief explanation of what MUSH softcode is and why we use Python
-instead.
-
 On MUX and Softcode: A brief overview
 =====================================
 

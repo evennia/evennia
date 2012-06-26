@@ -1,5 +1,3 @@
-Customizing the connection screen
-
 The Connection Screen
 =====================
 

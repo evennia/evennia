@@ -1,5 +1,3 @@
-Getting and giving Evennia-help
-
 How to \_get\_ Help
 ===================
 

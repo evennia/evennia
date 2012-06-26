@@ -1,5 +1,3 @@
-Locks and Permissions
-
 Locks
 =====
 

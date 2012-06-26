@@ -1,5 +1,3 @@
-The Licensing of Evennia
-
 Evennia Licence FAQ
 ===================
 

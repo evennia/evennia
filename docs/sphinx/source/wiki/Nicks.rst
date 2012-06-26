@@ -1,5 +1,3 @@
-Using nicknames
-
 Nicks
 =====
 

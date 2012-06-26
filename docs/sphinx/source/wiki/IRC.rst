@@ -1,5 +1,3 @@
-Configuring IRC connectivity
-
 IRC
 ===
 

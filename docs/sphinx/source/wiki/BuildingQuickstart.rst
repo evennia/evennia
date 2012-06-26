@@ -1,5 +1,3 @@
-A quick-start guide to in-game building in Evennia.
-
 Building Quick-start
 ====================
 

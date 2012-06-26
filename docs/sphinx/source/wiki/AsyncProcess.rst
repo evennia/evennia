@@ -1,5 +1,3 @@
-Running code asynchronously
-
 Asynchronous code
 =================
 

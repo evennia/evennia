@@ -1,5 +1,3 @@
-Running python code parsers for testing and debugging
-
 The \`@py\` command
 ===================
 

@@ -1,5 +1,3 @@
-Introduction to and configuration for IMC2.
-
 IMC2
 ====
 

@@ -1,5 +1,3 @@
-Adding a command prompt to your game
-
 Adding a command prompt
 =======================
 

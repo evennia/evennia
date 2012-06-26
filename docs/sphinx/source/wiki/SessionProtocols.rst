@@ -1,5 +1,3 @@
-Describing the Portal Session and Protocol system
-
 Portal Sessions and Protocols
 =============================
 

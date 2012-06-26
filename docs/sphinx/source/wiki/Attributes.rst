@@ -1,5 +1,3 @@
-Using attributes to store data
-
 Attributes
 ==========
 

@@ -1,5 +1,3 @@
-Adding colour
-
 Adding Colour to your game
 ==========================
 

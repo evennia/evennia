@@ -1,5 +1,3 @@
-External links
-
 External links and resources
 ============================
 

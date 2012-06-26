@@ -1,5 +1,3 @@
-Contributing
-
 Contributing to Evennia
 =======================
 

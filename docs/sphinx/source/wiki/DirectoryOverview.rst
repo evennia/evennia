@@ -1,5 +1,3 @@
-The layout of the evennia package
-
 Evennia directory overview
 ==========================
 

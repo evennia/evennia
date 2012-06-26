@@ -1,5 +1,3 @@
-Introduction
-
     "*A MUD (originally Multi-User Dungeon, with later variants
     Multi-User Dimension and Multi-User Domain), pronounced 'mud', is a
     multiplayer real-time virtual world described primarily in text.

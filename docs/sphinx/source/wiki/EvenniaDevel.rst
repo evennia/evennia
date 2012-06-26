@@ -1,5 +1,3 @@
-Summary of changes in devel-branch
-
 *Note: The devel branch merged with trunk as of r970 (aug2010). So if
 you are new to Evennia, this page is of no real interest to you.*
 

@@ -1,5 +1,3 @@
-Object typeclass
-
 Objects
 =======
 

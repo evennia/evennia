@@ -1,5 +1,3 @@
-changing and creating new translations
-
 Internationalization
 ====================
 

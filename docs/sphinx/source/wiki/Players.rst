@@ -1,5 +1,3 @@
-Player typeclass
-
 Players
 =======
 

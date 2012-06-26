@@ -1,5 +1,3 @@
-Controlling Evennia processes
-
 Running Evennia
 ===============
 

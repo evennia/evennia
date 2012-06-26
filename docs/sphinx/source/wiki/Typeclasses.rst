@@ -1,5 +1,3 @@
-Descibing how Objects and Typeclasses work
-
 Typeclassed entities
 ====================
 

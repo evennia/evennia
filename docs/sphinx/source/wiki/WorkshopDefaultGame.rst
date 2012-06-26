@@ -1,5 +1,3 @@
-Workshop: Default-game whitepage
-
 **Status Update**:*There does not seem to be any active development on
 this by the original initiator (rcaskey). As far as I know there is no
 active game code written apart from a Smaug area converter (how

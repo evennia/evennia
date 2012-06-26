@@ -1,5 +1,3 @@
-Introduction to setting permissions
-
 Giving permissions to your staff
 ================================
 

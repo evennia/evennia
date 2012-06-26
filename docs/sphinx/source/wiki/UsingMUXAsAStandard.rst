@@ -1,5 +1,3 @@
-Our policy on default commands
-
 The 'MUX-like' default of Evennia
 =================================
 

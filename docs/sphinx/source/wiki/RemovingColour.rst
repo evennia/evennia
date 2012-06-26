@@ -1,5 +1,3 @@
-Tutorial for adding configuration
-
 Tutorial: Removing colour from your game
 ========================================
 

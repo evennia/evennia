@@ -1,5 +1,3 @@
-Auto-generated list of default Evennia commands
-
 Commands in Evennia's default command set
 =========================================
 

@@ -1,5 +1,3 @@
-Evennia's help system
-
 Help system
 ===========
 
