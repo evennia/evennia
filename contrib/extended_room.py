@@ -44,9 +44,17 @@ will also look through the available details at the current location
 if applicable. An extended @desc command is used to set details.
 
 
-Installation:
+4) Extra commands
 
-1) Add CmdExtendedLook and CmdExtendedDesc from this module to the default cmdset (see wiki how to do this).
+  CmdExtendedLook - look command supporting room details
+  CmdExtendedDesc - @desc command allowing to add seasonal descs and details,
+                    as well as listing them
+  CmdGameTime     - A simple "time" command, displaying the current time and season.
+
+
+Installation/testing:
+
+1) Add CmdExtendedLook, CmdExtendedDesc and CmdGameTime to the default cmdset (see wiki how to do this).
 2) @dig a room of type contrib.extended_room.ExtendedRoom (or make it the default room type)
 3) Use @desc and @detail to customize the room, then play around!
 
@@ -126,7 +134,6 @@ class ExtendedRoom(Room):
         elif DAY_BOUNDARIES[2] <= timeslot < DAY_BOUNDARIES[3]: curr_timeslot = "afternoon"
         else: curr_timeslot = "evening"
 
-        print "season:%s, timeslot:%s" % (curr_season, curr_timeslot)
         return curr_season, curr_timeslot
 
     def replace_timeslots(self, raw_desc, curr_time):
@@ -283,9 +290,9 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     def func(self):
         "Define extended command"
         caller = self.caller
+        location = caller.location
         if self.cmdstring == '@detail':
             # switch to detailing mode. This operates only on current location
-            location = self.caller.location
             if not location:
                 caller.msg("No location to detail!")
                 return
@@ -308,20 +315,28 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                     del location.db.detail
                 caller.msg("Detail %s deleted, if it existed." % self.lhs)
                 return
-
             # setting a detail
             location.db.details[self.lhs] = self.rhs
             caller.msg("Set Detail %s to '%s'." % (self.lhs, self.rhs))
             return
         else:
             # we are doing a @desc call
+            if not self.args:
+                if location:
+                    string = "{wDescriptions on %s{n:\n" % location.key
+                    string += " {wspring:{n %s\n" % location.db.spring_desc
+                    string += " {wsummer:{n %s\n" % location.db.summer_desc
+                    string += " {wautumn:{n %s\n" % location.db.autumn_desc
+                    string += " {wwinter:{n %s\n" % location.db.winter_desc
+                    string += " {wgeneral:{n %s" % location.db.general_desc
+                    caller.msg(string)
+                    return
             if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
                 # a seasonal switch was given
                 if self.rhs:
                     caller.msg("Seasonal descs only works with rooms, not objects.")
                     return
                 switch = self.switches[0]
-                location = caller.location
                 if not location:
                     caller.msg("No location was found!")
                     return
@@ -346,3 +361,29 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 obj.db.desc = self.args  # compatability
                 caller.msg("General description was set on %s." % obj.key)
 
+# Simple command to view the current time and season
+
+class CmdGameTime(default_cmds.MuxCommand):
+    """
+    Check the game time
+
+    Usage:
+      time
+
+    Shows the current in-game time and season.
+    """
+    key = "time"
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        "Reads time info from current room"
+        location = self.caller.location
+        if not location or not hasattr(location, "get_time_and_season"):
+            self.caller.msg("No location available - you are outside time.")
+        else:
+            season, timeslot = location.get_time_and_season()
+            prep = "a"
+            if season == "autumn":
+                prep = "an"
+            self.caller.msg("It's %s %s day, in the %s." % (prep, season, timeslot))

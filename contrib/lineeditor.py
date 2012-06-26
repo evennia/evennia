@@ -8,12 +8,12 @@ This implements an advanced line editor for editing longer texts
 in-game. The editor mimics the command mechanisms of the VI editor as
 far as possible.
 
-Features of the editor: 
- undo/redo 
+Features of the editor:
+ undo/redo
  edit/replace on any line of the buffer
  search&replace text anywhere in buffer
  formatting of buffer, or selection, to certain width + indentations
- allow to echo the input or not depending on your client. 
+ allow to echo the input or not depending on your client.
 """
 
 import re
@@ -34,23 +34,23 @@ class CmdEditorBase(Command):
     help_entry = "LineEditor"
 
     code = None
-    editor = None 
+    editor = None
 
     def parse(self):
         """
         Handles pre-parsing
 
-        Editor commands are on the form 
+        Editor commands are on the form
          :cmd [li] [w] [txt]
 
-        Where all arguments are optional. 
+        Where all arguments are optional.
           li  - line number (int), starting from 1. This could also be a range given as <l>:<l>
           w   - word(s) (string), could be encased in quotes.
           txt - extra text (string), could be encased in quotes
         """
 
         linebuffer = []
-        if self.editor:            
+        if self.editor:
             linebuffer = self.editor.buffer.split("\n")
         nlines = len(linebuffer)
 
@@ -63,39 +63,39 @@ class CmdEditorBase(Command):
         arglist = [part for part in RE_GROUP.findall(self.args) if part]
         temp = []
         for arg in arglist:
-            # we want to clean the quotes, but only one type, in case we are nesting. 
+            # we want to clean the quotes, but only one type, in case we are nesting.
             if arg.startswith('"'):
                 arg.strip('"')
             elif arg.startswith("'"):
                 arg.strip("'")
             temp.append(arg)
-        arglist = temp 
+        arglist = temp
 
 
         # A dumb split, without grouping quotes
         words = self.args.split()
-        
-        # current line number         
-        cline = nlines - 1 
+
+        # current line number
+        cline = nlines - 1
 
         # the first argument could also be a range of line numbers, on the
         # form <lstart>:<lend>. Either of the ends could be missing, to
-        # mean start/end of buffer respectively. 
-            
+        # mean start/end of buffer respectively.
+
         lstart, lend = cline, cline + 1
-        linerange = False 
-        if arglist and ':' in arglist[0]: 
+        linerange = False
+        if arglist and ':' in arglist[0]:
             part1, part2 = arglist[0].split(':')
-            if part1 and part1.isdigit(): 
+            if part1 and part1.isdigit():
                 lstart = min(max(0, int(part1)) - 1, nlines)
                 linerange = True
             if part2 and part2.isdigit():
                 lend = min(lstart + 1, int(part2)) + 1
-                linerange = True             
+                linerange = True
         elif arglist and arglist[0].isdigit():
-            lstart = min(max(0, int(arglist[0]) - 1), nlines) 
-            lend = lstart + 1 
-            linerange = True 
+            lstart = min(max(0, int(arglist[0]) - 1), nlines)
+            lend = lstart + 1
+            linerange = True
         if linerange:
             arglist = arglist[1:]
 
@@ -107,7 +107,7 @@ class CmdEditorBase(Command):
             lstr = "lines %i-%i" % (lstart + 1, lend)
 
 
-        # arg1 and arg2 is whatever arguments. Line numbers or -ranges are never included here. 
+        # arg1 and arg2 is whatever arguments. Line numbers or -ranges are never included here.
         args = " ".join(arglist)
         arg1, arg2 = "", ""
         if len(arglist) > 1:
@@ -124,30 +124,30 @@ class CmdEditorBase(Command):
         self.lstart = lstart
         self.lend = lend
         self.linerange = linerange
-        self.lstr = lstr 
-        self.words = words 
-        self.args = args 
+        self.lstr = lstr
+        self.words = words
+        self.args = args
         self.arg1 = arg1
         self.arg2 = arg2
-                                
+
     def func(self):
         "Implements the Editor commands"
-        pass 
-        
+        pass
+
 
 class CmdLineInput(CmdEditorBase):
     """
     No command match - Inputs line of text into buffer.
     """
-    key = CMD_NOMATCH 
+    key = CMD_NOMATCH
     aliases = [CMD_NOINPUT]
     def func(self):
         "Adds the line without any formatting changes."
-        # add a line of text 
-        if not self.editor.buffer: 
+        # add a line of text
+        if not self.editor.buffer:
             buf = self.args
         else:
-            buf = self.editor.buffer + "\n%s" % self.args        
+            buf = self.editor.buffer + "\n%s" % self.args
         self.editor.update_buffer(buf)
         if self.editor.echo_mode:
             self.caller.msg("%02i| %s" % (self.cline + 1, self.args))
@@ -164,18 +164,18 @@ class CmdEditorGroup(CmdEditorBase):
     def func(self):
         """
         This command handles all the in-editor :-style commands. Since each command
-        is small and very limited, this makes for a more efficient presentation. 
+        is small and very limited, this makes for a more efficient presentation.
         """
-        caller = self.caller        
-        editor = self.editor 
-        linebuffer = self.linebuffer        
-        lstart, lend = self.lstart, self.lend 
-        cmd = self.cmdstring         
-        echo_mode = self.editor.echo_mode 
+        caller = self.caller
+        editor = self.editor
+        linebuffer = self.linebuffer
+        lstart, lend = self.lstart, self.lend
+        cmd = self.cmdstring
+        echo_mode = self.editor.echo_mode
         string = ""
 
         if cmd == ":":
-            # Echo buffer 
+            # Echo buffer
             if self.linerange:
                 buf = linebuffer[lstart:lend]
                 string = editor.display_buffer(buf=buf, offset=lstart)
@@ -189,9 +189,9 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 string = editor.display_buffer(linenums=False)
             self.caller.msg(string, data={"raw":True})
-            return 
+            return
         elif cmd == ":::":
-            # Insert single colon alone on a line 
+            # Insert single colon alone on a line
             editor.update_buffer(editor.buffer + "\n:")
             if echo_mode:
                 string = "Single ':' added to buffer."
@@ -212,25 +212,25 @@ class CmdEditorGroup(CmdEditorBase):
                              yescode = "self.caller.ndb._lineeditor.save_buffer()\nself.caller.ndb._lineeditor.quit()",
                              nocode = "self.caller.msg(self.caller.ndb._lineeditor.quit())", default="Y")
             else:
-                string = editor.quit()                
+                string = editor.quit()
         elif cmd == ":q!":
             # force quit, not checking saving
             string = editor.quit()
         elif cmd == ":u":
-            # undo 
+            # undo
             string = editor.update_undo(-1)
         elif cmd == ":uu":
-            # redo 
+            # redo
             string = editor.update_undo(1)
         elif cmd == ":UU":
             # reset buffer
             editor.update_buffer(editor.pristine_buffer)
             string = "Reverted all changes to the buffer back to original state."
         elif cmd == ":dd":
-            # :dd <l> - delete line <l> 
+            # :dd <l> - delete line <l>
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
-            string = "Deleted %s." % (self.lstr)            
+            string = "Deleted %s." % (self.lstr)
         elif cmd == ":dw":
             # :dw <w> - delete word in entire buffer
             # :dw <l> <w> delete word only on line(s) <l>
@@ -241,7 +241,7 @@ class CmdEditorGroup(CmdEditorBase):
                     lstart = 0
                     lend = self.cline + 1
                     string = "Removed %s for lines %i-%i." % (self.arg1, lstart + 1 , lend + 1)
-                else:                    
+                else:
                     string = "Removed %s for %s." % (self.arg1, self.lstr)
                 sarea = "\n".join(linebuffer[lstart:lend])
                 sarea = re.sub(r"%s" % self.arg1.strip("\'").strip('\"'), "", sarea, re.MULTILINE)
@@ -250,16 +250,16 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":DD":
             # clear buffer
             editor.update_buffer("")
-            string = "Cleared %i lines from buffer." % self.nlines 
+            string = "Cleared %i lines from buffer." % self.nlines
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
             cbuf = linebuffer[lstart:lend]
-            editor.copy_buffer = cbuf 
+            editor.copy_buffer = cbuf
             string = "%s, %s yanked." % (self.lstr.capitalize(), cbuf)
         elif cmd == ":x":
-            # :x <l> - cut line to copy buffer 
+            # :x <l> - cut line to copy buffer
             cbuf = linebuffer[lstart:lend]
-            editor.copy_buffer = cbuf 
+            editor.copy_buffer = cbuf
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
             string = "%s, %s cut." % (self.lstr.capitalize(), cbuf)
@@ -272,16 +272,16 @@ class CmdEditorGroup(CmdEditorBase):
             editor.update_buffer(buf)
             string = "Copied buffer %s to %s." % (editor.copy_buffer, self.lstr)
         elif cmd == ":i":
-            # :i <l> <txt> - insert new line             
+            # :i <l> <txt> - insert new line
             new_lines = self.args.split('\n')
             if not new_lines:
                 string = "You need to enter a new line and where to insert it."
             else:
-                buf = linebuffer[:lstart] + new_lines  + linebuffer[lstart:] 
+                buf = linebuffer[:lstart] + new_lines  + linebuffer[lstart:]
                 editor.update_buffer(buf)
                 string = "Inserted %i new line(s) at %s." % (len(new_lines), self.lstr)
         elif cmd == ":r":
-            # :r <l> <txt> - replace lines 
+            # :r <l> <txt> - replace lines
             new_lines = self.args.split('\n')
             if not new_lines:
                 string = "You need to enter a replacement string."
@@ -290,7 +290,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.update_buffer(buf)
                 string = "Replaced %i line(s) at %s." % (len(new_lines), self.lstr)
         elif cmd == ":I":
-            # :I <l> <txt> - insert text at beginning of line(s) <l> 
+            # :I <l> <txt> - insert text at beginning of line(s) <l>
             if not self.args:
                 string = "You need to enter text to insert."
             else:
@@ -314,17 +314,17 @@ class CmdEditorGroup(CmdEditorBase):
                     lstart = 0
                     lend = self.cline + 1
                     string = "Search-replaced %s -> %s for lines %i-%i." % (self.arg1, self.arg2, lstart + 1 , lend)
-                else:                    
-                    string = "Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr)                            
+                else:
+                    string = "Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr)
                 sarea = "\n".join(linebuffer[lstart:lend])
-                
+
                 regex = r"%s|^%s(?=\s)|(?<=\s)%s(?=\s)|^%s$|(?<=\s)%s$"
                 regarg = self.arg1.strip("\'").strip('\"')
                 if " " in regarg:
-                    regarg = regarg.replace(" ", " +")                                
+                    regarg = regarg.replace(" ", " +")
                 sarea = re.sub(regex % (regarg, regarg, regarg, regarg, regarg), self.arg2.strip("\'").strip('\"'), sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
-                editor.update_buffer(buf)  
+                editor.update_buffer(buf)
         elif cmd == ":f":
             # :f <l> flood-fill buffer or <l> lines of buffer.
             width = 78
@@ -332,7 +332,7 @@ class CmdEditorGroup(CmdEditorBase):
                 lstart = 0
                 lend = self.cline + 1
                 string = "Flood filled lines %i-%i." % (lstart + 1 , lend)
-            else:                    
+            else:
                 string = "Flood filled %s." % self.lstr
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = utils.fill(fbuf, width=width)
@@ -345,7 +345,7 @@ class CmdEditorGroup(CmdEditorBase):
                 lstart = 0
                 lend = self.cline + 1
                 string = "Indented lines %i-%i." % (lstart + 1 , lend)
-            else:                    
+            else:
                 string = "Indented %s." % self.lstr
             fbuf = [indent + line for line in linebuffer[lstart:lend]]
             buf = linebuffer[:lstart] + fbuf + linebuffer[lend:]
@@ -356,7 +356,7 @@ class CmdEditorGroup(CmdEditorBase):
                 lstart = 0
                 lend = self.cline + 1
                 string = "Removed left margin (dedented) lines %i-%i." % (lstart + 1 , lend)
-            else:                    
+            else:
                 string = "Removed left margin (dedented) %s." % self.lstr
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = utils.dedent(fbuf)
@@ -365,7 +365,7 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":echo":
             # set echoing on/off
             editor.echo_mode = not editor.echo_mode
-            string = "Echo mode set to %s" % editor.echo_mode                
+            string = "Echo mode set to %s" % editor.echo_mode
         caller.msg(string)
 
 
@@ -378,7 +378,7 @@ class LineEditor(object):
     """
     This defines a line editor object. It creates all relevant commands
     and tracks the current state of the buffer. It also cleans up after
-    itself. 
+    itself.
     """
 
     def __init__(self, caller, loadcode="", savecode="", key=""):
@@ -388,11 +388,11 @@ class LineEditor(object):
         savecode - code to execute in order to save the result
         key = an optional key for naming this session (such as which attribute is being edited)
         """
-        self.key = key         
+        self.key = key
         self.caller = caller
         self.caller.ndb._lineeditor = self
         self.buffer = ""
-        self.unsaved = False 
+        self.unsaved = False
         if loadcode:
             try:
                 exec(loadcode)
@@ -410,12 +410,12 @@ class LineEditor(object):
         editor_cmdset = EditorCmdSet()
         editor_cmdset.add(cmd1)
         editor_cmdset.add(cmd2)
-        self.caller.cmdset.add(editor_cmdset)                
+        self.caller.cmdset.add(editor_cmdset)
 
-        # store the original version 
-        self.pristine_buffer = self.buffer 
+        # store the original version
+        self.pristine_buffer = self.buffer
 
-        self.savecode = savecode 
+        self.savecode = savecode
         self.sep = "-"
 
         # undo operation buffer
@@ -425,9 +425,9 @@ class LineEditor(object):
 
         # copy buffer
         self.copy_buffer = []
-        
+
         # echo inserted text back to caller
-        self.echo_mode = False 
+        self.echo_mode = False
 
         # show the buffer ui
         self.caller.msg(self.display_buffer())
@@ -435,15 +435,15 @@ class LineEditor(object):
     def update_buffer(self, buf):
         """
         This should be called when the buffer has been changed somehow.
-        It will handle unsaved flag and undo updating. 
+        It will handle unsaved flag and undo updating.
         """
         if utils.is_iter(buf):
             buf = "\n".join(buf)
 
         if buf != self.buffer:
-            self.buffer = buf 
+            self.buffer = buf
             self.update_undo()
-            self.unsaved = True 
+            self.unsaved = True
 
     def quit(self):
         "Cleanly exit the editor."
@@ -456,7 +456,7 @@ class LineEditor(object):
         if self.unsaved:
             try:
                 exec(self.savecode)
-                self.unsaved = False 
+                self.unsaved = False
                 return "Buffer saved."
             except Exception, e:
                 return "%s\n{rSave code gave an error. Buffer not saved." % e
@@ -466,30 +466,30 @@ class LineEditor(object):
     def update_undo(self, step=None):
         """
         This updates the undo position.
-                
-        """                
+
+        """
         if step and step < 0:
             if self.undo_pos <= 0:
                 return "Nothing to undo."
             self.undo_pos = max(0, self.undo_pos + step)
-            self.buffer = self.undo_buffer[self.undo_pos]   
-            return "Undo."            
+            self.buffer = self.undo_buffer[self.undo_pos]
+            return "Undo."
         elif step and step > 0:
             if self.undo_pos >= len(self.undo_buffer) - 1 or self.undo_pos + 1 >= self.undo_max:
                 return "Nothing to redo."
             self.undo_pos = min(self.undo_pos + step, min(len(self.undo_buffer), self.undo_max) - 1)
             self.buffer = self.undo_buffer[self.undo_pos]
-            return "Redo."            
-        if not self.undo_buffer or (self.undo_buffer and self.buffer != self.undo_buffer[self.undo_pos]):            
+            return "Redo."
+        if not self.undo_buffer or (self.undo_buffer and self.buffer != self.undo_buffer[self.undo_pos]):
             self.undo_buffer = self.undo_buffer[:self.undo_pos + 1] + [self.buffer]
             self.undo_pos = len(self.undo_buffer) - 1
-        
+
     def display_buffer(self, buf=None, offset=0, linenums=True):
         """
         This displays the line editor buffer, or selected parts of it.
 
-        If buf is set and is not the full buffer, offset should define 
-        the starting line number, to get the linenum display right. 
+        If buf is set and is not the full buffer, offset should define
+        the starting line number, to get the linenum display right.
         """
         if buf == None:
             buf = self.buffer
@@ -504,32 +504,32 @@ class LineEditor(object):
         sep = self.sep
         header = "{n" + sep * 10 + "Line Editor [%s]" % self.key + sep * (78-25-len(self.key))
         footer = "{n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 23
-        if linenums: 
+        if linenums:
             main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
         else:
             main = "\n".join(lines)
         string = "%s\n%s\n%s" % (header, main, footer)
-        return string 
+        return string
 
     def display_help(self):
         """
-        Shows the help entry for the editor. 
+        Shows the help entry for the editor.
         """
         string = self.sep*78 + """
 <txt>  - any non-command is appended to the end of the buffer.
 :  <l> - view buffer or only line <l>
 :: <l> - view buffer without line numbers or other parsing
 :::    - print a ':' as the only character on the line...
-:h     - this help. 
+:h     - this help.
 
 :w     - saves the buffer (don't quit)
 :wq    - save buffer and quit
 :q     - quits (will be asked to save if buffer was changed)
-:q!    - quit without saving, no questions asked 
+:q!    - quit without saving, no questions asked
 
 :u     - (undo) step backwards in undo history
 :uu    - (redo) step forward in undo history
-:UU    - reset all changes back to initial 
+:UU    - reset all changes back to initial
 
 :dd <l>     - delete line <n>
 :dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>
@@ -539,7 +539,7 @@ class LineEditor(object):
 :x  <l>        - cut line <l> and store it in the copy buffer
 :p  <l>        - put (paste) previously copied line directly after <l>
 :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will be shifted down
-:r  <l> <txt>  - replace line <l> with text <txt> 
+:r  <l> <txt>  - replace line <l> with text <txt>
 :I  <l> <txt>  - insert text at the beginning of line <l>
 :A  <l> <txt>  - append text after the end of line <l>
 
@@ -547,17 +547,17 @@ class LineEditor(object):
 
 :f <l>    - flood-fill entire buffer or line <l>
 :fi <l>   - indent entire buffer or line <l>
-:fd <l>   - de-indent entire buffer or line <l> 
+:fd <l>   - de-indent entire buffer or line <l>
 
 :echo - turn echoing of the input on/off (helpful for some clients)
 
-   Legend: 
+   Legend:
    <l> - line numbers, or range lstart:lend, e.g. '3:7'.
    <w> - one word or several enclosed in quotes.
-   <txt> - longer string, usually not needed to be enclosed in quotes. 
+   <txt> - longer string, usually not needed to be enclosed in quotes.
 """ + self.sep * 78
-        return string 
-            
+        return string
+
 
 
 
@@ -566,15 +566,15 @@ class LineEditor(object):
 #
 
 class CmdEditor(Command):
-    """    
+    """
     start editor
 
-    Usage: 
-      @editor <obj>/<attr> 
-    
+    Usage:
+      @editor <obj>/<attr>
+
     This will start Evennia's powerful line editor, which
     has a host of commands on its own. Use :h for a list
-    of commands. 
+    of commands.
 
     """
 
@@ -588,23 +588,23 @@ class CmdEditor(Command):
 
         if not self.args or not '/' in self.args:
             self.caller.msg("Usage: @editor <obj>/<attrname>")
-            return 
+            return
         objname, attrname = [part.strip() for part in self.args.split("/")]
         obj = self.caller.search(objname)
         if not obj:
-            return 
+            return
 
-        # the load/save codes define what the editor shall do when wanting to 
+        # the load/save codes define what the editor shall do when wanting to
         # save the result of the editing. The editor makes self.buffer and
         # self.caller available for this code - self.buffer holds the editable text.
 
         loadcode = "obj = self.caller.search('%s')\n" % obj.id
         loadcode += "if obj.db.%s: self.buffer = obj.db.%s" % (attrname, attrname)
-        
+
         savecode = "obj = self.caller.search('%s')\n" % obj.id
         savecode += "obj.db.%s = self.buffer" % attrname
-        
+
         editor_key = "%s/%s" % (objname, attrname)
 
-        # start editor, it will handle things from here.         
+        # start editor, it will handle things from here.
         LineEditor(self.caller, loadcode=loadcode, savecode=savecode, key=editor_key)
