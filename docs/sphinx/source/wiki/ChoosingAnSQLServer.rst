@@ -34,9 +34,9 @@ your game has an very large database and/or extensive web presence
 through a separate server process.
 
 **Warning:** Postgres has issues with Evennia on some installs at the
-moment. "http://code.google.com/p/evennia/issues/detail?id
-
-151">Issue 151 outlines this. If unsure, avoid Postgres for now.
+moment. `Issue
+151 <http://code.google.com/p/evennia/issues/detail?id=151>`_ outlines
+this. If unsure, avoid Postgres for now.
 
 MySQL
 -----

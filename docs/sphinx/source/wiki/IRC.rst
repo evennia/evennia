@@ -1,9 +1,11 @@
+Configuring IRC connectivity
+
 IRC
 ===
 
 `IRC (Internet Relay
-Chat) <http://en.wikipedia.org/wiki/Internet<i>Relay</i>Chat>`_ is a
-long standing chat protocol used by many open-source projects for
+Chat) <http://en.wikipedia.org/wiki/Internet_Relay_Chat>`_ is a long
+standing chat protocol used by many open-source projects for
 communicating in real time. By connecting one of Evennia's
 `Channels <Communications.html>`_ to an IRC channel you can communicate
 also with people not on an mud themselves. Note that you can use IRC
@@ -27,7 +29,7 @@ command availabele: ``@irc2chan``. This command is called like this:
 
 ::
 
-    @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+     @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
 
 If you already know how IRC works, this should be pretty self-evident to
 use. Read the help entry for more features.
@@ -40,7 +42,7 @@ up a new channel ``irc``.
 
 ::
 
-    @ccreate irc = This is connected to an irc channel!
+     @ccreate irc = This is connected to an irc channel!
 
 You will automatically join the new channel.
 
@@ -75,7 +77,7 @@ Next we connect Evennia with the IRC channel.
 
 ::
 
-    @irc2chan irc = irc.freenode.net 6667 #myevennia-test mud-bot
+     @irc2chan irc = irc.freenode.net 6667 #myevennia-test mud-bot
 
 Evennia will now create a new IRC bot ``mud-bot`` and connect it to the
 IRC network and the channel #myevennia. If you are connected to the IRC
@@ -85,7 +87,8 @@ Write something in the Evennia channel *irc*.
 
 ::
 
-    irc Hello, World! [irc] Anna: Hello, World!
+     irc Hello, World!
+    [irc] Anna: Hello, World!
 
 If you are viewing your IRC channel with a separate IRC client you
 should see your text appearing there, spoken by the bot:
@@ -100,6 +103,7 @@ normal channel, marked with the name of the IRC channel you used
 
 ::
 
+     
     [irc] Anna@#myevennia-test: Hello!
 
 Your Evennia gamers can now chat with users on external IRC channels!

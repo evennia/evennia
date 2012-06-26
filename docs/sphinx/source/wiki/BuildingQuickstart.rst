@@ -16,7 +16,7 @@ optional parts):
 
 ::
 
-    command[/switch/switch...] [arguments ...]
+     command[/switch/switch...] [arguments ...]
 
 A *switch* is a special, optional flag to the command to make it behave
 differently. It is always put directly after the command name, and
@@ -46,7 +46,7 @@ player build rights:
 
 ::
 
-    @perm Anna = Builders
+     @perm Anna = Builders
 
 You could give the permission "Immortals" instead, if you want to assign
 full admin privileges. Log out of your superuser account (``@quit``) and
@@ -127,7 +127,8 @@ and try to get the box now:
 
 ::
 
-    > get box You can't get that.
+    > get box
+    You can't get that. 
 
 Think the default error message looks dull? The ``get`` command looks
 for an `Attribute <Attributes.html>`_ named ``get_err_msg`` for
@@ -137,7 +138,7 @@ attributes using the ``@set`` command:
 
 ::
 
-    > @set box/get_err_msg = The box is way too heavy for you to lift.
+    > @set box/get_err_msg = The box is way too heavy for you to lift. 
 
 Try to get it now and you should see a nicer error message echoed back
 to you.
@@ -162,7 +163,7 @@ while and you will notice yourself starting making random observations.
 
 ::
 
-    > @script self
+    > @script self 
 
 This will show details about scripts on yourself (also ``examine``
 works). You will see how long it is until it "fires" next. Don't be
@@ -320,7 +321,7 @@ command.
 
 ::
 
-    > @sethelp/add MyTopic = This help topic is about ...
+    > @sethelp/add MyTopic = This help topic is about ... 
 
 Adding a World
 --------------
@@ -330,7 +331,7 @@ need to log back in as *superuser*. Place yourself in Limbo and do:
 
 ::
 
-    @batchcommand contrib.tutorial_world.build
+     @batchcommand contrib.tutorial_world.build
 
 This will take a while, but you will see a lot of messages as the world
 is built for you. You will end up with a new exit from Limbo named

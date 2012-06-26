@@ -6,7 +6,7 @@ via Mercurial. If you haven't already, see the `Getting Started
 guide <GettingStarted.html>`_ and get everything running. There are many
 ways to get told when to update: You can subscribe to the RSS feed or
 manually check up on the feeds from
-`http://www.evennia.com. <http://www.evennia.com.>`_ You can also join
+`http://www.evennia.com <http://www.evennia.com>`_. You can also join
 the `Evennia Commit
 Log <http://groups.google.com/group/evennia-commits/>`_ group, which
 will send you an email when the server repository changes.
@@ -16,7 +16,8 @@ root directory and type:
 
 ::
 
-    hg pull  hg update
+     hg pull
+     hg update
 
 Assuming you've got the command line client. If you're using a graphical
 client, you will probably want to navigate to the ``evennia`` directory
@@ -27,7 +28,7 @@ You can review the latest changes with
 
 ::
 
-    hg log
+     hg log
 
 or the equivalent in the graphical client. The log tends to scroll past
 quite quickly, so if you are in linux it might be an idea to *pipe* the
@@ -37,7 +38,7 @@ permanent solution):
 
 ::
 
-    hg log | less
+     hg log | less
 
 You can also see the latest changes online
 `here <http://code.google.com/p/evennia/source/list>`_.
@@ -62,21 +63,22 @@ components you need to clear the data from all of them:
 
 ::
 
-    python manage.py reset server objects players scripts comms help web auth
+     python manage.py reset server objects players scripts comms help web auth 
 
 Django also offers an easy way to start the database's own management
 should we want more direct control:
 
 ::
 
-    python manage.py dbshell
+     python manage.py dbshell 
 
 In e.g. MySQL you can then do something like this (assuming your MySQL
 database is named "Evennia":
 
 ::
 
-    mysql> DROP DATABASE Evennia;  mysql> exit
+    mysql> DROP DATABASE Evennia; 
+    mysql> exit
 
 A Note on Schema Migration
 --------------------------
@@ -93,7 +95,7 @@ using the database's command line. This often means adding/removing new
 tables or fields as well as possibly convert existing data to match what
 the new Evennia version expects. It should be quite obvious that this
 quickly becomes cumbersome and error-prone. If your database doesn't
-contain anything critical yet iẗ́'s probably easiest to simply reset it
+contain anything critical yet it's probably easiest to simply reset it
 and start over rather than to bother converting.
 
 Enter `South <http://south.aeracode.org/>`_. South keeps track of
@@ -116,7 +118,7 @@ online list), you go to ``game/`` and run this command:
 
 ::
 
-    python manage.py migrate
+     python manage.py migrate
 
 This will convert your database to the new schema and you should be set
 to go.

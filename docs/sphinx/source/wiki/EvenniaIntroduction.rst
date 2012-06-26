@@ -1,23 +1,26 @@
-"*A MUD (originally Multi-User Dungeon, with later variants Multi-User
-Dimension and Multi-User Domain), pronounced /ˈmʌd/, is a multiplayer
-real-time virtual world described primarily in text. MUDs combine
-elements of role-playing games, hack and slash, player versus player,
-interactive fiction, and online chat. Players can read or view
-descriptions of rooms, objects, other players, non-player characters,
-and actions performed in the virtual world. Players typically interact
-with each other and the world by typing commands that resemble a natural
-language.*\ " - `Wikipedia <http://en.wikipedia.org/wiki/MUD>`_
+Introduction
 
-Evennia introduction=
+    "*A MUD (originally Multi-User Dungeon, with later variants
+    Multi-User Dimension and Multi-User Domain), pronounced 'mud', is a
+    multiplayer real-time virtual world described primarily in text.
+    MUDs combine elements of role-playing games, hack and slash, player
+    versus player, interactive fiction, and online chat. Players can
+    read or view descriptions of rooms, objects, other players,
+    non-player characters, and actions performed in the virtual world.
+    Players typically interact with each other and the world by typing
+    commands that resemble a natural language.*\ " -
+    `Wikipedia <http://en.wikipedia.org/wiki/MUD>`_
+
+Evennia introduction
+====================
 
 If you are reading this, it's quite likely you are dreaming of creating
 and running a text-based massively-multiplayer game
-(`MUD/MUX/MU <http://en.wikipedia.org/wiki/Mu<strong>>`_ etc) of your
-very own. You might just be starting to think about it, or you might
-have lugged around that *perfect* game in your mind for years ... you
-know *just* how good it would be, if you could only make it come to
-reality. We know how you feel. That is, after all, why Evennia came to
-be.
+(`MUD/MUX/MUSH <http://tinyurl.com/c5sc4bm>`_ etc) of your very own. You
+might just be starting to think about it, or you might have lugged
+around that *perfect* game in your mind for years ... you know *just*
+how good it would be, if you could only make it come to reality. We know
+how you feel. That is, after all, why Evennia came to be.
 
 Evennia is in principle a MUD-building system: a bare-bones Python
 codebase and server intended to be highly extendable for any style of
@@ -54,7 +57,7 @@ LP, MOO and so on. Or why not create a new and better command system of
 your own design.
 
 Can I test it somewhere?
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 There are Evennia-based muds under development but they are still not
 publicly available. If you do try to install Evennia (it's not hard), it
@@ -70,7 +73,7 @@ Brief summary of features
 =========================
 
 Technical
-~~~~~~~~~
+---------
 
 -  Game development is done by the server importing your normal Python
    modules. Specific server features are implemented by overloading
@@ -95,7 +98,7 @@ Technical
 -  Unit-testing suite, including tests of default commands and plugins
 
 Default content
-~~~~~~~~~~~~~~~
+---------------
 
 -  Basic classes for Objects, Characers, Rooms and Exits
 -  Basic login system, using the Player's login name as their in-game
@@ -107,7 +110,7 @@ Default content
    alternative login, menus, character generation and more
 
 Standards/Protocols supported
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 
 -  Telnet with mud-specific extensions (MCCP, MSSP, TTYPE)
 -  SSH

@@ -1,3 +1,5 @@
+Handling of ooc communications in game
+
 Communications
 ==============
 
@@ -24,7 +26,7 @@ communications, both in channels, but also for allowing
 senders/receivers to have 'mailboxes' with the messages they want to
 keep.
 
-Properties defined on ``Msg``
+Properties defined on \`Msg\`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``sender`` - this is a reference to a unique `Player <Players.html>`_
@@ -36,8 +38,8 @@ Properties defined on ``Msg``
 -  ``date_sent`` - when message was sent (auto-created).
 -  ``locks`` - a `lock definition <Locks.html>`_.
 
-You create new messages in code using
-``src.utils.create.create_message.``
+You create new messages in code using ``ev.create_message`` (or
+``src.utils.create.create_message.``)
 
 !TempMsg
 ~~~~~~~~
@@ -62,7 +64,8 @@ for asking questions). The default channels created are defined by
 ``settings.CHANNEL_PUBLIC``, ``settings.CHANNEL_MUDINFO`` and
 ``settings.CHANNEL_CONNECTINFO``.
 
-You create new channels with ``src.utils.create.create_channel()``.
+You create new channels with ``ev.create_message`` (or
+``src.utils.create.create_channel``).
 
 In code, messages are sent to a channel using the
 ``msg(message, from_obj=None)`` method. The argument ``message`` can
@@ -76,14 +79,25 @@ send a non-persistent message, also if you send it a ``Msg`` object.
 
 ::
 
-    # assume we have a 'sender' object and a channel named 'mychan'# send and store in database  from src.utils import create mymsg = create.create_message(sender, "Hello!", channels=[mychan]) mychan.msg(mymsg)# send a one-time message mychan.msg("Hello!")# send a one-time message created from a Msg object mychan.tempmsg(mymsg)
+    # assume we have a 'sender' object and a channel named 'mychan'
+
+    # send and store in database 
+    from src.utils import create
+    mymsg = create.create_message(sender, "Hello!", channels=[mychan])
+    mychan.msg(mymsg)
+
+    # send a one-time message
+    mychan.msg("Hello!")
+
+    # send a one-time message created from a Msg object
+    mychan.tempmsg(mymsg)
 
 As a more advanced note, sending text to channels is a "special
 exception" as far as commands are concerned, and you may completely
-customize how this works by defining a *system*\ command\_ with your own
+customize how this works by defining a *system\_command* with your own
 code. See `Commands <Commands.html>`_ for more details.
 
-Properties defined on ``Channel``
+Properties defined on \`Channel\`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` - main name for channel

@@ -1,3 +1,5 @@
+Using the Evennia command batch processors
+
 The Batch-Command processor
 ===========================
 
@@ -13,7 +15,7 @@ The batch-command processor is a superuser-only function, invoked by
 
 ::
 
-    > @batchcommand path.to.batchcmdfile
+     > @batchcommand path.to.batchcmdfile
 
 Where ``path.to.batchcmdfile`` is the path to a *batch-command file*
 with the "``.ev``\ " file ending. This path is given like a python path
@@ -24,7 +26,7 @@ relative to a folder you define to hold your batch files, set with
 
 ::
 
-    > @batchcommand examples.batch_cmds
+     > @batchcommand examples.batch_cmds
 
 A batch-command file contains a list of Evennia in-game commands
 separated by comments. The processor will run the batch file from
@@ -75,7 +77,46 @@ Below is a version of the example file found in
 
 ::
 
-    # # This is an example batch build file for Evennia.  ## This creates a red button @create button:examples.red_button.RedButton # (This comment ends input for @create) # Next command. Let's create something.  @set button/desc =    This is a large red button. Now and then    it flashes in an evil, yet strangely tantalizing way.   A big sign sits next to it. It says:----------- Press me! -----------  ... It really begs to be pressed! You  know you want to! # This inserts the commands from another batch-cmd file named # batch_insert_file.ev. #INSERT examples.batch_insert_file   # (This ends the @set command). Note that single line breaks  # and extra whitespace in the argument are ignored. Empty lines  # translate into line breaks in the output. # Now let's place the button where it belongs (let's say limbo #2 is  # the evil lair in our example) @teleport #2 # (This comments ends the @teleport command.)  # Now we drop it so others can see it.  # The very last command in the file needs not be ended with #. drop button
+    #
+    # This is an example batch build file for Evennia. 
+    #
+
+    # This creates a red button
+    @create button:examples.red_button.RedButton
+    # (This comment ends input for @create)
+    # Next command. Let's create something. 
+    @set button/desc = 
+      This is a large red button. Now and then 
+      it flashes in an evil, yet strangely tantalizing way. 
+
+      A big sign sits next to it. It says:
+
+
+    -----------
+
+     Press me! 
+
+    -----------
+
+
+      ... It really begs to be pressed! You 
+    know you want to! 
+
+    # This inserts the commands from another batch-cmd file named
+    # batch_insert_file.ev.
+    #INSERT examples.batch_insert_file
+
+      
+    # (This ends the @set command). Note that single line breaks 
+    # and extra whitespace in the argument are ignored. Empty lines 
+    # translate into line breaks in the output.
+    # Now let's place the button where it belongs (let's say limbo #2 is 
+    # the evil lair in our example)
+    @teleport #2
+    # (This comments ends the @teleport command.) 
+    # Now we drop it so others can see it. 
+    # The very last command in the file needs not be ended with #.
+    drop button
 
 To test this, run ``@batchcommand`` on the file. A button will be
 created, described and dropped in Limbo. All commands will be executed
@@ -97,13 +138,13 @@ same-named objects, for example). Use ``@batchcommand`` with the
 
 ::
 
-    > @batchcommand/interactive examples.batch_cmds
+     > @batchcommand/interactive examples.batch_cmds
 
 You will see this:
 
 ::
 
-    01/04: @create button:examples.red_button.RedButton  (hh for help)
+    01/04: @create button:examples.red_button.RedButton  (hh for help) 
 
 This shows that you are on the ``@create`` command, the first out of
 only four commands in this batch file. Observe that the command

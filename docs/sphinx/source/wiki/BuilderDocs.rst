@@ -15,12 +15,12 @@ Building basics
 Advanced building and World building
 ------------------------------------
 
-`Overview of batch processors <BatchProcessors.html>`_
+-  `Overview of batch processors <BatchProcessors.html>`_
 
--  `Batch-command processor <BatchCommandProcessor.html>`_
--  `Batch-code processor <BatchCodeProcessor.html>`_
+   -  `Batch-command processor <BatchCommandProcessor.html>`_
+   -  `Batch-code processor <BatchCodeProcessor.html>`_
 
-`Adding zones <Zones.html>`_
+-  `Adding zones <Zones.html>`_
 
 The Tutorial world
 ------------------

@@ -46,7 +46,6 @@ intervals.
    wiki/StartStopReload
    wiki/UpdatingYourGame
    wiki/Internationalization
-   wiki/StaffVersionControl
    wiki/ApacheConfig
    wiki/TextEncodings
    wiki/IRC
@@ -65,7 +64,6 @@ intervals.
    wiki/Licensing
    wiki/Contributing
    wiki/UsingMUXAsAStandard
-   wiki/BazaarDevel
    wiki/DirectoryOverview
    wiki/PortalAndServer   
    wiki/Commands
@@ -88,3 +86,19 @@ intervals.
    wiki/WorkshopDefaultGame
    wiki/Workshop
    wiki/EvenniaDevel
+   wiki/Banning
+   wiki/CodingIntroduction
+   wiki/CodingUtils
+   wiki/CommandCooldown
+   wiki/GamePlanning
+   wiki/GettingHelp
+   wiki/OnlineSetup
+   wiki/Quirks
+   wiki/RSS
+   wiki/ServerConf
+   wiki/TickerScripts
+   wiki/Tutorials
+   wiki/VersionControl
+   wiki/Zones
+   wiki/evAPI
+   wiki/AddingCommandTutorial

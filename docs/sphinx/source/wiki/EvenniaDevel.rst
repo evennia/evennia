@@ -51,8 +51,8 @@ function on the database model or if it in fact sat on the script parent
 (the call was made through something called the "scriptlink").
 
 By contrast, a typeclass is a normal python class that inherits from the
-*!TypeClass* parent. There are no other required functions to define.
-This class uses **\ getattribute\ ** and **\ setattr\ ** transparently
+*TypeClass* parent. There are no other required functions to define.
+This class uses *\_getattribute\_* and *\_setattr\_* transparently
 behind the scenes to store data onto the persistent django object. Also
 the django model is aware of the typeclass in the reverse direction. The
 admin don't really have to worry about this connection, they can usually
@@ -70,12 +70,12 @@ create the objects rather than to create objects with plain Django by
 instantiating the model class; this so that the rather complex
 relationships can be instantiated safely behind the scenes.
 
-Command functions + !StateCommands-> Command classes + CmdSets
---------------------------------------------------------------
+Command functions + !StateCommands-> Command classes + !CmdSets
+---------------------------------------------------------------
 
 In trunk, there was one default group of commands in a list
-GLOBAL\ *CMD*\ TABLE. Every player in game used this. There was a second
-dictionary GLOBAL\ *STATE*\ TABLE that held commands valid only for
+GLOBAL\_CMD\_TABLE. Every player in game used this. There was a second
+dictionary GLOBAL\_STATE\_TABLE that held commands valid only for
 certain *states* the player might end up in - like entering a dark room,
 a text editor, or whatever. The problem with this state system, was that
 it was limited in its use - every player could ever only be in one state
@@ -85,7 +85,7 @@ object could not offer different commands dependent on its state, for
 example.
 
 In devel, *every* command definition is grouped in what's called a
-*!CmdSet* (this is, like most things in Devel, defined as a class). A
+*CmdSet* (this is, like most things in Devel, defined as a class). A
 command can exist in any number of cmdsets at the same time. Also the
 'default' group of commands belong to a cmdset. These command sets are
 no longer stored globally, but instead locally on each object capable of
@@ -117,7 +117,9 @@ Example of new command definition:
 
 ::
 
-    class CmdTest(Command):     def func(self):          self.caller.msg("This is the test!")
+    class CmdTest(Command):
+        def func(self):
+             self.caller.msg("This is the test!")        
 
 Events + States -> Scripts
 --------------------------
@@ -263,14 +265,16 @@ just do:
 
 ::
 
-    obj.db.attr = value  value = obj.db.attr
+    obj.db.attr = value 
+    value = obj.db.attr
 
 And for storing something non-persistently (stored only until the server
 reboots) you can just do
 
 ::
 
-    obj.attr = value value = obj.attr
+    obj.attr = value
+    value = obj.attr
 
 The last example may sound trivial, but it's actually impossible to do
 in trunk since django objects are not guaranteed to remain the same
@@ -320,7 +324,7 @@ where it might be unclear if you receive a session or a player object
 (especially during login/logout), you can now use simply use ``msg()``
 without having to check (however, you *can* still use ``emit_to`` for
 legacy code, it's an alias to msg() now). Same is true with
-emit\ *to*\ contents() -> msg\ *to*\ contents().
+emit\_to\_contents() -> msg\_to\_contents().
 
 ``source_object`` in default commands are now consistently named
 *caller* instead.
@@ -343,7 +347,7 @@ function into a class and add the parse(self) and func(self) methods
 much double code), as well as learn what variable names is made
 available (see the commands in ``gamesrc/commands/default`` for
 guidance). You can make States into CmdSets very easy - just listing the
-commands needed for the state in a new !CmdSet.
+commands needed for the state in a new CmdSet.
 
 Script parents are made into Typeclasses by deleting the factory
 function and making them inherit from a TypeClassed object (such as

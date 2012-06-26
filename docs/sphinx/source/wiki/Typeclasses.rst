@@ -1,10 +1,13 @@
-Typeclassed objects
-===================
+Descibing how Objects and Typeclasses work
+
+Typeclassed entities
+====================
 
 How do you represent different objects in a game? What makes a bear
-different from a stone, or a character different from a house? How do
-you store such differences in the database? One way would be to create
-new database tables for each type. So a bear would have a database field
+different from a stone, a character different from a house or a AI
+script different from a script handling light and darkness? How do you
+store such differences in the database? One way would be to create new
+database tables for each type. So a bear would have a database field
 "claws" and the stone would have fields specifying its weight and colour
 ... and you'd soon go crazy with making custom database manipulations
 for all infinite combinations.
@@ -18,17 +21,15 @@ There are three main game 'entities' in Evennia that are what we call
 *typeclassed*. They are `Players <Players.html>`_,
 `Objects <Objects.html>`_ and `Scripts <Scripts.html>`_. This means that
 they are *almost* normal Python classes - they behave and can be
-inherited from etc just like normal Python classes except that for
-storing data they hide underlying database models ...
+inherited from etc just like normal Python classes. But whenever they
+store data they are infact transparently storing this data into the
+database.
 
-... and that's basically all you *really* need to know about how
-typeclasses work behind the scenes.
+All typeclassed entities share a few very useful properties and methods.
+These are described in the next section.
 
-To *work* with them you should however know that Objects, Scripts and
-Players all inherit a lot of helper methods from the typeclass system,
-properties you can *always* expect a typeclassed entity to have. In
-addition to these, each of the three sub types also offer a host of
-additional, subtype-specific helper methods and properties for your use.
+See the pages for `Players <Players.html>`_, `Objects <Objects.html>`_
+and `Scripts <Scripts.html>`_ for more specific usage examples.
 
 Properties available to all typeclassed entities (Players, Objects, Scripts)
 ----------------------------------------------------------------------------
@@ -43,24 +44,24 @@ Properties available to all typeclassed entities (Players, Objects, Scripts)
 
 There are three further properties that warrant special mention:
 
--  ``db`` (!DataBase) - this is the interface to the `Attribute
+-  ``db`` (DataBase) - this is the interface to the `Attribute
    system <Attributes.html>`_, allowing for *persistently* storing your
    own custom data on the entity (i.e. data that will survive a server
    restart).
--  ``ndb`` (!NotDataBase) - this is equivalent to the functionality of
+-  ``ndb`` (NotDataBase) - this is equivalent to the functionality of
    ``db`` but is used to store *non-peristent* data (i.e. data that will
    be lost on server restart).
 -  ``dbobj`` - this is a reference to the *Database object* connected to
    this typeclass (reversely, ``dbobj.typeclass`` is a reference back to
    this very typeclass).
 
-Each of the typeclassed entities then extend this list with their own
-properties. Go to the pages for `Objects <Objects.html>`_,
+As said, each of the typeclassed entities then extend this list with
+their own properties. Go to the pages for `Objects <Objects.html>`_,
 `Scripts <Scripts.html>`_ and `Players <Players.html>`_ respectively for
 more info.
 
-Things to remember when using TypeClasses
------------------------------------------
+Things to remember when using !TypeClasses
+------------------------------------------
 
 Typeclasses *mostly* behave like normal Python classes - you can
 add/overload custom methods and inherit your own classes from them -
@@ -100,9 +101,9 @@ a few things that you need to remember however:
 How typeclasses actually work
 =============================
 
-\_You don't need to read this section to use typeclassed entities, but
-it might be useful if you want to do advanced things or are interested
-in knowing how Evennia actually does things behind the scenes.\_
+*This is considered an advanced section. Skip it on your first
+read-through unless you are really interested in what's going on under
+the hood.*
 
 All typeclassed entities actually consist of two (three) parts:
 
@@ -176,9 +177,7 @@ where one.
 
 Below is a schematic of the database/typeclass structure.
 
-.. figure:: http://d.imagehost.org/0784/typeclasses1.png
-   :align: center
-   :alt: 
+|image0|
 
 Let's see how object creation looks like in an example.
 
@@ -187,9 +186,9 @@ Let's see how object creation looks like in an example.
    ``game.gamesrc.objects.baseobjects.Object``, which is a grandchild of
    ``src.typeclasses.typeclass.TypeClass``. So the rose a typeclassed
    object, just as it should be.
-#. Using a command we create a new *Rose* instance *!RedRose* (e.g. with
+#. Using a command we create a new *Rose* instance *RedRose* (e.g. with
    ``@create redrose:flowers.Rose``).
-#. A new database model is created and given the key *!RedRose*. Since
+#. A new database model is created and given the key *RedRose*. Since
    this is an `Object <Objects.html>`_ typeclass (rather than a Script
    or Player), the database model used is
    ``src.objects.models.ObjectDB``, which inherits directly from
@@ -200,7 +199,7 @@ Let's see how object creation looks like in an example.
    database model will restart from this point.
 #. The database model next *imports* the Typeclass from its stored path
    and creates a new instance of it in memory. It stores a reference to
-   this instance of *Rose* (*!RedRose*)in a property called
+   this instance of *Rose* (*RedRose*)in a property called
    ``typeclass``.
 #. As *Rose* is instantiated, its ``__init__()`` method is called. What
    this does it to make sure to store the back-reference to the Django
@@ -225,13 +224,12 @@ are intended to *overload* the default methods on the database object.
 These are thus searched and run first, and you can then safely use
 ``self.dbobj`` from the typeclass to call the original function if you
 want. An example of Typeclass overloading is found
-`here <CommandPrompt#Prompt<i>on</i>the<i>same</i>line.html>`_.
+[`CommandPrompt <CommandPrompt.html>`_\ #Prompt\_on\_the\_same\_line
+here].
 
 Another example:
 
-.. figure:: http://b.imagehost.org/0023/typeclasses2.png
-   :align: center
-   :alt: 
+|image1|
 
 Caveats of the typeclass system
 -------------------------------
@@ -253,7 +251,8 @@ query). You can easily convert between them with ``dbobj.typeclass`` and
 
 ::
 
-    obj = ObjectDB.objects.get_id(1) # custom evennia manager method. This returns the typeclass. obj = ObjectDB.objects.get(1) # standard Django. Returns a Django model object.
+    obj = ObjectDB.objects.get_id(1) # custom evennia manager method. This returns the typeclass.
+    obj = ObjectDB.objects.get(1) # standard Django. Returns a Django model object.
 
 Even more important to know for Django affectionados: Evennia's custom
 methods return *lists* where you with normal Django methods would expect
@@ -264,3 +263,6 @@ should be fine.
 
 Read the ``manager.py`` files in each relevant folder under ``src/`` to
 see which database access methods are available.
+
+.. |image0| image:: http://d.imagehost.org/0784/typeclasses1.png
+.. |image1| image:: http://b.imagehost.org/0023/typeclasses2.png

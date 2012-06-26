@@ -1,3 +1,5 @@
+Using attributes to store data
+
 Attributes
 ==========
 
@@ -24,12 +26,15 @@ Saving and Retrieving data
 --------------------------
 
 To save persistent data on a Typeclassed object you normally use the
-``db`` (!DataBase) operator. Let's try to save some data to a *Rose* (an
+``db`` (DataBase) operator. Let's try to save some data to a *Rose* (an
 `Object <Objects.html>`_):
 
 ::
 
-    # saving  rose.db.has_thorns = True  # getting it back is_ouch = rose.db.has_thorns
+    # saving 
+    rose.db.has_thorns = True 
+    # getting it back
+    is_ouch = rose.db.has_thorns
 
 This looks like any normal Python assignment, but that ``db`` makes sure
 that an *Attribute* is created behind the scenes and is stored in the
@@ -37,12 +42,15 @@ database. Your rose will continue to have thorns throughout the life of
 the server now, until you deliberately remove them.
 
 To be sure to save **non-persistently**, i.e. to make sure NOT to create
-a database entry, you use ``ndb`` (!NonDataBase). It works in the same
+a database entry, you use ``ndb`` (NonDataBase). It works in the same
 way:
 
 ::
 
-    # saving  rose.ndb.has_thorns = True  # getting it back is_ouch = rose.ndb.has_thorns
+    # saving 
+    rose.ndb.has_thorns = True 
+    # getting it back
+    is_ouch = rose.ndb.has_thorns
 
 Strictly speaking, ``ndb`` has nothing to do with ``Attributes``,
 despite how similar they look. No ``Attribute`` object is created behind
@@ -62,7 +70,8 @@ properties.
 
 ::
 
-    list_of_all_rose_attributes = rose.db.all  list_of_all_rose_ndb_attrs = rose.ndb.all
+     list_of_all_rose_attributes = rose.db.all
+     list_of_all_rose_ndb_attrs = rose.ndb.all
 
 If you use ``all`` as the name of an attribute, this will be used
 instead. Later deleting your custom ``all`` will return the default
@@ -76,7 +85,10 @@ assign Attributes like you would any normal Python property:
 
 ::
 
-    # saving rose.has_thorns = True # getting it back  is_ouch = rose.has_thorns
+    # saving
+    rose.has_thorns = True
+    # getting it back 
+    is_ouch = rose.has_thorns
 
 This looks like any normal Python assignment, but calls ``db`` behind
 the scenes for you.
@@ -87,7 +99,9 @@ you know what you are doing, this can cause lots of trouble.
 
 ::
 
-    rose.msg("hello") # this uses the in-built msg() method  rose.msg = "Ouch!" # this OVERLOADS the msg() method with a string  rose.msg("hello") # this now a gives traceback!
+     rose.msg("hello") # this uses the in-built msg() method
+     rose.msg = "Ouch!" # this OVERLOADS the msg() method with a string
+     rose.msg("hello") # this now a gives traceback!
 
 Overloading ``msg()`` with a string is a very bad idea since Evennia
 uses this method all the time to send text to you. There are of course
@@ -97,7 +111,8 @@ something that works.
 
 ::
 
-    rose.db.msg = "Ouch" # this stands no risk of overloading msg()  rose.msg("hello") # this works as it should
+     rose.db.msg = "Ouch" # this stands no risk of overloading msg()
+     rose.msg("hello") # this works as it should
 
 So using ``db``/``ndb`` will always do what you expect and is usually
 the safer bet. It also makes it visually clear at all times when you are
@@ -178,20 +193,46 @@ Examples of valid attribute data:
 
 ::
 
-    # a single value  obj.db.test1 = 23  obj.db.test1 = False   # a database object (will be stored as dbref)  obj.db.test2 = myobj  # a list of objects  obj.db.test3 = [obj1, 45, obj2, 67]  # a dictionary  obj.db.test4 = 'str':34, 'dex':56, 'agi':22, 'int':77  # a mixed dictionary/list  obj.db.test5 = 'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]  # a tuple with a list in it  obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)  # a set will still be stored and returned as a list [1,2,3,4,5]!  obj.db.test7 = set([1,2,3,4,5])  # in-situ manipulation  obj.db.test8 = [1,2,"test":1]  obj.db.test8[0] = 4  obj.db.test8[2]["test"] = 5  # test8 is now [4,2,"test":5]
+     # a single value
+     obj.db.test1 = 23
+     obj.db.test1 = False 
+     # a database object (will be stored as dbref)
+     obj.db.test2 = myobj
+     # a list of objects
+     obj.db.test3 = [obj1, 45, obj2, 67]
+     # a dictionary
+     obj.db.test4 = {'str':34, 'dex':56, 'agi':22, 'int':77}
+     # a mixed dictionary/list
+     obj.db.test5 = {'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]}
+     # a tuple with a list in it
+     obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)
+     # a set will still be stored and returned as a list [1,2,3,4,5]!
+     obj.db.test7 = set([1,2,3,4,5])
+     # in-situ manipulation
+     obj.db.test8 = [1,2,{"test":1}]
+     obj.db.test8[0] = 4
+     obj.db.test8[2]["test"] = 5
+     # test8 is now [4,2,{"test":5}]
 
 Example of non-supported save:
 
 ::
 
-    # this will fool the dbobj-check since myobj (a database object) is "hidden" # inside a custom object. This is unsupported and will lead to unexpected # results!  class BadStorage(object):     pass bad = BadStorage() bad.dbobj = myobj obj.db.test8 = bad # this will likely lead to a traceback
+    # this will fool the dbobj-check since myobj (a database object) is "hidden"
+    # inside a custom object. This is unsupported and will lead to unexpected
+    # results! 
+    class BadStorage(object):
+        pass
+    bad = BadStorage()
+    bad.dbobj = myobj
+    obj.db.test8 = bad # this will likely lead to a traceback
 
 Retrieving Mutable objects
 --------------------------
 
 A side effect of the way Evennia stores Attributes is that Python Lists
 and Dictionaries (only) are handled by custom objects called PackedLists
-and !PackedDicts. These behave just like normal lists and dicts except
+and PackedDicts. These behave just like normal lists and dicts except
 they have the special property that they save to the database whenever
 new data gets assigned to them. This allows you to do things like
 ``self.db.mylist[4]`` = val without having to extract the mylist
@@ -199,13 +240,17 @@ Attribute into a temporary variable first.
 
 There is however an important thing to remember. If you retrieve this
 data into another variable, e.g. ``mylist2 = obj.db.mylist``, your new
-variable (``mylist2``) will *still* be a !PackedList! This means it will
+variable (``mylist2``) will *still* be a PackedList! This means it will
 continue to save itself to the database whenever it is updated! This is
 important to keep in mind so you are not confused by the results.
 
 ::
 
-    obj.db.mylist = [1,2,3,4]  mylist = obj.db.mylist  mylist[3] = 5 # this will also update database  print mylist # this is now [1,2,3,5]  print mylist.db.mylist # this is also [1,2,3,5]
+     obj.db.mylist = [1,2,3,4]
+     mylist = obj.db.mylist
+     mylist[3] = 5 # this will also update database
+     print mylist # this is now [1,2,3,5]
+     print mylist.db.mylist # this is also [1,2,3,5]
 
 To "disconnect" your extracted mutable variable from the database you
 simply need to convert the PackedList or PackedDict to a normal Python
@@ -216,7 +261,11 @@ structure's connection to the database.
 
 ::
 
-    obj.db.mylist = [1,2,3,4]  mylist = list(obj.db.mylist) # convert to normal list  mylist[3] = 5  print mylist # this is now [1,2,3,5]  print obj.db.mylist # this remains [1,2,3,4]
+     obj.db.mylist = [1,2,3,4]
+     mylist = list(obj.db.mylist) # convert to normal list
+     mylist[3] = 5
+     print mylist # this is now [1,2,3,5]
+     print obj.db.mylist # this remains [1,2,3,4]
 
 Remember, this is only valid for mutable iterables - lists and dicts and
 combinations of the two.
@@ -227,7 +276,14 @@ stop any changes to the structure from updating the database.
 
 ::
 
-    obj.db.mytup = (1,2,[3,4])  obj.db.mytup[0] = 5 # this fails since tuples are immutable  obj.db.mytup[2][1] = 5 # this works but will NOT update database since outermost iterable is a tuple  print obj.db.mytup[2][1] # this still returns 4, not 5  mytup1 = obj.db.mytup  # mytup1 is already disconnected from database since outermost   # iterable is a tuple, so we can edit the internal list as we want   # without affecting the database.
+     obj.db.mytup = (1,2,[3,4])
+     obj.db.mytup[0] = 5 # this fails since tuples are immutable
+     obj.db.mytup[2][1] = 5 # this works but will NOT update database since outermost iterable is a tuple
+     print obj.db.mytup[2][1] # this still returns 4, not 5
+     mytup1 = obj.db.mytup
+     # mytup1 is already disconnected from database since outermost 
+     # iterable is a tuple, so we can edit the internal list as we want 
+     # without affecting the database. 
 
 Notes
 -----

@@ -1,3 +1,5 @@
+Tutorial for adding configuration
+
 Tutorial: Removing colour from your game
 ========================================
 
@@ -34,7 +36,12 @@ inheriting from ``game.gamesrc.objects.baseobjecs.Character``.
 
 ::
 
-    from ev import Characterclass ColourableCharacter(Character):     at_object_creation(self):                       # set a colour config value         self.db.config_colour = True
+    from ev import Character
+
+    class ColourableCharacter(Character):
+        at_object_creation(self):              
+            # set a colour config value
+            self.db.config_colour = True 
 
 Above we set a simple config value as an `attribute <Attributes.html>`_.
 
@@ -48,7 +55,7 @@ everything works - you don't want to render your root user unusable!).
 
 ::
 
-    @typeclass/reset/force Bob = mycharacter.ColourableCharacter
+     @typeclass/reset/force Bob = mycharacter.ColourableCharacter
 
 ``@typeclass`` changes Bob's typeclass and runs all its creation hooks
 all over again. The ``/reset`` switch clears all attributes and
@@ -58,7 +65,7 @@ properties from the old typeclass and the new one. ``/force`` might be
 needed if you edit the typeclass and want to update the object despite
 the actual typeclass name not having changed.
 
-Overload the ``msg()`` method
+Overload the \`msg()\` method
 -----------------------------
 
 Next we need to overload the ``msg()`` method. What we want is to check
@@ -76,7 +83,13 @@ original. Here's how it could look:
 
 ::
 
-    from ev import ansimsg(self, message, from_obj=None, data=None):     "our custom msg()"     if not self.db.config_colour:         message = ansi.parse_ansi(message, strip_ansi=True)     self.dbobj.msg(message, from_obj, data)
+    from ev import ansi
+
+    msg(self, message, from_obj=None, data=None):
+        "our custom msg()"
+        if not self.db.config_colour:
+            message = ansi.parse_ansi(message, strip_ansi=True)
+        self.dbobj.msg(message, from_obj, data)
 
 Above we create a custom version of the ``msg()`` method that cleans all
 ansi characters if the config value is not set to True. Once that's
@@ -94,7 +107,7 @@ command:
 
 ::
 
-    @py self.db.config_colour = False
+     @py self.db.config_colour = False
 
 Custom colour config command
 ----------------------------
@@ -111,7 +124,28 @@ for configuration down the line).
     from ev import default_cmds
     class ConfigColourCmd(default_cmds.MuxCommand):
         """
-        Configures your colour    Usage:       @setcolour on|off    This turns ansii-colours on/off.      Default is on.      """    key = "@setcolour"     aliases = ["@setcolor"]    def func(self):         "Implements the command"          if not self.args or not self.args in ("on", "off"):             self.caller.msg("Usage: @setcolour on|off")              return         if self.args == "on":             self.caller.db.config_colour = True         else:             self.caller.db.config_colour = False           self.caller.msg("Colour was turned %s." % self.args)
+        Configures your colour
+
+        Usage:
+          @setcolour on|off
+
+        This turns ansii-colours on/off. 
+        Default is on. 
+        """
+
+        key = "@setcolour"
+        aliases = ["@setcolor"]
+
+        def func(self):
+            "Implements the command" 
+            if not self.args or not self.args in ("on", "off"):
+                self.caller.msg("Usage: @setcolour on|off") 
+                return
+            if self.args == "on":
+                self.caller.db.config_colour = True
+            else:
+                self.caller.db.config_colour = False  
+            self.caller.msg("Colour was turned %s." % self.args)
 
 Lastly, we make this command available to the user by adding it to the
 default command set. Easiest is to add it to copy the template file from
@@ -128,7 +162,7 @@ module.
         
         def at_cmdset_creation(self):       
             super(DefaultCmdSet, self).at_cmdset_creation()        
-            self.add(configcmds.ConfigColourCmd())
+            self.add(configcmds.ConfigColourCmd())             
 
 When adding a new command to a cmdset like this you need to run the
 ``@reload`` command (or reboot the server). From here on out, your users

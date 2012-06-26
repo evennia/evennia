@@ -1,3 +1,5 @@
+Using nicknames
+
 Nicks
 =====
 
@@ -29,7 +31,7 @@ command):
 
 ::
 
-    nick ls = look
+     nick ls = look
 
 This is a good one for unix/linux users who are accustomed to using the
 ``ls`` command in their daily life. It is equivalent to
@@ -37,26 +39,26 @@ This is a good one for unix/linux users who are accustomed to using the
 
 ::
 
-    nick/object mycar2 = The red sports car
+     nick/object mycar2 = The red sports car
 
 With this example, substitutions will only be done specifically for
 commands expecting an object reference, such as
 
 ::
 
-    look mycar2
+     look mycar2 
 
 becomes equivalent to "``look The red sports car``\ ".
 
 ::
 
-    nick/players tom = Thomas Johnsson
+     nick/players tom = Thomas Johnsson
 
 This is useful for commands searching for players explicitly:
 
 ::
 
-    @find *tom
+     @find *tom 
 
 One can use nicks to speed up input. Below we add ourselves a quicker
 way to build red buttons. In the future just writing *rb* will be enough
@@ -64,26 +66,42 @@ to execute that whole long string.
 
 ::
 
-    nick rb = @create button:examples.red_button.RedButton
+     nick rb = @create button:examples.red_button.RedButton
 
 Nicks could also be used as the start for building a "recog" system
 suitable for an RP mud.
 
 ::
 
-    nick/player Arnold = The mysterious hooded man
+     nick/player Arnold = The mysterious hooded man
 
 Coding with nicks
 -----------------
 
 Nicks are are stored as the ``Nick`` database model and are referred
 from the normal Evennia `object <Objects.html>`_ through the ``nicks``
-property. ``nicks`` is a special handler that offers effective error
+property. `` nicks`` is a special handler that offers effective error
 checking, searches and conversion.
 
 ::
 
-    # A command/channel nick:   object.nicks.add("greetjack", "tell Jack = Hello pal!")# An object nick:     object.nicks.add("rose", "The red flower", nick_type="object")# An player nick:   object.nicks("tom", "Tommy Hill", nick_type="player")# My own custom nick type (handled by my own game code somehow):   object.nicks.add("hood", "The hooded man", nick_type="my_identsystem")# get back the translated nick:  full_name = object.nicks.get("rose", nick_type="object")# delete a previous set nick   object.nicks.del("rose", nick_type="object")
+    # A command/channel nick:
+      object.nicks.add("greetjack", "tell Jack = Hello pal!")
+
+    # An object nick:  
+      object.nicks.add("rose", "The red flower", nick_type="object")
+
+    # An player nick:
+      object.nicks("tom", "Tommy Hill", nick_type="player")
+
+    # My own custom nick type (handled by my own game code somehow):
+      object.nicks.add("hood", "The hooded man", nick_type="my_identsystem")
+
+    # get back the translated nick:
+     full_name = object.nicks.get("rose", nick_type="object")
+
+    # delete a previous set nick
+      object.nicks.del("rose", nick_type="object")
 
 In a command definition you can reach the nick handler through
 ``self.caller.nicks``. See the ``nick`` command in

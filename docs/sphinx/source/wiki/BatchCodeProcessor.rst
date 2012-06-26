@@ -1,3 +1,5 @@
+Using the Evennia batch code processor
+
 The Batch-Code processor
 ========================
 
@@ -13,7 +15,7 @@ The batch-command processor is a superuser-only function, invoked by
 
 ::
 
-    > @batchcode path.to.batchcodefile
+     > @batchcode path.to.batchcodefile
 
 Where ``path.to.batchcodefile`` is the path to a *batch-code file* with
 the "``.py``\ " file ending. This path is given like a python path
@@ -24,7 +26,7 @@ relative to a folder you define to hold your batch files, set by
 
 ::
 
-    > @batchcommand examples.batch_code
+     > @batchcommand examples.batch_code
 
 This will try to run through the entire batch file in one go. For more
 gradual, *interactive* control you can use the ``/interactive`` switch.
@@ -82,7 +84,37 @@ Below is a version of the example file found in
 
     #
     # This is an example batch-code build file for Evennia. 
-    ##HEADER# This will be included in all other #CODE blocksfrom src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]#CODE (create red button)red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")# importing more code from another batch-code file #INSERT examples.batch_code_insert#CODE (create table and chair) table, chairtable = create.create_object(baseobjects.Object, key="Blue Table", location=limbo) chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)string = "A %s and %s were created. If debug was active, they were deleted again."  caller.msg(string % (table, chair))
+    #
+
+    #HEADER
+
+    # This will be included in all other #CODE blocks
+
+    from src.utils import create, search
+    from game.gamesrc.objects.examples import red_button
+    from game.gamesrc.objects import baseobjects
+
+    limbo = search.objects(caller, 'Limbo', global_search=True)[0]
+
+
+    #CODE (create red button)
+
+    red_button = create.create_object(red_button.RedButton, key="Red button", 
+                                      location=limbo, aliases=["button"])
+
+    # caller points to the one running the script
+    caller.msg("A red button was created.")
+
+    # importing more code from another batch-code file
+    #INSERT examples.batch_code_insert
+
+    #CODE (create table and chair) table, chair
+
+    table = create.create_object(baseobjects.Object, key="Blue Table", location=limbo)
+    chair = create.create_object(baseobjects.Object, key="Blue Chair", location=limbo)
+
+    string = "A %s and %s were created. If debug was active, they were deleted again." 
+    caller.msg(string % (table, chair))
 
 This uses Evennia's Python API to create three objects in sequence.
 
@@ -93,7 +125,7 @@ Try to run the example script with
 
 ::
 
-    > @batchcode/debug examples.batch_code
+     > @batchcode/debug examples.batch_code
 
 The batch script will run to the end and tell you it completed. You will
 also get messages that the button and the two pieces of furniture where
@@ -127,13 +159,13 @@ mode.
 
 ::
 
-    > @batchcode/interactive examples.batch_code
+     > @batchcode/interactive examples.batch_code
 
 You should see the following:
 
 ::
 
-    01/02: #CODE (create red button) [...]         (hh for help)
+    01/02: #CODE (create red button) [...]         (hh for help) 
 
 This shows that you are on the first ``#CODE`` block, the first of only
 two commands in this batch file. Observe that the block has *not*
@@ -144,7 +176,17 @@ To take a look at the full code snippet you are about to run, use ``ll``
 
 ::
 
-    from src.utils import create, search from game.gamesrc.objects.examples import red_button from game.gamesrc.objects import baseobjectslimbo = search.objects(caller, 'Limbo', global_search=True)[0]red_button = create.create_object(red_button.RedButton, key="Red button",                                    location=limbo, aliases=["button"])# caller points to the one running the script caller.msg("A red button was created.")
+    from src.utils import create, search
+    from game.gamesrc.objects.examples import red_button
+    from game.gamesrc.objects import baseobjects
+
+    limbo = search.objects(caller, 'Limbo', global_search=True)[0]
+
+    red_button = create.create_object(red_button.RedButton, key="Red button", 
+                                      location=limbo, aliases=["button"])
+
+    # caller points to the one running the script
+    caller.msg("A red button was created.")
 
 Compare with the example code given earlier. Notice how the content of
 ``#HEADER`` has been pasted at the top of the ``#CODE`` block. Use

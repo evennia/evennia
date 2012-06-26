@@ -1,3 +1,5 @@
+changing and creating new translations
+
 Internationalization
 ====================
 
@@ -9,23 +11,25 @@ without anyone having to go in and add it manually. Take a look at the
 which languages are currently supported.
 
 Note, what is translated in this way are hard-coded strings from the
-server, things like "Connection closed" or "Server restarted".
-Basically, the things users are not supposed to change on their own.
-This means that the default command set is *not* translated. The reason
-for this is that commands are *intended* to be modified by users. Adding
-*i18n* code to commands tend to add complexity to code that will be
-changed anyway. One of the goals of Evennia is to keep the
-user-changeable code as clean and easy-to-read as possible.
+server, things like "Connection closed" or "Server restarted" - things
+that Players will see and which game devs are not supposed to change on
+their own. So stuff seen in the log file or on stdout will not be
+translated. It also means that the default command set is *not*
+translated. The reason for this is that commands are *intended* to be
+modified by users. Adding *i18n* code to commands tend to add complexity
+to code that will be changed anyway. One of the goals of Evennia is to
+keep the user-changeable code as clean and easy-to-read as possible.
 
 Changing server language
 ------------------------
 
-Change language by copy&pasting the following from the default file to
-your ``game/settings.py`` file:
+Change language by adding the following to your ``game/settings.py``
+file:
 
 ::
 
-    USE_I18N = True LANGUAGE_CODE = 'en'
+    USE_I18N = True
+    LANGUAGE_CODE = 'en'
 
 Here ``'en'`` should be changed to the abbreviation for one of the
 supported languages found in ``locale/``. Restart the server to activate
@@ -43,7 +47,7 @@ and run
 
 ::
 
-    django-admin makemessages -l <language-code>
+     django-admin makemessages -l <language-code>
 
 where ``<language-code>`` is the two-letter locale code for the language
 you want, like 'sv' for Swedish or 'es' for Spanish.
@@ -55,7 +59,11 @@ normal text editor -- best is to use a po-file editor from the web
 
 The concept of translating is simple, it's just a matter of taking the
 english strings you find in the ``*.po`` file and add your language's
-translation best you can.
+translation best you can. The ``*.po`` format (and many supporting
+editors) allow you to mark translations as "fuzzy". This tells the
+system (and future translators) that you are unsure about the
+translation, or that you couldn't find a translation that exactly
+matched the intention of the original text.
 
 Finally, you need to compile your translation into a more efficient
 form.

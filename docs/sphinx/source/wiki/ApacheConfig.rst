@@ -16,7 +16,7 @@ gunicorn, Tornado, uwsgi, etc.) Below are instructions on how to set
 things up with various apache2 Python modules. If you get things working
 using a different setup, please feel free to provide details below.
 
---------------
+----
 
 SQLite Note
 -----------
@@ -29,7 +29,7 @@ the game and the web front-end. The best bet to any game wishing to
 power their web presence with Evennia is to use Postgres, MySQL, Oracle,
 or any other supported full-blown relational database.
 
---------------
+----
 
 mod\_wsgi Setup
 ---------------
@@ -37,9 +37,9 @@ mod\_wsgi Setup
 Install mod\_wsgi
 ~~~~~~~~~~~~~~~~~
 
-mod\ *wsgi is an excellent, secure, and high-performance way to serve
+mod\_wsgi is an excellent, secure, and high-performance way to serve
 Python projects. Code reloading is a breeze, Python modules are executed
-as a user of your choice (which is a great security win), and mod*\ wsgi
+as a user of your choice (which is a great security win), and mod\_wsgi
 is easy to set up on most distributions.
 
 For the sake of brevity, this guide will refer you to mod\_wsgi's
@@ -50,10 +50,10 @@ Ubuntu, you may install the entire stack with the following command:
 
 ``sudo aptitude install libapache2-mod-wsgi``
 
-This should install apache2 (if it isn't already), mod\ *wsgi, and load
+This should install apache2 (if it isn't already), mod\_wsgi, and load
 the module. On Fedora or CentOS, you'll do this with ``yum`` and a
 similar package name that you'll need to search for. On Windows, you'll
-need to download and install apache2 and mod*\ wsgi binaries.
+need to download and install apache2 and mod\_wsgi binaries.
 
 Copy and modify the VHOST
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,8 +88,8 @@ site <http://evennia.com>`_.
 A note on code reloading
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If your mod\ *wsgi is set up to run on daemon mode (as will be the case
-by default on Debian and Ubuntu), you may tell mod*\ wsgi to reload by
+If your mod\_wsgi is set up to run on daemon mode (as will be the case
+by default on Debian and Ubuntu), you may tell mod\_wsgi to reload by
 using the ``touch`` command on
 ``evennia/game/web/utils/apache_wsgi.conf``. When mod\_wsgi sees that
 the file modification time has changed, it will force a code reload. Any
@@ -114,5 +114,8 @@ are trouble.
 
 ::
 
-    <Directory "/home/<yourname>/evennia/game/web">                 Options +ExecCGI                 Allow from all </Directory>
+    <Directory "/home/<yourname>/evennia/game/web">
+                    Options +ExecCGI
+                    Allow from all
+    </Directory>
 

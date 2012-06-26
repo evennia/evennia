@@ -1,3 +1,5 @@
+Locks and Permissions
+
 Locks
 =====
 
@@ -6,8 +8,8 @@ Evennia such restrictions are applied and checked by something called
 *locks*. All Evennia entities (`commands <Commands.html>`_,
 `objects <Objects.html>`_, `scripts <Scripts.html>`_,
 `players <Players.html>`_, `help system <HelpSystem.html>`_,
-`messages <Communications#Msg.html>`_ and
-`channels <Communications#Channels.html>`_) are accessed through locks.
+[Communications#Msg messages] and [Communications#Channels channels])
+are accessed through locks.
 
 A lock can be thought of as an "access rule" restricting a particular
 use of an Evennia entity. Whenever another entity wants that kind of
@@ -32,7 +34,7 @@ The in-game command for setting locks on objects is ``@lock``:
 
 ::
 
-    > @lock obj = <lockstring>
+     > @lock obj = <lockstring>
 
 The ``<lockstring>`` is a string on a certain form that defines the
 behaviour of the lock. We will go into more detail on how
@@ -44,7 +46,7 @@ add, delete and check locks.
 
 ::
 
-    myobj.locks.add(<lockstring>)
+     myobj.locks.add(<lockstring>)
 
 One can call ``locks.check()`` to perform a lock check, but to hide the
 underlying implementation all objects also have a convenience function
@@ -55,7 +57,9 @@ do) look from inside the ``@delete`` command:
 
 ::
 
-    if not obj.access(accessing_obj, 'delete'):      accessing_obj.msg("Sorry, you may not delete that.")      return
+     if not obj.access(accessing_obj, 'delete'):
+         accessing_obj.msg("Sorry, you may not delete that.")
+         return 
 
 Defining locks
 --------------
@@ -68,13 +72,15 @@ Here are some examples of lock strings (not including the quotes):
 
 ::
 
-    delete:id(34)   # only allow obj #34 to delete  edit:all()      # let everyone edit   get: not attr(very_weak) or perm(Wizard) # only those who are not "very_weak" or are Wizards may pick this up
+     delete:id(34)   # only allow obj #34 to delete
+     edit:all()      # let everyone edit 
+     get: not attr(very_weak) or perm(Wizard) # only those who are not "very_weak" or are Wizards may pick this up
 
 Formally, a lockstring has the following syntax:
 
 ::
 
-    access_type:[not] func1([arg1,..])[[and|or][ not] func2([arg1,...])[...]]
+     access_type:[not] func1([arg1,..])[[and|or][ not] func2([arg1,...])[...]]
 
 where ``[..]`` marks optional parts. AND, OR and NOT are not case
 sensitive and excess spaces are ignored. ``func1, func2`` etc are
@@ -110,47 +116,50 @@ tries, as in the example of ``@delete`` above that uses the 'delete'
 
 Below are the access\_types checked by the default commandset.
 
-`Commands <Commands.html>`_: ``cmd`` - this defines who may call this
-command at all.
+-  `Commands <Commands.html>`_: ``cmd`` - this defines who may call this
+   command at all.
+-  `Objects <Objects.html>`_:
 
-`Objects <Objects.html>`_:
+   -  ``control`` - who is the "owner" of the object. Can set locks,
+      delete it etc. Defaults to the creator of the object.
+   -  ``call`` - who may call object-commands on this object.
+   -  ``examine`` - who may examine this object's properties.
+   -  ``delete`` - who may delete the object.
+   -  ``edit`` - who may edit properties and attributes of the object.
+   -  ``get``- who may pick up the object and carry it around.
+   -  ``puppet`` - who may "become" this object and control it as their
+      "character".
+   -  ``attrcreate`` - allows to create new objects on object (default
+      True)
 
--  ``control`` - who is the "owner" of the object. Can set locks, delete
-   it etc. Defaults to the creator of the object.
--  ``call`` - who may call object-commands on this object.
--  ``examine`` - who may examine this object's properties.
--  ``delete`` - who may delete the object.
--  ``edit`` - who may edit properties and attributes of the object.
--  ``get``- who may pick up the object and carry it around.
--  ``puppet`` - who may "become" this object and control it as their
-   "character".
+-  [Objects#Characters Characters]: ``<Same as Objects>``
+-  [Objects#Exits Exits]: ``<Same as Objects>`` + ``traverse`` - who may
+   pass the exit.
+-  `Players <Players.html>`_:
 
-`Characters <Objects#Characters.html>`_: ``<Same as Objects>``
+   -  ``examine`` - who may examine the player's properties.
+   -  ``delete`` - who may delete the player.
+   -  ``edit`` - who may edit the player's attributes and properties.
+   -  ``msg`` - who may send messages to the player.
+   -  ``boot`` - who may boot the player.
 
-`Exits <Objects#Exits.html>`_: ``<Same as Objects>`` + ``traverse`` -
-who may pass the exit.
+-  `Attributes <Attributes.html>`_: (*only checked by
+   ``obj.secure_attr``*)
 
-`Players <Players.html>`_:
+   -  ``attrread`` - see/access attribute
+   -  ``attredit`` - change/delete attribute
 
--  ``examine`` - who may examine the player's properties.
--  ``delete`` - who may delete the player.
--  ``edit`` - who may edit the player's attributes and properties.
--  ``msg`` - who may send messages to the player.
--  ``boot`` - who may boot the player.
+-  [Communications#Channels Channels]:
 
-`Attributes <Attributes.html>`_: ``<None>``
+   -  ``control`` - who is administrating the channel. This means the
+      ability to delete the channel, boot listeners etc.
+   -  ``send`` - who may send to the channel.
+   -  ``listen`` - who may subscribe and listen to the channel.
 
-`Channels <Communications#Channels.html>`_:
+-  `HelpEntry <HelpSystem.html>`_:
 
--  ``control`` - who is administrating the channel. This means the
-   ability to delete the channel, boot listeners etc.
--  ``send`` - who may send to the channel.
--  ``listen`` - who may subscribe and listen to the channel.
-
-`HelpEntry <HelpSystem.html>`_:
-
--  ``examine`` - who may view this help entry (usually everyone)
--  ``edit`` - who may edit this help entry.
+   -  ``examine`` - who may view this help entry (usually everyone)
+   -  ``edit`` - who may edit this help entry.
 
 So to take an example, whenever an exit is to be traversed, a lock of
 the type *traverse* will be checked. Defining a suitable lock type for
@@ -176,7 +185,13 @@ appear as extra arguments.
 
 ::
 
-    # A simple example lock function. Called with e.g. id(34)def id(accessing_obj, accessed_obj, *args, **kwargs):     if args:         wanted_id = args[0]         return accessing_obj.id == wanted_id     return False
+    # A simple example lock function. Called with e.g. id(34)
+
+    def id(accessing_obj, accessed_obj, *args, **kwargs):
+        if args:
+            wanted_id = args[0]
+            return accessing_obj.id == wanted_id
+        return False 
 
 (Using the ``*`` and ``**`` syntax causes Python to magically put all
 extra arguments into a list ``args`` and all keyword arguments into a
@@ -189,17 +204,17 @@ Some useful default lockfuncs (see ``src/locks/lockfuncs.py`` for more):
 -  ``false()/none()/superuser()`` - give access to noone. Superusers
    bypass the check entirely.
 -  ``perm(perm)`` - this tries to match a given ``permission`` property.
-   See `below <Locks#Permissions.html>`_.
+   See [Locks#Permissions below].
 -  ``perm_above(perm)`` - requres a "higher" permission level than the
    one given.
--  ``id(num)/dbref(num)`` - checks so the accessobject has a certain
+-  ``id(num)/dbref(num)`` - checks so the access\_object has a certain
    dbref/id.
 -  ``attr(attrname)`` - checks if a certain
-   `Attribute <Attributes.html>`_ exists on accessingobject.
+   `Attribute <Attributes.html>`_ exists on accessing\_object.
 -  ``attr(attrname, value)`` - checks so an attribute exists on
-   accessing\ *object*\ and has the given value.
--  ``attr_gt(attrname, value)`` - checks so accessingobject has a value
-   larger (``>``) than the given value.
+   accessing\_object *and* has the given value.
+-  ``attr_gt(attrname, value)`` - checks so accessing\_object has a
+   value larger (``>``) than the given value.
 -  ``attr_ge, attr_lt, attr_le, attr_ne`` - corresponding for ``>=``,
    ``<``, ``<=`` and ``!=``.
 -  ``holds(objid)`` - checks so the accessing objects contains an object
@@ -233,7 +248,7 @@ set by the ``@perm`` command.
 
 ::
 
-    @perm Tommy = Builders
+     @perm Tommy = Builders
 
 All new players/character are given a default set of permissions defined
 by ``settings.PERMISSION_PLAYER_DEFAULT``.
@@ -244,7 +259,11 @@ default permission hierarchy is as follows:
 
 ::
 
-    Immortals  Wizards  Builders  PlayerHelpers  Players # this is what all new Players start with by default
+     Immortals
+     Wizards
+     Builders
+     PlayerHelpers
+     Players # this is what all new Players start with by default
 
 The main use of this is that if you use the lock function ``perm()``
 mentioned above, a lock check for a particular permission in the
@@ -257,7 +276,10 @@ looked for is not in the hierarchy, an exact match is required.
 
 ::
 
-    obj1.permissions = ["Builders", "cool_guy"] obj2.locks.add("enter:perm_above(Players) and perm(cool_guy)")obj2.access(obj1, "enter") # this returns True!
+    obj1.permissions = ["Builders", "cool_guy"]
+    obj2.locks.add("enter:perm_above(Players) and perm(cool_guy)")
+
+    obj2.access(obj1, "enter") # this returns True!
 
 Superusers
 ----------
@@ -293,7 +315,7 @@ their use of this particular command henceforth.
 
 ::
 
-    open: holds('the green key') or perm(Builder)
+    open: holds('the green key') or perm(Builder) 
 
 This could be called by the ``open`` command on a "door" object. The
 check is passed if you are a Builder or has the right key in your
@@ -328,7 +350,8 @@ other is an `Object <Objects.html>`_ called ``box``.
 
 ::
 
-    > @create/drop box  > @desc box = "This is a very big and heavy box."
+     > @create/drop box
+     > @desc box = "This is a very big and heavy box."
 
 We want to limit which objects can pick up this heavy box. Let's say
 that to do that we require the would-be lifter to to have an attribute
@@ -337,7 +360,7 @@ ourselves to begin with.
 
 ::
 
-    > @set self/strength = 45
+     > @set self/strength = 45
 
 Ok, so for testing we made ourselves strong, but not strong enough. Now
 we need to look at what happens when someone tries to pick up the the
@@ -347,16 +370,21 @@ this snippet:
 
 ::
 
-    if not obj.access(caller, 'get'):     if obj.db.get_err_msg:         caller.msg(obj.db.get_err_msg)     else:         caller.msg("You can't get that.")     return
+    if not obj.access(caller, 'get'):
+        if obj.db.get_err_msg:
+            caller.msg(obj.db.get_err_msg)
+        else:
+            caller.msg("You can't get that.")
+        return
 
 So the ``get`` command looks for a lock with the type *get* (not so
 surprising). It also looks for an `Attribute <Attributes.html>`_ on the
-checked object called *get*\ err\ *msg* in order to return a customized
+checked object called *get\_err\_msg* in order to return a customized
 error message. Sounds good! Let's start by setting that on the box:
 
 ::
 
-    > @set box/get_err_msg = You are not strong enough to lift this box.
+     > @set box/get_err_msg = You are not strong enough to lift this box.
 
 Next we need to craft a Lock of type *get* on our box. We want it to
 only be passed if the accessing object has the attribute *strength* of
@@ -370,7 +398,7 @@ We put this on the box now:
 
 ::
 
-    @lock box = get:attr_gt(strength, 50)
+     @lock box = get:attr_gt(strength, 50)
 
 Try to ``get`` the object and you should get the message that we are not
 strong enough. Increase your strength above 50 however and you'll pick
@@ -381,7 +409,19 @@ like this:
 
 ::
 
-    from ev import create_objectbox = create_object(None, key="box") box.locks.add("get:attr_gt(strength, 50)")# or we can assign locks right away box = create_object(None, key="box", locks="get:attr_gt(strength, 50)")# set the attributes box.db.desc = "This is a very big and heavy box." box.db.get_err_msg = "You are not strong enough to lift this box."# one heavy box, ready to withstand all but the strongest...
+    from ev import create_object
+
+    box = create_object(None, key="box")
+    box.locks.add("get:attr_gt(strength, 50)")
+
+    # or we can assign locks right away
+    box = create_object(None, key="box", locks="get:attr_gt(strength, 50)")
+
+    # set the attributes
+    box.db.desc = "This is a very big and heavy box."
+    box.db.get_err_msg = "You are not strong enough to lift this box."
+
+    # one heavy box, ready to withstand all but the strongest...
 
 On Django's permission system
 =============================

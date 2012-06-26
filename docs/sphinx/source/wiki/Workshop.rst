@@ -1,3 +1,5 @@
+Devel workshop
+
 rtclient protocol
 =================
 
@@ -19,11 +21,11 @@ twisted/python.
 There are two principle aspects to the rtclient protocol, mode control
 and buffering.
 
-modes
------
+Modes
+=====
 
 Unencoded Mode
-~~~~~~~~~~~~~~
+--------------
 
 All output is buffered until ascii char 10, 13, or 255 is encountered or
 the mode changes or no output has been added to the buffer in the last
@@ -31,19 +33,19 @@ the mode changes or no output has been added to the buffer in the last
 interprets the entire buffer as plain text and flushes the buffer.
 
 HTML Mode
-~~~~~~~~~
+---------
 
 All output is buffered. When the mode changes, the client then parses
 the entire buffer as HTML.
 
 Javascript Mode
-~~~~~~~~~~~~~~~
+---------------
 
 All output is buffered. When the mode changes, the client then parses
 the entire buffer as Javascript.
 
 Sample Sessions
----------------
+===============
 
 # start html mode, send html, force buffer flush
 
@@ -75,21 +77,21 @@ note we are using the tokens imported instead of the constants
     session.msg(chr(244))
 
 Values of Tokens
-----------------
+================
 
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| chr() value \| name \| function                                                                                                                                                                       |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 240 \| HTMLTOKEN \| lets client know it is about to receive HTML                                                                                                                                      |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 241 \| JAVASCRIPTTOKEN \| lets client know it is about to receive javascript                                                                                                                          |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 242 \| UNENCODEDTOKEN \| lets client know it is about to receive plain telnet text                                                                                                                    |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 243 \| NOAUTOCHUNKTOKEN \| applies to unencoded mode only, prevents the chunking of text at end-of-line characters so that only mode changes force the buffer to be sent to the client                |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 244 \| AUTOCHUNKTOKEN \| applies to unencoded mode only, enables automatic chunking of text by end-of-line characters and by non-blank buffers not having been written to in the last 1/10th second   |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| chr() value \| name \| function                                                                                                                                                                         |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 240 \| HTML\_TOKEN \| lets client know it is about to receive HTML                                                                                                                                      |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 241 \| JAVASCRIPT\_TOKEN \| lets client know it is about to receive javascript                                                                                                                          |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 242 \| UNENCODED\_TOKEN \| lets client know it is about to receive plain telnet text                                                                                                                    |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 243 \| NO\_AUTOCHUNK\_TOKEN \| applies to unencoded mode only, prevents the chunking of text at end-of-line characters so that only mode changes force the buffer to be sent to the client              |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 244 \| AUTOCHUNK\_TOKEN \| applies to unencoded mode only, enables automatic chunking of text by end-of-line characters and by non-blank buffers not having been written to in the last 1/10th second   |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 identifying as an rtclient
 --------------------------
@@ -111,16 +113,18 @@ NO\_AUTOCHUNK
 Contents are never sent to the client until the encoding mode changes
 (for example, switching from HTML to UNENCODED will send the HTML
 buffer) or the buffering mode changes (for example, one could set
-NO\ *AUTOCHUNK, send some text, and set NO*\ AUTOCHUNK again to force a
+NO\_AUTOCHUNK, send some text, and set NO\_AUTOCHUNK again to force a
 flush.
 
 AUTOCHUNK
 ~~~~~~~~~
 
-It sends the buffer to the client as unencoded text whenever one of two
-things happen: \* the buffer is non-blank but hasn't had anything added
-to it very recently (about 1/10th of a second) \* the buffer ends with
-an end-of-line character (10, 13, 255)
+    It sends the buffer to the client as unencoded text whenever one of
+    two things happen:
+
+**the buffer is non-blank but hasn't had anything added to it very
+recently (about 1/10th of a second)** the buffer ends with an
+end-of-line character (10, 13, 255)
 
 Autochunking strips end-of-line characters and the client adds in its
 own EOL! If you would like to preserve them, send them from within

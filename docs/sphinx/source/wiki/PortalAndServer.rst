@@ -1,3 +1,5 @@
+Portal and Server
+
 Portal and Server layout
 ========================
 
@@ -10,7 +12,7 @@ to have players connect to the Portal but keep the MUD running on the
 Server. This way one can restart/reload the game (the Server part)
 without Players getting disconnected.
 
-https://2498159658166209538-a-1802744773732722657-s-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia\ *server*\ portal.png
+|image0|
 
 The Server and Portal are glued together via an AMP (Asynchronous
 Messaging Protocol) connection. This allows the two programs to
@@ -65,3 +67,5 @@ the AMP bridge. All types of Sessions hold a reference to their
 respective Sessionhandler (the property is called ``sessionhandler``) so
 they can relay data. See `protocols <SessionProtocols.html>`_ for more
 info on building new protocols.
+
+.. |image0| image:: https://2498159658166209538-a-1802744773732722657-s-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png

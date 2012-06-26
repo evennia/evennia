@@ -49,46 +49,51 @@ platform, please let us know.
 You'll need the following packages and minimum versions in order to run
 Evennia:
 
-**Python** (http://www.python.org)
+-  **Python** (`http://www.python.org <http://www.python.org>`_)
 
--  Version 2.5+. Obs- Python3.x is not supported.
--  Windows users are recommended to use ActivePython
-   (http://www.activestate.com/activepython/downloads)
+   -  Version 2.6+. Obs- Python3.x is not supported.
+   -  Windows users are recommended to use ActivePython
+      (`http://www.activestate.com/activepython/downloads <http://www.activestate.com/activepython/downloads>`_)
 
-**Twisted** (http://twistedmatrix.com)
+-  **Twisted** (`http://twistedmatrix.com <http://twistedmatrix.com>`_)
 
-Version 10.0+
+   -  Version 10.0+
+   -  Twisted also requires:
 
-Twisted also requires:
+      -  ZopeInterface 3.0+
+         (`http://www.zope.org/Products/ZopeInterface <http://www.zope.org/Products/ZopeInterface>`_)
+      -  For Windows only: pywin32
+         (`http://sourceforge.net/projects/pywin32 <http://sourceforge.net/projects/pywin32>`_)
 
--  !ZopeInterface 3.0+ (http://www.zope.org/Products/ZopeInterface)
--  For Windows only: pywin32 (http://sourceforge.net/projects/pywin32)
+-  **Django**
+   (`http://www.djangoproject.com <http://www.djangoproject.com>`_)
 
-**Django** (http://www.djangoproject.com)
-
--  Version 1.2.5+ or latest development versions highly recommended.
--  PIL (Python Imaging Library) (http://www.pythonware.com/products/pil)
-   - not strictly required unless you use images in Django.
+   -  Version 1.3+ or latest development versions highly recommended.
+   -  PIL (Python Imaging Library)
+      (`http://www.pythonware.com/products/pil <http://www.pythonware.com/products/pil>`_)
+      - not strictly required unless you use images in Django.
 
 To download/update Evennia:
 
-**Mercurial** (http://mercurial.selenic.com/)
+-  **Mercurial**
+   (`http://mercurial.selenic.com/ <http://mercurial.selenic.com/>`_)
 
--  This is needed to download and update Evennia itself.
+   -  This is needed to download and update Evennia itself.
 
 Optional packages:
 
-**South** (http://south.aeracode.org/)
+-  **South**
+   (`http://south.aeracode.org/ <http://south.aeracode.org/>`_)
 
--  Version 0.7+
--  Optional, but highly recommended. Used for database migrations.
+   -  Version 0.7+
+   -  Optional, but highly recommended. Used for database migrations.
 
-**Apache2** (http://httpd.apache.org)
+-  **Apache2** (`http://httpd.apache.org <http://httpd.apache.org>`_)
 
--  Optional. Most likely you'll not need to bother with this since
-   Evennia runs its own threaded web server based on Twisted. Other
-   equivalent web servers with a Python interpreter module can also be
-   used.
+   -  Optional. Most likely you'll not need to bother with this since
+      Evennia runs its own threaded web server based on Twisted. Other
+      equivalent web servers with a Python interpreter module can also
+      be used.
 
 Installing pre-requisites
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,10 +101,10 @@ Installing pre-requisites
 **All platforms** can set up an *virtual Python environment* and install
 Evennia to that. All you need pre-installed is Python. Setup is
 described in detail
-`here <GettingStarted#Optional:<i>A</i>separate<i>installation</i>environment<i>with</i>virtualenv.html>`_.
-Windows users will probably want to go the ActivePython way instead
-though (see below), there are issues with installing certain extensions
-in Windows.
+[`GettingStarted <GettingStarted.html>`_\ #Optional:\ *A\_separate\_installation\_environment\_with\_virtualenv
+here]. Windows users will probably want to go the ActivePython way
+instead though (see below), there are issues with installing certain
+extensions in Windows.*
 
 **Linux** package managers should usually handle all this for you.
 Python itself is definitely available through all distributions. On
@@ -108,23 +113,23 @@ Debian-derived systems (such as Ubuntu) you can do something like this
 
 ::
 
-    apt-get install python python-django python-twisted mercurial python-django-south
+     apt-get install python python-django python-twisted mercurial python-django-south
 
 Few distros actually keep the latest updated security updates (notably
 django and twisted) in their repos though. So it might be worth to use
 Python's
-`easyinstall <http://packages.python.org/distribute/easy<i>install.html>`_
+`easy\_install <http://packages.python.org/distribute/easy_install.html>`_
 or the alternative
 `pip <http://www.pip-installer.org/en/latest/index.html>`_ to get some
 or all of these instead:
 
 ::
 
-    easy_install django twisted pil mercurial south
+     easy_install django twisted pil mercurial south
 
 ::
 
-    pip install django twisted pil mercurial south
+     pip install django twisted pil mercurial south
 
 If you already have Python and mercurial, and have downloaded Evennia,
 the package comes with a ``requirements.txt`` file. This can be used
@@ -133,19 +138,35 @@ automated build systems):
 
 ::
 
-    pip install -r requirements.txt
+     pip install -r requirements.txt
 
 **Mac** users should be able to get most dependencies through
-``easy_install`` or ``pip`` like Linux users do. There are however
-reports that you might need to get the
-`Xcode <https://developer.apple.com/xcode/.html>`_ development system to
-install the packages that requires extension compiling. You can also
+``easy_install`` or ``pip`` like Linux users do. All interaction is done
+from a terminal window. There are some reports that you might need to
+get the `Xcode <https://developer.apple.com/xcode/>`_ development system
+to install the packages that requires extension compiling. You can also
 retrieve the dependencies directly and install them through their native
 installers or python setups. Some users have reported problems compiling
-the ``PIL`` library on Mac, it's however not strictly required to use
-Django.
+the ``PIL`` library on Mac, it's however not strictly required in order
+to use Django (it's used for images).
 
-**Windows** users may want to install
+\_Note (June 2012): Some versions of MacOSX does not seem to have a
+locale setting out of the box, and this causes a traceback during
+database creation. This is a known upstream bug in Django 1.4, described
+`here <http://code.google.com/p/evennia/wiki/Quirks#Known_upstream_bugs>`_.
+In the bug comments is also described how to add the locale and
+circumvent this bug for now. This affects also Unix/Linux systems, but
+those usually have the locale set out of the box.
+
+**Windows** users should first and foremost recognize that the Evennia
+server is run from the command line, something which they might not be
+familiar with. In the Windows launch menu, just start *All Programs ->
+Accessories -> command prompt* and you will get the Windows command line
+interface. There are plenty of online tutorials on using the Windows
+command line, one example is found
+`here <http://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/>`_.
+
+Windows users may want to install
 `ActivePython <http://www.activestate.com/activepython/downloads>`_
 instead of the usual Python. Get the 32-bit version (it seems the 64-bit
 one won't let you download any packages without paying for a "Business"
@@ -154,12 +175,13 @@ license). If ActivePython is installed, you can use
 same manner as ``easy_install``/``pip`` above. This *greatly* simplifies
 getting started on Windows since that platform is by default missing
 many of the sane developer systems that Linux users take for granted.
-After installing ActivePython you may need to open a new DOS window to
-make this new command available on the command line:
+
+After installing ActivePython you may need to restart the terminal/DOS
+window to make the pypm command available on the command line:
 
 ::
 
-    pypm install Django Twisted PIL Mercurial South
+     pypm install Django Twisted PIL Mercurial South
 
 This installs everything you need in one go.
 
@@ -183,7 +205,7 @@ trick (first place yourself in a directory where you want a new folder
 
 ::
 
-    hg clone https://code.google.com/p/evennia/ evennia
+     hg clone https://code.google.com/p/evennia/ evennia
 
 (Mercurial is abbreviated ``hg`` since this is the chemical symbol for
 mercury).
@@ -192,7 +214,8 @@ In the future, you just do
 
 ::
 
-    hg pull  hg update
+     hg pull
+     hg update
 
 from your ``evennia/`` directory to obtain the latest updates.
 
@@ -210,7 +233,7 @@ the automatic creation of an empty ``settings.py`` file.
 
 ::
 
-    python manage.py
+     python manage.py
 
 Your new ``settings.py`` file will just be an empty template initially.
 In ``evennia/src/settings_default.py`` you will find the settings that
@@ -239,7 +262,7 @@ with the standard tables and values:
 
 ::
 
-    python manage.py syncdb
+     python manage.py syncdb
 
 You should be asked for a superuser username, email, and password. Make
 **sure** you create a superuser here when asked, this becomes your login
@@ -253,7 +276,7 @@ need to do this:
 
 ::
 
-    python manage.py migrate
+     python manage.py migrate
 
 This will migrate the server to the latest version. If you don't use
 ``South``, migrations will not be used and your server will already be
@@ -268,7 +291,7 @@ and execute ``evennia.py`` like this:
 
 ::
 
-    python evennia.py -i start
+     python evennia.py -i start
 
 This starts the server and portal. The ``-i`` flag means that the server
 starts in *interactive mode*, as a foreground process. You will see
@@ -279,11 +302,11 @@ To stop Evennia, do:
 
 ::
 
-    python evennia.py stop
+     python evennia.py stop
 
 See `Running
-Evennia <https://code.google.com/p/evennia/wiki/StartStopReload.html>`_
-for more advanced options on controlling Evennia's processes.
+Evennia <https://code.google.com/p/evennia/wiki/StartStopReload>`_ for
+more advanced options on controlling Evennia's processes.
 
 Step 4: Connecting to the server
 --------------------------------
@@ -310,7 +333,7 @@ Apart from installing the packages and versions as above, you can also
 set up a very easy self-contained Evennia install using the
 `virtualenv <http://pypi.python.org/pypi/virtualenv>`_ program. If you
 are unsure how to get it, just grab the
-`virtualenv.py <https://raw.github.com/pypa/virtualenv/master/virtualenv.py.html>`_
+`virtualenv.py <https://raw.github.com/pypa/virtualenv/master/virtualenv.py>`_
 file from that page and run it directly in the terminal with
 ``python virtualenv.py``.
 
@@ -341,7 +364,10 @@ virtual environment in here.
 
 ::
 
-    # for Linux/Unix: source bin/activate # for Windows: <path_to_this_place>\Scripts\activate.bat
+    # for Linux/Unix:
+    source bin/activate
+    # for Windows:
+    <path_to_this_place>\Scripts\activate.bat
 
 The virtual environment within our *mudenv* folder is now active. Next
 we get all the requirements with *pip*, which is included with

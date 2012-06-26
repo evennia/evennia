@@ -1,3 +1,6 @@
+A brief explanation of what MUSH softcode is and why we use Python
+instead.
+
 On MUX and Softcode: A brief overview
 =====================================
 
@@ -51,7 +54,8 @@ retrieved when emitting:
 
 ::
 
-    &HELLO_VALUE.D me=Hello World &HELLO_WORLD.C me=$hello:@pemit %#=[v(HELLO_VALUE.D)]
+    &HELLO_VALUE.D me=Hello World
+    &HELLO_WORLD.C me=$hello:@pemit %#=[v(HELLO_VALUE.D)]
 
 The v() function returns the HELLO\_VALUE.D attribute on the object that
 the command resides (``me``, which is yourself in this case). This
@@ -60,8 +64,8 @@ should yield the same output as the first example.
 If you are still curious about how Softcode works, take a look at some
 external resources:
 
--  http://www.tinymux.com/wiki/index.php/Softcode
--  http://www.duh.com/discordia/mushman/man2x1
+-  `http://www.tinymux.com/wiki/index.php/Softcode <http://www.tinymux.com/wiki/index.php/Softcode>`_
+-  `http://www.duh.com/discordia/mushman/man2x1 <http://www.duh.com/discordia/mushman/man2x1>`_
 
 Problems with Softcode
 ----------------------
@@ -107,14 +111,25 @@ Python modules out there in the wild. Our complex systems may be
 organized neatly into modules, sub-modules, or even broken out into
 entire Python packages.
 
-So what is *not* included in Evennia is a MUX/MOO-like online player
-building system. Advanced coding and building in Evennia is primarily
-intended to be done outside the game, in full-fledged Python modules. We
-feel that with a small development team you are better off using a
-professional source-control system (svn, git, bazaar, mercurial etc)
-anyway.
+So what is *not* included in Evennia proper is a MUX/MOO-like online
+player building system. Advanced coding and building in Evennia is
+primarily intended to be done outside the game, in full-fledged Python
+modules. We feel that with a small development team you are better off
+using a professional source-control system (svn, git, bazaar, mercurial
+etc) anyway.
 
-There is of course nothing stopping you from adding very advanced online
-building commands to Evennia (or even re-implement MUX' softcode in
-Python should you be very ambitious), but at this time this is not
-something planned to come with he core distribution.
+Your Solution
+=============
+
+Adding very advanced and flexible building commands to your game will
+probably often be enough to satisfy most creative builders. However, if
+you really, *really* want to offer online coding there is of course
+nothing stopping you from adding that to Evennia, no matter our
+recommendations. You could even re-implement MUX' softcode in Python
+should you be very ambitious.
+
+There is an experimental restricted python environment named *Evlang* to
+be found in our *contrib* folder. Being in this folder means it's not a
+part of the core server and is completely optional to use. Evlang could
+serve as a starting point if you want to go down the route of simple
+online player coding.

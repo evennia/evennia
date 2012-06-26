@@ -1,3 +1,5 @@
+Player typeclass
+
 Players
 =======
 
@@ -18,10 +20,12 @@ OOC mode. You are quite limited in this mode, basically it works like a
 simple chat program. It acts as a staging area for switching between
 Characters (if your game supports that) or as a safety mode if your
 Character gets deleted. . Use ``@ic`` to switch back "into" your
-character. Also note that the Player object can have a different set of
-`Permissions <Locks#Permissions.html>`_ from the Character they control
-(in the first character you create permissions for Player and Character
-are the same, however).
+character.
+
+Also note that the Player object can have a different set of
+[Locks#Permissions Permissions] from the Character they control (in the
+first character you create permissions for Player and Character are the
+same, however).
 
 How to create your own Player types
 -----------------------------------
@@ -40,7 +44,19 @@ Here's how to define a new Player typeclass in code:
 
 ::
 
-    from ev import Player class ConfigPlayer(Player):     """     This creates a Player with some configuration options     """             at_player_creation(self):         "this is called only once, when player is first created"         self.db.real_name = None      # this is set later         self.db.real_address = None   #        ''         self.db.config_1 = True       # default config         self.db.config_2 = False      #       "         self.db.config_3 = 1          #       "         # ... whatever else our game needs to know
+    from ev import Player
+    class ConfigPlayer(Player):
+        """
+        This creates a Player with some configuration options
+        """        
+        at_player_creation(self):
+            "this is called only once, when player is first created"
+            self.db.real_name = None      # this is set later
+            self.db.real_address = None   #        ''
+            self.db.config_1 = True       # default config
+            self.db.config_2 = False      #       "
+            self.db.config_3 = 1          #       "
+            # ... whatever else our game needs to know
 
 There is no pre-made folder in ``game/gamesrc`` to store custom player
 typeclasses. Make your own folder or store it in ``gamesrc/objects``
@@ -73,8 +89,8 @@ Special handlers:
    defined by ``settings.CMDSET_OOC``.
 -  ``nicks`` - This stores and handles `Nicks <Nicks.html>`_, in the
    same way as nicks it works on Objects. For Players, nicks are
-   primarily used to store custom aliases for
-   `Channels <Communications#Channels.html>`_.
+   primarily used to store custom aliases for [Communications#Channels
+   Channels].
 
 How it all hangs together
 -------------------------

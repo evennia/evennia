@@ -1,7 +1,9 @@
+Introduction to and configuration for IMC2.
+
 IMC2
 ====
 
-`IMC2 <http://en.wikipedia.org/wiki/InterMUD>`_, *!InterMud
+`IMC2 <http://en.wikipedia.org/wiki/InterMUD>`_, *InterMud
 Communications, protocol version 2*, is a protocol that allows
 individual mud games (Evennia-powered or not) to connect to a remote
 server for the purpose of IRC-like communication with other games. By
@@ -65,11 +67,11 @@ could also use an existing channel like ``ooc`` if you wanted):
 
 ::
 
-    @ccreate imc2 = This is connected to an IMC2 channel!
+     @ccreate imc2 = This is connected to an IMC2 channel!
 
 You should join the channel automatically.
 
-Setting up a Channel ``<->`` IMC2 binding
+Setting up a Channel \`<->\` IMC2 binding
 -----------------------------------------
 
 Evennia developers have an open-access IMC channel called ``ievennia``
@@ -81,12 +83,12 @@ Activating IMC2 have made new commands available, the one you need is
 channel and an existing Evennia channel of your choice. You can use the
 ``imcchanlist`` to see which IMC channels are available on the network.
 
-Let's connect our new ``imc2`` channel to the ``ievennia`` channel on
-Server01.
+    Let's connect our new ``imc2`` channel to the ``ievennia`` channel
+    on Server01.
 
 ::
 
-    @imc2chan imc2 = ievennia
+     @imc2chan imc2 = ievennia
 
 To test, use the IMC mud *Talon*, make sure you "listen" to
 ``ievennia``, then write something to the channel. You should see the
@@ -101,7 +103,7 @@ To permanently remove a connection, use ``@imc2chan`` with the
 
 ::
 
-    @imc2chan/delete imc2 = ievennia
+     @imc2chan/delete imc2 = ievennia
 
 A single Evennia channel may *listen* to any number of remote IMC
 channels. Just use ``@imc2chan`` to add more connections. Your channel

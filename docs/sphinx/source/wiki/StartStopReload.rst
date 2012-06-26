@@ -1,3 +1,5 @@
+Controlling Evennia processes
+
 Running Evennia
 ===============
 
@@ -8,13 +10,13 @@ multiple-choice menu instead.
 
 ::
 
-    python evennia.py menu
+     python evennia.py menu
 
 Starting Evennia
 ----------------
 
 Evennia consists of two components, the Evennia `Server and
-Portal <ServerAndPortal.html>`_. Briefly, the *Server* is what is
+Portal <PortalAndServer.html>`_. Briefly, the *Server* is what is
 running the mud. It handles all game-specific things but don't care
 exactly how players connect, only that they have. The *Portal* is a
 gateway to which players connect. It knows everything about telnet, ssh,
@@ -23,7 +25,7 @@ required for a functioning mud.
 
 ::
 
-    python evennia.py start
+     python evennia.py start
 
 The above command automatically starts both Portal and Server at the
 same time, logging to the log files in ``game/log``.
@@ -33,7 +35,7 @@ for quickly debugging your code), you use the -i (interactive) flag:
 
 ::
 
-    python evennia.py -i start
+     python evennia.py -i start 
 
 This will start the *Server* in interactive mode. The Portal will
 continue to log to its log file. This is normally what you want unless
@@ -43,7 +45,8 @@ You can also start the two components one at a time.
 
 ::
 
-    python evennia.py start server  python evennia.py start portal
+     python evennia.py start server
+     python evennia.py start portal
 
 Adding -i to either of these explicit commands will start that component
 in interactive mode so it logs to the terminal rather than to log file.
@@ -67,7 +70,7 @@ Windows):
 
 ::
 
-    python evennia.py reload
+     python evennia.py reload
 
 Resetting
 ---------
@@ -84,7 +87,8 @@ A reset is equivalent to
 
 ::
 
-    python evennia.py stop server  python evennia.py start server
+     python evennia.py stop server
+     python evennia.py start server
 
 Shutting down
 -------------
@@ -97,6 +101,6 @@ From command line you do
 
 ::
 
-    python.py evennia.py stop
+     python.py evennia.py stop
 
 You will see messages of both Server and Portal closing down.

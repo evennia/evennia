@@ -1,3 +1,5 @@
+Our policy on default commands
+
 The 'MUX-like' default of Evennia
 =================================
 
@@ -21,7 +23,7 @@ Evennia.
 
 However, Evennia has taken a completely different stance on how admins
 extend and improve their games. Instead of implementing a special
-in-game language (!SoftCode), all game extension is done through Python
+in-game language (SoftCode), all game extension is done through Python
 modules, like the rest of Evennia. This gives the admin practically
 unlimited power to extend the game leveraging the full power of a mature
 high level programming language. You can find a more elaborate
@@ -36,9 +38,10 @@ comes with a caveat though - there are many cases where this is
 impossible without sacrificing the usability and utility of the
 codebase. In those cases, differences in implementation as well as
 command syntax is to be expected. Evennia is *not* MUX - we handle all
-underlying systems very differently and don't use SoftCode. The WWMD
-policy is only applied to the default commands, not to any other
-programming paradigms in the codebase.
+underlying systems very differently and don't use
+`SoftCode <SoftCode.html>`_. The WWMD policy is only applied to the
+default commands, not to any other programming paradigms in the
+codebase.
 
 If you are an Evennia codebase developer, consider activating
 ``IMPORT_MUX_HELP`` in your ``settings.py`` file. This will import a

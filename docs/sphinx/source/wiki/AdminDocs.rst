@@ -27,7 +27,7 @@ Customizing the server
 Administrating the running game
 -------------------------------
 
--  `Banning <Banning.html>`_ Banning and deleting users
+-  `Banning <Banning.html>`_ and deleting users
 
 Working with Evennia
 --------------------

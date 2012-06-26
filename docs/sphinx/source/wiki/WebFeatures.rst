@@ -1,3 +1,5 @@
+Summarizes the web feautures of Evennia
+
 Web Features
 ============
 
@@ -28,7 +30,7 @@ so the server can access the directory.
 
 You also need to modify the settings file. Set ``ROOT_URLCONF`` to your
 new ``game.gamesrc.web.urls`` and add an entry
-``os.path.join(GAME_DIR, "web", "templates", ACTIVE_TEMPLATE)`` to the
+`` os.path.join(GAME_DIR, "web", "templates", ACTIVE_TEMPLATE)`` to the
 ``TEMPLATE_DIRS`` tuple. You should now have a separate website setup
 you can edit as you like. Be aware that updates we do to ``src/web``
 will not transfer automatically to your copy, so you'll need to apply

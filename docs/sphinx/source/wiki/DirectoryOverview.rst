@@ -1,3 +1,5 @@
+The layout of the evennia package
+
 Evennia directory overview
 ==========================
 
@@ -9,7 +11,7 @@ Evennia directory overview
       docs/   
       game/
       locale/ 
-      src/
+      src/ 
 
 Evennia's main directory (``evennia``) is divided into five sub
 directories - ``src/``, ``game/``, ``contrib/`` , ``locale`` and
@@ -32,7 +34,7 @@ places in ``src/``. By importing ``ev`` from your code in ``game/`` you
 have access to most important Evennia systems without *having* to know
 where everything is located, as described in the following sections.
 
-The ``docs/`` directory
+The \`docs/\` directory
 -----------------------
 
 This contains Evennia's offline documentation. The main source of
@@ -51,7 +53,7 @@ create a nice browsable web-index of all the sources and comments. In
 the same way you could in theory also create nice ``LaTeX``-formatted
 PDFs of the Evennia source (all 400+ pages of it ...).
 
-The ``locale/`` directory
+The \`locale/\` directory
 -------------------------
 
 This contains internationalization strings for translating the Evennia
@@ -59,7 +61,7 @@ core server to different languages. See
 `Internationalization <Internationalization.html>`_ for more
 information.
 
-The ``contrib/`` ("contributions") directory
+The \`contrib/\` ("contributions") directory
 --------------------------------------------
 
 This directory contains various stand-alone code snippets that are
@@ -69,7 +71,7 @@ you explicitly import and use them. The contrib folder also contains the
 `Tutorial World <TutorialWorldIntroduction.html>`_ game example. See
 ``contrib/README`` for more information.
 
-The ``game/`` directory
+The \`game/\` directory
 -----------------------
 
 ``game/`` contains everything related to a particular game world. If you
@@ -83,9 +85,20 @@ the server.
 
     game/
       evennia.py
-      manage.py  gamesrc/     commands/        examples/     scripts/       examples/     objects/       examples/     world/            examples/     conf/
+      manage.py
 
-``game/gamesrc/``
+      gamesrc/
+        commands/ 
+          examples/
+        scripts/
+          examples/
+        objects/
+          examples/
+        world/     
+          examples/
+        conf/
+
+\`game/gamesrc/\`
 ~~~~~~~~~~~~~~~~~
 
 ``game/gamesrc`` is where you will be spending most of your time. All
@@ -97,7 +110,7 @@ blinks and does interesting stuff when pressed. It's designed to combine
 many different systems and to show off several advanced features of
 Evennia.
 
-``gamesrc/commands/``
+\`gamesrc/commands/\`
 ^^^^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/commands/`` contains modules for defining
@@ -105,14 +118,14 @@ Evennia.
 templates for starting to define your own commands and cmdsets. Copy
 these out into the parent ``command`` folder and work from there.
 
-``gamesrc/scripts/``
+\`gamesrc/scripts/\`
 ^^^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/scripts/`` holds everything related to
 `Scripts <Scripts.html>`_. ``scripts/examples`` holds templates you can
 make copies of and build from to define your own scripts.
 
-``gamesrc/objects/``
+\`gamesrc/objects/\`
 ^^^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/objects/`` should contain the definitions for all your
@@ -121,7 +134,7 @@ make copies of and build from to define your own scripts.
 *Exit*. Make copies of these templates to have somthing to start from
 when defining your own in-game entities.
 
-``gamesrc/world/``
+\`gamesrc/world/\`
 ^^^^^^^^^^^^^^^^^^
 
 ``gamesrc/world/``, contains all the rest that make up your world. This
@@ -142,7 +155,7 @@ formatting.
 creates a *Red Button* object in *Limbo* using their respective special
 syntax.
 
-``gamesrc/conf/``
+\`gamesrc/conf/\`
 ^^^^^^^^^^^^^^^^^
 
 ``gamesrc/conf/`` holds optional extension modules for the Evennia
@@ -151,7 +164,7 @@ for the various config files that the server undertands. Each template
 file contains instructions for how you should use them; copy out the
 ones you want into the ``conf/`` directory and edit them there.
 
-The ``src/`` directory
+The \`src/\` directory
 ----------------------
 
 ``src/`` contains the main running code of the Evennia server. You can
@@ -167,7 +180,19 @@ or features missing, file a bug report or send us a message.
 ::
 
     src/
-      settings_defaults.py  commands/   comms/   help/   objects/   locks/   players/   scripts/   server/   typeclasses/   utils/   web/
+      settings_defaults.py
+
+      commands/
+      comms/
+      help/
+      objects/
+      locks/
+      players/
+      scripts/
+      server/
+      typeclasses/
+      utils/
+      web/
 
 Most of the folders in ``src/`` are technically "Django apps",
 identified by containing a file ``models.py`` and usually
@@ -193,7 +218,7 @@ file. This is the main configuration file of Evennia. You should
 copy&paste entries from this file to your ``game/settings.py`` file if
 you want to customize any setting.
 
-``src/commands/``
+\`src/commands/\`
 ~~~~~~~~~~~~~~~~~
 
 This directory contains the `command system <Commands.html>`_ of
@@ -208,41 +233,41 @@ here. If you want to edit a default command, copy&paste the respective
 module to ``game/gamesrc/commands/`` and edit the default cmdset to
 point to your copy.
 
-``src/comms/``
+\`src/comms/\`
 ~~~~~~~~~~~~~~
 
 ``src/comms/`` defines all aspects of OOC
 `communication <Communications.html>`_, notably *channels*, *messages*
 and the basic operators for connecting external listeners to channels.
 
-``src/help/``
+\`src/help/\`
 ~~~~~~~~~~~~~
 
 This defines the `help system <HelpSystem.html>`_ of Evennia, the
 command auto-help as well as the database-centric storage of in-game
 help files.
 
-``src/objects/``
+\`src/objects/\`
 ~~~~~~~~~~~~~~~~
 
 ``src/objects/`` defines how the in-game `objects <Objects.html>`_ are
 stored, found and handled in the database.
 
-``src/locks/``
+\`src/locks/\`
 ~~~~~~~~~~~~~~
 
 This directory defines the powerful `lock system <Locks.html>`_ of
 Evennia, a system that serves to restrict access to objects. The default
 lock functions are found here.
 
-``src/players/``
+\`src/players/\`
 ~~~~~~~~~~~~~~~~
 
 The `Player <Players.html>`_ is the OOC-represention of the person
 connected to the game. This directory defines the database handling and
 methods acting on the Player object.
 
-``src/scripts/``
+\`src/scripts/\`
 ~~~~~~~~~~~~~~~~
 
 ``src/scripts/`` defines all aspects of `Scripts <Scripts.html>`_ - how
@@ -250,7 +275,7 @@ they are activated, repeated and stored in-memory or in-database. The
 main engine scripts (e.g. for keeping track of game-time, uptime and
 connection timeouts) are also defined here.
 
-``src/server/``
+\`src/server/\`
 ~~~~~~~~~~~~~~~
 
 This directory is the heart of Evennia. It holds the server process
@@ -259,7 +284,7 @@ and protocols <SessionProtocols.html>`_ that allow users to connect to
 the game. It also knows how to store dynamic server info in the
 database.
 
-``src/typeclasses/``
+\`src/typeclasses/\`
 ~~~~~~~~~~~~~~~~~~~~
 
 ``src/typeclasses/`` defines the `Typeclass system <Typeclasses.html>`_
@@ -270,7 +295,7 @@ and Players all inherit from its core classes. Also
 `attributes <Attributes.html>`_ are defined here, being an vital part of
 the typeclass system.
 
-``src/utils/``
+\`src/utils/\`
 ~~~~~~~~~~~~~~
 
 ``src/utils/`` is a useful directory that contains helper functions for
@@ -281,7 +306,7 @@ managers directly. ``utils/search.py`` search a similar function for
 searching the database. This directory also contains many helper modules
 for parsing and converting data in various ways.
 
-``src/web/``
+\`src/web/\`
 ~~~~~~~~~~~~
 
 This directory contains features related to running Evennia's `web site

@@ -1,24 +1,18 @@
 Getting and giving Evennia-help
 
-How to *get* Help
-=================
+How to \_get\_ Help
+===================
 
 If you cannot find what you are looking for in the `online
 documentation <Index.html>`_, here's what to do:
 
 -  If you think the documentation is not clear enough, fill in our quick
-   little "https://docs.google.com/spreadsheet/viewform?hl
-
-   en\ *US&formkey*
-
-   dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid
-   ======================================
-
-   0.html">online form and say so (no login required). Maybe the docs
-   need to be improved or a new tutorial added! Note that this form will
-   help you by helping us improve documentation, but you cannot get
-   direct, specific answers back from it.
-
+   little `online
+   form <https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0>`_
+   and say so (no login required). Maybe the docs need to be improved or
+   a new tutorial added! Note that this form will help you by helping us
+   improve documentation, but you cannot get direct, specific answers
+   back from it.
 -  If you have trouble with a missing feature or a problem you think is
    a bug, go to the `issue
    tracker <http://code.google.com/p/evennia/issues/list>`_. If you
@@ -31,15 +25,14 @@ documentation <Index.html>`_, here's what to do:
    the online interface.
 -  If you want more direct discussions with developers and other users,
    consider dropping into our IRC chat channel
-   "http://webchat.freenode.net/?channels
-   evennia">#evennia on the Freenode\_ network. Please note however that
-   you have to be patient if you don't get any response immediately; we
-   are all in very different time zones and many have busy personal
-   lives. So you might have to lurk about for a while - you'll get
-   noticed eventually!
+   `#evennia <http://webchat.freenode.net/?channels=evennia>`_ on the
+   *Freenode* network. Please note however that you have to be patient
+   if you don't get any response immediately; we are all in very
+   different time zones and many have busy personal lives. So you might
+   have to lurk about for a while - you'll get noticed eventually!
 
-How to *give* Help
-==================
+How to \_give\_ Help
+====================
 
 Evennia is a completely un-funded project. It relies on the time donated
 by its users and developers in order to progress.
@@ -60,10 +53,9 @@ to get going:
    you can help improve or expand the documentation (even small things
    like fixing typos!).
 -  Send a message to our
-   `forum <http://groups.google.com/group/evennia/>`_ and/or our
-   "http://webchat.freenode.net/?channels
-   evennia">IRC chat asking about what needs doing, along with what your
-   interests and skills are.
+   `forum <http://groups.google.com/group/evennia/>`_ and/or our `IRC
+   chat <http://webchat.freenode.net/?channels=evennia>`_ asking about
+   what needs doing, along with what your interests and skills are.
 -  Take a look at our `issue
    tracker <http://code.google.com/p/evennia/issues/list>`_ and see if
    there's something you feel like taking on.

@@ -1,3 +1,5 @@
+Adding colour
+
 Adding Colour to your game
 ==========================
 
@@ -26,7 +28,8 @@ mark colour:
 
 ::
 
-    This is a %crRed text%cn This is normal text again.  %cRThis text has red background%cn this is normal text.
+     This is a %crRed text%cn This is normal text again.
+     %cRThis text has red background%cn this is normal text.
 
 ``%c#`` - markup works like a switch that is on until you actively turn
 it off with ``%cn`` (this returns the text to your default setting).
@@ -40,16 +43,16 @@ grey becomes white, dark yellow becomes bright yellow etc.
 The drawback of the ``%cs`` style has to do with how Python formats
 strings - the ``%`` is used in Python to create special text formatting,
 and combining that with colour codes easily leads to messy and
-unreadable code. It is thus often easier to use ``#`` style codes:
+unreadable code. It is thus often easier to use ``{#`` style codes:
 
 ::
 
-    This is a rBright red textn This is normal text again
+     This is a {rBright red text{n This is normal text again
 
-The ``x`` format don't include background colour, it only colours the
+The ``{x`` format don't include background colour, it only colours the
 foreground text. The basic rule is that lower-case letter means bright
 (hilighted) colour, whereas the upper-case one is for darker colour. So
-``g`` means bright green and ``G`` means dark green. ``n`` returns to
+``{g`` means bright green and ``{G`` means dark green. ``{n`` returns to
 normal text colour. The equivalent in ``%c``-style markup is ``%cg%ch``
 for bright green and ``%cg`` for dark green.
 

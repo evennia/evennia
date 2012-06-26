@@ -1,3 +1,5 @@
+Text encodings
+
 Notes on text encodings
 =======================
 

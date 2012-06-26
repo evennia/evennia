@@ -1,4 +1,4 @@
-*How to use Evennia's help system*
+Evennia's help system
 
 Help system
 ===========
@@ -17,7 +17,7 @@ The main command is ``help``.
 
 ::
 
-    help [searchstring]
+     help [searchstring]
 
 This will show a list of help entries, ordered after categories. You
 will find two sections, *Command help entries* and *Other help entries*
@@ -49,7 +49,24 @@ Example (from a module with command definitions):
 
 ::
 
-    class CmdMyCmd(Command):    """    mycmd - my very own command   Usage:       mycmd[/switches] <args>   Switches:      test - test the command      run  - do something else   This is my own command that does things to you when you    supply it with arguments.    """    ...    help_category = "Building"     ...
+    class CmdMyCmd(Command):
+       """
+       mycmd - my very own command
+
+       Usage: 
+         mycmd[/switches] <args>
+
+       Switches:
+         test - test the command
+         run  - do something else
+
+       This is my own command that does things to you when you
+       supply it with arguments. 
+
+       """
+       ...
+       help_category = "Building"
+        ...
 
 The text at the very top of the command class definition is the class'
 ``__doc__``-string and will be shown to users looking for help. Try to
@@ -89,7 +106,10 @@ You can create new help entries in code by using
 
 ::
 
-    from src.utils import create  entry = create.create_help_entry("emote",                                   "Emoting is important because ...",                                   category="Roleplaying", locks="view:all()"):
+    from src.utils import create 
+    entry = create.create_help_entry("emote", 
+                                     "Emoting is important because ...", 
+                                     category="Roleplaying", locks="view:all()"):
 
 From inside the game those with the right permissions can use the
 ``@sethelp`` command to add and modify help entries.

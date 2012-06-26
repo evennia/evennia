@@ -1,3 +1,5 @@
+Running code asynchronously
+
 Asynchronous code
 =================
 
@@ -17,7 +19,9 @@ Consider this piece of code:
 
 ::
 
-    print "before call ..." long_running_function() print "after call ..."
+    print "before call ..."
+    long_running_function()
+    print "after call ..."
 
 When run, this will print ``"before call ..."``, after which the
 ``long_running_function`` gets to work for however long time. Only once
@@ -43,7 +47,10 @@ use of the ``run_async()`` function in ``src/utils/utils.py``.
 
 ::
 
-    from ev import utils print "before call ..." utils.run_async(long_running_function) print "after call ..."
+    from ev import utils
+    print "before call ..."
+    utils.run_async(long_running_function)
+    print "after call ..."
 
 Now, when running this you will find that the program will not wait
 around for ``long_running_function`` to finish. Infact you will see
@@ -72,9 +79,10 @@ called automatically.
    argument ``r`` will then be the return value of that function (or
    ``None``). Example:
 
-::
+    ::
 
-    def at_return(r):      print r
+         def at_return(r):
+             print r    
 
 -  ``at_err(e)`` (the *errback*) is called if the asynchronous function
    fails and raises an exception. This exception is passed to the
@@ -83,17 +91,37 @@ called automatically.
    writes errors to the evennia log. An example of an errback is found
    below:
 
-::
+    ::
 
-    def at_err(e):   
-        print "There was an error:", str(e)
+        def at_err(e):   
+            print "There was an error:", str(e)    
 
 An example of making an asynchronous call from inside a
 `Command <Commands.html>`_ definition:
 
 ::
 
-    from ev import utils from game.gamesrc.commands.basecommand import Command      class CmdAsync(Command):   key = "asynccommand"   def func(self):                     def long_running_function():              #[... lots of time-consuming code              return final_value                def at_return(r):            self.caller.msg("The final value is %s" % r)       def at_err(e):            self.caller.msg("There was an error: %s" % e)       # do the async call, setting all callbacks        utils.run_async(long_running_function, at_return, at_err)
+    from ev import utils
+    from game.gamesrc.commands.basecommand import Command
+        
+    class CmdAsync(Command):
+
+       key = "asynccommand"
+
+       def func(self):     
+           
+           def long_running_function():  
+               #[... lots of time-consuming code  
+               return final_value
+           
+           def at_return(r):
+               self.caller.msg("The final value is %s" % r)
+
+           def at_err(e):
+               self.caller.msg("There was an error: %s" % e)
+
+           # do the async call, setting all callbacks
+           utils.run_async(long_running_function, at_return, at_err) 
 
 That's it - from here on we can forget about ``long_running_function``
 and go on with what else need to be done. *Whenever* it finishes, the
