@@ -844,7 +844,7 @@ class CmdLink(MuxCommand):
             if dest:
                 string = "%s is an exit to %s." % (obj.name, dest.name)
             else:
-                string = "%s is not an exit. Its home location is %s." % obj.home
+                string = "%s is not an exit. Its home location is %s." % (obj.name, obj.home)
 
         else:
             # We gave the command @link 'obj = ' which means we want to
