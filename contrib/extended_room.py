@@ -141,11 +141,13 @@ class ExtendedRoom(Room):
         Filter so that only time markers <timeslot>...</timeslot> of the correct timeslot
         remains in the description.
         """
-        regextuple = REGEXMAP[curr_time]
-        raw_desc = regextuple[0].sub(r"\1", raw_desc)
-        raw_desc = regextuple[1].sub("", raw_desc)
-        raw_desc = regextuple[2].sub("", raw_desc)
-        return regextuple[3].sub("", raw_desc)
+        if raw_desc:
+            regextuple = REGEXMAP[curr_time]
+            raw_desc = regextuple[0].sub(r"\1", raw_desc)
+            raw_desc = regextuple[1].sub("", raw_desc)
+            raw_desc = regextuple[2].sub("", raw_desc)
+            return regextuple[3].sub("", raw_desc)
+        return raw_desc
 
     def return_detail(self, key):
         """
