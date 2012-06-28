@@ -104,7 +104,7 @@ class ExtendedRoom(Room):
         self.db.autumn_desc = ""
         self.db.winter_desc = ""
         # the general desc is used as a fallback if a given seasonal one is not set
-        self.db.general_desc = "This is an extended room."
+        self.db.general_desc = ""
         self.db.raw_desc = "" # will be set dynamically. Can contain raw timeslot codes
         self.db.desc = "" # this will be set dynamically at first look. Parsed for timeslot codes
         # these will be filled later
@@ -201,7 +201,7 @@ class ExtendedRoom(Room):
         if update:
             # if anything changed we have to re-parse the raw_desc for time markers
             # and re-save the description again.
-            self.db.desc = self.replace_timeslots(raw_desc, curr_timeslot)
+            self.db.desc = self.replace_timeslots(self.db.raw_desc, curr_timeslot)
         # run the normal return_appearance method, now that desc is updated.
         return super(ExtendedRoom, self).return_appearance(looker)
 
