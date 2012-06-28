@@ -166,7 +166,7 @@ class ExtendedRoom(Room):
 
     def return_appearance(self, looker):
         "This is called when e.g. the look command wants to retrieve the description of this object."
-        raw_desc = self.db.raw_desc
+        raw_desc = self.db.raw_desc or ""
         update = False
 
         # get current time and season
