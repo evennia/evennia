@@ -367,8 +367,11 @@ class CmdDelPlayer(MuxCommand):
                 if reason:
                     string += " Reason given:\n  '%s'" % reason
                 character.msg(string)
-                caller.execute_cmd("@boot %s" % uname)
-
+                # we have a bootable object with a connected player
+                sessions = SESSIONS.sessions_from_player(character.player)
+                for session in sessions:
+                   session.msg(string)
+                   session.disconnect()
             player.delete()
             user.delete()
             caller.msg("Player %s was successfully deleted." % uname)
