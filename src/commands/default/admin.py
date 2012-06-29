@@ -302,7 +302,7 @@ class CmdDelPlayer(MuxCommand):
 
         # We use player_search since we want to be sure to find also players
         # that lack characters.
-        players = caller.search("*%s" % args, player=True)
+        players = caller.search("*%s" % args)
         if not players:
             try:
                 players = PlayerDB.objects.filter(id=args)
