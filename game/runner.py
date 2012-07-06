@@ -152,22 +152,31 @@ def start_services(server_argv, portal_argv):
             rc = Popen(portal_argv).wait()
         except Exception, e:
             print "Portal process error: %(e)s" % {'e': e}
+            return
         queue.put(("portal_stopped", rc)) # this signals the controller that the program finished
 
-    if server_argv:
-        # start server as a reloadable thread
-        SERVER = thread.start_new_thread(server_waiter, (processes, ))
+    try:
+        if server_argv:
+            # start server as a reloadable thread
+            SERVER = thread.start_new_thread(server_waiter, (processes, ))
+    except IOError, e:
+        print "Server IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
+        return
 
     if portal_argv:
-        if get_restart_mode(PORTAL_RESTART):
-            # start portal as interactive, reloadable thread
-            PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
-        else:
-            # normal operation: start portal as a daemon; we don't care to monitor it for restart
-            PORTAL = Popen(portal_argv)
-            if not SERVER:
-                # if portal is daemon and no server is running, we have no reason to continue to the loop.
-                return
+        try:
+            if get_restart_mode(PORTAL_RESTART):
+                # start portal as interactive, reloadable thread
+                PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
+            else:
+                # normal operation: start portal as a daemon; we don't care to monitor it for restart
+                PORTAL = Popen(portal_argv)
+                if not SERVER:
+                    # if portal is daemon and no server is running, we have no reason to continue to the loop.
+                    return
+        except IOError, e:
+            print "Portal IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
+            return
 
     # Reload loop
     while True:
