@@ -144,6 +144,7 @@ def start_services(server_argv, portal_argv):
             rc = Popen(server_argv).wait()
         except Exception, e:
             print "Server process error: %(e)s" % {'e': e}
+            return
         queue.put(("server_stopped", rc)) # this signals the controller that the program finished
 
     def portal_waiter(queue):
@@ -218,7 +219,7 @@ def main():
     options, args = parser.parse_args()
 
     if not args or args[0] != 'start':
-        # this is so as to not be accidentally launched.
+        # this is so as to avoid runner.py be accidentally launched manually.
         parser.print_help()
         sys.exit()
 
@@ -257,12 +258,12 @@ def main():
             del server_argv[2]
             print "\nStarting Evennia Server (output to stdout)."
         else:
+            cycle_logfile(SERVER_LOGFILE)
             print "\nStarting Evennia Server (output to server logfile)."
         if options.sprof:
             server_argv.extend(sprof_argv)
             print "\nRunning Evennia Server under cProfile."
 
-        cycle_logfile(SERVER_LOGFILE)
 
     # Portal
 
@@ -279,13 +280,13 @@ def main():
             set_restart_mode(PORTAL_RESTART, True)
             print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
         else:
+            cycle_logfile(PORTAL_LOGFILE)
             set_restart_mode(PORTAL_RESTART, False)
             print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
         if options.pprof:
             portal_argv.extend(pprof_argv)
             print "\nRunning Evennia Portal under cProfile."
 
-        cycle_logfile(PORTAL_LOGFILE)
 
     # Windows fixes (Windows don't support pidfiles natively)
     if os.name == 'nt':
