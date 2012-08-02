@@ -165,5 +165,13 @@ if __name__ == "__main__":
     # run the standard django manager, if dependencies match
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
+        if sys.argv[1] in ('runserver', 'testserver'):
+            print """
+            WARNING: There is no need to run the Django development
+            webserver to test out Evennia web features (the web client
+            will in fact not work since the Django test server knows
+            nothing about MUDs).  Instead, just start Evennia with the
+            webserver component active (this is the default).
+            """
         from django.core.management import execute_manager
         execute_manager(settings)
