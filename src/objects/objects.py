@@ -19,6 +19,10 @@ from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
 __all__ = ("Object", "Character", "Room", "Exit")
 
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
+
 #
 # Base class to inherit from.
 #
@@ -358,11 +362,13 @@ class Object(TypeClass):
         parent doesn't work.
         """
         try:
-            return self.dbref == other or self.dbref == other.dbref
+            return _GA(self, "dbid") == other \
+                or _GA(self, "dbid") == _GA(other, "dbid")
         except AttributeError:
            # compare players instead
             try:
-                return self.player.uid == other or self.player.uid == other.player.uid
+                return _GA(_GA(self, "player"),"uid") == other \
+                    or _GA(_GA(self, "player"),"uid") == _GA(_GA(other, "player"),"uid")
             except AttributeError:
                 return False
 
