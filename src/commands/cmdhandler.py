@@ -197,7 +197,7 @@ def cmdhandler(caller, raw_string, testing=False):
             if len(matches) > 1:
                 # We have a multiple-match
                 syscmd = yield cmdset.get(CMD_MULTIMATCH)
-                sysarg = _("There where multiple matches.")
+                sysarg = _("There were multiple matches.")
                 if syscmd:
                     syscmd.matches = matches
                 else:
