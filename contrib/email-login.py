@@ -1,11 +1,11 @@
 """
-MUX-like login system
+Email-based login system
 
 Evennia contrib - Griatch 2012
 
 
 This is a variant of the login system that requires a email-adress
-instead of a username to login. It's supposedly similar to MUX.
+instead of a username to login.
 
 This used to be the default Evennia login before replacing it with a
 more standard username + password system (having to supply an email
@@ -18,7 +18,7 @@ Install is simple:
 
 To your settings file, add/edit the line:
 
-CMDSET_UNLOGGEDIN = "contrib.mux_login.UnloggedInCmdSet"
+CMDSET_UNLOGGEDIN = "contrib.email_login.UnloggedInCmdSet"
 
 That's it. Reload the server and try to log in to see it.
 
