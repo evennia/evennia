@@ -363,7 +363,18 @@ class PlayerDB(TypedObject):
         """
         return self.__class__.objects.swap_character(self, new_character, delete_old_character=delete_old_character)
 
-
+    def delete(self, *args, **kwargs):
+        "Make sure to delete user also when deleting player - the two may never exist separately."
+        try:
+            if self.user:
+                self.user.delete()
+        except AssertionError:
+            pass
+        try:
+            super(PlayerDB, self).delete(*args, **kwargs)
+        except AssertionError:
+            # this means deleting the user already cleared out the Player object.
+            pass
     #
     # Execution/action methods
     #

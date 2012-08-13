@@ -372,8 +372,8 @@ class CmdDelPlayer(MuxCommand):
                 for session in sessions:
                    session.msg(string)
                    session.disconnect()
-            player.delete()
             user.delete()
+            player.delete()
             caller.msg("Player %s was successfully deleted." % uname)
 
 
