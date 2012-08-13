@@ -28,8 +28,24 @@ new module.
 from src.utils import utils
 from src.commands.connection_screen import DEFAULT_SCREEN
 
-#
+# # A copy of the default screen to modify
+
 # CUSTOM_SCREEN = \
+#"""{b=============================================================={n
+# Welcome to {gEvennia{n, version %s!
+#
+# If you have an existing account, connect to it by typing:
+#      {wconnect <username> <password>{n
+# If you need to create an account, type (without the <>'s):
+#      {wcreate <username> <password>{n
+#
+# If you have spaces in your username, enclose it in quotes.
+# Enter {whelp{n for more info. {wlook{n will re-show this screen.
+#{b=============================================================={n""" % utils.get_evennia_version()
+
+# # Mux-like alternative screen for contrib/mux_login.py
+
+# MUX_SCREEN = \
 # """{b=============================================================={n
 # Welcome to {gEvennia{n, version %s!
 #
@@ -41,7 +57,7 @@ from src.commands.connection_screen import DEFAULT_SCREEN
 # Enter {whelp{n for more info. {wlook{n will re-load this screen.
 #{b=============================================================={n""" % utils.get_evennia_version()
 
-# # A suggested alternative screen for the Menu login system
+# # Menu login minimal header for contrib/menu_login.py
 
 # MENU_SCREEN = \
 # """{b=============================================================={n

@@ -1,5 +1,35 @@
 """
-Commands that are available from the connect screen.
+MUX-like login system
+
+Evennia contrib - Griatch 2012
+
+
+This is a variant of the login system that requires a email-adress
+instead of a username to login. It's supposedly similar to MUX.
+
+This used to be the default Evennia login before replacing it with a
+more standard username + password system (having to supply an email
+for some reason caused a lot of confusion when people wanted to expand
+on it. The email is not strictly needed internally, nor is any
+confirmation email sent out anyway).
+
+
+Install is simple:
+
+To your settings file, add/edit the line:
+
+CMDSET_UNLOGGEDIN = "contrib.mux_login.UnloggedInCmdSet"
+
+That's it. Reload the server and try to log in to see it.
+
+The initial login "graphic" is taken from strings in the module given
+by settings.CONNECTION_SCREEN_MODULE. You will want to copy the
+template file in game/gamesrc/conf/examples up one level and re-point
+the settings file to this custom module. you can then edit the string
+in that module (at least comment out the default string that mentions
+commands that are not available) and add something more suitable for
+the initial splash screen.
+
 """
 import re
 import traceback
@@ -10,6 +40,7 @@ from src.objects.models import ObjectDB
 from src.server.models import ServerConfig
 from src.comms.models import Channel
 
+from src.commands.cmdset import CmdSet
 from src.utils import create, logger, utils, ansi
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import CMD_LOGINSTART
@@ -31,12 +62,9 @@ class CmdUnconnectedConnect(MuxCommand):
     Connect to the game.
 
     Usage (at login screen):
-      connect playername password
-      connect "player name" "pass word"
+      connect <email> <password>
 
     Use the create command to first create an account before logging in.
-
-    If you have spaces in your name, enclose it in quotes.
     """
     key = "connect"
     aliases = ["conn", "con", "co"]
@@ -52,30 +80,26 @@ class CmdUnconnectedConnect(MuxCommand):
         """
 
         session = self.caller
-        args = self.args
-        # extract quoted parts
-        parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
-        if len(parts) == 1:
-            # this was (hopefully) due to no quotes being found
-            parts = parts[0].split(None, 1)
-        if len(parts) != 2:
-            session.msg("\n\r Usage (without <>): connect <name> <password>")
+        arglist = self.arglist
+
+        if not arglist or len(arglist) < 2:
+            session.msg("\n\r Usage (without <>): connect <email> <password>")
             return
-        playername, password = parts
+        email = arglist[0]
+        password = arglist[1]
 
-        # Match account name and check password
-        player = PlayerDB.objects.get_player_from_name(playername)
-        pswd = None
-        if player:
-            pswd = player.user.check_password(password)
-
-        if not (player and pswd):
-        # No playername or password match
-            string = "Wrong login information given.\nIf you have spaces in your name or "
-            string += "password, don't forget to enclose it in quotes. Also capitalization matters."
-            string += "\nIf you are new you should first create a new account "
+        # Match an email address to an account.
+        player = PlayerDB.objects.get_player_from_email(email)
+        # No playername match
+        if not player:
+            string = "The email '%s' does not match any accounts." % email
+            string += "\n\r\n\rIf you are new you should first create a new account "
             string += "using the 'create' command."
             session.msg(string)
+            return
+        # We have at least one result, so we can check the password.
+        if not player.user.check_password(password):
+            session.msg("Incorrect password.")
             return
 
         # Check IP and/or name bans
@@ -107,53 +131,78 @@ class CmdUnconnectedCreate(MuxCommand):
     Create a new account.
 
     Usage (at login screen):
-      create <playername> <password>
-      create "player name" "pass word"
+      create \"playername\" <email> <password>
 
     This creates a new player account.
 
-    If you have spaces in your name, enclose it in quotes.
     """
     key = "create"
     aliases = ["cre", "cr"]
     locks = "cmd:all()"
 
+    def parse(self):
+        """
+        The parser must handle the multiple-word player
+        name enclosed in quotes:
+        connect "Long name with many words" my@myserv.com mypassw
+        """
+        super(CmdUnconnectedCreate, self).parse()
+
+        self.playerinfo = []
+        if len(self.arglist) < 3:
+            return
+        if len(self.arglist) > 3:
+            # this means we have a multi_word playername. pop from the back.
+            password = self.arglist.pop()
+            email = self.arglist.pop()
+            # what remains is the playername.
+            playername = " ".join(self.arglist)
+        else:
+            playername, email, password = self.arglist
+
+        playername = playername.replace('"', '') # remove "
+        playername = playername.replace("'", "")
+        self.playerinfo = (playername, email, password)
+
     def func(self):
         "Do checks and create account"
 
         session = self.caller
-        args = self.args.strip()
 
-        # extract quoted parts
-        parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
-        if len(parts) == 1:
-            # this was (hopefully) due to no quotes being found
-            parts = parts[0].split(None, 1)
-        if len(parts) != 2:
-            string = "\n Usage (without <>): create <name> <password>"
-            string += "\nIf <name> or <password> contains spaces, enclose it in quotes."
+        try:
+            playername, email, password = self.playerinfo
+        except ValueError:
+            string = "\n\r Usage (without <>): create \"<playername>\" <email> <password>"
             session.msg(string)
             return
-        playername, password = parts
-        print "playername '%s', password: '%s'" % (playername, password)
-
-        # sanity checks
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
-            # this echoes the restrictions made by django's auth module (except not
-            # allowing spaces, for convenience of logging in).
-            string = "\n\r Playername can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only."
-            session.msg(string)
+            session.msg("\n\r Playername can max be 30 characters or fewer. Letters, spaces, dig\
+its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth module.
             return
-        # strip excessive spaces in playername
-        playername = re.sub(r"\s+", " ", playername).strip()
-        if PlayerDB.objects.filter(user__username__iexact=playername) or User.objects.filter(username__iexact=playername):
-            # player already exists (we also ignore capitalization here)
+        if not email or not password:
+            session.msg("\n\r You have to supply an e-mail address followed by a password." )
+            return
+
+        if not utils.validate_email_address(email):
+            # check so the email at least looks ok.
+            session.msg("'%s' is not a valid e-mail address." % email)
+            return
+
+        # Run sanity and security checks
+
+        if PlayerDB.objects.get_player_from_name(playername) or User.objects.filter(username=playername):
+            # player already exists
             session.msg("Sorry, there is already a player with the name '%s'." % playername)
             return
-        if not re.findall('^[\w. @+-]+$', password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only."
-            string += "\nFor best security, make it longer than 8 characters. You can also use a phrase of"
-            string += "\nmany words if you enclose the password in quotes."
+        if PlayerDB.objects.get_player_from_email(email):
+            # email already set on a player
+            session.msg("Sorry, there is already a player with that email address.")
+            return
+        if len(password) < 3:
+            # too short password
+            string = "Your password must be at least 3 characters or longer."
+            string += "\n\rFor best security, make it at least 8 characters long, "
+            string += "avoid making it a real word and mix numbers into it."
             session.msg(string)
             return
 
@@ -165,12 +214,12 @@ class CmdUnconnectedCreate(MuxCommand):
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
             try:
-                new_character = create.create_player(playername, None, password,
+                new_character = create.create_player(playername, email, password,
                                                      permissions=permissions,
                                                      character_typeclass=typeclass,
                                                      character_location=default_home,
                                                      character_home=default_home)
-            except Exception:
+            except Exception, e:
                 session.msg("There was an error creating the default Character/Player:\n%s\n If this problem persists, contact an admin.")
                 return
             new_player = new_character.player
@@ -196,12 +245,9 @@ class CmdUnconnectedCreate(MuxCommand):
             new_character.db.desc = "This is a Player."
 
             # tell the caller everything went well.
-            string = "A new account '%s' was created. Welcome!"
-            if " " in playername:
-                string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
-            else:
-                string += "\n\nYou can now log with the command 'connect %s <your password>'."
-            session.msg(string % (playername, playername))
+            string = "A new account '%s' was created with the email address %s. Welcome!"
+            string += "\n\nYou can now log with the command 'connect %s <your password>'."
+            session.msg(string % (playername, email, email))
 
         except Exception:
             # We are in the middle between logged in and -not, so we have to handle tracebacks
@@ -261,27 +307,40 @@ You are not yet logged into the game. Commands available at this point:
 To login to the system, you need to do one of the following:
 
 {w1){n If you have no previous account, you need to use the 'create'
-   command.
+   command like this:
 
-     {wcreate Anna c67jHL8p{n
-
-   Note that if you use spaces in your name, you have to enclose in quotes.
-
-     {wcreate "Anna the Barbarian"  c67jHL8p{n
+     {wcreate "Anna the Barbarian" anna@myemail.com c67jHL8p{n
 
    It's always a good idea (not only here, but everywhere on the net)
    to not use a regular word for your password. Make it longer than
-   6 characters or write a passphrase.
+   3 characters (ideally 6 or more) and mix numbers and capitalization
+   into it.
 
 {w2){n If you have an account already, either because you just created
    one in {w1){n above or you are returning, use the 'connect' command:
 
-     {wconnect Anna c67jHL8p{n
+     {wconnect anna@myemail.com c67jHL8p{n
 
-   (Again, if there are spaces in the name you have to enclose it in quotes).
    This should log you in. Run {whelp{n again once you're logged in
    to get more aid. Hope you enjoy your stay!
 
 You can use the {wlook{n command if you want to see the connect screen again.
 """
         self.caller.msg(string)
+
+# command set for the mux-like login
+
+class UnloggedinCmdSet(CmdSet):
+    """
+    Sets up the unlogged cmdset.
+    """
+    key = "Unloggedin"
+    priority = 0
+
+    def at_cmdset_creation(self):
+        "Populate the cmdset"
+        self.add(CmdUnconnectedConnect())
+        self.add(CmdUnconnectedCreate())
+        self.add(CmdUnconnectedQuit())
+        self.add(CmdUnconnectedLook())
+        self.add(CmdUnconnectedHelp())

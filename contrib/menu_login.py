@@ -17,8 +17,7 @@ To your settings file, add/edit the line:
 
 CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedInCmdSet"
 
-That's it. The cmdset in this module will now be used instead of the
-default one.
+That's it. Reload the server and try to log in to see it.
 
 The initial login "graphic" is taken from strings in the module given
 by settings.CONNECTION_SCREEN_MODULE. You will want to copy the
