@@ -390,7 +390,7 @@ class Object(TypeClass):
 
         dbref = self.dbobj.dbref
 
-        self.locks.add("control:id(%s) or perm(Immortals)" % dbref)  # edit locks/permissions, delete
+        self.locks.add("control:perm(Immortals)")  # edit locks/permissions, delete
         self.locks.add("examine:perm(Builders)")  # examine properties
         self.locks.add("view:all()") # look at object (visibility)
         self.locks.add("edit:perm(Wizards)")   # edit properties/attributes
