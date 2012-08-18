@@ -229,7 +229,7 @@ class ObjectManager(TypedObjectManager):
         """
         ostring = to_unicode(ostring, force_string=True)
 
-        if not ostring:
+        if not ostring and ostring != 0:
             return []
 
         # Easiest case - dbref matching (always exact)
