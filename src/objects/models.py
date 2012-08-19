@@ -268,6 +268,7 @@ class ObjectDB(TypedObject):
     def __location_set(self, location):
         "Setter. Allows for self.location = location"
         try:
+            old_loc = _GA(self, "location")
             if location == None or type(location) == ObjectDB:
                 # location is None or a valid object
                 loc = location
@@ -281,6 +282,10 @@ class ObjectDB(TypedObject):
             else:
                 loc = location.dbobj
             _set_cache(self, "location", loc)
+            # update the contents of each location
+            if old_loc:
+                old_loc.contents_update(self, remove=True)
+            loc.contents_update(self.typeclass)
         except Exception:
             string = "Cannot set location: "
             string += "%s is not a valid location."
@@ -290,8 +295,9 @@ class ObjectDB(TypedObject):
     #@location.deleter
     def __location_del(self):
         "Deleter. Allows for del self.location"
-        self.db_location = None
-        self.save()
+        self.location.contents_update(self, remove=True)
+        _SA(self, "db_location", None)
+        _GA(self, "save")()
         _del_cache(self, "location")
     location = property(__location_get, __location_set, __location_del)
 
@@ -434,15 +440,41 @@ class ObjectDB(TypedObject):
         return any(self.sessions) and self.player.is_superuser
     is_superuser = property(__is_superuser_get)
 
+    # contents
+
+    _contents_cache = None
     #@property
     def contents_get(self, exclude=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
         This should be publically available.
+
+        exclude is one or more objects to not return
         """
-        return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+        if _GA(self, "_contents_cache") == None:
+            # create the cache
+            _SA(self, "_contents_cache", dict((obj.id, obj) for obj in ObjectDB.objects.get_contents(self)))
+        if exclude:
+            exclude = make_iter(exclude)
+            return [obj for obj in _GA(self, "_contents_cache").values() if obj not in exclude]
+        return _GA(self, "_contents_cache").values()
+        #return ObjectDB.objects.get_contents(self, excludeobj=exclude)
     contents = property(contents_get)
+
+    def contents_update(self, obj, remove=False):
+        """
+        Updates the contents property of the object. Called by
+        self.location_set.
+        """
+        # this creates/updates the cache
+        _GA(self, "contents")
+        # set/remove objects from contents cache
+        cache = _GA(self, "_contents_cache")
+        if remove and obj.id in cache:
+            del cache[obj.id]
+        else:
+            cache[obj.id] = obj
 
     #@property
     def __exits_get(self):
@@ -835,6 +867,9 @@ class ObjectDB(TypedObject):
         self.clear_exits()
         # Clear out any non-exit objects located within the object
         self.clear_contents()
+        # clear current location's content cache of this object
+        if self.location:
+            self.location.contents_update(self, remove=True)
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True

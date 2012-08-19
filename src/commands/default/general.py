@@ -327,7 +327,8 @@ class CmdDrop(MuxCommand):
         # we process the results ourselves since we want to sift out only
         # those in our inventory.
         results = [obj for obj in results if obj in caller.contents]
-        # now we send it into the handler.
+        # now we send it into the error handler (this will output consistent
+        # error messages if there are problems).
         obj = AT_SEARCH_RESULT(caller, self.args, results, False)
         if not obj:
             return
