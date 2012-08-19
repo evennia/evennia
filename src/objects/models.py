@@ -285,7 +285,8 @@ class ObjectDB(TypedObject):
             # update the contents of each location
             if old_loc:
                 old_loc.contents_update(self, remove=True)
-            loc.contents_update(self.typeclass)
+            if loc:
+                loc.contents_update(self.typeclass)
         except Exception:
             string = "Cannot set location: "
             string += "%s is not a valid location."

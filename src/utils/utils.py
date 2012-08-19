@@ -394,7 +394,7 @@ def inherits_from(obj, parent):
     Takes an object and tries to determine if it inherits at any distance
     from parent. What differs this function from e.g. isinstance()
     is that obj may be both an instance and a class, and parent
-<    may be an instance, a class, or the python path to a class (counting
+    may be an instance, a class, or the python path to a class (counting
     from the evennia root directory).
     """
 
