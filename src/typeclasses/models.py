@@ -64,7 +64,7 @@ def _get_cache(obj, name):
         return _GA(obj, "_cached_db_%s" % name)
     except AttributeError:
         val = _GA(obj, "db_%s" % name)
-        if val: _SA(obj, "_cached_db_%s" % name, val)
+        _SA(obj, "_cached_db_%s" % name, val)
         return val
 def _set_cache(obj, name, val):
     "On-model Cache setter. Also updates database."
