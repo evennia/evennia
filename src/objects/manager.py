@@ -7,7 +7,7 @@ from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
-from src.utils.utils import to_unicode
+from src.utils.utils import to_unicode, make_iter
 
 ObjAttribute = None
 
@@ -194,11 +194,13 @@ class ObjectManager(TypedObjectManager):
         """
         Get all objects that has a location
         set to this one.
+
+        excludeobjs - one or more object keys to exclude from the match
         """
-        estring = ""
-        if excludeobj:
-            estring = ".exclude(db_key=excludeobj)"
-        return eval("self.filter(db_location__id=location.id)%s" % estring)
+        query = self.filter(db_location__id=location.id, )
+        for objkey in make_iter(excludeobj):
+           query = query.exclude(db_key=objkey)
+        return query
 
     @returns_typeclass_list
     def object_search(self, ostring, caller=None,

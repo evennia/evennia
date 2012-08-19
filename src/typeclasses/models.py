@@ -885,10 +885,9 @@ class TypedObject(SharedMemoryModel):
             # typeclass' __getattribute__, since that one would
             # try to look back to this very database object.)
             typeclass = _GA(self, 'typeclass')
-            if typeclass:
-                return _GA(typeclass, propname)
-            else:
-                raise AttributeError
+            # will raise AttributeError also if typeclass was malformed
+            return _GA(typeclass, propname)
+
     #@property
     _dbid_cache = None
     def __dbid_get(self):
