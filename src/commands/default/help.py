@@ -100,7 +100,7 @@ class CmdHelp(Command):
         # having to allow doublet commands to manage exits etc.
         cmdset.make_unique(caller)
 
-        # retrieve all available commands and topics
+        # retrieve all available commands and database topics
         all_cmds = [cmd for cmd in cmdset if cmd.auto_help and cmd.access(caller)]
         all_topics = [topic for topic in HelpEntry.objects.all() if topic.access(caller, 'view', default=True)]
         all_categories = list(set([cmd.help_category.lower() for cmd in all_cmds] + [topic.help_category.lower() for topic in all_topics]))
@@ -132,7 +132,7 @@ class CmdHelp(Command):
             caller.msg(format_help_entry(match[0].key, match[0].__doc__, aliases=match[0].aliases, suggested=suggestions))
             return
 
-        # try a database help entry match
+        # try an exact database help entry match
         match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
         if len(match) == 1:
             caller.msg(format_help_entry(match[0].key, match[0].entrytext, suggested=suggestions))

@@ -137,32 +137,18 @@ class PlayerManager(TypedObjectManager):
         """
         Returns a player object based on User id.
         """
-        return User.objects.get(id=uid)
+        try:
+            return User.objects.get(id=uid)
+        except User.model.DoesNotExist:
+            return None
 
     @returns_typeclass
     def get_player_from_name(self, uname):
         "Get player object based on name"
-        players = self.filter(user__username=uname)
-        if players:
-            return players[0]
-        return None
-
-    # @returns_typeclass_list
-    # def get_players_with_perm(self, permstring):
-    #     """
-    #     Returns all players having access according to the given
-    #     permission string.
-    #     """
-    #     return [player for player in self.all()
-    #             if player.has_perm(permstring)]
-
-    # @returns_typeclass_list
-    # def get_players_with_group(self, groupstring):
-    #     """
-    #     Returns all players belonging to the given group.
-    #     """
-    #     return [player.user for player in self.all()
-    #             if player.has_group(groupstring)]
+        try:
+            return self.get(user__username=uname)
+        except self.model.DoesNotExist:
+            return None
 
     @returns_typeclass_list
     def player_search(self, ostring):

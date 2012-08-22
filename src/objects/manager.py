@@ -2,14 +2,14 @@
 Custom manager for Objects.
 """
 from django.conf import settings
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
 from src.utils.utils import to_unicode, make_iter
 
-ObjAttribute = None
+_ObjAttribute = None
 
 __all__ = ("ObjectManager",)
 
@@ -27,7 +27,7 @@ class ObjectManager(TypedObjectManager):
     Querysets or database objects).
 
     dbref (converter)
-    dbref_search
+    get_id (alias: dbref_search)
     get_dbref_range
     object_totals
     typeclass_search
@@ -60,19 +60,19 @@ class ObjectManager(TypedObjectManager):
 
         user - may be a user object or user id.
         """
-        try:
-            uid = int(user)
-        except TypeError:
+        dbref = self.dbref(user)
+        if dbref:
             try:
-                uid = user.id
-            except:
-                return None
+                return self.get(db_player__user__id=dbref)
+            except self.model.DoesNotExist:
+                pass
         try:
-            return self.get(db_player__user__id=uid)
-        except Exception:
+            return self.get(db_player__user=user)
+        except self.model.DoesNotExist:
             return None
 
     # This returns typeclass since get_object_with_user and get_dbref does.
+    @returns_typeclass
     def get_object_with_player(self, search_string):
         """
         Search for an object based on its player's name or dbref.
@@ -81,38 +81,36 @@ class ObjectManager(TypedObjectManager):
         the search criterion (e.g. in local_and_global_search).
         search_string:  (string) The name or dbref to search for.
         """
-        search_string = to_unicode(search_string).lstrip('*')
         dbref = self.dbref(search_string)
         if not dbref:
             # not a dbref. Search by name.
-            player_matches = User.objects.filter(username__iexact=search_string)
-            if player_matches:
-                dbref = player_matches[0].id
-        # use the id to find the player
-        return self.get_object_with_user(dbref)
+            search_string = to_unicode(search_string).lstrip('*')
+            return self.filter(db_player__user__username__iexact=search_string)
+        return self.get_id(dbref)
 
     @returns_typeclass_list
     def get_objs_with_key_and_typeclass(self, oname, otypeclass_path):
         """
         Returns objects based on simultaneous key and typeclass match.
         """
-        return self.filter(db_key__iexact=oname).filter(db_typeclass_path__exact=otypeclass_path)
+        return self.filter(db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path)
 
     # attr/property related
 
     @returns_typeclass_list
     def get_objs_with_attr(self, attribute_name, location=None):
         """
-        Returns all objects having the given attribute_name defined at all.
+        Returns all objects having the given attribute_name defined at all. Location
+        should be a valid location object.
         """
         global _ObjAttribute
-        if not ObjAttribute:
+        if not _ObjAttribute:
             from src.objects.models import ObjAttribute as _ObjAttribute
-        lstring = ""
         if location:
-            lstring = ", db_obj__db_location=location"
-        attrs = eval("_ObjAttribute.objects.filter(db_key=attribute_name%s)" % lstring)
-        return [attr.obj for attr in attrs]
+            attrs = _ObjAttribute.objects.select_related("db_obj").filter(db_key=attribute_name, db_obj__db_location=location)
+        else:
+            attrs = _ObjAttribute.objects.select_related("db_obj").filter(db_key=attribute_name)
+        return [attr.db_obj for attr in attrs]
 
     @returns_typeclass_list
     def get_objs_with_attr_match(self, attribute_name, attribute_value, location=None, exact=False):
@@ -122,14 +120,12 @@ class ObjectManager(TypedObjectManager):
         to attribute_value, and so it can accept also non-strings.
         """
         global _ObjAttribute
-        if not ObjAttribute:
+        if not _ObjAttribute:
             from src.objects.models import ObjAttribute as _ObjAttribute
-        lstring = ""
         if location:
-            lstring = ", db_obj__db_location=location"
-        attrs = eval("ObjAttribute.objects.filter(db_key=attribute_name%s)" % lstring)
-        # since attribute values are pickled in database, we cannot search directly, but
-        # must loop through the results. .
+            attrs = _ObjAttribute.objects.select_related("db_value").filter(db_key=attribute_name, db_obj__db_location=location)
+        else:
+            attrs = _ObjAttribute.objects.select_related("db_value").filter(db_key=attribute_name)
         if exact:
             return [attr.obj for attr in attrs if attribute_value == attr.value]
         else:
@@ -169,7 +165,7 @@ class ObjectManager(TypedObjectManager):
             return []
 
     @returns_typeclass_list
-    def get_objs_with_key_or_alias(self, ostring, location, exact=False):
+    def get_objs_with_key_or_alias(self, ostring, location=None, exact=False):
         """
         Returns objects based on key or alias match
         """
@@ -197,7 +193,7 @@ class ObjectManager(TypedObjectManager):
 
         excludeobjs - one or more object keys to exclude from the match
         """
-        query = self.filter(db_location__id=location.id, )
+        query = self.filter(db_location__id=location.id)
         for objkey in make_iter(excludeobj):
            query = query.exclude(db_key=objkey)
         return query

@@ -80,7 +80,7 @@ class MsgManager(models.Manager):
         "Retrieve message by its id."
         try:
             idnum = int(idnum)
-            return self.get(id=id)
+            return self.get(id=idnum)
         except Exception:
             return None
 

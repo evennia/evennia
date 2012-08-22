@@ -4,6 +4,7 @@ The custom manager for Scripts.
 
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass_list
+from src.utils.utils import make_iter
 __all__ = ("ScriptManager",)
 
 VALIDATE_ITERATION = 0
@@ -18,7 +19,7 @@ class ScriptManager(TypedObjectManager):
     Querysets or database objects).
 
     dbref (converter)
-    dbref_search
+    get_id  (or dbref_search)
     get_dbref_range
     object_totals
     typeclass_search
@@ -34,33 +35,37 @@ class ScriptManager(TypedObjectManager):
     @returns_typeclass_list
     def get_all_scripts_on_obj(self, obj, key=None):
         """
-        Returns as result all the Scripts related to a particular object
+        Returns as result all the Scripts related to a particular object.
+        key can be given as a dbref or name string. If given, only scripts
+        matching the key on the object will be returned.
         """
         if not obj:
             return []
-        scripts = self.filter(db_obj=obj)
         if key:
-            return scripts.filter(db_key=key)
-        return scripts
+            script = []
+            dbref = self.dbref(key)
+            if dbref:
+                script = self.filter(db_obj=obj, id=dbref)
+            if not script:
+                script = self.filter(db_obj=obj, db_key=key)
+            return script
+        return self.filter(db_obj=obj)
 
     @returns_typeclass_list
     def get_all_scripts(self, key=None):
         """
         Return all scripts, alternative only
-        scripts with a certain key/dbref or path.
+        scripts with a certain key/dbref
         """
         if key:
+            script = []
             dbref = self.dbref(key)
             if dbref:
-                # try to see if this is infact a dbref
                 script = self.dbref_search(dbref)
-                if script:
-                    return script
-            # not a dbref. Normal key search
-            scripts = self.filter(db_key=key)
-        else:
-            scripts = list(self.all())
-        return scripts
+            if not script:
+                scripts = self.filter(db_key=key)
+            return scripts
+        return self.all()
 
     def delete_script(self, dbref):
         """
@@ -70,7 +75,7 @@ class ScriptManager(TypedObjectManager):
         a specific game object.
         """
         scripts = self.get_id(dbref)
-        for script in scripts:
+        for script in make_iter(scripts):
             script.stop()
 
     def remove_non_persistent(self, obj=None):
@@ -80,13 +85,15 @@ class ScriptManager(TypedObjectManager):
         and
         """
         if obj:
-            to_stop = self.filter(db_persistent=False, db_obj=obj)
+            to_stop = self.filter(db_obj=obj, db_persistent=False, db_is_active=True)
+            to_delete = self.filter(db_obj=obj, db_persistent=False, db_is_active=False)
         else:
-            to_stop = self.filter(db_persistent=False)
-        nr_deleted = to_stop.count()
-        for script in to_stop.filter(db_is_active=True):
+            to_stop = self.filter(db_persistent=False, db_is_active=True)
+            to_delete = self.filter(db_persistent=False, db_is_active=False)
+        nr_deleted = to_stop.count() + to_delete.count()
+        for script in to_stop:
             script.stop()
-        for script in to_stop.filter(db_is_active=False):
+        for script in to_delete:
             script.delete()
         return nr_deleted
 

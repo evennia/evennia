@@ -94,17 +94,22 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
 
     @returns_typeclass
-    def dbref_search(self, dbref):
+    def get_id(self, dbref):
         """
-        Returns an object when given a dbref.
+        Find object with given dbref
         """
         dbref = self.dbref(dbref)
-        if dbref :
-            try:
-                return self.get(id=dbref)
-            except self.model.DoesNotExist:
-                return None
+        try:
+            return self.get(id=dbref)
+        except self.model.DoesNotExist:
+            pass
         return None
+
+    def dbref_search(self, dbref):
+        """
+        Alias to get_id
+        """
+        return self.get_id(dbref)
 
     @returns_typeclass_list
     def get_dbref_range(self, min_dbref=None, max_dbref=None):
@@ -120,12 +125,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         elif not max_dbref:
             return self.filter(id__gte=min_dbref)
         return self.filter(id__gte=min_dbref).filter(id__lte=min_dbref)
-
-    def get_id(self, idnum):
-        """
-        Alias to dbref_search
-        """
-        return self.dbref_search(idnum)
 
     def object_totals(self):
         """

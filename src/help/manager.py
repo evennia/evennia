@@ -26,8 +26,9 @@ class HelpEntryManager(models.Manager):
         """
         Searches for matching topics based on player's input.
         """
-        if utils.dbref(topicstr):
-            return self.filter(id=utils.dbref(topicstr))
+        dbref = utils.dbref(topicstr)
+        if dbref:
+            return self.filter(id=dbref)
         topics = self.filter(db_key__iexact=topicstr)
         if not topics and not exact:
             topics = self.filter(db_key__istartswith=topicstr)
@@ -47,17 +48,13 @@ class HelpEntryManager(models.Manager):
         Do a fuzzy match, preferably within the category of the
         current topic.
         """
-        topics = self.find_apropos(topicstr)
-        # we need to clean away the given help entry.
-        return [topic for topic in topics
-                if topic.key.lower() != topicstr.lower()]
+        return self.filter(db_key__icontains=topicstring).exclude(db_key__iexact=topicstring)
 
     def find_topics_with_category(self, help_category):
         """
         Search topics having a particular category
         """
-        topics = self.filter(db_help_category__iexact=help_category)
-        return topics
+        return self.filter(db_help_category__iexact=help_category)
 
     def get_all_topics(self):
         """
@@ -94,7 +91,7 @@ class HelpEntryManager(models.Manager):
         category - limit the search to a particular help topic
         """
         ostring = ostring.strip().lower()
-        help_entries = self.filter(db_topicstr=ostring)
-        if help_category:
-            help_entries.filter(db_help_category=help_category)
-        return help_entries
+        if help_categories:
+            return self.filter(db_topicstr__iexact=ostring, db_help_category__iexact=help_category)
+        else:
+            return self.filter(db_topicstr__iexact=ostring)
