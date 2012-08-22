@@ -82,15 +82,15 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             return None
         return dbref
 
-    @returns_typeclass_list
-    def get_with_attr(self, attribute_name, attribute_value=None):
-        """
-        Returns the typeclassed entity depending on having a given attribute.
+    #@returns_typeclass_list
+    #def get_with_attr(self, attribute_name, attribute_value=None):
+    #    """
+    #    Returns the typeclassed entity depending on having a given attribute.
 
-        attribute_name - only entities with an attribute of this name will be included in match
-        attribute_value - if != None, only entities with db.attribute_name=attribute_value will match.
-        """
-        self.filter()
+    #    attribute_name - only entities with an attribute of this name will be included in match
+    #    attribute_value - if != None, only entities with db.attribute_name=attribute_value will match.
+    #    """
+    #    self.filter() #TODO not implemented
 
 
     @returns_typeclass
@@ -150,5 +150,4 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if callable(typeclass):
             cls = typeclass.__class__
             typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        o_query = self.filter(db_typeclass_path__exact=typeclass)
-        return o_query
+        return self.filter(db_typeclass_path__exact=typeclass)

@@ -165,7 +165,7 @@ if __name__ == "__main__":
     # run the standard django manager, if dependencies match
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
-        if sys.argv[1] in ('runserver', 'testserver'):
+        if len(sys.argv) > 1 and sys.argv[1] in ('runserver', 'testserver'):
             print """
             WARNING: There is no need to run the Django development
             webserver to test out Evennia web features (the web client
