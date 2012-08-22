@@ -59,12 +59,20 @@ TOBJ_TYPECLASS = "examples.red_button.RedButton"
 def c_login(client):
     "logins to the game"
     cname = "Dummy-%s-%i" % (RUNID, client.cid)
-    cemail = "%s@dummy.com" % (cname.lower())
+    #cemail = "%s@dummy.com" % (cname.lower())
     cpwd = "%s-%s" % (RUNID, client.cid)
-    cmd = ('create "%s" %s %s' % (cname, cemail, cpwd),
-           'connect %s %s' % (cemail, cpwd),
+    # set up for digging a first room (to move to)
+    roomname = ROOM_TEMPLATE % client.counter()
+    exitname1 = EXIT_TEMPLATE % client.counter()
+    exitname2 = EXIT_TEMPLATE % client.counter()
+    client.exits.extend([exitname1, exitname2])
+    cmd = '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
+    cmd = ('create %s %s' % (cname, cpwd),
+           'connect %s %s' % (cname, cpwd),
            '@dig %s' % START_ROOM % client.cid,
-           '@teleport %s' % START_ROOM % client.cid)
+           '@teleport %s' % START_ROOM % client.cid,
+           '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
+           )
 
     return cmd, "logs in as %s ..." % cname
 
@@ -143,16 +151,16 @@ def c_moves(client):
 # otherwise the system will normalize them.
 #
 
-# heavy builder definition
-#ACTIONS = ( c_login,
-#            c_logout,
-#            (0.2, c_looks),
-#            (0.1, c_examines),
-#            (0.2, c_help),
-#            (0.1, c_digs),
-#            (0.1, c_creates_obj),
-#            #(0.1, c_creates_button),
-#            (0.2, c_moves))
+# "heavy" builder definition
+ACTIONS = ( c_login,
+            c_logout,
+            (0.2, c_looks),
+            (0.1, c_examines),
+            (0.2, c_help),
+            (0.1, c_digs),
+            (0.1, c_creates_obj),
+            #(0.01, c_creates_button),
+            (0.2, c_moves))
 # "normal builder" definition
 #ACTIONS = ( c_login,
 #            c_logout,
@@ -163,14 +171,14 @@ def c_moves(client):
 #            (0.01, c_creates_obj),
 #            #(0.1, c_creates_button),
 #            (0.3, c_moves))
-# "normal player" definition
-ACTIONS = ( c_login,
-            c_logout,
-            (0.7, c_looks),
-            #(0.1, c_examines),
-            (0.3, c_help))
-            #(0.1, c_digs),
-            #(0.1, c_creates_obj),
-            #(0.1, c_creates_button),
-            #(0.4, c_moves))
+# "passive player" definition
+#ACTIONS = ( c_login,
+#            c_logout,
+#            (0.7, c_looks),
+#            #(0.1, c_examines),
+#            (0.3, c_help))
+#            #(0.1, c_digs),
+#            #(0.1, c_creates_obj),
+#            #(0.1, c_creates_button),
+#            #(0.4, c_moves))
 

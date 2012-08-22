@@ -49,6 +49,9 @@ from django.conf import settings
 from src.utils import utils
 
 HELPTEXT = """
+
+Usage: dummyrunner.py [-h][-v][-V] [nclients]
+
 DO NOT RUN THIS ON A PRODUCTION SERVER! USE A CLEAN/TESTING DATABASE!
 
 This stand-alone program launches dummy telnet clients against a
@@ -144,6 +147,9 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self.exits = [] # exit names created
         self.objs = [] # obj names created
 
+        self._report = ""
+        self._cmdlist = [] # already stepping in a cmd definition
+        self._ncmds = 0
         self._actions = self.factory.actions
         self._echo_brief = self.factory.verbose == 1
         self._echo_all = self.factory.verbose == 2
@@ -186,23 +192,28 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         """
         if random.random() > CHANCE_OF_ACTION:
             return
-        if self.istep == 0:
-            cfunc = self._actions[0]
-        else: # random selection using cumulative probabilities
-            rand = random.random()
-            cfunc = [func for cprob, func in self._actions[2] if cprob >= rand][0]
-        # launch the action (don't hide tracebacks)
-        cmd, report = cfunc(self)
-        # handle the result
-        cmd = "\n".join(makeiter(cmd))
-        if self.istep == 0 or self._echo_brief or self._echo_all:
-            print "client %i %s" % (self.cid, report)
-        self.sendLine(cmd)
+        if not self._cmdlist:
+            # no cmdlist in store, get a new one
+            if self.istep == 0:
+                cfunc = self._actions[0]
+            else: # random selection using cumulative probabilities
+                rand = random.random()
+                cfunc = [func for cprob, func in self._actions[2] if cprob >= rand][0]
+            # assign to internal cmdlist
+            cmd, self._report = cfunc(self)
+            self._cmdlist = list(makeiter(cmd))
+            self._ncmds = len(self._cmdlist)
+        # output
+        if self.istep == 0 and not (self._echo_brief or self._echo_all):
+            print "client %i %s" % (self.cid, self._report)
+        elif self.istep == 0 or self._echo_brief or self._echo_all:
+            print "client %i %s (%i/%i)" % (self.cid, self._report, self._ncmds-(len(self._cmdlist)-1), self._ncmds)
+        # launch the action by popping the first element from cmdlist (don't hide tracebacks)
+        self.sendLine(str(self._cmdlist.pop(0)))
         self.istep += 1 # only steps up if an action is taken
 
 class DummyFactory(protocol.ClientFactory):
     protocol = DummyClient
-
     def __init__(self, actions, timestep, verbose):
         "Setup the factory base (shared by all clients)"
         self.actions = actions

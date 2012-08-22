@@ -884,9 +884,7 @@ class TypedObject(SharedMemoryModel):
             # (we make sure to not incur a loop by not triggering the
             # typeclass' __getattribute__, since that one would
             # try to look back to this very database object.)
-            typeclass = _GA(self, 'typeclass')
-            # will raise AttributeError also if typeclass was malformed
-            return _GA(typeclass, propname)
+            return _GA(_GA(self, 'typeclass'), propname)
 
     #@property
     _dbid_cache = None
