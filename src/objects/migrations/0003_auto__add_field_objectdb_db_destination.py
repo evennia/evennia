@@ -4,21 +4,25 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 from src.objects.models import ObjectDB
+from south import orm
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'ObjectDB.db_destination'
         db.add_column('objects_objectdb', 'db_destination', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='destinations_set', null=True, to=orm['objects.ObjectDB']), keep_default=False)
 
-        # move all exits to the new property
-        for exi in ObjectDB.objects.get_objs_with_attr('_destination'):
-            exi.destination = exi.db._destination
-            exi.del_attribute('_destination')
+        #move all exits to the new property
+        if not db.dry_run:
+            #for exi in ObjectDB.objects.get_objs_with_attr('_destination'):
+            #for exi in orm["objects.ObjAttribute"].objects.get_objs_with_attr('_destination'):
+            for exi in orm["objects.ObjAttribute"].objects.select_related("db_obj").filter(db_key="_destination").values_list('db_obj'):
+                exi.destination = exi.db._destination
+                exi.del_attribute('_destination')
 
     def backwards(self, orm):
-        
+
         # Deleting field 'ObjectDB.db_destination'
         db.delete_column('objects_objectdb', 'db_destination_id')
 
