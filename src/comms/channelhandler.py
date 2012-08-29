@@ -85,8 +85,9 @@ class ChannelCommand(command.Command):
         except AttributeError:
             # this could happen if a player is calling directly.
             sender = caller.dbobj
-        msgobj = Msg(db_sender=sender, db_message=msg)
+        msgobj = Msg(db_message=msg)
         msgobj.save()
+        msgobj.senders = sender
         msgobj.channels = channel
         # send new message object to channel
         channel.msg(msgobj, from_obj=sender)

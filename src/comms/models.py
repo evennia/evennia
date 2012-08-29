@@ -1,7 +1,12 @@
 """
-Models for the comsystem.
+Models for the comsystem. The Commsystem is intended to be
+used by Players (thematic IC communication is probably
+best handled by custom commands instead).
 
-The comsystem's main component is the Message, which
+The comm system could take the form of channels, but can also
+be adopted for storing tells or in-game mail.
+
+The comsystem's main component is the Message (Msg), which
 carries the actual information between two parties.
 Msgs are stored in the database and usually not
 deleted.
@@ -17,45 +22,11 @@ be able to delete connections on the fly).
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.comms import managers
+from src.comms.managers import identify_object
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import is_iter, to_str
-from src.utils.utils import dbref as is_dbref
+from src.utils.utils import is_iter, to_str, crop
 __all__ = ("Msg", "TempMsg", "Channel", "PlayerChannelConnection", "ExternalChannelConnection")
-
-#------------------------------------------------------------
-#
-# Utils
-#
-#------------------------------------------------------------
-
-def _obj_to_id(inp):
-    """
-    Converts input object to an id string.
-    """
-    dbref = is_dbref(inp)
-    if dbref:
-        return str(dbref)
-    if hasattr(inp, 'id'):
-        return str(inp.id)
-    if hasattr(inp, 'dbobj') and hasattr(inp.dbobj, 'id'):
-        return str(inp.dbobj.id)
-    return str(inp)
-
-def _id_to_obj(dbref, db_model='PlayerDB'):
-    """
-    loads from dbref to object. Uses the db_model to search
-    for the id.
-    """
-    if db_model == 'PlayerDB':
-        from src.players.models import PlayerDB as db_model
-    else:
-        db_model = Channel
-    try:
-        dbref = int(dbref.strip())
-        return db_model.objects.get(id=dbref)
-    except Exception:
-        return None
 
 #------------------------------------------------------------
 #
@@ -87,37 +58,50 @@ class Msg(SharedMemoryModel):
     # These databse fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
-    # There must always be one sender of the message.
-    db_sender = models.ForeignKey("players.PlayerDB", related_name='sender_set', null=True, verbose_name='sender')
-    # in the case of external senders, no Player object might be available
-    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True,
+    # Sender is either a player, an object or an external sender, like an IRC channel
+    # normally there is only one, but if co-modification of a message is allowed, there
+    # may be more than one "author"
+    db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set', null=True, verbose_name='sender(player)', db_index=True)
+    db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set', null=True, verbose_name='sender(object)', db_index=True)
+    db_sender_external = models.CharField('external sender', max_length=255, null=True, db_index=True,
           help_text="identifier for external sender, for example a sender over an IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
-    db_receivers = models.CharField('receivers', max_length=255, null=True, blank=True,
-           help_text='comma-separated list of object dbrefs this message is aimed at.')
-    # The channels this message was sent to. Stored as a
-    # comma-separated string of channel dbrefs. A message can both
-    # have channel targets and destination objects.
-    db_channels = models.CharField('channels', max_length=255, null=True, blank=True,
-           help_text='comma-separated list of channel dbrefs this message is aimed at.')
+    db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set', null=True, help_text="player receivers")
+    db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set', null=True, help_text="object receivers")
+    db_receivers_channels = models.ManyToManyField("Channel", related_name='channel_set', null=True, help_text="channel recievers")
+
+
     # The actual message and a timestamp. The message field
     # should itself handle eventual headers etc.
+    db_title = models.CharField('title', max_length=512, null=True, blank=True, db_index=True)
     db_message = models.TextField('messsage')
-    db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True)
+    db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
     # lock storage
     db_lock_storage = models.CharField('locks', max_length=512, blank=True,
                                        help_text='access locks on this message.')
-    # These are settable by senders/receivers/channels respectively.
-    # Stored as a comma-separated string of dbrefs. Can be used by the
-    # game to mask out messages from being visible in the archive (no
-    # messages are actually deleted)
-    db_hide_from_sender = models.BooleanField(default=False)
-    db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
-    db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
-    # Storage of lock strings
-    #db_lock_storage = models.TextField(null=True)
+
+    # these can be used to filter/hide a given message from supplied objects/players/channels
+    db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True)
+    db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
+    db_hide_from_channles = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
+
+    ## These are settable by senders/receivers/channels respectively.
+    ## Stored as a comma-separated string of dbrefs. Can be used by the
+    ## game to mask out messages from being visible in the archive (no
+    ## messages are actually deleted)
+    #db_hide_from_sender = models.BooleanField(default=False)
+    #db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
+    #db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
+    ## Storage of lock strings
+    ##db_receivers = models.CharField('receivers', max_length=255, null=True, blank=True,
+    ##       help_text='comma-separated list of object dbrefs this message is aimed at.')
+    ### The channels this message was sent to. Stored as a
+    ### comma-separated string of channel dbrefs. A message can both
+    ### have channel targets and destination objects.
+    ##db_channels = models.CharField('channels', max_length=255, null=True, blank=True,
+    ##       help_text='comma-separated list of channel dbrefs this message is aimed at.')
 
     # Database manager
     objects = managers.MsgManager()
@@ -138,79 +122,119 @@ class Msg(SharedMemoryModel):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
-    # sender property (wraps db_sender)
+    # sender property (wraps db_sender_*)
     #@property
-    def __sender_get(self):
+    def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return self.db_sender
+        return list(self.db_sender_players.all()) + list(self.db_sender_objects.all())
     #@sender.setter
-    def __sender_set(self, value):
+    def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
-        self.db_sender = value
+        obj, typ = identify_object(value)
+        if typ == 'player':
+            self.db_sender_players.add(obj)
+        elif typ == 'object':
+            self.db_sender_objects.add(obj)
+        elif isinstance(typ, basestring):
+            self.db_sender_external = obj
+        elif not obj:
+            return
+        else:
+            raise ValueError
         self.save()
     #@sender.deleter
-    def __sender_del(self):
-        "Deleter. Allows for del self.sender"
-        raise Exception("You cannot delete the sender of a message!")
-    sender = property(__sender_get, __sender_set, __sender_del)
-
-    # sender_external property (wraps db_sender_external)
-    #@property
-    def __sender_external_get(self):
-        "Getter. Allows for value = self.sender_external"
-        return self.db_sender_external
-    #@sender_external.setter
-    def __sender_external_set(self, value):
-        "Setter. Allows for self.sender_external = value"
-        self.db_sender_external = value
+    def __senders_del(self):
+        "Deleter. Clears all senders"
+        self.db_sender_players.clear()
+        self.db_sender_objects.clear()
+        self.db_sender_external = ""
         self.save()
-    #@sender_external.deleter
-    def __sender_external_del(self):
-        "Deleter. Allows for del self.sender_external"
-        raise Exception("You cannot delete the sender_external of a message!")
-    sender_external = property(__sender_external_get, __sender_external_set, __sender_external_del)
+    senders = property(__senders_get, __senders_set, __senders_del)
+
+    def remove_sender(self, obj):
+        "Remove a single sender"
+        obj, typ = identify_object(obj)
+        if typ == 'player':
+            self.db_sender_players.remove(obj)
+        elif typ == 'object':
+            self.db_sender_objects.remove(obj)
+        elif isinstance(obj, basestring) and self.db_sender_external == obj:
+            self.db_sender_external = ""
+        else:
+            raise ValueError
+        self.save()
 
     # receivers property
     #@property
     def __receivers_get(self):
-        "Getter. Allows for value = self.receivers. Returns a list of receivers."
-        if self.db_receivers:
-            return [_id_to_obj(dbref) for dbref in self.db_receivers.split(',')]
-        return []
+        "Getter. Allows for value = self.receivers. Returns three lists of receivers: players, objects and channels."
+        return list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())
     #@receivers.setter
     def __receivers_set(self, value):
-        "Setter. Allows for self.receivers = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([_obj_to_id(val) for val in value])
-        self.db_receivers = _obj_to_id(value)
+        "Setter. Allows for self.receivers = value. This appends a new receiver to the message."
+        obj, typ = identify_object(value)
+        if typ == 'player':
+            self.db_receivers_players.add(obj)
+        elif typ == 'object':
+            self.db_receivers_objects.add(obj)
+        elif not obj:
+            return
+        else:
+            raise ValueError
         self.save()
     #@receivers.deleter
     def __receivers_del(self):
-        "Deleter. Allows for del self.receivers"
-        self.db_receivers = ""
+        "Deleter. Clears all receivers"
+        self.db_receivers_players.clear()
+        self.db_receivers_objects.clear()
         self.save()
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
+
+    def remove_receiver(self, obj):
+        "Remove a single recevier"
+        obj, typ = identify_object(obj)
+        if typ == 'player':
+            self.db_receivers_players.remove(obj)
+        elif typ == 'object':
+            self.db_receivers_objects.remove(obj)
+        else:
+            raise ValueError
+        self.save()
 
     # channels property
     #@property
     def __channels_get(self):
         "Getter. Allows for value = self.channels. Returns a list of channels."
-        if self.db_channels:
-            return [_id_to_obj(dbref, 'Channel') for dbref in self.db_channels.split(',')]
-        return []
+        return self.db_receivers_channels.all()
     #@channels.setter
     def __channels_set(self, value):
-        "Setter. Allows for self.channels = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([_obj_to_id(val) for val in value])
-        self.db_channels = _obj_to_id(value)
-        self.save()
+        "Setter. Allows for self.channels = value. Requires a channel to be added."
+        if value:
+            self.db_receivers_channels.add(value)
     #@channels.deleter
     def __channels_del(self):
         "Deleter. Allows for del self.channels"
-        self.db_channels = ""
+        self.db_receivers_channels.clear()
         self.save()
     channels = property(__channels_get, __channels_set, __channels_del)
+
+    # title property (wraps db_title)
+    #@property
+    def __title_get(self):
+        "Getter. Allows for value = self.message"
+        return self.db_title
+    #@message.setter
+    def __title_set(self, value):
+        "Setter. Allows for self.message = value"
+        if value:
+            self.db_title = value
+            self.save()
+    #@message.deleter
+    def __title_del(self):
+        "Deleter. Allows for del self.message"
+        self.db_title = ""
+        self.save()
+    title = property(__title_get, __title_set, __title_del)
 
     # message property (wraps db_message)
     #@property
@@ -244,64 +268,32 @@ class Msg(SharedMemoryModel):
         raise Exception("You cannot delete the date_sent property!")
     date_sent = property(__date_sent_get, __date_sent_set, __date_sent_del)
 
-    # hide_from_sender property
+    # hide_from property
     #@property
-    def __hide_from_sender_get(self):
-        "Getter. Allows for value = self.hide_from_sender."
-        return self.db_hide_from_sender
+    def __hide_from_get(self):
+        "Getter. Allows for value = self.hide_from. Returns 3 lists of players, objects and channels"
+        return self.db_hide_from_players.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
     #@hide_from_sender.setter
-    def __hide_from_sender_set(self, value):
-        "Setter. Allows for self.hide_from_senders = value."
-        self.db_hide_from_sender = value
+    def __hide_from_set(self, value):
+        "Setter. Allows for self.hide_from = value. Will append to hiders"
+        obj, typ = identify_object(value)
+        if typ == "player":
+            self.db_hide_from_players.add(obj)
+        elif typ == "object":
+            self.db_hide_from_objects.add(obj)
+        elif typ == "channel":
+            self.db_hide_from_channels.add(obj)
+        else:
+            raise ValueError
         self.save()
     #@hide_from_sender.deleter
-    def __hide_from_sender_del(self):
+    def __hide_from_del(self):
         "Deleter. Allows for del self.hide_from_senders"
-        self.db_hide_from_sender = False
+        self.db_hide_from_players.clear()
+        self.db_hide_from_objects.clear()
+        self.db_hide_from_channels.clear()
         self.save()
-    hide_from_sender = property(__hide_from_sender_get, __hide_from_sender_set, __hide_from_sender_del)
-
-    # hide_from_receivers property
-    #@property
-    def __hide_from_receivers_get(self):
-        "Getter. Allows for value = self.hide_from_receivers. Returns a list of hide_from_receivers."
-        if self.db_hide_from_receivers:
-            return [_id_to_obj(dbref) for dbref in self.db_hide_from_receivers.split(',')]
-        return []
-    #@hide_from_receivers.setter
-    def __hide_from_receivers_set(self, value):
-        "Setter. Allows for self.hide_from_receivers = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([_obj_to_id(val) for val in value])
-        self.db_hide_from_receivers = _obj_to_id(value)
-        self.save()
-    #@hide_from_receivers.deleter
-    def __hide_from_receivers_del(self):
-        "Deleter. Allows for del self.hide_from_receivers"
-        self.db_hide_from_receivers = ""
-        self.save()
-    hide_from_receivers = property(__hide_from_receivers_get, __hide_from_receivers_set, __hide_from_receivers_del)
-
-    # hide_from_channels property
-    #@property
-    def __hide_from_channels_get(self):
-        "Getter. Allows for value = self.hide_from_channels. Returns a list of hide_from_channels."
-        if self.db_hide_from_channels:
-            return [_id_to_obj(dbref) for dbref in self.db_hide_from_channels.split(',')]
-        return []
-    #@hide_from_channels.setter
-    def __hide_from_channels_set(self, value):
-        "Setter. Allows for self.hide_from_channels = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([_obj_to_id(val) for val in value])
-        self.db_hide_from_channels = _obj_to_id(value)
-        self.save()
-    #@hide_from_channels.deleter
-    def __hide_from_channels_del(self):
-        "Deleter. Allows for del self.hide_from_channels"
-        self.db_hide_from_channels = ""
-        self.save()
-    hide_from_channels = property(__hide_from_channels_get, __hide_from_channels_set, __hide_from_channels_del)
+    hide_from = property(__hide_from_get, __hide_from_set, __hide_from_del)
 
     # lock_storage property (wraps db_lock_storage)
     #@property
@@ -326,15 +318,11 @@ class Msg(SharedMemoryModel):
     #
 
     def __str__(self):
-        "Print text"
-        if self.channels:
-            return "%s -> %s: %s" % (self.sender.key,
-                                       ", ".join([chan.key for chan in self.channels]),
-                                       self.message)
-        else:
-            return "%s -> %s: %s" % (self.sender.key,
-                                       ", ".join([rec.key for rec in self.receivers]),
-                                       self.message)
+        "This handles what is shown when e.g. printing the message"
+        senders = ",".join(obj.key for obj in self.senders)
+        receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
+        return "%s->%s::%s" % (senders, receivers, crop(self.message, width=40))
+
     def access(self, accessing_obj, access_type='read', default=False):
         """
         Determines if another object has permission to access.
@@ -360,13 +348,11 @@ class TempMsg(object):
 
     """
     def __init__(self, sender=None, receivers=[], channels=[], message="", permissions=[]):
-        self.sender = sender
+        self.senders = sender
         self.receivers = receivers
         self.message = message
         self.permissions = permissions
-        self.hide_from_sender = False
-        self.hide_from_sender = receivers = False
-        self.hide_from_channels = False
+        self.hide_from = None
 
 #------------------------------------------------------------
 #
@@ -407,6 +393,7 @@ class Channel(SharedMemoryModel):
     db_keep_log = models.BooleanField(default=True)
     # Storage of lock definitions
     db_lock_storage = models.CharField('locks', max_length=512, blank=True)
+
 
     # Database manager
     objects = managers.ChannelManager()
@@ -533,7 +520,7 @@ class Channel(SharedMemoryModel):
         Checks so this player is actually listening
         to this channel.
         """
-        return PlayerChannelConnection.objects.has_connection(player, self)
+        return PlayerChannelConnection.objects.has_player_connection(player, self)
 
     def msg(self, msgobj, from_obj=None):
         """
@@ -582,7 +569,7 @@ class Channel(SharedMemoryModel):
 
         message - a Msg object or a text string.
         """
-        if type(msgobj) == Msg:
+        if type(message) == Msg:
             # extract only the string
             message = message.message
         return self.msg(message)

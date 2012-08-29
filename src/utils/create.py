@@ -21,12 +21,12 @@ Models covered:
  Channel
  Players
 """
-from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import utils, logger
+from src.utils.utils import make_iter
 
 # delayed imports
 _User = None
@@ -306,7 +306,7 @@ help_entry = create_help_entry
 #
 
 def create_message(senderobj, message, channels=None,
-                   receivers=None, locks=None):
+                   receivers=None, locks=None, title=None):
     """
     Create a new communication message. Msgs are used for all
     player-to-player communication, both between individual players
@@ -326,52 +326,25 @@ def create_message(senderobj, message, channels=None,
     at the same time, it's up to the command definitions to limit this as
     desired.
     """
-    global _Msg, _PlayerDB, _to_object
+    global _Msg
     if not _Msg:
         from src.comms.models import Msg as _Msg
-    if not _PlayerDB:
-        from src.players.models import PlayerDB as _PlayerDB
-    if not _to_object:
-        from src.comms.managers import to_object as _to_object
-
-    def to_player(obj):
-        "Make sure the object is a player object"
-        if isinstance(obj, _PlayerDB):
-            return obj
-        elif hasattr(obj, 'user'):
-            return obj.dbobj
-        elif hasattr(obj, 'db_player'):
-            return obj.db_player
-        else:
-            return None
-
     if not message:
         # we don't allow empty messages.
         return
-
-    new_message = _Msg()
-    new_message.sender = to_player(senderobj)
-    new_message.message = message
+    new_message = _Msg(db_message=message)
     new_message.save()
-    if channels:
-        if not utils.is_iter(channels):
-            channels = [channels]
-        new_message.channels = [channel for channel in
-                                [_to_object(channel, objtype='channel')
-                                 for channel in channels] if channel]
-    if receivers:
-        #print "Found receiver:", receivers
-        if not utils.is_iter(receivers):
-            receivers = [receivers]
-        #print "to_player: %s" % to_player(receivers[0])
-        new_message.receivers = [to_player(receiver) for receiver in
-                                 [_to_object(receiver) for receiver in receivers]
-                                 if receiver]
+    for sender in make_iter(senderobj):
+        new_message.senders = sender
+    new_message.title = title
+    for channel in make_iter(channels):
+        new_message.channels = channel
+    for receiver in make_iter(receivers):
+        new_message.receivers = receiver
     if locks:
         new_message.locks.add(locks)
     new_message.save()
     return new_message
-
 message = create_message
 
 def create_channel(key, aliases=None, desc=None,

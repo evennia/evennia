@@ -651,23 +651,20 @@ class CmdPage(MuxCommandOOC):
 
         # this is a MuxCommandOOC, which means caller will be a Player.
         caller = self.caller
-        character = self.character
 
-        # get the messages we've sent
-        messages_we_sent = list(Msg.objects.get_messages_by_sender(caller))
-        pages_we_sent = [msg for msg in messages_we_sent if msg.receivers]
+        # get the messages we've sent (not to channels)
+        pages_we_sent = Msg.objects.get_messages_by_sender(caller, exclude_channel_messages=True)
         # get last messages we've got
-        pages_we_got = list(Msg.objects.get_messages_by_receiver(caller))
+        pages_we_got = Msg.objects.get_messages_by_receiver(caller)
+
 
         if 'last' in self.switches:
             if pages_we_sent:
-                string = "You last paged {c%s{n." % (", ".join([obj.name
-                                                                for obj in pages_we_sent[-1].receivers]))
-                caller.msg(string)
+                recv = ",".join(obj.key for obj in pages_we_sent[-1].receivers)
+                caller.msg("You last paged {c%s{n:%s" % (recv, pages_we_sent[-1].message))
                 return
             else:
-                string = "You haven't paged anyone yet."
-                caller.msg(string)
+                caller.msg("You haven't paged anyone yet.")
                 return
 
         if not self.args or not self.rhs:
@@ -687,11 +684,11 @@ class CmdPage(MuxCommandOOC):
             else:
                 lastpages = pages
 
-            lastpages = "\n ".join(["{w%s{n {c%s{n to {c%s{n: %s" % (utils.datetime_format(page.date_sent),
-                                                                     page.sender.name,
-                            "{n,{c ".join([obj.name for obj in page.receivers]),
-                                                              page.message)
-                                    for page in lastpages])
+            lastpages = "\n ".join("{w%s{n {c%s{n to {c%s{n: %s" % (utils.datetime_format(page.date_sent),
+                                                                    ",".join(obj.key for obj in page.senders),
+                                                                    "{n,{c ".join([obj.name for obj in page.receivers]),
+                                                                    page.message)
+                                                        for page in lastpages)
 
             if lastpages:
                 string = "Your latest pages:\n %s" % lastpages
@@ -705,7 +702,7 @@ class CmdPage(MuxCommandOOC):
 
         if not self.lhs:
             # If there are no targets, then set the targets
-            # to the last person they paged.
+            # to the last person we paged.
             if pages_we_sent:
                 receivers = pages_we_sent[-1].receivers
             else:
@@ -723,9 +720,10 @@ class CmdPage(MuxCommandOOC):
             else:
                 caller.msg("Who do you want to page?")
                 return
-            recobjs.append(pobj)
+            if pobj:
+                recobjs.append(pobj)
         if not recobjs:
-            caller.msg("No players matching your target were found.")
+            caller.msg("Noone found to page.")
             return
 
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
@@ -736,8 +734,8 @@ class CmdPage(MuxCommandOOC):
             message = "%s %s" % (caller.key, message.strip(':').strip())
 
         # create the persistent message object
-        msg = create.create_message(caller, message,
-                                    receivers=recobjs)
+        create.create_message(caller, message,
+                              receivers=recobjs)
 
         # tell the players they got a message.
         received = []

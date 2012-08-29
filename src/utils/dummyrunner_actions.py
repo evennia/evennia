@@ -134,6 +134,15 @@ def c_creates_button(client):
            '@desc %s = test red button!' % objname)
     return cmd, "creates button ..."
 
+def c_socialize(client):
+    "socializechats on channel"
+    cmd = ('ooc Hello!',
+          'ooc Testing ...',
+          'ooc Testing ... times 2',
+          'say Yo!',
+          'emote stands looking around.')
+    return cmd, "socializes ..."
+
 def c_moves(client):
     "moves to a previously created room, using the stored exits"
     cmd = client.exits # try all exits - finally one will work
@@ -151,17 +160,7 @@ def c_moves(client):
 # otherwise the system will normalize them.
 #
 
-# "heavy" builder definition
-ACTIONS = ( c_login,
-            c_logout,
-            (0.2, c_looks),
-            (0.1, c_examines),
-            (0.2, c_help),
-            (0.1, c_digs),
-            (0.1, c_creates_obj),
-            #(0.01, c_creates_button),
-            (0.2, c_moves))
-# "normal builder" definition
+## "normal builder" definition
 #ACTIONS = ( c_login,
 #            c_logout,
 #            (0.5, c_looks),
@@ -171,7 +170,17 @@ ACTIONS = ( c_login,
 #            (0.01, c_creates_obj),
 #            #(0.1, c_creates_button),
 #            (0.3, c_moves))
-# "passive player" definition
+## "heavy" builder definition
+#ACTIONS = ( c_login,
+#            c_logout,
+#            (0.2, c_looks),
+#            (0.1, c_examines),
+#            (0.2, c_help),
+#            (0.1, c_digs),
+#            (0.1, c_creates_obj),
+#            #(0.01, c_creates_button),
+#            (0.2, c_moves))
+## "passive player" definition
 #ACTIONS = ( c_login,
 #            c_logout,
 #            (0.7, c_looks),
@@ -181,4 +190,11 @@ ACTIONS = ( c_login,
 #            #(0.1, c_creates_obj),
 #            #(0.1, c_creates_button),
 #            #(0.4, c_moves))
-
+## "socializing heavy builder" definition
+ACTIONS = (c_login,
+           c_logout,
+           (0.3, c_socialize),
+           (0.1, c_looks),
+           (0.1, c_help),
+           (0.2, c_digs),
+           (0.3, c_moves))

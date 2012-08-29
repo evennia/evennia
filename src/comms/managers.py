@@ -4,14 +4,70 @@ These managers handles the
 
 import itertools
 from django.db import models
+from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
-from src.utils.utils import is_iter
+
+_PlayerDB = None
+_ObjectDB = None
+_Channel = None
+_ExternalConnection = None
+_User = None
+
+# error class
 
 class CommError(Exception):
     "Raise by comm system, to allow feedback to player when caught."
     pass
 
-# helper function
+#
+# helper functions
+#
+
+def dbref(dbref):
+    """
+    Valid forms of dbref (database reference number)
+    are either a string '#N' or an integer N.
+    Output is the integer part.
+    """
+    if isinstance(dbref, basestring):
+        dbref = dbref.lstrip('#')
+    try:
+        if int(dbref) < 0:
+            return None
+    except Exception:
+        return None
+    return dbref
+
+def identify_object(inp):
+    "identify if an object is a player or an object; return its database model"
+    # load global stores
+    global _PlayerDB, _ObjectDB, _Channel, _ExternalConnection, _User
+    if not _PlayerDB:
+        from src.players.models import PlayerDB as _PlayerDB
+    if not _ObjectDB:
+        from src.objects.models import ObjectDB as _ObjectDB
+    if not _Channel:
+        from src.comms.models import Channel as _Channel
+    if not _ExternalConnection:
+        from src.comms.models import ExternalChannelConnection as _ExternalConnection
+    if not _User:
+        from django.contrib.auth.models import User as _User
+    if not inp:
+        return inp, None
+    # try to identify the type
+    try:
+        obj = inp.dbobj # this works for all typeclassed entities
+    except AttributeError:
+        obj = inp
+    typ = type(obj)
+    if typ == _PlayerDB: return obj, "player"
+    if typ == _User: return obj.get_profile(), "player"
+    elif typ == _ObjectDB: return obj, "object"
+    elif typ == _Channel: return obj, "channel"
+    elif dbref(obj): return dbref(obj), "dbref"
+    elif typ == basestring: return obj, "string"
+    elif typ == _ExternalConnection: return obj, "external"
+    return obj, None   # Something else
 
 def to_object(inp, objtype='player'):
     """
@@ -21,34 +77,31 @@ def to_object(inp, objtype='player'):
     inp - the input object/string
     objtype - 'player' or 'channel'
     """
-    from src.players.models import PlayerDB
+    obj, typ = identify_object(inp)
+    if typ == objtype:
+        return obj
     if objtype == 'player':
-        if type(inp) == PlayerDB:
-            return inp
-        if hasattr(inp, 'player'):
-            return inp.player
-        else:
-            umatch = PlayerDB.objects.filter(user__username__iexact=inp)
-            if umatch:
-                return umatch[0]
+        if typ == 'object': return obj.player
+        if typ == 'string': return _PlayerDB.objects.get(user_username__iexact=obj)
+        if typ == 'dbref': return _PlayerDB.objects.get(id=obj)
+        print objtype, inp, obj, typ, type(inp)
+        raise CommError()
+    elif objtype == 'object':
+        if typ == 'player': return obj.obj
+        if typ == 'string': return _ObjectDB.objects.get(db_key__iexact=obj)
+        if typ == 'dbref': return _ObjectDB.objects.get(id=obj)
+        print objtype, inp, obj, typ, type(inp)
+        raise CommError()
+    elif objtype == 'channel':
+        if typ == 'string': return _Channel.objects.get(db_key__iexact=obj)
+        if typ == 'dbref': return _Channel.objects.get(id=obj)
+        print objtype, inp, obj, typ, type(inp)
+        raise CommError()
     elif objtype == 'external':
-        from src.comms.models import ExternalChannelConnection
-        if type (inp) == ExternalChannelConnection:
-            return inp
-        umatch = ExternalChannelConnection.objects.filter(db_key=inp)
-        if umatch:
-            return umatch[0]
-    else:
-        # have to import this way to avoid circular imports
-        from src.comms.models import Channel
-        #= ContentType.objects.get(app_label="comms",
-        #                                  model="channel").model_class()
-        if type(inp) == Channel:
-            return inp
-        cmatch = Channel.objects.filter(db_key__iexact=inp)
-        if cmatch:
-            return cmatch[0]
-    return None
+        if typ == 'string': return _ExternalConnection.objects.get(db_key=inp)
+        if typ == 'dbref': return _ExternalConnection.objects.get(id=obj)
+        print objtype, inp, obj, typ, type(inp)
+        raise CommError()
 
 #
 # Msg manager
@@ -76,106 +129,68 @@ class MsgManager(models.Manager):
      message_search (equivalent to ev.search_messages)
     """
 
+    def identify_object(self, obj):
+        "method version for easy access"
+        return identify_object(obj)
+
     def get_message_by_id(self, idnum):
         "Retrieve message by its id."
         try:
-            idnum = int(idnum)
-            return self.get(id=idnum)
+            return self.get(id=self.dbref(idnum))
         except Exception:
             return None
 
-    def get_messages_by_sender(self, player):
+    def get_messages_by_sender(self, obj, exclude_channel_messages=False):
         """
-        Get all messages sent by one player
-        """
-        player = to_object(player, objtype='player')
-        if not player:
-            return None
-        return self.filter(db_sender=player).exclude(db_hide_from_sender=True)
+        Get all messages sent by one entity - this could be either a player or an object
 
-    def get_messages_by_receiver(self, receiver):
+        only_non_channel: only return messages -not- aimed at a channel (e.g. private tells)
         """
-        Get all messages sent to one player
+        obj, typ = identify_object(obj)
+        if exclude_channel_messages:
+            # explicitly exclude channel recipients
+            if typ == 'player':
+                return list(self.filter(db_sender_players=obj, db_receivers_channels__isnull=True).exclude(db_hide_from_players=obj))
+            elif typ == 'object':
+                return list(self.filter(db_sender_objects=obj, db_receivers_channels__isnull=True).exclude(db_hide_from_objects=obj))
+            else:
+                raise CommError
+        else:
+            # get everything, channel or not
+            if typ == 'player':
+                return list(self.filter(db_sender_players=obj).exclude(db_hide_from_players=obj))
+            elif typ == 'object':
+                return list(self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj))
+            else:
+                raise CommError
+
+    def get_messages_by_receiver(self, obj):
         """
-        receiver = to_object(receiver)
-        if not receiver:
-            return None
-        return [msg for msg in self.all()
-                if receiver in msg.receivers
-                and receiver not in msg.hide_from_receivers]
+        Get all messages sent to one give recipient
+        """
+        obj, typ = identify_object(obj)
+        if typ == 'player':
+            return list(self.filter(db_receivers_players=obj).exclude(db_hide_from_players=obj))
+        elif typ == 'object':
+            return list(self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj))
+        elif typ == 'channel':
+            return list(self.filter(db_receivers_channels=obj).exclude(db_hide_from_channels=obj))
+        else:
+            raise CommError
 
     def get_messages_by_channel(self, channel):
         """
         Get all messages sent to one channel
         """
-        channel = to_object(channel, objtype='channel')
-        if not channel:
-            return None
-        return [msg for msg in self.all()
-                if channel in msg.channels
-                and channel not in msg.hide_from_channels]
+        return self.filter(db_receivers_channels=channel).exclude(db_hide_from_channels=channel)
 
-    #TODO add search limited by send_times
-    def text_search(self, searchstring, filterdict=None):
-        """
-        Returns all messages that contain the matching
-        search string. To avoid too many results, and also
-        since this can be a very computing-
-        heavy operation, it's recommended to be filtered
-        by at least channel or sender/receiver.
-        searchstring - string to search for
-        filterdict -
-            {'channels':[list],
-             'senders':[list],
-             'receivers':[list]}
-            lists can contain either the name/keys of the
-            objects or the actual objects to filter by.
-        """
-
-        if filterdict:
-            # obtain valid objects for all filters
-            channels = [chan for chan in
-                        [to_object(chan, objtype='channel')
-                         for chan in filterdict.get('channels',[])]
-                        if chan]
-            senders = [sender for sender in
-                       [to_object(sender)
-                        for sender in filterdict.get('senders',[])]
-                        if sender]
-            receivers = [receiver for receiver in
-                         [to_object(receiver)
-                          for receiver in filterdict.get('receivers',[])]
-                         if receiver]
-            # filter the messages lazily using the filter objects
-            msgs = []
-            for sender in senders:
-                msgs = list(sender.message_set.filter(
-                        db_message__icontains=searchstring))
-            for receiver in receivers:
-                rec_msgs = receiver.message_set.filter(
-                        db_message__icontains=searchstring)
-                if msgs:
-                    msgs = [msg for msg in rec_msgs if msg in msgs]
-                else:
-                    msgs = rec_msgs
-            for channel in channels:
-                chan_msgs = list(channel.message_set.filter(
-                        db_message__icontains=searchstring))
-                if msgs:
-                    msgs = [msg for msg in chan_msgs if msg in msgs]
-                else:
-                    msgs = chan_msgs
-            return list(set(msgs))
-        return list(self.all().filter(db_message__icontains=searchstring))
-
-    def message_search(self, sender=None, receiver=None, channel=None, freetext=None, dbref=None):
+    def message_search(self, sender=None, receiver=None, freetext=None, dbref=None):
         """
         Search the message database for particular messages. At least one
         of the arguments must be given to do a search.
 
-        sender - get messages sent by a particular player
-        receiver - get messages received by a certain player or players
-        channel - get messages sent to a particular channel or channels
+        sender - get messages sent by a particular player or object
+        receiver - get messages received by a certain player,object or channel
         freetext - Search for a text string in a message.
                    NOTE: This can potentially be slow, so make sure to supply
                    one of the other arguments to limit the search.
@@ -183,35 +198,41 @@ class MsgManager(models.Manager):
                 all other search crieteria since it's unique and
                 always gives a list with only one match.
         """
+        # unique msg id
         if dbref:
-            return self.filter(id=dbref)
+            msg = self.objects.filter(id=dbref)
+            if msg:
+                return msg[0]
+
+        # We use Q objects to gradually build up the query - this way we only need to do one
+        # database lookup at the end rather than gradually refining with multiple filter:s.
+        # Django Note: Q objects can be combined with & and | (=AND,OR). ~ negates the queryset
+
+        # filter by sender
+        sender, styp = identify_object(sender)
+        if styp == 'player':
+            sender_restrict = Q(db_sender_players=sender) & ~Q(db_hide_from_players=sender)
+        elif styp == 'object':
+            sender_restrict = Q(db_sender_objects=sender) & ~Q(db_hide_from_objects=sender)
+        else:
+            sender_restrict = Q()
+        # filter by receiver
+        receiver, rtyp = identify_object(receiver)
+        if rtyp == 'player':
+            receiver_restrict = Q(db_receivers_players=receiver) & ~Q(db_hide_from_players=receiver)
+        elif rtyp == 'object':
+            receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(db_hide_from_objects=receiver)
+        elif rtyp == 'channel':
+            receiver_restrict = Q(db_receivers_channels=receiver) & ~Q(db_hide_from_channels=receiver)
+        else:
+            receiver_restrict = Q()
+        # filter by full text
         if freetext:
-            if sender:
-                sender = [sender]
-            if receiver and not is_iter(receiver):
-                receiver = [receiver]
-            if channel and not is_iter(channel):
-                channel = [channel]
-            filterdict = {"senders":sender,
-                          "receivers":receiver,
-                          "channels":channel}
-            return self.textsearch(freetext, filterdict)
-        msgs = []
-        if sender:
-            msgs = self.get_messages_by_sender(sender)
-        if receiver:
-            rec_msgs = self.get_messages_by_receiver(receiver)
-            if msgs:
-                msgs = [msg for msg in rec_msgs if msg in msgs]
-            else:
-                msgs = rec_msgs
-        if channel:
-            chan_msgs = self.get_messaqge_by_channel(channel)
-            if msgs:
-                msgs = [msg for msg in chan_msgs if msg in msgs]
-            else:
-                msgs = chan_msgs
-        return msgs
+            fulltext_restrict = Q(db_title__icontains=freetext) | Q(db_message__icontains=freetext)
+        else:
+            fulltext_restrict = Q()
+        # execute the query
+        return list(self.filter(sender_restrict & receiver_restrict & fulltext_restrict))
 
 #
 # Channel manager
@@ -339,10 +360,8 @@ class PlayerChannelConnectionManager(models.Manager):
         player = to_object(player)
         return self.filter(db_player=player)
 
-    def has_connection(self, player, channel):
+    def has_player_connection(self, player, channel):
         "Checks so a connection exists player<->channel"
-        player = to_object(player)
-        channel = to_object(channel, objtype="channel")
         if player and channel:
             return self.filter(db_player=player).filter(db_channel=channel).count() > 0
         return False
