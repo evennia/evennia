@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Get Evennia version
 #------------------------------------------------------------
 try:
-    f = open(os.pardir + os.sep + 'VERSION', 'r''')
+    f = open(os.pardir + os.sep + 'VERSION.txt', 'r''')
     VERSION = "%s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
     f.close()
 except IOError:
@@ -94,7 +94,11 @@ from src.settings_default import *
 ######################################################################
 
 ######################################################################
-# Config for Django web features
+# Process Pool setup
+######################################################################
+
+######################################################################
+# Django web features
 ######################################################################
 
 ######################################################################
@@ -117,7 +121,16 @@ SECRET_KEY = '%s'
     # obs - this string cannot be under i18n since settings didn't exist yet.
     print """
     Welcome to Evennia (version %(version)s)!
-    We created a fresh settings.py file for you.""" % {'version': VERSION}
+
+    This looks like your first startup so we created a fresh
+    game/settings.py file for you. No database has yet been created,
+    so you may configure your settings file now if you want. If you
+    are just playing around to test things out, you don't have to
+    touch anything.
+
+    (re)run 'python manage.py syncdb' once you are ready to continue.
+
+    """ % {'version': VERSION}
 
 
 #------------------------------------------------------------

@@ -337,7 +337,7 @@ RSS_ENABLED=False
 RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
 
 ######################################################################
-# PROCPOOL setup
+# Process Pool setup
 ######################################################################
 
 # Activates the Twisted AMPoule process pool. This creates a pool
