@@ -347,7 +347,7 @@ RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
 # multiple processes). But it may be slower for some
 # combinations of database and operating system. Also, creating
 # objects from another process will require re-syncing of caches.
-PROCPOOL_ENABLED = True
+PROCPOOL_ENABLED = False
 # relay process stdout to log (debug mode, very spammy)
 PROCPOOL_DEBUG = False
 # max/min size of the process pool. Will expand up to max limit on demand.
