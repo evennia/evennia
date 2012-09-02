@@ -21,6 +21,11 @@ except ImportError:
 
 ENCODINGS = settings.ENCODINGS
 _LOGGER = None
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
+
+
 
 def is_iter(iterable):
     """
@@ -490,6 +495,8 @@ def to_pickle(data, do_pickle=True, emptypickle=True):
             return tuple(iter_db2id(val) for val in item)
         elif dtype == dict:
             return dict((key, iter_db2id(val)) for key, val in item.items())
+        elif hasattr(item, '__iter__'):
+            return [iter_db2id(val) for val in item]
         else:
             item = _TO_DBOBJ(item)
             natural_key = _FROM_MODEL_MAP[hasattr(item, "id") and hasattr(item, '__class__') and item.__class__.__name__.lower()]
@@ -501,10 +508,11 @@ def to_pickle(data, do_pickle=True, emptypickle=True):
     if do_pickle and not (not emptypickle and not data and data != False):
         return _DUMPS(data)
     return data
-
 _TO_MODEL_MAP = None
 _IS_PACKED_DBOBJ = lambda o: type(o)== tuple and len(o)==3 and o[0]=='__packed_dbobj__'
 _TO_TYPECLASS = lambda o: (hasattr(o, 'typeclass') and o.typeclass) or o
+from django.db import transaction
+@transaction.autocommit
 def from_pickle(data, do_pickle=True):
     """
     Converts back from a data stream prepared with to_pickle. This will
@@ -529,16 +537,56 @@ def from_pickle(data, do_pickle=True):
         if dtype in (basestring, int, float):
             return item
         elif _IS_PACKED_DBOBJ(item): # this is a tuple and must be done before tuple-check
-            return  _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[2]))
+            #print item[1], item[2]
+            if item[2]: #TODO Not sure why this could ever be None, but it can
+                return  _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[2]))
+            return None
         elif dtype == tuple:
             return tuple(iter_id2db(val) for val in item)
         elif dtype == dict:
             return dict((key, iter_id2db(val)) for key, val in item.items())
+        elif hasattr(item, '__iter__'):
+            return [iter_id2db(val) for val in item]
         return item
     if do_pickle:
         data = _LOADS(data)
+    # we have to make sure the database is in a safe state
+    # (this is relevant for multiprocess operation)
+    transaction.commit()
     # do recursive conversion
     return iter_id2db(data)
+
+
+_TYPECLASSMODELS = None
+_OBJECTMODELS = None
+def clean_object_caches(obj):
+    """
+    Clean all object caches on the given object
+    """
+    global _TYPECLASSMODELS, _OBJECTMODELS
+    if not _TYPECLASSMODELS:
+        from src.typeclasses import models as _TYPECLASSMODELS
+    if not _OBJECTMODELS:
+        from src.objects import models as _OBJECTMODELS
+
+    #print "recaching:", obj
+    if not obj:
+        return
+    obj = hasattr(obj, "dbobj") and obj.dbobj or obj
+    # contents cache
+    try:
+        _SA(obj, "_contents_cache", None)
+    except AttributeError:
+        pass
+
+    # on-object property cache
+    [_DA(obj, cname) for cname in obj.__dict__.keys() if cname.startswith("_cached_db_")]
+    try:
+        hashid = _GA(obj, "hashid")
+        hasid = obj.hashid
+        _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
+    except AttributeError:
+        pass
 
 _PPOOL = None
 _PCMD = None
@@ -625,6 +673,9 @@ def run_async(to_execute, *args, **kwargs):
     def convert_return(f):
         def func(ret, *args, **kwargs):
             rval = ret["response"] and from_pickle(ret["response"])
+            reca = ret["recached"] and from_pickle(ret["recached"])
+            # recache all indicated objects
+            [clean_object_caches(obj) for obj in reca]
             if f: return f(rval, *args, **kwargs)
             else: return rval
         return func
@@ -632,6 +683,7 @@ def run_async(to_execute, *args, **kwargs):
         def func(err, *args, **kwargs):
             err.trap(Exception)
             err = err.getErrorMessage()
+            print err
             if f:
                 return f(err, *args, **kwargs)
             else:

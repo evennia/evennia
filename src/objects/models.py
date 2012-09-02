@@ -41,6 +41,10 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+def clean_content_cache(obj):
+    "Clean obj's content cache"
+    _SA(obj, "_contents_cache", None)
+
 #------------------------------------------------------------
 #
 # ObjAttribute

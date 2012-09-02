@@ -17,6 +17,7 @@ It can be customized via settings.PROCPOOL_*
 from twisted.protocols import amp
 from src.utils.ampoule.child import AMPChild
 from src.utils.utils import to_pickle, from_pickle
+from src import PROC_MODIFIED_OBJS
 
 # handle global setups
 _LOGGER = None
@@ -43,11 +44,11 @@ class ExecuteCode(amp.Command):
     arguments = [('source', amp.String()),
                  ('environment', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
-    response = [('response', amp.String())]
+    response = [('response', amp.String()),
+                ('recached', amp.String())]
 
 
 # Evennia multiprocess child process template
-
 class ProcPoolChild(AMPChild):
     """
     This is describing what happens on the subprocess side.
@@ -58,7 +59,6 @@ class ProcPoolChild(AMPChild):
     executecode - a remote code execution environment
 
     """
-
     def executecode(self, source, environment):
         """
         Remote code execution
@@ -82,8 +82,9 @@ class ProcPoolChild(AMPChild):
         a list being return. The return value is pickled
         and thus allows for returning any pickleable data.
 
-
         """
+
+
         import ev, utils
         class Ret(object):
             "Helper class for holding returns from exec"
@@ -114,14 +115,24 @@ class ProcPoolChild(AMPChild):
                     from src.utils.logger import logger as _LOGGER
                 _LOGGER.log_trace("Could not find remote object")
             available_vars.update(environment)
+        # try to execute with eval first
         try:
             ret = eval(source, {}, available_vars)
-            if ret != None:
-                return {'response':to_pickle(ret, emptypickle=False) or ""}
+            ret = to_pickle(ret, emptypickle=False) or ""
         except Exception:
             # use exec instead
             exec source in available_vars
-
-        return {'response': _return.get_returns()}
+            ret = _return.get_returns()
+        # get the list of affected objects to recache
+        objs = list(set(PROC_MODIFIED_OBJS))
+        # we need to include the locations too, to update their content caches
+        objs = objs + list(set([o.location for o in objs if hasattr(o, "location") and o.location]))
+        #print "objs:", objs
+        #print "to_pickle", to_pickle(objs, emptypickle=False, do_pickle=False)
+        to_recache = to_pickle(objs, emptypickle=False) or ""
+        # empty the list without loosing memory reference
+        PROC_MODIFIED_OBJS[:] = []
+        return {'response': ret,
+                'recached': to_recache}
     ExecuteCode.responder(executecode)
 

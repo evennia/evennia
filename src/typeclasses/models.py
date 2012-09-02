@@ -71,13 +71,16 @@ def _set_cache(obj, name, val):
     _SA(obj, "db_%s" % name, val)
     _GA(obj, "save")()
     _SA(obj, "_cached_db_%s" % name, val)
-
 def _del_cache(obj, name):
     "On-model cache deleter"
     try:
         _DA(obj, "_cached_db_%s" % name)
     except AttributeError:
         pass
+def _clean_cache(obj):
+    "On-model cache resetter"
+    [_DA(obj, cname) for cname in obj.__dict__.keys() if cname.startswith("_cached_db_")]
+
 
 # this cache holds the attributes loaded on objects, one dictionary
 # of attributes per object.

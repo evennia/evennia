@@ -7,11 +7,40 @@ leave caching unexpectedly (no use if WeakRefs).
 Also adds cache_size() for monitoring the size of the cache.
 """
 
+import os
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, \
   post_syncdb
 
 from manager import SharedMemoryManager
+
+# determine if our current pid is different from the server PID (i.e.
+# if we are in a subprocess or not)
+from src import PROC_MODIFIED_OBJS
+def _get_pids():
+    """
+    Get the PID (Process ID) by trying to access
+    an PID file.
+    """
+    from django.conf import settings
+    server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
+    portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
+    server_pid, portal_pid = None, None
+    if os.path.exists(server_pidfile):
+        f = open(server_pidfile, 'r')
+        server_pid = f.read()
+        f.close()
+    if os.path.exists(portal_pidfile):
+        f = open(portal_pidfile, 'r')
+        portal_pid = f.read()
+        f.close()
+    if server_pid and portal_pid:
+        return int(server_pid), int(portal_pid)
+    return None, None
+_SELF_PID = os.getpid()
+_SERVER_PID = None
+_PORTAL_PID = None
+_IS_SUBPROCESS = False
 
 
 class SharedMemoryModelBase(ModelBase):
@@ -130,8 +159,14 @@ class SharedMemoryModel(Model):
 
     def save(cls, *args, **kwargs):
         "overload spot for saving"
+        global _SERVER_PID, _PORTAL_PID, _IS_SUBPROCESS, _SELF_PID
+        if not _SERVER_PID and not _PORTAL_PID:
+            _SERVER_PID, _PORTAL_PID = _get_pids()
+            _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and (_SERVER_PID != _SELF_PID) and (_PORTAL_PID != _SELF_PID)
+        if _IS_SUBPROCESS:
+            #print "storing in PROC_MODIFIED_OBJS:", cls.db_key, cls.id
+            PROC_MODIFIED_OBJS.append(cls)
         super(SharedMemoryModel, cls).save(*args, **kwargs)
-
 
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):

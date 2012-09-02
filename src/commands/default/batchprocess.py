@@ -278,7 +278,7 @@ class CmdBatchCommands(MuxCommand):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
                     purge_processor(caller)
                 def errback(e):
-                    caller.msg("  {RError from processor: 'e'")
+                    caller.msg("  {RError from processor: '%s'" % e)
                     purge_processor(caller)
                 utils.run_async(_PROCPOOL_BATCHCMD_SOURCE, commands=commands, caller=caller, at_return=callback, at_err=errback)
             else:
@@ -372,7 +372,7 @@ class CmdBatchCode(MuxCommand):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
                     purge_processor(caller)
                 def errback(e):
-                    caller.msg("  {RError from processor: 'e'")
+                    caller.msg("  {RError from processor: '%s'" % e)
                     purge_processor(caller)
                 utils.run_async(_PROCPOOL_BATCHCODE_SOURCE, commands=commands, caller=caller, at_return=callback, at_err=errback)
             else:
