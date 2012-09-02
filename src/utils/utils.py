@@ -20,6 +20,7 @@ except ImportError:
     import pickle
 
 ENCODINGS = settings.ENCODINGS
+_LOGGER = None
 
 def is_iter(iterable):
     """
@@ -556,6 +557,18 @@ def run_async(to_execute, *args, **kwargs):
                If a string, this string must be a source snippet.
                This string will executed using the ProcPool is
                enabled, if not this will raise a RunTimeError.
+
+    reserved kwargs:
+        'at_return' -should point to a callable with one argument.
+                    It will be called with the return value from
+                    to_execute.
+        'at_return_kwargs' - this dictionary which be used as keyword
+                             arguments to the at_return callback.
+        'at_err' - this will be called with a Failure instance if
+                       there is an error in to_execute.
+        'at_err_kwargs' - this dictionary will be used as keyword
+                          arguments to the at_err errback.
+
     *args   - if to_execute is a callable, these args will be used
               as arguments for that function. If to_execute is a string
               *args are not used.
@@ -563,18 +576,6 @@ def run_async(to_execute, *args, **kwargs):
               as keyword arguments in that function. If a string, they
               instead are used to define the executable environment
               that should be available to execute the code in to_execute.
-
-              There are two special (optional) kwargs. These are available
-              both if to_execute is a callable or a source string.
-                'at_return' -should point to a callable with one argument.
-                            It will be called with the return value from
-                            to_execute.
-                'at_return_kwargs' - this dictionary which be used as keyword
-                                     arguments to the at_return callback.
-                'at_err' - this will be called with a Failure instance if
-                               there is an error in to_execute.
-                'at_err_kwargs' - this dictionary will be used as keyword
-                                  arguments to the at_err errback.
 
     run_async will either relay the code to a thread or to a processPool
     depending on input and what is available in the system. To activate
@@ -615,19 +616,30 @@ def run_async(to_execute, *args, **kwargs):
     if not _PCMD:
         from src.server.procpool import ExecuteCode as _PCMD
 
-    # determine callbacks/errbacks
-    def default_errback(e):
-        from src.utils import logger
-        logger.log_trace(e)
+    # helper converters for callbacks/errbacks
     def convert_return(f):
-        def func(ret):
+        def func(ret, *args, **kwargs):
             rval = ret["response"] and from_pickle(ret["response"])
-            if f: return f(rval)
+            if f: return f(rval, *args, **kwargs)
             else: return rval
         return func
+    def convert_err(f):
+        def func(err, *args, **kwargs):
+            err.trap(Exception)
+            err = err.getErrorMessage()
+            if f:
+                return f(err, *args, **kwargs)
+            else:
+                global _LOGGER
+                if not _LOGGER:
+                    from src.utils import logger as _LOGGER
+                err = "Error reported from subprocess: '%s'" % err
+                _LOGGER.log_errmsg(err)
+        return func
 
+    # handle special reserved input kwargs
     callback = convert_return(kwargs.pop("at_return", None))
-    errback = kwargs.pop("at_err", None)
+    errback = convert_err(kwargs.pop("at_err", None))
     callback_kwargs = kwargs.pop("at_return_kwargs", {})
     errback_kwargs = kwargs.pop("at_err_kwargs", {})
 
@@ -647,11 +659,7 @@ def run_async(to_execute, *args, **kwargs):
     # attach callbacks
     if callback:
         deferred.addCallback(callback, **callback_kwargs)
-    if errback:
-        deferred.addCallback(errback, **errback_kwargs)
-    # always add a logging errback as a last catch
-    deferred.addErrback(default_errback)
-
+    deferred.addErrback(errback, **errback_kwargs)
 
 def check_evennia_dependencies():
     """

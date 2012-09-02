@@ -121,6 +121,7 @@ class ProcPoolChild(AMPChild):
         except Exception:
             # use exec instead
             exec source in available_vars
+
         return {'response': _return.get_returns()}
     ExecuteCode.responder(executecode)
 
