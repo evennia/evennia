@@ -1,0 +1,20 @@
+
+AMPOULE
+-------
+
+https://launchpad.net/ampoule
+
+AMPoule is a process management system using Twisted spawnProcess
+functionality. It uses AMP to pipe messages to a process Pool that it
+manages. The service is called ProcPool in Evennia settings.
+
+AMPoule's very good, but unfortunately the source is very poorly
+documented.  Hence the source in this directory does not comform to
+Evennia's normally rigid standards - for now we try to edit it as
+little as possible so as to make it easy to apply upstream updates
+down the line. 
+
+Changes made by Evennia are minor - it's mainly limiting spam to the
+log and an added ability to turn this on/off through settings. Most
+Evennia related code are found in src/server/procpool.py and
+src/server/server.py.

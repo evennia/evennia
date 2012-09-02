@@ -102,7 +102,7 @@ class Portal(object):
         """
         print ' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
         if AMP_ENABLED:
-            print "  amp (Server): %s" % AMP_PORT
+            print "  amp (to Server): %s" % AMP_PORT
         if TELNET_ENABLED:
             ports = ", ".join([str(port) for port in TELNET_PORTS])
             ifaces = ",".join([" %s" % iface for iface in TELNET_INTERFACES if iface != '0.0.0.0'])

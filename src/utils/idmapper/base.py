@@ -128,6 +128,11 @@ class SharedMemoryModel(Model):
         cls.__instance_cache__ = {} #WeakValueDictionary()
     flush_instance_cache = classmethod(flush_instance_cache)
 
+    def save(cls, *args, **kwargs):
+        "overload spot for saving"
+        super(SharedMemoryModel, cls).save(*args, **kwargs)
+
+
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):
     for model in SharedMemoryModel.__subclasses__():

@@ -324,7 +324,7 @@ IRC_ENABLED = False
 # discussion channel 'ievennia' is on server01.mudbytes.net:5000.
 IMC2_ENABLED = False
 IMC2_NETWORK = "server01.mudbytes.net"
-IMC2_PORT = 5000
+IMC2_PORT = 5000 # this is the imc2 port, not on localhost
 IMC2_CLIENT_PWD = ""
 IMC2_SERVER_PWD = ""
 # RSS allows to connect RSS feeds (from forum updates, blogs etc) to
@@ -337,7 +337,44 @@ RSS_ENABLED=False
 RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
 
 ######################################################################
-# Config for Django web features
+# PROCPOOL setup
+######################################################################
+
+# Activates the Twisted AMPoule process pool. This creates a pool
+# of subprocesses. When using e.g. utils.run_async Evennia will then
+# be able to offload long-running processes to the pool. Process pooling
+# shows much better parallelism than threading (and also makes use of
+# multiple processes). But it may be slower for some
+# combinations of database and operating system. Also, creating
+# objects from another process will require re-syncing of caches.
+PROCPOOL_ENABLED = True
+# relay process stdout to log (debug mode, very spammy)
+PROCPOOL_DEBUG = False
+# max/min size of the process pool. Will expand up to max limit on demand.
+PROCPOOL_MIN_NPROC = 5
+PROCPOOL_MAX_NPROC = 20
+# after sending a command, this is the maximum time in seconds the process
+# may run without returning. After this time the process will be killed
+PROCPOOL_TIMEOUT = None
+# maximum time (seconds) a process may idle before being pruned from pool (if pool bigger than minsize)
+PROCPOOL_IDLETIME = 20
+# only change if the port clashes with something else on the system
+PROCPOOL_HOST = 'localhost'
+PROCPOOL_PORT = 5001
+# 0.0.0.0 means listening to all interfaces
+PROCPOOL_INTERFACE = '0.0.0.0'
+# user-id and group-id to run the processes as (for OS:es supporting this).
+# If you plan to run unsafe code one could experiment with setting this
+# to an unprivileged user.
+PROCPOOL_UID = None
+PROCPOOL_GID = None
+# real path to a directory where all processes will be run. If
+# not given, processes will be executed in game/.
+PROCPOOL_DIRECTORY = None
+
+
+######################################################################
+# Django web features
 ######################################################################
 
 # While DEBUG is False, show a regular server error page on the web
