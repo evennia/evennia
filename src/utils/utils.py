@@ -557,6 +557,13 @@ def run_async(to_execute, *args, **kwargs):
                enabled, if not this will raise a RunTimeError.
 
     reserved kwargs:
+        'use_thread' (bool) - this only works with callables (not code).
+                     It forces the code to run in a thread instead
+                     of using the Process Pool, even if the latter
+                     is available. This could be useful if you want
+                     to make sure to not get out of sync with the
+                     main process (such as accessing in-memory global
+                     properties)
         'at_return' -should point to a callable with one argument.
                     It will be called with the return value from
                     to_execute.
@@ -635,13 +642,15 @@ def run_async(to_execute, *args, **kwargs):
                 _LOGGER.log_errmsg(err)
         return func
 
+    use_thread = kwargs.pop("use_thread", False)
+
     # handle special reserved input kwargs
     callback = convert_return(kwargs.pop("at_return", None))
     errback = convert_err(kwargs.pop("at_err", None))
     callback_kwargs = kwargs.pop("at_return_kwargs", {})
     errback_kwargs = kwargs.pop("at_err_kwargs", {})
 
-    if _PPOOL:
+    if _PPOOL and not use_thread:
         # process pool is running
         if isinstance(to_execute, basestring):
             # run source code in process pool

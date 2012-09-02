@@ -347,7 +347,11 @@ RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
 # multiple processes). But it may be slower for some
 # combinations of database and operating system. Also, creating
 # objects from another process will require re-syncing of caches.
-PROCPOOL_ENABLED = False
+# ProcPool is disabled by default on SQlite3 since it cannot handle
+# multiple process-writes very well. It should work fine with other supported
+# databases. If you plan to change your database, copy the following line
+# to your settings file to have it deactivate automatically for sqlite3.
+PROCPOOL_ENABLED = not DATABASES["default"]["ENGINE"] == 'django.db.backends.sqlite3'
 # relay process stdout to log (debug mode, very spammy)
 PROCPOOL_DEBUG = False
 # max/min size of the process pool. Will expand up to max limit on demand.
