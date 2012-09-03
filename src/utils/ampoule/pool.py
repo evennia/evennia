@@ -134,7 +134,7 @@ class ProcessPool(object):
         Adds the newly created child process to the pool.
         """
         def restart(child, reason):
-            log.msg("FATAL: Restarting after %s" % (reason,))
+            #log.msg("FATAL: Restarting after %s" % (reason,))
             self._pruneProcess(child)
             return self.startAWorker()
 
