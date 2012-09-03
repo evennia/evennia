@@ -40,7 +40,7 @@ from twisted.internet import reactor, protocol
 from twisted.internet.task import LoopingCall
 
 # Tack on the root evennia directory to the python path and initialize django settings
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from django.core.management import setup_environ
 from game import settings
 setup_environ(settings)
@@ -278,7 +278,7 @@ if __name__ == '__main__':
         action_modpath = settings.DUMMYRUNNER_ACTIONS_MODULE
     except AttributeError:
         # use default
-        action_modpath = "src.utils.dummyrunner_actions"
+        action_modpath = "src.utils.dummyrunner.dummyrunner_actions"
     actions = utils.variable_from_module(action_modpath, "ACTIONS")
 
     print "Connecting %i dummy client(s) to port %i using a %i second timestep ... " % (nclients, port, timestep)
