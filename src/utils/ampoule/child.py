@@ -11,6 +11,7 @@ class AMPChild(amp.AMP):
     def connectionLost(self, reason):
         amp.AMP.connectionLost(self, reason)
         from twisted.internet import reactor
+        print "connectionLost called", reason
         try:
             reactor.stop()
         except error.ReactorNotRunning:
@@ -27,6 +28,9 @@ class AMPChild(amp.AMP):
             # error condition and thus we return a -1 error returncode.
             import os
             os._exit(-1)
+
+    def processEnded(self, *args, **kwargs):
+        print "processEnded called", args, kwargs
 
     def shutdown(self):
         """

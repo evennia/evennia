@@ -806,7 +806,7 @@ def validate_code(codestring):
         raise LimitedExecCodeException(codestring, checker.errors)
     return True
 
-def limited_exec(code, context = {}, timeout_secs = 2, retobj=None):
+def limited_exec(code, context = {}, timeout_secs=2, retobj=None):
     """
     Validate source code and make sure it contains no unauthorized
     expression/statements as configured via 'UNALLOWED_AST_NODES' and
@@ -833,7 +833,7 @@ def limited_exec(code, context = {}, timeout_secs = 2, retobj=None):
         errback = lambda e: retobj.msg(e)
         # run code only after validation has completed
         if validate_context(context) and validate_code(code):
-            run_async(code, *context, at_return=callback, at_err=errback)
+            run_async(code, *context, proc_timeout=timeout_secs, at_return=callback, at_err=errback)
     else:
         # run code only after validation has completed
         if validate_context(context) and validate_code(code):
