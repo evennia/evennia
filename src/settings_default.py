@@ -352,7 +352,7 @@ RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
 # multiple process-writes very well. It should work fine with other supported
 # databases. If you plan to change your database, copy the following line
 # to your settings file to have it deactivate automatically for sqlite3.
-PROCPOOL_ENABLED = not DATABASES["default"]["ENGINE"] == 'django.db.backends.sqlite3'
+PROCPOOL_ENABLED = False # not DATABASES["default"]["ENGINE"] == 'django.db.backends.sqlite3'
 # relay process stdout to log (debug mode, very spammy)
 PROCPOOL_DEBUG = False
 # max/min size of the process pool. Will expand up to max limit on demand.
