@@ -85,6 +85,8 @@ from django.core.management import setup_environ
 from game import settings
 setup_environ(settings)
 from src.utils.utils import run_async
+
+_PROCPOOL_ENABLED = settings.PROCPOOL_ENABLED
 _LOGGER = None
 
 #------------------------------------------------------------
@@ -828,17 +830,18 @@ def limited_exec(code, context = {}, timeout_secs=2, retobj=None):
       if code did not execute within the given timelimit =
         LimitedExecTimeoutException
     """
-    if retobj:
-        callback = lambda r: retobj.msg(r)
-        errback = lambda e: retobj.msg(e)
+    if validate_context(context) and validate_code(code):
         # run code only after validation has completed
-        if validate_context(context) and validate_code(code):
-            run_async(code, *context, proc_timeout=timeout_secs, at_return=callback, at_err=errback)
-    else:
-        # run code only after validation has completed
-        if validate_context(context) and validate_code(code):
-            run_async(code, *context)
-
+        if _PROCPOOL_ENABLED:
+            if retobj:
+                callback = lambda r: retobj.msg(r)
+                errback = lambda e: retobj.msg(e)
+                run_async(code, *context, proc_timeout=timeout_secs, at_return=callback, at_err=errback)
+            else:
+                run_async(code, *context, proc_timeout=timeout_secs)
+        else:
+            # run in-process
+            exec code in context
 
 
 #----------------------------------------------------------------------
