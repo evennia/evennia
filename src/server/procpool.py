@@ -84,8 +84,6 @@ class ProcPoolChild(AMPChild):
 
         """
 
-
-        import ev, utils
         class Ret(object):
             "Helper class for holding returns from exec"
             def __init__(self):
@@ -102,9 +100,7 @@ class ProcPoolChild(AMPChild):
                     return to_pickle(self.returns, emptypickle=False) or ""
         _return = Ret()
 
-        available_vars = {'ev':ev,
-                          'inherits_from':utils.inherits_from,
-                          '_return':_return}
+        available_vars = {'_return':_return}
         if environment:
             # load environment
             try:
@@ -118,7 +114,7 @@ class ProcPoolChild(AMPChild):
         # try to execute with eval first
         try:
             ret = eval(source, {}, available_vars)
-            ret = to_pickle(ret, emptypickle=False) or ""
+            ret = _return.get_returns() or to_pickle(ret, emptypickle=False) or ""
         except Exception:
             # use exec instead
             exec source in available_vars
