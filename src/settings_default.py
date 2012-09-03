@@ -222,9 +222,10 @@ BASE_OBJECT_TYPECLASS = "src.objects.objects.Object"
 BASE_CHARACTER_TYPECLASS = "src.objects.objects.Character"
 # Typeclass for rooms (fallback)
 BASE_ROOM_TYPECLASS = "src.objects.objects.Room"
-# Typeclass for Exit objects (fallback)
+# Typeclass for Exit objects (fallback).
 BASE_EXIT_TYPECLASS = "src.objects.objects.Exit"
-# Typeclass for Scripts (fallback)
+# Typeclass for Scripts (fallback). You usually don't need to change this
+# but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # The home location for new characters. This must be a unique
 # dbref (default is Limbo #2). If you want more advanced control over

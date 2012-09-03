@@ -84,7 +84,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from django.core.management import setup_environ
 from game import settings
 setup_environ(settings)
-from ev import logger
+from src.utils.utils import run_async
+_LOGGER = None
 
 #------------------------------------------------------------
 # Evennia-specific blocks
@@ -308,9 +309,12 @@ class Evlang(object):
         """
         def alarm(codestring):
             "store the code of too-long-running scripts"
+            global _LOGGER
+            if not _LOGGER:
+                from src.utils import logger as _LOGGER
             self.timedout_codestrings.append(codestring)
             err = "Evlang code '%s' exceeded allowed execution time (>%ss)." % (codestring, timeout)
-            logger.log_errmsg("EVLANG time exceeded: caller: %s, scripter: %s, code: %s" % (caller, scripter, codestring))
+            _LOGGER.log_errmsg("EVLANG time exceeded: caller: %s, scripter: %s, code: %s" % (caller, scripter, codestring))
             if not self.msg(err, scripter, caller):
                 raise EvlangError(err)
         def errback(f):
@@ -702,10 +706,10 @@ class LimitedExecVisitor(object):
 
     def visitPower(self, node, *args):
         "Make sure power-of operations don't get too big"
-        if node.left.value > 1000000 or node.right.value > 10000:
+        if node.left.value > 1000000 or node.right.value > 10:
            lineno = get_node_lineno(node)
            self.errors.append(LimitedExecAttrError( \
-              "power law index too big - restricted", lineno))
+              "power law solution too big - restricted", lineno))
 
     def ok(self, node, *args):
         "Default callback for 'harmless' AST nodes."
@@ -802,7 +806,7 @@ def validate_code(codestring):
         raise LimitedExecCodeException(codestring, checker.errors)
     return True
 
-def limited_exec(code, context = {}, timeout_secs = 2):
+def limited_exec(code, context = {}, timeout_secs = 2, retobj=None):
     """
     Validate source code and make sure it contains no unauthorized
     expression/statements as configured via 'UNALLOWED_AST_NODES' and
@@ -824,9 +828,16 @@ def limited_exec(code, context = {}, timeout_secs = 2):
       if code did not execute within the given timelimit =
         LimitedExecTimeoutException
     """
-    # run code only after validation has completed
-    if validate_context(context) and validate_code(code):
-        exec code in context
+    if retobj:
+        callback = lambda r: retobj.msg(r)
+        errback = lambda e: retobj.msg(e)
+        # run code only after validation has completed
+        if validate_context(context) and validate_code(code):
+            run_async(code, *context, at_return=callback, at_err=errback)
+    else:
+        # run code only after validation has completed
+        if validate_context(context) and validate_code(code):
+            run_async(code, *context)
 
 
 

@@ -4,7 +4,7 @@ Dice - rolls dice for roleplaying, in-game gambling or GM:ing
 Evennia contribution - Griatch 2012
 
 
-This module implements a full-fledge dice-roller and a 'dice' command to
+This module implements a full-fledged dice-roller and a 'dice' command to
 go with it. It uses standard RPG 'd'-syntax (e.g. 2d6 to roll two
 six-sided die) and also supports modifiers such as 3d6 + 5.
 
@@ -21,7 +21,7 @@ Installation:
 To use in your code, just import the roll_dice function from this module.
 
 To use  the dice/roll command, just import this module in your custom
-cmdset module and add the following line to the end of OOCCmdSet's
+cmdset module and add the following line to the end of DefaultCmdSet's
 at_cmdset_creation():
 
    self.add(dice.CmdDice())
@@ -93,7 +93,7 @@ RE_COND = re.compile(r"(<|>|<=|>=|!=|==)")
 
 class CmdDice(default_cmds.MuxCommand):
     """
-    roll a dice
+    roll dice
 
     Usage:
       dice[/switch] <nr>d<sides> [modifier] [success condition]
