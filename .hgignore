@@ -5,5 +5,18 @@ syntax: glob
 
 *.pyc
 *.swp
+*.old
+*.prof
+*.orig
+*.key
 *~
-*#
+\#*\#
+game/logs/*
+game/*.restart
+game/*.pid
+game/*.db3
+docs/sphinx/build/*
+docs/sphinx/wiki2rest/wiki2html/*
+docs/sphinx/wiki2rest/rest/*
+docs/sphinx/wiki2rest/html/*
+docs/sphinx/wiki2html/*
