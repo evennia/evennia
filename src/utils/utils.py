@@ -539,7 +539,7 @@ def from_pickle(data, do_pickle=True):
             return item
         elif _IS_PACKED_DBOBJ(item): # this is a tuple and must be done before tuple-check
             #print item[1], item[2]
-            if item[2]: #TODO Not sure why this could ever be None, but it can
+            if item[2]: #Not sure why this could ever be None, but it can
                 return  _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[2]))
             return None
         elif dtype == tuple:

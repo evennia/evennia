@@ -825,8 +825,20 @@ class ObjectDB(TypedObject):
                            <old_key>_copy by default.
         Returns: Object (copy of this one)
         """
-        if not new_key:
-            new_key = "%s_copy" % self.key
+        def find_clone_key():
+            """
+            Append 01, 02 etc to obj.key. Checks next higher number in the
+            same location, then adds the next number available
+
+            returns the new clone name on the form keyXX
+            """
+            key = self.key
+            num = 1
+            for obj in (obj for obj in self.location.contents
+                        if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
+                num += 1
+            return "%s%02i" % (key, num)
+        new_key = new_key or find_clone_key(self)
         return ObjectDB.objects.copy_object(self, new_key=new_key)
 
     delete_iter = 0
