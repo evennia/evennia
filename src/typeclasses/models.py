@@ -56,6 +56,7 @@ _DA = object.__delattr__
 _PLOADS = pickle.loads
 _PDUMPS = pickle.dumps
 
+
 # Property Cache mechanism.
 
 def _get_cache(obj, name):
@@ -889,6 +890,17 @@ class TypedObject(SharedMemoryModel):
             # try to look back to this very database object.)
             return _GA(_GA(self, 'typeclass'), propname)
 
+    def _hasattr(self, obj, attrname):
+        """
+        Loop-safe version of hasattr, to avoid running a lookup that
+        will be rerouted up the typeclass. Returns True/False.
+        """
+        try:
+            _GA(obj, attrname)
+            return True
+        except AttributeError:
+            return False
+
     #@property
     _dbid_cache = None
     def __dbid_get(self):
@@ -1504,7 +1516,7 @@ class TypedObject(SharedMemoryModel):
     def nattr(self, attribute_name=None, value=None, delete=False):
         """
         This is the equivalence of self.attr but for non-persistent
-        stores.
+        stores. Will not raise error but return None.
         """
         if attribute_name == None:
             # act as a list method
@@ -1515,11 +1527,11 @@ class TypedObject(SharedMemoryModel):
                         if not val.startswith['_']]
         elif delete == True:
             if hasattr(self.ndb, attribute_name):
-                _DA(self.db, attribute_name)
+                _DA(_GA(self, "db"), attribute_name)
         elif value == None:
             # act as a getter.
             if hasattr(self.ndb, attribute_name):
-                _GA(self.ndb, attribute_name)
+                _GA(_GA(self, "ndb"), attribute_name)
             else:
                 return None
         else:

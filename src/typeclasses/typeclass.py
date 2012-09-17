@@ -11,7 +11,6 @@ used by the typesystem or django itself.
 """
 
 from src.utils.logger import log_trace, log_errmsg
-from django.conf import settings
 
 __all__ = ("TypeClass",)
 
@@ -115,10 +114,11 @@ class TypeClass(object):
                 return _GA(dbobj, propname)
             except AttributeError:
                 try:
+                    #XXX deprecated
                     return _GA(dbobj,"get_attribute_raise")(propname)
                 except AttributeError:
                     string = "Object: '%s' not found on %s(#%s), nor on its typeclass %s."
-                    raise AttributeError(string % (propname, dbobj, dbobj.dbid, dbobj.typeclass_path))
+                    raise AttributeError(string % (propname, dbobj, _GA(dbobj, "dbid"), _GA(dbobj, "typeclass_path")))
 
     def __setattr__(self, propname, value):
         """
@@ -134,7 +134,6 @@ class TypeClass(object):
             string += " (protected: [%s])" % (", ".join(PROTECTED))
             log_errmsg(string % (self.name, propname))
             return
-
         try:
             dbobj = _GA(self, 'dbobj')
         except AttributeError:
@@ -148,19 +147,20 @@ class TypeClass(object):
                 _GA(dbobj, propname)
                 _SA(dbobj, propname, value)
             except AttributeError:
+                #XXX deprecated
                 dbobj.set_attribute(propname, value)
         else:
             _SA(self, propname, value)
 
-        def __eq__(self, other):
-            """
-            dbobj-recognized comparison
-            """
-            try:
-                return other == self or other == _GA(self, dbobj) or other == _GA(self, dbobj).user
-            except AttributeError:
-                # if self.dbobj.user fails it means the two previous comparisons failed already
-                return False
+    def __eq__(self, other):
+        """
+        dbobj-recognized comparison
+        """
+        try:
+            return other == self or other == _GA(self, dbobj) or other == _GA(self, dbobj).user
+        except AttributeError:
+            # if self.dbobj.user fails it means the two previous comparisons failed already
+            return False
 
 
     def __delattr__(self, propname):

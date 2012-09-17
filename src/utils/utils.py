@@ -34,7 +34,13 @@ def is_iter(iterable):
     they are actually iterable), since string iterations
     are usually not what we want to do with a string.
     """
-    return hasattr(iterable, '__iter__')
+    # use a try..except here to avoid a property
+    # lookup when using this from a typeclassed entity
+    try:
+        _GA(iterable, '__iter__')
+        return True
+    except AttributeError:
+        return False
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."

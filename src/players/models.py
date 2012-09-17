@@ -44,7 +44,6 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
-from django.contrib.contenttypes.models import ContentType
 
 from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.server.sessionhandler import SESSIONS
@@ -63,6 +62,8 @@ _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
+_TYPECLASS = None
 
 #------------------------------------------------------------
 #
@@ -199,8 +200,11 @@ class PlayerDB(TypedObject):
     #@obj.setter
     def obj_set(self, value):
         "Setter. Allows for self.obj = value"
-        from src.typeclasses.typeclass import TypeClass
-        if isinstance(value, TypeClass):
+        global _TYPECLASS
+        if not _TYPECLASS:
+            from src.typeclasses.typeclass import TypeClass as _TYPECLASS
+
+        if isinstance(value, _TYPECLASS):
             value = value.dbobj
         try:
             _set_cache(self, "obj", value)
@@ -260,7 +264,6 @@ class PlayerDB(TypedObject):
     #@is_connected.setter
     def is_connected_set(self, value):
         "Setter. Allows for self.is_connected = value"
-        print "set_is_connected:", self, value
         _set_cache(self, "is_connected", value)
     #@is_connected.deleter
     def is_connected_del(self):
@@ -356,21 +359,19 @@ class PlayerDB(TypedObject):
         Evennia -> User
         This is the main route for sending data back to the user from the server.
         """
-
         if from_obj:
             try:
-                from_obj.at_msg_send(outgoing_string, to_obj=self, data=data)
+                _GA(from_obj, "at_msg_send")(outgoing_string, to_obj=self, data=data)
             except Exception:
                 pass
-
-        if (object.__getattribute__(self, "character")
-            and not self.character.at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
+        if (_GA(self, "character") and not
+            _GA(self, "character").at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
             # the at_msg_receive() hook may block receiving of certain messages
             return
 
         outgoing_string = utils.to_str(outgoing_string, force_string=True)
 
-        for session in object.__getattribute__(self, 'sessions'):
+        for session in _GA(self, 'sessions'):
             session.msg(outgoing_string, data)
 
 
@@ -383,8 +384,8 @@ class PlayerDB(TypedObject):
     def delete(self, *args, **kwargs):
         "Make sure to delete user also when deleting player - the two may never exist separately."
         try:
-            if self.user:
-                self.user.delete()
+            if _GA(self, "user"):
+                _GA(_GA(self, "user"), "delete")()
         except AssertionError:
             pass
         try:
@@ -398,7 +399,7 @@ class PlayerDB(TypedObject):
 
     def execute_cmd(self, raw_string):
         """
-        Do something as this playe. This command transparently
+        Do something as this player. This command transparently
         lets its typeclass execute the command.
         raw_string - raw command input coming from the command line.
         """
@@ -423,8 +424,11 @@ class PlayerDB(TypedObject):
                            the Player object itself. If no Character exists (since Player is
                            OOC), None will be returned.
         """
-        matches = self.__class__.objects.player_search(ostring)
+        matches = _GA(_GA(_GA(self, "_class__"), "objects"), "player_search")(ostring)
         matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=True)
-        if matches and return_character and hasattr(matches, "character"):
-           return matches.character
+        if matches and return_character:
+            try:
+                return _GA(matches, "character")
+            except:
+                pass
         return matches

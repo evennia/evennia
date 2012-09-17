@@ -632,16 +632,13 @@ class ObjectDB(TypedObject):
         data (object): an optional data object that may or may not
                        be used by the protocol.
         """
-        # This is an important function that must always work.
-        # we use a different __getattribute__ to avoid recursive loops.
-
-        if object.__getattribute__(self, 'player'):
-            object.__getattribute__(self, 'player').msg(message, from_obj=from_obj, data=data)
+        if _GA(self, 'player'):
+            _GA(_GA(self, 'player'), "msg")(message, from_obj=from_obj, data=data)
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"
         logger.log_depmsg("emit_to() is deprecated. Use msg() instead.")
-        self.msg(message, from_obj, data)
+        _GA(self, "msg")(message, from_obj, data)
 
     def msg_contents(self, message, exclude=None, from_obj=None, data=None):
         """
