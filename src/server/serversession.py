@@ -71,6 +71,12 @@ class ServerSession(Session):
         player - the connected player
         """
 
+        # we have to check this first before uid has been assigned
+        # this session.
+
+        if not self.sessionhandler.sessions_from_player(player):
+            player.is_connected = True
+
         # actually do the login by assigning session data
 
         self.player = player
@@ -134,6 +140,8 @@ class ServerSession(Session):
             uaccount.save()
             self.logged_in = False
         self.sessionhandler.disconnect(self)
+        if not self.sessionhandler.sessions_from_player(player):
+            player.is_connected = False
 
     def get_player(self):
         """

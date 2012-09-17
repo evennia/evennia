@@ -64,7 +64,7 @@ SSL_INTERFACES = ['0.0.0.0']
 # All feedback from the game will be echoed to all sessions.
 # If false, only one session is allowed, all other are logged off
 # when a new connects.
-ALLOW_MULTISESSION = True
+ALLOW_MULTISESSION = False
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.

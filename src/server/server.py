@@ -21,6 +21,7 @@ import django
 from django.db import connection
 from django.conf import settings
 
+from src.players.models import PlayerDB
 from src.scripts.models import ScriptDB
 from src.server.models import ServerConfig
 from src.server import initial_setup
@@ -28,6 +29,8 @@ from src.server import initial_setup
 from src.utils.utils import get_evennia_version, mod_import
 from src.comms import channelhandler
 from src.server.sessionhandler import SESSIONS
+
+_SA = object.__setattr__
 
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
@@ -285,6 +288,7 @@ class Evennia(object):
                 # don't call disconnect hooks on reset
                 yield [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
             else: # shutdown
+                yield [_SA(p, "is_connected", False) for p in PlayerDB.get_all_cached_instances()]
                 yield [(o.typeclass, o.at_disconnect(), o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
 
             yield [(p.typeclass, p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]

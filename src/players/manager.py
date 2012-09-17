@@ -96,7 +96,7 @@ class PlayerManager(TypedObjectManager):
         """
         Returns a list of player objects with currently connected users/players.
         """
-        return [player for player in self.all() if player.sessions]
+        return self.filter(db_is_connected=True)
 
     @returns_typeclass_list
     @returns_player_list
@@ -116,6 +116,8 @@ class PlayerManager(TypedObjectManager):
         """
         Returns a QuerySet containing the player User accounts that have been
         connected within the last <days> days.
+
+        days - number of days backwards to check
         """
         end_date = datetime.datetime.now()
         tdelta = datetime.timedelta(days)
@@ -165,7 +167,6 @@ class PlayerManager(TypedObjectManager):
             if matches:
                 return matches
         return self.filter(user__username__iexact=ostring)
-
 
     def swap_character(self, player, new_character, delete_old_character=False):
         """

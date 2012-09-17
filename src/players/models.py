@@ -161,7 +161,9 @@ class PlayerDB(TypedObject):
     # Use the property 'obj' to access.
     db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True,
                                verbose_name="character", help_text='In-game object.')
-
+    # store a connected flag here too, not just in sessionhandler.
+    # This makes it easier to track from various out-of-process locations
+    db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
                                          help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_DEFAULT.")
@@ -250,6 +252,21 @@ class PlayerDB(TypedObject):
         self.db_cmdset_storage = ""
         self.save()
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
+
+    #@property
+    def is_connected_get(self):
+        "Getter. Allows for value = self.is_connected"
+        return _get_cache(self, "is_connected")
+    #@is_connected.setter
+    def is_connected_set(self, value):
+        "Setter. Allows for self.is_connected = value"
+        print "set_is_connected:", self, value
+        _set_cache(self, "is_connected", value)
+    #@is_connected.deleter
+    def is_connected_del(self):
+        "Deleter. Allows for del is_connected"
+        _set_cache(self, "is_connected", False)
+    is_connected = property(is_connected_get, is_connected_set, is_connected_del)
 
     class Meta:
         "Define Django meta options"

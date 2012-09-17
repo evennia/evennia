@@ -16,7 +16,7 @@ import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
 
-_ServerConfig = None
+_PLAYERDB = None
 
 # AMP signals
 PCONN = chr(1)       # portal session connect
@@ -153,8 +153,6 @@ class ServerSessionHandler(SessionHandler):
             self.server.amp_protocol.call_remote_PortalAdmin(sessid,
                                                              operation=SDISCONN,
                                                              data=reason)
-        self.session_count(-1)
-
 
     def login(self, session):
         """
@@ -168,7 +166,6 @@ class ServerSessionHandler(SessionHandler):
             # disconnect previous sessions.
             self.disconnect_duplicate_sessions(session)
         session.logged_in = True
-        self.session_count(1)
         # sync the portal to this session
         sessdata = session.get_sync_data()
         self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
@@ -193,7 +190,6 @@ class ServerSessionHandler(SessionHandler):
 
         for session in self.sessions:
             del session
-        self.session_count(0)
         # tell portal to disconnect all sessions
         self.server.amp_protocol.call_remote_PortalAdmin(0,
                                                          operation=SDISCONNALL,
@@ -204,14 +200,12 @@ class ServerSessionHandler(SessionHandler):
         Disconnects any existing sessions with the same game object.
         """
         curr_char = curr_session.get_character()
-        doublet_sessions = [sess for sess in self.sessions
+        doublet_sessions = [sess for sess in self.sessions.values()
                             if sess.logged_in
                             and sess.get_character() == curr_char
                             and sess != curr_session]
         for session in doublet_sessions:
             self.disconnect(session, reason)
-            self.session_count(-1)
-
 
     def validate_sessions(self):
         """
@@ -224,31 +218,6 @@ class ServerSessionHandler(SessionHandler):
                         if session.logged_in and IDLE_TIMEOUT > 0
                         and (tcurr - session.cmd_last) > IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
-            self.session_count(-1)
-
-    def session_count(self, num=None):
-        """
-        Count up/down the number of connected, authenticated users.
-        If num is None, the current number of sessions is returned.
-
-        num can be a positive or negative value to be added to the current count.
-        If 0, the counter will be reset to 0.
-        """
-        global _ServerConfig
-        if not _ServerConfig:
-            from src.server.models import ServerConfig as _ServerConfig
-
-        if num == None:
-            # show the current value. This also syncs it.
-            return int(_ServerConfig.objects.conf('nr_sessions', default=0))
-        elif num == 0:
-            # reset value to 0
-            _ServerConfig.objects.conf('nr_sessions', 0)
-        else:
-            # add/remove session count from value
-            add = int(_ServerConfig.objects.conf('nr_sessions', default=0))
-            num = max(0, num + add)
-            _ServerConfig.objects.conf('nr_sessions', str(num))
 
     def player_count(self):
         """
@@ -273,7 +242,6 @@ class ServerSessionHandler(SessionHandler):
         if player:
             return self.sessions_from_player(player)
         return None
-
 
     def announce_all(self, message):
         """

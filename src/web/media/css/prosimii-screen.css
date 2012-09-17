@@ -1,5 +1,5 @@
 /***************************************
- * TITLE: Prosimii Screen Stylesheet   * 
+ * TITLE: Prosimii Screen Stylesheet   *
  * URI  : prosimii/prosimii-screen.css *
  * MODIF: 2004-Apr-28 21:43 +0800      *
  ***************************************/
@@ -312,7 +312,7 @@ dd {
 .filler {  /* use with an empty <p> element to add padding to the end of a text box */
   border: 1px solid white;
 }
- 
+
 .noBorderOnLeft {
   border-left: none;
 }
