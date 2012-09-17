@@ -1,17 +1,17 @@
 """
 Custom manager for Objects.
 """
+from django.db.models import Q
 from django.conf import settings
 #from django.contrib.auth.models import User
 from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
-from src.utils.utils import to_unicode, make_iter
-
-_ObjAttribute = None
+from src.utils.utils import to_unicode, make_iter, string_partial_matching
 
 __all__ = ("ObjectManager",)
+_GA = object.__getattribute__
 
 # Try to use a custom way to parse id-tagged multimatches.
 
@@ -73,7 +73,7 @@ class ObjectManager(TypedObjectManager):
 
     # This returns typeclass since get_object_with_user and get_dbref does.
     @returns_typeclass
-    def get_object_with_player(self, search_string):
+    def get_object_with_player(self, ostring, exact=True, candidates=None):
         """
         Search for an object based on its player's name or dbref.
         This search
@@ -81,109 +81,81 @@ class ObjectManager(TypedObjectManager):
         the search criterion (e.g. in local_and_global_search).
         search_string:  (string) The name or dbref to search for.
         """
-        dbref = self.dbref(search_string)
-        if not dbref:
-            # not a dbref. Search by name.
-            search_string = to_unicode(search_string).lstrip('*')
-            return self.filter(db_player__user__username__iexact=search_string)
-        return self.get_id(dbref)
+        ostring = to_unicode(ostring).lstrip('*')
+        # simplest case - search by dbref
+        dbref = self.dbref(ostring)
+        if dbref:
+            return dbref
+        # not a dbref. Search by name.
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        if exact:
+            return self.filter(cand_restriction & Q(db_player__user__username__iexact=ostring))
+        else: # fuzzy matching
+            ply_cands = self.filter(cand_restriction & Q(playerdb__user__username__istartswith=ostring)).values_list("db_key", flat=True)
+            if candidates:
+                index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
+                return [obj for ind, obj in enumerate(make_iter(candidates)) if ind in index_matches]
+            else:
+                return string_partial_matching(ply_cands, ostring, ret_index=False)
 
     @returns_typeclass_list
-    def get_objs_with_key_and_typeclass(self, oname, otypeclass_path):
+    def get_objs_with_key_and_typeclass(self, oname, otypeclass_path, candidates=None):
         """
         Returns objects based on simultaneous key and typeclass match.
         """
-        return self.filter(db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path)
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        return self.filter(cand_restriction & Q(db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path))
 
     # attr/property related
 
     @returns_typeclass_list
-    def get_objs_with_attr(self, attribute_name, location=None):
+    def get_objs_with_attr(self, attribute_name, candidates=None):
         """
         Returns all objects having the given attribute_name defined at all. Location
         should be a valid location object.
         """
-        global _ObjAttribute
-        if not _ObjAttribute:
-            from src.objects.models import ObjAttribute as _ObjAttribute
-        if location:
-            attrs = _ObjAttribute.objects.select_related("db_obj").filter(db_key=attribute_name, db_obj__db_location=location)
-        else:
-            attrs = _ObjAttribute.objects.select_related("db_obj").filter(db_key=attribute_name)
-        return [attr.db_obj for attr in attrs]
+        cand_restriction = candidates and Q(objattribute__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        return self.filter(cand_restriction & Q(objattribute__db_key=attribute_name))
 
     @returns_typeclass_list
-    def get_objs_with_attr_match(self, attribute_name, attribute_value, location=None, exact=False):
+    def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None):
         """
         Returns all objects having the valid
         attrname set to the given value. Note that no conversion is made
-        to attribute_value, and so it can accept also non-strings.
+        to attribute_value, and so it can accept also non-strings. For this reason it does
+        not make sense to offer an "exact" type matching for this.
         """
-        global _ObjAttribute
-        if not _ObjAttribute:
-            from src.objects.models import ObjAttribute as _ObjAttribute
-        if location:
-            attrs = _ObjAttribute.objects.select_related("db_value").filter(db_key=attribute_name, db_obj__db_location=location)
-        else:
-            attrs = _ObjAttribute.objects.select_related("db_value").filter(db_key=attribute_name)
-        if exact:
-            return [attr.obj for attr in attrs if attribute_value == attr.value]
-        else:
-            return [attr.obj for attr in attrs if to_unicode(attribute_value) in str(attr.value)]
+        cand_restriction = candidates and Q(db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        attrs= self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name))
+        return [attr.db_obj for attr in attrs if attribute_value == attr.value]
 
     @returns_typeclass_list
-    def get_objs_with_db_property(self, property_name, location=None):
+    def get_objs_with_db_property(self, property_name, candidates=None):
         """
         Returns all objects having a given db field property.
         property_name = search string
-        location - actual location object to restrict to
-
+        candidates - list of candidate objects to search
         """
-        lstring = ""
-        if location:
-            lstring = ".filter(db_location=location)"
+        property_name = "db_%s" % property_name.lstrip('db_')
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "in") for obj in make_iter(candidates) if obj]) or Q()
         try:
-            return eval("self.exclude(db_%s=None)%s" % (property_name, lstring))
+            return self.filter(cand_restriction).exclude(Q(property_name=None))
         except exceptions.FieldError:
             return []
 
     @returns_typeclass_list
-    def get_objs_with_db_property_match(self, property_name, property_value, location, exact=False):
+    def get_objs_with_db_property_value(self, property_name, property_value, candidates=None):
         """
         Returns all objects having a given db field property
         """
-        lstring = ""
-        if location:
-            lstring = ", db_location=location"
-
+        if isinstance(property_value, basestring):
+            property_value = to_unicode(property_value)
+        property_name = "db_%s" % property_name.lstrip('db_')
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "in") for obj in make_iter(candidates) if obj]) or Q()
         try:
-            if exact:
-                return eval("self.filter(db_%s__iexact=property_value%s)" % (property_name, lstring))
-            else:
-                return eval("self.filter(db_%s__icontains=property_value%s)" % (property_name, lstring))
+            return self.filter(cand_restriction & Q(property_name=property_value))
         except exceptions.FieldError:
             return []
-
-    @returns_typeclass_list
-    def get_objs_with_key_or_alias(self, ostring, location=None, exact=False):
-        """
-        Returns objects based on key or alias match
-        """
-        lstring_key, lstring_alias, estring = "", "", "icontains"
-        if location:
-            lstring_key = ", db_location=location"
-            lstring_alias = ", db_obj__db_location=location"
-        if exact:
-            estring = "__iexact"
-        else:
-            estring = "__istartswith"
-        matches = eval("self.filter(db_key%s=ostring%s)" % (estring, lstring_key))
-        if not matches:
-            alias_matches = eval("self.model.alias_set.related.model.objects.filter(db_key%s=ostring%s)" % (estring, lstring_alias))
-            matches = [alias.db_obj for alias in alias_matches]
-        return matches
-
-    # main search methods and helper functions
 
     @returns_typeclass_list
     def get_contents(self, location, excludeobj=None):
@@ -191,17 +163,56 @@ class ObjectManager(TypedObjectManager):
         Get all objects that has a location
         set to this one.
 
-        excludeobjs - one or more object keys to exclude from the match
+        excludeobj - one or more object keys to exclude from the match
         """
-        query = self.filter(db_location__id=location.id)
-        for objkey in make_iter(excludeobj):
-           query = query.exclude(db_key=objkey)
-        return query
+        exclude_restriction = excludeobj and Q(pk__in=[_GA(obj, "in") for obj in make_iter(excludeobj)]) or Q()
+        return self.filter(db_location=location).exclude(exclude_restriction)
+
+    @returns_typeclass_list
+    def get_objs_with_key_or_alias(self, ostring, exact=True, candidates=None):
+        """
+        Returns objects based on key or alias match. Will also do fuzzy matching based on
+        the utils.string_partial_matching function.
+        """
+        # build query objects
+        candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
+        cand_restriction = candidates and Q(pk__in=candidates_id) or Q()
+        if exact:
+            return self.filter(cand_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring)))
+        else:
+            if candidates:
+                # fuzzy matching - only check the candidates
+                key_candidates = self.filter(cand_restriction)
+                key_strings = key_candidates.values_list("db_key", flat=True)
+                index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
+                if index_matches:
+                    return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]
+                else:
+                    alias_candidates = self.model.alias_set.related.model.objects.filter(db_obj__pk__in=candidates_id)
+                    alias_strings = alias_candidates.values_list("db_key", flat=True)
+                    index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
+                    if index_matches:
+                        return [alias.db_obj for ind, alias in enumerate(alias_candidates) if ind in index_matches]
+                    return []
+            else:
+                # fuzzy matching - first check with keys, then with aliases
+                key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring))
+                key_strings = key_candidates.values_list("db_key", flat=True)
+                matches = string_partial_matching(key_candidates, ostring, reg_index=False)
+                if matches:
+                    return matches
+                alias_candidates = self.model.alias_set.related.model.objects.filter(db_obj__pk__in=candidates_id).values_list("db_key", flat=True)
+                return string_partial_matching(alias_candidates, ostring, ret_index=False)
+
+
+    # main search methods and helper functions
 
     @returns_typeclass_list
     def object_search(self, ostring, caller=None,
                       global_search=False,
-                      attribute_name=None, location=None, single_result=False):
+                      attribute_name=None,
+                      candidates=None,
+                      exact=True):
         """
         Search as an object and return results. The result is always an Object.
         If * is appended (player search, a Character controlled by this Player
@@ -212,19 +223,40 @@ class ObjectManager(TypedObjectManager):
         ostring: (string) The string to compare names against.
                   Can be a dbref. If name is appended by *, a player is searched for.
         caller: (Object) The optional object performing the search.
-        global_search (bool). Defaults to False. If a caller is defined, search will
-                  be restricted to the contents of caller.location unless global_search
-                  is True. If no caller is given (or the caller has no location), a
-                  global search is assumed automatically.
         attribute_name: (string) Which object attribute to match ostring against. If not
                   set, the "key" and "aliases" properties are searched in order.
-        location (Object): If set, this location's contents will be used to limit the search instead
-                  of the callers. global_search will override this argument
+        candidates (list obj ObjectDBs): If objlist is supplied, global_search keyword is ignored
+                  and search will only be performed among the candidates in this list. A common list
+                  of candidates is the contents of the current location searched.
+        exact (bool): Match names/aliases exactly or partially. Partial matching matches the
+                  beginning of words in the names/aliases, using a matching routine to separate
+                  multiple matches in names with multiple components (so "bi sw" will match
+                  "Big sword"). Since this is more expensive than exact matching, it is
+                  recommended to be used together with the objlist keyword to limit the number
+                  of possibilities. This value has no meaning if searching for attributes/properties.
 
         Returns:
         A list of matching objects (or a list with one unique match)
 
         """
+        def _searcher(ostring, exact=False):
+            "Helper method for searching objects"
+        # Handle player
+            if ostring.startswith("*"):
+                # Player search - try to find obj by its player's name
+                player_match = self.get_object_with_player(ostring, candidates=candidates)
+                if player_match is not None:
+                    return [player_match]
+            if attribute_name:
+                # attribute/property search (always exact).
+                matches = self.get_objs_with_db_property_value(attribute_name, ostring, candidates=candidates)
+                if not matches:
+                    return self.get_objs_with_attr_value(attribute_name, ostring, candidates=candidates)
+            else:
+                # normal key/alias search
+                return self.get_objs_with_key_or_alias(ostring, exact=exact, candidates=candidates)
+
+
         ostring = to_unicode(ostring, force_string=True)
 
         if not ostring and ostring != 0:
@@ -237,81 +269,25 @@ class ObjectManager(TypedObjectManager):
             if dbref_match:
                 return [dbref_match]
 
-        if not location and caller and hasattr(caller, "location"):
-            location = caller.location
-
-        # Test some common self-references
-
-        if location and ostring == 'here':
-            return [location]
-        if caller and ostring in ('me', 'self'):
-            return [caller]
-        if caller and ostring in ('*me', '*self'):
-            return [caller]
-
-        # Test if we are looking for an object controlled by a
-        # specific player
-
-        #logger.log_infomsg(str(type(ostring)))
-        if ostring.startswith("*"):
-            # Player search - try to find obj by its player's name
-            player_match = self.get_object_with_player(ostring)
-            if player_match is not None:
-                return [player_match]
-
-        # Search for keys, aliases or other attributes
-
-        search_locations = [None] # this means a global search
-        if not global_search and location:
-            # Test if we are referring to the current room
-            if location and (ostring.lower() == location.key.lower()
-                             or ostring.lower() in [alias.lower() for alias in location.aliases]):
-                return [location]
-            # otherwise, setup the locations to search in
-            search_locations = [location]
-            if caller:
-                search_locations.append(caller)
-
-        def local_and_global_search(ostring, exact=False):
-            "Helper method for searching objects"
-            matches = []
-            for location in search_locations:
-                if attribute_name:
-                    # Attribute/property search. First, search for db_<attrname> matches on the model
-                    matches.extend(self.get_objs_with_db_property_match(attribute_name, ostring, location, exact))
-                    if not matches:
-                        # Next, try Attribute matches
-                        matches.extend(self.get_objs_with_attr_match(attribute_name, ostring, location, exact))
-                else:
-                    # No attribute/property named. Do a normal key/alias-search
-                    matches.extend(self.get_objs_with_key_or_alias(ostring, location, exact))
-            return matches
-
         # Search through all possibilities.
 
         match_number = None
-        matches = local_and_global_search(ostring, exact=True)
+        # always run first check exact - we don't want partial matches if on the form of 1-keyword etc.
+        matches = _searcher(ostring, exact=True)
         if not matches:
-            # if we have no match, check if we are dealing with an "N-keyword" query - if so, strip it.
+            # no matches found - check if we are dealing with N-keyword query - if so, strip it.
             match_number, ostring = _AT_MULTIMATCH_INPUT(ostring)
-            if match_number != None and ostring:
-                # Run search again, without match number:
-                matches = local_and_global_search(ostring, exact=True)
-            if ostring and (len(matches) > 1 or not matches):
-                # Already multimatch or no matches. Run a fuzzy matching.
-                matches = local_and_global_search(ostring, exact=False)
-        elif len(matches) > 1:
-            # multiple matches already. Run a fuzzy search. This catches partial matches (suggestions)
-            matches = local_and_global_search(ostring, exact=False)
+            # run search again, with the exactness set by caller
+            matches = _searcher(ostring, exact=exact)
 
-        # deal with the result
+        # deal with result
         if len(matches) > 1 and match_number != None:
-            # We have multiple matches, but a N-type match number is available to separate them.
+            # multiple matches, but a number was given to separate them
             try:
                 matches = [matches[match_number]]
             except IndexError:
                 pass
-        # We always have a (possibly empty) list at this point.
+        # return a list (possibly empty)
         return matches
 
     #

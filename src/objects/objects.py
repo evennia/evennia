@@ -389,14 +389,14 @@ class Object(TypeClass):
         # controller, for example)
 
         dbref = self.dbobj.dbref
-        self.locks.add(";".join("control:perm(Immortals)",  # edit locks/permissions, delete
-                                "examine:perm(Builders)",   # examine properties
-                                "view:all()",               # look at object (visibility)
-                                "edit:perm(Wizards)",       # edit properties/attributes
-                                "delete:perm(Wizards)",     # delete object
-                                "get:all()",                # pick up object
-                                "call:true()",              # allow to call commands on this object
-                                "puppet:id(%s) or perm(Immortals) or pperm(Immortals)" % dbref)) # restricts puppeting of this object
+        self.locks.add(";".join(["control:perm(Immortals)",  # edit locks/permissions, delete
+                                 "examine:perm(Builders)",   # examine properties
+                                 "view:all()",               # look at object (visibility)
+                                 "edit:perm(Wizards)",       # edit properties/attributes
+                                 "delete:perm(Wizards)",     # delete object
+                                 "get:all()",                # pick up object
+                                 "call:true()",              # allow to call commands on this object
+                                 "puppet:id(%s) or perm(Immortals) or pperm(Immortals)" % dbref])) # restricts puppeting of this object
 
     def basetype_posthook_setup(self):
         """
@@ -720,8 +720,8 @@ class Character(Object):
         overload the defaults (it is called after this one).
         """
         super(Character, self).basetype_setup()
-        self.locks.add(";".join("get:false()",  # noone can pick up the character
-                                "call:false()")) # no commands can be called on character from outside
+        self.locks.add(";".join(["get:false()",  # noone can pick up the character
+                                 "call:false()"])) # no commands can be called on character from outside
         # add the default cmdset
         from settings import CMDSET_DEFAULT
         self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
@@ -788,8 +788,8 @@ class Room(Object):
         """
 
         super(Room, self).basetype_setup()
-        self.locks.add(";".join("get:false()",
-                                "puppet:false()")) # would be weird to puppet a room ...
+        self.locks.add(";".join(["get:false()",
+                                 "puppet:false()"])) # would be weird to puppet a room ...
         self.location = None
 
 #
@@ -884,9 +884,9 @@ class Exit(Object):
         super(Exit, self).basetype_setup()
 
         # setting default locks (overload these in at_object_creation()
-        self.locks.add(";".join("puppet:false()", # would be weird to puppet an exit ...
-                                "traverse:all()", # who can pass through exit by default
-                                "get:false()"))   # noone can pick up the exit
+        self.locks.add(";".join(["puppet:false()", # would be weird to puppet an exit ...
+                                 "traverse:all()", # who can pass through exit by default
+                                 "get:false()"]))   # noone can pick up the exit
 
         # an exit should have a destination (this is replaced at creation time)
         if self.dbobj.location:

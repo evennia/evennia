@@ -42,7 +42,6 @@ class ScriptManager(TypedObjectManager):
         if not obj:
             return []
         if key:
-            script = []
             dbref = self.dbref(key)
             if dbref:
                 script = self.filter(db_obj=obj, id=dbref)

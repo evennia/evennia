@@ -23,7 +23,6 @@ from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHan
 from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.typeclasses.typeclass import TypeClass
 from src.objects.manager import ObjectManager
-from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
@@ -40,6 +39,11 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
+_ME = _("me")
+_SELF = _("self")
+_HERE = _("here")
+
 
 def clean_content_cache(obj):
     "Clean obj's content cache"
@@ -500,7 +504,8 @@ class ObjectDB(TypedObject):
                global_search=False,
                attribute_name=None,
                use_nicks=False, location=None,
-               ignore_errors=False, player=False):
+               player=False,
+               ignore_errors=False, exact=False):
         """
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully.
@@ -509,17 +514,18 @@ class ObjectDB(TypedObject):
                        Obs - To find a player, append * to the
                        start of ostring.
         global_search: Search all objects, not just the current
-                       location/inventory
-        attribute_name: (string) Which attribute to match
-                        (if None, uses default 'name')
+                       location/inventory. This is overruled if location keyword is given.
+        attribute_name: (string) Which attribute to match (if None, uses default 'name')
         use_nicks : Use nickname replace (off by default)
         location : If None, use caller's current location
+        player: return the Objects' controlling Player, instead, if available
         ignore_errors : Don't display any error messages even
                         if there are none/multiple matches -
                         just return the result as a list.
-        player :        Don't search for an Object but a Player.
-                        This will also find players that don't
-                        currently have a character.
+        exact:  Determines if the search must exactly match the key/alias of the
+                given object or if partial matches the beginnings of one or more
+                words in the name is enough. Exact matching is faster if using
+                global search. Also, if attribute_name is set, matching is always exact.
 
         Returns - a unique Object/Player match or None. All error
                   messages are handled by system-commands and the parser-handlers
@@ -539,6 +545,12 @@ class ObjectDB(TypedObject):
         address the individual ball as '1-ball', '2-ball', '3-ball'
         etc.
         """
+        # handle some common self-references:
+        if ostring == _HERE:
+            return self.location
+        if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
+            return self
+
         if use_nicks:
             if ostring.startswith('*') or player:
                 # player nick replace
@@ -549,21 +561,32 @@ class ObjectDB(TypedObject):
                 # object nick replace
                 ostring = self.nicks.get(ostring, nick_type="object")
 
-        if player:
-            if ostring in ("me", "self", "*me", "*self"):
-                results = [self.player]
-            else:
-                results = PlayerDB.objects.player_search(ostring.lstrip('*'))
+        candidates=None
+        if global_search:
+            # only allow exact matching if searching the entire database
+            exact = True
         else:
-            results = ObjectDB.objects.object_search(ostring, caller=self,
-                                                     global_search=global_search,
-                                                     attribute_name=attribute_name,
-                                                     location=location)
+            # local search. Candidates are self.contents, self.location and self.location.contents
+            if not location:
+                location = self.location
+            candidates = self.contents
+            if location:
+                candidates = candidates + [location] + location.contents
+            else:
+                candidates.append(self) # normally we are included in location.contents
+            # db manager expects database objects
+            candidates = [obj.dbobj for obj in candidates]
 
-        if ignore_errors:
-            return results
-        # this import is cache after the first call.
-        return _AT_SEARCH_RESULT(self, ostring, results, global_search)
+        results = ObjectDB.objects.object_search(ostring, caller=self,
+                                                 attribute_name=attribute_name,
+                                                 candidates=candidates,
+                                                 exact=exact)
+        if not ignore_errors:
+            result = _AT_SEARCH_RESULT(self, ostring, results, global_search)
+        if player and result:
+            return result.player
+        return result
+
 
     #
     # Execution/action methods

@@ -66,7 +66,7 @@ def c_login(client):
     exitname1 = EXIT_TEMPLATE % client.counter()
     exitname2 = EXIT_TEMPLATE % client.counter()
     client.exits.extend([exitname1, exitname2])
-    cmd = '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
+    #cmd = '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
     cmd = ('create %s %s' % (cname, cpwd),
            'connect %s %s' % (cname, cpwd),
            '@dig %s' % START_ROOM % client.cid,

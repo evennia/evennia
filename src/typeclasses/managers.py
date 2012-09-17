@@ -34,7 +34,7 @@ class AttributeManager(models.Manager):
 
 def returns_typeclass_list(method):
     """
-    Decorator: Chantes return of the decorated method (which are
+    Decorator: Changes return of the decorated method (which are
     TypeClassed objects) into object_classes(s) instead.  Will always
     return a list (may be empty).
     """
@@ -52,11 +52,11 @@ def returns_typeclass(method):
     def func(self, *args, **kwargs):
         "decorator. Returns result or None."
         self.__doc__ = method.__doc__
-        rfunc = returns_typeclass_list(method)
-        try:
-            return rfunc(self, *args, **kwargs)[0]
-        except IndexError:
-            return None
+        matches = method(self, *args, **kwargs)
+        dbobj = matches and make_iter(matches)[0] or None
+        if dbobj:
+           return (hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
+        return None
     return update_wrapper(func, method)
 
 

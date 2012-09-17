@@ -38,8 +38,7 @@ def is_iter(iterable):
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."
-    if not hasattr(obj, '__iter__'): return [obj]
-    return obj
+    return not hasattr(obj, '__iter__') and [obj] or obj
 
 def fill(text, width=78, indent=0):
     """
@@ -976,3 +975,49 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     """
     return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg) for sugg in vocabulary],
                                       key=lambda tup: tup[0], reverse=True) if tup[0] >= cutoff][:maxnum]
+
+def string_partial_matching(alternatives, inp, ret_index=True):
+    """
+    Partially matches a string based on a list of alternatives. Matching
+    is made from the start of each subword in each alternative. Case is not
+    important. So e.g. "bi sh sw" or just "big" or "shiny" or "sw" will match
+    "Big shiny sword". Scoring is done to allow to separate by most common
+    demoninator. You will get multiple matches returned if appropriate.
+
+    Input:
+        alternatives (list of str) - list of possible strings to match
+        inp (str) - search criterion
+        ret_index (bool) - return list of indices (from alternatives array) or strings
+    Returns:
+        list of matching indices or strings, or an empty list
+
+    """
+    if not alternatives or not inp:
+        return []
+
+    matches = defaultdict(list)
+    inp_words = inp.lower().split()
+    for altindex, alt in enumerate(alternatives):
+        alt_words = alt.lower().split()
+        last_index = 0
+        score = 0
+        for inp_word in inp_words:
+            # loop over parts, making sure only to visit each part once
+            # (this will invalidate input in the wrong word order)
+            submatch = [last_index + alt_num for alt_num, alt_word
+                        in enumerate(alt_words[last_index:]) if alt_word.startswith(inp_word)]
+            if submatch:
+                last_index = min(submatch) + 1
+                score += 1
+            else:
+                score = 0
+                break
+        if score:
+            if ret_index:
+                matches[score].append(altindex)
+            else:
+                matches[score].append(alt)
+    if matches:
+        return matches[max(matches)]
+    return []
+
