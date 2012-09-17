@@ -221,7 +221,7 @@ class ObjectManager(TypedObjectManager):
 
         Arguments:
         ostring: (string) The string to compare names against.
-                  Can be a dbref. If name is appended by *, a player is searched for.
+                  Can be a dbref. If name is prepended by *, a player is searched for.
         caller: (Object) The optional object performing the search.
         attribute_name: (string) Which object attribute to match ostring against. If not
                   set, the "key" and "aliases" properties are searched in order.
@@ -241,7 +241,6 @@ class ObjectManager(TypedObjectManager):
         """
         def _searcher(ostring, exact=False):
             "Helper method for searching objects"
-        # Handle player
             if ostring.startswith("*"):
                 # Player search - try to find obj by its player's name
                 player_match = self.get_object_with_player(ostring, candidates=candidates)
