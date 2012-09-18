@@ -40,7 +40,11 @@ if os.name == 'nt':
 SERVER_RESTART = os.path.join(settings.GAME_DIR, 'server.restart')
 
 # module containing hook methods
-SERVER_HOOK_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
+SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
+
+# module containing plugin services
+SERVER_SERVICES_PLUGIN_MODULE = mod_import(settings.SERVER_SERVICES_PLUGIN_MODULE)
+
 
 #------------------------------------------------------------
 # Evennia Server settings
@@ -214,8 +218,8 @@ class Evennia(object):
         [(p.typeclass, p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
         # call server hook.
-        if SERVER_HOOK_MODULE:
-            SERVER_HOOK_MODULE.at_server_start()
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_start()
 
     def terminal_output(self):
         """
@@ -296,8 +300,8 @@ class Evennia(object):
 
             ServerConfig.objects.conf("server_restart_mode", "reset")
 
-        if SERVER_HOOK_MODULE:
-            SERVER_HOOK_MODULE.at_server_stop()
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_stop()
         # if _reactor_stopping is true, reactor does not need to be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually
@@ -400,6 +404,10 @@ if RSS_ENABLED:
     # RSS feed channel connections
     from src.comms import rss
     rss.connect_all()
+
+if SERVER_SERVICES_PLUGIN_MODULE:
+    # external plugin protocols
+    SERVER_SERVICES_PLUGIN_MODULE.start_plugin_services(EVENNIA)
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)

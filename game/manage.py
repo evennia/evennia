@@ -40,7 +40,8 @@ if not os.path.exists('settings.py'):
     _CREATED_SETTINGS = True
 
     string = \
-    """#
+    """
+######################################################################
 # Evennia MU* server configuration file
 #
 # You may customize your setup by copy&pasting the variables you want
@@ -50,60 +51,14 @@ if not os.path.exists('settings.py'):
 # This way you'll always have a sane default to fall back on
 # (also, the master config file may change with server updates).
 #
+######################################################################
 
 from src.settings_default import *
 
 ######################################################################
-# Evennia base server config
+# Custom settings
 ######################################################################
 
-######################################################################
-# Evennia Database config
-######################################################################
-
-######################################################################
-# Evennia pluggable modules
-######################################################################
-
-######################################################################
-# Default command sets
-######################################################################
-
-######################################################################
-# Typeclasses
-######################################################################
-
-######################################################################
-# Batch processors
-######################################################################
-
-######################################################################
-# Game Time setup
-######################################################################
-
-######################################################################
-# In-game access
-######################################################################
-
-######################################################################
-# In-game Channels created from server start
-######################################################################
-
-######################################################################
-# External Channel connections
-######################################################################
-
-######################################################################
-# Process Pool setup
-######################################################################
-
-######################################################################
-# Django web features
-######################################################################
-
-######################################################################
-# Evennia components
-######################################################################
 
 ######################################################################
 # SECRET_KEY was randomly seeded when settings.py was first created.
@@ -120,17 +75,15 @@ SECRET_KEY = '%s'
 
     # obs - this string cannot be under i18n since settings didn't exist yet.
     print """
-    Welcome to Evennia (version %(version)s)!
+    Welcome to Evennia!
 
-    This looks like your first startup so we created a fresh
-    game/settings.py file for you. No database has yet been created,
-    so you may configure your settings file now if you want. If you
-    are just playing around to test things out, you don't have to
-    touch anything.
+    This looks like your first startup, so we created a fresh
+    game/settings.py file for you. No database has yet been created.
+    You may edit the settings file now if you like, but if you just
+    want to quickly get started you don't have to touch anything.
 
     (re)run 'python manage.py syncdb' once you are ready to continue.
-
-    """ % {'version': VERSION}
+    """
 
 
 #------------------------------------------------------------
@@ -166,13 +119,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 #------------------------------------------------------------
 if __name__ == "__main__":
 
-    # checks if the settings file was created this run
     if _CREATED_SETTINGS:
-        print """
-    Edit your new settings.py file as needed, then run
-    'python manage syncdb' and follow the prompts to
-    create the database and your superuser account.
-        """
+        # if settings were created, info has already been printed.
         sys.exit()
 
     # run the standard django manager, if dependencies match

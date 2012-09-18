@@ -19,8 +19,10 @@ from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server, static
 from django.conf import settings
-from src.utils.utils import get_evennia_version
+from src.utils.utils import get_evennia_version, mod_import
 from src.server.sessionhandler import PORTAL_SESSIONS
+
+PORTAL_SERVICES_PLUGIN_MODULE = mod_import(settings.PORTAL_SERVICES_PLUGIN_MODULE)
 
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
@@ -284,6 +286,11 @@ if WEBSERVER_ENABLED:
             webserver = WSGIWebServer(threads, port, web_site, interface=interface)
             webserver.setName('EvenniaWebServer%s' % pstring)
             PORTAL.services.addService(webserver)
+
+if PORTAL_SERVICES_PLUGIN_MODULE:
+    # external plugin services to start
+    PORTAL_SERVICES_PLUGIN_MODULE.start_plugin_services(PORTAL)
+
 
 if os.name == 'nt':
     # Windows only: Set PID file manually

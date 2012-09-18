@@ -391,19 +391,11 @@ class CmdSet(object):
                 unique[cmd.key] = cmd
         self.commands = unique.values()
 
-    def at_cmdset_creation(self):
-        """
-        Hook method - this should be overloaded in the inheriting
-        class, and should take care of populating the cmdset
-        by use of self.add().
-        """
-        pass
-
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """
         Returns a list of all command keys and aliases
         available in this cmdset. If caller is given, the
-        comands is checked for access on the "call" type
+        commands is checked for access on the "call" type
         before being returned.
         """
         names = []
@@ -412,3 +404,11 @@ class CmdSet(object):
         else:
             [names.extend(cmd._keyaliases) for cmd in self.commands]
         return names
+
+    def at_cmdset_creation(self):
+        """
+        Hook method - this should be overloaded in the inheriting
+        class, and should take care of populating the cmdset
+        by use of self.add().
+        """
+        pass

@@ -152,9 +152,12 @@ DATABASE_PORT = ''
 ######################################################################
 # Evennia pluggable modules
 ######################################################################
+# Plugin modules extend Evennia in various ways. In the cases with no
+# existing default, there are examples of many of these modules
+# in game/gamesrc/conf/examples.
 
 # The command parser module to use. See the default module for which
-# functions it must implement.
+# functions it must implement
 COMMAND_PARSER = "src.commands.cmdparser.cmdparser"
 # The handler that outputs errors when searching
 # objects using object.search().
@@ -176,6 +179,14 @@ AT_INITIAL_SETUP_HOOK_MODULE = ""
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
 AT_SERVER_STARTSTOP_MODULE = ""
+# Module containing a function start_plugin_services(application). This module
+# will be called with the main Evennia Server application when the Server is initiated.
+# It will be called last in the startup sequence.
+SERVER_SERVICES_PLUGIN_MODULE = ""
+# Module containing a function start_plugin_services(application). This module
+# will be called with the main Evennia Portal application when the Portal is initiated.
+# It will be called last in the startup sequence.
+PORTAL_SERVICES_PLUGIN_MODULE = ""
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
 # what type of game you are running, how many players you have etc.
 MSSP_META_MODULE = ""
