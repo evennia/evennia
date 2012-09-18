@@ -581,8 +581,9 @@ class ObjectDB(TypedObject):
                                                  attribute_name=attribute_name,
                                                  candidates=candidates,
                                                  exact=exact)
-        if not ignore_errors:
-            result = _AT_SEARCH_RESULT(self, ostring, results, global_search)
+        if ignore_errors:
+            return results
+        result = _AT_SEARCH_RESULT(self, ostring, results, global_search)
         if player and result:
             return result.player
         return result
