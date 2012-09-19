@@ -44,7 +44,6 @@ _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
 
-
 def clean_content_cache(obj):
     "Clean obj's content cache"
     _SA(obj, "_contents_cache", None)
@@ -428,8 +427,8 @@ class ObjectDB(TypedObject):
         Retrieve sessions connected to this object.
         """
         # if the player is not connected, this will simply be an empty list.
-        if self.player:
-            return self.player.sessions
+        if _GA(self, "player"):
+            return _GA(_GA(self, "player"), "sessions")
         return []
     sessions = property(__sessions_get)
 
@@ -439,14 +438,15 @@ class ObjectDB(TypedObject):
         Convenience function for checking if an active player is
         currently connected to this object
         """
-        return any(self.sessions)
+        return any(_GA(self, "sessions"))
     has_player = property(__has_player_get)
     is_player = property(__has_player_get)
 
     #@property
     def __is_superuser_get(self):
         "Check if user has a player, and if so, if it is a superuser."
-        return any(self.sessions) and self.player.is_superuser
+        #return any(self.sessions) and self.player.is_superuser
+        return any(_GA(self, "sessions")) and _GA(_GA(self, "player"), "is_superuser")
     is_superuser = property(__is_superuser_get)
 
     # contents

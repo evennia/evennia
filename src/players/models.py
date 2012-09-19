@@ -180,9 +180,9 @@ class PlayerDB(TypedObject):
         "Parent must be initiated first"
         TypedObject.__init__(self, *args, **kwargs)
         # handlers
-        self.cmdset = CmdSetHandler(self)
-        self.cmdset.update(init_mode=True)
-        self.nicks = PlayerNickHandler(self)
+        _SA(self, "cmdset", CmdSetHandler(self))
+        _GA(self, "cmdset").update(init_mode=True)
+        _SA(self, "nicks", PlayerNickHandler(self))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -240,21 +240,21 @@ class PlayerDB(TypedObject):
     #@property
     def cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
-        if self.db_cmdset_storage:
-            return [path.strip() for path  in self.db_cmdset_storage.split(',')]
+        if _GA(self, "db_cmdset_storage"):
+            return [path.strip() for path  in _GA(self, "db_cmdset_storage").split(',')]
         return []
     #@cmdset_storage.setter
     def cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
         if utils.is_iter(value):
             value = ",".join([str(val).strip() for val in value])
-        self.db_cmdset_storage = value
-        self.save()
+        _SA(self, "db_cmdset_storage", value)
+        _GA(self, "save")()
     #@cmdset_storage.deleter
     def cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
-        self.db_cmdset_storage = ""
-        self.save()
+        _SA(self, "db_cmdset_storage", "")
+        _GA(self, "save")()
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
     #@property
@@ -281,10 +281,10 @@ class PlayerDB(TypedObject):
     #
 
     def __str__(self):
-        return smart_str("%s(player %s)" % (self.name, self.dbid))
+        return smart_str("%s(player %s)" % (_GA(self, "name"), _GA(self, "dbid")))
 
     def __unicode__(self):
-        return u"%s(player#%s)" % (self.name, self.dbid)
+        return u"%s(player#%s)" % (_GA(self, "name"), _GA(self, "dbid"))
 
     # this is required to properly handle attributes and typeclass loading
     _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS
@@ -297,15 +297,15 @@ class PlayerDB(TypedObject):
     #@property
     def name_get(self):
         "Getter. Allows for value = self.name"
-        if not self._name_cache:
-            self._name_cache = self.user.username
-        return self._name_cache
+        if not _GA(self, "_name_cache"):
+            _SA(self, "_name_cache", _GA(self,"user").username)
+        return _GA(self, "_name_cache")
     #@name.setter
     def name_set(self, value):
         "Setter. Allows for player.name = newname"
-        self.user.username = value
-        self.user.save() # this might be stopped by Django?
-        self._name_cache = value
+        _GA(self, "user").username = value
+        _GA(self, "user").save()
+        _SA(self, "_name_cache", value)
     #@name.deleter
     def name_del(self):
         "Deleter. Allows for del self.name"
@@ -317,9 +317,9 @@ class PlayerDB(TypedObject):
     #@property
     def uid_get(self):
         "Getter. Retrieves the user id"
-        if not self._uid_cache:
-            self._uid_cache = self.user.id
-        return self._uid_cache
+        if not _GA(self, "_uid_cache"):
+            _SA(self, "_uid_cache", _GA(self, "user").id)
+        return _GA(self, "_uid_cache")
     def uid_set(self, value):
         raise Exception("User id cannot be set!")
     def uid_del(self):
@@ -345,9 +345,9 @@ class PlayerDB(TypedObject):
     _is_superuser_cache = None
     def is_superuser_get(self):
         "Superusers have all permissions."
-        if self._is_superuser_cache == None:
-            self._is_superuser_cache = self.user.is_superuser
-        return self._is_superuser_cache
+        if _GA(self, "_is_superuser_cache") == None:
+            _SA(self, "_is_superuser_cache", _GA(self, "user").is_superuser)
+        return _GA(self, "_is_superuser_cache")
     is_superuser = property(is_superuser_get)
 
     #
@@ -379,7 +379,7 @@ class PlayerDB(TypedObject):
         """
         Swaps character, if possible
         """
-        return self.__class__.objects.swap_character(self, new_character, delete_old_character=delete_old_character)
+        return _GA(self, "__class__").objects.swap_character(self, new_character, delete_old_character=delete_old_character)
 
     def delete(self, *args, **kwargs):
         "Make sure to delete user also when deleting player - the two may never exist separately."

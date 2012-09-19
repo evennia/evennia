@@ -144,10 +144,12 @@ class CmdSet(object):
         if key:
             self.key = key
         self.commands = []
+        self.system_commands = []
         self.actual_mergetype = self.mergetype
         self.cmdsetobj = cmdsetobj
         # initialize system
         self.at_cmdset_creation()
+        self._contains_cache = {}
 
     # Priority-sensitive merge operations for cmdsets
 
@@ -223,7 +225,13 @@ class CmdSet(object):
         Returns True if this cmdset contains the given command (as defined
         by command name and aliases). This allows for things like 'if cmd in cmdset'
         """
-        return othercmd in self.commands
+        # optimization test
+        try:
+            return self._contains_cache[othercmd]
+        except KeyError:
+            ret = othercmd in self.commands
+            self._contains_cache[othercmd] = ret
+        return ret
 
     def __add__(self, cmdset_b):
         """
@@ -327,18 +335,29 @@ class CmdSet(object):
             cmds = [self._instantiate(c) for c in cmd]
         else:
             cmds = [self._instantiate(cmd)]
+        commands = self.commands
+        system_commands = self.system_commands
         for cmd in cmds:
             # add all commands
             if not hasattr(cmd, 'obj'):
                 cmd.obj = self.cmdsetobj
             try:
-                ic = self.commands.index(cmd)
-                self.commands[ic] = cmd # replace
+                ic = commands.index(cmd)
+                commands[ic] = cmd # replace
             except ValueError:
-                self.commands.append(cmd)
+                commands.append(cmd)
             # extra run to make sure to avoid doublets
-            self.commands = list(set(self.commands))
+            self.commands = list(set(commands))
             #print "In cmdset.add(cmd):", self.key, cmd
+            # add system_command to separate list as well,
+            # for quick look-up
+            if cmd.key.startswith("__"):
+                try:
+                    ic = system_commands.index(cmd)
+                    system_commands[ic] = cmd # replace
+                except ValueError:
+                    system_commands.append(cmd)
+
 
     def remove(self, cmd):
         """
@@ -369,7 +388,8 @@ class CmdSet(object):
         commands starting with double underscore __.
         These are excempt from merge operations.
         """
-        return [cmd for cmd in self.commands if cmd.key.startswith('__')]
+        return self.system_commands
+        #return [cmd for cmd in self.commands if cmd.key.startswith('__')]
 
     def make_unique(self, caller):
         """

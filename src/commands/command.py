@@ -29,8 +29,8 @@ class CommandMeta(type):
         mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases]
         # optimization - a set is much faster to match against than a list
         mcs._matchset = set([mcs.key] + mcs.aliases)
-        # optimization for retrieving aliases and key as one list
-        mcs._keyaliases = [mcs.key] + mcs.aliases
+        # optimization for looping over keys+aliases
+        mcs._keyaliases = tuple(mcs._matchset)
 
         # by default we don't save the command between runs
         if not hasattr(mcs, "save_for_next"):

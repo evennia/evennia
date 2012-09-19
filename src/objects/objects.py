@@ -637,31 +637,26 @@ class Object(TypeClass):
         """
         if not pobject:
             return
-        string = "{c%s{n" % self.name
-        desc = self.attr("desc")
+        # get and identify all objects
+        visible = (con for con in self.contents if con != pobject and con.access(pobject, "view"))
+        exits, users, things = [], [], []
+        for con in visible:
+            key = con.key
+            if con.destination:
+                exits.append(key)
+            elif con.has_player:
+                users.append("{c%s{n" % key)
+            else:
+                things.append(key)
+        # get description, build string
+        string = "{c%s{n" % self.key
+        desc = self.db.desc
         if desc:
             string += "\n %s" % desc
-        exits = []
-        users = []
-        things = []
-        for content in [con for con in self.contents if con.access(pobject, 'view')]:
-            if content == pobject:
-                continue
-            name = content.name
-            if content.destination:
-                exits.append(name)
-            elif content.has_player:
-                users.append(name)
-            else:
-                things.append(name)
         if exits:
             string += "\n{wExits:{n " + ", ".join(exits)
         if users or things:
-            string += "\n{wYou see: {n"
-            if users:
-                string += "{c" + ", ".join(users) + "{n "
-            if things:
-                string += ", ".join(things)
+            string += "\n{wYou see:{n " + ", ".join(users + things)
         return string
 
     def at_desc(self, looker=None):

@@ -142,7 +142,8 @@ def get_and_merge_cmdsets(caller):
     # report cmdset errors to user (these should already have been logged)
     yield [caller.msg(cmdset.message) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
     # sort cmdsets after reverse priority (highest prio are merged in last)
-    cmdsets = yield sorted(cmdsets, key=lambda x: x.priority)
+    yield cmdsets.sort(key=lambda x: x.priority)
+    #cmdsets = yield sorted(cmdsets, key=lambda x: x.priority)
 
     if cmdsets:
         # Merge all command sets into one, beginning with the lowest-prio one
