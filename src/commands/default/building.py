@@ -538,6 +538,8 @@ class CmdDestroy(MuxCommand):
             if not obj:
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
                 return ""
+            if not "override" in self.switches and obj.dbid == int(settings.CHARACTER_DEFAULT_HOME):
+                return "\nYou are trying to delete CHARACTER_DEFAULT_HOME. If you want to do this, use the /override switch."
             objname = obj.name
             if not obj.access(caller, 'delete'):
                 return "\nYou don't have permission to delete %s." % objname
@@ -1537,6 +1539,7 @@ class CmdExamine(ObjManipCommand):
     aliases = ["@ex","ex", "exam", "examine"]
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
+    arg_regex = r"\s.*?|$"
 
     player_mode = False
 
@@ -1601,7 +1604,7 @@ class CmdExamine(ObjManipCommand):
                    "perms":"\n{wPermissions{n: %s",
                    "locks":"\n{wLocks{n:",
                    "cmdset":"\n{wCurrent Cmdset(s){n:\n %s",
-                   "cmdset_avail":"\n{wActual commands available to %s (incl. lock-checks, external cmds etc){n:\n %s",
+                   "cmdset_avail":"\n{wCommands available to %s (all cmdsets + exits and external cmds){n:\n %s",
                    "scripts":"\n{wScripts{n:\n %s",
                    "exits":"\n{wExits{n: ",
                    "characters":"\n{wCharacters{n: ",
@@ -1616,7 +1619,7 @@ class CmdExamine(ObjManipCommand):
                    "perms":"\nPermissions: %s",
                    "locks":"\nLocks:",
                    "cmdset":"\nCurrent Cmdset(s):\n %s",
-                   "cmdset_avail":"\nActual commands available to %s (incl. lock-checks, external cmds, etc):\n %s",
+                   "cmdset_avail":"\nCommands available to %s (all cmdsets + exits and external cmds):\n %s",
                    "scripts":"\nScripts:\n %s",
                    "exits":"\nExits: ",
                    "characters":"\nCharacters: ",
@@ -1653,12 +1656,12 @@ class CmdExamine(ObjManipCommand):
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
             # list the current cmdsets
-            cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])
-            string += headers["cmdset"] % cmdsetstr
+            all_cmdsets = obj.cmdset.all() + (obj.player and obj.player.cmdset.all() or [])
+            all_cmdsets.sort(key=lambda x:x.priority, reverse=True)
+            string += headers["cmdset"] % ("\n ".join("%s (prio %s)" % (cmdset.path, cmdset.priority) for cmdset in all_cmdsets))
+            #cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])
 
             # list the actually available commands
-            #from src.commands.cmdhandler import get_and_merge_cmdsets
-            #avail_cmdset = get_and_merge_cmdsets(obj)
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
 
             cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
