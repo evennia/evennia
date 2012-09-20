@@ -275,7 +275,7 @@ class ObjectDB(TypedObject):
     def __location_set(self, location):
         "Setter. Allows for self.location = location"
         try:
-            old_loc = _GA(_GA(self, "location"), "dbobj")
+            old_loc = _GA(self, "location")
 
             if ObjectDB.objects.dbref(location):
                 # dbref search
@@ -288,7 +288,7 @@ class ObjectDB(TypedObject):
             _set_cache(self, "location", loc)
             # update the contents of each location
             if old_loc:
-                _GA(old_loc, "contents_update")(self, remove=True)
+                _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
             if loc:
                 _GA(loc, "contents_update")(_GA(self, "typeclass"))
         except Exception:
