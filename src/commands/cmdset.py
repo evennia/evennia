@@ -14,7 +14,6 @@ See CmdHandler for practical examples on how to apply cmdsets
 together to create interesting in-game effects.
 """
 
-import copy
 from django.utils.translation import ugettext as _
 from src.utils.utils import inherits_from, is_iter
 __all__ = ("CmdSet",)
@@ -225,10 +224,8 @@ class CmdSet(object):
         Returns True if this cmdset contains the given command (as defined
         by command name and aliases). This allows for things like 'if cmd in cmdset'
         """
-        # optimization test
-        try:
-            return self._contains_cache[othercmd]
-        except KeyError:
+        ret = self._contains_cache.get(othercmd)
+        if ret == None:
             ret = othercmd in self.commands
             self._contains_cache[othercmd] = ret
         return ret
@@ -326,7 +323,7 @@ class CmdSet(object):
             # an infinite loop (adding cmdset to itself somehow)
             try:
                 cmd = self._instantiate(cmd)
-            except RuntimeError, e:
+            except RuntimeError:
                 string = "Adding cmdset %(cmd)s to %(class)s lead to an infinite loop. When adding a cmdset to another, "
                 string += "make sure they are not themself cyclically added to the new cmdset somewhere in the chain."
                 raise RuntimeError(_(string) % {"cmd":cmd, "class":self.__class__})
