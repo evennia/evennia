@@ -269,41 +269,38 @@ class ObjectDB(TypedObject):
         "Getter. Allows for value = self.location."
         loc = _get_cache(self, "location")
         if loc:
-            return loc.typeclass
+            return _GA(loc, "typeclass")
         return None
     #@location.setter
     def __location_set(self, location):
         "Setter. Allows for self.location = location"
         try:
-            old_loc = _GA(self, "location")
-            if location == None or type(location) == ObjectDB:
-                # location is None or a valid object
-                loc = location
-            elif ObjectDB.objects.dbref(location):
-                # location is a dbref; search
+            old_loc = _GA(_GA(self, "location"), "dbobj")
+
+            if ObjectDB.objects.dbref(location):
+                # dbref search
                 loc = ObjectDB.objects.dbref_search(location)
-                if loc and hasattr(loc,'dbobj'):
-                    loc = loc.dbobj
-                else:
-                    loc = location.dbobj
+                loc = loc and _GA(loc, "dbobj")
+            elif type(location) != ObjectDB:
+                loc = _GA(location, "dbobj")
             else:
-                loc = location.dbobj
+                loc = location
             _set_cache(self, "location", loc)
             # update the contents of each location
             if old_loc:
-                old_loc.contents_update(self, remove=True)
+                _GA(old_loc, "contents_update")(self, remove=True)
             if loc:
-                loc.contents_update(self.typeclass)
+                _GA(loc, "contents_update")(_GA(self, "typeclass"))
         except Exception:
             string = "Cannot set location: "
             string += "%s is not a valid location."
-            self.msg(_(string) % location)
+            _GA(self, "msg")(_(string) % location)
             logger.log_trace(string)
             raise
     #@location.deleter
     def __location_del(self):
         "Deleter. Allows for del self.location"
-        self.location.contents_update(self, remove=True)
+        _GA(self, "location").contents_update(self, remove=True)
         _SA(self, "db_location", None)
         _GA(self, "save")()
         _del_cache(self, "location")
@@ -352,7 +349,7 @@ class ObjectDB(TypedObject):
         "Getter. Allows for value = self.destination."
         dest = _get_cache(self, "destination")
         if dest:
-            return dest.typeclass
+            return _GA(dest, "typeclass")
         return None
     #@destination.setter
     def __destination_set(self, destination):
@@ -364,24 +361,24 @@ class ObjectDB(TypedObject):
             elif ObjectDB.objects.dbref(destination):
                 # destination is a dbref; search
                 dest = ObjectDB.objects.dbref_search(destination)
-                if dest and hasattr(dest,'dbobj'):
-                    dest = dest.dbobj
+                if dest and self._hasattr(dest,'dbobj'):
+                    dest = _GA(dest, "dbobj")
                 else:
-                    dest = destination.dbobj
+                    dest = _GA(destination, "dbobj")
             else:
                 dest = destination.dbobj
             _set_cache(self, "destination", dest)
         except Exception:
             string = "Cannot set destination: "
             string += "%s is not a valid destination."
-            self.msg(_(string) % destination)
+            _GA(self, "msg")(_(string) % destination)
             logger.log_trace(string)
             raise
     #@destination.deleter
     def __destination_del(self):
         "Deleter. Allows for del self.destination"
-        self.db_destination = None
-        self.save()
+        _SA(self, "db_destination", None)
+        _GA(self, "save")()
         _del_cache(self, "destination")
     destination = property(__destination_get, __destination_set, __destination_del)
 
