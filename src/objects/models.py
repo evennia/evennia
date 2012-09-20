@@ -203,10 +203,10 @@ class ObjectDB(TypedObject):
         "Parent must be initialized first."
         TypedObject.__init__(self, *args, **kwargs)
         # handlers
-        self.cmdset = CmdSetHandler(self)
-        self.cmdset.update(init_mode=True)
-        self.scripts = ScriptHandler(self)
-        self.nicks = ObjectNickHandler(self)
+        _SA(self, "cmdset", CmdSetHandler(self))
+        _GA(self, "cmdset").update(init_mode=True)
+        _SA(self, "scripts", ScriptHandler(self))
+        _SA(self, "nicks", ObjectNickHandler(self))
         # store the attribute class
 
     # Wrapper properties to easily set database fields. These are
@@ -312,7 +312,7 @@ class ObjectDB(TypedObject):
         "Getter. Allows for value = self.home"
         home = _get_cache(self, "home")
         if home:
-            return home.typeclass
+            return _GA(home, "typeclass")
         return None
     #@home.setter
     def __home_set(self, home):
@@ -323,23 +323,23 @@ class ObjectDB(TypedObject):
             elif ObjectDB.objects.dbref(home):
                 hom = ObjectDB.objects.dbref_search(home)
                 if hom and hasattr(hom,'dbobj'):
-                    hom = hom.dbobj
+                    hom = _GA(hom, "dbobj")
                 else:
-                    hom = home.dbobj
+                    hom = _GA(home, "dbobj")
             else:
-                hom = home.dbobj
+                hom = _GA(home, "dbobj")
             _set_cache(self, "home", hom)
         except Exception:
             string = "Cannot set home: "
             string += "%s is not a valid home."
-            self.msg(_(string) % home)
+            _GA(self, "msg")(_(string) % home)
             logger.log_trace(string)
             #raise
     #@home.deleter
     def __home_del(self):
         "Deleter. Allows for del self.home."
-        self.db_home = None
-        self.save()
+        _SA(self, "db_home", None)
+        _GA(self, "save")()
         _del_cache(self, "home")
     home = property(__home_get, __home_set, __home_del)
 
@@ -361,7 +361,7 @@ class ObjectDB(TypedObject):
             elif ObjectDB.objects.dbref(destination):
                 # destination is a dbref; search
                 dest = ObjectDB.objects.dbref_search(destination)
-                if dest and self._hasattr(dest,'dbobj'):
+                if dest and _GA(self, "_hasattr")(dest,'dbobj'):
                     dest = _GA(dest, "dbobj")
                 else:
                     dest = _GA(destination, "dbobj")
@@ -370,8 +370,8 @@ class ObjectDB(TypedObject):
             _set_cache(self, "destination", dest)
         except Exception:
             string = "Cannot set destination: "
-            string += "%s is not a valid destination."
-            _GA(self, "msg")(_(string) % destination)
+            string += "%s is not a valid destination." % destination
+            _GA(self, "msg")(string)
             logger.log_trace(string)
             raise
     #@destination.deleter
@@ -387,20 +387,20 @@ class ObjectDB(TypedObject):
     #@property
     def __cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
-        if self.db_cmdset_storage:
-            return [path.strip() for path  in self.db_cmdset_storage.split(',')]
+        if _GA(self, "db_cmdset_storage"):
+            return [path.strip() for path  in _GA(self, "db_cmdset_storage").split(',')]
         return []
     #@cmdset_storage.setter
     def __cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
         value = ",".join(str(val).strip() for val in make_iter(value))
-        self.db_cmdset_storage = value
-        self.save()
+        _SA(self, "db_cmdset_storage", value)
+        _GA(self, "save")()
     #@cmdset_storage.deleter
     def __cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
-        self.db_cmdset_storage = ""
-        self.save()
+        _SA(self, "db_cmdset_storage", "")
+        _GA(self, "save")()
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
     class Meta:
@@ -488,7 +488,7 @@ class ObjectDB(TypedObject):
         Returns all exits from this object, i.e. all objects
         at this location having the property destination != None.
         """
-        return [exi for exi in self.contents
+        return [exi for exi in _GA(self, "contents")
                 if exi.destination]
     exits = property(__exits_get)
 
@@ -619,7 +619,7 @@ class ObjectDB(TypedObject):
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
                 break
-        return cmdhandler.cmdhandler(self.typeclass, raw_string)
+        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string)
 
     def msg(self, message, from_obj=None, data=None):
         """
@@ -644,7 +644,7 @@ class ObjectDB(TypedObject):
 
         exclude is a list of objects not to send to. See self.msg() for more info.
         """
-        contents = self.contents
+        contents = _GA(self, "contents")
         if exclude:
             exclude = make_iter(exclude)
             contents = [obj for obj in contents
@@ -684,7 +684,7 @@ class ObjectDB(TypedObject):
             trc = traceback.format_exc()
             errstring = "%s%s" % (trc, string)
             logger.log_trace()
-            self.msg(errstring)
+            _GA(self, "msg")(errstring)
 
         errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
         if not emit_to_obj:
@@ -708,12 +708,12 @@ class ObjectDB(TypedObject):
             return False
 
         # Save the old location
-        source_location = self.location
+        source_location = _GA(self, "location")
         if not source_location:
             # there was some error in placing this room.
             # we have to set one or we won't be able to continue
-            if self.home:
-                source_location = self.home
+            if _GA(self, "home"):
+                source_location = _GA(self, "home")
             else:
                 default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
                 source_location = default_home
@@ -739,7 +739,7 @@ class ObjectDB(TypedObject):
 
         # Perform move
         try:
-            self.location = destination
+            _SA(self, "location", destination)
         except Exception:
             emit_to_obj.msg(errtxt % "location change")
             logger.log_trace()
@@ -800,7 +800,7 @@ class ObjectDB(TypedObject):
         default_home_id = int(settings.CHARACTER_DEFAULT_HOME)
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
-            if default_home.dbid == self.dbid:
+            if default_home.dbid == _GA(self, "dbid"):
                 # we are deleting default home!
                 default_home = None
         except Exception:
@@ -811,7 +811,7 @@ class ObjectDB(TypedObject):
         for obj in objs:
             home = obj.home
             # Obviously, we can't send it back to here.
-            if not home or (home and home.dbid == self.dbid):
+            if not home or (home and home.dbid == _GA(self, "dbid")):
                 obj.home = default_home
 
             # If for some reason it's still None...
@@ -850,9 +850,9 @@ class ObjectDB(TypedObject):
 
             returns the new clone name on the form keyXX
             """
-            key = self.key
+            key = _GA(self, "key")
             num = 1
-            for obj in (obj for obj in self.location.contents
+            for obj in (obj for obj in _GA(_GA(self, "location"), "contents")
                         if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
                 num += 1
             return "%s%02i" % (key, num)
@@ -867,7 +867,7 @@ class ObjectDB(TypedObject):
         objects to their respective home locations, as well as clean
         up all exits to/from the object.
         """
-        if self.delete_iter > 0:
+        if _GA(self, "delete_iter") > 0:
             # make sure to only call delete once on this object
             # (avoid recursive loops)
             return False
@@ -876,22 +876,22 @@ class ObjectDB(TypedObject):
             # this is an extra pre-check
             # run before deletion mechanism
             # is kicked into gear.
-            self.delete_iter == 0
+            _SA(self, "delete_iter", 0)
             return False
 
         self.delete_iter += 1
 
         # See if we need to kick the player off.
 
-        for session in self.sessions:
-            session.msg(_("Your character %s has been destroyed.") % self.name)
+        for session in _GA(self, "sessions"):
+            session.msg(_("Your character %s has been destroyed.") % _GA(self, "key"))
             # no need to disconnect, Player just jumps to OOC mode.
         # sever the connection (important!)
-        if object.__getattribute__(self, 'player') and self.player:
-            self.player.character = None
-        self.player = None
+        if _GA(self, 'player'):
+            _SA(_GA(self, "player"), "character", None)
+        _SA(self, "player", None)
 
-        for script in self.scripts.all():
+        for script in _GA(self, "scripts").all():
             script.stop()
 
         # if self.player:
@@ -899,12 +899,12 @@ class ObjectDB(TypedObject):
         #     self.player.user.save(
 
         # Destroy any exits to and from this room, if any
-        self.clear_exits()
+        _GA(self, "clear_exits")()
         # Clear out any non-exit objects located within the object
-        self.clear_contents()
+        _GA(self, "clear_contents")()
         # clear current location's content cache of this object
-        if self.location:
-            self.location.contents_update(self, remove=True)
+        if _GA(self, "location"):
+            _GA(self, "location").contents_update(self, remove=True)
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True

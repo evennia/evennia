@@ -101,7 +101,7 @@ DEFAULT_NCLIENTS = 1
 # time between each 'tick', in seconds, if not set on command
 # line. All launched clients will be called upon to possibly do an
 # action with this frequency.
-DEFAULT_TIMESTEP = 5
+DEFAULT_TIMESTEP = 2
 # Port to use, if not specified on command line
 DEFAULT_PORT = settings.TELNET_PORTS[0]
 # chance of an action happening, per timestep. This helps to
