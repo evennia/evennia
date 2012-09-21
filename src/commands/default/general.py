@@ -323,10 +323,10 @@ class CmdDrop(MuxCommand):
             caller.msg("Drop what?")
             return
 
-        results = caller.search(self.args, ignore_errors=True)
-        # we process the results ourselves since we want to sift out only
-        # those in our inventory.
-        results = [obj for obj in results if obj in caller.contents]
+        # Because the DROP command by definition looks for items
+        # in inventory, call the search function using location = caller
+        results = caller.search(self.args, location=caller, ignore_errors=True)
+        
         # now we send it into the error handler (this will output consistent
         # error messages if there are problems).
         obj = AT_SEARCH_RESULT(caller, self.args, results, False)
