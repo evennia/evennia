@@ -275,7 +275,7 @@ class CmdGet(MuxCommand):
         if not self.args:
             caller.msg("Get what?")
             return
-        obj = caller.search(self.args)
+        obj = caller.search(self.args, location=caller.location)
         if not obj:
             return
         if caller == obj:
@@ -326,7 +326,7 @@ class CmdDrop(MuxCommand):
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
         results = caller.search(self.args, location=caller, ignore_errors=True)
-        
+
         # now we send it into the error handler (this will output consistent
         # error messages if there are problems).
         obj = AT_SEARCH_RESULT(caller, self.args, results, False)

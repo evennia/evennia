@@ -514,7 +514,8 @@ class ObjectDB(TypedObject):
                        location/inventory. This is overruled if location keyword is given.
         attribute_name: (string) Which attribute to match (if None, uses default 'name')
         use_nicks : Use nickname replace (off by default)
-        location : If None, use caller's current location
+        location : If None, use caller's current location, and caller.contents.
+                   This can also be a list of locations
         player: return the Objects' controlling Player, instead, if available
         ignore_errors : Don't display any error messages even
                         if there are none/multiple matches -
@@ -562,10 +563,14 @@ class ObjectDB(TypedObject):
         if global_search:
             # only allow exact matching if searching the entire database
             exact = True
+        elif location:
+            # location(s) were given
+            candidates = []
+            for obj in make_iter(location):
+                candidates.extend([o.dbobj for o in obj.contents])
         else:
             # local search. Candidates are self.contents, self.location and self.location.contents
-            if not location:
-                location = self.location
+            location = self.location
             candidates = self.contents
             if location:
                 candidates = candidates + [location] + location.contents
