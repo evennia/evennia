@@ -84,45 +84,11 @@ class Portal(object):
         self.sessions = PORTAL_SESSIONS
         self.sessions.portal = self
 
-        print '\n' + '-'*50
-
-        # Make info output to the terminal.
-        self.terminal_output()
-
-        print '-'*50
-
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
         reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _reactor_stopping=True)
 
         self.game_running = False
-
-    def terminal_output(self):
-        """
-        Outputs server startup info to the terminal.
-        """
-        print ' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
-        if AMP_ENABLED:
-            print "  amp (to Server): %s" % AMP_PORT
-        if TELNET_ENABLED:
-            ports = ", ".join([str(port) for port in TELNET_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in TELNET_INTERFACES if iface != '0.0.0.0'])
-            print "  telnet%s: %s" % (ifaces, ports)
-        if SSH_ENABLED:
-            ports = ", ".join([str(port) for port in SSH_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in SSH_INTERFACES if iface != '0.0.0.0'])
-            print "  ssh%s: %s" % (ifaces, ports)
-        if SSL_ENABLED:
-            ports = ", ".join([str(port) for port in SSL_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in SSL_INTERFACES if iface != '0.0.0.0'])
-            print "  ssl%s: %s" % (ifaces, ports)
-        if WEBSERVER_ENABLED:
-            clientstring = ""
-            if WEBCLIENT_ENABLED:
-                clientstring = '/client'
-            ports = ", ".join([str(port) for port in WEBSERVER_PORTS])
-            ifaces = ",".join([" %s" % iface for iface in WEBSERVER_INTERFACES if iface != '0.0.0.0'])
-            print "  webserver%s%s: %s" % (clientstring, ifaces, ports)
 
     def set_restart_mode(self, mode=None):
         """
@@ -179,11 +145,16 @@ application = service.Application('Portal')
 # and is where we store all the other services.
 PORTAL = Portal(application)
 
+print '-' * 50
+print ' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
+
 if AMP_ENABLED:
 
     # The AMP protocol handles the communication between
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
+
+    print "  amp (to Server): %s" % AMP_PORT
 
     from src.server import amp
 
@@ -214,6 +185,8 @@ if TELNET_ENABLED:
             telnet_service.setName('EvenniaTelnet%s' % pstring)
             PORTAL.services.addService(telnet_service)
 
+            print '  telnet%s: %s' % (ifacestr, port)
+
 if SSL_ENABLED:
 
     # Start SSL game connection (requires PyOpenSSL).
@@ -232,6 +205,10 @@ if SSL_ENABLED:
             ssl_service = internet.SSLServer(port, factory, ssl.getSSLContext(), interface=interface)
             ssl_service.setName('EvenniaSSL%s' % pstring)
             PORTAL.services.addService(ssl_service)
+
+            print "  ssl%s: %s" % (ifacestr, port)
+
+
 
 if SSH_ENABLED:
 
@@ -252,6 +229,8 @@ if SSH_ENABLED:
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
 
+            print "  ssl%s: %s" % (ifacestr, port)
+
 if WEBSERVER_ENABLED:
 
     # Start a django-compatible webserver.
@@ -266,12 +245,15 @@ if WEBSERVER_ENABLED:
     # point our media resources to url /media
     web_root.putChild("media", static.File(settings.MEDIA_ROOT))
 
+    webclientstr = ""
     if WEBCLIENT_ENABLED:
         # create ajax client processes at /webclientdata
         from src.server.webclient import WebClient
         webclient = WebClient()
         webclient.sessionhandler = PORTAL_SESSIONS
         web_root.putChild("webclientdata", webclient)
+
+        webclientstr = "/client"
 
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
 
@@ -286,9 +268,13 @@ if WEBSERVER_ENABLED:
             webserver.setName('EvenniaWebServer%s' % pstring)
             PORTAL.services.addService(webserver)
 
+            print "  webserver%s%s: %s" % (webclientstr, ifacestr, port)
+
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     plugin_module.start_plugin_services(PORTAL)
+
+print '-' * 50 # end of terminal output
 
 
 if os.name == 'nt':

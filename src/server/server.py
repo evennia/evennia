@@ -88,8 +88,6 @@ class Evennia(object):
         self.sessions = SESSIONS
         self.sessions.server = self
 
-        print '\n' + '-'*50
-
         # Database-specific startup optimizations.
         self.sqlite3_prep()
 
@@ -100,11 +98,6 @@ class Evennia(object):
 
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
-
-        # Make info output to the terminal.
-        self.terminal_output()
-
-        print '-'*50
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
@@ -207,13 +200,6 @@ class Evennia(object):
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
 
-    def terminal_output(self):
-        """
-        Outputs server startup info to the terminal.
-        """
-        print ' %(servername)s Server (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
-        print '  amp (to Portal): %s' % AMP_PORT
-
     def set_restart_mode(self, mode=None):
         """
         This manages the flag file that tells the runner if the server is
@@ -311,11 +297,16 @@ application = service.Application('Evennia')
 # and is where we store all the other services.
 EVENNIA = Evennia(application)
 
-# The AMP protocol handles the communication between
-# the portal and the mud server. Only reason to ever deactivate
-# it would be during testing and debugging.
+print '-' * 50
+print ' %(servername)s Server (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
 
 if AMP_ENABLED:
+
+    # The AMP protocol handles the communication between
+    # the portal and the mud server. Only reason to ever deactivate
+    # it would be during testing and debugging.
+
+    print '  amp (to Portal): %s' % AMP_PORT
 
     from src.server import amp
 
@@ -328,6 +319,8 @@ if IRC_ENABLED:
 
     # IRC channel connections
 
+    print '  irc enabled'
+
     from src.comms import irc
     irc.connect_all()
 
@@ -335,18 +328,25 @@ if IMC2_ENABLED:
 
     # IMC2 channel connections
 
+    print '  imc2 enabled'
+
     from src.comms import imc2
     imc2.connect_all()
 
 if RSS_ENABLED:
 
     # RSS feed channel connections
+
+    print '  rss enabled'
+
     from src.comms import rss
     rss.connect_all()
 
 for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols
     plugin_module.start_plugin_services(EVENNIA)
+
+print '-' * 50 # end of terminal output
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)
