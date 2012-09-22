@@ -1,14 +1,21 @@
 """
-This is a plugin for the Evennia services.
+Python ProcPool plugin
 
-To add, simply add the path to this module
-("contrib.procpools.python_procpool_plugin") to the
-settings.SERVER_SERVICES_PLUGIN_MODULES list and reboot the server.
+Evennia contribution - Griatch 2012
+
+This is a plugin for the Evennia services. It will make the service
+and run_async in python_procpool.py available to the system.
+
+To activate, add the following line to your settings file:
+
+SERVER_SERVICES_PLUGIN_MODULES.append("contrib.procpools.python_procpool_plugin")
+
+Next reboot the server and the new service will be available.
 
 If you want to adjust the defaults, copy this file to
-game/gamesrc/conf/, re-point settings.SERVER_SERVICES_PLUGINS_MODULES
-and edit the file there. This is to avoid eventual upstream
-modifications to this file.
+game/gamesrc/conf/ and re-point
+settings.SERVER_SERVICES_PLUGINS_MODULES to that file instead.  This
+is to avoid clashes with eventual upstream modifications to this file.
 
 It is not recommended to use this with an SQLite3 database, at least
 if you plan to do many out-of-process database write - SQLite3 does

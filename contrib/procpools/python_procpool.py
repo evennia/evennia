@@ -1,16 +1,30 @@
 """
-ProcPool
+Python ProcPool
 
-This module implements and handles processes running under the AMPoule
-pool. The ProcPool can accept data from processes and runs them in a
-dynamically changing pool of processes, talking to them over AMP. This
-offers full asynchronous operation (Python threading does not work as
-well for this).
+Evennia Contribution - Griatch 2012
 
-The ExecuteCode command found here is used by src.utils.utils.run_async()
-to launch snippets of code on the process pool. The pool itself is a
-service named "Process Pool" and is controlled from src/server/server.py.
-It can be customized via settings.PROCPOOL_*
+The ProcPool is used to execute code on a separate process. This allows for
+true asynchronous operation. Process communication happens over AMP and is
+thus fully asynchronous as far as Evennia is concerned.
+
+The process pool is implemented using a slightly modified version of
+the Ampoule package (included).
+
+The python_process pool is a service activated with the instructions
+in python_procpool_plugin.py.
+
+To use, import run_async from this module and use instead of the
+in-process version found in src.utils.utils. Note that this is a much
+more complex function than the default run_async, so make sure to read
+the header carefully.
+
+To test it works, make sure to activate the process pool, then try the
+following as superuser:
+
+@py from contrib.procpools.python_procpool import run_async;run_async("_return('Wohoo!')", at_return=self.msg, at_err=self.msg)
+
+You can also try to import time and do time.sleep(5) before the
+_return statement, to test it really is asynchronous.
 
 """
 
