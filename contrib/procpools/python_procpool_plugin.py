@@ -18,9 +18,9 @@ settings.SERVER_SERVICES_PLUGINS_MODULES to that file instead.  This
 is to avoid clashes with eventual upstream modifications to this file.
 
 It is not recommended to use this with an SQLite3 database, at least
-if you plan to do many out-of-process database write - SQLite3 does
+if you plan to do many out-of-process database writes. SQLite3 does
 not work very well with a high frequency of off-process writes due to
-file locking clashes.
+file locking clashes. Test what works with your mileage.
 
 """
 import os
@@ -32,17 +32,18 @@ from django.conf import settings
 # convenient flag to turn off process pool without changing settings
 PROCPOOL_ENABLED = True
 # relay process stdout to log (debug mode, very spammy)
-PROCPOOL_DEBUG = True
+PROCPOOL_DEBUG = False
 # max/min size of the process pool. Will expand up to max limit on demand.
 PROCPOOL_MIN_NPROC = 5
 PROCPOOL_MAX_NPROC = 20
+# maximum time (seconds) a process may idle before being pruned from
+# pool (if pool bigger than minsize)
+PROCPOOL_IDLETIME = 20
 # after sending a command, this is the maximum time in seconds the process
 # may run without returning. After this time the process will be killed. This
 # can be seen as a fallback; the run_async method takes a keyword proc_timeout
 # that will override this value on a per-case basis.
 PROCPOOL_TIMEOUT = 10
-# maximum time (seconds) a process may idle before being pruned from pool (if pool bigger than minsize)
-PROCPOOL_IDLETIME = 20
 # only change if the port clashes with something else on the system
 PROCPOOL_PORT = 5001
 # 0.0.0.0 means listening to all interfaces
