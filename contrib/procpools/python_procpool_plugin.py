@@ -30,12 +30,13 @@ PROCPOOL_DEBUG = True
 PROCPOOL_MIN_NPROC = 5
 PROCPOOL_MAX_NPROC = 20
 # after sending a command, this is the maximum time in seconds the process
-# may run without returning. After this time the process will be killed
-PROCPOOL_TIMEOUT = 15
+# may run without returning. After this time the process will be killed. This
+# can be seen as a fallback; the run_async method takes a keyword proc_timeout
+# that will override this value on a per-case basis.
+PROCPOOL_TIMEOUT = 10
 # maximum time (seconds) a process may idle before being pruned from pool (if pool bigger than minsize)
 PROCPOOL_IDLETIME = 20
 # only change if the port clashes with something else on the system
-PROCPOOL_HOST = 'localhost'
 PROCPOOL_PORT = 5001
 # 0.0.0.0 means listening to all interfaces
 PROCPOOL_INTERFACE = '0.0.0.0'
@@ -96,6 +97,7 @@ def start_plugin_services(server):
                                         max=PROCPOOL_MAX_NPROC,
                                         recycleAfter=500,
                                         timeout=PROCPOOL_TIMEOUT,
+                                        maxIdle=PROCPOOL_IDLETIME,
                                         ampChild=PythonProcPoolChild,
                                         starter=procpool_starter)
     procpool_service = ampoule_service.AMPouleService(procpool,

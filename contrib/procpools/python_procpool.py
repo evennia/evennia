@@ -111,10 +111,8 @@ class PythonProcPoolChild(AMPChild):
             try:
                 environment = from_pickle(environment)
                 available_vars.update(environment)
-            except Exception, e:
+            except Exception:
                 logger.log_trace()
-                _return(e)
-
         # try to execute with eval first
         try:
             ret = eval(source, {}, available_vars)
@@ -132,12 +130,14 @@ class PythonProcPoolChild(AMPChild):
         to_recache = to_pickle(objs, emptypickle=False) or ""
         # empty the list without loosing memory reference
         PROC_MODIFIED_OBJS[:] = []
-        print "... executecode done."
         return {'response': ret,
                 'recached': to_recache}
     ExecuteCode.responder(executecode)
 
 
+#
+# Procpool run_async - Server-side access function for executing code in another process
+#
 
 _PPOOL = None
 _SESSIONS = None
@@ -231,7 +231,7 @@ def run_async(to_execute, *args, **kwargs):
         except AttributeError:
             _PPOOL = False
 
-    use_timeout = kwargs.pop("proc_timeout", None)
+    use_timeout = kwargs.pop("proc_timeout", _PPOOL.timeout)
 
     # helper converters for callbacks/errbacks
     def convert_return(f):
