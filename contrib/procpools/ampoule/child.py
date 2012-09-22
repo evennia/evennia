@@ -1,7 +1,14 @@
+"""
+This defines the the parent for all subprocess children.
+
+Inherit from this to define a new type of subprocess.
+
+"""
+
 from twisted.python import log
 from twisted.internet import error
 from twisted.protocols import amp
-from src.utils.ampoule.commands import Echo, Shutdown, Ping
+from contrib.procpools.ampoule.commands import Echo, Shutdown, Ping
 
 class AMPChild(amp.AMP):
     def __init__(self):

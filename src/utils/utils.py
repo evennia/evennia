@@ -20,12 +20,9 @@ except ImportError:
     import pickle
 
 ENCODINGS = settings.ENCODINGS
-_LOGGER = None
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-
-
 
 def is_iter(iterable):
     """
@@ -465,10 +462,10 @@ def format_table(table, extra_space=1):
     return ftable
 
 
-
 _FROM_MODEL_MAP = None
 _TO_DBOBJ = lambda o: (hasattr(o, "dbobj") and o.dbobj) or o
 _TO_PACKED_DBOBJ = lambda natural_key, dbref: ('__packed_dbobj__', natural_key, dbref)
+_DUMPS = None
 def to_pickle(data, do_pickle=True, emptypickle=True):
     """
     Prepares object for being pickled. This will remap database models
@@ -482,11 +479,10 @@ def to_pickle(data, do_pickle=True, emptypickle=True):
     Database objects are stored as ('__packed_dbobj__', <natural_key_tuple>, <dbref>)
     """
     # prepare globals
-    global _DUMPS, _LOADS, _FROM_MODEL_MAP
+    global _DUMPS, _FROM_MODEL_MAP
+    _DUMPS = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
     if not _DUMPS:
         _DUMPS = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
-    if not _LOADS:
-        _LOADS = lambda data: pickle.loads(to_str(data))
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
@@ -511,12 +507,14 @@ def to_pickle(data, do_pickle=True, emptypickle=True):
     # do recursive conversion
     data = iter_db2id(data)
     if do_pickle and not (not emptypickle and not data and data != False):
+        print "_DUMPS2:", _DUMPS
         return _DUMPS(data)
     return data
 
 _TO_MODEL_MAP = None
 _IS_PACKED_DBOBJ = lambda o: type(o)== tuple and len(o)==3 and o[0]=='__packed_dbobj__'
 _TO_TYPECLASS = lambda o: (hasattr(o, 'typeclass') and o.typeclass) or o
+_LOADS = None
 from django.db import transaction
 @transaction.autocommit
 def from_pickle(data, do_pickle=True):
@@ -528,9 +526,7 @@ def from_pickle(data, do_pickle=True):
     do_pickle - actually unpickle the input before continuing
     """
     # prepare globals
-    global _DUMPS, _LOADS, _TO_MODEL_MAP
-    if not _DUMPS:
-        _DUMPS = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
+    global _LOADS, _TO_MODEL_MAP
     if not _LOADS:
         _LOADS = lambda data: pickle.loads(to_str(data))
     if not _TO_MODEL_MAP:
@@ -572,8 +568,8 @@ def clean_object_caches(obj):
     global _TYPECLASSMODELS, _OBJECTMODELS
     if not _TYPECLASSMODELS:
         from src.typeclasses import models as _TYPECLASSMODELS
-    if not _OBJECTMODELS:
-        from src.objects import models as _OBJECTMODELS
+    #if not _OBJECTMODELS:
+    #    from src.objects import models as _OBJECTMODELS
 
     #print "recaching:", obj
     if not obj:
@@ -596,8 +592,6 @@ def clean_object_caches(obj):
 
 _PPOOL = None
 _PCMD = None
-_DUMPS = None
-_LOADS = None
 _PROC_ERR = "A process has ended with a probable error condition: process ended by signal 9."
 def run_async(to_execute, *args, **kwargs):
     """
@@ -609,23 +603,8 @@ def run_async(to_execute, *args, **kwargs):
             arguments.
             The callable will be executed using ProcPool, or in
             a thread if ProcPool is not available.
-    to_execute (string) - this is only available is ProcPool is
-            running. If a string, to_execute this will be treated as a code
-            snippet to execute asynchronously. *args are then not used
-            and non-reserverd *kwargs are used to define the execution
-            environment made available to the code.
 
     reserved kwargs:
-        'use_thread' (bool) - this only works with callables (not code).
-                     It forces the code to run in a thread instead
-                     of using the Process Pool, even if the latter
-                     is available. This could be useful if you want
-                     to make sure to not get out of sync with the
-                     main process (such as accessing in-memory global
-                     properties)
-        'proc_timeout' (int) - only used if ProcPool is available. Sets a
-                     max time for execution. This alters the value set
-                     by settings.PROCPOOL_TIMEOUT
         'at_return' -should point to a callable with one argument.
                     It will be called with the return value from
                     to_execute.
@@ -636,32 +615,20 @@ def run_async(to_execute, *args, **kwargs):
         'at_err_kwargs' - this dictionary will be used as keyword
                           arguments to the at_err errback.
 
-    *args   - if to_execute is a callable, these args will be used
+    *args   - these args will be used
               as arguments for that function. If to_execute is a string
               *args are not used.
-    *kwargs - if to_execute is a callable, these kwargs will be used
+    *kwargs - these kwargs will be used
               as keyword arguments in that function. If a string, they
               instead are used to define the executable environment
               that should be available to execute the code in to_execute.
 
-    run_async will either relay the code to a thread or to a processPool
-    depending on input and what is available in the system. To activate
-    Process pooling, settings.PROCPOOL_ENABLE must be set.
-
-    to_execute in string form should handle all imports needed. kwargs
-    can be used to send objects and properties. Such properties will
-    be pickled, except Database Objects which will be sent across
-    on a special format and re-loaded on the other side.
-
-    To get a return value from your code snippet, Use the _return()
-    function: Every call to this function from your snippet will
-    append the argument to an internal list of returns. This return value
-    (or a list) will be the first argument to the at_return callback.
+    run_async will relay executed code to a thread.
 
     Use this function with restrain and only for features/commands
     that you know has no influence on the cause-and-effect order of your
     game (commands given after the async function might be executed before
-    it has finished). Accessing the same property from different threads/processes
+    it has finished). Accessing the same property from different threads
     can lead to unpredicted behaviour if you are not careful (this is called a
     "race condition").
 
@@ -671,72 +638,14 @@ def run_async(to_execute, *args, **kwargs):
     tracebacks.
 
     """
-    # handle all global imports.
-    global _PPOOL, _PCMD
-    if _PPOOL == None:
-        # Try to load process Pool
-        from src.server.sessionhandler import SESSIONS as _SESSIONS
-        try:
-            _PPOOL = _SESSIONS.server.services.namedServices.get("ProcPool").pool
-        except AttributeError:
-            _PPOOL = False
-    if not _PCMD:
-        from src.server.procpool import ExecuteCode as _PCMD
-
-    use_timeout = kwargs.pop("proc_timeout", None)
-
-    # helper converters for callbacks/errbacks
-    def convert_return(f):
-        def func(ret, *args, **kwargs):
-            rval = ret["response"] and from_pickle(ret["response"])
-            reca = ret["recached"] and from_pickle(ret["recached"])
-            # recache all indicated objects
-            [clean_object_caches(obj) for obj in reca]
-            if f: return f(rval, *args, **kwargs)
-            else: return rval
-        return func
-    def convert_err(f):
-        def func(err, *args, **kwargs):
-            err.trap(Exception)
-            err = err.getErrorMessage()
-            if use_timeout and err == _PROC_ERR:
-                err = "Process took longer than %ss and timed out." % use_timeout
-            if f:
-                return f(err, *args, **kwargs)
-            else:
-                global _LOGGER
-                if not _LOGGER:
-                    from src.utils import logger as _LOGGER
-                err = "Error reported from subprocess: '%s'" % err
-                _LOGGER.log_errmsg(err)
-        return func
 
     # handle special reserved input kwargs
-    use_thread = kwargs.pop("use_thread", False)
     callback = convert_return(kwargs.pop("at_return", None))
     errback = convert_err(kwargs.pop("at_err", None))
     callback_kwargs = kwargs.pop("at_return_kwargs", {})
     errback_kwargs = kwargs.pop("at_err_kwargs", {})
 
-    if _PPOOL and not use_thread:
-        # process pool is running
-        if isinstance(to_execute, basestring):
-            # run source code in process pool
-            cmdargs = {"_timeout":use_timeout}
-            cmdargs["source"] = to_str(to_execute)
-            cmdargs["environment"] = to_pickle(kwargs, emptypickle=False) or ""
-            # defer to process pool
-            deferred = _PPOOL.doWork(_PCMD, **cmdargs)
-        elif callable(to_execute):
-            # execute callable in process
-            callname = to_execute.__name__
-            cmdargs = {"_timeout":use_timeout}
-            cmdargs["source"] = "_return(%s(*args,**kwargs))" % callname
-            cmdargs["environment"] = to_pickle({callname:to_execute, "args":args, "kwargs":kwargs})
-            deferred = _PPOOL.doWork(_PCMD, **cmdargs)
-        else:
-            raise RuntimeError("'%s' could not be handled by run_async" % to_execute)
-    elif callable(to_execute):
+    if callable(to_execute):
         # no process pool available, fall back to old deferToThread mechanism.
         deferred = threads.deferToThread(to_execute, *args, **kwargs)
     else:

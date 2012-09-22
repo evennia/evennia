@@ -10,7 +10,7 @@ from twisted.internet import error, defer, reactor
 from twisted.python import failure, reflect
 from twisted.trial import unittest
 from twisted.protocols import amp
-from src.utils.ampoule import main, child, commands, pool
+from contrib.procpools.ampoule import main, child, commands, pool
 
 class ShouldntHaveBeenCalled(Exception):
     pass

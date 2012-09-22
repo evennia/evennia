@@ -179,14 +179,14 @@ AT_INITIAL_SETUP_HOOK_MODULE = ""
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
 AT_SERVER_STARTSTOP_MODULE = ""
-# Module containing a function start_plugin_services(application). This module
+# List of one or more module paths to modules containing a function start_plugin_services(application). This module
 # will be called with the main Evennia Server application when the Server is initiated.
 # It will be called last in the startup sequence.
-SERVER_SERVICES_PLUGIN_MODULE = ""
-# Module containing a function start_plugin_services(application). This module
+SERVER_SERVICES_PLUGIN_MODULES = []
+# List of one or more module paths to modules containing a function start_plugin_services(application). This module
 # will be called with the main Evennia Portal application when the Portal is initiated.
 # It will be called last in the startup sequence.
-PORTAL_SERVICES_PLUGIN_MODULE = ""
+PORTAL_SERVICES_PLUGIN_MODULES = []
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
 # what type of game you are running, how many players you have etc.
 MSSP_META_MODULE = ""
@@ -347,47 +347,6 @@ IMC2_SERVER_PWD = ""
 # http://code.google.com/p/feedparser/)
 RSS_ENABLED=False
 RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
-
-######################################################################
-# Process Pool setup
-######################################################################
-
-# Activates the Twisted AMPoule process pool. This creates a pool
-# of subprocesses. When using e.g. utils.run_async Evennia will then
-# be able to offload long-running processes to the pool. Process pooling
-# shows much better parallelism than threading (and also makes use of
-# multiple processes). But it may be slower for some
-# combinations of database and operating system. Also, creating
-# objects from another process will require re-syncing of caches.
-# ProcPool is disabled by default on SQlite3 since it cannot handle
-# multiple process-writes very well. It should work fine with other supported
-# databases. If you plan to change your database, copy the following line
-# to your settings file to have it deactivate automatically for sqlite3.
-PROCPOOL_ENABLED = False # not DATABASES["default"]["ENGINE"] == 'django.db.backends.sqlite3'
-# relay process stdout to log (debug mode, very spammy)
-PROCPOOL_DEBUG = False
-# max/min size of the process pool. Will expand up to max limit on demand.
-PROCPOOL_MIN_NPROC = 5
-PROCPOOL_MAX_NPROC = 20
-# after sending a command, this is the maximum time in seconds the process
-# may run without returning. After this time the process will be killed
-PROCPOOL_TIMEOUT = None
-# maximum time (seconds) a process may idle before being pruned from pool (if pool bigger than minsize)
-PROCPOOL_IDLETIME = 20
-# only change if the port clashes with something else on the system
-PROCPOOL_HOST = 'localhost'
-PROCPOOL_PORT = 5001
-# 0.0.0.0 means listening to all interfaces
-PROCPOOL_INTERFACE = '0.0.0.0'
-# user-id and group-id to run the processes as (for OS:es supporting this).
-# If you plan to run unsafe code one could experiment with setting this
-# to an unprivileged user.
-PROCPOOL_UID = None
-PROCPOOL_GID = None
-# real path to a directory where all processes will be run. If
-# not given, processes will be executed in game/.
-PROCPOOL_DIRECTORY = None
-
 
 ######################################################################
 # Django web features

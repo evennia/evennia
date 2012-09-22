@@ -26,7 +26,7 @@ from src.scripts.models import ScriptDB
 from src.server.models import ServerConfig
 from src.server import initial_setup
 
-from src.utils.utils import get_evennia_version, mod_import
+from src.utils.utils import get_evennia_version, mod_import, make_iter
 from src.comms import channelhandler
 from src.server.sessionhandler import SESSIONS
 
@@ -43,8 +43,7 @@ SERVER_RESTART = os.path.join(settings.GAME_DIR, 'server.restart')
 SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
 # module containing plugin services
-SERVER_SERVICES_PLUGIN_MODULE = mod_import(settings.SERVER_SERVICES_PLUGIN_MODULE)
-
+SERVER_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)]
 
 #------------------------------------------------------------
 # Evennia Server settings
@@ -56,19 +55,6 @@ VERSION = get_evennia_version()
 AMP_ENABLED = True
 AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
-
-PROCPOOL_ENABLED = settings.PROCPOOL_ENABLED
-PROCPOOL_DEBUG = settings.PROCPOOL_DEBUG
-PROCPOOL_MIN_NPROC = settings.PROCPOOL_MIN_NPROC
-PROCPOOL_MAX_NPROC = settings.PROCPOOL_MAX_NPROC
-PROCPOOL_TIMEOUT = settings.PROCPOOL_TIMEOUT
-PROCPOOL_IDLETIME = settings.PROCPOOL_IDLETIME
-PROCPOOL_HOST = settings.PROCPOOL_HOST
-PROCPOOL_PORT = settings.PROCPOOL_PORT
-PROCPOOL_INTERFACE = settings.PROCPOOL_INTERFACE
-PROCPOOL_UID = settings.PROCPOOL_UID
-PROCPOOL_GID = settings.PROCPOOL_GID
-PROCPOOL_DIRECTORY = settings.PROCPOOL_DIRECTORY
 
 # server-channel mappings
 IMC2_ENABLED = settings.IMC2_ENABLED
@@ -227,9 +213,6 @@ class Evennia(object):
         """
         print ' %(servername)s Server (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
         print '  amp (to Portal): %s' % AMP_PORT
-        if PROCPOOL_ENABLED:
-            print '  amp (Process Pool): %s' % PROCPOOL_PORT
-
 
     def set_restart_mode(self, mode=None):
         """
@@ -341,50 +324,6 @@ if AMP_ENABLED:
     amp_service.setName("EvenniaPortal")
     EVENNIA.services.addService(amp_service)
 
-# The ampoule twisted extension manages asynchronous process pools
-# via an AMP port. It can be used to offload expensive operations
-# to another process asynchronously.
-
-if PROCPOOL_ENABLED:
-
-    from src.utils.ampoule import main as ampoule_main
-    from src.utils.ampoule import service as ampoule_service
-    from src.utils.ampoule import pool as ampoule_pool
-    from src.utils.ampoule.main import BOOTSTRAP as _BOOTSTRAP
-    from src.server.procpool import ProcPoolChild
-
-    # for some reason absolute paths don't work here, only relative ones.
-    apackages = ("twisted",
-                 os.path.join(os.pardir, "src", "utils", "ampoule"),
-                 os.path.join(os.pardir, "ev"),
-                 os.path.join(os.pardir))
-    aenv = {"DJANGO_SETTINGS_MODULE":"settings",
-            "DATABASE_NAME":settings.DATABASES.get("default", {}).get("NAME") or settings.DATABASE_NAME}
-    if PROCPOOL_DEBUG:
-        _BOOTSTRAP = _BOOTSTRAP % "log.startLogging(sys.stderr)"
-    else:
-        _BOOTSTRAP = _BOOTSTRAP % ""
-
-    procpool_starter = ampoule_main.ProcessStarter(packages=apackages,
-                                                   env=aenv,
-                                                   path=PROCPOOL_DIRECTORY,
-                                                   uid=PROCPOOL_UID,
-                                                   gid=PROCPOOL_GID,
-                                                   bootstrap=_BOOTSTRAP,
-                                                   childReactor=os.name == 'nt' and "select" or "epoll")
-    procpool = ampoule_pool.ProcessPool(name="ProcPool",
-                                        min=PROCPOOL_MIN_NPROC,
-                                        max=PROCPOOL_MAX_NPROC,
-                                        recycleAfter=500,
-                                        ampChild=ProcPoolChild,
-                                        starter=procpool_starter)
-    procpool_service = ampoule_service.AMPouleService(procpool,
-                                                      ProcPoolChild,
-                                                      PROCPOOL_PORT,
-                                                      PROCPOOL_INTERFACE)
-    procpool_service.setName("ProcPool")
-    EVENNIA.services.addService(procpool_service)
-
 if IRC_ENABLED:
 
     # IRC channel connections
@@ -405,9 +344,9 @@ if RSS_ENABLED:
     from src.comms import rss
     rss.connect_all()
 
-if SERVER_SERVICES_PLUGIN_MODULE:
+for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols
-    SERVER_SERVICES_PLUGIN_MODULE.start_plugin_services(EVENNIA)
+    plugin_module.start_plugin_services(EVENNIA)
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)

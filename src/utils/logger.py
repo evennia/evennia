@@ -7,7 +7,6 @@ a higher layer module.
 """
 from traceback import format_exc
 from twisted.python import log
-from src.utils import utils
 
 def log_trace(errmsg=None):
     """
@@ -22,7 +21,7 @@ def log_trace(errmsg=None):
                 log.msg('[::] %s' % line)
         if errmsg:
             try:
-                errmsg = utils.to_str(errmsg)
+                errmsg = str(errmsg)
             except Exception, e:
                 errmsg = str(e)
             for line in errmsg.splitlines():
@@ -37,7 +36,7 @@ def log_errmsg(errmsg):
     errormsg: (string) The message to be logged.
     """
     try:
-        errmsg = utils.to_str(errmsg)
+        errmsg = str(errmsg)
     except Exception, e:
         errmsg = str(e)
     for line in errmsg.splitlines():
@@ -51,7 +50,7 @@ def log_warnmsg(warnmsg):
     warnmsg: (string) The message to be logged.
     """
     try:
-        warnmsg = utils.to_str(warnmsg)
+        warnmsg = str(warnmsg)
     except Exception, e:
         warnmsg = str(e)
     for line in warnmsg.splitlines():
@@ -65,7 +64,7 @@ def log_infomsg(infomsg):
     infomsg: (string) The message to be logged.
     """
     try:
-        infomsg = utils.to_str(infomsg)
+        infomsg = str(infomsg)
     except Exception, e:
         infomsg = str(e)
     for line in infomsg.splitlines():
@@ -76,7 +75,7 @@ def log_depmsg(depmsg):
     Prints a deprecation message
     """
     try:
-        depmsg = utils.to_str(depmsg)
+        depmsg = str(depmsg)
     except Exception, e:
         depmsg = str(e)
     for line in depmsg.splitlines():

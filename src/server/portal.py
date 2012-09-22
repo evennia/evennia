@@ -7,7 +7,6 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
-import time
 import sys
 import os
 if os.name == 'nt':
@@ -19,10 +18,10 @@ from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server, static
 from django.conf import settings
-from src.utils.utils import get_evennia_version, mod_import
+from src.utils.utils import get_evennia_version, mod_import, make_iter
 from src.server.sessionhandler import PORTAL_SESSIONS
 
-PORTAL_SERVICES_PLUGIN_MODULE = mod_import(settings.PORTAL_SERVICES_PLUGIN_MODULE)
+PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
@@ -287,9 +286,9 @@ if WEBSERVER_ENABLED:
             webserver.setName('EvenniaWebServer%s' % pstring)
             PORTAL.services.addService(webserver)
 
-if PORTAL_SERVICES_PLUGIN_MODULE:
+for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
-    PORTAL_SERVICES_PLUGIN_MODULE.start_plugin_services(PORTAL)
+    plugin_module.start_plugin_services(PORTAL)
 
 
 if os.name == 'nt':

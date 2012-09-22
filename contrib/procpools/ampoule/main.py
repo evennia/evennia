@@ -11,7 +11,7 @@ from twisted.protocols import amp
 from twisted.python import runtime
 from twisted.python.compat import set
 
-from src.utils.ampoule import iampoule
+from contrib.procpools.ampoule import iampoule
 
 gen = itertools.count()
 

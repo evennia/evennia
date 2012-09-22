@@ -276,7 +276,6 @@ class ObjectDB(TypedObject):
         "Setter. Allows for self.location = location"
         try:
             old_loc = _GA(self, "location")
-
             if ObjectDB.objects.dbref(location):
                 # dbref search
                 loc = ObjectDB.objects.dbref_search(location)

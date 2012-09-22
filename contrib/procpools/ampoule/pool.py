@@ -11,7 +11,7 @@ pop = heapq.heappop
 from twisted.internet import defer, task, error
 from twisted.python import log, failure
 
-from src.utils.ampoule import commands, main
+from contrib.procpools.ampoule import commands, main
 
 try:
     DIE = signal.SIGKILL
@@ -66,7 +66,7 @@ class ProcessPool(object):
         self.ampParent = ampParent
         self.ampChild = ampChild
         if ampChild is None:
-            from src.utils.ampoule.child import AMPChild
+            from contrib.procpools.ampoule.child import AMPChild
             self.ampChild = AMPChild
         self.min = min
         self.max = max

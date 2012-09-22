@@ -1,10 +1,8 @@
 """
 This module implements a remote pool to use with AMP.
 """
-from zope.interface import implements
 
 from twisted.protocols import amp
-from twisted.internet import utils
 
 class AMPProxy(amp.AMP):
     """

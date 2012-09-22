@@ -84,9 +84,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from django.core.management import setup_environ
 from game import settings
 setup_environ(settings)
-from src.utils.utils import run_async
+#from src.utils.utils import run_async as thread_run_async
 
-_PROCPOOL_ENABLED = settings.PROCPOOL_ENABLED
 _LOGGER = None
 
 #------------------------------------------------------------
@@ -808,37 +807,42 @@ def validate_code(codestring):
         raise LimitedExecCodeException(codestring, checker.errors)
     return True
 
-def limited_exec(code, context = {}, timeout_secs=2, retobj=None):
+def limited_exec(code, context = {}, timeout_secs=2, retobj=None, procpool_async=None):
     """
     Validate source code and make sure it contains no unauthorized
     expression/statements as configured via 'UNALLOWED_AST_NODES' and
     'UNALLOWED_BUILTINS'. By default this means that code is not
     allowed import modules or access dangerous builtins like 'open' or
-    'eval'. If code is considered 'safe' it will be executed via
-    'exec' using 'context' as the global environment. More details on
-    how code is executed can be found in the Python Reference Manual
-    section 6.14 (ignore the remark on '__builtins__'). The 'context'
-    enviroment is also validated and is not allowed to contain modules
-    or builtins. The following exception will be raised on errors:
+    'eval'.
 
-      if 'context' contains unallowed objects =
+    code - code to execute. Will be evaluated for safety
+    context - if code is deemed safe, code will execute with this environment
+    time_out_secs - only used if procpool_async is given. Sets timeout
+                    for remote code execution
+    retobj - only used if procpool_async is also given. Defines an Object
+             (which must define a msg() method), for receiving returns from
+             the execution.
+    procpool_async - a run_async function alternative to the one in src.utils.utils.
+                     this must accept the keywords
+                        proc_timeout (will be set to timeout_secs
+                        at_return - a callback
+                        at_err - an errback
+                     If retobj is given, at_return/at_err will be created and
+                     set to msg callbacks and errors to that object.
+    Tracebacks:
         LimitedExecContextException
-
-      if code didn't validate and is considered 'unsafe' =
         LimitedExecCodeException
-
-      if code did not execute within the given timelimit =
-        LimitedExecTimeoutException
     """
     if validate_context(context) and validate_code(code):
         # run code only after validation has completed
-        if _PROCPOOL_ENABLED:
+        if procpool_async:
+            # custom run_async
             if retobj:
                 callback = lambda r: retobj.msg(r)
                 errback = lambda e: retobj.msg(e)
-                run_async(code, *context, proc_timeout=timeout_secs, at_return=callback, at_err=errback)
+                procpool_async(code, *context, proc_timeout=timeout_secs, at_return=callback, at_err=errback)
             else:
-                run_async(code, *context, proc_timeout=timeout_secs)
+                procpool_async(code, *context, proc_timeout=timeout_secs)
         else:
             # run in-process
             exec code in context

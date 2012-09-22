@@ -3,8 +3,8 @@ from twisted.internet.protocol import ClientFactory
 from twisted.trial import unittest
 from twisted.protocols import amp
 
-from src.utils.ampoule import service, child, pool, main
-from src.utils.ampoule.commands import Echo
+from contrib.procpools.ampoule import service, child, pool, main
+from contrib.procpools.ampoule.commands import Echo
 
 class ClientAMP(amp.AMP):
     factory = None

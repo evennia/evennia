@@ -9,8 +9,8 @@ def makeService(options):
     """
     ms = service.MultiService()
 
-    from src.utils.ampoule.pool import ProcessPool
-    from src.utils.ampoule.main import ProcessStarter
+    from contrib.procpools.ampoule.pool import ProcessPool
+    from contrib.procpools.ampoule.main import ProcessStarter
     name = options['name']
     ampport = options['ampport']
     ampinterface = options['ampinterface']
@@ -43,7 +43,7 @@ class AMPouleService(service.Service):
         Before reactor.run() is called we setup the system.
         """
         service.Service.startService(self)
-        from src.utils.ampoule import rpool
+        from contrib.procpools.ampoule import rpool
         from twisted.internet import reactor
 
         try:
