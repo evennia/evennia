@@ -281,7 +281,7 @@ class ObjectDB(TypedObject):
                 # dbref search
                 loc = ObjectDB.objects.dbref_search(location)
                 loc = loc and _GA(loc, "dbobj")
-            elif type(location) != ObjectDB:
+            elif location and type(location) != ObjectDB:
                 loc = _GA(location, "dbobj")
             else:
                 loc = location
