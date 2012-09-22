@@ -424,7 +424,7 @@ class PlayerDB(TypedObject):
                            the Player object itself. If no Character exists (since Player is
                            OOC), None will be returned.
         """
-        matches = _GA(_GA(_GA(self, "_class__"), "objects"), "player_search")(ostring)
+        matches = _GA(self, "__class__").objects.player_search(ostring)
         matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=True)
         if matches and return_character:
             try:
