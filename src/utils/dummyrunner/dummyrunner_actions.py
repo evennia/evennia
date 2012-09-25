@@ -193,8 +193,9 @@ def c_moves(client):
 ## "socializing heavy builder" definition
 ACTIONS = (c_login,
            c_logout,
-           (0.3, c_socialize),
+           (0.1, c_socialize),
            (0.1, c_looks),
            (0.1, c_help),
+           (0.2, c_creates_obj),
            (0.2, c_digs),
            (0.3, c_moves))
