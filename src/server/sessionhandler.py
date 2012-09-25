@@ -113,6 +113,7 @@ class ServerSessionHandler(SessionHandler):
         """
         session = self.sessions.get(sessid, None)
         if session:
+            session.disconnect()
             del self.sessions[session.sessid]
             self.session_count(-1)
 
