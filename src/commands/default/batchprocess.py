@@ -272,7 +272,7 @@ class CmdBatchCommands(MuxCommand):
         else:
             caller.msg("Running Batch-command processor - Automatic mode for %s (this might take some time) ..." % python_path)
 
-            if settings.PROCPOOL_ENABLED:
+            if False:#TODO - need to add a procpool solution. settings.PROCPOOL_ENABLED:
                 # run in parallel process
                 def callback(r):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
@@ -366,7 +366,7 @@ class CmdBatchCode(MuxCommand):
         else:
             caller.msg("Running Batch-code processor - Automatic mode for %s ..." % python_path)
 
-            if settings.PROCPOOL_ENABLED:
+            if False: #TODO Add procpool solution. settings.PROCPOOL_ENABLED:
                 # run in parallel process
                 def callback(r):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
