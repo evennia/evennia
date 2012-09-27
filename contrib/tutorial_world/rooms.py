@@ -365,7 +365,7 @@ class TeleportRoom(TutorialRoom):
             # passed the puzzle
             teleport_to = self.db.success_teleport_to # this is a room name
 
-        results = search_object(teleport_to, global_search=True)
+        results = search_object(teleport_to)
         if not results or len(results) > 1:
             # we cannot move anywhere since no valid target was found.
             print "no valid teleport target for %s was found." % teleport_to
