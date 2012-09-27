@@ -178,7 +178,7 @@ class ObjectManager(TypedObjectManager):
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
         cand_restriction = candidates and Q(pk__in=candidates_id) or Q()
         if exact:
-            return self.filter(cand_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring)))
+            return self.filter(cand_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring))).distinct()
         else:
             if candidates:
                 # fuzzy matching - only check the candidates
@@ -209,7 +209,6 @@ class ObjectManager(TypedObjectManager):
 
     @returns_typeclass_list
     def object_search(self, ostring, caller=None,
-                      global_search=False,
                       attribute_name=None,
                       candidates=None,
                       exact=True):
