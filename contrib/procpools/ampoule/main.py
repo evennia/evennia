@@ -278,7 +278,8 @@ def spawnProcess(processProtocol, bootstrap, args=(), env={},
 
     pythonpath = []
     for pkg in packages:
-        p = os.path.split(imp.find_module(pkg)[1])[0]
+        path, name = os.path.split(pkg)
+        p = os.path.split(imp.find_module(name, [path] if path else None)[1])[0]
         if p.startswith(os.path.join(sys.prefix, 'lib')):
             continue
         pythonpath.append(p)
