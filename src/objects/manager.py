@@ -1,6 +1,8 @@
 """
 Custom manager for Objects.
 """
+try: import cPickle as pickle
+except ImportError: import pickle
 from django.db.models import Q
 from django.conf import settings
 #from django.contrib.auth.models import User
@@ -8,10 +10,11 @@ from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
-from src.utils.utils import to_unicode, make_iter, string_partial_matching
+from src.utils.utils import to_unicode, make_iter, string_partial_matching, to_str
 
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
+_DUMPS = lambda inp: to_unicode(pickle.dumps(inp))
 
 # Try to use a custom way to parse id-tagged multimatches.
 
@@ -126,8 +129,13 @@ class ObjectManager(TypedObjectManager):
         not make sense to offer an "exact" type matching for this.
         """
         cand_restriction = candidates and Q(db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
-        attrs= self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name))
-        return [attr.db_obj for attr in attrs if attribute_value == attr.value]
+        if type(attribute_value) in (basestring, int, float):
+            # simple attribute_value - do direct lookup
+            return self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name) & Q(db_value=_DUMPS(("simple", attribute_value))))
+        else:
+            # go via attribute conversion
+            attrs= self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name))
+            return [attr.db_obj for attr in attrs if attribute_value == attr.value]
 
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, candidates=None):
