@@ -118,7 +118,7 @@ class CmdSetObjAlias(MuxCommand):
         objname = self.lhs
 
         # Find the object to receive aliases
-        obj = caller.search(objname, global_search=True)
+        obj = caller.search(objname)
         if not obj:
             return
         if self.rhs == None:
