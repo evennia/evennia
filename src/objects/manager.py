@@ -137,7 +137,7 @@ class ObjectManager(TypedObjectManager):
         candidates - list of candidate objects to search
         """
         property_name = "db_%s" % property_name.lstrip('db_')
-        cand_restriction = candidates and Q(pk__in=[_GA(obj, "in") for obj in make_iter(candidates) if obj]) or Q()
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         try:
             return self.filter(cand_restriction).exclude(Q(property_name=None))
         except exceptions.FieldError:
@@ -151,7 +151,7 @@ class ObjectManager(TypedObjectManager):
         if isinstance(property_value, basestring):
             property_value = to_unicode(property_value)
         property_name = "db_%s" % property_name.lstrip('db_')
-        cand_restriction = candidates and Q(pk__in=[_GA(obj, "in") for obj in make_iter(candidates) if obj]) or Q()
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         try:
             return self.filter(cand_restriction & Q(property_name=property_value))
         except exceptions.FieldError:
@@ -196,7 +196,7 @@ class ObjectManager(TypedObjectManager):
                     return []
             else:
                 # fuzzy matching - first check with keys, then with aliases
-                key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring))
+                key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring)).distinct()
                 key_strings = key_candidates.values_list("db_key", flat=True)
                 matches = string_partial_matching(key_candidates, ostring, reg_index=False)
                 if matches:
@@ -240,16 +240,16 @@ class ObjectManager(TypedObjectManager):
         """
         def _searcher(ostring, exact=False):
             "Helper method for searching objects"
-            if ostring.startswith("*"):
-                # Player search - try to find obj by its player's name
-                player_match = self.get_object_with_player(ostring, candidates=candidates)
-                if player_match is not None:
-                    return [player_match]
             if attribute_name:
                 # attribute/property search (always exact).
                 matches = self.get_objs_with_db_property_value(attribute_name, ostring, candidates=candidates)
                 if not matches:
                     return self.get_objs_with_attr_value(attribute_name, ostring, candidates=candidates)
+            if ostring.startswith("*"):
+                # Player search - try to find obj by its player's name
+                player_match = self.get_object_with_player(ostring, candidates=candidates)
+                if player_match is not None:
+                    return [player_match]
             else:
                 # normal key/alias search
                 return self.get_objs_with_key_or_alias(ostring, exact=exact, candidates=candidates)
