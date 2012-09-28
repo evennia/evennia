@@ -131,7 +131,7 @@ class ObjectManager(TypedObjectManager):
         cand_restriction = candidates and Q(db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if type(attribute_value) in (basestring, int, float):
             # simple attribute_value - do direct lookup
-            return self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name) & Q(db_value=_DUMPS(("simple", attribute_value))))
+            return self.filter(cand_restriction & Q(objattribute__db_key=attribute_name, objattribute__db_value=_DUMPS(("simple", attribute_value))))
         else:
             # go via attribute conversion
             attrs= self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name))
@@ -251,8 +251,9 @@ class ObjectManager(TypedObjectManager):
             if attribute_name:
                 # attribute/property search (always exact).
                 matches = self.get_objs_with_db_property_value(attribute_name, ostring, candidates=candidates)
-                if not matches:
-                    return self.get_objs_with_attr_value(attribute_name, ostring, candidates=candidates)
+                if matches:
+                    return matches
+                return self.get_objs_with_attr_value(attribute_name, ostring, candidates=candidates)
             if ostring.startswith("*"):
                 # Player search - try to find obj by its player's name
                 player_match = self.get_object_with_player(ostring, candidates=candidates)
@@ -262,15 +263,12 @@ class ObjectManager(TypedObjectManager):
                 # normal key/alias search
                 return self.get_objs_with_key_or_alias(ostring, exact=exact, candidates=candidates)
 
-
-        ostring = to_unicode(ostring, force_string=True)
-
         if not ostring and ostring != 0:
             return []
 
-        # Easiest case - dbref matching (always exact)
-        dbref = self.dbref(ostring)
+        dbref = not attribute_name and self.dbref(ostring)
         if dbref:
+            # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
                 return [dbref_match]
