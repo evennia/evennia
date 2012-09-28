@@ -65,15 +65,15 @@ for inum in range(len(commands)):
 print "leaving run ..."
 """
 _PROCPOOL_BATCHCODE_SOURCE = """
-from src.commands.default.batchprocess import batch_cmd_exec, step_pointer, BatchSafeCmdSet
-caller.ndb.batch_stack = commands
+from src.commands.default.batchprocess import batch_code_exec, step_pointer, BatchSafeCmdSet
+caller.ndb.batch_stack = codes
 caller.ndb.batch_stackptr = 0
-caller.ndb.batch_batchmode = "batch_commands"
+caller.ndb.batch_batchmode = "batch_code"
 caller.cmdset.add(BatchSafeCmdSet)
-for inum in range(len(commands)):
-    print "command:", inum
+for inum in range(len(codes)):
+    print "code:", inum
     caller.cmdset.add(BatchSafeCmdSet)
-    if not batch_cmd_exec(caller):
+    if not batch_code_exec(caller):
         break
     step_pointer(caller, 1)
 print "leaving run ..."
@@ -272,7 +272,14 @@ class CmdBatchCommands(MuxCommand):
         else:
             caller.msg("Running Batch-command processor - Automatic mode for %s (this might take some time) ..." % python_path)
 
-            if False:#TODO - need to add a procpool solution. settings.PROCPOOL_ENABLED:
+            procpool = False
+            if "PythonProcPool" in utils.server_services():
+                if utils.uses_database("sqlite3"):
+                   caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
+                else:
+                    procpool=True
+
+            if procpool:
                 # run in parallel process
                 def callback(r):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
@@ -366,7 +373,13 @@ class CmdBatchCode(MuxCommand):
         else:
             caller.msg("Running Batch-code processor - Automatic mode for %s ..." % python_path)
 
-            if False: #TODO Add procpool solution. settings.PROCPOOL_ENABLED:
+            procpool = False
+            if "PythonProcPool" in utils.server_services():
+                if utils.uses_database("sqlite3"):
+                   caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
+                else:
+                    procpool=True
+            if procpool:
                 # run in parallel process
                 def callback(r):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
@@ -374,10 +387,10 @@ class CmdBatchCode(MuxCommand):
                 def errback(e):
                     caller.msg("  {RError from processor: '%s'" % e)
                     purge_processor(caller)
-                utils.run_async(_PROCPOOL_BATCHCODE_SOURCE, commands=commands, caller=caller, at_return=callback, at_err=errback)
+                utils.run_async(_PROCPOOL_BATCHCODE_SOURCE, codes=codes, caller=caller, at_return=callback, at_err=errback)
             else:
                 # un in-process (will block)
-                for inum in range(len(commands)):
+                for inum in range(len(codes)):
                     # loop through the batch file
                     if not batch_cmd_exec(caller):
                         return

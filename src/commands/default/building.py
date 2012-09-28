@@ -118,7 +118,7 @@ class CmdSetObjAlias(MuxCommand):
         objname = self.lhs
 
         # Find the object to receive aliases
-        obj = caller.search(objname, global_search=True)
+        obj = caller.search(objname)
         if not obj:
             return
         if self.rhs == None:
@@ -1232,7 +1232,7 @@ class CmdSetAttribute(ObjManipCommand):
             # Use literal_eval to parse python structure exactly.
             try:
                 return _LITERAL_EVAL(strobj)
-            except ValueError:
+            except (SyntaxError, ValueError):
                 # treat as string
                 string = "{RNote: Value was converted to string. If you don't want this, "
                 string += "use proper Python syntax, like enclosing strings in quotes.{n"

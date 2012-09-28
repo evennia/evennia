@@ -1,6 +1,8 @@
 """
 Custom manager for Objects.
 """
+try: import cPickle as pickle
+except ImportError: import pickle
 from django.db.models import Q
 from django.conf import settings
 #from django.contrib.auth.models import User
@@ -8,10 +10,11 @@ from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
-from src.utils.utils import to_unicode, make_iter, string_partial_matching
+from src.utils.utils import to_unicode, make_iter, string_partial_matching, to_str
 
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
+_DUMPS = lambda inp: to_unicode(pickle.dumps(inp))
 
 # Try to use a custom way to parse id-tagged multimatches.
 
@@ -126,8 +129,13 @@ class ObjectManager(TypedObjectManager):
         not make sense to offer an "exact" type matching for this.
         """
         cand_restriction = candidates and Q(db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
-        attrs= self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name))
-        return [attr.db_obj for attr in attrs if attribute_value == attr.value]
+        if type(attribute_value) in (basestring, int, float):
+            # simple attribute_value - do direct lookup
+            return self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name) & Q(db_value=_DUMPS(("simple", attribute_value))))
+        else:
+            # go via attribute conversion
+            attrs= self.model.objattribute_set.related.model.objects.select_related("db_obj").filter(cand_restriction & Q(db_key=attribute_name))
+            return [attr.db_obj for attr in attrs if attribute_value == attr.value]
 
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, candidates=None):
@@ -137,7 +145,7 @@ class ObjectManager(TypedObjectManager):
         candidates - list of candidate objects to search
         """
         property_name = "db_%s" % property_name.lstrip('db_')
-        cand_restriction = candidates and Q(pk__in=[_GA(obj, "in") for obj in make_iter(candidates) if obj]) or Q()
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         try:
             return self.filter(cand_restriction).exclude(Q(property_name=None))
         except exceptions.FieldError:
@@ -151,7 +159,7 @@ class ObjectManager(TypedObjectManager):
         if isinstance(property_value, basestring):
             property_value = to_unicode(property_value)
         property_name = "db_%s" % property_name.lstrip('db_')
-        cand_restriction = candidates and Q(pk__in=[_GA(obj, "in") for obj in make_iter(candidates) if obj]) or Q()
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         try:
             return self.filter(cand_restriction & Q(property_name=property_value))
         except exceptions.FieldError:
@@ -178,7 +186,7 @@ class ObjectManager(TypedObjectManager):
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
         cand_restriction = candidates and Q(pk__in=candidates_id) or Q()
         if exact:
-            return self.filter(cand_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring)))
+            return self.filter(cand_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring))).distinct()
         else:
             if candidates:
                 # fuzzy matching - only check the candidates
@@ -196,7 +204,7 @@ class ObjectManager(TypedObjectManager):
                     return []
             else:
                 # fuzzy matching - first check with keys, then with aliases
-                key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring))
+                key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring)).distinct()
                 key_strings = key_candidates.values_list("db_key", flat=True)
                 matches = string_partial_matching(key_candidates, ostring, reg_index=False)
                 if matches:
@@ -209,7 +217,6 @@ class ObjectManager(TypedObjectManager):
 
     @returns_typeclass_list
     def object_search(self, ostring, caller=None,
-                      global_search=False,
                       attribute_name=None,
                       candidates=None,
                       exact=True):
@@ -241,16 +248,16 @@ class ObjectManager(TypedObjectManager):
         """
         def _searcher(ostring, exact=False):
             "Helper method for searching objects"
-            if ostring.startswith("*"):
-                # Player search - try to find obj by its player's name
-                player_match = self.get_object_with_player(ostring, candidates=candidates)
-                if player_match is not None:
-                    return [player_match]
             if attribute_name:
                 # attribute/property search (always exact).
                 matches = self.get_objs_with_db_property_value(attribute_name, ostring, candidates=candidates)
                 if not matches:
                     return self.get_objs_with_attr_value(attribute_name, ostring, candidates=candidates)
+            if ostring.startswith("*"):
+                # Player search - try to find obj by its player's name
+                player_match = self.get_object_with_player(ostring, candidates=candidates)
+                if player_match is not None:
+                    return [player_match]
             else:
                 # normal key/alias search
                 return self.get_objs_with_key_or_alias(ostring, exact=exact, candidates=candidates)

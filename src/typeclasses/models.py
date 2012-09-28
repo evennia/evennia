@@ -268,7 +268,7 @@ class Attribute(SharedMemoryModel):
 
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
-    db_value = models.TextField('value', blank=True, null=True)
+    db_value = models.TextField('value', blank=True, null=True, db_index=True)
     # Lock storage
     db_lock_storage = models.CharField('locks', max_length=512, blank=True)
     # references the object the attribute is linked to (this is set

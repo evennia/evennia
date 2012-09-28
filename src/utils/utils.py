@@ -461,6 +461,35 @@ def format_table(table, extra_space=1):
                        for icol, col in enumerate(table)])
     return ftable
 
+def server_services():
+    """
+    Lists all services active on the Server. Observe that
+    since services are launced in memory, this function will
+    only return any results if called from inside the game.
+    """
+    from src.server.sessionhandler import SESSIONS
+    if hasattr(SESSIONS, "server") and hasattr(SESSIONS.server, "services"):
+        server = SESSIONS.server.services.namedServices
+    else:
+        print "This function must be called from inside the evennia process."
+        server = {}
+    del SESSIONS
+    return server
+
+def uses_database(name="sqlite3"):
+    """
+    Checks if the game is currently using a given database. This is a
+    shortcut to having to use the full backend name
+
+    name - one of 'sqlite3', 'mysql', 'postgresql_psycopg2' or 'oracle'
+    """
+    try:
+        engine = settings.DATABASES["default"]["ENGINE"]
+    except KeyError:
+        engine = settings.DATABASE_ENGINE
+    return engine == "django.db.backends.%s" % name
+
+
 
 _FROM_MODEL_MAP = None
 _TO_DBOBJ = lambda o: (hasattr(o, "dbobj") and o.dbobj) or o
