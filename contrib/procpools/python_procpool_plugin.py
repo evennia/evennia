@@ -24,6 +24,7 @@ file locking clashes. Test what works with your mileage.
 
 """
 import os
+import sys
 from django.conf import settings
 
 
@@ -85,21 +86,20 @@ def start_plugin_services(server):
     apackages = ("twisted",
                  os.path.join(os.pardir, "contrib", "procpools", "ampoule"),
                  os.path.join(os.pardir, "ev"),
-                 os.path.join(os.pardir))
+                 "settings")
     aenv = {"DJANGO_SETTINGS_MODULE":"settings",
             "DATABASE_NAME":settings.DATABASES.get("default", {}).get("NAME") or settings.DATABASE_NAME}
     if PROCPOOL_DEBUG:
         _BOOTSTRAP = _BOOTSTRAP % "log.startLogging(sys.stderr)"
     else:
         _BOOTSTRAP = _BOOTSTRAP % ""
-
     procpool_starter = ampoule_main.ProcessStarter(packages=apackages,
                                                    env=aenv,
                                                    path=PROCPOOL_DIRECTORY,
                                                    uid=PROCPOOL_UID,
                                                    gid=PROCPOOL_GID,
                                                    bootstrap=_BOOTSTRAP,
-                                                   childReactor=os.name == 'nt' and "select" or "epoll")
+                                                   childReactor=sys.platform == 'linux2' and "epoll" or "default")
     procpool = ampoule_pool.ProcessPool(name=SERVICE_NAME,
                                         min=PROCPOOL_MIN_NPROC,
                                         max=PROCPOOL_MAX_NPROC,

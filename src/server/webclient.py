@@ -72,8 +72,8 @@ class WebClient(resource.Resource):
     def _responseFailed(self, failure, suid, request):
         "callback if a request is lost/timed out"
         try:
-            self.requests.get(suid, []).remove(request)
-        except ValueError:
+            del self.requests[suid]
+        except KeyError:
             pass
 
     def lineSend(self, suid, string, data=None):
@@ -81,13 +81,12 @@ class WebClient(resource.Resource):
         This adds the data to the buffer and/or sends it to
         the client as soon as possible.
         """
-        requests = self.requests.get(suid, None)
-        if requests:
-            request = requests.pop(0)
+        request = self.requests.get(suid)
+        if request:
             # we have a request waiting. Return immediately.
             request.write(jsonify({'msg':string, 'data':data}))
             request.finish()
-            self.requests[suid] = requests
+            del self.requests[suid]
         else:
             # no waiting request. Store data in buffer
             dataentries = self.databuffer.get(suid, [])
@@ -99,9 +98,8 @@ class WebClient(resource.Resource):
         Disconnect session with given suid.
         """
         if self.requests.has_key(suid):
-            for request in self.requests.get(suid, []):
-                request.finish()
-                del self.requests[suid]
+            self.requests[suid].finish()
+            del self.requests[suid]
         if self.databuffer.has_key(suid):
             del self.databuffer[suid]
 
@@ -119,7 +117,6 @@ class WebClient(resource.Resource):
         if suid == '0':
             # creating a unique id hash string
             suid = md5(str(time.time())).hexdigest()
-            self.requests[suid] = []
             self.databuffer[suid] = []
 
             sess = WebClientSession()
@@ -160,10 +157,10 @@ class WebClient(resource.Resource):
         dataentries = self.databuffer.get(suid, [])
         if dataentries:
             return dataentries.pop(0)
-        reqlist = self.requests.get(suid, [])
         request.notifyFinish().addErrback(self._responseFailed, suid, request)
-        reqlist.append(request)
-        self.requests[suid] = reqlist
+        if self.requests.has_key(suid):
+            self.requests[suid].finish() # Clear any stale request.
+        self.requests[suid] = request
         return server.NOT_DONE_YET
 
     def mode_close(self, request):
