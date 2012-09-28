@@ -154,8 +154,6 @@ if AMP_ENABLED:
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
 
-    print "  amp (to Server): %s" % AMP_PORT
-
     from src.server import amp
 
     factory = amp.AmpClientFactory(PORTAL)

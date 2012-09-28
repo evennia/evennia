@@ -110,6 +110,7 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # change this unless you cannot use the default AMP port/host for whatever reason.
 AMP_HOST = 'localhost'
 AMP_PORT = 5000
+AMP_INTERFACE = '127.0.0.1'
 # Attributes on objects are cached aggressively for speed. If the number of
 # objects is large (and their attributes are often accessed) this can use up a lot of
 # memory. So every now and then Evennia checks the size of this cache and resets

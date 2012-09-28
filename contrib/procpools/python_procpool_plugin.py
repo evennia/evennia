@@ -48,7 +48,7 @@ PROCPOOL_TIMEOUT = 10
 # only change if the port clashes with something else on the system
 PROCPOOL_PORT = 5001
 # 0.0.0.0 means listening to all interfaces
-PROCPOOL_INTERFACE = '0.0.0.0'
+PROCPOOL_INTERFACE = '127.0.0.1'
 # user-id and group-id to run the processes as (for OS:es supporting this).
 # If you plan to run unsafe code one could experiment with setting this
 # to an unprivileged user.

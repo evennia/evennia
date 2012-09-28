@@ -55,6 +55,7 @@ VERSION = get_evennia_version()
 AMP_ENABLED = True
 AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
+AMP_INTERFACE = settings.AMP_INTERFACE
 
 # server-channel mappings
 IMC2_ENABLED = settings.IMC2_ENABLED
@@ -306,12 +307,15 @@ if AMP_ENABLED:
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
 
-    print '  amp (to Portal): %s' % AMP_PORT
+    ifacestr = ""
+    if AMP_INTERFACE != '127.0.0.1':
+        ifacestr = "-%s" % AMP_INTERFACE
+    print '  amp (to Portal)%s:%s' % (ifacestr, AMP_PORT)
 
     from src.server import amp
 
     factory = amp.AmpServerFactory(EVENNIA)
-    amp_service = internet.TCPServer(AMP_PORT, factory)
+    amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
     amp_service.setName("EvenniaPortal")
     EVENNIA.services.addService(amp_service)
 
