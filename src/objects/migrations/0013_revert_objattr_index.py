@@ -1,39 +1,19 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import DataMigration
-from django.db import models, utils
+from south.v2 import SchemaMigration
+from django.db import models
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        try:
-            for obj in orm.ObjectDB.objects.all():
-                if obj.db_cmdset_storage == "game.gamesrc.commands.basecmdset.DefaultCmdSet":
-                    obj.db_cmdset_storage = "src.commands.default.cmdset_default.DefaultCmdSet"
-                    obj.save()
-                if obj.db_typeclass_path == "game.gamesrc.objects.baseobjects.Character":
-                    obj.db_typeclass_path = "src.objects.objects.Character"
-                    obj.save()
-                if obj.db_typeclass_path == "game.gamesrc.objects.baseobjects.Object":
-                    obj.db_typeclass_path = "src.objects.objects.Object"
-                    obj.save()
-                if obj.db_typeclass_path == "game.gamesrc.objects.baseobjects.Room":
-                    obj.db_typeclass_path = "src.objects.objects.Room"
-                    obj.save()
-                if obj.db_typeclass_path == "game.gamesrc.objects.baseobjects.Exit":
-                    obj.db_typeclass_path = "src.objects.objects.Exit"
-                    obj.save()
-
-        except utils.DatabaseError:
-            "We are starting from scratch. Ignore."
-            pass
-
-
+        # Removing index on 'ObjAttribute', fields ['db_value']
+        if orm.ObjAttribute._meta.get_field_by_name("db_value")[0].db_index:
+            db.delete_index('objects_objattribute', ['db_value'])
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        # Adding index on 'ObjAttribute', fields ['db_value']
         raise RuntimeError
 
     models = {
@@ -114,6 +94,7 @@ class Migration(DataMigration):
             'Meta': {'object_name': 'PlayerDB'},
             'db_cmdset_storage': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'db_is_connected': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['objects.ObjectDB']", 'null': 'True', 'blank': 'True'}),

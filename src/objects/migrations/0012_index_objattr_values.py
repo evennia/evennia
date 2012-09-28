@@ -9,12 +9,12 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding index on 'ObjAttribute', fields ['db_value']
-        db.create_index('objects_objattribute', ['db_value'])
-
+        # removing this migration completely.
+        pass
 
     def backwards(self, orm):
         # Removing index on 'ObjAttribute', fields ['db_value']
-        db.delete_index('objects_objattribute', ['db_value'])
+        raise RuntimeError
 
 
     models = {
