@@ -267,7 +267,7 @@ class ObjectManager(TypedObjectManager):
             return []
 
         dbref = not attribute_name and self.dbref(ostring)
-        if dbref:
+        if dbref or dbref == 0:
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
