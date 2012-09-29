@@ -1614,6 +1614,12 @@ class TypedObject(SharedMemoryModel):
                        if hperm in [p.lower() for p in self.permissions] and hpos > ppos)
         return False
 
+    def flush_attr_cache(self):
+        """
+        Flush only the attribute cache for this object.
+        """
+        _ATTRIBUTE_CACHE[_GA(self, "hashid")] = {}
+
     def flush_from_cache(self):
         """
         Flush this object instance from cache, forcing an object reload. Note that this
