@@ -192,8 +192,9 @@ class CmdUnconnectedCreate(MuxCommand):
                                     (new_character.id, new_player.id))
 
 
-            # set a default description
-            new_character.db.desc = "This is a Player."
+            # If no description is set, set a default description
+            if not new_character.db.desc:
+                new_character.db.desc = "This is a Player."
 
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"
