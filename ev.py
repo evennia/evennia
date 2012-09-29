@@ -194,6 +194,7 @@ class DefaultCmds(object):
             self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
         from src.commands.default import admin, batchprocess, building, comms, general, help, system, unloggedin
+        add_cmds(admin)
         add_cmds(building)
         add_cmds(batchprocess)
         add_cmds(building)
