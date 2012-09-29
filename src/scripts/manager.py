@@ -191,7 +191,7 @@ class ScriptManager(TypedObjectManager):
         ostring = ostring.strip()
 
         dbref = self.dbref(ostring)
-        if dbref:
+        if dbref or dbref == 0:
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
             if dbref_match:

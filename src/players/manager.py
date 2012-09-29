@@ -162,7 +162,7 @@ class PlayerManager(TypedObjectManager):
         """
         ostring = ostring.lstrip("*")
         dbref = self.dbref(ostring)
-        if dbref:
+        if dbref or dbref == 0:
             matches = self.filter(id=dbref)
             if matches:
                 return matches
