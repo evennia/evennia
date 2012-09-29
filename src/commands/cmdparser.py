@@ -73,8 +73,11 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     matches = [match for match in matches if match[2].access(caller, 'cmd')]
 
     if len(matches) > 1:
-        # see if it helps to analyze the match with preserved case.
-        matches = [match for match in matches if raw_string.startswith(match[0])]
+        # See if it helps to analyze the match with preserved case but only if 
+        # it leaves at least one match.
+        trimmed = [match for match in matches if raw_string.startswith(match[0])]
+        if trimmed:
+            matches = trimmed 
 
     if len(matches) > 1:
         # we still have multiple matches. Sort them by count quality.
