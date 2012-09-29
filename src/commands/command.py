@@ -23,10 +23,11 @@ class CommandMeta(type):
         mcs.key = mcs.key.lower()
         if mcs.aliases and not is_iter(mcs.aliases):
             try:
-                mcs.aliases = mcs.aliases.split(',')
+                mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases.split(',')]
             except Exception:
                 mcs.aliases = []
-        mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases]
+        mcs.aliases = list(set(alias for alias in mcs.aliases if alias != mcs.key))
+
         # optimization - a set is much faster to match against than a list
         mcs._matchset = set([mcs.key] + mcs.aliases)
         # optimization for looping over keys+aliases
