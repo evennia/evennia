@@ -157,7 +157,7 @@ def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
     """
     try:
         perm = args[0].lower()
-    except IndexError:
+    except (AttributeError, IndexError):
         return False
 
     if perm in _PERMISSION_HIERARCHY:

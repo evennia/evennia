@@ -240,7 +240,7 @@ class ServerSession(Session):
 
         for funcname, argtuple in data.items():
             # loop through the data, calling available functions.
-            func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
+rc           func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
             if func:
                 try:
                     outdata[funcname] = func(entity, *argtuple[0], **argtuple[1])
