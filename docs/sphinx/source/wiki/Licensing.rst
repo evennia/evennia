@@ -4,7 +4,7 @@ Evennia Licence FAQ
 Evennia is licensed under the very friendly *Modified Clarified Artistic
 License*. You can find the license as ``LICENCE`` in the Evennia root
 directory. You can also read the full license file
-`here <http://code.google.com/p/evennia/source/browse/trunk/LICENSE>`_.
+`here <http://code.google.com/p/evennia/source/browse/LICENSE.txt>`_.
 
 You should read the full license text to know what it says exactly, but
 here are some answers to common questions.

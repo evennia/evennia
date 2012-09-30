@@ -8,10 +8,14 @@ Contributing with Documentation
 
 Evennia depends heavily on good documentation and we are always looking
 for extra eyes and hands to improve it. Even small things such as fixing
-typos is a great help. To edit the wiki yourself you need contributor
-access. Otherwise, it goes a long way just pointing out wiki errors so
-devs can fix them (in an Issue or just over chat/forum). You can also
-commit wiki changes over Mercurial - just go to the wiki repository
+typos are a great help!
+
+The documentation is a wiki and to edit it you need wiki-contributor
+access. We are happy to give this - just ask (on the forum/mailing list
+or in the chat channel) if you want to help out. Otherwise, it goes a
+long way just pointing out wiki errors so devs can fix them (in an Issue
+or just over chat/forum). You can also commit wiki changes over
+Mercurial - just go to the wiki repository
 `here <http://code.google.com/p/evennia/source/checkout?repo=wiki>`_ and
 then continue from point ``2`` below.
 

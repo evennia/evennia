@@ -15,9 +15,9 @@ new additional commands of your own.
 
 #. Go to ``game/gamesrc/commands``.
 #. There is a subfolder here named ``examples``. *Copy* the files
-   ``examples/command.py`` and ``examples/cmdset.py`` to where you are.
-   You can rename them as you please, but in this example we assume you
-   don't.
+   ``examples/command.py`` and ``examples/cmdset.py`` to your current
+   directory (game/gamesrc/commands). You can rename them as you please,
+   but in this example we assume you don't.
 #. Edit ``game/settings.py``, adding the following line:
 
     ``CMDSET_DEFAULT="game.gamesrc.commands.cmdset.DefaultCmdSet"``
@@ -45,7 +45,7 @@ Creating a custom command
 
     # file game/gamesrc/commands/command.py
     #[...]
-    class CmdEcho(MuxCommand):
+    class CmdEcho(default_cmds.MuxCommand):
         """
         Simple command example
 
@@ -75,8 +75,8 @@ command set we already prepared.
 #. Edit your recently copied ``game/gamesrc/commands/cmdset.py``
 #. In this copied module you will find the ``DefaultCmdSet`` class
    already imported and prepared for you. Import your new command module
-   here with ``from game.gamesrc.commands import echo``.
-#. Add a line ``self.add(echo.CmdEcho())`` to ``DefaultCmdSet``, in the
+   here with ``from game.gamesrc.commands.command import CmdEcho``.
+#. Add a line ``self.add(CmdEcho())`` to ``DefaultCmdSet``, in the
    ``at_cmdset_creation`` method (the template tells you where). This is
    approximately how it should look at this point:
 
@@ -84,7 +84,7 @@ command set we already prepared.
 
     # file gamesrc/commands/examples/cmdset.py
     #[...]
-    from game.gamesrc.commands import echo
+    from game.gamesrc.commands.command import CmdEcho
     #[...]
     class DefaultCmdSet(default_cmds.DefaultCmdSet):
         
@@ -97,7 +97,7 @@ command set we already prepared.
 
             # all commands added after this point will extend or 
             # overwrite the default commands.       
-            self.add(echo.CmdEcho())
+            self.add(CmdEcho())
 
 #. Reboot/restart Evennia (``@reload`` from inside the game). You should
    now be able to use your new ``echo`` command from inside the game.
@@ -107,8 +107,11 @@ If you have trouble, make sure to check the log for error messages
 (probably due to syntax errors in your command definition).
 
 Adding new commands to the default cmdset in the future now only
-involves creating the function class and adding it to the same place. If
-you want to overload existing default commands (such as ``look`` or
-``get``), just add your new command with the same key as the old one -
-it will overload the default one. Just remember that you must
+involves creating the function class and adding it to the cmdset in the
+same place. If you want to overload existing default commands (such as
+``look`` or ``get``), just add your new command with the same key as the
+old one - it will overload the default one. Just remember that you must
 ``@reload`` the server before you see any changes.
+
+See `Commands <Commands.html>`_ for many more details and possibilities
+when defining Commands and using Cmdsets in various ways.

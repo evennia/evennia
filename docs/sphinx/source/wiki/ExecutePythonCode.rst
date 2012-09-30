@@ -86,20 +86,20 @@ entries found in ``ev.search_*``.
 (Note that since this becomes a simple statement, we don't have to wrap
 it in ``self.msg()`` to get the output). You can also use the database
 model managers directly (accessible through the ``objects`` properties
-of database models or as ``ev.db_*``). This is a bit more flexible since
-it gives you access to the full range of database search methods defined
-in each manager.
+of database models or as ``ev.managers.*``). This is a bit more flexible
+since it gives you access to the full range of database search methods
+defined in each manager.
 
 ::
 
-    @py ev.db_scripts.script_search("sys_game_time")
+    @py ev.managers.scripts.script_search("sys_game_time")
     <<< [<src.utils.gametime.GameTime object at 0x852be2c>]
 
 The managers are useful for all sorts of database studies.
 
 ::
 
-    @py ev.db_configvalues.all()
+    @py ev.managers.configvalues.all()
     <<< [<ConfigValue: default_home]>, <ConfigValue:site_name>, ...]
 
 In doing so however, keep in mind the difference between `Typeclasses
@@ -114,12 +114,12 @@ most situations.
 
     # this uses Evennia's manager method get_id(). 
     # It returns a Character typeclass instance
-    @py ev.db_objects.get_id(1).__class__
+    @py ev.managers.objects.get_id(1).__class__
     <<< Character
 
     # this uses the standard Django get() query. 
     # It returns a django database model instance.
-    @py ev.db_objects.get(id=1).__class__
+    @py ev.managers.objects.get(id=1).__class__
     <<< <class 'src.objects.models.ObjectDB'>
 
 Running a Python Parser outside the game
@@ -152,6 +152,6 @@ tab-completion and ``__doc__``-string reading.
     ...
 
     In [1]: import ev
-    In [2]: ev.db_objects.all()
+    In [2]: ev.managers.objects.all()
     Out[3]: [<ObjectDB: Harry>, <ObjectDB: Limbo>, ...]
 

@@ -56,6 +56,12 @@ General mud/game development ideas and discussions
    Realities <http://disinterest.org/resource/imaginary-realities/>`_ is
    an e-magazine on game/MUD design which were active 1998-2001.
    Interesting articles.
+-  `Mud-dev wiki <http://mud-dev.wikidot.com/>`_ is a slowly growing
+   resource on MUD creation
+-  `Nick Gammon's hints
+   thread <http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=5959>`_
+   holds a very useful list of things to think about when starting your
+   new MUD.
 
 -  `Lost Garden <http://www.lostgarden.com/>`_ is a game development
    blog with long and interesting articles (not MUD-specific)
@@ -65,6 +71,8 @@ General mud/game development ideas and discussions
    tabletop roleplaying and board games, but with lots of general
    discussion about rule systems and game balance that could be
    applicable also for MUDs.
+
+x
 
 Frameworks
 ----------

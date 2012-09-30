@@ -49,51 +49,41 @@ platform, please let us know.
 You'll need the following packages and minimum versions in order to run
 Evennia:
 
--  **Python** (`http://www.python.org <http://www.python.org>`_)
+-  **`Python <http://www.python.org>`_** (v2.6+, not supporting v3.x)
 
-   -  Version 2.6+. Obs- Python3.x is not supported.
-   -  Windows users are recommended to use ActivePython
-      (`http://www.activestate.com/activepython/downloads <http://www.activestate.com/activepython/downloads>`_)
+   -  Windows users are recommended to use
+      `ActivePython <http://www.activestate.com/activepython/downloads>`_
+      instead.
 
--  **Twisted** (`http://twistedmatrix.com <http://twistedmatrix.com>`_)
+-  **`Twisted <http://twistedmatrix.com>`_** (v10.0+)
 
-   -  Version 10.0+
-   -  Twisted also requires:
+   -  `ZopeInterface <http://www.zope.org/Products/ZopeInterface>`_
+      (v3.0+) - usually included in Twisted packages
+   -  Windows users might also need
+      `pywin32 <http://sourceforge.net/projects/pywin32>`_.
 
-      -  ZopeInterface 3.0+
-         (`http://www.zope.org/Products/ZopeInterface <http://www.zope.org/Products/ZopeInterface>`_)
-      -  For Windows only: pywin32
-         (`http://sourceforge.net/projects/pywin32 <http://sourceforge.net/projects/pywin32>`_)
+-  **`Django <http://www.djangoproject.com>`_** (v1.3+ or latest dev
+   build recommended)
 
--  **Django**
-   (`http://www.djangoproject.com <http://www.djangoproject.com>`_)
-
-   -  Version 1.3+ or latest development versions highly recommended.
-   -  PIL (Python Imaging Library)
-      (`http://www.pythonware.com/products/pil <http://www.pythonware.com/products/pil>`_)
-      - not strictly required unless you use images in Django.
+   -  `PIL <http://www.pythonware.com/products/pil>`_ (Python Image
+      Library) - often distributed with Django.
 
 To download/update Evennia:
 
--  **Mercurial**
-   (`http://mercurial.selenic.com/ <http://mercurial.selenic.com/>`_)
-
-   -  This is needed to download and update Evennia itself.
+-  **`Mercurial <http://mercurial.selenic.com/>`_**
 
 Optional packages:
 
--  **South**
-   (`http://south.aeracode.org/ <http://south.aeracode.org/>`_)
+-  **`South <http://south.aeracode.org/>`_** (v0.7+)
 
-   -  Version 0.7+
-   -  Optional, but highly recommended. Used for database migrations.
+   -  Optional, but highly recommended. Makes it easy to keep up with
+      Evennia updates to the database schema.
 
--  **Apache2** (`http://httpd.apache.org <http://httpd.apache.org>`_)
+-  **`Apache2 <http://httpd.apache.org>`_**
 
-   -  Optional. Most likely you'll not need to bother with this since
-      Evennia runs its own threaded web server based on Twisted. Other
-      equivalent web servers with a Python interpreter module can also
-      be used.
+   -  Optional. Only use if you don't want to use Evennia's own threaded
+      webserver. Other equivalent web servers with a Python interpreter
+      module can also be used.
 
 Installing pre-requisites
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -114,6 +104,10 @@ Debian-derived systems (such as Ubuntu) you can do something like this
 ::
 
      apt-get install python python-django python-twisted mercurial python-django-south
+
+(Gentoo note: Gentoo (and maybe other distros?) seems to distribute
+Twisted in multiple packages. Beyond the main twisted package you will
+also need to get at least twisted-conch and twisted-web too).\ **
 
 Few distros actually keep the latest updated security updates (notably
 django and twisted) in their repos though. So it might be worth to use
@@ -159,11 +153,11 @@ circumvent this bug for now. This affects also Unix/Linux systems, but
 those usually have the locale set out of the box.
 
 **Windows** users should first and foremost recognize that the Evennia
-server is run from the command line, something which they might not be
-familiar with. In the Windows launch menu, just start *All Programs ->
-Accessories -> command prompt* and you will get the Windows command line
-interface. There are plenty of online tutorials on using the Windows
-command line, one example is found
+server is run from the command line, something which some might not be
+familiar with (based on the questions we have received). In the Windows
+launch menu, just start *All Programs -> Accessories -> command prompt*
+and you will get the Windows command line interface. There are plenty of
+online tutorials on using the Windows command line, one example is found
 `here <http://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/>`_.
 
 Windows users may want to install

@@ -2,8 +2,8 @@ Developer Central
 =================
 
 This page serves as a central nexus for useful information regarding
-coding using the Evennia codebase, and also for development of the
-codebase itself. Everyone is welcome to `help
+coding using the Evennia codebase or developing the codebase itself.
+Everyone is welcome to `help
 out <http://code.google.com/p/evennia/wiki/Contributing>`_! If you have
 any questions, please feel free to ask them in the `Forum/Discussion
 Group <http://www.evennia.com/discussions>`_. If you want more docs on a
@@ -19,8 +19,8 @@ General Evennia development information
 -  `Introduction to coding with Evennia <CodingIntroduction.html>`_
 -  `Evennia Licensing FAQ <Licensing.html>`_
 -  `Contributing to Evennia <Contributing.html>`_
--  `Evennia Code Style
-   Guide <http://evennia.googlecode.com/svn/trunk/CODING_STYLE>`_
+-  `Code Style
+   Guide <http://code.google.com/p/evennia/source/browse/CODING_STYLE.txt>`_
    (Important!)
 -  `Policy for 'MUX-like' default commands <UsingMUXAsAStandard.html>`_
 -  `Setting up a Mercurial environment for
@@ -47,6 +47,7 @@ Evennia Component Documentation
 -  `Help System <HelpSystem.html>`_
 -  `Nicks <Nicks.html>`_
 -  `Sessions and Protocols <SessionProtocols.html>`_
+-  `Caches <Caches.html>`_
 -  `Web features <WebFeatures.html>`_
 -  `Configuration and module plugins <ServerConf.html>`_
 

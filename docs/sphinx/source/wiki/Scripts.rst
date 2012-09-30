@@ -1,8 +1,24 @@
 Scripts
 =======
 
-*Scripts* are the way to implement everything in Evennia that may change
-with time.
+*Scripts* are the out-of-character siblings to the in-character
+`Objects <Objects.html>`_. The name "Script" might suggest that they can
+only be used to script the game but this is only part of their
+usefulness (in the end we had to pick a single name for them). Scripts
+are full Typeclassed database entities, just like Objects - with all the
+advantages this entails. Likewise they can also store arbitrary
+*Attributes*.
+
+Scripts can be used for many different things in Evennia:
+
+-  They can attach to Objects to influence them in various ways - or
+   exist independently of any one in-game entity.
+-  They can work as timers and tickers - anything that may change with
+   Time. But they can also have no time dependence at all.
+-  They can describe State changes.
+-  They can act as data stores for storing game data persistently in the
+   database
+-  They can be used to shared data between groups of objects
 
 The most obvious use of Scripts may be to use them as *timers* or
 *Events*. Consider a script running on the object ``Grandfather Clock``.
@@ -12,16 +28,17 @@ clock must be rewound so it won't stop.
 
 Scripts may act as changeable *States*. Consider for example creating a
 'dark' room. It has two scripts assigned on it - one ``DarkState``
-script, and one ``BrightState`` script. When characters enters the dark
-room, it assigns a custom `Cmdset <Commands.html>`_ to them - this
-command set (say) limits their actions because of the darkness. After
-the characters have stumbled around for a while, someone brings up a
-torch. As a light source is now in the room, ``DarkState`` reacts to
-this by shutting down itself and handing over control to the
-``BrightState`` script that restores normal commands. Finally, when the
-character with the torch leaves the room, the ``BrightState`` script
-detects this and obediently hands control back to the ``DarkState``,
-leaving the remaining poor characters in darkness once again.
+script, and one ``BrightState`` script. When characters enter the dark
+room, it assigns a custom `Cmdset <Commands.html>`_ to them. This
+command set defines the parameters of the state they describe. In this
+case it limits their actions because of the darkness. After the
+characters have stumbled around for a while, someone brings up a torch.
+As a light source is now in the room, ``DarkState`` reacts to this by
+shutting down itself and handing over control to the ``BrightState``
+script that restores normal commands. Finally, when the character with
+the torch leaves the room, the ``BrightState`` script detects this and
+obediently hands control back to the ``DarkState``, leaving the
+remaining poor characters in darkness once again.
 
 By combining state-changes with timers one can make a room look
 different during nighttime than it does during the day. Weather and
@@ -29,9 +46,11 @@ seasons might come and go. But one can also achieve more complex things
 such as state-AI systems that make mobs move around and possibly pursue
 characters between rooms.
 
-... In short, Scripts make the game world *tick*. Scripts are
-database-persistent objects and are `TypeClassed <Typeclasses.html>`_
-entities, with all the advantages that this entails.
+Scripts are also excellent places to store game data in an OOC way. A
+groupd of objects may share date by use of a Script object they all hold
+references to.
+
+In short, Scripts can be used for a lot of things.
 
 How to create your own Script types
 -----------------------------------

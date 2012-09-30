@@ -137,7 +137,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/adm
 ~~~~~
 
 -  ``key`` = ``@emit``
--  ``aliases`` = ``@pemit, @remit``
+-  ``aliases`` = ``@remit, @pemit``
 -  `locks <Locks.html>`_ = ``cmd:perm(emit) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Admin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -319,7 +319,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~~~~~~~
 
 -  ``key`` = ``@batchcommands``
--  ``aliases`` = ``@batchcommand, @batchcmd``
+-  ``aliases`` = ``@batchcmd, @batchcommand``
 -  `locks <Locks.html>`_ = ``cmd:perm(batchcommands) or superuser()``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -510,7 +510,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~
 
 -  ``key`` = ``@destroy``
--  ``aliases`` = ``@delete, @del``
+-  ``aliases`` = ``@del, @delete``
 -  `locks <Locks.html>`_ = ``cmd:perm(destroy) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -570,7 +570,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~
 
 -  ``key`` = ``@examine``
--  ``aliases`` = ``@ex, ex, exam, examine``
+-  ``aliases`` = ``examine, @ex, ex, exam``
 -  `locks <Locks.html>`_ = ``cmd:perm(examine) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -600,7 +600,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@find``
--  ``aliases`` = ``find, @search, search, @locate, locate``
+-  ``aliases`` = ``locate, @locate, search, @search, find``
 -  `locks <Locks.html>`_ = ``cmd:perm(find) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -721,7 +721,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@lock``
--  ``aliases`` = ``@locks, lock, locks``
+-  ``aliases`` = ``lock, @locks, locks``
 -  `locks <Locks.html>`_ = ``cmd: perm(@locks) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1173,7 +1173,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 
 -  ``key`` = ``@channels``
 -  ``aliases`` =
-   ``@clist, channels, comlist, chanlist, channellist, all channels``
+   ``comlist, channellist, all channels, channels, @clist, chanlist``
 -  `locks <Locks.html>`_ = ``cmd: not pperm(channel_banned)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1270,7 +1270,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 ~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@imcinfo``
--  ``aliases`` = ``@imcchanlist, @imclist, @imcwhois``
+-  ``aliases`` = ``@imcchanlist, @imcwhois, @imclist``
 -  `locks <Locks.html>`_ =
    ``cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
@@ -1436,7 +1436,7 @@ imctell (OOC command)
 ~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``imctell``
--  ``aliases`` = ``imcpage, imc2tell, imc2page``
+-  ``aliases`` = ``imc2tell, imc2page, imcpage``
 -  `locks <Locks.html>`_ = ``cmd: serversetting(IMC2_ENABLED)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1609,7 +1609,7 @@ access
 ~~~~~~
 
 -  ``key`` = ``access``
--  ``aliases`` = ``groups, hierarchy``
+-  ``aliases`` = ``hierarchy, groups``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1738,7 +1738,7 @@ inventory
 ~~~~~~~~~
 
 -  ``key`` = ``inventory``
--  ``aliases`` = ``inv, i``
+-  ``aliases`` = ``i, inv``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1805,7 +1805,7 @@ nick
 ~~~~
 
 -  ``key`` = ``nick``
--  ``aliases`` = ``nickname, nicks, @nick, alias``
+-  ``aliases`` = ``@nick, nicks, nickname, alias``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1942,7 +1942,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 ~~~~~~~~
 
 -  ``key`` = ``@objects``
--  ``aliases`` = ``@listobjects, @listobjs, @stats, @db``
+-  ``aliases`` = ``@listobjects, @stats, @db, @listobjs``
 -  `locks <Locks.html>`_ = ``cmd:perm(listobjects) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``System``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2041,7 +2041,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 ~~~~~~~~
 
 -  ``key`` = ``@scripts``
--  ``aliases`` = ``@globalscript, @listscripts``
+-  ``aliases`` = ``@listscripts, @globalscript``
 -  `locks <Locks.html>`_ = ``cmd:perm(listscripts) or perm(Wizards)``
 -  `help\_category <HelpSystem.html>`_ = ``System``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2203,7 +2203,7 @@ connect (Unloggedin command)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``connect``
--  ``aliases`` = ``conn, con, co``
+-  ``aliases`` = ``co, conn, con``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``Unloggedin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2214,16 +2214,19 @@ connect (Unloggedin command)
         Connect to the game.
 
         Usage (at login screen):
-          connect <email> <password>
+          connect playername password
+          connect "player name" "pass word"
 
         Use the create command to first create an account before logging in.
+
+        If you have spaces in your name, enclose it in quotes.
         
 
 create (Unloggedin command)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``create``
--  ``aliases`` = ``cre, cr``
+-  ``aliases`` = ``cr, cre``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``Unloggedin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2234,10 +2237,12 @@ create (Unloggedin command)
         Create a new account.
 
         Usage (at login screen):
-          create "playername" <email> <password>
+          create <playername> <password>
+          create "player name" "pass word"
 
         This creates a new player account.
 
+        If you have spaces in your name, enclose it in quotes.
         
 
 help (Unloggedin command)

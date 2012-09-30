@@ -78,6 +78,10 @@ behaviour.
 Fast assignment
 ---------------
 
+*Depracation Warning: Fast assigment is deprecated and should not be
+used - it will be removed in the future. Use the ``db`` operator
+explicitly when saving to the database.*
+
 For quick testing you can in principle skip the ``db`` operator and
 assign Attributes like you would any normal Python property:
 

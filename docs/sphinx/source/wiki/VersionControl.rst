@@ -162,7 +162,7 @@ Sharing your code with the world
 The most common case of this is when you have fixed an Evennia bug and
 want to make the fix available to Evennia maintainers. But you can also
 share your work with other people on your game-development team if you
-don't worry about the changes being publicly visible.
+aren't worried about the changes being publicly visible.
 
 Let's take the example of debugging Evennia. Go online and create an
 "online clone" of Evennia as described `here <Contributing.html>`_. Pull

@@ -44,7 +44,8 @@ install, log into the server as the superuser (user #1) and run:
 
     @batchcommand contrib.tutorial_world.build
 
-The world will be built (there will be a lot of text output) and you
+The world will be built (this might take a while, so don't rerun the
+command even if it seems the system has frozen). After finishing you
 will end up back in Limbo with a new exit called ``tutorial``.
 
 An alternative is
@@ -73,7 +74,7 @@ together with her powerful magical weapon - a valuable prize, if it's
 true. Of course this is a chance to adventure that you cannot turn
 down!*
 
-*You reach the coast in the midst of a raging thunderstorm. With wind
+*You reach the ocean in the midst of a raging thunderstorm. With wind
 and rain screaming in your face you stand where the moor meets the sea
 along a high, rocky coast ...*
 

@@ -215,9 +215,9 @@ button is meant to be pushed. You know you want to.
 Creating a room called 'house'
 ------------------------------
 
-The main command for shaping the game world is ``@dig``. If you for
-example are standing in Limbo, you can in one go dig a route 'north' to
-your new house location like this:
+The main command for shaping the game world is ``@dig``. For example, if
+you are standing in Limbo you can dig a route to your new house location
+like this:
 
 ::
 

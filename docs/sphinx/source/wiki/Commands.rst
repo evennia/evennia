@@ -335,18 +335,19 @@ server, or you run
 
     @py self.cmdset.delete('game.gamesrc.commands.mycmdset.MyCmdSet')
 
-For more permanent addition, read the
-[Commands#Adding\_a\_new\_command\_-*a\_step\_by\_step\_guide
-step-by-step guide] below. Generally you can customize which command
-sets are added to your objects by using ``self.cmdset.add()`` or
-``self.cmdset.add_default()``.*
+For a quick tutorial on setting up things more permanently read the
+`Step by step
+tutorial <http://code.google.com/p/evennia/wiki/AddingCommandTutorial>`_
+for a different way of approaching it. Generally you can customize which
+command sets are added to your objects by using ``self.cmdset.add()`` or
+``self.cmdset.add_default()``.
 
 Adding and merging command sets
 -------------------------------
 
-\_Note: This is an advanced topic. It's useful to know about, but you
+*Note: This is an advanced topic. It's useful to know about, but you
 might want to skip it if this is your first time learning about
-commands.
+commands.*
 
 CmdSets have the special ability that they can be *merged* together into
 new sets. This would happen if you, for example, did

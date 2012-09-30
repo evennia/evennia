@@ -18,12 +18,12 @@ your work fun for you, or motivation will falter. Making a full game is
 a lot of work as it is, you'll need all your motivation to make it a
 reality.
 
-Remember that *99.99999% of all great game ideas never leads to an
-online game*. So your first all overshadowing goal is to beat those odds
-and get *something* out the door! *Even* if it's a scaled-down version
-of your dream game, lacking many "must-have" features! It's better to
-get it out there and expand on it later than to code in isolation
-forever until you burn out, loose interest or your hard drive crashes.
+Remember that *99.99999% of all great game ideas never lead to an online
+game*. So your first all overshadowing goal is to beat those odds and
+get *something* out the door! *Even* if it's a scaled-down version of
+your dream game, lacking many "must-have" features! It's better to get
+it out there and expand on it later than to code in isolation forever
+until you burn out, lose interest or your hard drive crashes.
 
 Like is common with online games, getting a game out the door does not
 mean you are going to be "finished" with the game - most MUDs add
@@ -49,7 +49,7 @@ game and what they need to be able to do.
    simple description enough? Can it be dark (description
    changed/hidden)? Should it have smells, sounds? Weather? Different
    terrain? How are those to be conveyed? Are there special "magic"
-   rooms that does things to people entering? Can a person hide in the
+   rooms that do things to people entering? Can a person hide in the
    room? Should all rooms have the ability to be this complex or should
    there be different types of rooms? Evennia allows you to change the
    very concept of rooms should you be very ambitious, but is that a
@@ -67,7 +67,7 @@ game and what they need to be able to do.
    object. For a role playing game, you need to define chances of
    success ("rolls") for example. Will weather messages be random in
    every room or should it follow some sort of realistic pattern over
-   all rooms? Do you have an game-wide economy - if so, how is that
+   all rooms? Do you have a game-wide economy - if so, how is that
    supposed to work? If magic is dependent on the position of the
    planets, the planets must change with time. What about spreading
    rumors? Mail boxes? Bulletin boards?

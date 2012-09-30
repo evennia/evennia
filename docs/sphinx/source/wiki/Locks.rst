@@ -87,9 +87,8 @@ special *lock functions* available to the lock system.
 So, a lockstring consists of the type of restriction (the
 ``access_type``), a colon (``:``) and then a list of function calls that
 determine what is needed to pass the lock. Each function returns either
-``True`` or ``False``. AND/OR and NOT works like normal Python to
-combine several function checks. If the total result is True, the lock
-is passed.
+``True`` or ``False``. AND, OR and NOT work as they do normally in
+Python. If the total result is True, the lock is passed.
 
 You can create several lock types one after the other by separating them
 with a semicolon (``;``) in the lockstring. The string below is
