@@ -19,7 +19,7 @@ import sys, os
 
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.insert(0, EVENNIA_ROOT)
-sys.path.insert(0, os.path.dirname(EVENNIA_ROOT)) # also import top container 
+sys.path.insert(0, os.path.dirname(EVENNIA_ROOT)) # also import top container
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
 # -- General configuration -----------------------------------------------------
@@ -45,7 +45,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Evennia'
-copyright = u'2011, Evennia-development team'
+copyright = u'2012, Evennia-development team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
