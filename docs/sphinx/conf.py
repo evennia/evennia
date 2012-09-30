@@ -21,7 +21,7 @@ from django.core.management import setup_environ
 try:
     from game import settings
 except ImportError:
-    raise ImportError(str(sys.path))
+    raise ImportError("game/ dir not found. sys.path: %s" % str(sys.path))
 setup_environ(settings)
 
 # -- General configuration -----------------------------------------------------
