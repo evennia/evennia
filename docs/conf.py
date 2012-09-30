@@ -18,7 +18,10 @@ import sys, os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath('.'))))
 from django.core.management import setup_environ
-from game import settings
+try:
+    from game import settings
+except ImportError:
+    raise ImportError(str(sys.path))
 setup_environ(settings)
 
 # -- General configuration -----------------------------------------------------
