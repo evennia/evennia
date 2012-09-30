@@ -290,6 +290,16 @@ class LockHandler(object):
         self.log_obj = None
         return True
 
+    def replace(self, lockstring, log_obj=None):
+        "Replaces the lockstring entirely."
+        old_lockstring = str(self)
+        self.clear()
+        try:
+            return self.add(lockstring, log_obj)
+        except LockException:
+            self.add(old_lockstring, log_obj)
+            raise
+
     def get(self, access_type):
         "get the lockstring of a particular type"
         return self.locks.get(access_type, None)
@@ -386,7 +396,7 @@ class LockHandler(object):
              or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
                 return True
 
-        locks = self. _parse_lockstring(lockstring)
+        locks = self._parse_lockstring(lockstring)
         for access_type in locks:
             evalstring, func_tup, raw_string = locks[access_type]
             true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
