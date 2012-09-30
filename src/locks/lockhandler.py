@@ -109,7 +109,7 @@ from django.conf import settings
 from src.utils import logger, utils
 from django.utils.translation import ugettext as _
 
-__all__ = ("LockHandler", )
+__all__ = ("LockHandler", "LockException")
 
 #
 # Exception class
@@ -168,7 +168,6 @@ class LockHandler(object):
         self.obj = obj
         self.locks = {}
         self.log_obj = None
-        self.no_errors = True
         self.reset_flag = False
         self._cache_locks(self.obj.lock_storage)
         # we handle bypass checks already here for efficiency. We need to grant access to superusers and
@@ -244,7 +243,6 @@ class LockHandler(object):
         if elist:
             # an error text was set, raise exception.
             raise LockException("\n".join(elist))
-            self.no_errors = False
         # return the gathered locks in an easily executable form
         return locks
 
@@ -265,7 +263,6 @@ class LockHandler(object):
         """
         if log_obj:
             self.log_obj = log_obj
-        self.no_errors = True
         # sanity checks
         for lockdef in lockstring.split(';'):
             if not ':' in lockstring:
@@ -291,7 +288,7 @@ class LockHandler(object):
         self._cache_locks(storage_lockstring)
         self._save_locks()
         self.log_obj = None
-        return self.no_errors
+        return True
 
     def get(self, access_type):
         "get the lockstring of a particular type"
