@@ -1222,4 +1222,4 @@ stairs down
 #
 @open exit back to Limbo;limbo;exit;back = #2
 #
-@tel 2
+@tel #2
