@@ -10,7 +10,7 @@ import os, sys, imp, types, math
 import textwrap, datetime, random
 from inspect import ismodule
 from collections import defaultdict
-from twisted.internet import threads
+from twisted.internet import threads, defer, reactor
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
@@ -38,6 +38,7 @@ def is_iter(iterable):
         return True
     except AttributeError:
         return False
+
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."
@@ -87,9 +88,15 @@ def list_to_string(inlist, endsep="and", addquote=False):
     """
     This pretty-formats a list as string output, adding
     an optional alternative separator to the second to last entry.
-    If addquote is True, the outgoing strints will be surrounded by quotes.
+    If addquote is True, the outgoing strings will be surrounded by quotes.
 
-    [1,2,3] -> '1, 2 and 3'
+    Examples:
+     no endsep:
+        [1,2,3] -> '1, 2, 3'
+     with endsep=='and':
+        [1,2,3] -> '1, 2 and 3'
+     with addquote and endsep
+        [1,2,3] -> '"1", "2" and "3"'
     """
     if not inlist:
         return ""
@@ -488,7 +495,6 @@ def uses_database(name="sqlite3"):
     except KeyError:
         engine = settings.DATABASE_ENGINE
     return engine == "django.db.backends.%s" % name
-
 
 
 _FROM_MODEL_MAP = None

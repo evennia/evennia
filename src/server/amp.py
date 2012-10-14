@@ -22,7 +22,8 @@ except ImportError:
     import pickle
 from twisted.protocols import amp
 from twisted.internet import protocol
-from src.utils.utils import to_str
+from twisted.internet.defer import Deferred
+from src.utils.utils import to_str, variable_from_module
 
 # these are only needed on the server side, so we delay loading of them
 # so as to not have to load them on the portal too. Note: It's doubtful
@@ -133,6 +134,8 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
         protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 
+# AMP Communication Command types
+
 class MsgPortal2Server(amp.Command):
     """
     Message portal -> server
@@ -197,6 +200,23 @@ class PortalAdmin(amp.Command):
                  ('data', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
+
+class FunctionCall(amp.Command):
+    """
+    Bidirectional
+
+    Sent when either process needs to call an
+    arbitrary function in the other.
+    """
+    arguments = [('module', amp.String()),
+                 ('function', amp.String()),
+                 ('args', amp.String()),
+                 ('kwargs', amp.String())]
+    errors = [(Exception, 'EXCEPTION')]
+    response = [('result', amp.String())]
+
+
+# Helper functions
 
 dumps = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
 loads = lambda data: pickle.loads(to_str(data))
@@ -469,3 +489,43 @@ class AMPProtocol(amp.AMP):
                         sessid=sessid,
                         operation=operation,
                         data=data).addErrback(self.errback, "PortalAdmin")
+
+    # Extra functions
+
+    def amp_function_call(self, module, function, args, kwargs):
+        """
+        This allows Portal- and Server-process to call an arbitrary function
+        in the other process. It is intended for use by plugin modules.
+        """
+        args = loads(args)
+        kwargs = loads(kwargs)
+
+        # call the function (don't catch tracebacks here)
+        result = variable_from_module(module, function)(*args, **kwargs)
+
+        if isinstance(result, Deferred):
+            # if result is a deferred, attach handler to properly wrap the return value
+            result.addCallback(lambda r: {"result":dumps(r)})
+            return result
+        else:
+            return {'result':dumps(result)}
+    FunctionCall.responder(amp_function_call)
+
+
+    def call_remote_FunctionCall(self, modulepath, functionname, *args, **kwargs):
+        """
+        Access method called by either process. This will call an arbitrary function
+        on the other process (On Portal if calling from Server and vice versa).
+
+        Inputs:
+            modulepath (str) - python path to module holding function to call
+            functionname (str) - name of function in given module
+            *args, **kwargs will be used as arguments/keyword args for the remote function call
+        Returns:
+            A deferred that fires with the return value of the remote function call
+        """
+        return self.callRemote(FunctionCall,
+                               module=modulepath,
+                               function=functionname,
+                               args=dumps(args),
+                               kwargs=dumps(kwargs)).addCallback(lambda r: loads(r["result"])).addErrback(self.errback, "FunctionCall")
