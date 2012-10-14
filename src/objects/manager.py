@@ -259,6 +259,7 @@ class ObjectManager(TypedObjectManager):
                 player_match = self.get_object_with_player(ostring, candidates=candidates)
                 if player_match is not None:
                     return [player_match]
+                return []
             else:
                 # normal key/alias search
                 return self.get_objs_with_key_or_alias(ostring, exact=exact, candidates=candidates)
