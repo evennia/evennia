@@ -167,7 +167,7 @@ class CmdNick(MuxCommand):
         switches = self.switches
 
         nicks = Nick.objects.filter(db_obj=caller.dbobj).exclude(db_type="channel")
-        if 'list' in switches or self.cmdstring == "nicks":
+        if 'list' in switches:
             string = "{wDefined Nicks:{n"
             cols = [["Type"],["Nickname"],["Translates-to"] ]
             for nick in nicks:
