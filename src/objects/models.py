@@ -856,11 +856,11 @@ class ObjectDB(TypedObject):
             """
             key = _GA(self, "key")
             num = 1
-            for obj in (obj for obj in _GA(_GA(self, "location"), "contents")
+            for obj in (obj for obj in self.location.contents
                         if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
                 num += 1
-            return "%s%02i" % (key, num)
-        new_key = new_key or find_clone_key(self)
+            return "%s%03i" % (key, num)
+        new_key = new_key or find_clone_key()
         return ObjectDB.objects.copy_object(self, new_key=new_key)
 
     delete_iter = 0
