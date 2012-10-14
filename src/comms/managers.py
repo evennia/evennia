@@ -23,12 +23,14 @@ class CommError(Exception):
 # helper functions
 #
 
-def dbref(dbref):
+def dbref(dbref, reqhash=True):
     """
     Valid forms of dbref (database reference number)
     are either a string '#N' or an integer N.
     Output is the integer part.
     """
+    if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
+        return None
     if isinstance(dbref, basestring):
         dbref = dbref.lstrip('#')
     try:
@@ -136,7 +138,7 @@ class MsgManager(models.Manager):
     def get_message_by_id(self, idnum):
         "Retrieve message by its id."
         try:
-            return self.get(id=self.dbref(idnum))
+            return self.get(id=self.dbref(idnum, reqhash=False))
         except Exception:
             return None
 

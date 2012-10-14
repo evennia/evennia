@@ -43,7 +43,7 @@ class ScriptManager(TypedObjectManager):
             return []
         if key:
             dbref = self.dbref(key)
-            if dbref:
+            if dbref or dbref == 0:
                 script = self.filter(db_obj=obj, id=dbref)
                 if script:
                     return script
@@ -59,7 +59,7 @@ class ScriptManager(TypedObjectManager):
         if key:
             script = []
             dbref = self.dbref(key)
-            if dbref:
+            if dbref or dbref == 0:
                 script = self.dbref_search(dbref)
             if not script:
                 scripts = self.filter(db_key=key)
@@ -153,7 +153,7 @@ class ScriptManager(TypedObjectManager):
 
         elif not scripts:
             # normal operation
-            if dbref and self.dbref(dbref):
+            if dbref and self.dbref(dbref, reqhash=False):
                 scripts = self.get_id(dbref)
             elif obj:
                 scripts = self.get_all_scripts_on_obj(obj, key=key)
