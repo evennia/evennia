@@ -578,6 +578,16 @@ class Object(TypeClass):
         """
         pass
 
+    def at_traverse(self, traversing_object, target_location):
+        """
+        This hook is responsible for handling the actual traversal, normally
+        by calling traversing_object.move_to(target_location). It is normally
+        only implemented by Exit objects. If it returns False (usually because move_to
+        returned False), at_after_traverse below should not be called and
+        instead at_failed_traverse should be called.
+        """
+        pass
+
     def at_after_traverse(self, traversing_object, source_location):
         """
         Called just after an object successfully used this object to
@@ -836,17 +846,9 @@ class Exit(Object):
 
                 if self.obj.access(self.caller, 'traverse'):
                     # we may traverse the exit.
-
-                    old_location = None
-                    if hasattr(self.caller, "location"):
-                        old_location = self.caller.location
-
-                    # call pre/post hooks and move object.
-                    self.obj.at_before_traverse(self.caller)
-                    self.caller.move_to(self.obj.destination)
-                    self.obj.at_after_traverse(self.caller, old_location)
-
+                    self.obj.at_traverse(self.caller, self.obj.destination)
                 else:
+                    # exit is locked
                     if self.obj.db.err_traverse:
                         # if exit has a better error message, let's use it.
                         self.caller.msg(self.obj.db.err_traverse)
@@ -904,6 +906,28 @@ class Exit(Object):
 
     def at_object_creation(self):
         "Called once, when object is first created (after basetype_setup)."
+        pass
+
+    def at_traverse(self, traversing_object, target_location):
+        """
+        This implements the actual traversal. The traverse lock has already been
+        checked (in the Exit command) at this point.
+        """
+        source_location = traversing_object.location
+        if traversing_object.move_to(target_location):
+            self.at_after_traverse(traversing_object, source_location)
+        else:
+            if self.db.err_traverse:
+                # if exit has a better error message, let's use it.
+                self.caller.msg(self.db.err_traverse)
+            else:
+                # No shorthand error message. Call hook.
+                self.at_failed_traverse(traversing_object)
+
+    def at_after_traverse(self, traversing_object, source_location):
+        """
+        Called after a successful traverse.
+        """
         pass
 
     def at_failed_traverse(self, traversing_object):
