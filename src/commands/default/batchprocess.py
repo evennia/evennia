@@ -392,7 +392,7 @@ class CmdBatchCode(MuxCommand):
                 # un in-process (will block)
                 for inum in range(len(codes)):
                     # loop through the batch file
-                    if not batch_cmd_exec(caller):
+                    if not batch_code_exec(caller):
                         return
                     step_pointer(caller, 1)
                 # clean out the safety cmdset and clean out all other temporary attrs.

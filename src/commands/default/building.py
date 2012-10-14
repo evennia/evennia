@@ -545,7 +545,7 @@ class CmdDestroy(MuxCommand):
             if not obj:
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
                 return ""
-            if not "override" in self.switches and obj.dbid == int(settings.CHARACTER_DEFAULT_HOME):
+            if not "override" in self.switches and obj.dbid == int(settings.CHARACTER_DEFAULT_HOME.lstrip("#")):
                 return "\nYou are trying to delete CHARACTER_DEFAULT_HOME. If you want to do this, use the /override switch."
             objname = obj.name
             if not obj.access(caller, 'delete'):
@@ -572,10 +572,10 @@ class CmdDestroy(MuxCommand):
         for objname in self.lhslist:
             if '-' in objname:
                 # might be a range of dbrefs
-                dmin, dmax = [utils.dbref(part) for part in objname.split('-', 1)]
+                dmin, dmax = [utils.dbref(part, reqhash=False) for part in objname.split('-', 1)]
                 if dmin and dmax:
                     for dbref in range(int(dmin),int(dmax+1)):
-                        string += delobj(str(dbref))
+                        string += delobj("#" + str(dbref))
                 else:
                     string += delobj(objname)
             else:

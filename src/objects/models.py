@@ -801,7 +801,7 @@ class ObjectDB(TypedObject):
         """
         # Gather up everything that thinks this is its location.
         objs = ObjectDB.objects.filter(db_location=self)
-        default_home_id = int(settings.CHARACTER_DEFAULT_HOME)
+        default_home_id = int(settings.CHARACTER_DEFAULT_HOME.lstrip("#"))
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
             if default_home.dbid == _GA(self, "dbid"):

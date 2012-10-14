@@ -284,12 +284,14 @@ def pypath_to_realpath(python_path, file_ending='.py'):
         return "%s%s" % (path, file_ending)
     return path
 
-def dbref(dbref):
+def dbref(dbref, reqhash=True):
     """
     Converts/checks if input is a valid dbref Valid forms of dbref
     (database reference number) are either a string '#N' or
     an integer N.  Output is the integer part.
     """
+    if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
+        return None
     if isinstance(dbref, basestring):
         dbref = dbref.lstrip('#')
         try:
