@@ -202,6 +202,10 @@ class ScriptManager(TypedObjectManager):
                     ok = False
                 if ok:
                     return [dbref_match]
+        if obj:
+            # convenience check to make sure obj is really a dbobj
+            obj = hasattr(obj, "dbobj") and obj.dbobj or obj
+
         # not a dbref; normal search
         scripts = self.filter(db_key__iexact=ostring)
 

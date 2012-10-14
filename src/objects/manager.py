@@ -273,6 +273,10 @@ class ObjectManager(TypedObjectManager):
             if dbref_match:
                 return [dbref_match]
 
+        # Convenience check to make sure candidates are really dbobjs
+        if candidates:
+            candidates = [cand.dbobj for cand in make_iter(candidates) if hasattr(cand, "dbobj")]
+
         # Search through all possibilities.
 
         match_number = None
