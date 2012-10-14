@@ -34,7 +34,7 @@ except ImportError:
 import traceback
 from collections import defaultdict
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
@@ -377,6 +377,7 @@ class Attribute(SharedMemoryModel):
         self.no_cache = False
         self.db_value = to_unicode(_PDUMPS(to_str(new_value)))
         self.save()
+
     #@value.deleter
     def __value_del(self):
         "Deleter. Allows for del attr.value. This removes the entire attribute."
@@ -1291,7 +1292,15 @@ class TypedObject(SharedMemoryModel):
                 # no match; create new attribute
                 attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
         # re-set an old attribute value
-        attrib_obj.value = new_value
+        try:
+            attrib_obj.value = new_value
+        except IntegrityError:
+            # this can happen if the cache was stale and the databse object is
+            # missing. If so we need to clean self.hashid from the cache
+            if _GA(self, "hashid") in _ATTRIBUTE_CACHE:
+                del _ATTRIBUTE_CACHE[_GA(self, "hashid")]
+                self.delete()
+            raise IntegrityError("Attribute could not be saved - object %s was deleted from database." % self.key)
         _ATTRIBUTE_CACHE[_GA(self, "hashid")][attribute_name] = attrib_obj
 
     def get_attribute_obj(self, attribute_name, default=None):

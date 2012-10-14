@@ -15,6 +15,7 @@ That an object is controlled by a player/user is just defined by its
 they control by simply linking to a new object's user property.
 """
 
+from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
 __all__ = ("Object", "Character", "Room", "Exit")
@@ -728,8 +729,7 @@ class Character(Object):
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
                                  "call:false()"])) # no commands can be called on character from outside
         # add the default cmdset
-        from settings import CMDSET_DEFAULT
-        self.cmdset.add_default(CMDSET_DEFAULT, permanent=True)
+        self.cmdset.add_default(settings.CMDSET_DEFAULT, permanent=True)
         # no other character should be able to call commands on the Character.
         self.cmdset.outside_access = False
 
