@@ -22,6 +22,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.typeclasses.models import _get_cache, _set_cache, _del_cache
 from src.typeclasses.typeclass import TypeClass
+from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
@@ -549,14 +550,19 @@ class ObjectDB(TypedObject):
             return self
 
         if use_nicks:
-            if ostring.startswith('*') or player:
-                # player nick replace
-                ostring = self.nicks.get(ostring.lstrip('*'), nick_type="player")
-                if not player:
-                    ostring = "*%s" % ostring
-            else:
-                # object nick replace
-                ostring = self.nicks.get(ostring, nick_type="object")
+            nick = None
+            nicktype = "object"
+            if player or ostring.startswith('*'):
+                ostring = ostring.lstrip("*")
+                nicktype = "player"
+            # look up nicks
+            nicks = ObjectNick.objects.filter(db_obj=self, db_type=nicktype)
+            if self.has_player:
+                nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type=nicktype))
+            for nick in nicks:
+                if ostring == nick.db_nick:
+                    ostring = nick.db_real
+                    break
 
         candidates=None
         if global_search:
@@ -619,7 +625,10 @@ class ObjectDB(TypedObject):
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        for nick in ObjectNick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):
+        nicks = ObjectNick.objects.filter(db_obj=self, db_type__in=("inputline", "channel"))
+        if self.has_player:
+            nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type__in=("inputline","channel")))
+        for nick in nicks:
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
                 break
