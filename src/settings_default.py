@@ -243,7 +243,7 @@ BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # dbref (default is Limbo #2). If you want more advanced control over
 # start locations, copy the "create" command from
 # src/commands/default/unloggedin.py and customize.
-CHARACTER_DEFAULT_HOME = "2"
+CHARACTER_DEFAULT_HOME = "#2"
 
 ######################################################################
 # Batch processors
