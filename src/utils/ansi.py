@@ -72,29 +72,29 @@ class ANSIParser(object):
         # MUX-style mappings %cr %cn etc
 
         self.mux_ansi_map = [
-            (r'(?<!\\{2})%r',  ANSI_RETURN),
-            (r'(?<!\\{2})%t',  ANSI_TAB),
-            (r'(?<!\\{2})%b',  ANSI_SPACE),
-            (r'(?<!\\{2})%cf', ANSI_BLINK),
-            (r'(?<!\\{2})%ci', ANSI_INVERSE),
-            (r'(?<!\\{2})%ch', ANSI_HILITE),
-            (r'(?<!\\{2})%cn', ANSI_NORMAL),
-            (r'(?<!\\{2})%cx', ANSI_BLACK),
-            (r'(?<!\\{2})%cX', ANSI_BACK_BLACK),
-            (r'(?<!\\{2})%cr', ANSI_RED),
-            (r'(?<!\\{2})%cR', ANSI_BACK_RED),
-            (r'(?<!\\{2})%cg', ANSI_GREEN),
-            (r'(?<!\\{2})%cG', ANSI_BACK_GREEN),
-            (r'(?<!\\{2})%cy', ANSI_YELLOW),
-            (r'(?<!\\{2})%cY', ANSI_BACK_YELLOW),
-            (r'(?<!\\{2})%cb', ANSI_BLUE),
-            (r'(?<!\\{2})%cB', ANSI_BACK_BLUE),
-            (r'(?<!\\{2})%cm', ANSI_MAGENTA),
-            (r'(?<!\\{2})%cM', ANSI_BACK_MAGENTA),
-            (r'(?<!\\{2})%cc', ANSI_CYAN),
-            (r'(?<!\\{2})%cC', ANSI_BACK_CYAN),
-            (r'(?<!\\{2})%cw', ANSI_WHITE),
-            (r'(?<!\\{2})%cW', ANSI_BACK_WHITE),
+            (r'(?<!%)%r',  ANSI_RETURN),
+            (r'(?<!%)%t',  ANSI_TAB),
+            (r'(?<!%)%b',  ANSI_SPACE),
+            (r'(?<!%)%cf', ANSI_BLINK),
+            (r'(?<!%)%ci', ANSI_INVERSE),
+            (r'(?<!%)%ch', ANSI_HILITE),
+            (r'(?<!%)%cn', ANSI_NORMAL),
+            (r'(?<!%)%cx', ANSI_BLACK),
+            (r'(?<!%)%cX', ANSI_BACK_BLACK),
+            (r'(?<!%)%cr', ANSI_RED),
+            (r'(?<!%)%cR', ANSI_BACK_RED),
+            (r'(?<!%)%cg', ANSI_GREEN),
+            (r'(?<!%)%cG', ANSI_BACK_GREEN),
+            (r'(?<!%)%cy', ANSI_YELLOW),
+            (r'(?<!%)%cY', ANSI_BACK_YELLOW),
+            (r'(?<!%)%cb', ANSI_BLUE),
+            (r'(?<!%)%cB', ANSI_BACK_BLUE),
+            (r'(?<!%)%cm', ANSI_MAGENTA),
+            (r'(?<!%)%cM', ANSI_BACK_MAGENTA),
+            (r'(?<!%)%cc', ANSI_CYAN),
+            (r'(?<!%)%cC', ANSI_BACK_CYAN),
+            (r'(?<!%)%cw', ANSI_WHITE),
+            (r'(?<!%)%cW', ANSI_BACK_WHITE),
             ]
 
         # Expanded mapping {r {n etc
@@ -124,19 +124,19 @@ class ANSIParser(object):
         # xterm256 {123, %c134,
 
         self.xterm256_map = [
-            (r'(?<!\\{2})%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
-            (r'(?<!\\{2})%c(b[0-5]{3})', self.parse_rgb), # %cb123 - background colour
-            (r'(?<!\\){([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
-            (r'(?<!\\){(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
+            (r'(?<!%)%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
+            (r'(?<!%)%c(b[0-5]{3})', self.parse_rgb), # %cb123 - background colour
+            (r'(?<!{){([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
+            (r'(?<!{){(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
             ]
 
         # matching for cleaning out escaped colour codes (used with sub)
 
         self.clean_escapes = [
             (r"{{", "{"),
-            (r"\\\\%r", "%r"),
-            (r"\\\\%b", "%b"),
-            (r"\\\\%c", "%c")
+            (r"%%r", "%r"),
+            (r"%%b", "%b"),
+            (r"%%c", "%c")
             ]
 
         # obs - order matters here, we want to do the xterms first since
