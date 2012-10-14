@@ -183,7 +183,7 @@ class DefaultCmds(object):
     from src.commands.default.cmdset_default import DefaultCmdSet
     from src.commands.default.cmdset_ooc import OOCCmdSet
     from src.commands.default.cmdset_unloggedin import UnloggedinCmdSet
-    from src.commands.default.muxcommand import MuxCommand
+    from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
     def __init__(self):
         "populate the object with commands"
