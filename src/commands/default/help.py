@@ -48,12 +48,12 @@ def format_help_list(hdict_cmds, hdict_db):
     if hdict_cmds and any(hdict_cmds.values()):
         string += "\n" + SEP + "\n   {CCommand help entries{n\n" + SEP
         for category in sorted(hdict_cmds.keys()):
-            string += "\n  {w%s{n:\n" % (str(category).capitalize())
+            string += "\n  {w%s{n:\n" % (str(category).title())
             string += "{G" + fill(", ".join(sorted(hdict_cmds[category]))) + "{n"
     if hdict_db and any(hdict_db.values()):
         string += "\n\n" + SEP + "\n\r  {COther help entries{n\n" + SEP
         for category in sorted(hdict_db.keys()):
-            string += "\n\r  {w%s{n:\n" % (str(category).capitalize())
+            string += "\n\r  {w%s{n:\n" % (str(category).title())
             string += "{G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "{n"
     return string
 
