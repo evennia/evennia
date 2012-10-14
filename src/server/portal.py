@@ -171,6 +171,9 @@ if TELNET_ENABLED:
     from src.server import telnet
 
     for interface in TELNET_INTERFACES:
+        if ":" in interface:
+            print "  iPv6 interfaces not yet supported"
+            continue
         ifacestr = ""
         if interface != '0.0.0.0' or len(TELNET_INTERFACES) > 1:
             ifacestr = "-%s" % interface
@@ -192,6 +195,9 @@ if SSL_ENABLED:
     from src.server import ssl
 
     for interface in SSL_INTERFACES:
+        if ":" in interface:
+            print "  iPv6 interfaces not yet supported"
+            continue
         ifacestr = ""
         if interface != '0.0.0.0' or len(SSL_INTERFACES) > 1:
             ifacestr = "-%s" % interface
@@ -215,6 +221,9 @@ if SSH_ENABLED:
     from src.server import ssh
 
     for interface in SSH_INTERFACES:
+        if ":" in interface:
+            print "  iPv6 interfaces not yet supported"
+            continue
         ifacestr = ""
         if interface != '0.0.0.0' or len(SSH_INTERFACES) > 1:
             ifacestr = "-%s" % interface
@@ -256,6 +265,9 @@ if WEBSERVER_ENABLED:
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
 
     for interface in WEBSERVER_INTERFACES:
+        if ":" in interface:
+            print "  iPv6 interfaces not yet supported"
+            continue
         ifacestr = ""
         if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
             ifacestr = "-%s" % interface
