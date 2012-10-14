@@ -76,7 +76,7 @@ class DefaultCmdSet(CmdSet):
         self.add(building.CmdTypeclass())
         self.add(building.CmdLock())
         self.add(building.CmdScript())
-        self.add(building.CmdHome())
+        self.add(building.CmdSetHome())
 
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())

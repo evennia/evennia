@@ -86,17 +86,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             return None
         return dbref
 
-    #@returns_typeclass_list
-    #def get_with_attr(self, attribute_name, attribute_value=None):
-    #    """
-    #    Returns the typeclassed entity depending on having a given attribute.
-
-    #    attribute_name - only entities with an attribute of this name will be included in match
-    #    attribute_value - if != None, only entities with db.attribute_name=attribute_value will match.
-    #    """
-    #    self.filter() #TODO not implemented
-
-
     @returns_typeclass
     def get_id(self, dbref):
         """

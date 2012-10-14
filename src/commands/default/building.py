@@ -14,7 +14,7 @@ from src.commands.cmdhandler import get_and_merge_cmdsets
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdCpAttr", "CmdMvAttr", "CmdCreate", "CmdDebug",
            "CmdDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
-           "CmdUnLink", "CmdHome", "CmdListCmdSets", "CmdName",
+           "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
            "CmdScript")
@@ -900,7 +900,7 @@ class CmdUnLink(CmdLink):
         # call the @link functionality
         super(CmdUnLink, self).func()
 
-class CmdHome(CmdLink):
+class CmdSetHome(CmdLink):
     """
     @home - control an object's home location
 
@@ -916,6 +916,7 @@ class CmdHome(CmdLink):
     """
 
     key = "@home"
+    aliases = "@sethome"
     locks = "cmd:perm(@home) or perm(Builders)"
     help_category = "Building"
 
