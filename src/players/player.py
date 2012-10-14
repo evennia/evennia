@@ -288,11 +288,14 @@ class Player(TypeClass):
 
     def at_post_login(self):
         """
-        Called at the end of the login
-        process, just before letting
-        them loose.
+        Called at the end of the login process, just before letting
+        them loose. This is called before an eventual Character's
+        at_post_login hook.
         """
-        pass
+        # Character.at_post_login also looks around. Only use
+        # this as a backup when logging in without a character
+        if not self.character:
+            self.execute_cmd("look")
 
     def at_disconnect(self, reason=None):
         """

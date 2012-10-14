@@ -761,6 +761,8 @@ class Character(Object):
 
         self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         self.location.at_object_receive(self, self.location)
+        # call look
+        self.execute_cmd("look")
 
 
 
