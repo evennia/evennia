@@ -367,6 +367,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     Usage:
       holds()          # checks if accessed_obj or accessed_obj.obj is held by accessing_obj
       holds(key/dbref) # checks if accessing_obj holds an object with given key/dbref
+      holds(attrname, value) # checks if accessing_obj holds an object with the given attrname and value
 
     This is passed if accessed_obj is carried by accessing_obj (that is,
     accessed_obj.location == accessing_obj), or if accessing_obj itself holds an
@@ -393,17 +394,23 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         return any((True for obj in contents
                     if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases]))
 
-    if args and args[0]:
-        return check_holds(args[0])
-    else:
+    if not args:
+        # holds() - check if accessed_obj is held by accessing_ob
         try:
             if check_holds(accessed_obj.dbid):
-                #print "holds: accessed_obj.id - True"
                 return True
         except Exception:
             pass
-        #print "holds: accessed_obj.obj.id -", hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.id)
         return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.dbid)
+    if len(args) == 1:
+        # command is holds(dbref/key) - check if given objname/dbref is held by accessing_ob
+        return check_holds(args[0])
+    elif len(args = 2):
+        # command is holds(attrname, value) check if any held object has the given attribute and value
+        for obj in contents:
+            if obj.attr(args[0]) == args[1]:
+                return True
+
 
 def superuser(*args, **kwargs):
     """
