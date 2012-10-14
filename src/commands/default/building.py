@@ -1501,13 +1501,12 @@ class CmdLock(ObjManipCommand):
                 return
             lockdef = obj.locks.get(access_type)
             if lockdef:
-                string = lockdef[2]
                 if 'del' in self.switches:
                     if not obj.access(caller, 'control'):
                         caller.msg("You are not allowed to do that.")
                         return
                     obj.locks.delete(access_type)
-                    string = "deleted lock %s" % string
+                    string = "deleted lock %s" % lockdef
             else:
                 string = "%s has no lock of access type '%s'." % (obj, access_type)
             caller.msg(string)

@@ -300,9 +300,11 @@ class LockHandler(object):
             self.add(old_lockstring, log_obj)
             raise
 
-    def get(self, access_type):
-        "get the lockstring of a particular type"
-        return self.locks.get(access_type, None)
+    def get(self, access_type=None):
+        "get the full lockstring or the lockstring of a particular access type."
+        if access_type:
+            return self.locks.get(access_type, ["","",""])[2]
+        return str(self)
 
     def delete(self, access_type):
         "Remove a lock from the handler"
