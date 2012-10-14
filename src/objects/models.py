@@ -285,18 +285,31 @@ class ObjectDB(TypedObject):
                 loc = _GA(location, "dbobj")
             else:
                 loc = location
+            if loc == self:
+                # block 1st level recursion; best to defer having to do
+                # a full recursive check of location loops if possible -
+                # (it's rather expensive) this could be checked higher up
+                # if a problem.
+                raise RuntimeError
+            # set the location
             _set_cache(self, "location", loc)
             # update the contents of each location
             if old_loc:
                 _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
             if loc:
                 _GA(loc, "contents_update")(_GA(self, "typeclass"))
+        except RuntimeError:
+            string = "Cannot set location: "
+            string += "%s.location = %s would create a location-loop." % (self.key, location)
+            _GA(self, "msg")(_(string))
+            logger.log_trace(string)
+            raise RuntimeError(string)
         except Exception:
             string = "Cannot set location: "
-            string += "%s is not a valid location."
-            _GA(self, "msg")(_(string) % location)
+            string += "%s is not a valid location." % location
+            _GA(self, "msg")(_(string))
             logger.log_trace(string)
-            raise
+            raise Exception(string)
     #@location.deleter
     def __location_del(self):
         "Deleter. Allows for del self.location"
