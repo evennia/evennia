@@ -863,6 +863,7 @@ class Exit(Object):
         cmd.aliases = exidbobj.aliases
         cmd.locks = str(exidbobj.locks)
         cmd.destination = exidbobj.db_destination
+        cmd.auto_help = False
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
         exit_cmdset.key = '_exitset'
