@@ -677,7 +677,7 @@ class CmdIC(MuxCommandOOC):
                 return
         if not new_character:
             # search for a matching character
-            new_character = search.objects(self.args, caller, global_search=True, single_result=True)
+            new_character = search.objects(self.args, caller)
             if new_character:
                 new_character = new_character[0]
             else:
