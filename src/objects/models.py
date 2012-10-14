@@ -285,12 +285,18 @@ class ObjectDB(TypedObject):
                 loc = _GA(location, "dbobj")
             else:
                 loc = location
-            if loc == self:
-                # block 1st level recursion; best to defer having to do
-                # a full recursive check of location loops if possible -
-                # (it's rather expensive) this could be checked higher up
-                # if a problem.
-                raise RuntimeError
+
+            # recursive location check
+            def is_loc_loop(loc, depth=0):
+                "Recursively traverse the target location to make sure we are not in it."
+                if depth > 10: return
+                elif loc == self: raise RuntimeError
+                elif loc == None: raise RuntimeWarning # just to quickly get out
+                return is_loc_loop(_GA(loc, "db_location"), depth+1)
+            # check so we don't create a location loop - if so, RuntimeError will be raised.
+            try: is_loc_loop(loc)
+            except RuntimeWarning: pass
+
             # set the location
             _set_cache(self, "location", loc)
             # update the contents of each location
