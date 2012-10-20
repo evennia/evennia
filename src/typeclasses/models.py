@@ -174,14 +174,14 @@ class PackedList(list):
     """
     def __init__(self, db_obj, *args, **kwargs):
         """
-        Sets up the packing list.
-         db_obj - the Attribute object storing this dict.
+        sets up the packing list.
+         db_obj - the attribute object storing this list.
 
-         The 'parent' property is set to 'init' at creation,
+         the 'parent' property is set to 'init' at creation,
          this stops the system from saving itself over and over
-         when first assigning the dict. Once initialization
-         is over, the Attribute from_attr() method will assign
-         the parent (or None, if at the root)
+         when first assigning the dict. once initialization
+         is over, the attribute from_attr() method will assign
+         the parent (or none, if at the root)
 
         """
         self.db_obj = db_obj
@@ -190,7 +190,7 @@ class PackedList(list):
     def __str__(self):
         return "[%s]" % ", ".join(str(val) for val in self)
     def save(self):
-        "Relay save operation upwards in tree until we hit the root."
+        "relay save operation upwards in tree until we hit the root."
         if self.parent == 'init':
             pass
         elif self.parent:
@@ -228,6 +228,72 @@ class PackedList(list):
     def sort(self, *args, **kwargs):
         "Custom sort"
         super(PackedList, self).sort(*args, **kwargs)
+        self.save()
+
+class PackedSet(set):
+    """
+    A variant of Set that stores new updates to the databse.
+    """
+    def __init__(self, db_obj, *args, **kwargs):
+        """
+        sets up the packing set.
+         db_obj - the attribute object storing this set
+
+         the 'parent' property is set to 'init' at creation,
+         this stops the system from saving itself over and over
+         when first assigning the dict. once initialization
+         is over, the attribute from_attr() method will assign
+         the parent (or none, if at the root)
+
+        """
+        self.db_obj = db_obj
+        self.parent = 'init'
+        super(PackedSet, self).__init__(*args, **kwargs)
+    def __str__(self):
+        return "{%s}" % ", ".join(str(val) for val in self)
+    def save(self):
+        "relay save operation upwards in tree until we hit the root."
+        if self.parent == 'init':
+            pass
+        elif self.parent:
+            self.parent.save()
+        else:
+            self.db_obj.value = self
+    def add(self, *args, **kwargs):
+        "Add an element to the set"
+        super(PackedSet, self).add(*args, **kwargs)
+        self.save()
+    def clear(self, *args, **kwargs):
+        "Remove all elements from this set"
+        super(PackedSet, self).clear(*args, **kwargs)
+        self.save()
+    def difference_update(self, *args, **kwargs):
+        "Remove all elements of another set from this set."
+        super(PackedSet, self).difference_update(*args, **kwargs)
+        self.save()
+    def discard(self, *args, **kwargs):
+        "Remove an element from a set if it is a member.\nIf not a member, do nothing."
+        super(PackedSet, self).discard(*args, **kwargs)
+        self.save()
+    def intersection_update(self, *args, **kwargs):
+        "Update a set with the intersection of itself and another."
+        super(PackedSet, self).intersection_update(*args, **kwargs)
+        self.save()
+    def pop(self, *args, **kwargs):
+        "Remove and return an arbitrary set element.\nRaises KeyError if the set is empty."
+        super(PackedSet, self).pop(*args, **kwargs)
+        self.save()
+    def remove(self, *args, **kwargs):
+        "Remove an element from a set; it must be a member.\nIf the element is not a member, raise a KeyError."
+        super(PackedSet, self).remove(*args, **kwargs)
+        self.save()
+    def symmetric_difference_update(self, *args, **kwargs):
+        "Update a set with the symmetric difference of itself and another."
+        super(PackedSet, self).symmetric_difference_update(*args, **kwargs)
+        self.save()
+    def update(self, *args, **kwargs):
+        "Update a set with the union of itself and others."
+        super(PackedSet, self).update(*args, **kwargs)
         self.save()
 
 class Attribute(SharedMemoryModel):
@@ -457,6 +523,8 @@ class Attribute(SharedMemoryModel):
                 return tuple(iter_db2id(val) for val in item)
             elif dtype in (dict, PackedDict):
                 return dict((key, iter_db2id(val)) for key, val in item.items())
+            elif dtype in (set, PackedSet):
+                return set(iter_db2id(val) for val in item)
             elif hasattr(item, '__iter__'):
                 return list(iter_db2id(val) for val in item)
             else:
@@ -532,6 +600,10 @@ class Attribute(SharedMemoryModel):
                                       [iter_id2db(val, pdict) for val in item.values()])))
                 pdict.parent = parent
                 return pdict
+            elif dtype in (set, PackedSet):
+                pset = PackedSet(self)
+                pset.update(set(iter_id2db(val) for val in item))
+                return pset
             elif hasattr(item, '__iter__'):
                 plist = PackedList(self)
                 plist.extend(list(iter_id2db(val, plist) for val in item))
