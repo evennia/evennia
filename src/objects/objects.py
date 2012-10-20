@@ -381,8 +381,8 @@ class Object(TypeClass):
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
 
-        Don't change this, instead edit at_object_creation() to
-        overload the defaults (it is called after this one).
+        You normally don't need to change this unless you change some fundamental
+        things like names of permission groups.
         """
         # the default security setup fallback for a generic
         # object. Overload in child for a custom setup. Also creation
@@ -722,8 +722,10 @@ class Character(Object):
         """
         Setup character-specific security
 
-        Don't change this, instead edit at_object_creation() to
-        overload the defaults (it is called after this one).
+        You should normally not need to overload this, but if you do, make
+        sure to reproduce at least the two last commands in this method (unless
+        you want to fundamentally change how a Character object works).
+
         """
         super(Character, self).basetype_setup()
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
@@ -790,8 +792,6 @@ class Room(Object):
         Simple setup, shown as an example
         (since default is None anyway)
 
-        Don't change this, instead edit at_object_creation() to
-        overload the defaults (it is called after this one).
         """
 
         super(Room, self).basetype_setup()
@@ -878,8 +878,8 @@ class Exit(Object):
         """
         Setup exit-security
 
-        Don't change this, instead edit at_object_creation() to
-        overload the default locks (it is called after this one).
+        You should normally not need to overload this - if you do make sure you
+        include all the functionality in this method.
         """
         super(Exit, self).basetype_setup()
 
