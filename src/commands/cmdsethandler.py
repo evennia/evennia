@@ -240,7 +240,7 @@ class CmdSetHandler(object):
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
-                            cmdset.permanent = True
+                            cmdset.permanent = cmdset.key != '_ERROR_CMDSET'
                             self.cmdset_stack.append(cmdset)
 
         # merge the stack into a new merged cmdset
@@ -284,7 +284,7 @@ class CmdSetHandler(object):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
         if cmdset:
-            if permanent:
+            if permanent and cmdset.key != '_CMDSET_ERROR':
                 # store the path permanently
                 cmdset.permanent = True
                 storage = self.obj.cmdset_storage
@@ -323,7 +323,7 @@ class CmdSetHandler(object):
                 self.cmdset_stack = [cmdset]
                 self.mergetype_stack = [cmdset.mergetype]
 
-            if permanent:
+            if permanent and cmdset.key != '_CMDSET_ERROR':
                 cmdset.permanent = True
                 storage = self.obj.cmdset_storage
                 if storage:
