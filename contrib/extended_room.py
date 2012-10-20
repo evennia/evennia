@@ -23,6 +23,10 @@ time comes.
 
 An updated @desc command allows for setting seasonal descriptions.
 
+The room uses the src.utils.gametime.GameTime global script. This is
+started by default, but if you have deactivated it, you need to
+supply your own time keeping mechanism.
+
 
 2) In-description changing tags
 

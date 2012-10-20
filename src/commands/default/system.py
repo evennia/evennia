@@ -149,20 +149,22 @@ class CmdPy(MuxCommand):
                           'ev':ev,
                           'inherits_from':utils.inherits_from}
 
-        caller.msg(">>> %s" % pycode)
+        caller.msg(">>> %s{n" % pycode)
         try:
             ret = eval(pycode, {}, available_vars)
-            ret = "<<< %s" % str(ret)
+            if ret != None:
+                ret = "{n<<< %s" % str(ret)
         except Exception:
             try:
                 exec(pycode, {}, available_vars)
-                ret = "<<< Done."
+                ret = "{n<<< Done."
             except Exception:
                 errlist = traceback.format_exc().split('\n')
                 if len(errlist) > 4:
                     errlist = errlist[4:]
-                ret = "\n".join("<<< %s" % line for line in errlist if line)
-        caller.msg(ret)
+                ret = "\n".join("{n<<< %s" % line for line in errlist if line)
+        if ret != None:
+            caller.msg(ret)
 
 # helper function. Kept outside so it can be imported and run
 # by other commands.
