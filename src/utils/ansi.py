@@ -56,6 +56,9 @@ ANSI_RETURN = "\r\n"
 ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
+# Escapes
+ANSI_ESCAPES = ("{{", "%%")
+
 class ANSIParser(object):
     """
     A class that parses ansi markup
@@ -72,29 +75,29 @@ class ANSIParser(object):
         # MUX-style mappings %cr %cn etc
 
         self.mux_ansi_map = [
-            (r'(?<!%)%r',  ANSI_RETURN),
-            (r'(?<!%)%t',  ANSI_TAB),
-            (r'(?<!%)%b',  ANSI_SPACE),
-            (r'(?<!%)%cf', ANSI_BLINK),
-            (r'(?<!%)%ci', ANSI_INVERSE),
-            (r'(?<!%)%ch', ANSI_HILITE),
-            (r'(?<!%)%cn', ANSI_NORMAL),
-            (r'(?<!%)%cx', ANSI_BLACK),
-            (r'(?<!%)%cX', ANSI_BACK_BLACK),
-            (r'(?<!%)%cr', ANSI_RED),
-            (r'(?<!%)%cR', ANSI_BACK_RED),
-            (r'(?<!%)%cg', ANSI_GREEN),
-            (r'(?<!%)%cG', ANSI_BACK_GREEN),
-            (r'(?<!%)%cy', ANSI_YELLOW),
-            (r'(?<!%)%cY', ANSI_BACK_YELLOW),
-            (r'(?<!%)%cb', ANSI_BLUE),
-            (r'(?<!%)%cB', ANSI_BACK_BLUE),
-            (r'(?<!%)%cm', ANSI_MAGENTA),
-            (r'(?<!%)%cM', ANSI_BACK_MAGENTA),
-            (r'(?<!%)%cc', ANSI_CYAN),
-            (r'(?<!%)%cC', ANSI_BACK_CYAN),
-            (r'(?<!%)%cw', ANSI_WHITE),
-            (r'(?<!%)%cW', ANSI_BACK_WHITE),
+            (r'%r',  ANSI_RETURN),
+            (r'%t',  ANSI_TAB),
+            (r'%b',  ANSI_SPACE),
+            (r'%cf', ANSI_BLINK),
+            (r'%ci', ANSI_INVERSE),
+            (r'%ch', ANSI_HILITE),
+            (r'%cn', ANSI_NORMAL),
+            (r'%cx', ANSI_BLACK),
+            (r'%cX', ANSI_BACK_BLACK),
+            (r'%cr', ANSI_RED),
+            (r'%cR', ANSI_BACK_RED),
+            (r'%cg', ANSI_GREEN),
+            (r'%cG', ANSI_BACK_GREEN),
+            (r'%cy', ANSI_YELLOW),
+            (r'%cY', ANSI_BACK_YELLOW),
+            (r'%cb', ANSI_BLUE),
+            (r'%cB', ANSI_BACK_BLUE),
+            (r'%cm', ANSI_MAGENTA),
+            (r'%cM', ANSI_BACK_MAGENTA),
+            (r'%cc', ANSI_CYAN),
+            (r'%cC', ANSI_BACK_CYAN),
+            (r'%cw', ANSI_WHITE),
+            (r'%cW', ANSI_BACK_WHITE),
             ]
 
         # Expanded mapping {r {n etc
@@ -102,41 +105,32 @@ class ANSIParser(object):
         hilite = ANSI_HILITE
         normal = ANSI_NORMAL
         self.ext_ansi_map = [
-            (r'(?<!{){r', hilite + ANSI_RED),
-            (r'(?<!{){R', normal + ANSI_RED),
-            (r'(?<!{){g', hilite + ANSI_GREEN),
-            (r'(?<!{){G', normal + ANSI_GREEN),
-            (r'(?<!{){y', hilite + ANSI_YELLOW),
-            (r'(?<!{){Y', normal + ANSI_YELLOW),
-            (r'(?<!{){b', hilite + ANSI_BLUE),
-            (r'(?<!{){B', normal + ANSI_BLUE),
-            (r'(?<!{){m', hilite + ANSI_MAGENTA),
-            (r'(?<!{){M', normal + ANSI_MAGENTA),
-            (r'(?<!{){c', hilite + ANSI_CYAN),
-            (r'(?<!{){C', normal + ANSI_CYAN),
-            (r'(?<!{){w', hilite + ANSI_WHITE), # pure white
-            (r'(?<!{){W', normal + ANSI_WHITE), #light grey
-            (r'(?<!{){x', hilite + ANSI_BLACK), #dark grey
-            (r'(?<!{){X', normal + ANSI_BLACK), #pure black
-            (r'(?<!{){n', normal)               #reset
+            (r'{r', hilite + ANSI_RED),
+            (r'{R', normal + ANSI_RED),
+            (r'{g', hilite + ANSI_GREEN),
+            (r'{G', normal + ANSI_GREEN),
+            (r'{y', hilite + ANSI_YELLOW),
+            (r'{Y', normal + ANSI_YELLOW),
+            (r'{b', hilite + ANSI_BLUE),
+            (r'{B', normal + ANSI_BLUE),
+            (r'{m', hilite + ANSI_MAGENTA),
+            (r'{M', normal + ANSI_MAGENTA),
+            (r'{c', hilite + ANSI_CYAN),
+            (r'{C', normal + ANSI_CYAN),
+            (r'{w', hilite + ANSI_WHITE), # pure white
+            (r'{W', normal + ANSI_WHITE), #light grey
+            (r'{x', hilite + ANSI_BLACK), #dark grey
+            (r'{X', normal + ANSI_BLACK), #pure black
+            (r'{n', normal)               #reset
             ]
 
         # xterm256 {123, %c134,
 
         self.xterm256_map = [
-            (r'(?<!%)%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
-            (r'(?<!%)%c(b[0-5]{3})', self.parse_rgb), # %cb123 - background colour
-            (r'(?<!{){([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
-            (r'(?<!{){(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
-            ]
-
-        # matching for cleaning out escaped colour codes (used with sub)
-
-        self.clean_escapes = [
-            (r"{{", "{"),
-            (r"%%r", "%r"),
-            (r"%%b", "%b"),
-            (r"%%c", "%c")
+            (r'%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
+            (r'%c(b[0-5]{3})', self.parse_rgb), # %cb123 - background colour
+            (r'{([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
+            (r'{(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
             ]
 
         # obs - order matters here, we want to do the xterms first since
@@ -147,11 +141,11 @@ class ANSIParser(object):
         self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
                          for sub in self.ansi_map]
 
-        self.escape_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
-                          for sub in self.clean_escapes]
-
         # prepare matching ansi codes overall
         self.ansi_regex = re.compile("\033\[[0-9;]+m")
+
+        # escapes - these double-chars will be replaced with a single instance of each
+        self.ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
 
     def parse_rgb(self, rgbmatch):
         """
@@ -221,19 +215,20 @@ class ANSIParser(object):
         """
         if not string:
             return ''
+        self.do_xterm256 = xterm256
         string = utils.to_str(string)
 
-        self.do_xterm256 = xterm256
-        # handle all subs
-        for sub in self.ansi_sub:
-            # go through all available mappings and translate them
-            string = sub[0].sub(sub[1], string)
+        # go through all available mappings and translate them
+        parts = self.ansi_escapes.split(string) + [" "]
+        string = ""
+        for part, sep in zip(parts[::2], parts[1::2]):
+            for sub in self.ansi_sub:
+                part = sub[0].sub(sub[1], part)
+            string += "%s%s" % (part, sep[0].strip())
         if strip_ansi:
-            # remove all ANSI escape codes
-            string = self.ansi_regex.sub("", string)
-        for sub in self.escape_sub:
-            # strip the \ in front of escaped colour codes, like \{r.
-            string = sub[0].sub(sub[1], string)
+            # remove all ansi codes (including those manually inserted in string)
+            for sub in self.ansi_sub:
+                string = sub[0].sub("", string)
         return string
 
 
