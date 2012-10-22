@@ -57,7 +57,7 @@ ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
 # Escapes
-ANSI_ESCAPES = ("{{", "%%")
+ANSI_ESCAPES = ("{{", "%%", "\\\\")
 
 class ANSIParser(object):
     """
