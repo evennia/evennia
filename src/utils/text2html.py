@@ -51,9 +51,11 @@ class TextToHTMLparser(object):
         return re.sub(self.normalcode, "", text)
 
     def re_bold(self, text):
-        "Replace ansi hilight with strong text element."
-        regexp = "(?:%s)(.*?)(?=%s)" % (self.bold, self.codestop)
-        return re.sub(regexp, r'<strong>\1</strong>', text)
+        "Clean out superfluous hilights rather than set <strong>to make it match the look of telnet."
+        #"Replace ansi hilight with strong text element."
+        #regexp = "(?:%s)(.*?)(?=%s)" % (self.bold, self.codestop)
+        #return re.sub(regexp, r'<strong>\1</strong>', text)
+        return re.sub(self.bold, "", text)
 
     def re_underline(self, text):
         "Replace ansi underline with html underline class name."
