@@ -86,7 +86,7 @@ class Object(TypeClass):
          execute_cmd(raw_string)
          msg(message, from_obj=None, data=None)
          msg_contents(message, exclude=None, from_obj=None, data=None)
-         move_to(destination, quiet=False, emit_to_obj=None, use_destination=True)
+         move_to(destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False)
          copy(new_key=None)
          delete()
          is_typeclass(typeclass, exact=False)
@@ -231,7 +231,7 @@ class Object(TypeClass):
         self.dbobj.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
 
     def move_to(self, destination, quiet=False,
-                emit_to_obj=None, use_destination=True):
+                emit_to_obj=None, use_destination=True, to_none=False):
         """
         Moves this object to a new location. Note that if <destination> is an
         exit object (i.e. it has "destination"!=None), the move_to will
@@ -247,6 +247,8 @@ class Object(TypeClass):
         use_destination (bool): Default is for objects to use the "destination" property
                               of destinations as the target to move to. Turning off this
                               keyword allows objects to move "inside" exit objects.
+        to_none - allow destination to be None. Note that no hooks are run when moving
+                      to a None location. If you want to run hooks, run them manually.
         Returns True/False depending on if there were problems with the move. This method
                 may also return various error messages to the emit_to_obj.
 

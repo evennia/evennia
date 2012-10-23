@@ -690,7 +690,7 @@ class ObjectDB(TypedObject):
         self.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
 
     def move_to(self, destination, quiet=False,
-                emit_to_obj=None, use_destination=True):
+                emit_to_obj=None, use_destination=True, to_none=False):
         """
         Moves this object to a new location.
 
@@ -708,6 +708,8 @@ class ObjectDB(TypedObject):
         use_destination (bool): Default is for objects to use the "destination" property
                               of destinations as the target to move to. Turning off this
                               keyword allows objects to move "inside" exit objects.
+        to_none - allow destination to be None. Note that no hooks are run when moving
+                      to a None location. If you want to run hooks, run them manually.
 
         Returns True/False depending on if there were problems with the move. This method
                 may also return various error messages to the emit_to_obj.
@@ -723,6 +725,11 @@ class ObjectDB(TypedObject):
             emit_to_obj = self
 
         if not destination:
+            if to_none:
+                # immediately move to None. There can be no hooks called since
+                # there is no destination to call them with.
+                self.location = None
+                return True
             emit_to_obj.msg(_("The destination doesn't exist."))
             return
         if destination.destination and use_destination:
