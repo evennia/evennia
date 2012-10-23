@@ -149,7 +149,7 @@ class CmdPy(MuxCommand):
                           'ev':ev,
                           'inherits_from':utils.inherits_from}
 
-        caller.msg(">>> %s{n" % pycode)
+        caller.msg(">>> %s" % pycode, data={"raw":True})
         try:
             ret = eval(pycode, {}, available_vars)
             if ret != None:
