@@ -2,8 +2,8 @@
 """
 ANSI -> html converter
 
-Credit for original idea and implementation 
-goes to Muhammad Alkarouri and his 
+Credit for original idea and implementation
+goes to Muhammad Alkarouri and his
 snippet #577349 on http://code.activestate.com.
 
 (extensively modified by Griatch 2010)
@@ -16,26 +16,29 @@ from src.utils import ansi
 class TextToHTMLparser(object):
     """
     This class describes a parser for converting from ansi to html.
-    """    
-    
-    # mapping html color name <-> ansi code. 
-    # Obs order matters - longer ansi codes are replaced first.
-    colorcodes = [('white', '\033[1m\033[37m'),
-                  ('cyan', '\033[1m\033[36m'),
-                  ('blue', '\033[1m\033[34m'),
-                  ('red', '\033[1m\033[31m'),
-                  ('magenta', '\033[1m\033[35m'),
-                  ('lime', '\033[1m\033[32m'), 
-                  ('yellow', '\033[1m\033[33m'),
-                  ('gray', '\033[37m'),
-                  ('teal', '\033[36m'), 
-                  ('navy', '\033[34m'),
-                  ('maroon', '\033[31m'),
-                  ('purple', '\033[35m'),
-                  ('green', '\033[32m'),
-                  ('olive', '\033[33m')]
-    normalcode = '\033[0m'                
+    """
+
     tabstop = 4
+    # mapping html color name <-> ansi code.
+    # note that \[ is used here since they go into regexes.
+    colorcodes = [('white', '\033\[1m\033\[37m'),
+                  ('cyan', '\033\[1m\033\[36m'),
+                  ('blue', '\033\[1m\033\[34m'),
+                  ('red', '\033\[1m\033\[31m'),
+                  ('magenta', '\033\[1m\033\[35m'),
+                  ('lime', '\033\[1m\033\[32m'),
+                  ('yellow', '\033\[1m\033\[33m'),
+                  ('gray', '\033\[37m'),
+                  ('teal', '\033\[36m'),
+                  ('navy', '\033\[34m'),
+                  ('maroon', '\033\[31m'),
+                  ('purple', '\033\[35m'),
+                  ('green', '\033\[32m'),
+                  ('olive', '\033\[33m')]
+    normalcode = '\033\[0m'
+    bold = '\033\[1m'
+    underline = '\033\[4m'
+    codestop = "|".join(co[1] for co in colorcodes + [("", normalcode), ("", bold), ("", underline), ("", "$")])
 
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
 
@@ -43,21 +46,18 @@ class TextToHTMLparser(object):
         """Replace ansi colors with html color class names.
         Let the client choose how it will display colors, if it wishes to."""
         for colorname, code in self.colorcodes:
-            regexp = "(?:%s)(.*?)(?:%s)" % (code, self.normalcode)
-            regexp = regexp.replace('[', r'\[')
+            regexp = "(?:%s)(.*?)(?=%s)" % (code, self.codestop)
             text = re.sub(regexp, r'''<span class="%s">\1</span>''' % colorname, text)
-        return text
+        return re.sub(self.normalcode, "", text)
 
     def re_bold(self, text):
         "Replace ansi hilight with strong text element."
-        regexp = "(?:%s)(.*?)(?:%s)" % ('\033[1m', self.normalcode)
-        regexp = regexp.replace('[', r'\[')
+        regexp = "(?:%s)(.*?)(?=%s)" % (self.bold, self.codestop)
         return re.sub(regexp, r'<strong>\1</strong>', text)
 
     def re_underline(self, text):
         "Replace ansi underline with html underline class name."
-        regexp = "(?:%s)(.*?)(?:%s)" % ('\033[4m', self.normalcode)
-        regexp = regexp.replace('[', r'\[')
+        regexp = "(?:%s)(.*?)(?=%s)" % (self.underline, self.codestop)
         return re.sub(regexp, r'<span class="underline">\1</span>', text)
 
     def remove_bells(self, text):
@@ -79,7 +79,7 @@ class TextToHTMLparser(object):
     def convert_urls(self, text):
         "Replace urls (http://...) by valid HTML"
         regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$]+))"
-        # -> added target to output prevent the web browser from attempting to 
+        # -> added target to output prevent the web browser from attempting to
         # change pages (and losing our webclient session).
         return re.sub(regexp, r'<a href="\1" target="_blank">\1</a>', text)
 
@@ -99,11 +99,11 @@ class TextToHTMLparser(object):
 
     def parse(self, text):
         """
-        Main access function, converts a text containing 
-        ansi codes into html statements. 
+        Main access function, converts a text containing
+        ansi codes into html statements.
         """
 
-        # parse everything to ansi first 
+        # parse everything to ansi first
         text = ansi.parse_ansi(text)
 
         # convert all ansi to html
@@ -117,8 +117,8 @@ class TextToHTMLparser(object):
         result = self.convert_urls(result)
         # clean out eventual ansi that was missed
         result = ansi.parse_ansi(result, strip_ansi=True)
-    
-        return result 
+
+        return result
 
 HTML_PARSER = TextToHTMLparser()
 
