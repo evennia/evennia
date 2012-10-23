@@ -119,7 +119,8 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 # those in this module.
 #
 
-def at_search_result(msg_obj, ostring, results, global_search=False):
+def at_search_result(msg_obj, ostring, results, global_search=False,
+                     nofound_string=None, multimatch_string=None):
     """
     Called by search methods after a result of any type has been found.
 
@@ -132,6 +133,8 @@ def at_search_result(msg_obj, ostring, results, global_search=False):
     global_search - if this was a global_search or not
             (if it is, there might be an idea of supplying
             dbrefs instead of only numbers)
+    nofound_string - optional custom string for not-found error message.
+    multimatch_string - optional custom string for multimatch error header
 
     Multiple matches are returned to the searching object
     as
@@ -144,7 +147,11 @@ def at_search_result(msg_obj, ostring, results, global_search=False):
     string = ""
     if not results:
         # no results.
-        string = _("Could not find '%s'." % ostring)
+        if nofound_string:
+            # custom return string
+            string = nofound_string
+        else:
+            string = _("Could not find '%s'." % ostring)
         results = None
 
     elif len(results) > 1:
@@ -154,9 +161,14 @@ def at_search_result(msg_obj, ostring, results, global_search=False):
         # check if the msg_object may se dbrefs
         show_dbref = global_search
 
-        string += "More than one match for '%s'" % ostring
-        string += " (please narrow target):"
-        string = _(string)
+        if multimatch_string:
+            # custom header
+            string = multimatch_string
+        else:
+            string = "More than one match for '%s'" % ostring
+            string += " (please narrow target):"
+            string = _(string)
+
         for num, result in enumerate(results):
             invtext = ""
             dbreftext = ""

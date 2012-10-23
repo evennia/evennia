@@ -329,7 +329,9 @@ class CmdDrop(MuxCommand):
 
         # now we send it into the error handler (this will output consistent
         # error messages if there are problems).
-        obj = AT_SEARCH_RESULT(caller, self.args, results, False)
+        obj = AT_SEARCH_RESULT(caller, self.args, results, False,
+                              nofound_string="You don't carry %s." % self.args,
+                              multimatch_string="You carry more than one %s:" % self.args)
         if not obj:
             return
 
