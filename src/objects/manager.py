@@ -186,32 +186,27 @@ class ObjectManager(TypedObjectManager):
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
         cand_restriction = candidates and Q(pk__in=candidates_id) or Q()
         if exact:
+            # exact match - do direct search
             return self.filter(cand_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring))).distinct()
+        elif candidates:
+            # fuzzy with candidates
+            key_candidates = self.filter(cand_restriction)
         else:
-            if candidates:
-                # fuzzy matching - only check the candidates
-                key_candidates = self.filter(cand_restriction)
-                key_strings = key_candidates.values_list("db_key", flat=True)
-                index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
-                if index_matches:
-                    return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]
-                else:
-                    alias_candidates = self.model.alias_set.related.model.objects.filter(db_obj__pk__in=candidates_id)
-                    alias_strings = alias_candidates.values_list("db_key", flat=True)
-                    index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
-                    if index_matches:
-                        return [alias.db_obj for ind, alias in enumerate(alias_candidates) if ind in index_matches]
-                    return []
-            else:
-                # fuzzy matching - first check with keys, then with aliases
-                key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring)).distinct()
-                key_strings = key_candidates.values_list("db_key", flat=True)
-                matches = string_partial_matching(key_candidates, ostring, reg_index=False)
-                if matches:
-                    return matches
-                alias_candidates = self.model.alias_set.related.model.objects.filter(db_obj__pk__in=candidates_id).values_list("db_key", flat=True)
-                return string_partial_matching(alias_candidates, ostring, ret_index=False)
-
+            # fuzzy without supplied candidates - we select our own candidates
+            key_candidates = self.filter(Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring)).distinct()
+            candidates_id = [_GA(obj, "id") for obj in key_candidates]
+        # fuzzy matching
+        key_strings = key_candidates.values_list("db_key", flat=True)
+        index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
+        if index_matches:
+            return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]
+        else:
+            alias_candidates = self.model.alias_set.related.model.objects.filter(db_obj__pk__in=candidates_id)
+            alias_strings = alias_candidates.values_list("db_key", flat=True)
+            index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
+            if index_matches:
+                return [alias.db_obj for ind, alias in enumerate(alias_candidates) if ind in index_matches]
+            return []
 
     # main search methods and helper functions
 
@@ -267,16 +262,23 @@ class ObjectManager(TypedObjectManager):
         if not ostring and ostring != 0:
             return []
 
+        # Convenience check to make sure candidates are really dbobjs
+        if candidates:
+            candidates = [cand.dbobj for cand in make_iter(candidates) if hasattr(cand, "dbobj")]
+
+        # If candidates is given as an empty list, don't go any further.
+        if candidates == []:
+            return []
+
         dbref = not attribute_name and self.dbref(ostring)
         if dbref or dbref == 0:
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
-                return [dbref_match]
-
-        # Convenience check to make sure candidates are really dbobjs
-        if candidates:
-            candidates = [cand.dbobj for cand in make_iter(candidates) if hasattr(cand, "dbobj")]
+                if candidates == None or dbref_match.dbobj in candidates:
+                    return [dbref_match]
+                else:
+                    return []
 
         # Search through all possibilities.
 
