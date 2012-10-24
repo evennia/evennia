@@ -13,7 +13,7 @@ from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 __all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
            "CmdInventory", "CmdGet", "CmdDrop", "CmdQuit", "CmdWho",
            "CmdSay", "CmdPose", "CmdEncoding", "CmdAccess",
-           "CmdOOCLook", "CmdIC", "CmdOOC")
+           "CmdOOCLook", "CmdIC", "CmdOOC", "CmdColorTest")
 
 AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
@@ -753,3 +753,61 @@ class CmdOOC(MuxCommandOOC):
 
         caller.msg("\n{GYou go OOC.{n\n")
         caller.execute_cmd("look")
+
+class CmdColorTest(MuxCommand):
+    """
+    testing colors
+
+    Usage:
+      @color ansi|xterm256
+
+    Print a color map along with in-mud color codes, while testing what is supported in your client.
+    Choices are 16-color ansi (supported in most muds) or the 256-color xterm256 standard.
+    No checking is done to determine your client supports color - if not you will
+    see rubbish appear.
+    """
+    key = "@color"
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        "Show color tables"
+
+        if not self.args or not self.args in ("ansi", "xterm256"):
+            self.caller.msg("Usage: @color ansi|xterm256")
+            return
+
+        if self.args == "ansi":
+            from src.utils import ansi
+            ap = ansi.ANSI_PARSER
+            # ansi colors
+            # show all ansi color-related codes
+            col1 = ["%s%s{n" % (code, code.replace("{","{{")) for code, _ in ap.ext_ansi_map[:-1]]
+            hi = "%ch"
+            col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
+            col3 = ["%s%s{n" % (hi+code, (hi+code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
+            table = utils.format_table([col1, col2, col3], extra_space=1)
+            string = "ANSI colors:"
+            for row in table:
+                string += "\n" + "".join(row)
+            print string
+            self.caller.msg(string)
+            self.caller.msg("{{X and %%cx are black-on-black)")
+        elif self.args == "xterm256":
+            table = [[],[],[],[],[],[],[],[],[],[],[],[]]
+            for ir in range(6):
+                for ig in range(6):
+                    for ib in range(6):
+                        # foreground table
+                        table[ir].append("%%c%i%i%i%s{n" % (ir,ig,ib, "{{%i%i%i" % (ir,ig,ib)))
+                        # background table
+                        table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir,ig,ib,
+                                                                        5-ir,5-ig,5-ib,
+                                                                        "{{b%i%i%i" % (ir,ig,ib)))
+            table = utils.format_table(table)
+            string = "Xterm256 colors:"
+            for row in table:
+                string += "\n" + "".join(row)
+            self.caller.msg(string)
+            self.caller.msg("(e.g. %%c123 and %%cb123 also work)")
+

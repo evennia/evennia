@@ -75,15 +75,12 @@ class ANSIParser(object):
         # MUX-style mappings %cr %cn etc
 
         self.mux_ansi_map = [
-            (r'%r',  ANSI_RETURN),
-            (r'%t',  ANSI_TAB),
-            (r'%b',  ANSI_SPACE),
-            (r'%cf', ANSI_BLINK),
-            (r'%ci', ANSI_INVERSE),
-            (r'%ch', ANSI_HILITE),
-            (r'%cn', ANSI_NORMAL),
-            (r'%cx', ANSI_BLACK),
-            (r'%cX', ANSI_BACK_BLACK),
+            # commented out by default; they (especially blink) are potentially annoying
+            #(r'%r',  ANSI_RETURN),
+            #(r'%t',  ANSI_TAB),
+            #(r'%b',  ANSI_SPACE),
+            #(r'%cf', ANSI_BLINK),
+            #(r'%ci', ANSI_INVERSE),
             (r'%cr', ANSI_RED),
             (r'%cR', ANSI_BACK_RED),
             (r'%cg', ANSI_GREEN),
@@ -98,6 +95,10 @@ class ANSIParser(object):
             (r'%cC', ANSI_BACK_CYAN),
             (r'%cw', ANSI_WHITE),
             (r'%cW', ANSI_BACK_WHITE),
+            (r'%cx', ANSI_BLACK),
+            (r'%cX', ANSI_BACK_BLACK),
+            (r'%ch', ANSI_HILITE),
+            (r'%cn', ANSI_NORMAL),
             ]
 
         # Expanded mapping {r {n etc

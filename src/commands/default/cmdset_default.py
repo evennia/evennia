@@ -29,6 +29,7 @@ class DefaultCmdSet(CmdSet):
         self.add(general.CmdDrop())
         self.add(general.CmdSay())
         self.add(general.CmdAccess())
+        self.add(general.CmdColorTest())
 
         # The help system
         self.add(help.CmdHelp())

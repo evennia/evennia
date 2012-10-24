@@ -18,12 +18,17 @@ body {
   font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
   line-height: 1.6em }
 
+
 a:link, a:visited { color: #fff }
 a:hover, a:active { color: #ccc }
 
+/* Set this to e.g. bolder if wanting to have ansi-highlights bolden
+ * stand-alone text.*/
+strong {font-weight:normal;}
+
 /* Base style for new messages in the main message area */
 .msg {
-  white-space: pre-wrap;  
+  white-space: pre-wrap;
   padding: .5em .9em;}
   /*border-bottom: 1px dotted #222 } /*optional line between messages */
 
@@ -40,21 +45,40 @@ a:hover, a:active { color: #ccc }
 .err { color: #f00 }
 
 /* Style specific classes corresponding to formatted, narative text. */
-.white { color: white; } 
-.cyan { color: #00FFFF; }
-.blue { color: blue; }
 .red { color: red; }
-.magenta { color: #FF00FF; }
-.lime { color: lime; } 
-.yellow { color: yellow; }
-.gray { color: gray; }
-.teal { color: teal; } 
-.navy { color: navy; }
 .maroon { color: maroon; }
-.purple { color: purple; }
+.lime { color: lime; }
 .green { color: green; }
+.yellow { color: yellow; }
 .olive { color: olive; }
+.blue { color: blue; }
+.navy { color: navy; }
+.magenta { color: #FF00FF; }
+.purple { color: purple; }
+.cyan { color: #00FFFF; }
+.teal { color: teal; }
+.white { color: white; }
+.gray { color: gray; }
+.dimgray {color: #696969;}
+.black {color: black;}
 .underline { text-decoration: underline; }
+
+.bgred { background-color: red;}
+.bgmaroon { background-color: maroon;}
+.bglime { background-color: lime;}
+.bggreen { background-color: green;}
+.bgyellow { background-color: yellow;}
+.bgolive { background-color: olive;}
+.bgblue { background-color: blue;}
+.bgnavy { background-color: navy;}
+.bgmagenta { background-color: #FF00FF;}
+.bgpurple { background-color: purple;}
+.bgcyan { background-color: #00FFFF;}
+.bgteal { background-color: teal;}
+.bgwhite { background-color: white;}
+.bggray { background-color: gray;}
+.bgdimgray { background-color: #696969;}
+.bgblack { background-color: black;}
 
 /* Container surrounding entire chat */
 #wrapper {

@@ -243,7 +243,7 @@ class WebClientSession(session.Session):
             if raw:
                 self.client.lineSend(self.suid, string)
             else:
-                self.client.lineSend(self.suid, parse_html(ansi.parse_ansi(string, strip_ansi=nomarkup)))
+                self.client.lineSend(self.suid, parse_html(string, strip_ansi=nomarkup))
             return
         except Exception, e:
             logger.log_trace()
