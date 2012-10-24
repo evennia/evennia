@@ -192,7 +192,7 @@ class SshProtocol(Manhole, session.Session):
         if raw:
             self.lineSend(string)
         else:
-            self.lineSend(ansi.parse_ansi(string, strip_ansi=nomarkup))
+            self.lineSend(ansi.parse_ansi(string.strip("{r") + "{r", strip_ansi=nomarkup))
 
 
 class ExtraInfoAuthServer(SSHUserAuthServer):

@@ -162,4 +162,5 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if raw:
             self.sendLine(string)
         else:
-            self.sendLine(ansi.parse_ansi(string, strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))
+            # we need to make sure to kill the color at the end in order to match the webclient output.
+            self.sendLine(ansi.parse_ansi(string.rstrip("{n") + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))
