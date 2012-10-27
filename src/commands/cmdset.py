@@ -203,7 +203,14 @@ class CmdSet(object):
         (no actual commands are copied over)
         """
         cmdset = CmdSet()
-        cmdset.__dict__.update(dict((key, val) for key, val in self.__dict__.items() if key in self.to_duplicate))
+        # This is the commented out old behavior for duplication. This would fail to
+        # copy over attributes defined as class rather than object members.
+        #cmdset.__dict__.update(dict((key, val) for key, val in self.__dict__.items() if key in self.to_duplicate))
+        for key in self.to_duplicate:
+            try:
+                setattr(cmdset, key, getattr(self, key))
+            except AttributeError:
+                pass
         cmdset.key_mergetypes = self.key_mergetypes.copy() #copy.deepcopy(self.key_mergetypes)
         return cmdset
 
