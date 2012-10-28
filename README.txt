@@ -27,6 +27,12 @@ See the INSTALL file for help on setting up and running Evennia.
 Current Status
 --------------
 
+Oct 2012:
+Changed Evennia from the Modified Artistic 1.0 license to the more
+standard and permissive BSD license. Lots of updates and bug fixes as 
+more people start to use it in new ways. Lots of new caching and
+speed-ups.
+
 March 2012:
 Evennia's API has changed and simplified slightly in that the
 base-modules where removed from game/gamesrc. Instead admins are
