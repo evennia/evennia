@@ -98,6 +98,9 @@ class ExampleObject(Object):
      at_server_reload()   - called before server is reloaded
      at_server_shutdown() - called just before server is fully shut down
 
+     at_access_success(accessing_obj, access_type) - called if an lock access check succeeded on this object
+     at_access_failure(accessing_obj, access_type) - called if an lock access check failed on this object
+
      at_before_move(destination)             - called just before moving object to the destination. If returns False, move is cancelled.
      announce_move_from(destination)         - called in old location, just before move, if obj.move_to() has quiet=False
      announce_move_to(source_location)       - called in new location, just after move, if obj.move_to() has quiet=False

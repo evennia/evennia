@@ -343,8 +343,17 @@ class Object(TypeClass):
           accessing_obj (Object)- object trying to access this one
           access_type (string) - type of access sought
           default (bool) - what to return if no lock of access_type was found
+
+        This function will call at_access_success or at_access_failure depending on the
+        outcome of the access check.
+
         """
-        return self.dbobj.access(accessing_obj, access_type=access_type, default=default)
+        if self.dbobj.access(accessing_obj, access_type=access_type, default=default):
+            self.at_access_success(accessing_obj, access_type)
+            return True
+        else:
+            self.at_access_failure(accessing_obj, access_type)
+            return False
 
     def check_permstring(self, permstring):
         """
@@ -486,6 +495,23 @@ class Object(TypeClass):
         """
         pass
 
+    def at_access_success(self, accessing_obj, access_type):
+        """
+        This hook is called whenever accessing_obj succeed a lock check of type access_type
+        on this object, for whatever reason. The return value of this hook is not used,
+        the lock will still pass regardless of what this hook does (use lockstring/funcs to tweak
+        the lock result).
+        """
+        pass
+
+    def at_access_failure(self, accessing_obj, access_type):
+        """
+        This hook is called whenever accessing_obj fails a lock check of type access_type
+        on this object, for whatever reason. The return value of this hook is not used, the
+        lock will still fail regardless of what this hook does (use lockstring/funcs to tweak the
+        lock result).
+        """
+        pass
 
     # hooks called when moving the object
 
@@ -571,7 +597,6 @@ class Object(TypeClass):
         """
         pass
 
-
     def at_before_traverse(self, traversing_object):
         """
         Called just before an object uses this object to
@@ -621,9 +646,11 @@ class Object(TypeClass):
         msg is passed on to the user sesssion. If this
         method returns False, the msg will not be
         passed on.
-
-        msg = the message received
-        from_obj = the one sending the message
+        Input:
+            msg = the message received
+            from_obj = the one sending the message
+        Output:
+            boolean True/False
         """
         return True
 
