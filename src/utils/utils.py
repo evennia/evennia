@@ -6,7 +6,7 @@ be of use when designing your own game.
 
 """
 
-import os, sys, imp, types, math
+import os, sys, imp, types, math, re
 import textwrap, datetime, random
 from inspect import ismodule
 from collections import defaultdict
@@ -837,7 +837,7 @@ def mod_import(module):
             if not os.path.isabs(module):
                 module = os.path.abspath(module)
             path, filename = module.rsplit(os.path.sep, 1)
-            modname = filename.rstrip('.py')
+            modname = re.sub(r"\.py$", "", filename)
 
             try:
                 result = imp.find_module(modname, [path])

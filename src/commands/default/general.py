@@ -281,7 +281,8 @@ class CmdGet(MuxCommand):
         if caller == obj:
             caller.msg("You can't get yourself.")
             return
-        if obj.location == caller:
+        print obj, obj.location, caller, caller==obj.location
+        if caller == obj.location:
             caller.msg("You already hold that.")
             return
         if not obj.access(caller, 'get'):
