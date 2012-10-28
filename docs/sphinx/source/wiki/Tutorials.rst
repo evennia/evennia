@@ -20,6 +20,8 @@ Central <DeveloperCentral.html>`_.
 
 -  `Tutorial: Adding a new default
    command <AddingCommandTutorial.html>`_
+-  `Tutorial: Adding new Object typeclasses and
+   defaults <AddingObjectTypeclassTutorial.html>`_
 
 Implementation ideas
 --------------------

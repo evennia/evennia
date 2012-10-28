@@ -6,6 +6,7 @@ Alphabetical page index
    :titlesonly:
 
    wiki/AddingCommandTutorial
+   wiki/AddingObjectTypeclassTutorial
    wiki/AdminDocs
    wiki/ApacheConfig
    wiki/AsyncProcess
@@ -17,6 +18,7 @@ Alphabetical page index
    wiki/BuilderDocs
    wiki/BuildingPermissions
    wiki/BuildingQuickstart
+   wiki/Caches
    wiki/ChoosingAnSQLServer
    wiki/CodingIntroduction
    wiki/CodingUtils

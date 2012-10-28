@@ -161,10 +161,17 @@ situations though.
 What types of data can I save in an Attribute?
 ----------------------------------------------
 
-If you store a single object (that is, not an iterable list of objects),
-you can practically store any Python object that can be
-`pickled <http://docs.python.org/library/pickle.html>`_. Evennia uses
-the ``pickle`` module to serialize Attribute data into the database.
+Evennia uses the ``pickle`` module to serialize Attribute data into the
+database. So if you store a single object (that is, not an iterable list
+of objects), you can practically store any Python object that can be
+`pickled <http://docs.python.org/library/pickle.html>`_.
+
+If you store many objects however, you can only store them using normal
+Python structures (i.e. in either a *tuple*, *list*, *dictionary* or
+*set*). All other iterables (such as custom containers) are converted to
+*lists* by the Attribute (see next section for the reason for this).
+Since you can nest dictionaries, sets, lists and tuples together in any
+combination, this is usually not much of a limitation.
 
 There is one notable type of object that cannot be pickled - and that is
 a Django database object. These will instead be stored as a wrapper
@@ -177,19 +184,12 @@ recursively traverse all iterables to make sure all database objects in
 them are stored safely. So for efficiency, it can be a good idea to
 avoid deeply nested lists with objects if you can.
 
-To store several objects, you may only use python *lists*,
-*dictionaries* or *tuples* to store them. If you try to save any other
-form of iterable (like a ``set`` or a home-made class), the Attribute
-will convert, store and retrieve it as a list instead. Since you can
-nest dictionaries, lists and tuples together in any combination, this is
-usually not a limitation you need to worry about.
-
 *Note that you could fool the safety check if you for example created
 custom, non-iterable classes and stored database objects in them. So to
 make this clear - saving such an object is **not supported** and will
 probably make your game unstable. Store your database objects using
-lists, tuples, dictionaries or a combination of the three and you should
-be fine.*
+lists, tuples, dictionaries, sets or a combination of the four and you
+should be fine.*
 
 Examples of valid attribute data:
 
@@ -232,13 +232,13 @@ Example of non-supported save:
 Retrieving Mutable objects
 --------------------------
 
-A side effect of the way Evennia stores Attributes is that Python Lists
-and Dictionaries (only) are handled by custom objects called PackedLists
-and PackedDicts. These behave just like normal lists and dicts except
-they have the special property that they save to the database whenever
-new data gets assigned to them. This allows you to do things like
-``self.db.mylist[4]`` = val without having to extract the mylist
-Attribute into a temporary variable first.
+A side effect of the way Evennia stores Attributes is that Python Lists,
+Dictionaries and Sets are handled by custom objects called PackedLists,
+PackedDicts and PackedSets. These behave just like normal lists and
+dicts except they have the special property that they save to the
+database whenever new data gets assigned to them. This allows you to do
+things like ``self.db.mylist[4]`` = val without having to extract the
+mylist Attribute into a temporary variable first.
 
 There is however an important thing to remember. If you retrieve this
 data into another variable, e.g. ``mylist2 = obj.db.mylist``, your new
@@ -287,9 +287,92 @@ stop any changes to the structure from updating the database.
      # iterable is a tuple, so we can edit the internal list as we want 
      # without affecting the database. 
 
-Notes
------
+Locking and checking Attributes
+-------------------------------
 
-There are several other ways to assign Attributes to be found on the
-typeclassed objects, all being more 'low-level' underpinnings to
-``db``/``ndb``. Read their descriptions in the respective modules.
+Attributes are normally not locked down by default, but you can easily
+change that for individual Attributes (like those that may be
+game-sensitive in games with user-level building).
+
+First you need to set a *lock string* on your Attribute. Lock strings
+are specified `here <Locks.html>`_. The relevant lock types are
+
+-  *attrread* - limits who may read the value of the Attribute
+-  *attredit* - limits who may set/change this Attribute
+
+You cannot use e.g. ``obj.db.attrname`` handler to modify Attribute
+objects (such as setting a lock on them - you will only get the
+Attribute *value* that way, not the actual Attribute *object*. You get
+the latter with ``get_attribute_obj`` (see next section) which allows
+you to set the lock something like this:
+
+::
+
+     obj.get_attribute_obj.locks.add("attread:all();attredit:perm(Wizards)")
+
+A lock is no good if nothing checks it -- and by default Evennia does
+not check locks on Attributes. You have to add a check to your
+commands/code wherever it fits (such as before setting an Attribute).
+
+::
+
+    # in some command code where we want to limit
+    # setting of a given attribute name on an object
+    attr = obj.get_attribute_obj(attrname, default=None)
+    if not (attr and attr.locks.check(caller, 'attredit', default=True)):
+        caller.msg("You cannot edit that Attribute!")
+        return
+    # edit the Attribute here
+
+Note that in this example this lock check will default to ``True`` if no
+lock was defined on the Attribute (which is the case by default). You
+can set this to False if you know all your Attributes always check
+access in all situations. If you want some special control over what the
+default Attribute access is (such as allowing everyone to view, but
+never allowing anyone to edit unless explicitly allowing it with a
+lock), you can use the ``secure_attr`` method on Typeclassed objects
+like this:
+
+::
+
+    obj.secure_attr(caller, attrname, value=None, 
+                            delete=False,
+                            default_access_read=True,  
+                            default_access_edit=False,
+                            default_access_create=True)
+
+The secure\_attr will try to retrieve the attribute value of an existing
+Attribute if the ``value`` keyword is not set and create/set/delete it
+otherwise. The *default\_access* keywords specify what should be the
+default policy for each operation if no appropriate lock string is set
+on the Attribute.
+
+Other ways to access Attributes
+-------------------------------
+
+Normally ``db`` is all you need. But there there are also several other
+ways to access information about Attributes, some of which cannot be
+replicated by ``db``. These are available on all Typeclassed objects:
+
+-  ``has_attribute(attrname)`` - checks if the object has an attribute
+   with the given name. This is equivalent to doing ``obj.db.attrname``.
+-  ``set_attribute(attrname, value)`` - equivalent to
+   ``obj.db.attrname = value``.
+-  ``get_attribute(attrname)`` - returns the attribute value. Equivalent
+   to ``obj.db.attrname``.
+-  ``get_attribute_raise(attrname)`` - returns the attribute value, but
+   instead of returning ``None`` if no such attribute is found, this
+   method raises ``AttributeError``.
+-  ``get_attribute_obj(attrname)`` - returns the attribute *object*
+   itself rather than the value stored in it.
+-  ``del_attribute(attrname)`` - equivalent to ``del obj.db.attrname``.
+   Quietly fails if ``attrname`` is not found.
+-  ``del_attribute_raise(attrname)`` - deletes attribute, raising
+   ``AttributeError`` if no matching Attribute is found.
+-  ``get_all_attributes`` - equivalent to ``obj.db.all``
+-  ``attr(attrname, value=None, delete=False)`` - this is a convenience
+   function for getting, setting and deleting Attributes. It's
+   recommended to use ``db`` instead.
+-  ``secure_attr(...)`` - lock-checking version of ``attr``. See example
+   in previous section.
+

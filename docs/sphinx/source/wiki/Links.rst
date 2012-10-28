@@ -34,6 +34,10 @@ Third-party Evennia links
 
 -  `Avaloria <http://code.google.com/p/avaloria/>`_ (MUD under
    development, using Evennia)
+-  `Winter's Oasis <http://blog.wintersoasis.com/>`_ (MUCK under
+   development, using Evennia)
+-  `Latitude <https://github.com/dbenoy/latitude>`_ (MUCK under
+   development, using Evennia)
 
 General mud/game development ideas and discussions
 --------------------------------------------------

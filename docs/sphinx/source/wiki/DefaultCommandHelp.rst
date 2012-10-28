@@ -27,7 +27,7 @@ defined on.
    DefaultCmdset and available in the game.
 
 The full set of available commands (all three sub-sets above) currently
-contains 85 commands in 6 categories. More information about how
+contains 86 commands in 6 categories. More information about how
 commands work can be found in the `Command <Commands.html>`_
 documentation.
 
@@ -666,7 +666,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@home``
--  ``aliases`` = ``<None>``
+-  ``aliases`` = ``@sethome``
 -  `locks <Locks.html>`_ = ``cmd:perm(@home) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -910,19 +910,29 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 
 ::
 
-        teleport
+        teleport object to another location
 
         Usage:
-          @tel/switch [<object> =] <location>
+          @tel/switch [<object> =] <target location>
+
+        Examples:
+          @tel Limbo
+          @tel/quiet box Limbo
+          @tel/tonone box
 
         Switches:
           quiet  - don't echo leave/arrive messages to the source/target
                    locations for the move.
           intoexit - if target is an exit, teleport INTO
                      the exit object instead of to its destination
+          tonone - if set, teleport the object to a None-location. If this
+                   switch is set, <target location> is ignored.
+                   Note that the only way to retrieve
+                   an object from a None location is by direct #dbref
+                   reference.
 
-        Teleports an object or yourself somewhere.
-        
+        Teleports an object somewhere. If no object is given, you yourself
+        is teleported to the target location.     
 
 @tunnel
 ~~~~~~~
@@ -1486,6 +1496,29 @@ General
 
 `Link to Python
 module <https://code.google.com/p/evennia/source/browse/src/commands/default/general.py>`_
+
+@color
+~~~~~~
+
+-  ``key`` = ``@color``
+-  ``aliases`` = ``<None>``
+-  `locks <Locks.html>`_ = ``cmd:all()``
+-  `help\_category <HelpSystem.html>`_ = ``General``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        testing colors
+
+        Usage:
+          @color ansi|xterm256
+
+        Print a color map along with in-mud color codes, while testing what is supported in your client.
+        Choices are 16-color ansi (supported in most muds) or the 256-color xterm256 standard.
+        No checking is done to determine your client supports color - if not you will
+        see rubbish appear.
+        
 
 @encoding (OOC command)
 ~~~~~~~~~~~~~~~~~~~~~~~
