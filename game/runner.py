@@ -74,22 +74,21 @@ if os.name == 'nt':
 
 # Functions
 
-def set_restart_mode(restart_file, flag=True):
+def set_restart_mode(restart_file, flag="reload"):
     """
     This sets a flag file for the restart mode.
     """
-    f = open(restart_file, 'w')
-    f.write(str(flag))
-    f.close()
+    with open(restart_file, 'w') as f:
+        f.write(str(flag))
 
 def get_restart_mode(restart_file):
     """
     Parse the server/portal restart status
     """
     if os.path.exists(restart_file):
-        flag = open(restart_file, 'r').read()
-        return flag == "True"
-    return False
+        with open(restart_file, 'r') as f:
+            return f.read()
+    return "shutdown"
 
 def get_pid(pidfile):
     """
@@ -98,8 +97,8 @@ def get_pid(pidfile):
     """
     pid = None
     if os.path.exists(pidfile):
-        f = open(pidfile, 'r')
-        pid = f.read()
+        with open(pidfile, 'r') as f:
+            pid = f.read()
     return pid
 
 def cycle_logfile(logfile):
@@ -165,7 +164,7 @@ def start_services(server_argv, portal_argv):
 
     if portal_argv:
         try:
-            if get_restart_mode(PORTAL_RESTART):
+            if get_restart_mode(PORTAL_RESTART) == "True":
                 # start portal as interactive, reloadable thread
                 PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             else:
@@ -185,13 +184,13 @@ def start_services(server_argv, portal_argv):
         message, rc = processes.get()
 
         # restart only if process stopped cleanly
-        if message == "server_stopped" and int(rc) == 0 and get_restart_mode(SERVER_RESTART):
+        if message == "server_stopped" and int(rc) == 0 and get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset"):
             print "Evennia Server stopped. Restarting ..."
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
-        if message == "portal_stopped" and int(rc) == 0 and get_restart_mode(PORTAL_RESTART):
+        if message == "portal_stopped" and int(rc) == 0 and get_restart_mode(PORTAL_RESTART) == "True":
             print "Evennia Portal stopped in interactive mode. Restarting ..."
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             continue
@@ -261,7 +260,7 @@ def main():
     if options.noserver:
         server_argv = None
     else:
-        set_restart_mode(SERVER_RESTART, True)
+        set_restart_mode(SERVER_RESTART, "shutdown")
         if options.iserver:
             # don't log to server logfile
             del server_argv[2]

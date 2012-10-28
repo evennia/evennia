@@ -252,7 +252,7 @@ def del_pid(pidfile):
     if os.path.exists(pidfile):
         os.remove(pidfile)
 
-def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart=True):
+def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart="reload"):
     """
     Send a kill signal to a process based on PID. A customized success/error
     message will be returned. If clean=True, the system will attempt to manually
@@ -321,17 +321,17 @@ def run_menu():
                 if os.name == 'nt':
                     print "This operation is not supported under Windows. Log into the game to restart/reload the server."
                     return
-                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server")
+                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", restart="reload")
             elif inp == 6:
                 if os.name == 'nt':
                     print "This operation is not supported under Windows."
                     return
-                kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal")
+                kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", restart=True)
             elif inp == 7:
                 kill(SERVER_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
-                kill(PORTAL_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", restart=False)
+                kill(PORTAL_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", restart="shutdown")
             elif inp == 8:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", restart=False)
+                kill(PORTAL_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", restart="shutdown")
             elif inp == 9:
                 kill(SERVER_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
             return
@@ -379,7 +379,7 @@ def handle_args(options, mode, service):
             print "Restarting from command line is not supported under Windows. Log into the game to restart."
             return
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server')
+            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', restart="reload")
         elif service == 'portal':
             print """
           Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode.
@@ -389,17 +389,17 @@ def handle_args(options, mode, service):
             kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART)
         else: # all
             # default mode, only restart server
-            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server')
+            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server', restart="reload")
 
     elif mode == 'stop':
         # stop processes, avoiding reload
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart=False)
+            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart="shutdown")
         elif service == 'portal':
             kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
         else:
             kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart=False)
+            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart="shutdown")
     return None
 
 def error_check_python_modules():

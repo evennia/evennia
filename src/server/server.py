@@ -39,7 +39,7 @@ if os.name == 'nt':
 # a file with a flag telling the server to restart after shutdown or not.
 SERVER_RESTART = os.path.join(settings.GAME_DIR, 'server.restart')
 
-# module containing hook methods
+# module containing hook methods called during start_stop
 SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
 # module containing plugin services
@@ -197,8 +197,16 @@ class Evennia(object):
         [(o.typeclass, o.at_init()) for o in ObjectDB.get_all_cached_instances()]
         [(p.typeclass, p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
-        # call server hook.
         if SERVER_STARTSTOP_MODULE:
+            # call correct server hook based on start file value
+            with open(SERVER_RESTART, 'r') as f:
+                mode = f.read()
+            if mode in ('True', 'reload'):
+                # True was the old reload flag, kept for compatibilty
+                SERVER_STARTSTOP_MODULE.at_server_reload_start()
+            elif mode in ('reset', 'shutdown'):
+                SERVER_STARTSTOP_MODULE.at_server_cold_start()
+            # always call this regardless of start type
             SERVER_STARTSTOP_MODULE.at_server_start()
 
     def set_restart_mode(self, mode=None):
@@ -212,18 +220,27 @@ class Evennia(object):
         returned so the server knows which more it's in.
         """
         if mode == None:
-            f = open(SERVER_RESTART, 'r')
-            if os.path.exists(SERVER_RESTART) and 'True' == f.read():
-                mode = 'reload'
-            else:
-                mode = 'shutdown'
-            f.close()
+            with open(SERVER_RESTART, 'r') as f:
+                # mode is either shutdown, reset or reload
+                mode = f.read()
         else:
-            restart = mode in ('reload', 'reset')
-            f = open(SERVER_RESTART, 'w')
-            f.write(str(restart))
-            f.close()
+            with open(SERVER_RESTART, 'w') as f:
+                f.write(str(mode))
         return mode
+
+        #if mode == None:
+        #    f = open(SERVER_RESTART, 'r')
+        #    if os.path.exists(SERVER_RESTART) and 'True' == f.read():
+        #        mode = 'reload'
+        #    else:
+        #        mode = 'shutdown'
+        #    f.close()
+        #else:
+        #    restart = mode in ('reload', 'reset')
+        #    f = open(SERVER_RESTART, 'w')
+        #    f.write(str(restart))
+        #    f.close()
+        #return mode
 
     @defer.inlineCallbacks
     def shutdown(self, mode=None, _reactor_stopping=False):
@@ -257,6 +274,10 @@ class Evennia(object):
             yield [(s.typeclass, s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
             yield self.sessions.all_sessions_portal_sync()
             ServerConfig.objects.conf("server_restart_mode", "reload")
+
+            if SERVER_STARTSTOP_MODULE:
+                SERVER_STARTSTOP_MODULE.at_server_reload_stop()
+
         else:
             if mode == 'reset':
                 # don't call disconnect hooks on reset
@@ -269,6 +290,9 @@ class Evennia(object):
             yield [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
 
             ServerConfig.objects.conf("server_restart_mode", "reset")
+
+            if SERVER_STARTSTOP_MODULE:
+                SERVER_STARTSTOP_MODULE.at_server_cold_stop()
 
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()

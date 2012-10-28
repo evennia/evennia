@@ -19,19 +19,48 @@ The module should define at least these global functions:
 
 at_server_start()
 at_server_stop()
+at_server_reload_start()
+at_server_reload_stop()
+at_server_cold_start()
+at_server_cold_stop()
 
 """
 
 def at_server_start():
     """
-    This is called every time the server starts up (also after a
-    reload or reset).
+    This is called every time the server starts up, regardless of
+    how it was shut down.
     """
     pass
 
 def at_server_stop():
     """
-    This is called just before a server is shut down, reloaded or
-    reset.
+    This is called just before a server is shut down, regardless
+    of it is fore a reload, reset or shutdown.
+    """
+    pass
+
+def at_server_reload_start():
+    """
+    This is called only when server starts back up after a reload.
+    """
+    pass
+
+def at_server_reload_stop():
+    """
+    This is called only time the server stops before a reload.
+    """
+    pass
+
+def at_server_cold_start():
+    """
+    This is called only when the server starts "cold", i.e. after a
+    shutdown or a reset.
+    """
+    pass
+
+def at_server_cold_stop():
+    """
+    This is called only when the server goes down due to a shutdown or reset.
     """
     pass
