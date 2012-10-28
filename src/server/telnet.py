@@ -7,11 +7,14 @@ sessions etc.
 
 """
 
+import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
 from src.server.session import Session
 from src.server import ttype, mssp
 from src.server.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
+
+_RE_N = re.compile(r"\{n$")
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -163,4 +166,4 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.sendLine(string)
         else:
             # we need to make sure to kill the color at the end in order to match the webclient output.
-            self.sendLine(ansi.parse_ansi(string.rstrip("{n") + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))
+            self.sendLine(ansi.parse_ansi(_RE_N.sub("", string) + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))

@@ -202,10 +202,17 @@ class CmdSet(object):
         Returns a new cmdset with the same settings as this one
         (no actual commands are copied over)
         """
-        cmdset = self.__class__()
-        cmdset.__dict__.update(dict((key, val) for key, val in self.__dict__.items() if key in self.to_duplicate))
-        cmdset.key_mergetypes = self.key_mergetypes.copy() #copy.deepcopy(self.key_mergetypes)
+        cmdset = CmdSet()
+        for key, val in ((key, getattr(self, key)) for key in self.to_duplicate):
+            if val != getattr(cmdset, key):
+                # only copy if different from default; avoid turning class-vars into instance vars
+                setattr(cmdset, key, val)
+        cmdset.key_mergetypes = self.key_mergetypes.copy()
         return cmdset
+        #cmdset = self.__class__()
+        #cmdset.__dict__.update(dict((key, val) for key, val in self.__dict__.items() if key in self.to_duplicate))
+        #cmdset.key_mergetypes = self.key_mergetypes.copy() #copy.deepcopy(self.key_mergetypes)
+        #return cmdset
 
     def __str__(self):
         """
