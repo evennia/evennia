@@ -45,7 +45,6 @@ def create_objects():
     # accessed by user.get_profile() and can also store attributes.
     # It also holds mud permissions, but for a superuser these
     # have no effect anyhow.
-
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
 
     # Create the Player object as well as the in-game god-character
@@ -84,7 +83,6 @@ def create_objects():
         god_character.location = limbo_obj
     if not god_character.home:
         god_character.home = limbo_obj
-
 
 def create_channels():
     """

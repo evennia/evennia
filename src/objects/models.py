@@ -20,7 +20,8 @@ from django.conf import settings
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
-from src.typeclasses.models import _get_cache, _set_cache, _del_cache
+from src.server.caches import get_field_cache, set_field_cache, del_field_cache
+from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, hashid
 from src.typeclasses.typeclass import TypeClass
 from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
@@ -44,10 +45,6 @@ _DA = object.__delattr__
 _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
-
-def clean_content_cache(obj):
-    "Clean obj's content cache"
-    _SA(obj, "_contents_cache", None)
 
 #------------------------------------------------------------
 #
@@ -222,25 +219,24 @@ class ObjectDB(TypedObject):
     #@property
     def __aliases_get(self):
         "Getter. Allows for value = self.aliases"
-        try:
-            return _GA(self, "_cached_aliases")
-        except AttributeError:
+        aliases = get_prop_cache(self, "_aliases")
+        if aliases == None:
             aliases = list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
-            _SA(self, "_cached_aliases", aliases)
-            return aliases
+            set_prop_cache(self, "_aliases", aliases)
+        return aliases
     #@aliases.setter
     def __aliases_set(self, aliases):
         "Setter. Allows for self.aliases = value"
         for alias in make_iter(aliases):
             new_alias = Alias(db_key=alias, db_obj=self)
             new_alias.save()
-        _SA(self, "_cached_aliases", aliases)
+        set_prop_cache(self, "_aliases", aliases)
     #@aliases.deleter
     def __aliases_del(self):
         "Deleter. Allows for del self.aliases"
         for alias in Alias.objects.filter(db_obj=self):
             alias.delete()
-        _DA(self, "_cached_aliases")
+        del_prop_cache(self, "_aliases")
     aliases = property(__aliases_get, __aliases_set, __aliases_del)
 
     # player property (wraps db_player)
@@ -251,24 +247,24 @@ class ObjectDB(TypedObject):
         We have to be careful here since Player is also
         a TypedObject, so as to not create a loop.
         """
-        return _get_cache(self, "player")
+        return get_field_cache(self, "player")
     #@player.setter
     def __player_set(self, player):
         "Setter. Allows for self.player = value"
         if inherits_from(player, TypeClass):
             player = player.dbobj
-        _set_cache(self, "player", player)
+        set_field_cache(self, "player", player)
     #@player.deleter
     def __player_del(self):
         "Deleter. Allows for del self.player"
-        _del_cache(self, "player")
+        del_field_cache(self, "player")
     player = property(__player_get, __player_set, __player_del)
 
     # location property (wraps db_location)
     #@property
     def __location_get(self):
         "Getter. Allows for value = self.location."
-        loc = _get_cache(self, "location")
+        loc = get_field_cache(self, "location")
         if loc:
             return _GA(loc, "typeclass")
         return None
@@ -298,20 +294,20 @@ class ObjectDB(TypedObject):
             except RuntimeWarning: pass
 
             # set the location
-            _set_cache(self, "location", loc)
+            set_field_cache(self, "location", loc)
             # update the contents of each location
             if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
+                _GA(_GA(old_loc, "dbobj"), "contents_update")()
             if loc:
-                _GA(loc, "contents_update")(_GA(self, "typeclass"))
+                _GA(loc, "contents_update")()
         except RuntimeError:
-            string = "Cannot set location: "
-            string += "%s.location = %s would create a location-loop." % (self.key, location)
+            string = "Cannot set location, "
+            string += "%s.location = %s would create a location-loop." % (self.key, loc)
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise RuntimeError(string)
-        except Exception:
-            string = "Cannot set location: "
+        except Exception, e:
+            string = "Cannot set location (%s): " % str(e)
             string += "%s is not a valid location." % location
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
@@ -319,17 +315,17 @@ class ObjectDB(TypedObject):
     #@location.deleter
     def __location_del(self):
         "Deleter. Allows for del self.location"
-        _GA(self, "location").contents_update(self, remove=True)
+        _GA(self, "location").contents_update()
         _SA(self, "db_location", None)
         _GA(self, "save")()
-        _del_cache(self, "location")
+        del_field_cache(self, "location")
     location = property(__location_get, __location_set, __location_del)
 
     # home property (wraps db_home)
     #@property
     def __home_get(self):
         "Getter. Allows for value = self.home"
-        home = _get_cache(self, "home")
+        home = get_field_cache(self, "home")
         if home:
             return _GA(home, "typeclass")
         return None
@@ -347,7 +343,7 @@ class ObjectDB(TypedObject):
                     hom = _GA(home, "dbobj")
             else:
                 hom = _GA(home, "dbobj")
-            _set_cache(self, "home", hom)
+            set_field_cache(self, "home", hom)
         except Exception:
             string = "Cannot set home: "
             string += "%s is not a valid home."
@@ -359,14 +355,14 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.home."
         _SA(self, "db_home", None)
         _GA(self, "save")()
-        _del_cache(self, "home")
+        del_field_cache(self, "home")
     home = property(__home_get, __home_set, __home_del)
 
     # destination property (wraps db_destination)
     #@property
     def __destination_get(self):
         "Getter. Allows for value = self.destination."
-        dest = _get_cache(self, "destination")
+        dest = get_field_cache(self, "destination")
         if dest:
             return _GA(dest, "typeclass")
         return None
@@ -386,7 +382,7 @@ class ObjectDB(TypedObject):
                     dest = _GA(destination, "dbobj")
             else:
                 dest = destination.dbobj
-            _set_cache(self, "destination", dest)
+            set_field_cache(self, "destination", dest)
         except Exception:
             string = "Cannot set destination: "
             string += "%s is not a valid destination." % destination
@@ -398,7 +394,7 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.destination"
         _SA(self, "db_destination", None)
         _GA(self, "save")()
-        _del_cache(self, "destination")
+        del_field_cache(self, "destination")
     destination = property(__destination_get, __destination_set, __destination_del)
 
     # cmdset_storage property.
@@ -461,13 +457,11 @@ class ObjectDB(TypedObject):
     #@property
     def __is_superuser_get(self):
         "Check if user has a player, and if so, if it is a superuser."
-        #return any(self.sessions) and self.player.is_superuser
         return any(_GA(self, "sessions")) and _GA(_GA(self, "player"), "is_superuser")
     is_superuser = property(__is_superuser_get)
 
     # contents
 
-    _contents_cache = None
     #@property
     def contents_get(self, exclude=None):
         """
@@ -477,29 +471,25 @@ class ObjectDB(TypedObject):
 
         exclude is one or more objects to not return
         """
-        if _GA(self, "_contents_cache") == None:
-            # create the cache
-            _SA(self, "_contents_cache", dict((obj.id, obj) for obj in ObjectDB.objects.get_contents(self)))
-        if exclude:
-            exclude = make_iter(exclude)
-            return [obj for obj in _GA(self, "_contents_cache").values() if obj not in exclude]
-        return _GA(self, "_contents_cache").values()
-        #return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+        cont = get_prop_cache(self, "_contents")
+        exclude = make_iter(exclude)
+        if cont == None:
+            cont = _GA(self, "contents_update")()
+        return [obj for obj in cont if obj not in exclude]
     contents = property(contents_get)
 
-    def contents_update(self, obj, remove=False):
+    def contents_update(self):
         """
-        Updates the contents property of the object. Called by
+        Updates the contents property of the object with a new
+        object Called by
         self.location_set.
+
+        obj -
+        remove (true/false) - remove obj from content list
         """
-        # this creates/updates the cache
-        _GA(self, "contents")
-        # set/remove objects from contents cache
-        cache = _GA(self, "_contents_cache")
-        if remove and obj.id in cache:
-            del cache[obj.id]
-        else:
-            cache[obj.id] = obj
+        cont = ObjectDB.objects.get_contents(self)
+        set_prop_cache(self, "_contents", cont)
+        return cont
 
     #@property
     def __exits_get(self):
@@ -941,9 +931,10 @@ class ObjectDB(TypedObject):
         _GA(self, "clear_exits")()
         # Clear out any non-exit objects located within the object
         _GA(self, "clear_contents")()
-        # clear current location's content cache of this object
-        if _GA(self, "location"):
-            _GA(self, "location").contents_update(self, remove=True)
+        old_loc = _GA(self, "location")
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
+        # clear object's old  location's content cache of this object
+        if old_loc:
+            old_loc.contents_update()
         return True
