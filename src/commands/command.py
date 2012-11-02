@@ -148,6 +148,10 @@ class Command(object):
             # probably got a string
             return cmd in self._matchset
 
+    def __ne__(self, cmd):
+        "The logical negation of __eq__."
+        return not self.__eq__(cmd)
+
     def __contains__(self, query):
         """
         This implements searches like 'if query in cmd'. It's a fuzzy matching
