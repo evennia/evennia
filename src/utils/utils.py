@@ -7,7 +7,7 @@ be of use when designing your own game.
 """
 
 import os, sys, imp, types, math, re
-import textwrap, datetime, random
+import textwrap, datetime, random, traceback, inspect
 from inspect import ismodule
 from collections import defaultdict
 from twisted.internet import threads, defer, reactor
@@ -804,11 +804,10 @@ def mod_import(module):
         from within an exception. errmsg is optional and
         adds an extra line with added info.
         """
-        from traceback import format_exc
         from twisted.python import log
         print errmsg
 
-        tracestring = format_exc()
+        tracestring = traceback.format_exc()
         if tracestring:
             for line in tracestring.splitlines():
                 log.msg('[::] %s' % line)
@@ -830,9 +829,14 @@ def mod_import(module):
         # first try to import as a python path
         try:
             mod = __import__(module, fromlist=["None"])
-        except ImportError:
+        except ImportError, ex:
+            # check just where the ImportError happened (it could have been an erroneous
+            # import inside the module as well). This is the trivial way to do it ...
+            if str(ex) != "Import by filename is not supported.":
+                #log_trace("ImportError inside module '%s': '%s'" % (module, str(ex)))
+                raise
 
-            # try absolute path import instead
+            # error in this module. Try absolute path import instead
 
             if not os.path.isabs(module):
                 module = os.path.abspath(module)
