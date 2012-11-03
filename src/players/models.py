@@ -45,7 +45,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 
-from src.typeclasses.models import _get_cache, _set_cache, _del_cache
+from src.server.caches import get_field_cache, set_field_cache, del_field_cache
+from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
 from src.server.sessionhandler import SESSIONS
 from src.players import manager
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
@@ -196,7 +197,7 @@ class PlayerDB(TypedObject):
     #@property
     def obj_get(self):
         "Getter. Allows for value = self.obj"
-        return _get_cache(self, "obj")
+        return get_field_cache(self, "obj")
     #@obj.setter
     def obj_set(self, value):
         "Setter. Allows for self.obj = value"
@@ -207,14 +208,14 @@ class PlayerDB(TypedObject):
         if isinstance(value, _TYPECLASS):
             value = value.dbobj
         try:
-            _set_cache(self, "obj", value)
+            set_field_cache(self, "obj", value)
         except Exception:
             logger.log_trace()
             raise Exception("Cannot assign %s as a player object!" % value)
     #@obj.deleter
     def obj_del(self):
         "Deleter. Allows for del self.obj"
-        _del_cache(self, "obj")
+        del_field_cache(self, "obj")
     obj = property(obj_get, obj_set, obj_del)
 
     # whereas the name 'obj' is consistent with the rest of the code,
@@ -223,17 +224,17 @@ class PlayerDB(TypedObject):
     #@property
     def character_get(self):
         "Getter. Allows for value = self.character"
-        return _get_cache(self, "obj")
+        return get_field_cache(self, "obj")
     #@character.setter
     def character_set(self, character):
         "Setter. Allows for self.character = value"
         if inherits_from(character, TypeClass):
             character = character.dbobj
-        _set_cache(self, "obj", character)
+        set_field_cache(self, "obj", character)
     #@character.deleter
     def character_del(self):
         "Deleter. Allows for del self.character"
-        _del_cache(self, "obj")
+        del_field_cache(self, "obj")
     character = property(character_get, character_set, character_del)
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
@@ -260,15 +261,15 @@ class PlayerDB(TypedObject):
     #@property
     def is_connected_get(self):
         "Getter. Allows for value = self.is_connected"
-        return _get_cache(self, "is_connected")
+        return get_field_cache(self, "is_connected")
     #@is_connected.setter
     def is_connected_set(self, value):
         "Setter. Allows for self.is_connected = value"
-        _set_cache(self, "is_connected", value)
+        set_field_cache(self, "is_connected", value)
     #@is_connected.deleter
     def is_connected_del(self):
         "Deleter. Allows for del is_connected"
-        _set_cache(self, "is_connected", False)
+        set_field_cache(self, "is_connected", False)
     is_connected = property(is_connected_get, is_connected_set, is_connected_del)
 
     class Meta:
@@ -292,20 +293,21 @@ class PlayerDB(TypedObject):
     _db_model_name = "playerdb" # used by attributes to safely store objects
     _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
 
-    _name_cache = None
     # name property (wraps self.user.username)
     #@property
     def name_get(self):
         "Getter. Allows for value = self.name"
-        if not _GA(self, "_name_cache"):
-            _SA(self, "_name_cache", _GA(self,"user").username)
-        return _GA(self, "_name_cache")
+        name = get_prop_cache(self, "_name")
+        if not name:
+            name = _GA(self,"user").username
+            set_prop_cache(self, "_name", name)
+        return name
     #@name.setter
     def name_set(self, value):
         "Setter. Allows for player.name = newname"
         _GA(self, "user").username = value
         _GA(self, "user").save()
-        _SA(self, "_name_cache", value)
+        set_prop_cache(self, "_name", value)
     #@name.deleter
     def name_del(self):
         "Deleter. Allows for del self.name"
@@ -313,13 +315,14 @@ class PlayerDB(TypedObject):
     name = property(name_get, name_set, name_del)
     key = property(name_get, name_set, name_del)
 
-    _uid_cache = None
     #@property
     def uid_get(self):
         "Getter. Retrieves the user id"
-        if not _GA(self, "_uid_cache"):
-            _SA(self, "_uid_cache", _GA(self, "user").id)
-        return _GA(self, "_uid_cache")
+        uid = get_prop_cache(self, "_uid")
+        if not uid:
+            uid = _GA(self, "user").id
+            set_prop_cache(self, "_uid", uid)
+        return uid
     def uid_set(self, value):
         raise Exception("User id cannot be set!")
     def uid_del(self):
@@ -342,12 +345,13 @@ class PlayerDB(TypedObject):
     sessions = property(sessions_get, sessions_set, sessions_del)
 
     #@property
-    _is_superuser_cache = None
     def is_superuser_get(self):
         "Superusers have all permissions."
-        if _GA(self, "_is_superuser_cache") == None:
-            _SA(self, "_is_superuser_cache", _GA(self, "user").is_superuser)
-        return _GA(self, "_is_superuser_cache")
+        is_suser = get_prop_cache(self, "_is_superuser")
+        if is_suser == None:
+            is_suser = _GA(self, "user").is_superuser
+            set_prop_cache(self, "_is_superuser", is_suser)
+        return is_suser
     is_superuser = property(is_superuser_get)
 
     #

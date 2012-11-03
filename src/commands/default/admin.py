@@ -212,7 +212,7 @@ class CmdBan(MuxCommand):
             # replace * with regex form and compile it
             ipregex = ban.replace('.','\.')
             ipregex = ipregex.replace('*', '[0-9]{1,3}')
-            print "regex:",ipregex
+            #print "regex:",ipregex
             ipregex = re.compile(r"%s" % ipregex)
             bantup = ("", ban, ipregex, now, reason)
         # save updated banlist
