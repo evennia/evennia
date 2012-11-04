@@ -8,22 +8,8 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
-
-
-        # Adding field 'Msg.db_header'
-        db.add_column('comms_msg', 'db_header',
-                      self.gf('django.db.models.fields.CharField')(db_index=True, max_length=128, null=True, blank=True),
-                      keep_default=False)
-
-        if not db.dry_run:
-            for msg in orm.Msg.objects.all():
-                msg.db_header = msg.db_title
-                msg.save()
-
-        # Deleting field 'Msg.db_title'
-        db.delete_column('comms_msg', 'db_title')
-
+        # Renaming field 'Msg.db_title' to 'Msg.db_header'
+        db.rename_column('comms_msg', 'db_title', 'db_header')
 
     def backwards(self, orm):
         # Adding field 'Msg.db_title'
