@@ -468,16 +468,20 @@ def create_player(name, email, password,
         elif isinstance(typeclass, _Player) or utils.inherits_from(typeclass, _Player):
             # this is already an object typeclass, extract its path
             typeclass = typeclass.path
-
         if player_dbobj:
-            new_db_player = player_dbobj
+            try:
+                _GA(player_dbobj, "dbobj")
+                new_db_player = player_dbobj.dbobj
+            except AttributeError:
+                new_db_player = player_dbobj
+            # use the typeclass from this object
+            typeclass = new_db_player.typeclass_path
         else:
             new_db_player = _PlayerDB(db_key=name, user=new_user)
             new_db_player.save()
-
-        # assign the typeclass
-        typeclass = utils.to_unicode(typeclass)
-        new_db_player.typeclass_path = typeclass
+            # assign the typeclass
+            typeclass = utils.to_unicode(typeclass)
+            new_db_player.typeclass_path = typeclass
 
         # this will either load the typeclass or the default one
         new_player = new_db_player.typeclass
@@ -487,7 +491,7 @@ def create_player(name, email, password,
             SharedMemoryModel.delete(new_db_player)
             if report_to:
                 _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_player.key, typeclass,
-                                                                      _GA(new_db_player, "typeclass_last_errmsg")))
+                                                                  _GA(new_db_player, "typeclass_last_errmsg")))
                 return None
             else:
                 raise Exception(_GA(new_db_player, "typeclass_last_errmsg"))
@@ -512,12 +516,12 @@ def create_player(name, email, password,
             # creating the object automatically links the player
             # and object together by player.obj <-> obj.player
             new_character = create_object(character_typeclass, key=name,
-                                          location=None, home=character_location,
+                                          location=character_location, home=character_location,
                                           permissions=permissions,
                                           player=new_player, report_to=report_to)
             return new_character
         return new_player
-    except Exception:
+    except Exception, e:
         # a failure in creating the character
         if not user:
             # in there was a failure we clean up everything we can
@@ -534,7 +538,7 @@ def create_player(name, email, password,
                 del new_character
             except Exception:
                 pass
-        raise
+        raise e
 
 # alias
 player = create_player

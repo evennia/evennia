@@ -868,12 +868,14 @@ class TypedObject(SharedMemoryModel):
     def __typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
         set_field_cache(self, "typeclass_path", value)
+        _SA(self, "_cached_typeclass", None)
     #@typeclass_path.deleter
     def __typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
         self.db_typeclass_path = ""
         self.save()
         del_field_cache(self, "typeclass_path")
+        _SA(self, "_cached_typeclass", None)
     typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
 
     # date_created property
@@ -1030,7 +1032,6 @@ class TypedObject(SharedMemoryModel):
                 return typeclass
         except AttributeError:
             pass
-
         errstring = ""
         if not path:
             # this means we should get the default obj without giving errors.
@@ -1048,9 +1049,7 @@ class TypedObject(SharedMemoryModel):
                 typeclass = _GA(self, "_path_import")(tpath)
                 if callable(typeclass):
                     # we succeeded to import. Cache and return.
-                    _SA(self, 'db_typeclass_path', tpath)
-                    _GA(self, 'save')()
-                    _SA(self, "_cached_db_typeclass_path", tpath)
+                    _SA(self, "typeclass_path", tpath)
                     typeclass = typeclass(self)
                     _SA(self, "_cached_typeclass", typeclass)
                     try:

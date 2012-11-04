@@ -228,8 +228,7 @@ class ANSIParser(object):
             string += "%s%s" % (part, sep[0].strip())
         if strip_ansi:
             # remove all ansi codes (including those manually inserted in string)
-            for sub in self.ansi_sub:
-                string = sub[0].sub("", string)
+            string = self.ansi_regex.sub("", string)
         return string
 
 

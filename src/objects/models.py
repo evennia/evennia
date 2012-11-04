@@ -653,7 +653,8 @@ class ObjectDB(TypedObject):
                        be used by the protocol.
         """
         if _GA(self, 'player'):
-            _GA(_GA(self, 'player'), "msg")(message, from_obj=from_obj, data=data)
+            # note that we check the typeclass' msg, otherwise one couldn't overload it.
+            _GA(_GA(self, 'player'), "typeclass").msg(message, from_obj=from_obj, data=data)
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"
