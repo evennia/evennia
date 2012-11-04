@@ -1,22 +1,33 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        # Adding index on 'Channel', fields ['db_key']
-        db.create_index('comms_channel', ['db_key'])
+
+
+        # Adding field 'Msg.db_header'
+        db.add_column('comms_msg', 'db_header',
+                      self.gf('django.db.models.fields.CharField')(db_index=True, max_length=128, null=True, blank=True),
+                      keep_default=False)
+
+        if not db.dry_run:
+            for msg in orm.Msg.objects.all():
+                msg.db_header = msg.db_title
+                msg.save()
+
+        # Deleting field 'Msg.db_title'
+        db.delete_column('comms_msg', 'db_title')
 
 
     def backwards(self, orm):
-
-        # Removing index on 'Channel', fields ['db_key']
-        db.delete_index('comms_channel', ['db_key'])
-
+        # Adding field 'Msg.db_title'
+        raise RuntimeError
 
     models = {
         'auth.group': {
@@ -68,16 +79,19 @@ class Migration(SchemaMigration):
         },
         'comms.msg': {
             'Meta': {'object_name': 'Msg'},
-            'db_channels': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'db_date_sent': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'db_hide_from_channels': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'db_hide_from_receivers': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'db_hide_from_sender': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'db_date_sent': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
+            'db_header': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
+            'db_hide_from_channles': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_channels_set'", 'null': 'True', 'to': "orm['comms.Channel']"}),
+            'db_hide_from_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_objects_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
+            'db_hide_from_players': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_players_set'", 'null': 'True', 'to': "orm['players.PlayerDB']"}),
             'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             'db_message': ('django.db.models.fields.TextField', [], {}),
-            'db_receivers': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'db_sender': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'sender_set'", 'null': 'True', 'to': "orm['players.PlayerDB']"}),
-            'db_sender_external': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'db_receivers_channels': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'channel_set'", 'null': 'True', 'to': "orm['comms.Channel']"}),
+            'db_receivers_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'receiver_object_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
+            'db_receivers_players': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'receiver_player_set'", 'null': 'True', 'to': "orm['players.PlayerDB']"}),
+            'db_sender_external': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'db_index': 'True'}),
+            'db_sender_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'sender_object_set'", 'null': 'True', 'db_index': 'True', 'to': "orm['objects.ObjectDB']"}),
+            'db_sender_players': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'sender_player_set'", 'null': 'True', 'db_index': 'True', 'to': "orm['players.PlayerDB']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'comms.playerchannelconnection': {
@@ -111,6 +125,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'PlayerDB'},
             'db_cmdset_storage': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'db_is_connected': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['objects.ObjectDB']", 'null': 'True', 'blank': 'True'}),

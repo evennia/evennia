@@ -231,7 +231,7 @@ class MsgManager(models.Manager):
             receiver_restrict = Q()
         # filter by full text
         if freetext:
-            fulltext_restrict = Q(db_title__icontains=freetext) | Q(db_message__icontains=freetext)
+            fulltext_restrict = Q(db_header__icontains=freetext) | Q(db_message__icontains=freetext)
         else:
             fulltext_restrict = Q()
         # execute the query

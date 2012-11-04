@@ -75,11 +75,12 @@ class Msg(SharedMemoryModel):
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set', null=True, help_text="object receivers")
     db_receivers_channels = models.ManyToManyField("Channel", related_name='channel_set', null=True, help_text="channel recievers")
 
-
-    # The actual message and a timestamp. The message field
-    # should itself handle eventual headers etc.
-    db_title = models.CharField('title', max_length=512, null=True, blank=True, db_index=True)
+    # header could be used for meta-info about the message if your system needs it, or as a separate
+    # store for the mail subject line maybe.
+    db_header = models.CharField('header', max_length=128, null=True, blank=True, db_index=True)
+    # the message body itself
     db_message = models.TextField('messsage')
+    # send date
     db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
     # lock storage
     db_lock_storage = models.CharField('locks', max_length=512, blank=True,
@@ -209,23 +210,23 @@ class Msg(SharedMemoryModel):
         self.save()
     channels = property(__channels_get, __channels_set, __channels_del)
 
-    # title property (wraps db_title)
+    # header property (wraps db_header)
     #@property
-    def __title_get(self):
+    def __header_get(self):
         "Getter. Allows for value = self.message"
-        return self.db_title
+        return self.db_header
     #@message.setter
-    def __title_set(self, value):
+    def __header_set(self, value):
         "Setter. Allows for self.message = value"
         if value:
-            self.db_title = value
+            self.db_header = value
             self.save()
     #@message.deleter
-    def __title_del(self):
+    def __header_del(self):
         "Deleter. Allows for del self.message"
-        self.db_title = ""
+        self.db_header = ""
         self.save()
-    title = property(__title_get, __title_set, __title_del)
+    header = property(__header_get, __header_set, __header_del)
 
     # message property (wraps db_message)
     #@property
@@ -338,11 +339,12 @@ class TempMsg(object):
     sender to be given.
 
     """
-    def __init__(self, senders=None, receivers=None, channels=None, message="", title="", lockstring="", hide_from=None):
+    def __init__(self, senders=None, receivers=None, channels=None, message="", header="", type="", lockstring="", hide_from=None):
         self.senders = senders and make_iter(senders) or []
         self.receivers = receivers and make_iter(receivers) or []
         self.channels = channels and make_iter(channels) or []
-        self.title = title
+        self.type = type
+        self.header, header
         self.message = message
         self.lock_storage = lockstring
         self.locks = LockHandler(self)
@@ -544,7 +546,7 @@ class Channel(SharedMemoryModel):
         """
         return PlayerChannelConnection.objects.has_player_connection(player, self)
 
-    def msg(self, msgobj, title=None, senders=None, persistent=True):
+    def msg(self, msgobj, header=None, senders=None, persistent=True):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
@@ -568,7 +570,7 @@ class Channel(SharedMemoryModel):
                 msg = TempMsg()
             if senders:
                 msg.senders = make_iter(senders)
-            msg.title = title
+            msg.header = header
             msg.message = msgobj
             msg.channels = [self] # add this channel
         else:
@@ -586,11 +588,11 @@ class Channel(SharedMemoryModel):
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
         return True
 
-    def tempmsg(self, message, title=None, senders=None):
+    def tempmsg(self, message, header=None, senders=None):
         """
         A wrapper for sending non-persistent messages.
         """
-        self.msg(message, senders=senders, title=title, persistent=False)
+        self.msg(message, senders=senders, header=header, persistent=False)
 
     def connect_to(self, player):
         "Connect the user to this channel"
