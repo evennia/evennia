@@ -30,6 +30,7 @@ from src.utils.utils import is_iter, to_str, crop, make_iter
 
 __all__ = ("Msg", "TempMsg", "Channel", "PlayerChannelConnection", "ExternalChannelConnection")
 
+
 #------------------------------------------------------------
 #
 # Msg

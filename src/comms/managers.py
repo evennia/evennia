@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
+_GA = object.__getattribute__
 _PlayerDB = None
 _ObjectDB = None
 _Channel = None
@@ -58,7 +59,7 @@ def identify_object(inp):
         return inp, None
     # try to identify the type
     try:
-        obj = inp.dbobj # this works for all typeclassed entities
+        obj = _GA(inp, "dbobj") # this works for all typeclassed entities
     except AttributeError:
         obj = inp
     typ = type(obj)
