@@ -306,7 +306,7 @@ help_entry = create_help_entry
 #
 
 def create_message(senderobj, message, channels=None,
-                   receivers=None, locks=None, title=None):
+                   receivers=None, locks=None, header=None):
     """
     Create a new communication message. Msgs are used for all
     player-to-player communication, both between individual players
@@ -320,6 +320,7 @@ def create_message(senderobj, message, channels=None,
     receivers - a player to send to, or a list of them. May be Player objects
                or playernames.
     locks - lock definition string
+    header - mime-type or other optional information for the message
 
     The Comm system is created very open-ended, so it's fully possible
     to let a message both go to several channels and to several receivers
@@ -336,7 +337,7 @@ def create_message(senderobj, message, channels=None,
     new_message.save()
     for sender in make_iter(senderobj):
         new_message.senders = sender
-    new_message.title = title
+    new_message.header = header
     for channel in make_iter(channels):
         new_message.channels = channel
     for receiver in make_iter(receivers):
