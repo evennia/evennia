@@ -19,13 +19,15 @@ ChannelConnect object (this object is necessary to easily
 be able to delete connections on the fly).
 """
 
+from datetime import datetime
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.comms import managers
 from src.comms.managers import identify_object
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import is_iter, to_str, crop
+from src.utils.utils import is_iter, to_str, crop, make_iter
+
 __all__ = ("Msg", "TempMsg", "Channel", "PlayerChannelConnection", "ExternalChannelConnection")
 
 #------------------------------------------------------------
@@ -87,22 +89,6 @@ class Msg(SharedMemoryModel):
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
     db_hide_from_channles = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
 
-    ## These are settable by senders/receivers/channels respectively.
-    ## Stored as a comma-separated string of dbrefs. Can be used by the
-    ## game to mask out messages from being visible in the archive (no
-    ## messages are actually deleted)
-    #db_hide_from_sender = models.BooleanField(default=False)
-    #db_hide_from_receivers = models.CharField(max_length=255, null=True, blank=True)
-    #db_hide_from_channels = models.CharField(max_length=255, null=True, blank=True)
-    ## Storage of lock strings
-    ##db_receivers = models.CharField('receivers', max_length=255, null=True, blank=True,
-    ##       help_text='comma-separated list of object dbrefs this message is aimed at.')
-    ### The channels this message was sent to. Stored as a
-    ### comma-separated string of channel dbrefs. A message can both
-    ### have channel targets and destination objects.
-    ##db_channels = models.CharField('channels', max_length=255, null=True, blank=True,
-    ##       help_text='comma-separated list of channel dbrefs this message is aimed at.')
-
     # Database manager
     objects = managers.MsgManager()
 
@@ -130,18 +116,20 @@ class Msg(SharedMemoryModel):
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
-        obj, typ = identify_object(value)
-        if typ == 'player':
-            self.db_sender_players.add(obj)
-        elif typ == 'object':
-            self.db_sender_objects.add(obj)
-        elif isinstance(typ, basestring):
-            self.db_sender_external = obj
-        elif not obj:
-            return
-        else:
-            raise ValueError
-        self.save()
+        values = make_iter(value)
+        for value in values:
+            obj, typ = identify_object(value)
+            if typ == 'player':
+                self.db_sender_players.add(obj)
+            elif typ == 'object':
+                self.db_sender_objects.add(obj)
+            elif isinstance(typ, basestring):
+                self.db_sender_external = obj
+            elif not obj:
+                return
+            else:
+                raise ValueError(obj)
+            self.save()
     #@sender.deleter
     def __senders_del(self):
         "Deleter. Clears all senders"
@@ -152,17 +140,19 @@ class Msg(SharedMemoryModel):
     senders = property(__senders_get, __senders_set, __senders_del)
 
     def remove_sender(self, obj):
-        "Remove a single sender"
-        obj, typ = identify_object(obj)
-        if typ == 'player':
-            self.db_sender_players.remove(obj)
-        elif typ == 'object':
-            self.db_sender_objects.remove(obj)
-        elif isinstance(obj, basestring) and self.db_sender_external == obj:
-            self.db_sender_external = ""
-        else:
-            raise ValueError
-        self.save()
+        "Remove a single sender or a list of senders"
+        objs = make_iter(obj)
+        for obj in objs:
+            obj, typ = identify_object(obj)
+            if typ == 'player':
+                self.db_sender_players.remove(obj)
+            elif typ == 'object':
+                self.db_sender_objects.remove(obj)
+            elif isinstance(obj, basestring) and self.db_sender_external == obj:
+                self.db_sender_external = ""
+            else:
+                raise ValueError(obj)
+            self.save()
 
     # receivers property
     #@property
@@ -321,7 +311,7 @@ class Msg(SharedMemoryModel):
         "This handles what is shown when e.g. printing the message"
         senders = ",".join(obj.key for obj in self.senders)
         receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
-        return "%s->%s::%s" % (senders, receivers, crop(self.message, width=40))
+        return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 
     def access(self, accessing_obj, access_type='read', default=False):
         """
@@ -347,12 +337,43 @@ class TempMsg(object):
     sender to be given.
 
     """
-    def __init__(self, sender=None, receivers=[], channels=[], message="", permissions=[]):
-        self.senders = sender
-        self.receivers = receivers
+    def __init__(self, senders=None, receivers=None, channels=None, message="", title="", lockstring="", hide_from=None):
+        self.senders = senders and make_iter(senders) or []
+        self.receivers = receivers and make_iter(receivers) or []
+        self.channels = channels and make_iter(channels) or []
+        self.title = title
         self.message = message
-        self.permissions = permissions
-        self.hide_from = None
+        self.lock_storage = lockstring
+        self.locks = LockHandler(self)
+        self.hide_from = hide_from and make_iter(hide_from) or []
+        self.date_sent = datetime.now()
+
+    def __str__(self):
+        "This handles what is shown when e.g. printing the message"
+        senders = ",".join(obj.key for obj in self.senders)
+        receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
+        return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
+
+    def remove_sender(self, obj):
+        "Remove a sender or a list of senders"
+        for o in make_iter(obj):
+            try:
+                self.senders.remove(o)
+            except ValueError:
+                pass # nothing to remove
+
+    def remove_receiver(self, obj):
+        "Remove a sender or a list of senders"
+        for o in make_iter(obj):
+            try:
+                self.senders.remove(o)
+            except ValueError:
+                pass # nothing to remove
+
+    def access(self, accessing_obj, access_type='read', default=False):
+        "checks lock access"
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+
 
 #------------------------------------------------------------
 #
@@ -522,57 +543,53 @@ class Channel(SharedMemoryModel):
         """
         return PlayerChannelConnection.objects.has_player_connection(player, self)
 
-    def msg(self, msgobj, from_obj=None):
+    def msg(self, msgobj, title=None, senders=None, persistent=True):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
         done before calling this method.
 
-        msgobj - a Msg instance or a message string. In the latter case a Msg will be created.
-        from_obj - if msgobj is not an Msg-instance, this is used to create
-                   a message on the fly. If from_obj is None, no Msg object will
-                   be created and the message will be sent without being logged.
+        msgobj - a Msg/TempMsg instance or a message string. If one of the former, the remaining
+              keywords will be ignored. If a string, the other keywords will be used to construct
+              a Msg/TempMsg on the fly.
+        senders (object, player or a list of objects or players) - ignored if msgobj is a Msg or TempMsg.
+                 if msgobj is a string. This will be used for the senders of the newly created Msg or TempMsg.
+        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, otherwise a TempMsg. If
+
         """
+
         if isinstance(msgobj, basestring):
             # given msgobj is a string
-            if from_obj:
-                if isinstance(from_obj, basestring):
-                    msgobj = Msg(db_sender_external=from_obj, db_message=msgobj)
-                else:
-                    msgobj = Msg(db_sender=from_obj, db_message=msgobj)
-                # try to use
-                msgobj.save()
-                msgobj.channels = [self]
-                msg = msgobj.message
+            if persistent:
+                msg = Msg()
+                msg.save()
             else:
-                # this just sends a message, without any sender
-                # (and without storing it in a persistent Msg object)
-                msg = to_str(msgobj)
+                msg = TempMsg()
+            if senders:
+                msg.senders = make_iter(senders)
+            msg.title = title
+            msg.message = msgobj
+            msg.channels = [self] # add this channel
         else:
+            # already in a Msg/TempMsg
             msg = msgobj.message
 
         # get all players connected to this channel and send to them
         for conn in Channel.objects.get_all_connections(self):
             try:
-                conn.player.msg(msg, from_obj)
+                conn.player.msg(msg, senders)
             except AttributeError:
                 try:
-                    conn.to_external(msg, from_obj, from_channel=self)
+                    conn.to_external(msg, senders, from_channel=self)
                 except Exception:
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
         return True
 
-    def tempmsg(self, message):
+    def tempmsg(self, message, title=None, senders=None):
         """
-        A wrapper for sending non-persistent messages. Nothing
-        will be stored in the database.
-
-        message - a Msg object or a text string.
+        A wrapper for sending non-persistent messages.
         """
-        if type(message) == Msg:
-            # extract only the string
-            message = message.message
-        return self.msg(message)
+        self.msg(message, senders=senders, title=title, persistent=False)
 
     def connect_to(self, player):
         "Connect the user to this channel"
