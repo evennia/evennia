@@ -139,7 +139,7 @@ def get_attr_cache(obj, attrname):
     """
     Attribute cache store
     """
-    return _ATTR_CACHE[hashid(obj)].get(attrname)
+    return _ATTR_CACHE[hashid(obj)].get(attrname, None)
 
 def set_attr_cache(obj, attrname, attrobj):
     """

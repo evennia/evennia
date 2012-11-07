@@ -1321,7 +1321,7 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         """
-        if attribute_name not in get_attr_cache(self):
+        if not get_attr_cache(self, attribute_name):
             attrib_obj = _GA(self, "_attribute_class").objects.filter(db_obj=self).filter(
                             db_key__iexact=attribute_name)
             if attrib_obj:
