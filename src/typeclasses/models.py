@@ -157,11 +157,17 @@ class PackedDict(dict):
         self.save()
     def pop(self, *args, **kwargs):
         "Custom pop"
-        super(PackedDict, self).pop(*args, **kwargs)
+        ret = super(PackedDict, self).pop(*args, **kwargs)
         self.save()
+        return ret
     def popitem(self, *args, **kwargs):
         "Custom popitem"
-        super(PackedDict, self).popitem(*args, **kwargs)
+        ret = super(PackedDict, self).popitem(*args, **kwargs)
+        self.save()
+        return ret
+    def setdefault(self, *args, **kwargs):
+        "Custom setdefault"
+        super(PackedDict, self).setdefault(*args, **kwargs)
         self.save()
     def update(self, *args, **kwargs):
         "Custom update"
@@ -222,8 +228,9 @@ class PackedList(list):
         self.save()
     def pop(self, *args, **kwargs):
         "Custom pop"
-        super(PackedList, self).pop(*args, **kwargs)
+        ret = super(PackedList, self).pop(*args, **kwargs)
         self.save()
+        return ret
     def reverse(self, *args, **kwargs):
         "Custom reverse"
         super(PackedList, self).reverse(*args, **kwargs)
