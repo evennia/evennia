@@ -11,9 +11,9 @@ from collections import defaultdict
 from twisted.internet.defer import maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
+from src.server import caches
 from src.server.sessionhandler import SESSIONS
 from src.typeclasses.typeclass import TypeClass
-from src.typeclasses.models import _ATTRIBUTE_CACHE
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
 from src.utils import logger
@@ -449,7 +449,6 @@ class ClearAttributeCache(Script):
         self.persistent = True
     def at_repeat(self):
         "called every 2 hours. Sets a max attr-cache limit to 100 MB." # enough for normal usage?
-        global _ATTRIBUTE_CACHE
-        size = sum([sum([getsizeof(obj) for obj in dic.values()]) for dic in _ATTRIBUTE_CACHE.values()])
-        if size / 1024.0 > _ATTRIBUTE_CACHE_MAXSIZE:
-            _ATTRIBUTE_CACHE = defaultdict(dict)
+        attr_cache_size, _, _ = caches.get_cache_sizes()
+        if attr_cache_size > _ATTRIBUTE_CACHE_MAXSIZE:
+            caches.flush_attr_cache()

@@ -59,38 +59,6 @@ _DA = object.__delattr__
 _PLOADS = pickle.loads
 _PDUMPS = pickle.dumps
 
-
-# Property Cache mechanism.
-
-#def _get_cache(obj, name):
-#    "On-model Cache handler."
-#    try:
-#        return _GA(obj, "_cached_db_%s" % name)
-#    except AttributeError:
-#        val = _GA(obj, "db_%s" % name)
-#        _SA(obj, "_cached_db_%s" % name, val)
-#        return val
-#def set_prop_cache(obj, name, val):
-#    "On-model Cache setter. Also updates database."
-#    _SA(obj, "db_%s" % name, val)
-#    _GA(obj, "save")()
-#    _SA(obj, "_cached_db_%s" % name, val)
-#def del_prop_cache(obj, name):
-#    "On-model cache deleter"
-#    try:
-#        _DA(obj, "_cached_db_%s" % name)
-#    except AttributeError:
-#        pass
-#def _clean_cache(obj):
-#    "On-model cache resetter"
-#    [_DA(obj, cname) for cname in obj.__dict__.keys() if cname.startswith("_cached_db_")]
-
-
-# this cache holds the attributes loaded on objects, one dictionary
-# of attributes per object.
-_ATTRIBUTE_CACHE = defaultdict(dict)
-
-
 #------------------------------------------------------------
 #
 #   Attributes

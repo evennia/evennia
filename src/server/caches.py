@@ -89,9 +89,12 @@ def del_field_cache(obj, name):
 def flush_field_cache(obj):
     "On-model cache resetter"
     hid = hashid(obj)
+    global _FIELD_CACHE
     if hid:
-        global _FIELD_CACHE
         del _FIELD_CACHE[hashid(obj)]
+    else:
+        # clean cache completely
+        _FIELD_CACHE = defaultdict(dict)
 
 # on-object property cache (unrelated to database)
 # Note that the get/set_prop_cache handler do not actually
@@ -128,10 +131,12 @@ def del_prop_cache(obj, name):
 def flush_field_cache(obj):
     "On-model cache resetter"
     hid = hashid(obj)
+    global _PROP_CACHE
     if hid:
-        global _PROP_CACHE
         del _PROP_CACHE[hashid(obj)]
-
+    else:
+        # clean cache completely
+        _PROP_CACHE = defaultdict(dict)
 
 # attribute cache
 
@@ -163,4 +168,8 @@ def flush_attr_cache(obj):
     Flush the attribute cache for this object.
     """
     global _ATTR_CACHE
-    del _ATTR_CACHE[hashid(obj)]
+    if obj:
+        del _ATTR_CACHE[hashid(obj)]
+    else:
+        # clean cache completely
+        _ATTR_CACHE = defaultdict(dict)
