@@ -151,6 +151,10 @@ class PackedDict(dict):
         "assign item to this dict"
         super(PackedDict, self).__setitem__(*args, **kwargs)
         self.save()
+    def __delitem__(self, *args, **kwargs):
+        "delete with del self[key]"
+        super(PackedDict, self).__delitem__(*args, **kwargs)
+        self.save()
     def clear(self, *args, **kwargs):
         "Custom clear"
         super(PackedDict, self).clear(*args, **kwargs)
@@ -209,6 +213,10 @@ class PackedList(list):
     def __setitem__(self, *args, **kwargs):
         "Custom setitem that stores changed list to database."
         super(PackedList, self).__setitem__(*args, **kwargs)
+        self.save()
+    def __delitem__(self, *args, **kwargs):
+        "delete with del self[index]"
+        super(PackedList, self).__delitem__(*args, **kwargs)
         self.save()
     def append(self, *args, **kwargs):
         "Custom append"
