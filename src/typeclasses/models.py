@@ -1342,7 +1342,7 @@ class TypedObject(SharedMemoryModel):
         """
         Get the actual attribute object named attribute_name
         """
-        attrib_obj = get_attribute_cache(self, attribute_name)
+        attrib_obj = get_attr_cache(self, attribute_name)
         if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
                              db_obj=self).filter(db_key__iexact=attribute_name)

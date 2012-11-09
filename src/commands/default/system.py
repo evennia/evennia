@@ -274,6 +274,9 @@ class CmdScripts(MuxCommand):
         else:
             # we want all scripts.
             scripts = ScriptDB.objects.get_all_scripts()
+            if not scripts:
+                caller.msg("No scripts are running.")
+                return
 
         if not scripts:
             string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
@@ -691,47 +694,4 @@ class CmdServerLoad(MuxCommand):
             string += "\n{w On-entity Field cache usage:{n %5.2f MB (%i fields)" % (field_cache_info[1], field_cache_info[0])
             string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
         caller.msg(string)
-
-
-# class CmdPs(MuxCommand):
-#     """
-#     list processes
-
-#     Usage
-#       @ps
-
-#     Shows the process/event table.
-#     """
-#     key = "@ps"
-#     locks = "cmd:perm(ps) or perm(Builders)"
-#     help_category = "System"
-
-#     def func(self):
-#         "run the function."
-
-#         nscripts = ScriptDB.objects.count()
-#         repeat_scripts = ScriptDB.objects.filter(db_interval__gt=0)
-#         nrepeat_scripts = ScriptDB.objects.filter(db_interval__le=0)
-
-#         string = "\n{wNon-timed scripts:{n -- PID name desc --"
-#         if not nrepeat_scripts:
-#             string += "\n <None>"
-#         for script in nrepeat_scripts:
-#             string += "\n {w%i{n %s %s" % (script.id, script.key, script.desc)
-
-#         string += "\n{wTimed scripts:{n -- PID name [time/interval][repeats] desc --"
-#         if not repeat_scripts:
-#             string += "\n <None>"
-#         for script in repeat_scripts:
-#             repeats = "[inf] "
-#             if script.repeats:
-#                 repeats = "[%i] " % script.repeats
-#             time_next = "[inf/inf]"
-#             if script.time_until_next_repeat() != None:
-#                 time_next = "[%d/%d]" % (script.time_until_next_repeat(), script.interval)
-#             string += "\n {w%i{n %s %s%s%s" % (script.id, script.key,
-#                                            time_next, repeats, script.desc)
-#         string += "\n{wTotal{n: %d scripts." % len(all_scripts)
-#         self.caller.msg(string)
-
 
