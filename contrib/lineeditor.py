@@ -150,7 +150,8 @@ class CmdLineInput(CmdEditorBase):
             buf = self.editor.buffer + "\n%s" % self.args
         self.editor.update_buffer(buf)
         if self.editor.echo_mode:
-            self.caller.msg("%02i| %s" % (self.cline + 1, self.args))
+            cline = len(self.editor.buffer.split('\n')) # need to do it here or we will be off one line
+            self.caller.msg("{b%02i|{n %s" % (cline, self.args))
 
 class CmdEditorGroup(CmdEditorBase):
     """
@@ -160,6 +161,7 @@ class CmdEditorGroup(CmdEditorBase):
     aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
                ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i",
                ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo"]
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         """
@@ -209,7 +211,7 @@ class CmdEditorGroup(CmdEditorBase):
             # quit. If not saved, will ask
             if self.editor.unsaved:
                 prompt_yesno(caller, "Save before quitting?",
-                             yescode = "self.caller.ndb._lineeditor.save_buffer()\nself.caller.ndb._lineeditor.quit()",
+                             yescode = "self.caller.ndb._lineeditor.save_buffer(quitting=True)\nself.caller.ndb._lineeditor.quit()",
                              nocode = "self.caller.msg(self.caller.ndb._lineeditor.quit())", default="Y")
             else:
                 string = editor.quit()
@@ -269,8 +271,8 @@ class CmdEditorGroup(CmdEditorBase):
                 string = "Copy buffer is empty."
             else:
                 buf = linebuffer[:lstart] + editor.copy_buffer + linebuffer[lstart:]
-            editor.update_buffer(buf)
-            string = "Copied buffer %s to %s." % (editor.copy_buffer, self.lstr)
+                editor.update_buffer(buf)
+                string = "Copied buffer %s to %s." % (editor.copy_buffer, self.lstr)
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split('\n')
@@ -381,11 +383,24 @@ class LineEditor(object):
     itself.
     """
 
-    def __init__(self, caller, loadcode="", savecode="", key=""):
+    def __init__(self, caller,
+                 loadfunc=None, loadfunc_args=None,
+                 savefunc=None, savefunc_args=None,
+                 quitfunc=None, quitfunc_args=None,
+                 key=""):
         """
         caller - who is using the editor
-        loadcode - code to execute in order to load already existing text into the buffer
-        savecode - code to execute in order to save the result
+
+        loadfunc - this will be called as func(*loadfunc_args) when the editor is first started, e.g. for pre-loading text into it.
+        loadfunc_args - optional tuple of arguments to supply to loadfunc.
+        savefunc - this will be called as func(*savefunc_args) when the save-command is given and is
+                   used to actually determine where/how result is saved. It should return True if save was successful and
+                   also handle any feedback to the user.
+        savefunc_args - optional tuple of arguments to supply to savefunc.
+        quitfunc - this will optionally e called as func(*quitfunc_args) when the editor is exited. If defined, it should
+                   handle all wanted feedback to the user.
+        quitfunc_args - optional tuple of arguments to supply to quitfunc.
+
         key = an optional key for naming this session (such as which attribute is being edited)
         """
         self.key = key
@@ -393,11 +408,24 @@ class LineEditor(object):
         self.caller.ndb._lineeditor = self
         self.buffer = ""
         self.unsaved = False
-        if loadcode:
+
+        if loadfunc:
+            # execute command for loading initial data
             try:
-                exec(loadcode)
+                args = loadfunc_args or ()
+                self.buffer = loadfunc(*args)
             except Exception, e:
-                caller.msg("%s\n{rBuffer loadcode failed. Could not load initial data.{n" % e)
+                caller.msg("%s\n{rBuffer load function error. Could not load initial data.{n" % e)
+        if not savefunc:
+            # If no save function is defined, save an error-reporting function
+            err = "{rNo save function defined. Buffer cannot be saved.{n"
+            caller.msg(err)
+            savefunc = lambda:  self.caller.msg(err)
+        self.savefunc = savefunc
+        self.savefunc_args = savefunc_args or ()
+        self.quitfunc = quitfunc
+        self.quitfunc_args = quitfunc_args or ()
+
 
         # Create the commands we need
         cmd1 = CmdLineInput()
@@ -414,8 +442,6 @@ class LineEditor(object):
 
         # store the original version
         self.pristine_buffer = self.buffer
-
-        self.savecode = savecode
         self.sep = "-"
 
         # undo operation buffer
@@ -447,19 +473,33 @@ class LineEditor(object):
 
     def quit(self):
         "Cleanly exit the editor."
+        if self.quitfunc:
+            # call quit function hook if available
+            try:
+                self.quitfunc(*self.quitfunc_args)
+            except Exception, e:
+                self.caller.msg("%s\n{Quit function gave an error. Skipping.{n" % e)
         del self.caller.ndb._lineeditor
         self.caller.cmdset.delete(EditorCmdSet)
+        if self.quitfunc:
+            # if quitfunc is defined, it should manage exit messages.
+            return ""
         return "Exited editor."
 
     def save_buffer(self):
-        "Saves the content of the buffer"
+        """
+            Saves the content of the buffer. The 'quitting' argument is a bool
+        indicating whether or not the editor intends to exit after saving.
+        """
         if self.unsaved:
             try:
-                exec(self.savecode)
-                self.unsaved = False
-                return "Buffer saved."
+                if self.savefunc(*self.savefunc_args):
+                    # Save codes should return a true value to indicate save worked.
+                    # The saving function is responsible for any status messages.
+                    self.unsaved = False
+                return ""
             except Exception, e:
-                return "%s\n{rSave code gave an error. Buffer not saved." % e
+                return "%s\n{rSave function gave an error. Buffer not saved." % e
         else:
             return "No changes need saving."
 
@@ -559,8 +599,6 @@ class LineEditor(object):
         return string
 
 
-
-
 #
 # Editor access command for editing a given attribute on an object.
 #
@@ -589,22 +627,29 @@ class CmdEditor(Command):
         if not self.args or not '/' in self.args:
             self.caller.msg("Usage: @editor <obj>/<attrname>")
             return
-        objname, attrname = [part.strip() for part in self.args.split("/")]
-        obj = self.caller.search(objname)
-        if not obj:
+        self.objname, self.attrname = [part.strip() for part in self.args.split("/", 1)]
+        self.obj = self.caller.search(self.objname)
+        if not self.obj:
             return
 
-        # the load/save codes define what the editor shall do when wanting to
-        # save the result of the editing. The editor makes self.buffer and
-        # self.caller available for this code - self.buffer holds the editable text.
+        # hook save/load functions
+        def load_attr():
+            "inital loading of buffer data from given attribute."
+            target = self.obj.get_attribute(self.attrname)
+            if target != None and not isinstance(target, basestring):
+                typ = type(target).__name__
+                self.caller.msg("{RWARNING! Saving this buffer will overwrite the current attribute (of type %s) with a string!{n" % typ)
+            return target and str(target) or ""
+        def save_attr():
+            "Save line buffer to given attribute name. This should return True if successful and also report its status."
+            self.obj.set_attribute(self.attrname, self.editor.buffer)
+            self.caller.msg("Saved.")
+            return True
+        def quit_hook():
+            "Example quit hook. Since it's given, it's responsible for giving feedback messages."
+            self.caller.msg("Exited Editor.")
 
-        loadcode = "obj = self.caller.search('%s')\n" % obj.id
-        loadcode += "if obj.db.%s: self.buffer = obj.db.%s" % (attrname, attrname)
 
-        savecode = "obj = self.caller.search('%s')\n" % obj.id
-        savecode += "obj.db.%s = self.buffer" % attrname
-
-        editor_key = "%s/%s" % (objname, attrname)
-
+        editor_key = "%s/%s" % (self.objname, self.attrname)
         # start editor, it will handle things from here.
-        LineEditor(self.caller, loadcode=loadcode, savecode=savecode, key=editor_key)
+        self.editor = LineEditor(self.caller, loadfunc=load_attr, savefunc=save_attr, quitfunc=quit_hook, key=editor_key)
