@@ -1241,24 +1241,20 @@ class TypedObject(SharedMemoryModel):
             # this is an actual class object - build the path
             cls = new_typeclass.__class__
             new_typeclass = "%s.%s" % (cls.__module__, cls.__name__)
+        else:
+            new_typeclass = "%s" % to_str(new_typeclass)
 
         # Try to set the new path
         # this will automatically save to database
-
         old_typeclass_path = self.typeclass_path
-        self.typeclass_path = new_typeclass.strip()
+        _SA(self, "typeclass_path", new_typeclass.strip())
         # this will automatically use a default class if
         # there is an error with the given typeclass.
         new_typeclass = self.typeclass
-        if self.typeclass_path == new_typeclass.path:
-            # the typeclass loading worked as expected
-            _DA(self, "_cached_db_typeclass_path")
-            _SA(self, "_cached_typeclass", None)
-        elif no_default:
+        if self.typeclass_path != new_typeclass.path and no_default:
             # something went wrong; the default was loaded instead,
             # and we don't allow that; instead we return to previous.
             _SA(self, "typeclass_path", old_typeclass_path)
-            _SA(self, "_cached_typeclass", None)
             return False
 
         if clean_attributes:
