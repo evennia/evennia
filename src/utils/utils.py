@@ -230,6 +230,7 @@ def datetime_format(dtobj):
     """
     Takes a datetime object instance (e.g. from django's DateTimeField)
     and returns a string describing how long ago that date was.
+
     """
 
     year, month, day = dtobj.year, dtobj.month, dtobj.day

@@ -344,7 +344,7 @@ class TempMsg(object):
         self.receivers = receivers and make_iter(receivers) or []
         self.channels = channels and make_iter(channels) or []
         self.type = type
-        self.header, header
+        self.header = header
         self.message = message
         self.lock_storage = lockstring
         self.locks = LockHandler(self)
@@ -550,29 +550,32 @@ class Channel(SharedMemoryModel):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
-        done before calling this method.
+        done before calling this method. The optional keywords are not used if persistent is False.
 
         msgobj - a Msg/TempMsg instance or a message string. If one of the former, the remaining
-              keywords will be ignored. If a string, the other keywords will be used to construct
-              a Msg/TempMsg on the fly.
-        senders (object, player or a list of objects or players) - ignored if msgobj is a Msg or TempMsg.
-                 if msgobj is a string. This will be used for the senders of the newly created Msg or TempMsg.
-        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, otherwise a TempMsg. If
+              keywords will be ignored. If a string, this will either be sent as-is (if persistent=False) or
+              it will be used together with header and senders keywords to create a Msg instance on the fly.
+        senders (object, player or a list of objects or players) - ignored if msgobj is a Msg or TempMsg, or if
+                 persistent=False.
+        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, using
+                header and senders keywords. If False, other keywords will be ignored.
 
         """
 
         if isinstance(msgobj, basestring):
             # given msgobj is a string
             if persistent:
-                msg = Msg()
-                msg.save()
+                msg = msgobj
+                msgobj = Msg()
+                msgobj.save()
+                if senders:
+                    msgobj.senders = make_iter(senders)
+                msgobj.header = header
+                msgobj.message = msg
+                msgobj.channels = [self] # add this channel
             else:
-                msg = TempMsg()
-            if senders:
-                msg.senders = make_iter(senders)
-            msg.header = header
-            msg.message = msgobj
-            msg.channels = [self] # add this channel
+                # just use the msg as-is
+                msg = msgobj
         else:
             # already in a Msg/TempMsg
             msg = msgobj.message

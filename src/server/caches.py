@@ -41,6 +41,8 @@ def hashid(obj):
     between different typeclassed entities such as scripts and
     objects (which may still have the same id).
     """
+    if not obj:
+        return obj
     try:
         hid = _GA(obj, "_hashid")
     except AttributeError:
@@ -86,7 +88,7 @@ def del_field_cache(obj, name):
         except KeyError:
             pass
 
-def flush_field_cache(obj):
+def flush_field_cache(obj=None):
     "On-model cache resetter"
     hid = hashid(obj)
     global _FIELD_CACHE
@@ -128,7 +130,7 @@ def del_prop_cache(obj, name):
         del _PROP_CACHE[hashid(obj)][name]
     except KeyError:
         pass
-def flush_field_cache(obj):
+def flush_field_cache(obj=None):
     "On-model cache resetter"
     hid = hashid(obj)
     global _PROP_CACHE
@@ -151,7 +153,9 @@ def set_attr_cache(obj, attrname, attrobj):
     Cache an attribute object
     """
     global _ATTR_CACHE
-    _ATTR_CACHE[hashid(obj)][attrname] = attrobj
+    hid = hashid(obj)
+    if hid:
+        _ATTR_CACHE[hid][attrname] = attrobj
 
 def del_attr_cache(obj, attrname):
     """
@@ -163,7 +167,7 @@ def del_attr_cache(obj, attrname):
     except KeyError:
         pass
 
-def flush_attr_cache(obj):
+def flush_attr_cache(obj=None):
     """
     Flush the attribute cache for this object.
     """
