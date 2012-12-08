@@ -114,7 +114,8 @@ class Msg(SharedMemoryModel):
     #@property
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return list(self.db_sender_players.all()) + list(self.db_sender_objects.all())
+        return [hasattr(o, "typeclass") and o.typeclass or o for o in
+                list(self.db_sender_players.all()) + list(self.db_sender_objects.all())]
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
@@ -160,7 +161,8 @@ class Msg(SharedMemoryModel):
     #@property
     def __receivers_get(self):
         "Getter. Allows for value = self.receivers. Returns three lists of receivers: players, objects and channels."
-        return list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())
+        return [hasattr(o, "typeclass") and o.typeclass or o for o in
+                list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())]
     #@receivers.setter
     def __receivers_set(self, value):
         "Setter. Allows for self.receivers = value. This appends a new receiver to the message."
