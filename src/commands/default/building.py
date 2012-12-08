@@ -1750,7 +1750,7 @@ class CmdExamine(ObjManipCommand):
 
             self.player_mode = "player" in self.switches or obj_name.startswith('*')
 
-            obj = caller.search(obj_name, player=self.player_mode)
+            obj = caller.search(obj_name, player=self.player_mode, global_dbref=True)
             if not obj:
                 continue
 

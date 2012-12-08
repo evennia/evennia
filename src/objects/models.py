@@ -508,6 +508,7 @@ class ObjectDB(TypedObject):
 
     def search(self, ostring,
                global_search=False,
+               global_dbref=False,
                attribute_name=None,
                use_nicks=False, location=None,
                player=False,
@@ -521,6 +522,7 @@ class ObjectDB(TypedObject):
                        start of ostring.
         global_search: Search all objects, not just the current
                        location/inventory. This is overruled if location keyword is given.
+        global_dbref: Search globally -only- if a valid #dbref is given, otherwise local.
         attribute_name: (string) Which attribute to match (if None, uses default 'name')
         use_nicks : Use nickname replace (off by default)
         location : If None, use caller's current location, and caller.contents.
@@ -558,6 +560,7 @@ class ObjectDB(TypedObject):
         if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
             return self
 
+
         if use_nicks:
             nick = None
             nicktype = "object"
@@ -574,7 +577,7 @@ class ObjectDB(TypedObject):
                     break
 
         candidates=None
-        if global_search:
+        if global_search or (global_dbref and ostring.startswith("#")):
             # only allow exact matching if searching the entire database
             exact = True
         elif location:

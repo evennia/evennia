@@ -92,7 +92,8 @@ class Object(TypeClass):
 
         * Helper methods (see src.objects.objects.py for full headers)
 
-         search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
+         search(ostring, global_search=False, global_dbref=False, attribute_name=None,
+                use_nicks=False, location=None, ignore_errors=False, player=False)
          execute_cmd(raw_string)
          msg(message, from_obj=None, data=None)
          msg_contents(message, exclude=None, from_obj=None, data=None)
@@ -150,6 +151,7 @@ class Object(TypeClass):
 
     def search(self, ostring,
                global_search=False,
+               global_dbref=False,
                attribute_name=None,
                use_nicks=False,
                location=None,
@@ -195,6 +197,7 @@ class Object(TypeClass):
         """
         return self.dbobj.search(ostring,
                                  global_search=global_search,
+                                 global_dbref=global_dbref,
                                  attribute_name=attribute_name,
                                  use_nicks=use_nicks,
                                  location=location,
