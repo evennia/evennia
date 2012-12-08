@@ -288,7 +288,6 @@ class CmdLightSourceOn(Command):
             # look around
             self.caller.execute_cmd("look")
 
-
 class CmdLightSourceOff(Command):
     """
     Switch off the lightsource.

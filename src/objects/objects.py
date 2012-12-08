@@ -774,8 +774,6 @@ class Character(Object):
                                  "call:false()"])) # no commands can be called on character from outside
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_DEFAULT, permanent=True)
-        # no other character should be able to call commands on the Character.
-        self.cmdset.outside_access = False
 
     def at_object_creation(self):
         """

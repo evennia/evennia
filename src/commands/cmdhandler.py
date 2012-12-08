@@ -122,6 +122,8 @@ def get_and_merge_cmdsets(caller):
                 yield obj.at_cmdset_get()
             except Exception:
                 logger.log_trace()
+        # the call-type lock is checked here, it makes sure a player is not seeing e.g. the commands
+        # on a fellow player (which is why the no_superuser_bypass must be True)
         local_objects_cmdsets = yield [obj.cmdset.current for obj in local_objlist
                                        if (obj.cmdset.current and obj.locks.check(caller, 'call', no_superuser_bypass=True))]
         for cset in local_objects_cmdsets:

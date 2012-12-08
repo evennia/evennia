@@ -232,7 +232,6 @@ class Player(TypeClass):
 
         # The ooc player cmdset
         self.cmdset.add_default(CMDSET_OOC, permanent=True)
-        self.cmdset.outside_access = False
 
     def at_player_creation(self):
         """
