@@ -11,7 +11,7 @@ from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
-           "CmdInventory", "CmdGet", "CmdDrop", "CmdQuit", "CmdWho",
+           "CmdInventory", "CmdGet", "CmdDrop", "CmdGive", "CmdQuit", "CmdWho",
            "CmdSay", "CmdPose", "CmdEncoding", "CmdAccess",
            "CmdOOCLook", "CmdIC", "CmdOOC", "CmdColorTest")
 
@@ -343,6 +343,42 @@ class CmdDrop(MuxCommand):
                                          exclude=caller)
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
+
+
+class CmdGive(MuxCommand):
+    """
+    give away things
+
+    Usage:
+      give <inventory obj> = <target>
+
+    Gives an items from your inventory to another character,
+    placing it in their inventory.
+    """
+    key = "give"
+    locks = "cmd:all()"
+
+    def func(self):
+        "Implement give"
+
+        caller = self.caller
+        if not self.args or not self.rhs:
+            caller.msg("Usage: give <inventory object> = <target>")
+            return
+        to_give = caller.search(self.lhs)
+        target = caller.search(self.rhs)
+        if not (to_give and target):
+            return
+        if target == caller:
+            caller.msg("You keep %s to yourself." % to_give.key)
+            return
+        if not to_give.location == caller:
+            caller.msg("You are not holding %s." % to_give.key)
+            return
+        # give object
+        to_give.location = target
+        caller.msg("You give %s to %s." % (to_give.key, target.key))
+        target.msg("%s gives you %s." % (caller.key, to_give.key))
 
 
 class CmdQuit(MuxCommand):

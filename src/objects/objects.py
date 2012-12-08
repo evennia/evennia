@@ -387,13 +387,11 @@ class Object(TypeClass):
         parent doesn't work.
         """
         try:
-            return _GA(_GA(self, "dbobj"),"dbid") == other \
-                or _GA(_GA(self, "dbobj"),"dbid") == _GA(_GA(other,"dbobj"),"dbid")
+                return _GA(_GA(self, "dbobj"),"dbid") == _GA(_GA(other,"dbobj"),"dbid")
         except AttributeError:
            # compare players instead
             try:
-                return _GA(_GA(_GA(self, "dbobj"),"player"),"uid") == other \
-                    or _GA(_GA(_GA(self, "dbobj"),"player"),"uid") == _GA(_GA(other, "player"),"uid")
+                return _GA(_GA(_GA(self, "dbobj"),"player"),"uid") == _GA(_GA(other, "player"),"uid")
             except AttributeError:
                 return False
 

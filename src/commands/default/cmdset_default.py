@@ -27,6 +27,7 @@ class DefaultCmdSet(CmdSet):
         self.add(general.CmdNick())
         self.add(general.CmdGet())
         self.add(general.CmdDrop())
+        self.add(general.CmdGive())
         self.add(general.CmdSay())
         self.add(general.CmdAccess())
         self.add(general.CmdColorTest())

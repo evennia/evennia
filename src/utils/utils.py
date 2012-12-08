@@ -350,13 +350,10 @@ def to_str(obj, encoding='utf-8', force_string=False):
     if force_string and not isinstance(obj, basestring):
         # some sort of other object. Try to
         # convert it to a string representation.
-        if hasattr(obj, '__str__'):
-            obj = obj.__str__()
-        elif hasattr(obj, '__unicode__'):
-            obj = obj.__unicode__()
-        else:
-            # last resort
+        try:
             obj = str(obj)
+        except Exception:
+            obj = unicode(obj)
 
     if isinstance(obj, basestring) and isinstance(obj, unicode):
         try:

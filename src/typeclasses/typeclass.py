@@ -157,10 +157,9 @@ class TypeClass(object):
         dbobj-recognized comparison
         """
         try:
-            return other == self or other == _GA(self, dbobj) or other == _GA(self, dbobj).user
+            return _GA(_GA(self, "dbobj"), "dbid") == _GA(_GA(other, "dbobj"), "dbid")
         except AttributeError:
-            # if self.dbobj.user fails it means the two previous comparisons failed already
-            return False
+            return id(self) == id(other)
 
 
     def __delattr__(self, propname):

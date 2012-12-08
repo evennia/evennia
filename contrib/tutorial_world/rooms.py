@@ -180,9 +180,9 @@ class CmdLookDark(Command):
                 lightsource = lightsources[0]
             else:
                 # create the light source from scratch.
-                lightsource = create_object(LightSource, key="torch")
+                lightsource = create_object(LightSource, key="splinter")
             lightsource.location = caller
-            string = "Your fingers bump against a piece of wood in a corner. Smelling it you sense the faint smell of tar. A {c%s{n!"
+            string = "Your fingers bump against a splinter of wood in a corner. It smells of resin and seems dry enough to burn!"
             string += "\nYou pick it up, holding it firmly. Now you just need to {wlight{n it using the flint and steel you carry with you."
             caller.msg(string % lightsource.key)
 

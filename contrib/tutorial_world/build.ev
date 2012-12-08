@@ -673,15 +673,16 @@ hole
 # light source.
 #
 @desc
- {YThe {yflickering light{Y of the torch reveals a small square
+ {YThe {yflickering light{Y of your makeshift light reveals a small square
  cell. It does not seem like you are still in the castle, for the
  stone of the walls are chiseled crudely and drip with water and mold.
 
  One wall holds a solid iron-cast door. While rusted and covered with
  lichen it seems very sturdy. In a corner lies what might have once
- been a bed or a bench but is now nothing more than a pile or rotting
- splinters. One of the walls are covered with a thick cover of black
- roots where they have broken through the cracks.{n
+ been a bed or a bench but is now nothing more than a pile of splinters,
+ one of which you are using for light. One of the walls is covered with a
+ thick cover of black roots having broken through the cracks from the
+ outside.{n
 #
 @create/drop iron-cast door;iron;door;iron-cast
 #
