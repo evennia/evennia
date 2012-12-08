@@ -1673,7 +1673,7 @@ class CmdExamine(ObjManipCommand):
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
             # list the current cmdsets
-            all_cmdsets = obj.cmdset.all() + (hasattr(obj, "player") and obj.player.cmdset.all() or [])
+            all_cmdsets = obj.cmdset.all() + (hasattr(obj, "player") and obj.player and obj.player.cmdset.all() or [])
             all_cmdsets.sort(key=lambda x:x.priority, reverse=True)
             string += headers["cmdset"] % ("\n ".join("%s (prio %s)" % (cmdset.path, cmdset.priority) for cmdset in all_cmdsets))
             #cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])
