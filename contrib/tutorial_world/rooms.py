@@ -184,7 +184,7 @@ class CmdLookDark(Command):
             lightsource.location = caller
             string = "Your fingers bump against a splinter of wood in a corner. It smells of resin and seems dry enough to burn!"
             string += "\nYou pick it up, holding it firmly. Now you just need to {wlight{n it using the flint and steel you carry with you."
-            caller.msg(string % lightsource.key)
+            caller.msg(string)
 
 class CmdDarkHelp(Command):
     """
@@ -663,6 +663,10 @@ class IntroRoom(TutorialRoom):
 class OutroRoom(TutorialRoom):
     """
     Outro room.
+
+    One can set an attribute list "wracklist" with weapon-rack ids
+        in order to clear all weapon rack ids from the character.
+
     """
 
     def at_object_receive(self, character, source_location):
@@ -670,8 +674,12 @@ class OutroRoom(TutorialRoom):
         Do cleanup.
         """
         if character.has_player:
+            if self.db.wracklist:
+                for wrackid in self.db.wracklist:
+                    character.del_attribute(wrackid)
+            del character.db.health_max
             del character.db.health
-            del character.db.has_climbed
+            del character.db.last_climbed
             del character.db.puzzle_clue
             del character.db.combat_parry_mode
             del character.db.tutorial_bridge_position

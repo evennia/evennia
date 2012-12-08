@@ -383,19 +383,17 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             contents = accessing_obj.obj.contents
         except AttributeError:
             return False
-
     def check_holds(objid):
         # helper function. Compares both dbrefs and keys/aliases.
         objid = str(objid)
-        dbref = utils.dbref(objid)
+        dbref = utils.dbref(objid, reqhash=False)
         if dbref and any((True for obj in contents if obj.dbid == dbref)):
             return True
         objid = objid.lower()
         return any((True for obj in contents
                     if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases]))
-
     if not args:
-        # holds() - check if accessed_obj is held by accessing_ob
+        # holds() - check if accessed_obj or accessed_obj.obj is held by accessing_obj
         try:
             if check_holds(accessed_obj.dbid):
                 return True

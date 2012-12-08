@@ -114,10 +114,9 @@ class AttackTimer(Script):
             #return
         else:
             #dead mode. Wait for respawn.
-            dead_at = self.db.dead_at
-            if not dead_at:
-                self.db.dead_at = time.time()
-            if (time.time() - self.db.dead_at) > self.db.dead_timer:
+            if not self.obj.db.dead_at:
+                self.obj.db.dead_at = time.time()
+            if (time.time() - self.obj.db.dead_at) > self.obj.db.dead_timer:
                 self.obj.reset()
 
 class Enemy(Mob):
@@ -332,12 +331,12 @@ class Enemy(Mob):
                     string += "You fear it's only a matter of time before it materializes somewhere again."
                 self.location.msg_contents(string, exclude=[attacker])
 
-                # put enemy in dead mode and hide it from view. IrregularEvent will bring it back later.
+                # put enemy in dead mode and hide it from view. AttackTimer will bring it back later.
+                self.db.dead_at = time.time()
                 self.db.roam_mode = False
                 self.db.pursue_mode = False
                 self.db.battle_mode = False
                 self.db.dead_mode = True
-                self.db.dead_at = time.time()
                 self.location = None
             else:
                 self.location.msg_contents("%s wails, shudders and writhes." % self.key)

@@ -559,7 +559,7 @@ class CrumblingWall(TutorialObject, Exit):
         "called when the object is first created."
         super(CrumblingWall, self).at_object_creation()
 
-        self.aliases = ["secret passage", "crack", "opening", "secret door"]
+        self.aliases = ["secret passage", "passage", "crack", "opening", "secret door"]
         # this is assigned first when pushing button, so assign this at creation time!
         self.db.destination = 2
         # locks on the object directly transfer to the exit "command"
@@ -722,7 +722,7 @@ class CmdAttack(Command):
             ostring = "%s slash at %s with %s. " % (self.caller.key, target.key, self.obj.key)
             self.caller.db.combat_parry_mode = False
         else:
-            self.caller.msg("You fumble with your weapon, unable to choose an appropriate action...")
+            self.caller.msg("You fumble with your weapon, unsure of whether to stab, slash or parry ...")
             self.caller.location.msg_contents("%s fumbles with their weapon." % self.obj.key)
             self.caller.db.combat_parry_mode = False
             return
@@ -807,12 +807,12 @@ class CmdGetWeapon(Command):
         "Implement the command"
 
         rack_id = self.obj.db.rack_id
-        if eval("self.caller.db.%s" % rack_id):
-            # we don't allow to take more than one weapon from rack.
-            self.caller.msg("%s has no more to offer." % self.obj.name)
+        if self.caller.get_attribute(rack_id):
+            # we don't allow a player to take more than one weapon from rack.
+            self.caller.msg("%s has no more to offer you." % self.obj.name)
         else:
             dmg, name, aliases, desc, magic = self.obj.randomize_type()
-            new_weapon = create_object(Weapon, key=name, aliases=aliases,location=self.caller)
+            new_weapon = create_object(Weapon, key=name, aliases=aliases,location=self.caller, home=self.caller)
             new_weapon.db.rack_id = rack_id
             new_weapon.db.damage = dmg
             new_weapon.db.desc = desc
@@ -825,7 +825,7 @@ class CmdGetWeapon(Command):
             else:
                 self.caller.msg(ostring)
             # tag the caller so they cannot keep taking objects from the rack.
-            exec("self.caller.db.%s = True" % rack_id)
+            self.caller.set_attribute(rack_id, True)
 
 
 class CmdSetWeaponRack(CmdSet):
@@ -848,7 +848,7 @@ class WeaponRack(TutorialObject):
     def at_object_creation(self):
         "called at creation"
         self.cmdset.add_default(CmdSetWeaponRack, permanent=True)
-        self.rack_id = "weaponrack_1"
+        self.db.rack_id = "weaponrack_1"
         self.db.min_dmg = 1.0
         self.db.max_dmg = 4.0
         self.db.magic = False

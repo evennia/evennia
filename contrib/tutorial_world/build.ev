@@ -1196,6 +1196,9 @@ stairs down
 # to tutorial outro
 @tel tut#17
 #
+# we want to clear the weapon-rack ids on the character when exiting.
+@set here/wracklist = ["rack_sarcophagus"]
+#
 # this quits the tutorial and cleans up all variables that was .
 @desc
  {gThanks for trying out this little Evennia tutorial!
