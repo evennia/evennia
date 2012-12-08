@@ -429,6 +429,8 @@ class Attribute(SharedMemoryModel):
         self.no_cache = False
         self.db_value = to_unicode(_PDUMPS(to_str(new_value)))
         self.save()
+        # call attribute hook
+        self.at_set(new_value)
 
     #@value.deleter
     def __value_del(self):
@@ -618,6 +620,12 @@ class Attribute(SharedMemoryModel):
         default - what to return if no lock of access_type was found
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
+
+    def at_set(self, new_value):
+        """
+        Hook method called when the attribute changes value.
+        """
+        pass
 
 
 #------------------------------------------------------------
