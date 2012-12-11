@@ -139,9 +139,9 @@ class ServerSession(Session):
             uaccount.last_login = datetime.now()
             uaccount.save()
             self.logged_in = False
+            if not self.sessionhandler.sessions_from_player(player):
+                player.is_connected = False
         self.sessionhandler.disconnect(self)
-        if not self.sessionhandler.sessions_from_player(player):
-            player.is_connected = False
 
     def get_player(self):
         """

@@ -8,6 +8,9 @@ too game-specific to be a part of the main Evennia game server.  These
 modules are not used unless you explicitly import them. See each file
 for more detailed instructions on how to install. 
 
+Modules in this folder is distributed under the same licence as 
+Evennia unless noted differently in the individual module. 
+
 If you want to edit, tweak or expand on this code you should copy the
 things you want from here into game/gamesrc and change them there.
 
@@ -20,7 +23,7 @@ things you want from here into game/gamesrc and change them there.
       to the user for accepting an action. Includes a simple new
       command 'menu' for testing and debugging.
 
-* Evennia Lineeditor (Griatch 2011) - A powerful line-by-line editor
+* Evennia Line editor (Griatch 2011) - A powerful line-by-line editor
       for editing text in-game. Mimics the command names of the famous
       VI text editor. Supports undo/redo, search/replace,
       regex-searches, buffer formatting, indenting etc. It comes with
