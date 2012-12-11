@@ -300,6 +300,11 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     """
     aliases = ["@describe", "@detail"]
 
+    def reset_times(self, obj):
+        "By deleteting the caches we force a re-load."
+        del obj.ndb.last_season
+        del ndb.last_timeslot
+
     def func(self):
         "Define extended command"
         caller = self.caller
@@ -327,10 +332,12 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 if self.lhs in location.db.details:
                     del location.db.detail
                 caller.msg("Detail %s deleted, if it existed." % self.lhs)
+                self.reset(location)
                 return
             # setting a detail
             location.db.details[self.lhs] = self.rhs
             caller.msg("Set Detail %s to '%s'." % (self.lhs, self.rhs))
+            self.reset(location)
             return
         else:
             # we are doing a @desc call
@@ -358,20 +365,20 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 elif switch == 'autumn': location.db.autumn_desc = self.args
                 elif switch == 'winter': location.db.winter_desc = self.args
                 # clear flag to force an update
-                location.ndb.last_season = None
+                self.reset(location)
                 caller.msg("Seasonal description was set on %s." % location.key)
             elif self.rhs:
-                # Not a seasonal desc, and we have an =
+                # Not a seasonal desc, and we have an =. Assumed not extendedroom.
                 obj = caller.search(self.lhs)
                 if not obj:
                     return
                 obj.db.desc = self.rhs
                 caller.msg("The description was set on %s." % obj.key)
             else:
-                # set a normal non-seasonal description (fallback) on room
-                obj = caller.location
-                obj.db.general_desc = self.args
-                obj.db.desc = self.args  # compatability
+                # set a normal non-seasonal description (fallback) on extended room
+                location.db.general_desc = self.args
+                location.db.desc = self.args  # compatability
+                self.reset(obj)
                 caller.msg("General description was set on %s." % obj.key)
 
 # Simple command to view the current time and season
