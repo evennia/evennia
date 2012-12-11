@@ -378,8 +378,8 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 # set a normal non-seasonal description (fallback) on extended room
                 location.db.general_desc = self.args
                 location.db.desc = self.args  # compatability
-                self.reset_times(obj)
-                caller.msg("General description was set on %s." % obj.key)
+                self.reset_times(location)
+                caller.msg("General description was set on %s." % location.key)
 
 # Simple command to view the current time and season
 
