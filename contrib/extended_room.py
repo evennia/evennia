@@ -332,12 +332,12 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 if self.lhs in location.db.details:
                     del location.db.detail
                 caller.msg("Detail %s deleted, if it existed." % self.lhs)
-                self.reset(location)
+                self.reset_times(location)
                 return
             # setting a detail
             location.db.details[self.lhs] = self.rhs
             caller.msg("Set Detail %s to '%s'." % (self.lhs, self.rhs))
-            self.reset(location)
+            self.reset_times(location)
             return
         else:
             # we are doing a @desc call
@@ -365,7 +365,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 elif switch == 'autumn': location.db.autumn_desc = self.args
                 elif switch == 'winter': location.db.winter_desc = self.args
                 # clear flag to force an update
-                self.reset(location)
+                self.reset_times(location)
                 caller.msg("Seasonal description was set on %s." % location.key)
             elif self.rhs:
                 # Not a seasonal desc, and we have an =. Assumed not extendedroom.
@@ -378,7 +378,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 # set a normal non-seasonal description (fallback) on extended room
                 location.db.general_desc = self.args
                 location.db.desc = self.args  # compatability
-                self.reset(obj)
+                self.reset_times(obj)
                 caller.msg("General description was set on %s." % obj.key)
 
 # Simple command to view the current time and season
