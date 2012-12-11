@@ -302,8 +302,8 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
 
     def reset_times(self, obj):
         "By deleteting the caches we force a re-load."
-        del obj.ndb.last_season
-        del ndb.last_timeslot
+        obj.ndb.last_season = None
+        obj.ndb.last_timeslot = None
 
     def func(self):
         "Define extended command"
