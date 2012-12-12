@@ -76,9 +76,9 @@ class ANSIParser(object):
 
         self.mux_ansi_map = [
             # commented out by default; they (especially blink) are potentially annoying
-            #(r'%r',  ANSI_RETURN),
-            #(r'%t',  ANSI_TAB),
-            #(r'%b',  ANSI_SPACE),
+            (r'%r',  ANSI_RETURN),
+            (r'%t',  ANSI_TAB),
+            (r'%b',  ANSI_SPACE),
             #(r'%cf', ANSI_BLINK),
             #(r'%ci', ANSI_INVERSE),
             (r'%cr', ANSI_RED),

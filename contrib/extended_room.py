@@ -289,13 +289,16 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     describe the current room.
 
     The alias @detail allows to assign a "detail" (a non-object
-    target for the look command) to the current room.
+    target for the look command) to the current room (only).
 
-    You can also embed special time markers in your description, like this:
+    You can also embed special time markers in your room description, like this:
       <night>In the darkness, the forest looks foreboding.</night>. Text
     marked this way will only display when the server is truly at the given
     time slot. The available times
     are night, morning, afternoon and evening.
+
+    Note that @detail, seasons and time-of-day slots only works on rooms in this
+    version of the @desc command.
 
     """
     aliases = ["@describe", "@detail"]
