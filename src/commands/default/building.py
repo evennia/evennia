@@ -1556,7 +1556,7 @@ class CmdExamine(ObjManipCommand):
     aliases = ["@ex","ex", "exam", "examine"]
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
-    arg_regex = r"\s.*?|$"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     player_mode = False
 
