@@ -30,7 +30,6 @@ from src.utils.utils import is_iter, to_str, crop, make_iter
 
 __all__ = ("Msg", "TempMsg", "Channel", "PlayerChannelConnection", "ExternalChannelConnection")
 
-
 #------------------------------------------------------------
 #
 # Msg
@@ -546,6 +545,15 @@ class Channel(SharedMemoryModel):
         Checks so this player is actually listening
         to this channel.
         """
+        # also handle object.player calls
+        player, typ = identify_object(player)
+        if typ == 'object':
+            player = player.player
+            player, typ = identify_object(player)
+        if player and not typ == "player":
+            logger.log_errmsg("Channel.has_connection received object of type '%s'. It only accepts players/characters." % typ)
+            return
+        # do the check
         return PlayerChannelConnection.objects.has_player_connection(player, self)
 
     def msg(self, msgobj, header=None, senders=None, persistent=True):

@@ -132,7 +132,6 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string)
             return
         playername, password = parts
-        print "playername '%s', password: '%s'" % (playername, password)
 
         # sanity checks
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
