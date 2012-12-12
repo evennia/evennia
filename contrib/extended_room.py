@@ -163,7 +163,11 @@ class ExtendedRoom(Room):
 
         Details are not season-sensitive, but are parsed for timeslot markers.
         """
-        detail = self.db.details.get(key.lower(), None)
+        try:
+            detail = self.db.details.get(key.lower(), None)
+        except AttributeError:
+            # this happens if no attribute details is set at all
+            return None
         if detail:
             season, timeslot = self.get_time_and_season()
             detail = self.replace_timeslots(detail, timeslot)
