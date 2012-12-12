@@ -246,7 +246,7 @@ class CmdExtendedLook(default_cmds.CmdLook):
                 return
             else:
                 # we need to extract the match manually.
-                looking_at_obj = looking_at_obj[0]
+                looking_at_obj = utils.make_iter(looking_at_obj)[0]
         else:
             looking_at_obj = caller.location
             if not looking_at_obj:
