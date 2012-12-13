@@ -70,7 +70,7 @@ class IRC_Bot(irc.IRCClient):
             if conn.channel:
                 conn.to_channel(msg)
 
-    def msg_irc(self, msg, from_obj=None):
+    def msg_irc(self, msg, senders=None):
         """
         Called by evennia when sending something to mapped IRC channel.
 
@@ -131,7 +131,7 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
     # how the channel will be able to contact this protocol
     send_code =  "from src.comms.irc import IRC_CHANNELS\n"
     send_code += "matched_ircs = [irc for irc in IRC_CHANNELS if irc.factory.key == '%s']\n" % key
-    send_code += "[irc.msg_irc(message, from_obj=from_obj) for irc in matched_ircs]\n"
+    send_code += "[irc.msg_irc(message, senders=[self]) for irc in matched_ircs]\n"
     conn = ExternalChannelConnection(db_channel=channel, db_external_key=key, db_external_send_code=send_code,
                                      db_external_config=config)
     conn.save()

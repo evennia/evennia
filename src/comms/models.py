@@ -118,9 +118,8 @@ class Msg(SharedMemoryModel):
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
-        values = make_iter(value)
-        for value in values:
-            obj, typ = identify_object(value)
+        for val in make_iter(value):
+            obj, typ = identify_object(val)
             if typ == 'player':
                 self.db_sender_players.add(obj)
             elif typ == 'object':
@@ -141,11 +140,10 @@ class Msg(SharedMemoryModel):
         self.save()
     senders = property(__senders_get, __senders_set, __senders_del)
 
-    def remove_sender(self, obj):
+    def remove_sender(self, value):
         "Remove a single sender or a list of senders"
-        objs = make_iter(obj)
-        for obj in objs:
-            obj, typ = identify_object(obj)
+        for val in make_iter(value):
+            obj, typ = identify_object(val)
             if typ == 'player':
                 self.db_sender_players.remove(obj)
             elif typ == 'object':
@@ -165,16 +163,17 @@ class Msg(SharedMemoryModel):
     #@receivers.setter
     def __receivers_set(self, value):
         "Setter. Allows for self.receivers = value. This appends a new receiver to the message."
-        obj, typ = identify_object(value)
-        if typ == 'player':
-            self.db_receivers_players.add(obj)
-        elif typ == 'object':
-            self.db_receivers_objects.add(obj)
-        elif not obj:
-            return
-        else:
-            raise ValueError
-        self.save()
+        for val in make_iter(value):
+            obj, typ = identify_object(val)
+            if typ == 'player':
+                self.db_receivers_players.add(obj)
+            elif typ == 'object':
+                self.db_receivers_objects.add(obj)
+            elif not obj:
+                return
+            else:
+                raise ValueError
+            self.save()
     #@receivers.deleter
     def __receivers_del(self):
         "Deleter. Clears all receivers"
@@ -202,8 +201,8 @@ class Msg(SharedMemoryModel):
     #@channels.setter
     def __channels_set(self, value):
         "Setter. Allows for self.channels = value. Requires a channel to be added."
-        if value:
-            self.db_receivers_channels.add(value)
+        for val in make_iter(value):
+            self.db_receivers_channels.add(val)
     #@channels.deleter
     def __channels_del(self):
         "Deleter. Allows for del self.channels"
@@ -810,14 +809,14 @@ class ExternalChannelConnection(SharedMemoryModel):
         "Send external -> channel"
         if not from_obj:
             from_obj = self.external_key
-        self.channel.msg(message, from_obj=from_obj)
+        self.channel.msg(message, senders=[self])
 
-    def to_external(self, message, from_obj=None, from_channel=None):
+    def to_external(self, message, senders=None, from_channel=None):
         "Send channel -> external"
 
         # make sure we are not echoing back our own message to ourselves
         # (this would result in a nasty infinite loop)
-        if from_obj == self.external_key:
+        if self in make_iter(senders):#.external_key:
             return
 
         try:
