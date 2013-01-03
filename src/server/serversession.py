@@ -228,6 +228,8 @@ class ServerSession(Session):
         example:
            data = {"get_hp": ([], {}),
                    "update_counter", (["counter1"], {"now":True}) }
+
+        All functions will be called with a back-reference to this session as first argument.
         """
 
         outdata = {}
@@ -243,7 +245,7 @@ class ServerSession(Session):
             func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
             if func:
                 try:
-                    outdata[funcname] = func(entity, *argtuple[0], **argtuple[1])
+                    outdata[funcname] = func(self, entity, *argtuple[0], **argtuple[1])
                 except Exception:
                     logger.log_trace()
             else:

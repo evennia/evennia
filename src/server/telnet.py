@@ -35,7 +35,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.mccp = Mccp(self)
         # negotiate ttype (client info)
         self.ttype = ttype.Ttype(self)
-
         # negotiate mssp (crawler communication)
         self.mssp = mssp.Mssp(self)
 

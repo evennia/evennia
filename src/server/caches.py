@@ -5,7 +5,6 @@ Central caching module.
 
 from sys import getsizeof
 from collections import defaultdict
-from weakref import WeakKeyDictionary
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -16,6 +15,14 @@ _ATTR_CACHE = defaultdict(dict)
 _FIELD_CACHE = defaultdict(dict)
 _PROP_CACHE = defaultdict(dict)
 
+# OOB hooks
+_OOB_FIELD_UPDATE_HOOKS = defaultdict(dict)
+_OOB_PROP_UPDATE_HOOKS = defaultdict(dict)
+_OOB_ATTR_UPDATE_HOOKS = defaultdict(dict)
+_OOB_NDB_UPDATE_HOOKS = defaultdict(dict)
+_OOB_CUSTOM_UPDATE_HOOKS = defaultdict(dict)
+
+_OOB_HANDLER = None # set by oob handler when it initializes
 
 def get_cache_sizes():
     """
@@ -46,15 +53,70 @@ def hashid(obj):
     try:
         hid = _GA(obj, "_hashid")
     except AttributeError:
-        date, idnum = _GA(obj, "db_date_created"), _GA(obj, "id")
-        if not idnum or not date:
-            # this will happen if setting properties on an object
-            # which is not yet saved
-            return None
+        try:
+            date, idnum = _GA(obj, "db_date_created"), _GA(obj, "id")
+            if not idnum or not date:
+                # this will happen if setting properties on an object
+                # which is not yet saved
+                return None
+        except AttributeError:
+            # this happens if hashing something like ndb. We have to
+            # rely on memory adressing in this case.
+            date, idnum = "Nondb", id(obj)
         # build the hashid
         hid = "%s-%s-#%s" % (_GA(obj, "__class__"), date, idnum)
         _SA(obj, "_hashid", hid)
     return hid
+
+# oob helper functions
+def register_oob_update_hook(obj,name, entity="field"):
+    """
+    Register hook function to be called when field/property/db/ndb is updated.
+    Given function will be called with function(obj, entityname, newvalue, *args, **kwargs)
+     entity - one of "field", "property", "db", "ndb" or "custom"
+    """
+    hid = hashid(obj)
+    if hid:
+        if entity == "field":
+            global _OOB_FIELD_UPDATE_HOOKS
+            _OOB_FIELD_UPDATE_HOOKS[hid][name] = True
+        elif entity == "property":
+            global _OOB_PROP_UPDATE_HOOKS
+            _OOB_PROP_UPDATE_HOOKS[hid][name] = True
+        elif entity == "db":
+            global _OOB_ATTR_UPDATE_HOOKS
+            _OOB_ATTR_UPDATE_HOOKS[hid][name] = True
+        elif entity == "ndb":
+            global _OOB_NDB_UPDATE_HOOKS
+            _OOB_NDB_UPDATE_HOOKS[hid][name] = True
+        elif entity == "custom":
+            global _OOB_CUSTOM_UPDATE_HOOKS
+            _OOB_CUSTOM_UPDATE_HOOKS[hid][name] = True
+        else:
+            return None
+        return hid
+
+def unregister_oob_update_hook(obj, name, entity="property"):
+    """
+    Un-register a report hook
+    """
+    hid = hashid(obj)
+    if hid:
+        global _OOB_FIELD_UPDATE_HOOKS,_OOB_PROP_UPDATE_HOOKS, _OOB_ATTR_UPDATE_HOOKS
+        global _OOB_CUSTOM_UPDATE_HOOKS, _OOB_NDB_UPDATE_HOOKS
+        if entity == "field" and name in _OOB_FIELD_UPDATE_HOOKS:
+            del _OOB_FIELD_UPDATE_HOOKS[hid][name]
+        elif entity == "property" and name in _OOB_PROP_UPDATE_HOOKS:
+            del _OOB_PROP_UPDATE_HOOKS[hid][name]
+        elif entity == "db" and name in _OOB_ATTR_UPDATE_HOOKS:
+            del _OOB_ATTR_UPDATE_HOOKS[hid][name]
+        elif entity == "ndb" and name in _OOB_NDB_UPDATE_HOOKS:
+            del _OOB_NDB_UPDATE_HOOKS[hid][name]
+        elif entity == "custom" and name in _OOB_CUSTOM_UPDATE_HOOKS:
+            del _OOB_CUSTOM_UPDATE_HOOKS[hid][name]
+        else:
+            return None
+        return hid
 
 # on-object database field cache
 def get_field_cache(obj, name):
@@ -78,6 +140,9 @@ def set_field_cache(obj, name, val):
     if hid:
         global _FIELD_CACHE
         _FIELD_CACHE[hid][name] = val
+        # oob hook functionality
+        if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
+            _OOB_HANDLER.update(hid, name, val)
 
 def del_field_cache(obj, name):
     "On-model cache deleter"
@@ -110,7 +175,7 @@ def get_prop_cache(obj, name, default=None):
     hid = hashid(obj)
     if hid:
         try:
-            return _PROP_CACHE[hid][name]
+            val = _PROP_CACHE[hid][name]
         except KeyError:
             return default
         _PROP_CACHE[hid][name] = val
@@ -123,6 +188,11 @@ def set_prop_cache(obj, name, val):
     if hid:
         global _PROP_CACHE
         _PROP_CACHE[hid][name] = val
+        # oob hook functionality
+        oob_hook = _OOB_PROP_UPDATE_HOOKS[hid].get(name)
+        if oob_hook:
+            oob_hook[0](obj.typeclass, name, val, *oob_hook[1], **oob_hook[2])
+
 
 def del_prop_cache(obj, name):
     "On-model cache deleter"
@@ -130,7 +200,7 @@ def del_prop_cache(obj, name):
         del _PROP_CACHE[hashid(obj)][name]
     except KeyError:
         pass
-def flush_field_cache(obj=None):
+def flush_prop_cache(obj=None):
     "On-model cache resetter"
     hid = hashid(obj)
     global _PROP_CACHE
@@ -152,10 +222,14 @@ def set_attr_cache(obj, attrname, attrobj):
     """
     Cache an attribute object
     """
-    global _ATTR_CACHE
     hid = hashid(obj)
     if hid:
+        global _ATTR_CACHE
         _ATTR_CACHE[hid][attrname] = attrobj
+        # oob hook functionality
+        oob_hook = _OOB_ATTR_UPDATE_HOOKS[hid].get(attrname)
+        if oob_hook:
+            oob_hook[0](obj.typeclass, attrname, attrobj.value, *oob_hook[1], **oob_hook[2])
 
 def del_attr_cache(obj, attrname):
     """
@@ -177,3 +251,26 @@ def flush_attr_cache(obj=None):
     else:
         # clean cache completely
         _ATTR_CACHE = defaultdict(dict)
+
+
+def call_ndb_hooks(obj, attrname, value):
+    """
+    No caching is done of ndb here, but
+    we use this as a way to call OOB hooks.
+    """
+    hid = hashid(obj)
+    if hid:
+        oob_hook = _OOB_NDB_UPDATE_HOOKS[hid].get(attrname)
+        if oob_hook:
+            oob_hook[0](obj.typeclass, attrname, value, *oob_hook[1], **oob_hook[2])
+
+def call_custom_hooks(obj, attrname, value):
+    """
+    Custom handler for developers adding their own oob hooks, e.g. to
+    custom typeclass properties.
+    """
+    hid = hashid(obj)
+    if hid:
+        oob_hook = _OOB_CUSTOM_UPDATE_HOOKS[hid].get(attrname)
+        if oob_hook:
+            oob_hook[0](obj.typeclass, attrname, value, *oob_hook[1], **oob_hook[2])

@@ -396,6 +396,13 @@ class DoNothing(Script):
          self.key = "sys_do_nothing"
          self.desc = _("This is an empty placeholder script.")
 
+class Store(Script):
+    "Simple storage script"
+    def at_script_creation(self):
+        "Setup the script"
+        self.key = "sys_storage"
+        self.desc = _("This is a generic storage container.")
+
 class CheckSessions(Script):
     "Check sessions regularly."
     def at_script_creation(self):

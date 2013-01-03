@@ -42,6 +42,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_attr_cache, set_attr_cache, del_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
@@ -1584,7 +1585,7 @@ class TypedObject(SharedMemoryModel):
                 return None
         else:
             # act as a setter
-            _SA(self.db, attribute_name, value)
+            _SA(self.ndb, attribute_name, value)
 
     #@property
     def __ndb_get(self):
@@ -1609,6 +1610,10 @@ class TypedObject(SharedMemoryModel):
                         return _GA(self, key)
                     except AttributeError:
                         return None
+                def __setattr__(self, key, value):
+                    # hook the oob handler here
+                    call_ndb_hooks(self, key, value)
+                    _SA(self, key, value)
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
     #@ndb.setter

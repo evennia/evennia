@@ -107,7 +107,7 @@ class ServerConfig(SharedMemoryModel):
     def __unicode__(self):
         return "%s : %s" % (self.key, self.value)
 
-    def store(key, value):
+    def store(self, key, value):
         """
         Wrap the storage (handles pickling)
         """

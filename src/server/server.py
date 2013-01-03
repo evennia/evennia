@@ -142,7 +142,7 @@ class Evennia(object):
         if len(mismatches): # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and run the update
             from src.objects.models import ObjectDB
-            from src.players.models import PlayerDB
+            #from src.players.models import PlayerDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
                 print " one or more default cmdset/typeclass settings changed. Updating defaults stored in database ..."
@@ -188,7 +188,7 @@ class Evennia(object):
         Called every server start
         """
         from src.objects.models import ObjectDB
-        from src.players.models import PlayerDB
+        #from src.players.models import PlayerDB
 
         #update eventual changed defaults
         self.update_defaults()
@@ -264,7 +264,7 @@ class Evennia(object):
         # call shutdown hooks on all cached objects
 
         from src.objects.models import ObjectDB
-        from src.players.models import PlayerDB
+        #from src.players.models import PlayerDB
         from src.server.models import ServerConfig
 
         if mode == 'reload':

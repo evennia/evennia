@@ -15,13 +15,6 @@ from django.conf import settings
 from src.utils.utils import make_iter, mod_import
 from src.utils import logger
 
-# custom functions
-OOC_MODULE = mod_import(settings.OOB_FUNC_MODULE)
-OOC_FUNCS = dict((key.upper(), var) for key, var in OOC_MODULE if not key.startswith('__') and callable(var))
-
-# MSDP commands supported by Evennia
-MSDP_COMMANDS = ("LIST", "REPORT", "RESET", "SEND", "UNREPORT")
-
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = chr(69)
 MSDP_VAR = chr(1)
@@ -35,6 +28,92 @@ MSDP_ARRAY_CLOSE = chr(6)
 regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)) # return 2-tuple
 regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
 regex_varval = re.compile(r"%s(.*?)%s(.*?)" % (MSDP_VAR, MSDP_VAL)) # return 2-tuple
+
+# MSDP default definition commands supported by Evennia (can be supplemented with custom commands as well)
+MSDP_COMMANDS = ("LIST", "REPORT", "RESET", "SEND", "UNREPORT")
+
+# fallbacks if no custom OOB module is available
+MSDP_COMMANDS_CUSTOM = {}
+# MSDP_REPORTABLE is a standard suggestions for making it easy to create generic guis.
+# this maps MSDP command names to Evennia commands found in OOB_FUNC_MODULE. It
+# is up to these commands to return data on proper form. This is overloaded if
+# OOB_REPORTABLE is defined in the custom OOB module below.
+MSDP_REPORTABLE = {
+    # General
+    "CHARACTER_NAME": "get_character_name",
+    "SERVER_ID": "get_server_id",
+    "SERVER_TIME": "get_server_time",
+    # Character
+    "AFFECTS": "char_affects",
+    "ALIGNMENT": "char_alignment",
+    "EXPERIENCE": "char_experience",
+    "EXPERIENCE_MAX": "char_experience_max",
+    "EXPERIENCE_TNL": "char_experience_tnl",
+    "HEALTH": "char_health",
+    "HEALTH_MAX": "char_health_max",
+    "LEVEL": "char_level",
+    "RACE": "char_race",
+    "CLASS": "char_class",
+    "MANA": "char_mana",
+    "MANA_MAX": "char_mana_max",
+    "WIMPY": "char_wimpy",
+    "PRACTICE": "char_practice",
+    "MONEY": "char_money",
+    "MOVEMENT": "char_movement",
+    "MOVEMENT_MAX": "char_movement_max",
+    "HITROLL": "char_hitroll",
+    "DAMROLL": "char_damroll",
+    "AC": "char_ac",
+    "STR": "char_str",
+    "INT": "char_int",
+    "WIS": "char_wis",
+    "DEX": "char_dex",
+    "CON": "char_con",
+    # Combat
+    "OPPONENT_HEALTH": "opponent_health",
+    "OPPONENT_HEALTH_MAX":"opponent_health_max",
+    "OPPONENT_LEVEL": "opponent_level",
+    "OPPONENT_NAME": "opponent_name",
+    # World
+    "AREA_NAME": "area_name",
+    "ROOM_EXITS": "area_room_exits",
+    "ROOM_NAME": "room_name",
+    "ROOM_VNUM": "room_dbref",
+    "WORLD_TIME": "world_time",
+    # Configurable variables
+    "CLIENT_ID": "client_id",
+    "CLIENT_VERSION": "client_version",
+    "PLUGIN_ID": "plugin_id",
+    "ANSI_COLORS": "ansi_colours",
+    "XTERM_256_COLORS": "xterm_256_colors",
+    "UTF_8": "utf_8",
+    "SOUND": "sound",
+    "MXP": "mxp",
+   # GUI variables
+    "BUTTON_1": "button1",
+    "BUTTON_2": "button2",
+    "BUTTON_3": "button3",
+    "BUTTON_4": "button4",
+    "BUTTON_5": "button5",
+    "GAUGE_1": "gauge1",
+    "GAUGE_2": "gauge2",
+    "GAUGE_3": "gauge3",
+    "GAUGE_4": "gauge4",
+    "GAUGE_5": "gauge5"}
+MSDP_SENDABLE = MSDP_REPORTABLE
+
+# try to load custom OOB module
+OOB_MODULE = mod_import(settings.OOB_FUNC_MODULE)
+if OOB_MODULE:
+    # loading customizations from OOB_FUNC_MODULE if available
+    try: MSDP_REPORTABLE = OOB_MODULE.OOB_REPORTABLE # replaces the default MSDP definitions
+    except AttributeError: pass
+    try: MSDP_SENDABLE = OOB_MODULE.OOB_SENDABLE
+    except AttributeError: MSDP_SENDABLE = MSDP_REPORTABLE
+    try: MSDP_COMMANDS_CUSTOM = OOB_MODULE.OOB_COMMANDS
+    except: pass
+
+# Msdp object handler
 
 class Msdp(object):
     """
@@ -51,6 +130,7 @@ class Msdp(object):
         self.protocol.protocol_FLAGS['MSDP'] = False
         self.protocol.negotiationMap['MSDP'] = self.parse_msdp
         self.protocol.will(MSDP).addCallbacks(self.do_msdp, self.no_msdp)
+        self.msdp_reported = {}
 
     def no_msdp(self, option):
         "No msdp supported or wanted"
@@ -110,7 +190,7 @@ class Msdp(object):
         Handle a client's requested negotiation, converting
         it into a function mapping - either one of the MSDP
         default functions (LIST, SEND etc) or a custom one
-        in OOC_FUNCS dictionary. command names are case-insensitive.
+        in OOB_FUNCS dictionary. command names are case-insensitive.
 
         varname, var  --> mapped to function varname(var)
         arrayname, array --> mapped to function arrayname(*array)
@@ -133,6 +213,7 @@ class Msdp(object):
         variables = dict((key.upper(), val) for key, val in regex_varval(regex_array.sub("", regex_table.sub("", data))))
 
         ret = ""
+
         # default MSDP functions
         if "LIST" in variables:
             ret += self.func_to_msdp("LIST", self.msdp_cmd_list(variables["LIST"]))
@@ -150,7 +231,7 @@ class Msdp(object):
             ret += self.func_to_msdp("RESET", self.msdp_cmd_reset(*arrays["RESET"]))
             del arrays["RESET"]
         if "SEND" in variables:
-            ret += self.func_to_msdp("SEND", self.msdp_cmd_send((*variables["SEND"],)))
+            ret += self.func_to_msdp("SEND", self.msdp_cmd_send(*(variables["SEND"],)))
             del variables["SEND"]
         if "SEND" in arrays:
             ret += self.func_to_msdp("SEND",self.msdp_cmd_send(*arrays["SEND"]))
@@ -159,17 +240,17 @@ class Msdp(object):
         # if there are anything left we look for a custom function
         for varname, var in variables.items():
             # a simple function + argument
-            ooc_func = OOC_FUNCS.get(varname.upper())
+            ooc_func = MSDP_COMMANDS_CUSTOM.get(varname.upper())
             if ooc_func:
                 ret += self.func_to_msdp(varname, ooc_func(var))
         for arrayname, array in arrays.items():
             # we assume the array are multiple arguments to the function
-            ooc_func = OOC_FUNCS.get(arrayname.upper())
+            ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
             if ooc_func:
                 ret += self.func_to_msdp(arrayname, ooc_func(*array))
         for tablename, table in tables.items():
             # we assume tables are keyword arguments to the function
-            ooc_func = OOC_FUNCS.get(arrayname.upper())
+            ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
             if ooc_func:
                 ret += self.func_to_msdp(tablename, ooc_func(**table))
         return ret
@@ -184,20 +265,23 @@ class Msdp(object):
         The List command allows for retrieving various info about the server/client
         """
         if arg == 'COMMANDS':
-            return self.func_to_msdp(arg, MSDP_COMMANDS))
+            return self.func_to_msdp(arg, MSDP_COMMANDS)
         elif arg == 'LISTS':
             return self.func_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
                                            "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
         elif arg == 'CONFIGURABLE_VARIABLES':
             return self.func_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
         elif arg == 'REPORTABLE_VARIABLES':
-            return self.func_to_msdp(arg, self.MSDP_REPORTABLE.keys())
+            return self.func_to_msdp(arg, MSDP_REPORTABLE.keys())
         elif arg == 'REPORTED_VARIABLES':
-            return self.func_to_msdp(arg, self.MSDP_REPORTED.keys())
+            # the dynamically set items to report
+            return self.func_to_msdp(arg, self.msdp_reported.keys())
         elif arg == 'SENDABLE_VARIABLES':
-            return self.func_to_msdp(arg, self.MSDP_SEND.keys())
+            return self.func_to_msdp(arg, MSDP_SENDABLE.keys())
         else:
             return self.func_to_msdp("LIST", arg)
+
+    # default msdp commands
 
     def msdp_cmd_report(self, *arg):
         """
@@ -205,7 +289,7 @@ class Msdp(object):
         reportable variable to the client.
         """
         try:
-            self.MSDP_REPORTABLE[arg](report=True)
+            MSDP_REPORTABLE[arg](report=True)
         except Exception:
             logger.log_trace()
 
@@ -214,7 +298,7 @@ class Msdp(object):
         Unreport a previously reported variable
         """
         try:
-            self.MSDP_REPORTABLE[arg](report=False)
+            MSDP_REPORTABLE[arg](report=False)
         except Exception:
             self.logger.log_trace()
 
@@ -223,7 +307,7 @@ class Msdp(object):
         The reset command resets a variable to its initial state.
         """
         try:
-            self.MSDP_REPORTABLE[arg](reset=True)
+            MSDP_REPORTABLE[arg](reset=True)
         except Exception:
             logger.log_trace()
 
@@ -237,79 +321,9 @@ class Msdp(object):
         ret = []
         for var in make_iter(arg):
             try:
-                ret.append(self.MSDP_REPORTABLE[arg](send=True))
+                ret.append(MSDP_REPORTABLE[arg](send=True))
             except Exception:
                 logger.log_trace()
         return ret
 
 
-    # MSDP_MAP is a standard suggestions for making it easy to create generic guis.
-    # this maps MSDP command names to Evennia commands found in OOB_FUNC_MODULE. It
-    # is up to these commands to return data on proper form.
-    MSDP_REPORTABLE = {
-        # General
-        "CHARACTER_NAME": "get_character_name",
-        "SERVER_ID": "get_server_id",
-        "SERVER_TIME": "get_server_time",
-
-        # Character
-        "AFFECTS": "char_affects",
-        "ALIGNMENT": "char_alignment",
-        "EXPERIENCE": "char_experience",
-        "EXPERIENCE_MAX": "char_experience_max",
-        "EXPERIENCE_TNL": "char_experience_tnl",
-        "HEALTH": "char_health",
-        "HEALTH_MAX": "char_health_max",
-        "LEVEL": "char_level",
-        "RACE": "char_race",
-        "CLASS": "char_class",
-        "MANA": "char_mana",
-        "MANA_MAX": "char_mana_max",
-        "WIMPY": "char_wimpy",
-        "PRACTICE": "char_practice",
-        "MONEY": "char_money",
-        "MOVEMENT": "char_movement",
-        "MOVEMENT_MAX": "char_movement_max",
-        "HITROLL": "char_hitroll",
-        "DAMROLL": "char_damroll",
-        "AC": "char_ac",
-        "STR": "char_str",
-        "INT": "char_int",
-        "WIS": "char_wis",
-        "DEX": "char_dex",
-        "CON": "char_con",
-
-        # Combat
-        "OPPONENT_HEALTH": "opponent_health",
-        "OPPONENT_HEALTH_MAX":"opponent_health_max",
-        "OPPONENT_LEVEL": "opponent_level",
-        "OPPONENT_NAME": "opponent_name",
-
-        # World
-        "AREA_NAME": "area_name",
-        "ROOM_EXITS": "area_room_exits",
-        "ROOM_NAME": "room_name",
-        "ROOM_VNUM": "room_dbref",
-        "WORLD_TIME": "world_time",
-
-        # Configurable variables
-       "CLIENT_ID": "client_id",
-        "CLIENT_VERSION": "client_version",
-        "PLUGIN_ID": "plugin_id",
-        "ANSI_COLORS": "ansi_colours",
-        "XTERM_256_COLORS": "xterm_256_colors",
-        "UTF_8": "utf_8",
-        "SOUND": "sound",
-        "MXP": "mxp",
-
-       # GUI variables
-        "BUTTON_1": "button1",
-        "BUTTON_2": "button2",
-        "BUTTON_3": "button3",
-        "BUTTON_4": "button4",
-        "BUTTON_5": "button5",
-        "GAUGE_1": "gauge1",
-        "GAUGE_2": "gauge2",
-        "GAUGE_3": "gauge3",
-        "GAUGE_4": "gauge4",
-        "GAUGE_5": "gauge5"}
