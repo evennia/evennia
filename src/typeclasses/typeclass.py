@@ -113,12 +113,8 @@ class TypeClass(object):
             try:
                 return _GA(dbobj, propname)
             except AttributeError:
-                try:
-                    #XXX deprecated
-                    return _GA(dbobj,"get_attribute_raise")(propname)
-                except AttributeError:
-                    string = "Object: '%s' not found on %s(#%s), nor on its typeclass %s."
-                    raise AttributeError(string % (propname, dbobj, _GA(dbobj, "dbid"), _GA(dbobj, "typeclass_path")))
+                string = "Object: '%s' not found on %s(#%s), nor on its typeclass %s."
+                raise AttributeError(string % (propname, dbobj, _GA(dbobj, "dbid"), _GA(dbobj, "typeclass_path")))
 
     def __setattr__(self, propname, value):
         """
@@ -139,16 +135,8 @@ class TypeClass(object):
         except AttributeError:
             dbobj = None
             log_trace("This is probably due to an unsafe reload.")
-
         if dbobj:
-            try:
-                # only set value on propname if propname already exists
-                # on dbobj. __getattribute__ will raise attribute error otherwise.
-                _GA(dbobj, propname)
-                _SA(dbobj, propname, value)
-            except AttributeError:
-                #XXX deprecated
-                dbobj.set_attribute(propname, value)
+            _SA(dbobj, propname, value)
         else:
             _SA(self, propname, value)
 
