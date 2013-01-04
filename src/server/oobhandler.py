@@ -3,7 +3,7 @@ OOB - Out-of-band central handler
 
 This module presents a central API for requesting data from objects in
 Evennia via OOB negotiation. It is meant specifically to be imported
-and used by the module defined in settings.OOB_MODULE.
+and used by the module defined in settings.OOB_FUNC_MODULE.
 
 Import src.server.oobhandler and use the methods in OOBHANDLER.
 
@@ -25,6 +25,18 @@ track_active - this is an active reporting mechanism making use of a Script. Thi
 
 Trivial operations such as get/setting individual properties one time is best done directly from
 the OOB_MODULE functions.
+
+Examples of call from OOB_FUNC_MODULE:
+
+from src.server.oobhandler import OOBHANDLER
+
+def track_desc(session, *args, **kwargs):
+    "Sets up a passive watch for the desc attribute on session object"
+    if session.player and session.player.character:
+        char = session.player.character
+        OOBHANDLER.track_passive(session, char, "desc", entity="db")
+        # to start off we return the value once
+        return char.db.desc
 
 """
 
@@ -104,7 +116,7 @@ class OOBhandler(object):
         # set reference on caches module
         caches._OOB_HANDLER = self
 
-    def track_passive(self, tracker, tracked, name, function, entity="db", *args, **kwargs):
+    def track_passive(self, tracker, tracked, key, callback=None, mode="db", *args, **kwargs):
         """
         Passively track changes to an object property,
         attribute or non-db-attribute. Uses cache hooks to
@@ -112,12 +124,12 @@ class OOBhandler(object):
 
         tracker - object who is tracking
         tracked - object being tracked
-        name - field/property/attribute/ndb nam to watch
-        function - function object to call when entity update. When entitye <name>
+        key - field/property/attribute/ndb nam to watch
+        function - function object to call when entity update. When entitye <key>
         is updated, this function will be called with called
-              with function(obj, name, new_value, *args, **kwargs)
+              with function(obj, key, new_value, *args, **kwargs)
         *args - additional, optional arguments to send to function
-        entity (keyword) - the type of entity to track. One of
+        mode (keyword) - the type of entity to track. One of
              "property", "db", "ndb" or "custom" ("property" includes both
              changes to database fields and cached on-model properties)
         **kwargs - additional, optionak keywords to send to function
@@ -133,28 +145,32 @@ class OOBhandler(object):
         try: tracked = tracked.dbobj
         except AttributeError: pass
 
+        def default_callback(tracker, tracked, key, new_val, *args, **kwargs):
+            "Callback used if no function is supplied"
+            pass
+
         thid = hashid(tracked)
         if not thid:
             return
-        oob_call = (function, tracked, name, args, kwargs)
+        oob_call = (function, tracked, key, args, kwargs)
         if thid not in self.track_passive_subs:
-            if entity in ("db", "ndb", "custom"):
-                caches.register_oob_update_hook(tracked, name, entity=entity)
-            elif entity == "property":
+            if mode in ("db", "ndb", "custom"):
+                caches.register_oob_update_hook(tracked, key, mode=mode)
+            elif mode == "property":
                 # track property/field. We must first determine which cache to use.
-                if hasattr(tracked, 'db_%s' % name.lstrip("db_")):
-                    hid = caches.register_oob_update_hook(tracked, name, entity="field")
+                if hasattr(tracked, 'db_%s' % key.lstrip("db_")):
+                    hid = caches.register_oob_update_hook(tracked, key, mode="field")
                 else:
-                    hid = caches.register_oob_update_hook(tracked, name, entity="property")
-        if not self.track_pass_subs[hid][name]:
-            self.track_pass_subs[hid][name] = {tracker:oob_call}
+                    hid = caches.register_oob_update_hook(tracked, key, mode="property")
+        if not self.track_pass_subs[hid][key]:
+            self.track_pass_subs[hid][key] = {tracker:oob_call}
         else:
-            self.track_passive_subs[hid][name][tracker] = oob_call
+            self.track_passive_subs[hid][key][tracker] = oob_call
 
-    def untrack_passive(self, tracker, tracked, name, entity="db"):
+    def untrack_passive(self, tracker, tracked, key, mode="db"):
         """
         Remove passive tracking from an object's entity.
-        entity - one of "property", "db", "ndb" or "custom"
+        mode - one of "property", "db", "ndb" or "custom"
         """
         try: tracked = tracked.dbobj
         except AttributeError: pass
@@ -162,27 +178,29 @@ class OOBhandler(object):
         thid = hashid(tracked)
         if not thid:
             return
-        if len(self.track_passive_subs[thid][name]) == 1:
-            if entity in ("db", "ndb", "custom"):
-                caches.unregister_oob_update_hook(tracked, name, entity=entity)
-            elif entity == "property":
-                if hasattr(tracked, 'db_%s' % name.lstrip("db_")):
-                    caches.unregister_oob_update_hook(tracked, name, entity="field")
+        if len(self.track_passive_subs[thid][key]) == 1:
+            if mode in ("db", "ndb", "custom"):
+                caches.unregister_oob_update_hook(tracked, key, mode=mode)
+            elif mode == "property":
+                if hasattr(, 'db_%s' % key.lstrip("db_")):
+                    caches.unregister_oob_update_hook(tracked, key, mode="field")
                 else:
-                    caches.unregister_oob_update_hook(tracked, name, entity="property")
+                    caches.unregister_oob_update_hook(tracked, key, mode="property")
 
-        try: del self.track_passive_subs[thid][name][tracker]
+        try: del self.track_passive_subs[thid][key][tracker]
         except (KeyError, TypeError): pass
 
-    def update(self, hid, name, new_val):
+    def update(self, hid, key, new_val):
         """
-        This is called by the caches when the tracked object when its property/field/etc is updated,
-        to inform the oob handler and all subscribing to this particular entity has been updated with new_val.
+        This is called by the caches when the  object when its
+        property/field/etc is updated, to inform the oob handler and
+        all subscribing to this particular entity has been updated
+        with new_val.
         """
         # tell all tracking objects of the update
-        for tracker, oob in self.track_passive_subs[hid][name].items():
+        for tracker, oob in self.track_passive_subs[hid][key].items():
             try:
-                # function(tracker, tracked, key, new_value, *args, **kwargs)
+                # function(tracker, , key, new_value, *args, **kwargs)
                 oob[0](tracker, oob[1], oob[2], new_val, *oob[3], **oob[4])
             except Exception:
                 logger.log_trace()

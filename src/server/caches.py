@@ -80,6 +80,7 @@ def register_oob_update_hook(obj,name, entity="field"):
         if entity == "field":
             global _OOB_FIELD_UPDATE_HOOKS
             _OOB_FIELD_UPDATE_HOOKS[hid][name] = True
+            return
         elif entity == "property":
             global _OOB_PROP_UPDATE_HOOKS
             _OOB_PROP_UPDATE_HOOKS[hid][name] = True
@@ -94,7 +95,6 @@ def register_oob_update_hook(obj,name, entity="field"):
             _OOB_CUSTOM_UPDATE_HOOKS[hid][name] = True
         else:
             return None
-        return hid
 
 def unregister_oob_update_hook(obj, name, entity="property"):
     """
@@ -116,7 +116,6 @@ def unregister_oob_update_hook(obj, name, entity="property"):
             del _OOB_CUSTOM_UPDATE_HOOKS[hid][name]
         else:
             return None
-        return hid
 
 # on-object database field cache
 def get_field_cache(obj, name):

@@ -1585,7 +1585,7 @@ class CmdExamine(ObjManipCommand):
             else:
                 db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
             try:
-                ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items()]
+                ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items() if not aname.startswith("_")]
             except Exception:
                 ndb_attr = None
         string = ""
