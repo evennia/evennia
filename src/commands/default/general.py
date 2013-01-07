@@ -691,9 +691,12 @@ class CmdIC(MuxCommandOOC):
     Go in-character (IC) as a given Character.
 
     This will attempt to "become" a different object assuming you have
-    the right to do so.  You cannot become an object that is already
-    controlled by another player. In principle <character> can be
-    any in-game object as long as you have access right to puppet it.
+    the right to do so. Note that it's the PLAYER character that puppets
+    characters/objects and which needs to have the correct permission!
+
+    You cannot become an object that is already controlled by another
+    player. In principle <character> can be any in-game object as long
+    as you the player have access right to puppet it.
     """
 
     key = "@ic"
