@@ -218,46 +218,50 @@ class ServerSession(Session):
         """
         This receives out-of-band data from the Portal.
 
+        OBS - preliminary. OOB not yet functional in Evennia. Don't use.
+
         This method parses the data input (a dict) and uses
         it to launch correct methods from those plugged into
         the system.
 
-        data = {funcname: ( [args], {kwargs]),
-                funcname: ( [args], {kwargs}), ...}
+        data = {oobkey: (funcname, (args), {kwargs}),
+                oobkey: (funcname, (args), {kwargs}), ...}
 
         example:
-           data = {"get_hp": ([], {}),
-                   "update_counter", (["counter1"], {"now":True}) }
+           data = {"get_hp": ("oob_get_hp, [], {}),
+                   "update_counter", ("counter", ["counter1"], {"now":True}) }
 
-        All functions will be called with a back-reference to this session as first argument.
+        All function names must be defined in settings.OOB_FUNC_MODULE. Each
+        function will be called with the oobkey and a back-reference to this session
+        as their first two arguments.
         """
 
         outdata = {}
 
-        entity = self.get_character()
-        if not entity:
-            entity = self.get_player()
-        if not entity:
-            entity = self
-
-        for funcname, argtuple in data.items():
+        for oobkey, functuple in data.items():
             # loop through the data, calling available functions.
-            func = OOB_FUNC_MODULE.__dict__.get(funcname, None)
+            func = OOB_FUNC_MODULE.__dict__.get(functuple[0])
             if func:
                 try:
-                    outdata[funcname] = func(self, entity, *argtuple[0], **argtuple[1])
+                    outdata[funcname] = func(oobkey, self, *functuple[1], **functuple[2])
                 except Exception:
                     logger.log_trace()
             else:
                 logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % funcname)
         if outdata:
-            # we have a result, send it back
+            # we have a direct result - send it back right away
             self.oob_data_out(outdata)
 
 
     def oob_data_out(self, data):
         """
         This sends data from Server to the Portal across the AMP connection.
+
+        OBS - preliminary. OOB not yet functional in Evennia. Don't use.
+
+        data = {oobkey: (funcname, (args), {kwargs}),
+                oobkey: (funcname, (args), {kwargs}), ...}
+
         """
         self.sessionhandler.oob_data_out(self, data)
 

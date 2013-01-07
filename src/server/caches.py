@@ -15,7 +15,7 @@ _ATTR_CACHE = defaultdict(dict)
 _FIELD_CACHE = defaultdict(dict)
 _PROP_CACHE = defaultdict(dict)
 
-# OOB hooks
+# OOB hooks (OOB not yet functional, don't use yet)
 _OOB_FIELD_UPDATE_HOOKS = defaultdict(dict)
 _OOB_PROP_UPDATE_HOOKS = defaultdict(dict)
 _OOB_ATTR_UPDATE_HOOKS = defaultdict(dict)

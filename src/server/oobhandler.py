@@ -1,4 +1,6 @@
 """
+-- OBS - OOB is not yet functional in Evennia. Don't use this module --
+
 OOB - Out-of-band central handler
 
 This module presents a central API for requesting data from objects in
@@ -116,7 +118,7 @@ class OOBhandler(object):
         # set reference on caches module
         caches._OOB_HANDLER = self
 
-    def track_passive(self, tracker, tracked, key, callback=None, mode="db", *args, **kwargs):
+    def track_passive(self, oobkey, tracker, tracked, entityname, callback=None, mode="db", *args, **kwargs):
         """
         Passively track changes to an object property,
         attribute or non-db-attribute. Uses cache hooks to
@@ -124,10 +126,10 @@ class OOBhandler(object):
 
         tracker - object who is tracking
         tracked - object being tracked
-        key - field/property/attribute/ndb nam to watch
+        entityname - field/property/attribute/ndb nam to watch
         function - function object to call when entity update. When entitye <key>
         is updated, this function will be called with called
-              with function(obj, key, new_value, *args, **kwargs)
+              with function(obj, entityname, new_value, *args, **kwargs)
         *args - additional, optional arguments to send to function
         mode (keyword) - the type of entity to track. One of
              "property", "db", "ndb" or "custom" ("property" includes both
@@ -145,29 +147,29 @@ class OOBhandler(object):
         try: tracked = tracked.dbobj
         except AttributeError: pass
 
-        def default_callback(tracker, tracked, key, new_val, *args, **kwargs):
+        def default_callback(tracker, tracked, entityname, new_val, *args, **kwargs):
             "Callback used if no function is supplied"
             pass
 
         thid = hashid(tracked)
         if not thid:
             return
-        oob_call = (function, tracked, key, args, kwargs)
+        oob_call = (function, oobkey, tracker, tracked, entityname, args, kwargs)
         if thid not in self.track_passive_subs:
             if mode in ("db", "ndb", "custom"):
-                caches.register_oob_update_hook(tracked, key, mode=mode)
+                caches.register_oob_update_hook(tracked, entityname, mode=mode)
             elif mode == "property":
                 # track property/field. We must first determine which cache to use.
-                if hasattr(tracked, 'db_%s' % key.lstrip("db_")):
-                    hid = caches.register_oob_update_hook(tracked, key, mode="field")
+                if hasattr(tracked, 'db_%s' % entityname.lstrip("db_")):
+                    hid = caches.register_oob_update_hook(tracked, entityname, mode="field")
                 else:
-                    hid = caches.register_oob_update_hook(tracked, key, mode="property")
-        if not self.track_pass_subs[hid][key]:
-            self.track_pass_subs[hid][key] = {tracker:oob_call}
+                    hid = caches.register_oob_update_hook(tracked, entityname, mode="property")
+        if not self.track_pass_subs[hid][entityname]:
+            self.track_pass_subs[hid][entityname] = {tracker:oob_call}
         else:
-            self.track_passive_subs[hid][key][tracker] = oob_call
+            self.track_passive_subs[hid][entityname][tracker] = oob_call
 
-    def untrack_passive(self, tracker, tracked, key, mode="db"):
+    def untrack_passive(self, tracker, tracked, entityname, mode="db"):
         """
         Remove passive tracking from an object's entity.
         mode - one of "property", "db", "ndb" or "custom"
@@ -178,19 +180,19 @@ class OOBhandler(object):
         thid = hashid(tracked)
         if not thid:
             return
-        if len(self.track_passive_subs[thid][key]) == 1:
+        if len(self.track_passive_subs[thid][entityname]) == 1:
             if mode in ("db", "ndb", "custom"):
-                caches.unregister_oob_update_hook(tracked, key, mode=mode)
+                caches.unregister_oob_update_hook(tracked, entityname, mode=mode)
             elif mode == "property":
-                if hasattr(, 'db_%s' % key.lstrip("db_")):
-                    caches.unregister_oob_update_hook(tracked, key, mode="field")
+                if hasattr(, 'db_%s' % entityname.lstrip("db_")):
+                    caches.unregister_oob_update_hook(tracked, entityname, mode="field")
                 else:
-                    caches.unregister_oob_update_hook(tracked, key, mode="property")
+                    caches.unregister_oob_update_hook(tracked, entityname, mode="property")
 
-        try: del self.track_passive_subs[thid][key][tracker]
+        try: del self.track_passive_subs[thid][entityname][tracker]
         except (KeyError, TypeError): pass
 
-    def update(self, hid, key, new_val):
+    def update(self, hid, entityname, new_val):
         """
         This is called by the caches when the  object when its
         property/field/etc is updated, to inform the oob handler and
@@ -198,9 +200,9 @@ class OOBhandler(object):
         with new_val.
         """
         # tell all tracking objects of the update
-        for tracker, oob in self.track_passive_subs[hid][key].items():
+        for tracker, oob in self.track_passive_subs[hid][entityname].items():
             try:
-                # function(tracker, , key, new_value, *args, **kwargs)
+                # function(oobkey, tracker, tracked, entityname, new_value, *args, **kwargs)
                 oob[0](tracker, oob[1], oob[2], new_val, *oob[3], **oob[4])
             except Exception:
                 logger.log_trace()
@@ -208,13 +210,13 @@ class OOBhandler(object):
     # Track (active/proactive tracking)
 
     # creating and storing tracker scripts
-    def track_active(self, key, func, interval=30, *args, **kwargs):
+    def track_active(self, oobkey, func, interval=30, *args, **kwargs):
         """
         Create a tracking, re-use script with same interval if available,
         otherwise create a new one.
 
         args:
-         key - interval-unique identifier needed for removing tracking later
+         oobkey - interval-unique identifier needed for removing tracking later
          func - function to call at interval seconds
             (all other args become argjs into func)
         keywords:
@@ -223,20 +225,20 @@ class OOBhandler(object):
         """
         if interval in self.track_active_subs:
             # tracker with given interval found. Add to its subs
-            self.track_active_subs[interval].track(key, func, *args, **kwargs)
+            self.track_active_subs[interval].track(oobkey, func, *args, **kwargs)
         else:
             # create new tracker with given interval
-            new_tracker = create.create_script(_OOBTracker, key="oob_tracking_%i" % interval, interval=interval)
-            new_tracker.track(key, func, *args, **kwargs)
+            new_tracker = create.create_script(_OOBTracker, oobkey="oob_tracking_%i" % interval, interval=interval)
+            new_tracker.track(oobkey, func, *args, **kwargs)
             self.track_active_subs[interval] = new_tracker
 
-    def untrack_active(self, key, interval):
+    def untrack_active(self, oobkey, interval):
         """
-        Remove tracking for a given interval and key
+        Remove tracking for a given interval and oobkey
         """
         tracker = self.track_active_subs.get(interval)
         if tracker:
-            tracker.untrack(key)
+            tracker.untrack(oobkey)
 
 # handler object
 OOBHANDLER = OOBhandler()

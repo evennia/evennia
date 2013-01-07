@@ -120,9 +120,7 @@ class TypeClass(object):
         """
         Transparently save data to the dbobj object in
         all situations. Note that this does not
-        necessarily mean storing it to the database
-        unless data is stored into a propname
-        corresponding to a field on ObjectDB model.
+        necessarily mean storing it to the database.
         """
         #print "set %s -> %s" % (propname, value)
         if propname in PROTECTED:
@@ -138,6 +136,7 @@ class TypeClass(object):
         if dbobj:
             _SA(dbobj, propname, value)
         else:
+            # only as a last resort do we save on the typeclass object
             _SA(self, propname, value)
 
     def __eq__(self, other):
