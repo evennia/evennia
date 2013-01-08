@@ -28,11 +28,6 @@ _DA = object.__delattr__
 
 
 _CONNECT_CHANNEL = None
-try:
-    _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
-except Exception, e:
-    print e
-    pass
 
 #
 # Base class to inherit from.
@@ -791,6 +786,13 @@ class Character(Object):
         We stove away the character when logging off, otherwise the character object will
         remain in the room also after the player logged off ("headless", so to say).
         """
+        global _CONNECT_CHANNEL
+        if not _CONNECT_CHANNEL:
+            try:
+                _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
+            except Exception, e:
+                logger.log_trace()
+
         if self.location: # have to check, in case of multiple connections closing
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
             self.db.prelogout_location = self.location
@@ -804,6 +806,12 @@ class Character(Object):
         """
         This recovers the character again after having been "stoved away" at disconnect.
         """
+        global _CONNECT_CHANNEL
+        if not _CONNECT_CHANNEL:
+            try:
+                _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
+            except Exception, e:
+                logger.log_trace()
         if self.db.prelogout_location:
             # try to recover
             self.location = self.db.prelogout_location
