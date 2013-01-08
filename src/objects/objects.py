@@ -20,6 +20,7 @@ from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
 from src.comms.models import Channel
+from src.utils import logger
 __all__ = ("Object", "Character", "Room", "Exit")
 
 _GA = object.__getattribute__
