@@ -111,6 +111,12 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 AMP_HOST = 'localhost'
 AMP_PORT = 5000
 AMP_INTERFACE = '127.0.0.1'
+# Caching speeds up all forms of database access, often considerably. There
+# are (currently) only two settings, "local" or None, the latter of which turns
+# off all caching completely. Local caching stores data in the process. It's very
+# fast but will go out of sync if more than one process writes to the database (such
+# as when using procpool or an extensice web precense).
+GAME_CACHE_TYPE = "local"
 # Attributes on objects are cached aggressively for speed. If the number of
 # objects is large (and their attributes are often accessed) this can use up a lot of
 # memory. So every now and then Evennia checks the size of this cache and resets

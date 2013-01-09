@@ -325,6 +325,9 @@ EVENNIA = Evennia(application)
 print '-' * 50
 print ' %(servername)s Server (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
 
+if not settings.GAME_CACHE_TYPE:
+    print "  caching disabled"
+
 if AMP_ENABLED:
 
     # The AMP protocol handles the communication between
