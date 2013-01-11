@@ -6,6 +6,7 @@ System commands
 
 import traceback
 import os, datetime, time
+from time import time as timemeasure
 from sys import getsizeof
 import sys
 import django, twisted
@@ -112,6 +113,9 @@ class CmdPy(MuxCommand):
     Usage:
       @py <cmd>
 
+    Switch:
+      time - output an approximate execution time for <cmd>
+
     Separate multiple commands by ';'.  A few variables are made
     available for convenience in order to offer access to the system
     (you can import more at execution time).
@@ -151,19 +155,33 @@ class CmdPy(MuxCommand):
                           'inherits_from':utils.inherits_from}
 
         caller.msg(">>> %s" % pycode, data={"raw":True})
+
+        mode = "eval"
         try:
-            ret = eval(pycode, {}, available_vars)
-            if ret != None:
-                ret = "{n<<< %s" % str(ret)
-        except Exception:
             try:
-                exec(pycode, {}, available_vars)
-                ret = "{n<<< Done."
+                pycode_compiled = compile(pycode, "", mode)
             except Exception:
-                errlist = traceback.format_exc().split('\n')
-                if len(errlist) > 4:
-                    errlist = errlist[4:]
-                ret = "\n".join("{n<<< %s" % line for line in errlist if line)
+                mode = "exec"
+                pycode_compiled = compile(pycode, "", mode)
+
+            duration = ""
+            if "time" in self.switches:
+                t0 = timemeasure()
+                ret = eval(pycode_compiled, {}, available_vars)
+                t1 = timemeasure()
+                duration = " (%.4f ms)" % ((t1 - t0) * 1000)
+            else:
+                eval(pycode_compiled, {}, available_vars)
+            if mode == eval:
+                ret = "{n<<< %s%s" % (str(ret), duration)
+            else:
+                ret = "{n<<< Done.%s" % duration
+        except Exception:
+            errlist = traceback.format_exc().split('\n')
+            if len(errlist) > 4:
+                errlist = errlist[4:]
+            ret = "\n".join("{n<<< %s" % line for line in errlist if line)
+
         if ret != None:
             caller.msg(ret)
 
