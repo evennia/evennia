@@ -170,7 +170,13 @@ class SharedMemoryModel(Model):
 
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):
-    for model in SharedMemoryModel.__subclasses__():
+    def class_hierarchy(root):
+        """Recursively yield a class hierarchy."""
+        yield root
+        for subcls in root.__subclasses__():
+            for cls in class_hierarchy(subcls):
+                yield cls
+    for model in class_hierarchy(SharedMemoryModel):
         model.flush_instance_cache()
 #request_finished.connect(flush_cache)
 post_syncdb.connect(flush_cache)
