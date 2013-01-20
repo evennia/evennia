@@ -538,10 +538,10 @@ class CmdDestroy(MuxCommand):
             caller.msg("Usage: @destroy[/switches] [obj, obj2, obj3, [dbref-dbref],...]")
             return ""
 
-        def delobj(objname):
+        def delobj(objname, byref=False):
             # helper function for deleting a single object
             string = ""
-            obj = caller.search(objname)
+            obj = caller.search(objname, global_dbref=byref)
             if not obj:
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
                 return ""
@@ -575,7 +575,7 @@ class CmdDestroy(MuxCommand):
                 dmin, dmax = [utils.dbref(part, reqhash=False) for part in objname.split('-', 1)]
                 if dmin and dmax:
                     for dbref in range(int(dmin),int(dmax+1)):
-                        string += delobj("#" + str(dbref))
+                        string += delobj("#" + str(dbref), True)
                 else:
                     string += delobj(objname)
             else:
