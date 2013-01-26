@@ -228,12 +228,15 @@ class ServerSessionHandler(SessionHandler):
         """
         return len(set(session.uid for session in self.sessions.values() if session.logged_in))
 
-    def sessions_from_player(self, player):
+    def sessions_from_player(self, player, sessid=None):
         """
         Given a player, return any matching sessions.
         """
         uid = player.uid
-        return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
+        if sessid:
+            return [session for session in self.sessions.values() if session.logged_in and session.sessid == sessid and session.uid == uid]
+        else
+            return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_character(self, character):
         """
