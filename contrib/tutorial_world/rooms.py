@@ -286,7 +286,7 @@ class DarkRoom(TutorialRoom):
         type LightSource.
         """
         return any([any([True for obj in char.contents
-                         if utils.inherits_from(obj, LightSource) and obj.is_active])
+                         if utils.inherits_from(obj, LightSource) and obj.db.is_active])
                     for char in self.contents if char.has_player])
 
     def at_object_creation(self):
