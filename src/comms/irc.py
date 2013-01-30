@@ -52,6 +52,7 @@ class IRC_Bot(irc.IRCClient):
         msg_info(msg)
         logger.log_infomsg(msg)
 
+
     def privmsg(self, user, irc_channel, msg):
         "Someone has written something in irc channel. Echo it to the evennia channel"
         #find irc->evennia channel mappings
@@ -65,6 +66,23 @@ class IRC_Bot(irc.IRCClient):
         else:
             user = _("Unknown")
         msg = "[%s] %s@%s: %s" % (self.factory.evennia_channel, user, irc_channel, msg.strip())
+        #logger.log_infomsg("<IRC: " + msg)
+        for conn in conns:
+            if conn.channel:
+                conn.to_channel(msg)
+    def action(self, user, irc_channel, msg):
+        "Someone has performed an action, e.g. using /me <pose>"
+        #find irc->evennia channel mappings
+        conns = ExternalChannelConnection.objects.filter(db_external_key=self.factory.key)
+        if not conns:
+            return
+        #format message:
+        user = user.split("!")[0]
+        if user:
+            user.strip()
+        else:
+            user = _("Unknown")
+        msg = "[%s] *%s@%s %s*" % (self.factory.evennia_channel, user, irc_channel, msg.strip())
         #logger.log_infomsg("<IRC: " + msg)
         for conn in conns:
             if conn.channel:
