@@ -196,7 +196,7 @@ class ExtendedRoom(Room):
                 raw_desc = new_raw_desc
             else:
                 # no seasonal desc set. Use fallback
-                raw_desc = self.db.general_desc
+                raw_desc = self.db.general_desc or self.db.desc
             self.db.raw_desc = raw_desc
             self.ndb.last_season = curr_season
             update = True
@@ -374,19 +374,23 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 # clear flag to force an update
                 self.reset_times(location)
                 caller.msg("Seasonal description was set on %s." % location.key)
-            elif self.rhs:
-                # Not a seasonal desc, and we have an =. Assumed not extendedroom.
-                obj = caller.search(self.lhs)
-                if not obj:
-                    return
-                obj.db.desc = self.rhs
-                caller.msg("The description was set on %s." % obj.key)
             else:
-                # set a normal non-seasonal description (fallback) on extended room
-                location.db.general_desc = self.args
-                location.db.desc = self.args  # compatability
-                self.reset_times(location)
-                caller.msg("General description was set on %s." % location.key)
+                # Not seasonal desc set, maybe this is not an extended room
+                if self.rhs:
+                    obj = caller.search(self.lhs)
+                    if not obj:
+                        return
+                else:
+                    obj = location
+                obj.db.desc = self.rhs # this is set as a compatability fallback
+                if utils.inherits_from(obj, ExtendedRoom):
+                    # this is an extendedroom, we need to reset times and set general_desc
+                    obj.db.general_desc = self.args
+                    self.reset_times(obj)
+                    caller.msg("General description was set on %s." % obj.key)
+                else:
+                    caller.msg("The description was set on %s." % obj.key)
+
 
 # Simple command to view the current time and season
 
