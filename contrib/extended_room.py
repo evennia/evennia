@@ -377,15 +377,17 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             else:
                 # Not seasonal desc set, maybe this is not an extended room
                 if self.rhs:
+                    text = self.rhs
                     obj = caller.search(self.lhs)
                     if not obj:
                         return
                 else:
+                    text = self.args
                     obj = location
                 obj.db.desc = self.rhs # this is set as a compatability fallback
                 if utils.inherits_from(obj, ExtendedRoom):
                     # this is an extendedroom, we need to reset times and set general_desc
-                    obj.db.general_desc = self.args
+                    obj.db.general_desc = text
                     self.reset_times(obj)
                     caller.msg("General description was set on %s." % obj.key)
                 else:
