@@ -16,9 +16,15 @@ matter the value of this file.
 """
 import os
 import sys
+import time
 from optparse import OptionParser
 from subprocess import Popen
 import Queue, thread
+
+try:
+    import __pypy__ as is_pypy
+except ImportError:
+    is_pypy = False
 
 #
 # System Configuration
@@ -163,6 +169,10 @@ def start_services(server_argv, portal_argv):
         return
 
     if portal_argv:
+        if is_pypy:
+            # This is a hack; without it, the *server* stalls out and never finishes loading under PyPy.
+            time.sleep(1)
+
         try:
             if get_restart_mode(PORTAL_RESTART) == "True":
                 # start portal as interactive, reloadable thread

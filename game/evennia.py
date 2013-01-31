@@ -283,7 +283,7 @@ def run_menu():
     This launches an interactive menu.
     """
 
-    cmdstr = ["python", "runner.py"]
+    cmdstr = [sys.executable, "runner.py"]
 
     while True:
         # menu loop
@@ -350,7 +350,7 @@ def handle_args(options, mode, service):
     """
 
     inter = options.interactive
-    cmdstr = ["python", "runner.py"]
+    cmdstr = [sys.executable, "runner.py"]
     errmsg = "The %s does not seem to be running."
 
     if mode == 'start':
