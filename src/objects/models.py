@@ -230,7 +230,7 @@ class ObjectDB(TypedObject):
         for alias in make_iter(aliases):
             new_alias = Alias(db_key=alias, db_obj=self)
             new_alias.save()
-        set_prop_cache(self, "_aliases", aliases)
+        set_prop_cache(self, "_aliases", make_iter(aliases))
     #@aliases.deleter
     def __aliases_del(self):
         "Deleter. Allows for del self.aliases"
