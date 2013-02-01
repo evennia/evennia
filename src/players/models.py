@@ -387,7 +387,7 @@ class PlayerDB(TypedObject):
             for sess in _GA(self, 'get_sessions'):
                 sess.msg(outgoing_string, data)
 
-    def inmsg(self, ingoing_string, data, session):
+    def inmsg(self, ingoing_string, data, sessid):
         """
         This is the reverse of msg - used by sessions to relay
         messages/data back into the game. It is normally not called
@@ -395,16 +395,21 @@ class PlayerDB(TypedObject):
 
         ingoing_string - text string (i.e. command string)
         data - dictionary of optional data
-        sessid - session sending this data
+        session - session sending this data
         """
-        character = _GA(self, "get_character")(session.sessid)
+        character = _GA(self, "get_character")(sessid)
         if character:
             # execute command on character
-            character.execute_cmd(ingoing_string)
+            _GA(character, "execute_cmd")(ingoing_string)
         else:
             # a non-character session; this goes to player directly
-            self.execute_cmd(ingoing_message)
+            _GA(self, "execute_cmd")(ingoing_string)
 
+    def connect_session(self, sessid):
+        """
+        Connect session to this player to a session through
+        its session id.
+        """
 
     def get_sessions(self, sessid=None):
         """
@@ -436,8 +441,10 @@ class PlayerDB(TypedObject):
 
     def connect_character(self, character, sessid):
         """
-        Use the Player to connect a Character to a session. Note
-        that we don't do any access checks at this point.
+        Use the Player to connect a Character to a session. Note that
+        we don't do any access checks at this point. Note that if the
+        game was fully restarted (including the Portal), this must be
+        used, since sessids will have changed as players reconnect.
         """
         character = character.dbobj
         character.player = self
@@ -455,6 +462,9 @@ class PlayerDB(TypedObject):
             character.player = None
             character.sessid = None
             self.save()
+
+    def disconnect_all_characters(self):
+        for char in self.db_objs.all():
 
     def swap_character(self, new_character, delete_old_character=False):
         """

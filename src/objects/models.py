@@ -176,6 +176,9 @@ class ObjectDB(TypedObject):
     # If this is a character object, the player is connected here.
     db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player',
                                   help_text='a Player connected to this object, if any.')
+    # the session id associated with this player, if any
+    db_sessid = models.IntegerField(null=True, verbose_name="session id",
+                                    help_text="unique session id of connected Player, if any."
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
@@ -191,7 +194,6 @@ class ObjectDB(TypedObject):
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, blank=True,
                                          help_text="optional python path to a cmdset class.")
-
     # Database manager
     objects = ObjectManager()
 
@@ -260,6 +262,30 @@ class ObjectDB(TypedObject):
         del_field_cache(self, "player")
     player = property(__player_get, __player_set, __player_del)
 
+    # sessid property (wraps db_sessid)
+    #@property
+    def __sessid_get(self):
+        """
+        Getter. Allows for value = self.sessid. Since sessid
+        is directly related to self.player, we cannot have
+        a sessid without a player being connected (but the
+        opposite could be true).
+        """
+        if not get_field_cache(self, "player"):
+            del_field_cache(self, "sessid")
+        return get_field_cache(self, "sessid")
+
+    #@player.setter
+    def __sessid_set(self, player):
+        "Setter. Allows for self.player = value"
+        if inherits_from(player, TypeClass):
+            player = player.dbobj
+        set_field_cache(self, "player", player)
+    #@player.deleter
+    def __player_del(self):
+        "Deleter. Allows for del self.player"
+        del_field_cache(self, "player")
+    player = property(__player_get, __player_set, __player_del)
     # location property (wraps db_location)
     #@property
     def __location_get(self):
