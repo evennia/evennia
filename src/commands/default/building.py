@@ -579,7 +579,7 @@ class CmdDestroy(MuxCommand):
                 else:
                     string += delobj(objname)
             else:
-                string += delobj(objname)
+                string += delobj(objname, True)
         if string:
             caller.msg(string.strip())
 
