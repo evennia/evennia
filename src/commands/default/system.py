@@ -171,8 +171,8 @@ class CmdPy(MuxCommand):
                 t1 = timemeasure()
                 duration = " (%.4f ms)" % ((t1 - t0) * 1000)
             else:
-                eval(pycode_compiled, {}, available_vars)
-            if mode == eval:
+                ret = eval(pycode_compiled, {}, available_vars)
+            if mode == "eval":
                 ret = "{n<<< %s%s" % (str(ret), duration)
             else:
                 ret = "{n<<< Done.%s" % duration
