@@ -579,7 +579,7 @@ class CmdDestroy(MuxCommand):
                 else:
                     string += delobj(objname)
             else:
-                string += delobj(objname)
+                string += delobj(objname, True)
         if string:
             caller.msg(string.strip())
 
@@ -665,6 +665,7 @@ class CmdDig(ObjManipCommand):
                 if not typeclass:
                     typeclass = settings.BASE_EXIT_TYPECLASS
 
+                print typeclass, to_exit["name"], location, to_exit["aliases"],lockstring, new_room, caller
                 new_to_exit = create.create_object(typeclass, to_exit["name"], location,
                                                    aliases=to_exit["aliases"],
                                                    locks=lockstring, destination=new_room, report_to=caller)
@@ -1649,7 +1650,7 @@ class CmdExamine(ObjManipCommand):
         else:
             string = headers["name"] % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases:
-            string += headers["aliases"] % (", ".join(obj.aliases))
+            string += headers["aliases"] % (", ".join(utils.make_iter(obj.aliases)))
         if hasattr(obj, "has_player") and obj.has_player:
             string += headers["player"] % obj.player.name
             perms = obj.player.permissions
