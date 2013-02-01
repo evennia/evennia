@@ -163,6 +163,7 @@ class PlayerDB(TypedObject):
     # Use the property 'obj' to access.
     db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True,
                                verbose_name="character", help_text='In-game object.')
+    db_objs = models.ManyToManyField("objects.ObjectDB", null=True, verbose_name="characters", help_text="In-game objects.")
     # store a connected flag here too, not just in sessionhandler.
     # This makes it easier to track from various out-of-process locations
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
@@ -224,7 +225,7 @@ class PlayerDB(TypedObject):
     #@property
     def character_get(self):
         "Getter. Allows for value = self.character"
-        return get_field_cache(self, "obj")
+        return get_field_cache(self, "obj)
     #@character.setter
     def character_set(self, character):
         "Setter. Allows for self.character = value"
@@ -236,6 +237,7 @@ class PlayerDB(TypedObject):
         "Deleter. Allows for del self.character"
         del_field_cache(self, "obj")
     character = property(character_get, character_set, character_del)
+
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
     #@property
@@ -358,26 +360,111 @@ class PlayerDB(TypedObject):
     # PlayerDB class access methods
     #
 
-    def msg(self, outgoing_string, from_obj=None, data=None):
+    def msg(self, outgoing_string, from_obj=None, data=None, sessid=None):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
         """
         if from_obj:
+            # call hook
             try:
                 _GA(from_obj, "at_msg_send")(outgoing_string, to_obj=self, data=data)
             except Exception:
                 pass
-        if (_GA(self, "character") and not
-            _GA(self, "character").at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
-            # the at_msg_receive() hook may block receiving of certain messages
-            return
-
         outgoing_string = utils.to_str(outgoing_string, force_string=True)
 
-        for session in _GA(self, 'sessions'):
+        session = None
+        if sessid:
+            session = _GA(self, "get_session")(sessid)
+        if session:
+            char = _GA(self, "get_character")(sessid)
+            if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
+                # if hook returns false, cancel send
+                return
             session.msg(outgoing_string, data)
+        else:
+            # if no session was specified, send to them all
+            for sess in _GA(self, 'get_sessions'):
+                sess.msg(outgoing_string, data)
 
+    def inmsg(self, ingoing_string, data, sessid):
+        """
+        This is the reverse of msg - used by sessions to relay
+        messages/data back into the game. It is normally not called
+        from inside game code but only by the serversessions directly.
+
+        ingoing_string - text string (i.e. command string)
+        data - dictionary of optional data
+        session - session sending this data
+        """
+        character = _GA(self, "get_character")(sessid)
+        if character:
+            # execute command on character
+            _GA(character, "execute_cmd")(ingoing_string)
+        else:
+            # a non-character session; this goes to player directly
+            _GA(self, "execute_cmd")(ingoing_string)
+
+    def connect_session(self, sessid):
+        """
+        Connect session to this player to a session through
+        its session id.
+        """
+
+    def get_sessions(self, sessid=None):
+        """
+        Return session with given sessid connected to this player. If sessid is
+        not given, return all connected sessions.
+        Note that this method will always return a list, even if it only has one
+        (or zero) element(s).
+        """
+        return SESSIONS.get_session_from_player(self, sessid=sessid)
+
+    def get_character(self, sessid):
+        """
+        Get the character connected through this sessid, if any
+        """
+        if not sessid: # sessid is always > 0
+            return None
+        try:
+            char = get_prop_cache(self, "_characters").get(sessid)
+        except AttributeError:
+            set_prop_cache(self, "_characters", {})
+            char = None
+        if not char:
+            char = self.db_objs.filter(player=self, sessid=sessid)
+            if char.count():
+                chars_cache = get_prop_cache(self, "_characters")
+                chars_cache[sessid] = char[0]
+                set_prop_cache(self, "_characters")
+        return char
+
+    def connect_character(self, character, sessid):
+        """
+        Use the Player to connect a Character to a session. Note that
+        we don't do any access checks at this point. Note that if the
+        game was fully restarted (including the Portal), this must be
+        used, since sessids will have changed as players reconnect.
+        """
+        character = character.dbobj
+        character.player = self
+        character.sessid = sessid
+        self.db_objs.add(character)
+        self.save()
+
+    def disconnect_character(self, character):
+        """
+        Disconnect a character from this player.
+        """
+        character = character.dbobj
+        if self.db_objs.filter(id=_GA(character,"id")):
+            self.db_objs.remove(character)
+            character.player = None
+            character.sessid = None
+            self.save()
+
+    def disconnect_all_characters(self):
+        for char in self.db_objs.all():
 
     def swap_character(self, new_character, delete_old_character=False):
         """
