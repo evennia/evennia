@@ -448,18 +448,19 @@ class ValidateChannelHandler(Script):
         #print "ValidateChannelHandler run."
         channelhandler.CHANNELHANDLER.update()
 
-# PyPy does not support sys.getsizeof, so the attribute cache dump script is skipped here.
-if not is_pypy:
-    class ClearAttributeCache(Script):
-        "Clear the attribute cache."
-        def at_script_creation(self):
-            "Setup the script"
-            self.key = "sys_cache_clear"
-            self.desc = _("Clears the Attribute Cache")
-            self.interval = 3600 * 2
-            self.persistent = True
-        def at_repeat(self):
-            "called every 2 hours. Sets a max attr-cache limit to 100 MB." # enough for normal usage?
-            attr_cache_size, _, _ = caches.get_cache_sizes()
-            if attr_cache_size > _ATTRIBUTE_CACHE_MAXSIZE:
-                caches.flush_attr_cache()
+class ClearAttributeCache(Script):
+    "Clear the attribute cache."
+    def at_script_creation(self):
+        "Setup the script"
+        self.key = "sys_cache_clear"
+        self.desc = _("Clears the Attribute Cache")
+        self.interval = 3600 * 2
+        self.persistent = True
+    def at_repeat(self):
+        "called every 2 hours. Sets a max attr-cache limit to 100 MB." # enough for normal usage?
+        if is_pypy:
+            # pypy don't support get_size, so we have to skip out here.
+            return
+        attr_cache_size, _, _ = caches.get_cache_sizes()
+        if attr_cache_size > _ATTRIBUTE_CACHE_MAXSIZE:
+            caches.flush_attr_cache()

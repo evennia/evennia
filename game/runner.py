@@ -16,12 +16,12 @@ matter the value of this file.
 """
 import os
 import sys
-import time
 from optparse import OptionParser
 from subprocess import Popen
 import Queue, thread
 
 try:
+    # check if launched with pypy
     import __pypy__ as is_pypy
 except ImportError:
     is_pypy = False
@@ -29,7 +29,6 @@ except ImportError:
 #
 # System Configuration
 #
-
 
 SERVER_PIDFILE = "server.pid"
 PORTAL_PIDFILE = "portal.pid"
@@ -168,7 +167,6 @@ def start_services(server_argv, portal_argv):
             else:
                 # normal operation: start portal as a daemon; we don't care to monitor it for restart
                 PORTAL = Popen(portal_argv)
-
         except IOError, e:
             print "Portal IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
             return

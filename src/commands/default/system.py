@@ -694,7 +694,7 @@ class CmdServerLoad(MuxCommand):
 
             if not is_pypy:
                 # Cache size measurements are not available on PyPy because it lacks sys.getsizeof
-                
+
                 # object cache size
                 cachedict = _idmapper.cache_size()
                 totcache = cachedict["_total"]
