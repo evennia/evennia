@@ -1649,7 +1649,7 @@ class CmdExamine(ObjManipCommand):
         else:
             string = headers["name"] % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases:
-            string += headers["aliases"] % (", ".join(obj.aliases))
+            string += headers["aliases"] % (", ".join(utils.make_iter(obj.aliases)))
         if hasattr(obj, "has_player") and obj.has_player:
             string += headers["player"] % obj.player.name
             perms = obj.player.permissions
