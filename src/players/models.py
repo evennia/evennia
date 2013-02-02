@@ -161,9 +161,9 @@ class PlayerDB(TypedObject):
       help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
     # the in-game object connected to this player (if any).
     # Use the property 'obj' to access.
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True,
-                               verbose_name="character", help_text='In-game object.')
-    db_objs = models.ManyToManyField("objects.ObjectDB", null=True, verbose_name="characters", help_text="In-game objects.")
+    db_objs = models.ManyToManyField("objects.ObjectDB", null=True,
+                                     verbose_name="characters", related_name="objs_set",
+                                     help_text="In-game objects.")
     # store a connected flag here too, not just in sessionhandler.
     # This makes it easier to track from various out-of-process locations
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
@@ -196,11 +196,12 @@ class PlayerDB(TypedObject):
 
     # obj property (wraps db_obj)
     #@property
-    def obj_get(self):
+    def objs_get(self):
         "Getter. Allows for value = self.obj"
-        return get_field_cache(self, "obj")
+        return self.db_objs.all()
+        #return get_field_cache(self, "objs").all()
     #@obj.setter
-    def obj_set(self, value):
+    def objs_set(self, value):
         "Setter. Allows for self.obj = value"
         global _TYPECLASS
         if not _TYPECLASS:
@@ -209,15 +210,19 @@ class PlayerDB(TypedObject):
         if isinstance(value, _TYPECLASS):
             value = value.dbobj
         try:
-            set_field_cache(self, "obj", value)
+            self.db_objs.add(value)
+            self.save()
+            #set_field_cache(self, "obj", value)
         except Exception:
             logger.log_trace()
             raise Exception("Cannot assign %s as a player object!" % value)
     #@obj.deleter
-    def obj_del(self):
+    def objs_del(self):
         "Deleter. Allows for del self.obj"
-        del_field_cache(self, "obj")
-    obj = property(obj_get, obj_set, obj_del)
+        self.db_objs.clear()
+        self.save()
+        #del_field_cache(self, "obj")
+    objs = property(objs_get, objs_set, objs_del)
 
     # whereas the name 'obj' is consistent with the rest of the code,
     # 'character' is a more intuitive property name, so we
