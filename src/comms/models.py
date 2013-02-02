@@ -118,7 +118,7 @@ class Msg(SharedMemoryModel):
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
-        for val in make_iter(value):
+        for val in (v for v in make_iter(value) if v):
             obj, typ = identify_object(val)
             if typ == 'player':
                 self.db_sender_players.add(obj)
@@ -163,7 +163,7 @@ class Msg(SharedMemoryModel):
     #@receivers.setter
     def __receivers_set(self, value):
         "Setter. Allows for self.receivers = value. This appends a new receiver to the message."
-        for val in make_iter(value):
+        for val in (v for v in make_iter(value) if v):
             obj, typ = identify_object(val)
             if typ == 'player':
                 self.db_receivers_players.add(obj)
@@ -201,7 +201,7 @@ class Msg(SharedMemoryModel):
     #@channels.setter
     def __channels_set(self, value):
         "Setter. Allows for self.channels = value. Requires a channel to be added."
-        for val in make_iter(value):
+        for val in (v for v in make_iter(value) if v):
             self.db_receivers_channels.add(val)
     #@channels.deleter
     def __channels_del(self):
