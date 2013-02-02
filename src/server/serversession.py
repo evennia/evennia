@@ -91,25 +91,14 @@ class ServerSession(Session):
         self.user.save()
 
         # player init
-        #print "at_init() - player"
         player.at_init()
 
         # Check if this is the first time the *player* logs in
         if player.db.FIRST_LOGIN:
             player.at_first_login()
             del player.db.FIRST_LOGIN
-        player.at_pre_login()
 
-        character = player.character
-        if character:
-            # this player has a character. Check if it's the
-            # first time *this character* logs in
-            character.at_init()
-            if character.db.FIRST_LOGIN:
-                character.at_first_login()
-                del character.db.FIRST_LOGIN
-            # run character login hook
-            character.at_pre_login()
+        player.at_pre_login()
 
         self.log(_('Logged in: %(self)s') % {'self': self})
 
@@ -119,10 +108,7 @@ class ServerSession(Session):
         #add session to connected list
         self.sessionhandler.login(self)
 
-        # post-login hooks
         player.at_post_login()
-        if character:
-            character.at_post_login()
 
     def session_disconnect(self):
         """
@@ -193,20 +179,13 @@ class ServerSession(Session):
         if str(command_string).strip() == IDLE_COMMAND:
             self.update_session_counters(idle=True)
             return
-
-        # all other inputs, including empty inputs
-        character = self.get_character()
-        if character:
-            character.execute_cmd(command_string)
+        if self.logged_in:
+            # the inmsg handler will relay to the right place
+            self.player.inmsg(command_string, self.sessid)
         else:
-            if self.logged_in:
-                # there is no character, but we are logged in. Use player instead.
-                self.get_player().execute_cmd(command_string)
-            else:
-                # we are not logged in. Use the session directly
-                # (it uses the settings.UNLOGGEDIN cmdset)
-                cmdhandler.cmdhandler(self, command_string)
-        self.update_session_counters()
+            # we are not logged in. Use the session directly
+            # (it uses the settings.UNLOGGEDIN cmdset)
+            cmdhandler.cmdhandler(self, command_string)
 
     def data_out(self, msg, data=None):
         """
@@ -243,11 +222,11 @@ class ServerSession(Session):
             func = OOB_FUNC_MODULE.__dict__.get(functuple[0])
             if func:
                 try:
-                    outdata[funcname] = func(oobkey, self, *functuple[1], **functuple[2])
+                    outdata[functuple[0]] = func(oobkey, self, *functuple[1], **functuple[2])
                 except Exception:
                     logger.log_trace()
             else:
-                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % funcname)
+                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % functuple[0])
         if outdata:
             # we have a direct result - send it back right away
             self.oob_data_out(outdata)

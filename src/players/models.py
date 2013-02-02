@@ -387,7 +387,7 @@ class PlayerDB(TypedObject):
             for sess in _GA(self, 'get_sessions'):
                 sess.msg(outgoing_string, data)
 
-    def inmsg(self, ingoing_string, data, sessid):
+    def inmsg(self, ingoing_string, sessid):
         """
         This is the reverse of msg - used by sessions to relay
         messages/data back into the game. It is normally not called
@@ -400,58 +400,101 @@ class PlayerDB(TypedObject):
         character = _GA(self, "get_character")(sessid)
         if character:
             # execute command on character
-            _GA(character, "execute_cmd")(ingoing_string)
+            _GA(character, "execute_cmd")(ingoing_string, sessid=sessid)
         else:
             # a non-character session; this goes to player directly
-            _GA(self, "execute_cmd")(ingoing_string)
+            _GA(self, "execute_cmd")(ingoing_string, sessid=sessid)
 
-    def connect_session(self, sessid):
+    def connect_session_to_character(self, sessid, character, force=False):
         """
-        Connect session to this player to a session through
-        its session id.
-        """
+        Connect the given session to a character through this player.
+        Note that this assumes the character has previously been
+        linked to the player using self.connect_character().
 
-    def get_session(self, sessid=None):
+        force - drop existing connection to other character
         """
-        Return session with given sessid connected to this player. If sessid is
-        not given, return all connected sessions.
-        Note that this method will always return a list, even if it only has one
-        (or zero) element(s).
+        # first check if we already have a character tied to this session
+        char = _GA(self, "get_character")(sessid=sessid)
+        if char:
+            if force and char != character:
+                _GA(self, "disconnect_session_from_character")(sessid)
+            else:
+                return
+        # do the connection
+        character.sessid = sessid
+        # update cache
+        cache = get_prop_cache(self, "_characters") or {}
+        cache[sessid] = character
+        set_prop_cache(self, "_characters", cache)
+        # call hooks
+        character.at_init()
+        if character.db.FIRST_LOGIN:
+            character.at_first_login()
+            del character.db.FIRST_LOGIN
+        character.at_pre_login()
+        character.at_post_login()
+
+    def disconnect_session_from_character(self, sessid):
+        """
+        Disconnect a session from the characterm (still keeping the
+        connection to the Player)
+        """
+        char = _GA(self, "get_character")(sessid=sessid)
+        if char:
+            del char.sessid
+        # update cache
+        cache = get_prop_cache(self, "_characters") or {}
+        if sessid in cache:
+            del cache[sessid]
+        set_prop_cache(self, "_characters", cache)
+
+    def get_session(self, sessid):
+        """
+        Return session with given sessid connected to this player.
         """
         return SESSIONS.get_session_from_player(self, sessid=sessid)
 
-    def get_character(self, sessid=None, key=None):
+    def get_all_sessions(self):
+        "Return all sessions connected to this player"
+        return SESSIONS.get_session_from_player(self)
+
+    def get_character(self, sessid=None, character=None):
         """
-        Get the character connected through this sessid, if any. May also
-        try to return a character based on key. If neither sessid nor key
-        is given, return all characters connected to this player
+        Get the character connected to this player
+
+        sessid - return character connected to this sessid,
+        character - return character if connected to this player, else None.
+
+        Combining both keywords will check the entire connection - if the
+        given session is currently connected to the given char. If no
+        keywords are given, returns all connected characters.
         """
         cache = get_prop_cache(self, "_characters") or {}
         if sessid:
             # try to return a character with a given sessid
             char = cache.get(sessid)
             if not char:
-                char = self.db_objs.filter(player=self, sessid=sessid) or None
+                char = _GA(self, "db_objs").filter(player=self, sessid=sessid) or None
                 if char:
                     cache[sessid] = char[0]
                     set_prop_cache(self, "_characters", cache)
-            if key:
-                return char.key.lower() == key.lower() and char or None
+            if character:
+                return char == character.dbobj or None
             return char
-        elif key:
-            char = self.db_objs.filter(player=self, db_key__iexact=key)
+        elif character:
+            char = _GA(self, "db_objs").filter(character)
             return char and char[0] or None
         else:
             # no sessid given - return all available characters
-            return list(self.db_objs.filter(player=self, sessid=sessid))
+            return list(self.db_objs.all())
 
     def get_all_characters(self):
         """
         Readability-wrapper for getting all characters
         """
-        return self.get_character(sessid=None)
+        return _GA(self, "get_character")(sessid=None, character=None)
 
-    def connect_character(self, character, sessid):
+    def connect_character(self, char):
         """
         Use the Player to connect a Character to a session. Note that
         we don't do any access checks at this point. Note that if the
@@ -459,38 +502,34 @@ class PlayerDB(TypedObject):
         used, since sessids will have changed as players reconnect.
         """
         # first disconnect any other character from this session
-        self.disconnect_character(sessid=sessid)
-        character = character.dbobj
-        character.player = self
-        character.sessid = sessid
-        self.db_objs.add(character)
-        self.save()
-        # update cache
-        cache = get_prop_cache(self, "_characters") or {}
-        cache[sessid] = character
-        set_prop_cache(self, "_characters", cache)
+        char = char.dbobj
+        _GA(self, "disconnect_character")(char)
+        char = char.dbobj
+        char.player = self
+        _GA(self, "db_objs").add(char)
+        _GA(self, "save")()
 
-    def disconnect_character(self, sessid=None, char=None):
+    def disconnect_character(self, char):
         """
         Disconnect a character from this player, either based
         on sessid or by giving the character object directly
         """
+        char = char.dbobj
         key = char and char.key or None
-        char = self.get_character(sessid=sessid, key=key)
+        char = _GA(self, "get_character")(key=key)
         if char:
-            self.db_objs.remove(char)
+            _GA(self, "db_objs").remove(char)
             del char.player
             del char.sessid
             self.save()
             # clear cache
             cache = get_prop_cache(self, "_characters") or {}
-            if cache and sessid in cache:
-                del cache[sessid]
-                set_prop_cache(self, "_characters", cache)
+            [cache.pop(sessid) for sessid,stored_char in cache.items() if stored_char==char]
+            set_prop_cache(self, "_characters", cache)
 
     def disconnect_all_characters(self):
         for char in self.db_objs.all():
-            self.disconnect_character(char)
+            _GA(self, "disconnect_character")(char)
 
     def swap_character(self, new_character, delete_old_character=False):
         """
@@ -514,7 +553,7 @@ class PlayerDB(TypedObject):
     # Execution/action methods
     #
 
-    def execute_cmd(self, raw_string):
+    def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this player. This command transparently
         lets its typeclass execute the command.
@@ -530,7 +569,7 @@ class PlayerDB(TypedObject):
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
                 break
-        return cmdhandler.cmdhandler(self.typeclass, raw_string)
+        return cmdhandler.cmdhandler(self.typeclass, raw_string, sessid=sessid)
 
     def search(self, ostring, return_character=False):
         """

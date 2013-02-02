@@ -41,7 +41,6 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import logger, utils
-from src.commands.cmdset import CmdSet
 from src.commands.cmdparser import at_multimatch_cmd
 from src.utils.utils import string_suggestions
 
@@ -165,7 +164,7 @@ def get_and_merge_cmdsets(caller):
 # Main command-handler function
 
 @inlineCallbacks
-def cmdhandler(caller, raw_string, testing=False):
+def cmdhandler(caller, raw_string, testing=False, sessid=None):
     """
     This is the main function to handle any string sent to the engine.
 
@@ -251,6 +250,7 @@ def cmdhandler(caller, raw_string, testing=False):
             cmd.cmdstring = cmdname
             cmd.args = args
             cmd.cmdset = cmdset
+            cmd.sessid = sessid
             cmd.raw_string = unformatted_raw_string
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):

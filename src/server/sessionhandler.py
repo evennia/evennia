@@ -223,8 +223,8 @@ class ServerSessionHandler(SessionHandler):
 
     def player_count(self):
         """
-        Get the number of connected players (not sessions since a player
-        may have more than one session connected if ALLOW_MULTISESSION is True)
+        Get the number of connected players (not sessions since a
+        player may have more than one session depending on settings).
         Only logged-in players are counted here.
         """
         return len(set(session.uid for session in self.sessions.values() if session.logged_in))
@@ -235,7 +235,8 @@ class ServerSessionHandler(SessionHandler):
         """
         uid = player.uid
         if sessid:
-            return [session for session in self.sessions.values() if session.logged_in and session.sessid == sessid and session.uid == uid]
+            session = self.sessions.get(sessid)
+            return session and session.logged_in and session.uid == uid and session or None
         else:
             return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
@@ -243,9 +244,9 @@ class ServerSessionHandler(SessionHandler):
         """
         Given a game character, return any matching sessions.
         """
-        player = character.player
-        if player:
-            return self.sessions_from_player(player)
+        sessid = character.sessid
+        if sessid:
+            return self.sessions.get(sessid)
         return None
 
     def announce_all(self, message):

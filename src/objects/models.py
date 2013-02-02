@@ -21,7 +21,7 @@ from django.conf import settings
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, hashid
+from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
 from src.typeclasses.typeclass import TypeClass
 from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
@@ -178,7 +178,7 @@ class ObjectDB(TypedObject):
                                   help_text='a Player connected to this object, if any.')
     # the session id associated with this player, if any
     db_sessid = models.IntegerField(null=True, verbose_name="session id",
-                                    help_text="unique session id of connected Player, if any."
+                                    help_text="unique session id of connected Player, if any.")
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
@@ -271,20 +271,18 @@ class ObjectDB(TypedObject):
         a sessid without a player being connected (but the
         opposite could be true).
         """
-        if not get_field_cache(self, "player"):
+        if not get_field_cache(self, "sessid"):
             del_field_cache(self, "sessid")
         return get_field_cache(self, "sessid")
     #@sessid.setter
-    def __sessid_set(self, player):
+    def __sessid_set(self, sessid):
         "Setter. Allows for self.player = value"
-        if inherits_from(player, TypeClass):
-            player = player.dbobj
-        set_field_cache(self, "player", player)
+        set_field_cache(self, "sessid", sessid)
     #@sessid.deleter
-    def __player_del(self):
+    def __sessid_del(self):
         "Deleter. Allows for del self.player"
-        del_field_cache(self, "player")
-    player = property(__player_get, __player_set, __player_del)
+        del_field_cache(self, "sessid")
+    player = property(__sessid_get, __sessid_set, __sessid_del)
     # location property (wraps db_location)
     #@property
     def __location_get(self):
@@ -637,7 +635,7 @@ class ObjectDB(TypedObject):
     # Execution/action methods
     #
 
-    def execute_cmd(self, raw_string):
+    def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this object. This command transparently
         lets its typeclass execute the command. Evennia also calls
@@ -669,11 +667,11 @@ class ObjectDB(TypedObject):
             if nick.db_nick in raw_list:
                 raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
                 break
-        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string)
+        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, sessid=sessid)
 
     def msg(self, message, from_obj=None, data=None):
         """
-        Emits something to any sessions attached to the object.
+        Emits something to a session attached to the object.
 
         message (str): The message to send
         from_obj (obj): object that is sending.
@@ -681,8 +679,8 @@ class ObjectDB(TypedObject):
                        be used by the protocol.
         """
         if _GA(self, 'player'):
-            # note that we check the typeclass' msg, otherwise one couldn't overload it.
-            _GA(_GA(self, 'player'), "typeclass").msg(message, from_obj=from_obj, data=data)
+            # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
+            _GA(_GA(self, 'player'), "typeclass").msg(message, from_obj=from_obj, data=data, sessid=_GA(self, "sessid"))
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"
