@@ -274,14 +274,13 @@ class ObjectDB(TypedObject):
         if not get_field_cache(self, "player"):
             del_field_cache(self, "sessid")
         return get_field_cache(self, "sessid")
-
-    #@player.setter
+    #@sessid.setter
     def __sessid_set(self, player):
         "Setter. Allows for self.player = value"
         if inherits_from(player, TypeClass):
             player = player.dbobj
         set_field_cache(self, "player", player)
-    #@player.deleter
+    #@sessid.deleter
     def __player_del(self):
         "Deleter. Allows for del self.player"
         del_field_cache(self, "player")

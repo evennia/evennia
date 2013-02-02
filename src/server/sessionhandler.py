@@ -32,7 +32,8 @@ SSYNC = chr(8)       # server session sync
 from django.utils.translation import ugettext as _
 
 SERVERNAME = settings.SERVERNAME
-ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
+#ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
 #-----------------------------------------------------------
@@ -163,8 +164,8 @@ class ServerSessionHandler(SessionHandler):
         """
         # prep the session with player/user info
 
-        if not ALLOW_MULTISESSION:
-            # disconnect previous sessions.
+        if MULTISESSION_MODE == 0:
+            # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
         session.logged_in = True
         # sync the portal to this session
@@ -235,7 +236,7 @@ class ServerSessionHandler(SessionHandler):
         uid = player.uid
         if sessid:
             return [session for session in self.sessions.values() if session.logged_in and session.sessid == sessid and session.uid == uid]
-        else
+        else:
             return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_character(self, character):

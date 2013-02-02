@@ -225,7 +225,7 @@ class PlayerDB(TypedObject):
     #@property
     def character_get(self):
         "Getter. Allows for value = self.character"
-        return get_field_cache(self, "obj)
+        return get_field_cache(self, "obj")
     #@character.setter
     def character_set(self, character):
         "Setter. Allows for self.character = value"
@@ -378,7 +378,7 @@ class PlayerDB(TypedObject):
             session = _GA(self, "get_session")(sessid)
         if session:
             char = _GA(self, "get_character")(sessid)
-            if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data)):
+            if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
                 # if hook returns false, cancel send
                 return
             session.msg(outgoing_string, data)
@@ -411,7 +411,7 @@ class PlayerDB(TypedObject):
         its session id.
         """
 
-    def get_sessions(self, sessid=None):
+    def get_session(self, sessid=None):
         """
         Return session with given sessid connected to this player. If sessid is
         not given, return all connected sessions.
@@ -420,24 +420,36 @@ class PlayerDB(TypedObject):
         """
         return SESSIONS.get_session_from_player(self, sessid=sessid)
 
-    def get_character(self, sessid):
+    def get_character(self, sessid=None, key=None):
         """
-        Get the character connected through this sessid, if any
+        Get the character connected through this sessid, if any. May also
+        try to return a character based on key. If neither sessid nor key
+        is given, return all characters connected to this player
         """
-        if not sessid: # sessid is always > 0
-            return None
-        try:
-            char = get_prop_cache(self, "_characters").get(sessid)
-        except AttributeError:
-            set_prop_cache(self, "_characters", {})
-            char = None
-        if not char:
-            char = self.db_objs.filter(player=self, sessid=sessid)
-            if char.count():
-                chars_cache = get_prop_cache(self, "_characters")
-                chars_cache[sessid] = char[0]
-                set_prop_cache(self, "_characters")
-        return char
+        cache = get_prop_cache(self, "_characters") or {}
+        if sessid:
+            # try to return a character with a given sessid
+            char = cache.get(sessid)
+            if not char:
+                char = self.db_objs.filter(player=self, sessid=sessid) or None
+                if char:
+                    cache[sessid] = char[0]
+                    set_prop_cache(self, "_characters", cache)
+            if key:
+                return char.key.lower() == key.lower() and char or None
+            return char
+        elif key:
+            char = self.db_objs.filter(player=self, db_key__iexact=key)
+            return char and char[0] or None
+        else:
+            # no sessid given - return all available characters
+            return list(self.db_objs.filter(player=self, sessid=sessid))
+
+    def get_all_characters(self):
+        """
+        Readability-wrapper for getting all characters
+        """
+        return self.get_character(sessid=None)
 
     def connect_character(self, character, sessid):
         """
@@ -446,25 +458,39 @@ class PlayerDB(TypedObject):
         game was fully restarted (including the Portal), this must be
         used, since sessids will have changed as players reconnect.
         """
+        # first disconnect any other character from this session
+        self.disconnect_character(sessid=sessid)
         character = character.dbobj
         character.player = self
         character.sessid = sessid
         self.db_objs.add(character)
         self.save()
+        # update cache
+        cache = get_prop_cache(self, "_characters") or {}
+        cache[sessid] = character
+        set_prop_cache(self, "_characters", cache)
 
-    def disconnect_character(self, character):
+    def disconnect_character(self, sessid=None, char=None):
         """
-        Disconnect a character from this player.
+        Disconnect a character from this player, either based
+        on sessid or by giving the character object directly
         """
-        character = character.dbobj
-        if self.db_objs.filter(id=_GA(character,"id")):
-            self.db_objs.remove(character)
-            character.player = None
-            character.sessid = None
+        key = char and char.key or None
+        char = self.get_character(sessid=sessid, key=key)
+        if char:
+            self.db_objs.remove(char)
+            del char.player
+            del char.sessid
             self.save()
+            # clear cache
+            cache = get_prop_cache(self, "_characters") or {}
+            if cache and sessid in cache:
+                del cache[sessid]
+                set_prop_cache(self, "_characters", cache)
 
     def disconnect_all_characters(self):
         for char in self.db_objs.all():
+            self.disconnect_character(char)
 
     def swap_character(self, new_character, delete_old_character=False):
         """
