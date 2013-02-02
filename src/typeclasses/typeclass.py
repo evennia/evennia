@@ -97,6 +97,8 @@ class TypeClass(object):
         """
         if propname == 'dbobj':
             return _GA(self, 'dbobj')
+        if propname == 'typeclass':
+            return self
         if propname.startswith('__') and propname.endswith('__'):
             # python specials are parsed as-is (otherwise things like
             # isinstance() fail to identify the typeclass)
