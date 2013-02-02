@@ -57,10 +57,6 @@ class ServerSession(Session):
             self.cmdset.update(init_mode=True)
             return
 
-        character = self.get_character()
-        if character:
-            # start (persistent) scripts on this object
-            ScriptDB.objects.validate(obj=character)
 
     def session_login(self, player):
         """
@@ -103,7 +99,7 @@ class ServerSession(Session):
         self.log(_('Logged in: %(self)s') % {'self': self})
 
         # start (persistent) scripts on this object
-        ScriptDB.objects.validate(obj=self.player.character)
+        #ScriptDB.objects.validate(obj=self.player.character)
 
         #add session to connected list
         self.sessionhandler.login(self)
@@ -117,10 +113,10 @@ class ServerSession(Session):
         accounts.
         """
         if self.logged_in:
-            player = self.get_player()
-            character = self.get_character()
-            if character:
-                character.at_disconnect()
+            sessid = self.sessid
+            player = self.player
+            if player.get_character(sessid):
+                player.disconnect_session_from_character(sessid)
             uaccount = player.user
             uaccount.last_login = datetime.now()
             uaccount.save()
@@ -140,10 +136,7 @@ class ServerSession(Session):
         Returns the in-game character associated with this session.
         This returns the typeclass of the object.
         """
-        player = self.get_player()
-        if player:
-            return player.character
-        return None
+        return self.logged_in and self.player.get_character(self.sessid) or None
 
     def log(self, message, channel=True):
         """

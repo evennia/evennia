@@ -88,16 +88,20 @@ class Player(TypeClass):
 
     ## methods inherited from database model
 
-    def msg(self, outgoing_string, from_obj=None, data=None):
+    def msg(self, outgoing_string, from_obj=None, data=None, sessid=None):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
 
         outgoing_string (string) - text data to send
         from_obj (Object/Player) - source object of message to send
-        data (?) - arbitrary data object containing eventual protocol-specific options
-
-        """
+        data (dict) - arbitrary data object containing eventual protocol-specific options
+        sessid - the session id of the session to send to. If not given, return to
+                 all sessions connected to this player. This is usually only
+                 relevant when using msg() directly from a player-command (from
+                 a command on a Character, the character automatically stores and
+                 handles the sessid).
+                 """
         self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data)
 
     def swap_character(self, new_character, delete_old_character=False):
@@ -293,8 +297,7 @@ class Player(TypeClass):
         """
         # Character.at_post_login also looks around. Only use
         # this as a backup when logging in without a character
-        if not self.character:
-            self.execute_cmd("look")
+        self.execute_cmd("look")
 
     def at_disconnect(self, reason=None):
         """

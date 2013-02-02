@@ -696,7 +696,7 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         characters = player.get_all_characters() # get all characters
         string = "You are logged in as {g%s{n." % player.key
         string += " Use {w@ic <character>{n to enter the game."
-        string += "\n\nAvailable character%s:"  % (characters.count() > 1 and "s" or "")
+        string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
         for char in characters:
             csessid = char.sessid
             if csessid:

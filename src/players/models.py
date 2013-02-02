@@ -369,6 +369,15 @@ class PlayerDB(TypedObject):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
+
+        outgoing_string (string) - text data to send
+        from_obj (Object/Player) - source object of message to send
+        data (dict) - arbitrary data object containing eventual protocol-specific options
+        sessid - the session id of the session to send to. If not given, return to
+                 all sessions connected to this player. This is usually only
+                 relevant when using msg() directly from a player-command (from
+                 a command on a Character, the character automatically stores and
+                 handles the sessid).
         """
         if from_obj:
             # call hook
@@ -389,11 +398,12 @@ class PlayerDB(TypedObject):
             session.msg(outgoing_string, data)
         else:
             # if no session was specified, send to them all
-            for sess in _GA(self, 'get_sessions'):
+            for sess in _GA(self, 'get_all_sessions')():
                 sess.msg(outgoing_string, data)
 
     def inmsg(self, ingoing_string, sessid):
         """
+        User -> Evennia
         This is the reverse of msg - used by sessions to relay
         messages/data back into the game. It is normally not called
         from inside game code but only by the serversessions directly.
@@ -433,6 +443,10 @@ class PlayerDB(TypedObject):
         set_prop_cache(self, "_characters", cache)
         # call hooks
         character.at_init()
+        if character:
+            # start (persistent) scripts on this object
+            #ScriptDB.objects.validate(obj=character)
+            pass
         if character.db.FIRST_LOGIN:
             character.at_first_login()
             del character.db.FIRST_LOGIN
@@ -446,6 +460,8 @@ class PlayerDB(TypedObject):
         """
         char = _GA(self, "get_character")(sessid=sessid)
         if char:
+            # call hook before disconnecting
+            character.at_disconnect()
             del char.sessid
         # update cache
         cache = get_prop_cache(self, "_characters") or {}
@@ -457,11 +473,11 @@ class PlayerDB(TypedObject):
         """
         Return session with given sessid connected to this player.
         """
-        return SESSIONS.get_session_from_player(self, sessid=sessid)
+        return SESSIONS.sessions_from_player(self, sessid=sessid)
 
     def get_all_sessions(self):
         "Return all sessions connected to this player"
-        return SESSIONS.get_session_from_player(self)
+        return SESSIONS.sessions_from_player(self)
 
     def get_character(self, sessid=None, character=None):
         """
@@ -479,7 +495,7 @@ class PlayerDB(TypedObject):
             # try to return a character with a given sessid
             char = cache.get(sessid)
             if not char:
-                char = _GA(self, "db_objs").filter(player=self, sessid=sessid) or None
+                char = _GA(self, "db_objs").filter(db_player=self, db_sessid=sessid) or None
                 if char:
                     cache[sessid] = char[0]
                     set_prop_cache(self, "_characters", cache)

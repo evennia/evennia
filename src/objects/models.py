@@ -282,7 +282,8 @@ class ObjectDB(TypedObject):
     def __sessid_del(self):
         "Deleter. Allows for del self.player"
         del_field_cache(self, "sessid")
-    player = property(__sessid_get, __sessid_set, __sessid_del)
+    sessid = property(__sessid_get, __sessid_set, __sessid_del)
+
     # location property (wraps db_location)
     #@property
     def __location_get(self):
