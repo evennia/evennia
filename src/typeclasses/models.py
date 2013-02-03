@@ -323,7 +323,7 @@ class Attribute(SharedMemoryModel):
     # access through the value property
     db_value = models.TextField('value', blank=True, null=True)
     # Lock storage
-    db_lock_storage = models.CharField('locks', max_length=512, blank=True)
+    db_lock_storage = models.TextField('locks', blank=True)
     # references the object the attribute is linked to (this is set
     # by each child class to this abstact class)
     db_obj =  None # models.ForeignKey("RefencedObject")
