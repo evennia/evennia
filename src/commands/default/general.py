@@ -752,7 +752,7 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         # get all our characters
         characters = player.db._playable_characters
         string = "You are logged in as {g%s{n." % player.key
-        string += " Use {w@ic <character>{n to enter the game."
+        string += "\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
         if characters:
             string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
             for char in characters:
@@ -760,7 +760,7 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
                 if csessid:
                     # character is already puppeted
                     if player.get_session(csessid):
-                        string += "\n - {G%s{n (played by you in another session)"
+                        string += "\n - {G%s{n (played by you in another session)" % char.key
                     else:
                         string += "\n - {R%s{n (played by someone else)" % char.key
                 else:
@@ -802,7 +802,7 @@ class CmdCharCreate(MuxCommandOOC):
             return
         key = self.lhs
         desc = self.rhs
-        if player.db._playeable_characters and len(player.db._playable_characters) >= self.MAX_NR_CHARACTERS:
+        if player.db._playable_characters and len(player.db._playable_characters) >= self.MAX_NR_CHARACTERS:
             player.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
             return
         # create the character
@@ -934,8 +934,8 @@ class CmdOOC(MuxCommandOOC):
             old_char.location = None
 
         # disconnect
-        caller.disconnect_character(caller)
-
+        err = caller.disconnect_character(caller)
+        print "err:", err
         caller.msg("\n{GYou go OOC.{n\n")
         caller.execute_cmd("look")
 
