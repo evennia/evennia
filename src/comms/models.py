@@ -82,7 +82,7 @@ class Msg(SharedMemoryModel):
     # send date
     db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
     # lock storage
-    db_lock_storage = models.CharField('locks', max_length=512, blank=True,
+    db_lock_storage = models.TextField('locks', blank=True,
                                        help_text='access locks on this message.')
 
     # these can be used to filter/hide a given message from supplied objects/players/channels
@@ -416,7 +416,7 @@ class Channel(SharedMemoryModel):
     # Whether this channel should remember its past messages
     db_keep_log = models.BooleanField(default=True)
     # Storage of lock definitions
-    db_lock_storage = models.CharField('locks', max_length=512, blank=True)
+    db_lock_storage = models.TextField('locks', blank=True)
 
 
     # Database manager
