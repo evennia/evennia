@@ -246,8 +246,9 @@ class Player(TypeClass):
         to store attributes all players should have,
         like configuration values etc.
         """
-        pass
-
+        # set an attribute holding the characters this player has
+        lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
+        self.set_attribute("_playable_characters", [], lockstring=lockstring)
 
     def at_init(self):
         """

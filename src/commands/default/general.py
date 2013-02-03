@@ -735,9 +735,11 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         "Hook method for when an argument is given."
         # caller is assumed to be a player object here.
         caller = self.caller
-        looktarget = caller.get_character(key=self.args)
+        key = self.args.lower()
+        chars = dict((utils.to_str(char.key.lower()), char) for char in caller.db._playable_characters)
+        looktarget = chars.get(key)
         if looktarget:
-            caller.msg(looktarget.return_appearance())
+            caller.msg(looktarget.return_appearance(caller))
         else:
             caller.msg("No such character.")
         return
@@ -748,24 +750,22 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         player = self.caller
         sessid = self.sessid
         # get all our characters
-        characters = player.get_all_characters() # get all characters
+        characters = player.db._playable_characters
         string = "You are logged in as {g%s{n." % player.key
         string += " Use {w@ic <character>{n to enter the game."
-        string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
-        for char in characters:
-            csessid = char.sessid
-            if csessid:
-                # character is already puppeted
-                if csessid == sessid:
-                    # this should not happen.
-                    string += "\n - {r%s{n (sessid not properly cleared! Contact an admin!)" % char.key
-                elif player.get_session(csessid):
-                    string += "\n - {G%s{n (played by you in another session)"
+        if characters:
+            string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
+            for char in characters:
+                csessid = char.sessid
+                if csessid:
+                    # character is already puppeted
+                    if player.get_session(csessid):
+                        string += "\n - {G%s{n (played by you in another session)"
+                    else:
+                        string += "\n - {R%s{n (played by someone else)" % char.key
                 else:
-                    string += "\n - {R%s{n (played by someone else)" % char.key
-            else:
-                # character is "free to puppet"
-                string += "\n - %s" % char.key
+                    # character is "free to puppet"
+                    string += "\n - %s" % char.key
         player.msg(string)
 
     def func(self):
@@ -802,10 +802,7 @@ class CmdCharCreate(MuxCommandOOC):
             return
         key = self.lhs
         desc = self.rhs
-        if not player.db._created_chars:
-            lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
-            player.set_attribute("_created_chars", [], lockstring=lockstring)
-        if len(player.db._created_chars) >= self.MAX_NR_CHARACTERS:
+        if player.db._playeable_characters and len(player.db._playable_characters) >= self.MAX_NR_CHARACTERS:
             player.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
             return
         # create the character
@@ -817,7 +814,7 @@ class CmdCharCreate(MuxCommandOOC):
 
         new_character = create.create_object(typeclass, key=key, location=default_home,
                                              home=default_home, permissions=permissions)
-        player.db._created_chars.append(new_character)
+        player.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
         player.msg("Created new character %s." % new_character.key)

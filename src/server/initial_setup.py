@@ -52,10 +52,8 @@ def create_objects():
     # exists. Also, all properties (name, email, password, is_superuser)
     # is inherited from the user so we don't specify it again here.
 
-    god_character = create.create_player(god_user.username, None, None,
-                                         user=god_user,
-                                         create_character=True,
-                                         character_typeclass=character_typeclass)
+    god_player = create.create_player(god_user.username, None, None, user=god_user)
+    god_character = create.create_object(character_typeclass, key=god_user.username)
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
@@ -83,6 +81,8 @@ def create_objects():
         god_character.location = limbo_obj
     if not god_character.home:
         god_character.home = limbo_obj
+    # store in list as playable character
+    god_player.db._playable_characters.append(god_character)
 
 def create_channels():
     """
