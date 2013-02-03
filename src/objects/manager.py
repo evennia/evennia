@@ -365,3 +365,12 @@ class ObjectManager(TypedObjectManager):
             ScriptDB.objects.copy_script(script, new_obj=new_object.dbobj)
 
         return new_object
+
+
+    def clear_all_sessids(self):
+        """
+        Clear the db_sessid field of all objects having also the db_player field
+        set.
+        """
+        self.filter(db_sessid__isnull=False).update(db_sessid=None)
+

@@ -88,17 +88,21 @@ class Player(TypeClass):
 
     ## methods inherited from database model
 
-    def msg(self, outgoing_string, from_obj=None, data=None):
+    def msg(self, outgoing_string, from_obj=None, data=None, sessid=None):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
 
         outgoing_string (string) - text data to send
         from_obj (Object/Player) - source object of message to send
-        data (?) - arbitrary data object containing eventual protocol-specific options
-
-        """
-        self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data)
+        data (dict) - arbitrary data object containing eventual protocol-specific options
+        sessid - the session id of the session to send to. If not given, return to
+                 all sessions connected to this player. This is usually only
+                 relevant when using msg() directly from a player-command (from
+                 a command on a Character, the character automatically stores and
+                 handles the sessid).
+                 """
+        self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data, sessid=sessid)
 
     def swap_character(self, new_character, delete_old_character=False):
         """
@@ -111,7 +115,7 @@ class Player(TypeClass):
         """
         return self.dbobj.swap_character(new_character, delete_old_character=delete_old_character)
 
-    def execute_cmd(self, raw_string):
+    def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this object. This command transparently
         lets its typeclass execute the command. Evennia also calls
@@ -119,6 +123,7 @@ class Player(TypeClass):
 
         Argument:
         raw_string (string) - raw command input
+        sessid (int) - id of session executing the command. This sets the sessid property on the command
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To overload
@@ -129,7 +134,7 @@ class Player(TypeClass):
             This return is not used at all by Evennia by default, but might be useful
             for coders intending to implement some sort of nested command structure.
         """
-        return self.dbobj.execute_cmd(raw_string)
+        return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
     def search(self, ostring, return_character=False):
         """
@@ -293,8 +298,7 @@ class Player(TypeClass):
         """
         # Character.at_post_login also looks around. Only use
         # this as a backup when logging in without a character
-        if not self.character:
-            self.execute_cmd("look")
+        self.execute_cmd("look")
 
     def at_disconnect(self, reason=None):
         """

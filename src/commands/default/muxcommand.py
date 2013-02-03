@@ -189,6 +189,6 @@ class MuxCommandOOC(MuxCommand):
             self.caller = self.caller.player
         elif hasattr(self.caller, "character"):
             # caller was already a Player
-            self.character = self.caller.character
+            self.character = self.caller.get_character(sessid=self.sessid)
         else:
             self.character = None

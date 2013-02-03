@@ -146,11 +146,13 @@ class CmdPy(MuxCommand):
             caller.msg(string)
             return
 
+        # check if caller is a player
+
         # import useful variables
         import ev
         available_vars = {'self':caller,
                           'me':caller,
-                          'here':caller.location,
+                          'here':hasattr(caller, "location") and caller.location or None,
                           'ev':ev,
                           'inherits_from':utils.inherits_from}
 

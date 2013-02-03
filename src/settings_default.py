@@ -59,12 +59,12 @@ SSL_ENABLED = False
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 SSL_INTERFACES = ['0.0.0.0']
-# If multisessions are allowed, a user can log into the game
-# from several different computers/clients at the same time.
-# All feedback from the game will be echoed to all sessions.
-# If false, only one session is allowed, all other are logged off
-# when a new connects.
-ALLOW_MULTISESSION = False
+# Multisession modes allow a player (=account) to connect to the game simultaneously
+# with multiple clients in various ways according to the set mode:
+#  0 - no multisession - when a new session is connected, the old one is disconnected
+#  1 - multiple sessions, one player, one character, each session getting the same data
+#  2 - multiple sessions, one player, each session controlling different characters
+MULTISESSION_MODE = 0
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.

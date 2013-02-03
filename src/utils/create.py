@@ -500,6 +500,7 @@ def create_player(name, email, password,
         # call hook method (may override default permissions)
         new_player.at_player_creation()
 
+        print
         # custom given arguments potentially overrides the hook
         if permissions:
             new_player.permissions = permissions
@@ -521,7 +522,7 @@ def create_player(name, email, password,
                                           player=new_player, report_to=report_to)
             return new_character
         return new_player
-    except Exception, e:
+    except Exception:
         # a failure in creating the character
         if not user:
             # in there was a failure we clean up everything we can
@@ -538,7 +539,7 @@ def create_player(name, email, password,
                 del new_character
             except Exception:
                 pass
-        raise e
+        raise
 
 # alias
 player = create_player

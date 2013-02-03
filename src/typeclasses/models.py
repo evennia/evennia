@@ -1311,7 +1311,7 @@ class TypedObject(SharedMemoryModel):
                 return False
         return True
 
-    def set_attribute(self, attribute_name, new_value=None):
+    def set_attribute(self, attribute_name, new_value=None, lockstring=""):
         """
         Sets an attribute on an object. Creates the attribute if need
         be.
@@ -1319,6 +1319,10 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         new_value: (python obj) The value to set the attribute to. If this is not
                                 a str, the object will be stored as a pickle.
+        lockstring - this sets an access restriction on the attribute object. Note that
+                     this is normally NOT checked - use the secureattr() access method
+                     below to perform access-checked modification of attributes. Lock
+                     types checked by secureattr are 'attrread','attredit','attrcreate'.
         """
         attrib_obj = get_attr_cache(self, attribute_name)
         if not attrib_obj:
@@ -1332,6 +1336,8 @@ class TypedObject(SharedMemoryModel):
             else:
                 # no match; create new attribute
                 attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
+        if lockstring:
+            attrib_obj.locks.add(lockstring)
         # re-set an old attribute value
         try:
             attrib_obj.value = new_value

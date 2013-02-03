@@ -23,6 +23,7 @@ class OOCCmdSet(CmdSet):
         self.add(general.CmdOOCLook())
         self.add(general.CmdIC())
         self.add(general.CmdOOC())
+        self.add(general.CmdCharCreate())
         self.add(general.CmdEncoding())
         self.add(general.CmdQuit())
         self.add(general.CmdPassword())
@@ -34,6 +35,7 @@ class OOCCmdSet(CmdSet):
         self.add(system.CmdReload())
         self.add(system.CmdReset())
         self.add(system.CmdShutdown())
+        self.add(system.CmdPy())
 
         # Admin commands
         self.add(admin.CmdDelPlayer())
