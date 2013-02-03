@@ -391,7 +391,7 @@ class PlayerDB(TypedObject):
         if sessid:
             session = _GA(self, "get_session")(sessid)
         if session:
-            char = _GA(self, "get_character")(sessid)
+            char = _GA(self, "get_character")(sessid=sessid)
             if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
                 # if hook returns false, cancel send
                 return
@@ -412,7 +412,7 @@ class PlayerDB(TypedObject):
         data - dictionary of optional data
         session - session sending this data
         """
-        character = _GA(self, "get_character")(sessid)
+        character = _GA(self, "get_character")(sessid=sessid)
         if character:
             # execute command on character
             _GA(character, "execute_cmd")(ingoing_string, sessid=sessid)
@@ -427,9 +427,11 @@ class PlayerDB(TypedObject):
         linked to the player using self.connect_character().
 
         force - drop existing connection to other character
+
+        Returns True if connection was successful, False otherwise
         """
         # first check if we already have a character tied to this session
-        char = _GA(self, "get_character")(sessid=sessid)
+        char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
         if char:
             if force and char != character:
                 _GA(self, "disconnect_session_from_character")(sessid)
@@ -452,22 +454,27 @@ class PlayerDB(TypedObject):
             del character.db.FIRST_LOGIN
         character.at_pre_login()
         character.at_post_login()
+        return True
 
     def disconnect_session_from_character(self, sessid):
         """
         Disconnect a session from the characterm (still keeping the
         connection to the Player)
+        returns the newly disconnected character, if it existed
         """
-        char = _GA(self, "get_character")(sessid=sessid)
+        if not sessid:
+            return
+        char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
         if char:
             # call hook before disconnecting
-            character.at_disconnect()
+            _GA(char.typeclass, "at_disconnect")()
             del char.sessid
-        # update cache
-        cache = get_prop_cache(self, "_characters") or {}
-        if sessid in cache:
-            del cache[sessid]
-        set_prop_cache(self, "_characters", cache)
+            # update cache
+            cache = get_prop_cache(self, "_characters") or {}
+            if sessid in cache:
+                del cache[sessid]
+            set_prop_cache(self, "_characters", cache)
+        return char
 
     def get_session(self, sessid):
         """
@@ -479,9 +486,9 @@ class PlayerDB(TypedObject):
         "Return all sessions connected to this player"
         return SESSIONS.sessions_from_player(self)
 
-    def get_character(self, sessid=None, character=None):
+    def get_character(self, sessid=None, character=None, return_dbobj=False):
         """
-        Get the character connected to this player
+        Get the character connected to this player and sessid
 
         sessid - return character connected to this sessid,
         character - return character if connected to this player, else None.
@@ -497,17 +504,18 @@ class PlayerDB(TypedObject):
             if not char:
                 char = _GA(self, "db_objs").filter(db_player=self, db_sessid=sessid) or None
                 if char:
-                    cache[sessid] = char[0]
+                    char = char[0]
+                    cache[sessid] = char
                     set_prop_cache(self, "_characters", cache)
             if character:
-                return char == character.dbobj or None
-            return char
+                return char and (char == character.dbobj and (return_dbobj and char or char.typeclass)) or None
+            return char and (return_dbobj and char or char.typeclass) or None
         elif character:
-            char = _GA(self, "db_objs").filter(character)
-            return char and char[0] or None
+            char = _GA(self, "db_objs").filter(id=_GA(character.dbobj, "id"))
+            return char and (return_dbobj and char[0] or char[0].typeclass) or None
         else:
             # no sessid given - return all available characters
-            return list(self.db_objs.all())
+            return list(return_dbobj and o or o.typeclass for o in self.db_objs.all())
 
     def get_all_characters(self):
         """
@@ -515,30 +523,37 @@ class PlayerDB(TypedObject):
         """
         return _GA(self, "get_character")(sessid=None, character=None)
 
-    def connect_character(self, char):
+    def connect_character(self, character, sessid=None):
         """
         Use the Player to connect a Character to a session. Note that
         we don't do any access checks at this point. Note that if the
         game was fully restarted (including the Portal), this must be
         used, since sessids will have changed as players reconnect.
+
+        if sessid is given, also connect the sessid to the character.
         """
         # first disconnect any other character from this session
-        char = char.dbobj
+        char = character.dbobj
         _GA(self, "disconnect_character")(char)
-        char = char.dbobj
         char.player = self
         _GA(self, "db_objs").add(char)
         _GA(self, "save")()
+        if sessid:
+            return _GA(self, "connect_session_to_character")(sessid=sessid, character=char)
+        return True
 
-    def disconnect_character(self, char):
+    def disconnect_character(self, character):
         """
         Disconnect a character from this player, either based
         on sessid or by giving the character object directly
+
+        Returns newly disconnected character.
         """
-        char = char.dbobj
-        key = char and char.key or None
-        char = _GA(self, "get_character")(key=key)
+        if not character:
+            return
+        char = _GA(self, "get_character")(character=character, return_dbobj=True)
         if char:
+            _GA(self, "disconnect_session_from_character")(char.sessid)
             _GA(self, "db_objs").remove(char)
             del char.player
             del char.sessid
@@ -547,16 +562,23 @@ class PlayerDB(TypedObject):
             cache = get_prop_cache(self, "_characters") or {}
             [cache.pop(sessid) for sessid,stored_char in cache.items() if stored_char==char]
             set_prop_cache(self, "_characters", cache)
+        return char
+
 
     def disconnect_all_characters(self):
         for char in self.db_objs.all():
             _GA(self, "disconnect_character")(char)
 
-    def swap_character(self, new_character, delete_old_character=False):
+    def swap_character(self, old_character, new_character):
         """
-        Swaps character, if possible
+        Swaps character between sessions, if possible
         """
-        return _GA(self, "__class__").objects.swap_character(self, new_character, delete_old_character=delete_old_character)
+        this_sessid = old_character.sessid
+        other_sessd = new_character.sessid
+        this_char = _GA(self, "disconnect_session_from_character")(this_sessid)
+        other_char = _GA(self, "disconnect_session_from_character")(other_sessid)
+        _GA(self, "connect_session_to_character")(this_sessid, other_char)
+        _GA(self, "connect_session_to_character")(other_sessid, this_char)
 
     def delete(self, *args, **kwargs):
         "Make sure to delete user also when deleting player - the two may never exist separately."

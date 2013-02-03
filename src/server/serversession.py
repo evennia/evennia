@@ -178,7 +178,7 @@ class ServerSession(Session):
         else:
             # we are not logged in. Use the session directly
             # (it uses the settings.UNLOGGEDIN cmdset)
-            cmdhandler.cmdhandler(self, command_string)
+            cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
 
     def data_out(self, msg, data=None):
         """

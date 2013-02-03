@@ -5,7 +5,7 @@ now.
 import time
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
-from src.utils import utils, search
+from src.utils import utils, search, create
 from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
@@ -573,7 +573,7 @@ class CmdEncoding(MuxCommand):
     Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
 
     If you don't submit an encoding, the current encoding will be displayed instead.
-    """
+  """
 
     key = "@encoding"
     aliases = "@encode"
@@ -649,7 +649,62 @@ class CmdAccess(MuxCommand):
             string += "\nPlayer {c%s{n: %s" % (caller.player.key, pperms)
         caller.msg(string)
 
+class CmdColorTest(MuxCommand):
+    """
+    testing colors
 
+    Usage:
+      @color ansi|xterm256
+
+    Print a color map along with in-mud color codes, while testing what is supported in your client.
+    Choices are 16-color ansi (supported in most muds) or the 256-color xterm256 standard.
+    No checking is done to determine your client supports color - if not you will
+    see rubbish appear.
+    """
+    key = "@color"
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        "Show color tables"
+
+        if not self.args or not self.args in ("ansi", "xterm256"):
+            self.caller.msg("Usage: @color ansi|xterm256")
+            return
+
+        if self.args == "ansi":
+            from src.utils import ansi
+            ap = ansi.ANSI_PARSER
+            # ansi colors
+            # show all ansi color-related codes
+            col1 = ["%s%s{n" % (code, code.replace("{","{{")) for code, _ in ap.ext_ansi_map[:-1]]
+            hi = "%ch"
+            col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
+            col3 = ["%s%s{n" % (hi+code, (hi+code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
+            table = utils.format_table([col1, col2, col3], extra_space=1)
+            string = "ANSI colors:"
+            for row in table:
+                string += "\n" + "".join(row)
+            print string
+            self.caller.msg(string)
+            self.caller.msg("{{X and %%cx are black-on-black)")
+        elif self.args == "xterm256":
+            table = [[],[],[],[],[],[],[],[],[],[],[],[]]
+            for ir in range(6):
+                for ig in range(6):
+                    for ib in range(6):
+                        # foreground table
+                        table[ir].append("%%c%i%i%i%s{n" % (ir,ig,ib, "{{%i%i%i" % (ir,ig,ib)))
+                        # background table
+                        table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir,ig,ib,
+                                                                        5-ir,5-ig,5-ib,
+                                                                        "{{b%i%i%i" % (ir,ig,ib)))
+            table = utils.format_table(table)
+            string = "Xterm256 colors:"
+            for row in table:
+                string += "\n" + "".join(row)
+            self.caller.msg(string)
+            self.caller.msg("(e.g. %%c123 and %%cb123 also work)")
 
 
 #------------------------------------------------------------
@@ -724,6 +779,49 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         else:
             self.no_look_target()
 
+class CmdCharCreate(MuxCommandOOC):
+    """
+    Create a character
+
+    Usage:
+      @charcreate <charname> [= desc]
+
+    Create a new character, optionally giving it a description.
+    """
+    key = "@charcreate"
+    locks = "cmd:all()"
+    help_category = "General"
+
+    MAX_NR_CHARACTERS = 2
+
+    def func(self):
+        "create the new character"
+        player = self.caller
+        if not self.args:
+            player.msg("Usage: @charcreate <charname> [= description]")
+            return
+        key = self.lhs
+        desc = self.rhs
+        if not player.db._created_chars:
+            lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
+            player.set_attribute("_created_chars", [], lockstring=lockstring)
+        if len(player.db._created_chars) >= self.MAX_NR_CHARACTERS:
+            player.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
+            return
+        # create the character
+        from src.objects.models import ObjectDB
+
+        default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
+        permissions = settings.PERMISSION_PLAYER_DEFAULT
+
+        new_character = create.create_object(typeclass, key=key, location=default_home,
+                                             home=default_home, permissions=permissions)
+        player.db._created_chars.append(new_character)
+        if desc:
+            new_character.db.desc = desc
+        player.msg("Created new character %s." % new_character.key)
+
 
 class CmdIC(MuxCommandOOC):
     """
@@ -753,6 +851,7 @@ class CmdIC(MuxCommandOOC):
         Simple puppet method
         """
         caller = self.caller
+        sessid = self.sessid
         old_character = self.character
 
         new_character = None
@@ -769,16 +868,21 @@ class CmdIC(MuxCommandOOC):
             else:
                 # the search method handles error messages etc.
                 return
-        if new_character.player:
-            if new_character.player == caller:
-                caller.msg("{RYou already are {c%s{n." % new_character.name)
-            else:
-                caller.msg("{c%s{r is already acted by another player.{n" % new_character.name)
+        # permission checks
+        if caller.get_character(sessid=sessid, character=new_character):
+            caller.msg("{RYou already act as {c%s{n." % new_character.name)
             return
+        if new_character.player:
+            if new_character.sessid == sessid:
+                caller.msg("{RYou already act as {c%s{n from another session." % new_character.name)
+                return
+            elif not caller.get_character(character=new_character):
+                caller.msg("{c%s{r is already acted by another player.{n" % new_character.name)
+                return
         if not new_character.access(caller, "puppet"):
             caller.msg("{rYou may not become %s.{n" % new_character.name)
             return
-        if caller.swap_character(new_character):
+        if caller.connect_character(new_character, sessid=sessid):
             new_character.msg("\n{gYou become {c%s{n.\n" % new_character.name)
             caller.db.last_puppet = old_character
             if not new_character.location:
@@ -819,79 +923,22 @@ class CmdOOC(MuxCommandOOC):
         if utils.inherits_from(caller, "src.objects.objects.Object"):
             caller = self.caller.player
 
-        if not caller.character:
+        old_char = caller.get_character(sessid=self.sessid)
+        if not old_char:
             string = "You are already OOC."
             caller.msg(string)
             return
 
-        caller.db.last_puppet = caller.character
+        caller.db.last_puppet = old_char
         # save location as if we were disconnecting from the game entirely.
-        if caller.character.location:
-            caller.character.location.msg_contents("%s has left the game." % caller.character.key, exclude=[caller.character])
-            caller.character.db.prelogout_location = caller.character.location
-            caller.character.location = None
+        if old_char.location:
+            old_char.location.msg_contents("%s has left the game." % old_char.key, exclude=[old_char])
+            old_char.db.prelogout_location = old_char.location
+            old_char.location = None
 
         # disconnect
-        caller.character.player = None
-        caller.character = None
+        caller.disconnect_character(caller)
 
         caller.msg("\n{GYou go OOC.{n\n")
         caller.execute_cmd("look")
-
-class CmdColorTest(MuxCommand):
-    """
-    testing colors
-
-    Usage:
-      @color ansi|xterm256
-
-    Print a color map along with in-mud color codes, while testing what is supported in your client.
-    Choices are 16-color ansi (supported in most muds) or the 256-color xterm256 standard.
-    No checking is done to determine your client supports color - if not you will
-    see rubbish appear.
-    """
-    key = "@color"
-    locks = "cmd:all()"
-    help_category = "General"
-
-    def func(self):
-        "Show color tables"
-
-        if not self.args or not self.args in ("ansi", "xterm256"):
-            self.caller.msg("Usage: @color ansi|xterm256")
-            return
-
-        if self.args == "ansi":
-            from src.utils import ansi
-            ap = ansi.ANSI_PARSER
-            # ansi colors
-            # show all ansi color-related codes
-            col1 = ["%s%s{n" % (code, code.replace("{","{{")) for code, _ in ap.ext_ansi_map[:-1]]
-            hi = "%ch"
-            col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
-            col3 = ["%s%s{n" % (hi+code, (hi+code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
-            table = utils.format_table([col1, col2, col3], extra_space=1)
-            string = "ANSI colors:"
-            for row in table:
-                string += "\n" + "".join(row)
-            print string
-            self.caller.msg(string)
-            self.caller.msg("{{X and %%cx are black-on-black)")
-        elif self.args == "xterm256":
-            table = [[],[],[],[],[],[],[],[],[],[],[],[]]
-            for ir in range(6):
-                for ig in range(6):
-                    for ib in range(6):
-                        # foreground table
-                        table[ir].append("%%c%i%i%i%s{n" % (ir,ig,ib, "{{%i%i%i" % (ir,ig,ib)))
-                        # background table
-                        table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir,ig,ib,
-                                                                        5-ir,5-ig,5-ib,
-                                                                        "{{b%i%i%i" % (ir,ig,ib)))
-            table = utils.format_table(table)
-            string = "Xterm256 colors:"
-            for row in table:
-                string += "\n" + "".join(row)
-            self.caller.msg(string)
-            self.caller.msg("(e.g. %%c123 and %%cb123 also work)")
 

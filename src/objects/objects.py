@@ -201,7 +201,7 @@ class Object(TypeClass):
                                  ignore_errors=ignore_errors,
                                  player=player)
 
-    def execute_cmd(self, raw_string):
+    def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this object. This command transparently
         lets its typeclass execute the command. Evennia also calls
@@ -209,6 +209,7 @@ class Object(TypeClass):
 
         Argument:
         raw_string (string) - raw command input
+        sessid (int) - id of session executing the command. This sets the sessid property on the command.
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To overload
@@ -219,7 +220,7 @@ class Object(TypeClass):
             This return is not used at all by Evennia by default, but might be useful
             for coders intending to implement some sort of nested command structure.
         """
-        return self.dbobj.execute_cmd(raw_string)
+        return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
     def msg(self, message, from_obj=None, data=None):
         """

@@ -102,7 +102,7 @@ class Player(TypeClass):
                  a command on a Character, the character automatically stores and
                  handles the sessid).
                  """
-        self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data)
+        self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data, sessid=sessid)
 
     def swap_character(self, new_character, delete_old_character=False):
         """
@@ -115,7 +115,7 @@ class Player(TypeClass):
         """
         return self.dbobj.swap_character(new_character, delete_old_character=delete_old_character)
 
-    def execute_cmd(self, raw_string):
+    def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this object. This command transparently
         lets its typeclass execute the command. Evennia also calls
@@ -123,6 +123,7 @@ class Player(TypeClass):
 
         Argument:
         raw_string (string) - raw command input
+        sessid (int) - id of session executing the command. This sets the sessid property on the command
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To overload
@@ -133,7 +134,7 @@ class Player(TypeClass):
             This return is not used at all by Evennia by default, but might be useful
             for coders intending to implement some sort of nested command structure.
         """
-        return self.dbobj.execute_cmd(raw_string)
+        return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
     def search(self, ostring, return_character=False):
         """

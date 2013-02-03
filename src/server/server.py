@@ -190,6 +190,9 @@ class Evennia(object):
         from src.objects.models import ObjectDB
         #from src.players.models import PlayerDB
 
+        # clear eventual lingering session storages
+        ObjectDB.objects.clear_all_sessids()
+
         #update eventual changed defaults
         self.update_defaults()
 
@@ -288,7 +291,7 @@ class Evennia(object):
 
             yield [(p.typeclass, p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
             yield [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
-
+            yield ObjectDB.objects.clear_all_sessids()
             ServerConfig.objects.conf("server_restart_mode", "reset")
 
             if SERVER_STARTSTOP_MODULE:
