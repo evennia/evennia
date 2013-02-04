@@ -8,6 +8,7 @@ a Player object as caller rather than a Character.
 from src.commands.cmdset import CmdSet
 from src.commands.default import help, comms, general, admin, system
 
+from src.commands.default import building
 class OOCCmdSet(CmdSet):
     """
     Implements the player command set.
@@ -27,6 +28,9 @@ class OOCCmdSet(CmdSet):
         self.add(general.CmdEncoding())
         self.add(general.CmdQuit())
         self.add(general.CmdPassword())
+
+        # test
+        self.add(building.CmdExamine())
 
         # Help command
         self.add(help.CmdHelp())

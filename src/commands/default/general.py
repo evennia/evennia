@@ -934,8 +934,7 @@ class CmdOOC(MuxCommandOOC):
             old_char.location = None
 
         # disconnect
-        err = caller.disconnect_character(caller)
-        print "err:", err
+        err = caller.disconnect_character(self.character)
         caller.msg("\n{GYou go OOC.{n\n")
         caller.execute_cmd("look")
 

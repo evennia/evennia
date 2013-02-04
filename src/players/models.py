@@ -465,7 +465,6 @@ class PlayerDB(TypedObject):
         if not sessid:
             return
         char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
-        print "disonnect session:", char
         if char:
             # call hook before disconnecting
             _GA(char.typeclass, "at_disconnect")()
@@ -512,9 +511,7 @@ class PlayerDB(TypedObject):
                 return char and (char == character.dbobj and (return_dbobj and char or char.typeclass)) or None
             return char and (return_dbobj and char or char.typeclass) or None
         elif character:
-            print character, character.dbobj, _GA(self,"db_objs").all()
             char = _GA(self, "db_objs").filter(id=_GA(character.dbobj, "id"))
-            print "character:", character, char
             return char and (return_dbobj and char[0] or char[0].typeclass) or None
         else:
             # no sessid given - return all available characters
@@ -555,9 +552,8 @@ class PlayerDB(TypedObject):
         if not character:
             return
         char = _GA(self, "get_character")(character=character, return_dbobj=True)
-        print "disconnect_char:", char
         if char:
-            print _GA(self, "disconnect_session_from_character")(char.sessid)
+            err = _GA(self, "disconnect_session_from_character")(char.sessid)
             _GA(self, "db_objs").remove(char)
             del char.player
             self.save()
