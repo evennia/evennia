@@ -245,4 +245,8 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False):
     """
     return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256)
 
-
+def raw(string):
+    """
+    Escapes a string into a form which won't be colorized by the ansi parser.
+    """
+    return string.replace('{','{{').replace('%','%%')

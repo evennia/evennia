@@ -7,6 +7,7 @@ from django.conf import settings
 from src.objects.models import ObjectDB, ObjAttribute
 from src.players.models import PlayerAttribute
 from src.utils import create, utils, debug
+from src.utils.ansi import raw
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
 
@@ -1544,7 +1545,6 @@ class CmdExamine(ObjManipCommand):
 
     Switch:
       player - examine a Player (same as adding *)
-      raw - don't parse escape codes for data.
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it.
@@ -1561,18 +1561,22 @@ class CmdExamine(ObjManipCommand):
 
     player_mode = False
 
-    def format_attributes(self, obj, attrname=None, crop=True, raw=False):
+    def list_attribute(self, crop, attr, value):
+        """
+        Formats a single attribute line.
+        """
+        if crop and isinstance(value, basestring):
+            value = utils.crop(value)
+            value = repr(value)
+        string = "\n %s = %s" % (attr, value)
+        string = raw(string)
+        return string
+
+    def format_attributes(self, obj, attrname=None, crop=True):
         """
         Helper function that returns info about attributes and/or
         non-persistent data stored on object
         """
-
-        headers = {"persistent":"\n{wPersistent attributes{n:",
-                   "nonpersistent":"\n{wNon-persistent attributes{n:"}
-        headers_noansi = {"persistent":"\nPersistent attributes:",
-                          "nonpersistent":"\nNon-persistent attributes:"}
-        if raw:
-            headers = headers_noansi
 
         if attrname:
             db_attr = [(attrname, obj.attr(attrname))]
@@ -1591,104 +1595,71 @@ class CmdExamine(ObjManipCommand):
                 ndb_attr = None
         string = ""
         if db_attr and db_attr[0]:
-            #self.caller.msg(db_attr)
-            string += headers["persistent"]
+            string += "\n{wPersistent attributes{n:"
             for attr, value in db_attr:
-                if crop and isinstance(value, basestring):
-                    value = utils.crop(value)
-                string += "\n %s = %s" % (attr, value)
+                string += self.list_attribute(crop, attr, value)
         if ndb_attr and ndb_attr[0]:
-            string += headers["nonpersistent"]
+            string += "\n{wNon-Persistent attributes{n:"
             for attr, value in ndb_attr:
-                if crop and isinstance(value, basestring):
-                    value = utils.crop(value)
-                string += "\n %s = %s" % (attr, value)
+                string += self.list_attribute(crop, attr, value)
         return string
 
-    def format_output(self, obj, avail_cmdset, raw=False):
+    def format_output(self, obj, avail_cmdset):
         """
         Helper function that creates a nice report about an object.
 
         returns a string.
         """
 
-        headers = {"name":"\n{wName/key{n: {c%s{n (%s)",
-                   "aliases":"\n{wAliases{n: %s",
-                   "player":"\n{wPlayer{n: {c%s{n",
-                   "playerperms":"\n{wPlayer Perms{n: %s",
-                   "typeclass":"\n{wTypeclass{n: %s (%s)",
-                   "location":"\n{wLocation{n: %s (#%s)",
-                   "destination":"\n{wDestination{n: %s (#%s)",
-                   "perms":"\n{wPermissions{n: %s",
-                   "locks":"\n{wLocks{n:",
-                   "cmdset":"\n{wCurrent Cmdset(s){n:\n %s",
-                   "cmdset_avail":"\n{wCommands available to %s (all cmdsets + exits and external cmds){n:\n %s",
-                   "scripts":"\n{wScripts{n:\n %s",
-                   "exits":"\n{wExits{n: ",
-                   "characters":"\n{wCharacters{n: ",
-                   "contents":"\n{wContents{n: "}
-        headers_noansi = {"name":"\nName/key: %s (%s)",
-                   "aliases":"\nAliases: %s",
-                   "player":"\nPlayer: %s",
-                   "playerperms":"\nPlayer Perms: %s",
-                   "typeclass":"\nTypeclass: %s%s",
-                   "location":"\nLocation: %s (#%s)",
-                   "destination":"\nDestination: %s (#%s)",
-                   "perms":"\nPermissions: %s",
-                   "locks":"\nLocks:",
-                   "cmdset":"\nCurrent Cmdset(s):\n %s",
-                   "cmdset_avail":"\nCommands available to %s (all cmdsets + exits and external cmds):\n %s",
-                   "scripts":"\nScripts:\n %s",
-                   "exits":"\nExits: ",
-                   "characters":"\nCharacters: ",
-                   "contents":"\nContents: "}
-        if raw:
-            headers = headers_noansi
-
-        if hasattr(obj, "has_player") and obj.has_player:
-            string = headers["name"] % (obj.name, obj.dbref)
-        else:
-            string = headers["name"] % (obj.name, obj.dbref)
+        string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases:
-            string += headers["aliases"] % (", ".join(utils.make_iter(obj.aliases)))
+            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(obj.aliases)))
         if hasattr(obj, "has_player") and obj.has_player:
-            string += headers["player"] % obj.player.name
+            string += "\n{wPlayer{n: {c%s{n" % obj.player.name
             perms = obj.player.permissions
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]
-            string += headers["playerperms"] % (", ".join(perms))
-        string += headers["typeclass"] % (obj.typeclass.typename, obj.typeclass_path)
-
-        if hasattr(obj, "location") and obj.location:
-            string += headers["location"] % (obj.location, obj.location.id)
-        if hasattr(obj, "destination") and obj.destination:
-            string += headers["destination"]  % (obj.destination, obj.destination.id)
+            string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))
+        string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass.typename, obj.typeclass_path)
+        if hasattr(obj, "location"):
+            string += "\n{wLocation{n: %s" % obj.location
+            if obj.location:
+                string += " (#%s)" % obj.location.id
+        if hasattr(obj, "destination"):
+            string += "\n{wDestination{n: %s" % obj.destination
+            if obj.destination:
+                string += " (#%s)" % obj.destination.id
         perms = obj.permissions
         if perms:
-            string += headers["perms"] % (", ".join(perms))
+            perms_string = (", ".join(perms))
+        else:
+            perms_string = "Default"
+        string += "\n{wPermissions{n: %s" % perms_string
         locks = str(obj.locks)
         if locks:
-            string += headers["locks"] + utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
+            locks_string = utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
+        else:
+            locks_string = " Default"
+        string += "\n{wLocks{n:%s" % locks_string
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
             # list the current cmdsets
             all_cmdsets = obj.cmdset.all() + (hasattr(obj, "player") and obj.player and obj.player.cmdset.all() or [])
             all_cmdsets.sort(key=lambda x:x.priority, reverse=True)
-            string += headers["cmdset"] % ("\n ".join("%s (prio %s)" % (cmdset.path, cmdset.priority) for cmdset in all_cmdsets))
-            #cmdsetstr = "\n".join([utils.fill(cmdset, indent=2) for cmdset in str(obj.cmdset).split("\n")])
+            string += "\n{wCurrent Cmdset(s){n:\n %s" % ("\n ".join("%s (prio %s)" % (cmdset.path, cmdset.priority) for cmdset in all_cmdsets))
 
             # list the commands available to this object
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
 
             cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
-            string += headers["cmdset_avail"] % (obj.key, cmdsetstr)
+            string += "\n{wCommands available to %s (all cmdsets + exits and external cmds){n:\n %s" % (obj.key, cmdsetstr)
 
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            string += headers["scripts"] % obj.scripts
+            string += "\n{wScripts{n:\n %s" % obj.scripts
         # add the attributes
-        string += self.format_attributes(obj, raw=raw)
+        string += self.format_attributes(obj)
         # add the contents
         exits = []
         pobjs = []
@@ -1702,22 +1673,19 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += headers["exits"] + ", ".join([exit.name for exit in exits])
+                string += "\n{wExits{n: %s" % ", ".join([exit.name for exit in exits])
             if pobjs:
-                string += headers["characters"] + ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
+                string += "\n{wCharacters{n: %s" % ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
             if things:
-                string += headers["contents"] + ", ".join([cont.name for cont in obj.contents
+                string += "\n{wContents{n: %s" % ", ".join([cont.name for cont in obj.contents
                                                            if cont not in exits and cont not in pobjs])
+        separater = "="*78
         #output info
-        return "-"*78 + '\n' + string.strip() + "\n" + '-'*78
+        return '%s\n%s\n%s' % ( separater, string.strip(), separater )
 
     def func(self):
         "Process command"
         caller = self.caller
-
-        msgdata = None
-        if "raw" in self.switches:
-            msgdata = {"raw":True}
 
         def get_cmdset_callback(cmdset):
             """
@@ -1728,8 +1696,8 @@ class CmdExamine(ObjManipCommand):
             that function finishes. Taking the resulting cmdset, we continue
             to format and output the result.
             """
-            string = self.format_output(obj, cmdset, raw=msgdata)
-            caller.msg(string.strip(), data=msgdata)
+            string = self.format_output(obj, cmdset)
+            caller.msg(string.strip())
 
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
@@ -1763,7 +1731,7 @@ class CmdExamine(ObjManipCommand):
             if obj_attrs:
                 for attrname in obj_attrs:
                     # we are only interested in specific attributes
-                    caller.msg(self.format_attributes(obj, attrname, crop=False, raw=msgdata))
+                    caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
                 # using callback to print results whenever function returns.
                 get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
