@@ -44,6 +44,9 @@ WEBSERVER_ENABLED = True
 WEBSERVER_PORTS = [8000]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 WEBSERVER_INTERFACES = ['0.0.0.0']
+# IP addresses that may talk to the server in a reverse proxy configuration,
+# like NginX.
+UPSTREAM_IPS = ['127.0.0.1']
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True
