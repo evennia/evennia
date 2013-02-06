@@ -11,13 +11,38 @@ application.
 a great example/aid on how to do this.)
 
 """
-from twisted.web import resource
+from twisted.web import resource, http
 from twisted.python import threadpool
 from twisted.internet import reactor
 from twisted.application import service, internet
 
 from twisted.web.wsgi import WSGIResource
 from django.core.handlers.wsgi import WSGIHandler
+
+from settings import UPSTREAM_IPS
+
+#
+# X-Forwarded-For Handler
+#
+
+class HTTPChannelWithXForwardedFor(http.HTTPChannel):
+    def allHeadersReceived(self):
+        """
+        Check to see if this is a reverse proxied connection.
+        """
+        IP = 0
+        PORT = 1
+        http.HTTPChannel.allHeadersReceived(self)
+        req = self.requests[-1]
+        client_ip, port = self.transport.client
+        forwarded = req.getHeader('X-FORWARDED-FOR')
+        if forwarded and client_ip in UPSTREAM_IPS:
+            self.transport.client = (forwarded, port) 
+
+
+# Monkey-patch Twisted to handle X-Forwarded-For.
+
+http.HTTPFactory.protocol = HTTPChannelWithXForwardedFor
 
 #
 # Website server resource
