@@ -30,13 +30,13 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
         """
         Check to see if this is a reverse proxied connection.
         """
-        IP = 0
-        PORT = 1
+        CLIENT = 0
         http.HTTPChannel.allHeadersReceived(self)
         req = self.requests[-1]
         client_ip, port = self.transport.client
-        forwarded = req.getHeader('X-FORWARDED-FOR')
-        if forwarded and client_ip in UPSTREAM_IPS:
+        proxy_chain = req.getHeader('X-FORWARDED-FOR')
+        if proxy_chain and client_ip in UPSTREAM_IPS:
+            forwarded = proxy_chain.split(', ', 1)[CLIENT]
             self.transport.client = (forwarded, port) 
 
 
