@@ -26,10 +26,11 @@ a:hover, a:active { color: #ccc }
  * stand-alone text.*/
 strong {font-weight:normal;}
 
+div {margin:0px;}
 /* Base style for new messages in the main message area */
-.msg {
-  white-space: pre-wrap;
-  padding: .5em .9em;}
+/*.msg {
+  white-space: pre-wrap; }
+  padding: .5em .9em;} */
   /*border-bottom: 1px dotted #222 } /*optional line between messages */
 
 /* Utility messages (green) */
