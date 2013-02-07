@@ -13,7 +13,7 @@
 # mind that the full flexibility of Evennia is not used to its maximum
 # potential here.
 #
-# The load this file, place yourself in Limbo (room #2) and load the
+# To load this file, place yourself in Limbo (room #2) and load the
 # file as user #1 with
 #
 #     @batchprocess contrib.tutorial_world.build
@@ -51,12 +51,12 @@
 #
 # There are a few ways we could have gone about building this layout;
 # one is to do all the digging in one go first, then go back and add
-# all the details. The advantage of this is that you the area is
+# all the details. The advantage of this is that the area is
 # already there and you can more easily jump ahead in the build file
 # to the detail work when you want to update things later. In this
 # file we will however build and design it all in sequence; room by
 # room. This makes it easier to keep an overview of what is going on
-# in each room, tie things to parents etc.  When building your own
+# in each room, tie things to parents, etc.  When building your own
 # world you might want to separate your world into a lot more
 # individual batch files (maybe one for just a few rooms) for easy
 # handling. The numbers mark the order of construction and also the
@@ -204,7 +204,7 @@ start
 
  To the east, you glimpse the ragged outline of a castle ruin. It sits
  perched on a sheer cliff out into the water, isolated from the
- shore. The only way to reach it seems by way of an old hang bridge,
+ shore. The only way to reach it seems by way of an old hanging bridge,
  anchored not far east from here.
 #
 # This is the well you will come back up from if you end up in the underground.
@@ -239,7 +239,7 @@ start
 #
 @desc sign =
  The wooden sign sits at the end of a small eastward path. Beyond it
- is the shore-side anchor of the hang bridge that connects the main
+ is the shore-side anchor of the hanging bridge that connects the main
  land with the castle ruin on its desolate cliff. The sign is not as
  old as the rest of the scenery and the text on it is easily readable.
 #
@@ -266,7 +266,7 @@ start
  outlines of a ruined castle. The once mighty towers have crumbled and
  it presents a jagged shape against the rainy sky. The ruin is perched
  on its own cliff, only connected to the mainland by means of an old
- hang bridge starting not far east from you.
+ hanging bridge starting not far east from you.
 #
 @lock ruin = get:false()
 #
@@ -403,8 +403,8 @@ north
  rare spot of warmth and mirth on this dread moor.
 
 
- Soon you have a beer in hand and is chatting with the locals. Your
- eye fall on a {wbarrel{n in a corner with a few old rusty weapons
+ Soon you have a beer in hand and are chatting with the locals. Your
+ eye falls on a {wbarrel{n in a corner with a few old rusty weapons
  sticking out. There is a sign next to it: {wFree to take{n. A patron
  tells you cheerfully that it's the leftovers from those foolish
  adventurers that challenged the old ruin before you ...
@@ -471,7 +471,7 @@ north
 # put some descriptions on the exit to the bridge
 #
 @desc bridge =
- The hang-bridge's foundation sits at the edge of the cliff to the
+ The hanging bridge's foundation sits at the edge of the cliff to the
  east - two heavy stone pillars anchor the bridge on this side.
 #
 # go to the bridge
@@ -506,7 +506,7 @@ bridge
 
 
  The room also inherits from the weather room to cause the bridge to
- sway at regular intervals. It also implements an timer and a random
+ sway at regular intervals. It also implements a timer and a random
  occurrence at every step across the bridge. It might be worth trying
  this passage a few times to see what may happen.  Hint: you can fall
  off!
@@ -523,7 +523,7 @@ bridge
 @dig/teleport Protruding ledge;cliffledge;ledge;tut#06
 #
 @set here/tutorial_info =
- This room is stored as an attribute on the 'Bridge' room and used a
+ This room is stored as an attribute on the 'Bridge' room and used as a
  destination should the player fall off the bridge. In our example the
  bridge is relatively simple and always drops us to the same ledge; a
  more advanced implementation might implement different locations to
@@ -531,7 +531,7 @@ bridge
 #
 @desc
  You are on a narrow ledge protruding from the side of the cliff,
- about halfway down.  The air if saturated with salty sea water,
+ about halfway down.  The air is saturated with salty sea water,
  sprays hitting your face from the crashing waves below.
 
  The ledge is covered with a few black-grey brushes. Not far from you
@@ -543,7 +543,7 @@ bridge
 @lock brush = get:false()
 #
 @desc brush =
- The brushes covering the ledge are gray and dwarfed by constantly
+ The brushes covering the ledge are gray and dwarfed from constantly
  being pummeled by salt, rain and wind.
 #
 @create/drop The sea (far below you);sea;ocean
@@ -563,7 +563,7 @@ bridge
 @lock bridge = get:false()
 #
 @desc bridge =
- You can see the shape of the hang bridge a fair bit above you, partly
+ You can see the shape of the hanging bridge a fair bit above you, partly
  obscured by the rain. There is no way to get back up there from this
  ledge.
 #
@@ -594,7 +594,7 @@ bridge
 hole
 #
 @set here/tutorial_info =
- This room acts a hub for getting the player back to the
+ This room acts as a hub for getting the player back to the
  start again, regardless of how you got here.
 #
 @desc
@@ -746,7 +746,7 @@ hole
  room for long enough.
 
  Combat itself is a very simple affair which takes advantage of the
- strength of the weapon you use, but dictates a fix skill for you and
+ strength of the weapon you use, but dictates a fixed skill for you and
  your enemy. The enemy is quite powerful, so don't stick around too
  long ...
 #
@@ -759,7 +759,7 @@ hole
  sprawled over the ground together with most of its frame.
 
  {wEast{n the gatehouse leads out to a small open area surrounded by
- the remains of the castle.  There is also an standing archway
+ the remains of the castle.  There is also a standing archway
  offering passage to a path along the old {wsouth{nern inner wall.
 #
 @create/drop fallen portoculis;portoculis;fall;fallen
@@ -795,13 +795,13 @@ archway
  room for long enough.
 
  Combat itself is a very simple affair which takes advantage of the
- strength of the weapon you use, but dictates a fix skill for you and
+ strength of the weapon you use, but dictates a fixed skill for you and
  your enemy.
 #
 @desc
  What appears at first sight to be a series of connected rooms
  actually turns out to be collapsed buildings so mashed together by
- the ravishes of time that they all seem to lean on each other and
+ the ravages of time that they all seem to lean on each other and
  against the outer wall. The whole scene is directly open to the sky.
 
  The buildings make a half-circle along the main wall, here and there
@@ -838,7 +838,7 @@ archway
  room for long enough.
 
  Combat itself is a very simple affair which takes advantage of the
- strength of the weapon you use, but dictates a fix skill for you and
+ strength of the weapon you use, but dictates a fixed skill for you and
  your enemy.
 #
 @create/drop obelisk:tutorial_world.objects.Obelisk
@@ -915,12 +915,12 @@ archway
  room for long enough.
 
  Combat itself is a very simple affair which takes advantage of the
- strength of the weapon you use, but dictates a fix skill for you and
+ strength of the weapon you use, but dictates a fixed skill for you and
  your enemy.
 #
 @desc
  The inner courtyard of the old castle is littered with debris and
- overgrown with low grass and patches of thorny wines. There is a
+ overgrown with low grass and patches of thorny vines. There is a
  collapsed structure close to the gatehouse that looks like a stable.
 
  {wNorth{nwards is a smaller area cornered in the debris, adorned with
@@ -1027,7 +1027,7 @@ stairs down
  = Tomb depicting a heroine fighting a monster;knight;hero;monster;beast
 #
 # The puzzle_values are set on Character by looking at the Obelisk in
-# the Castle Corner room. If the scenes show doesn't match, the
+# the Castle Corner room. If the scenes shown don't match, the
 # failure/success_teleport_to attributes will be used to teleport away
 # the Character. Since the scene shown by the Obelisk is random, this
 # means the right tomb need not be the same.
