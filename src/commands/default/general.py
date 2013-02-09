@@ -5,7 +5,7 @@ now.
 import time
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
-from src.utils import utils, search
+from src.utils import utils, search, create
 from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
@@ -573,7 +573,7 @@ class CmdEncoding(MuxCommand):
     Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
 
     If you don't submit an encoding, the current encoding will be displayed instead.
-    """
+  """
 
     key = "@encoding"
     aliases = "@encode"
@@ -649,151 +649,6 @@ class CmdAccess(MuxCommand):
             string += "\nPlayer {c%s{n: %s" % (caller.player.key, pperms)
         caller.msg(string)
 
-# OOC commands
-
-class CmdOOCLook(MuxCommandOOC, CmdLook):
-    """
-    ooc look
-
-    Usage:
-      look
-
-    This is an OOC version of the look command. Since a
-    Player doesn't have an in-game existence, there is no
-    concept of location or "self". If we are controlling
-    a character, pass control over to normal look.
-
-    """
-
-    key = "look"
-    aliases = ["l", "ls"]
-    locks = "cmd:all()"
-    help_category = "General"
-
-    def func(self):
-        "implement the ooc look command"
-
-        if not self.character:
-            string = "You are out-of-character (OOC). "
-            string += "Use {w@ic{n to get back to the game, {whelp{n for more info."
-            self.caller.msg(string)
-        else:
-            self.caller = self.character # we have to put this back for normal look to work.
-            super(CmdOOCLook, self).func()
-
-class CmdIC(MuxCommandOOC):
-    """
-    Switch control to an object
-
-    Usage:
-      @ic <character>
-
-    Go in-character (IC) as a given Character.
-
-    This will attempt to "become" a different object assuming you have
-    the right to do so. Note that it's the PLAYER character that puppets
-    characters/objects and which needs to have the correct permission!
-
-    You cannot become an object that is already controlled by another
-    player. In principle <character> can be any in-game object as long
-    as you the player have access right to puppet it.
-    """
-
-    key = "@ic"
-    locks = "cmd:all()" # must be all() or different puppeted objects won't be able to access it.
-    aliases = "@puppet"
-    help_category = "General"
-
-    def func(self):
-        """
-        Simple puppet method
-        """
-        caller = self.caller
-        old_character = self.character
-
-        new_character = None
-        if not self.args:
-            new_character = caller.db.last_puppet
-            if not new_character:
-                caller.msg("Usage: @ic <character>")
-                return
-        if not new_character:
-            # search for a matching character
-            new_character = search.objects(self.args, caller)
-            if new_character:
-                new_character = new_character[0]
-            else:
-                # the search method handles error messages etc.
-                return
-        if new_character.player:
-            if new_character.player == caller:
-                caller.msg("{RYou already are {c%s{n." % new_character.name)
-            else:
-                caller.msg("{c%s{r is already acted by another player.{n" % new_character.name)
-            return
-        if not new_character.access(caller, "puppet"):
-            caller.msg("{rYou may not become %s.{n" % new_character.name)
-            return
-        if caller.swap_character(new_character):
-            new_character.msg("\n{gYou become {c%s{n.\n" % new_character.name)
-            caller.db.last_puppet = old_character
-            if not new_character.location:
-            # this might be due to being hidden away at logout; check
-                loc = new_character.db.prelogout_location
-                if not loc: # still no location; use home
-                    loc = new_character.home
-                new_character.location = loc
-                if new_character.location:
-                    new_character.location.msg_contents("%s has entered the game." % new_character.key, exclude=[new_character])
-                    new_character.location.at_object_receive(new_character, new_character.location)
-            new_character.execute_cmd("look")
-        else:
-            caller.msg("{rYou cannot become {C%s{n." % new_character.name)
-
-class CmdOOC(MuxCommandOOC):
-    """
-    @ooc - go ooc
-
-    Usage:
-      @ooc
-
-    Go out-of-character (OOC).
-
-    This will leave your current character and put you in a incorporeal OOC state.
-    """
-
-    key = "@ooc"
-    locks = "cmd:all()" # this must be all(), or different puppeted objects won't be able to access it.
-    aliases = "@unpuppet"
-    help_category = "General"
-
-    def func(self):
-        "Implement function"
-
-        caller = self.caller
-
-        if utils.inherits_from(caller, "src.objects.objects.Object"):
-            caller = self.caller.player
-
-        if not caller.character:
-            string = "You are already OOC."
-            caller.msg(string)
-            return
-
-        caller.db.last_puppet = caller.character
-        # save location as if we were disconnecting from the game entirely.
-        if caller.character.location:
-            caller.character.location.msg_contents("%s has left the game." % caller.character.key, exclude=[caller.character])
-            caller.character.db.prelogout_location = caller.character.location
-            caller.character.location = None
-
-        # disconnect
-        caller.character.player = None
-        caller.character = None
-
-        caller.msg("\n{GYou go OOC.{n\n")
-        caller.execute_cmd("look")
-
 class CmdColorTest(MuxCommand):
     """
     testing colors
@@ -850,4 +705,236 @@ class CmdColorTest(MuxCommand):
                 string += "\n" + "".join(row)
             self.caller.msg(string)
             self.caller.msg("(e.g. %%c123 and %%cb123 also work)")
+
+
+#------------------------------------------------------------
+# OOC commands
+#------------------------------------------------------------
+
+class CmdOOCLook(MuxCommandOOC, CmdLook):
+    """
+    ooc look
+
+    Usage:
+      look
+
+    Look in the ooc state.
+    """
+
+    #This is an OOC version of the look command. Since a
+    #Player doesn't have an in-game existence, there is no
+    #concept of location or "self". If we are controlling
+    #a character, pass control over to normal look.
+
+    key = "look"
+    aliases = ["l", "ls"]
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def look_target(self):
+        "Hook method for when an argument is given."
+        # caller is assumed to be a player object here.
+        caller = self.caller
+        key = self.args.lower()
+        chars = dict((utils.to_str(char.key.lower()), char) for char in caller.db._playable_characters)
+        looktarget = chars.get(key)
+        if looktarget:
+            caller.msg(looktarget.return_appearance(caller))
+        else:
+            caller.msg("No such character.")
+        return
+
+    def no_look_target(self):
+        "Hook method for default look without a specified target"
+        # caller is always a player at this point.
+        player = self.caller
+        sessid = self.sessid
+        # get all our characters
+        characters = player.db._playable_characters
+        string = "You are logged in as {g%s{n." % player.key
+        string += "\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
+        if characters:
+            string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
+            for char in characters:
+                csessid = char.sessid
+                if csessid:
+                    # character is already puppeted
+                    if player.get_session(csessid):
+                        string += "\n - {G%s{n (played by you in another session)" % char.key
+                    else:
+                        string += "\n - {R%s{n (played by someone else)" % char.key
+                else:
+                    # character is "free to puppet"
+                    string += "\n - %s" % char.key
+        player.msg(string)
+
+    def func(self):
+        "implement the ooc look command"
+
+        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+            # An object of some type is calling. Use default look instead.
+            super(CmdOOCLook, self).func()
+        elif self.args:
+            self.look_target()
+        else:
+            self.no_look_target()
+
+class CmdCharCreate(MuxCommandOOC):
+    """
+    Create a character
+
+    Usage:
+      @charcreate <charname> [= desc]
+
+    Create a new character, optionally giving it a description.
+    """
+    key = "@charcreate"
+    locks = "cmd:all()"
+    help_category = "General"
+
+    MAX_NR_CHARACTERS = 2
+
+    def func(self):
+        "create the new character"
+        player = self.caller
+        if not self.args:
+            player.msg("Usage: @charcreate <charname> [= description]")
+            return
+        key = self.lhs
+        desc = self.rhs
+        if player.db._playable_characters and len(player.db._playable_characters) >= self.MAX_NR_CHARACTERS:
+            player.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
+            return
+        # create the character
+        from src.objects.models import ObjectDB
+
+        default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
+        permissions = settings.PERMISSION_PLAYER_DEFAULT
+
+        new_character = create.create_object(typeclass, key=key, location=default_home,
+                                             home=default_home, permissions=permissions)
+        player.db._playable_characters.append(new_character)
+        if desc:
+            new_character.db.desc = desc
+        player.msg("Created new character %s." % new_character.key)
+
+
+class CmdIC(MuxCommandOOC):
+    """
+    Switch control to an object
+
+    Usage:
+      @ic <character>
+
+    Go in-character (IC) as a given Character.
+
+    This will attempt to "become" a different object assuming you have
+    the right to do so. Note that it's the PLAYER character that puppets
+    characters/objects and which needs to have the correct permission!
+
+    You cannot become an object that is already controlled by another
+    player. In principle <character> can be any in-game object as long
+    as you the player have access right to puppet it.
+    """
+
+    key = "@ic"
+    locks = "cmd:all()" # must be all() or different puppeted objects won't be able to access it.
+    aliases = "@puppet"
+    help_category = "General"
+
+    def func(self):
+        """
+        Simple puppet method
+        """
+        caller = self.caller
+        sessid = self.sessid
+        old_character = self.character
+
+        new_character = None
+        if not self.args:
+            new_character = caller.db.last_puppet
+            if not new_character:
+                caller.msg("Usage: @ic <character>")
+                return
+        if not new_character:
+            # search for a matching character
+            new_character = search.objects(self.args, caller)
+            if new_character:
+                new_character = new_character[0]
+            else:
+                # the search method handles error messages etc.
+                return
+        # permission checks
+        if caller.get_character(sessid=sessid, character=new_character):
+            caller.msg("{RYou already act as {c%s{n." % new_character.name)
+            return
+        if new_character.player:
+            if new_character.sessid == sessid:
+                caller.msg("{RYou already act as {c%s{n from another session." % new_character.name)
+                return
+            elif not caller.get_character(character=new_character):
+                caller.msg("{c%s{r is already acted by another player.{n" % new_character.name)
+                return
+        if not new_character.access(caller, "puppet"):
+            caller.msg("{rYou may not become %s.{n" % new_character.name)
+            return
+        if caller.connect_character(new_character, sessid=sessid):
+            new_character.msg("\n{gYou become {c%s{n.\n" % new_character.name)
+            caller.db.last_puppet = old_character
+            if not new_character.location:
+            # this might be due to being hidden away at logout; check
+                loc = new_character.db.prelogout_location
+                if not loc: # still no location; use home
+                    loc = new_character.home
+                new_character.location = loc
+                if new_character.location:
+                    new_character.location.msg_contents("%s has entered the game." % new_character.key, exclude=[new_character])
+                    new_character.location.at_object_receive(new_character, new_character.location)
+            new_character.execute_cmd("look")
+        else:
+            caller.msg("{rYou cannot become {C%s{n." % new_character.name)
+
+class CmdOOC(MuxCommandOOC):
+    """
+    @ooc - go ooc
+
+    Usage:
+      @ooc
+
+    Go out-of-character (OOC).
+
+    This will leave your current character and put you in a incorporeal OOC state.
+    """
+
+    key = "@ooc"
+    locks = "cmd:all()" # this must be all(), or different puppeted objects won't be able to access it.
+    aliases = "@unpuppet"
+    help_category = "General"
+
+    def func(self):
+        "Implement function"
+
+        caller = self.caller
+
+        if utils.inherits_from(caller, "src.objects.objects.Object"):
+            caller = self.caller.player
+
+        old_char = caller.get_character(sessid=self.sessid)
+        if not old_char:
+            string = "You are already OOC."
+            caller.msg(string)
+            return
+
+        caller.db.last_puppet = old_char
+        # save location as if we were disconnecting from the game entirely.
+        if old_char.location:
+            old_char.location.msg_contents("%s has left the game." % old_char.key, exclude=[old_char])
+            old_char.db.prelogout_location = old_char.location
+            old_char.location = None
+
+        # disconnect
+        err = caller.disconnect_character(self.character)
+        caller.msg("\n{GYou go OOC.{n\n")
+        caller.execute_cmd("look")
 

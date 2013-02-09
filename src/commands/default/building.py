@@ -1701,13 +1701,16 @@ class CmdExamine(ObjManipCommand):
 
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
-            obj = caller.location
-            if not obj.access(caller, 'examine'):
-            #If we don't have special info access, just look at the object instead.
-                caller.execute_cmd('look %s' % obj.name)
-                return
-            # using callback for printing result whenever function returns.
-            get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
+            if hasattr(caller, "location"):
+                obj = caller.location
+                if not obj.access(caller, 'examine'):
+                #If we don't have special info access, just look at the object instead.
+                    caller.execute_cmd('look %s' % obj.name)
+                    return
+                # using callback for printing result whenever function returns.
+                get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
+            else:
+                caller.msg("You need to supply a target to examine.")
             return
 
         # we have given a specific target object

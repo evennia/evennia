@@ -32,7 +32,8 @@ SSYNC = chr(8)       # server session sync
 from django.utils.translation import ugettext as _
 
 SERVERNAME = settings.SERVERNAME
-ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
+#ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
 #-----------------------------------------------------------
@@ -163,8 +164,8 @@ class ServerSessionHandler(SessionHandler):
         """
         # prep the session with player/user info
 
-        if not ALLOW_MULTISESSION:
-            # disconnect previous sessions.
+        if MULTISESSION_MODE == 0:
+            # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
         session.logged_in = True
         # sync the portal to this session
@@ -222,26 +223,30 @@ class ServerSessionHandler(SessionHandler):
 
     def player_count(self):
         """
-        Get the number of connected players (not sessions since a player
-        may have more than one session connected if ALLOW_MULTISESSION is True)
+        Get the number of connected players (not sessions since a
+        player may have more than one session depending on settings).
         Only logged-in players are counted here.
         """
         return len(set(session.uid for session in self.sessions.values() if session.logged_in))
 
-    def sessions_from_player(self, player):
+    def sessions_from_player(self, player, sessid=None):
         """
         Given a player, return any matching sessions.
         """
         uid = player.uid
-        return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
+        if sessid:
+            session = self.sessions.get(sessid)
+            return session and session.logged_in and session.uid == uid and session or None
+        else:
+            return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_character(self, character):
         """
         Given a game character, return any matching sessions.
         """
-        player = character.player
-        if player:
-            return self.sessions_from_player(player)
+        sessid = character.sessid
+        if sessid:
+            return self.sessions.get(sessid)
         return None
 
     def announce_all(self, message):

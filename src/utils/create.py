@@ -53,7 +53,7 @@ _GA = object.__getattribute__
 #
 
 def create_object(typeclass, key=None, location=None,
-                  home=None, player=None, permissions=None, locks=None,
+                  home=None, permissions=None, locks=None,
                   aliases=None, destination=None, report_to=None):
     """
     Create a new in-game object. Any game object is a combination
@@ -115,11 +115,6 @@ def create_object(typeclass, key=None, location=None,
 
     # from now on we can use the typeclass object
     # as if it was the database object.
-
-    if player:
-        # link a player and the object together
-        new_object.player = player
-        player.obj = new_object
 
     new_object.destination = destination
 
@@ -397,10 +392,7 @@ def create_player(name, email, password,
                   typeclass=None,
                   is_superuser=False,
                   locks=None, permissions=None,
-                  create_character=True, character_typeclass=None,
-                  character_location=None, character_home=None,
                   player_dbobj=None, report_to=None):
-
 
     """
     This creates a new player, handling the creation of the User
@@ -500,6 +492,7 @@ def create_player(name, email, password,
         # call hook method (may override default permissions)
         new_player.at_player_creation()
 
+        print
         # custom given arguments potentially overrides the hook
         if permissions:
             new_player.permissions = permissions
@@ -509,19 +502,8 @@ def create_player(name, email, password,
         if locks:
             new_player.locks.add(locks)
 
-        # create *in-game* 'player' object
-        if create_character:
-            if not character_typeclass:
-                character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-            # creating the object automatically links the player
-            # and object together by player.obj <-> obj.player
-            new_character = create_object(character_typeclass, key=name,
-                                          location=character_location, home=character_location,
-                                          permissions=permissions,
-                                          player=new_player, report_to=report_to)
-            return new_character
         return new_player
-    except Exception, e:
+    except Exception:
         # a failure in creating the character
         if not user:
             # in there was a failure we clean up everything we can
@@ -538,7 +520,7 @@ def create_player(name, email, password,
                 del new_character
             except Exception:
                 pass
-        raise e
+        raise
 
 # alias
 player = create_player

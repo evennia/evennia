@@ -161,15 +161,19 @@ class CmdUnconnectedCreate(MuxCommand):
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
             try:
-                new_character = create.create_player(playername, None, password,
-                                                     permissions=permissions,
-                                                     character_typeclass=typeclass,
-                                                     character_location=default_home,
-                                                     character_home=default_home)
+                new_player = create.create_player(playername, None, password,
+                                                     permissions=permissions)
+
+                # create character to go with player
+                new_character = create_object(character_typeclass, key=name,
+                                          location=default_home, home=default_home,
+                                          permissions=permissions)
+                # set list
+                new_player.db._playable_characters.append(new_character)
+
             except Exception:
-                session.msg("There was an error creating the default Character/Player:\n%s\n If this problem persists, contact an admin.")
+                session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin.")
                 return
-            new_player = new_character.player
 
             # This needs to be called so the engine knows this player is logging in for the first time.
             # (so it knows to call the right hooks during login later)
