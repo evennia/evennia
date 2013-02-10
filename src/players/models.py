@@ -47,7 +47,6 @@ from django.utils.encoding import smart_str
 
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
-from src.server.sessionhandler import SESSIONS
 from src.players import manager
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.typeclasses.typeclass import TypeClass
@@ -58,6 +57,7 @@ from src.utils.utils import inherits_from
 
 __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
 
+_SESSIONS = None
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 _GA = object.__getattribute__
@@ -333,7 +333,10 @@ class PlayerDB(TypedObject):
     #@property
     def sessions_get(self):
         "Getter. Retrieve sessions related to this player/user"
-        return SESSIONS.sessions_from_player(self)
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        return _SESSIONS.sessions_from_player(self)
     #@sessions.setter
     def sessions_set(self, value):
         "Setter. Protects the sessions property from adding things"

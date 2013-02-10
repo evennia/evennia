@@ -12,7 +12,6 @@ from twisted.internet.defer import maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
 from src.server import caches
-from src.server.sessionhandler import SESSIONS
 from src.typeclasses.typeclass import TypeClass
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
@@ -23,6 +22,7 @@ __all__ = ["Script", "DoNothing", "CheckSessions", "ValidateScripts", "ValidateC
 if not is_pypy:
     __all__.append("ClearAttributeCache")
 
+_SESSIONS = None
 _ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE # attr-cache size in MB.
 
 #
@@ -416,9 +416,12 @@ class CheckSessions(Script):
 
     def at_repeat(self):
         "called every 60 seconds"
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
         #print "session check!"
         #print "ValidateSessions run"
-        SESSIONS.validate_sessions()
+        _SESSIONS.validate_sessions()
 
 class ValidateScripts(Script):
     "Check script validation regularly"
