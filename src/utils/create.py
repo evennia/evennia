@@ -477,6 +477,7 @@ def create_player(name, email, password,
             # use the typeclass from this object
             typeclass = new_db_player.typeclass_path
         else:
+            new_user = User.objects.get(username=new_user.username)
             new_db_player = _PlayerDB(db_key=name, user=new_user)
             new_db_player.save()
             # assign the typeclass
@@ -521,7 +522,7 @@ def create_player(name, email, password,
                                           player=new_player, report_to=report_to)
             return new_character
         return new_player
-    except Exception, e:
+    except Exception:
         # a failure in creating the character
         if not user:
             # in there was a failure we clean up everything we can
@@ -538,7 +539,7 @@ def create_player(name, email, password,
                 del new_character
             except Exception:
                 pass
-        raise e
+        raise
 
 # alias
 player = create_player
