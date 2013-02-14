@@ -613,7 +613,7 @@ class PlayerDB(TypedObject):
                 break
         return cmdhandler.cmdhandler(self.typeclass, raw_string, sessid=sessid)
 
-    def search(self, ostring, return_character=False):
+    def search(self, ostring, return_character=False, **kwargs):
         """
         This is similar to the ObjectDB search method but will search for Players only. Errors
         will be echoed, and None returned if no Player is found.
@@ -621,6 +621,8 @@ class PlayerDB(TypedObject):
         return_character - will try to return the character the player controls instead of
                            the Player object itself. If no Character exists (since Player is
                            OOC), None will be returned.
+        Extra keywords are ignored, but are allowed in call in order to make API more consistent
+                           with objects.models.TypedObject.search.
         """
         matches = _GA(self, "__class__").objects.player_search(ostring)
         matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=True)

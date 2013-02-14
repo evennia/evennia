@@ -1614,6 +1614,10 @@ class CmdExamine(ObjManipCommand):
         string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases:
             string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(obj.aliases)))
+        if hasattr(obj, "sessid") and obj.sessid:
+            string += "\n{wsession{n: %s" % obj.sessid
+        elif hasattr(obj, "sessions") and obj.sessions:
+            string += "\n{wsession(s){n: %s" % (", ".join(str(sess.sessid) for sess in obj.sessions))
         if hasattr(obj, "has_player") and obj.has_player:
             string += "\n{wPlayer{n: {c%s{n" % obj.player.name
             perms = obj.player.permissions

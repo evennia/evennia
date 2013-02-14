@@ -136,10 +136,12 @@ class Player(TypeClass):
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
-    def search(self, ostring, return_character=False):
+    def search(self, ostring, return_character=False, **kwargs):
         """
         This method mimicks object.search if self.character is set. Otherwise only
         other Players can be searched with this method.
+        extra keywords are accepted but ignored to make API more consistent with
+        TypedObject.search.
         """
         return self.dbobj.search(ostring, return_character=return_character)
 
