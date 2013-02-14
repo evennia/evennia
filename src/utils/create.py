@@ -469,6 +469,7 @@ def create_player(name, email, password,
             # use the typeclass from this object
             typeclass = new_db_player.typeclass_path
         else:
+            new_user = User.objects.get(username=new_user.username)
             new_db_player = _PlayerDB(db_key=name, user=new_user)
             new_db_player.save()
             # assign the typeclass

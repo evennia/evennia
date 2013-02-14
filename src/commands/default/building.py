@@ -666,7 +666,6 @@ class CmdDig(ObjManipCommand):
                 if not typeclass:
                     typeclass = settings.BASE_EXIT_TYPECLASS
 
-                print typeclass, to_exit["name"], location, to_exit["aliases"],lockstring, new_room, caller
                 new_to_exit = create.create_object(typeclass, to_exit["name"], location,
                                                    aliases=to_exit["aliases"],
                                                    locks=lockstring, destination=new_room, report_to=caller)
