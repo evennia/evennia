@@ -908,8 +908,8 @@ def init_new_player(player):
     """
     # the FIRST_LOGIN flags are necessary for the system to call
     # the relevant first-login hooks.
-    if player.character:
-        player.character.db.FIRST_LOGIN = True
+    #if player.character:
+    #    player.character.db.FIRST_LOGIN = True
     player.db.FIRST_LOGIN = True
 
 def string_similarity(string1, string2):

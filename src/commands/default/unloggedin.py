@@ -165,14 +165,14 @@ class CmdUnconnectedCreate(MuxCommand):
                                                      permissions=permissions)
 
                 # create character to go with player
-                new_character = create_object(character_typeclass, key=name,
+                new_character = create.create_object(typeclass, key=playername,
                                           location=default_home, home=default_home,
                                           permissions=permissions)
                 # set list
                 new_player.db._playable_characters.append(new_character)
 
-            except Exception:
-                session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin.")
+            except Exception, e:
+                session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
                 return
 
             # This needs to be called so the engine knows this player is logging in for the first time.

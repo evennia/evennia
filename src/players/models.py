@@ -483,11 +483,17 @@ class PlayerDB(TypedObject):
         """
         Return session with given sessid connected to this player.
         """
-        return SESSIONS.sessions_from_player(self, sessid=sessid)
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        return _SESSIONS.sessions_from_player(self, sessid=sessid)
 
     def get_all_sessions(self):
         "Return all sessions connected to this player"
-        return SESSIONS.sessions_from_player(self)
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        return _SESSIONS.sessions_from_player(self)
 
     def get_character(self, sessid=None, character=None, return_dbobj=False):
         """
