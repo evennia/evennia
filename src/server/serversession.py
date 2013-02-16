@@ -57,7 +57,6 @@ class ServerSession(Session):
             self.cmdset.update(init_mode=True)
             return
 
-
     def session_login(self, player):
         """
         Startup mechanisms that need to run at login. This is called

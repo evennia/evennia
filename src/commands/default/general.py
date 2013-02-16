@@ -395,9 +395,15 @@ class CmdQuit(MuxCommand):
 
     def func(self):
         "hook function"
-        for session in self.caller.sessions:
-            session.msg("{RQuitting{n. Hope to see you soon again.")
-            session.session_disconnect()
+        if hasattr(self.caller, "player"):
+            player = self.caller.player
+        else:
+            player = self.caller
+
+        player.msg("{RQuitting{n. Hope to see you soon again.", sessid=self.sessid)
+        player.disconnect_session_from_player(self.sessid)
+        #for session in self.caller.sessions:
+        #    session.session_disconnect()
 
 class CmdWho(MuxCommand):
     """
