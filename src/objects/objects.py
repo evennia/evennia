@@ -216,7 +216,7 @@ class Object(TypeClass):
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
-    def msg(self, message, from_obj=None, data=None):
+    def msg(self, message, from_obj=None, data=None, sessid=0):
         """
         Emits something to any sessions attached to the object.
 
@@ -224,8 +224,10 @@ class Object(TypeClass):
         from_obj (obj): object that is sending.
         data (object): an optional data object that may or may not
                        be used by the protocol.
+        sessid: optional session target. If sessid=0, the session will
+                default to self.sessid or from_obj.sessid.
         """
-        self.dbobj.msg(message, from_obj=from_obj, data=data)
+        self.dbobj.msg(message, from_obj=from_obj, data=data, sessid=0)
 
     def msg_contents(self, message, exclude=None, from_obj=None, data=None):
         """

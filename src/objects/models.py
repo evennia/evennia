@@ -678,13 +678,18 @@ class ObjectDB(TypedObject):
         data (object): an optional data object that may or may not
                        be used by the protocol.
         sessid (int): sessid to relay to, if any.
-                      If set to 0 (default), use self.sessid automatically
+                      If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
                       If None, echo to all connected sessions
         """
         if _GA(self, 'player'):
             # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
-            _GA(_GA(self, 'player'), "typeclass").msg(msg, from_obj=from_obj, data=data,
-                                                      sessid=(sessid==0 and _GA(self, "sessid") or sessid or None))
+            if sessid == 0:
+                sessid = None
+                if from_obj and hasattr(from_obj, "sessid"):
+                    sessid = from_obj.sessid
+                elif hasattr(self, "sessid"):
+                    sessid = self.sessid
+            _GA(_GA(self, 'player'), "typeclass").msg(msg, from_obj=from_obj, data=data, sessid=sessid)
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"
