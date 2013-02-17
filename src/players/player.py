@@ -10,10 +10,17 @@ character object, so you should customize that
 instead for most things).
 
 """
+
+import datetime
 from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
+from src.comms.models import Channel
+from src.utils import logger
 __all__ = ("Player",)
-CMDSET_OOC = settings.CMDSET_OOC
+
+_CMDSET_OOC = settings.CMDSET_OOC
+_CONNECT_CHANNEL = None
+
 
 class Player(TypeClass):
     """
@@ -238,7 +245,7 @@ class Player(TypeClass):
         self.locks.add("msg:all()")
 
         # The ooc player cmdset
-        self.cmdset.add_default(CMDSET_OOC, permanent=True)
+        self.cmdset.add_default(_CMDSET_OOC, permanent=True)
 
     def at_player_creation(self):
         """
@@ -293,12 +300,28 @@ class Player(TypeClass):
         """
         pass
 
+    def _send_to_connect_channel(self, message):
+        "Helper method for loading the default comm channel"
+        global _CONNECT_CHANNEL
+        if not _CONNECT_CHANNEL:
+            try:
+                _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
+            except Exception:
+                logger.log_trace()
+        now = datetime.datetime.now()
+        now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
+        if _CONNECT_CHANNEL:
+            _CONNECT_CHANNEL.tempmsg("[%s, %s]: %s" % (_CONNECT_CHANNEL.key, now, message))
+        else:
+            logger.log_infomsg("[%s]: %s" % (now, message))
+
     def at_post_login(self):
         """
         Called at the end of the login process, just before letting
         them loose. This is called before an eventual Character's
         at_post_login hook.
         """
+        self._send_to_connect_channel("{G%s connected{n" % self.key)
         # Character.at_post_login also looks around. Only use
         # this as a backup when logging in without a character
         self.execute_cmd("look")
@@ -308,7 +331,7 @@ class Player(TypeClass):
         Called just before user
         is disconnected.
         """
-        pass
+        self._send_to_connect_channel("{R%s disconnected{n" % self.key)
 
     def at_message_receive(self, message, from_obj=None):
         """

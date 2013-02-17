@@ -15,21 +15,15 @@ That an object is controlled by a player/user is just defined by its
 they control by simply linking to a new object's user property.
 """
 
-import datetime
 from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
-from src.comms.models import Channel
-from src.utils import logger
 
 __all__ = ("Object", "Character", "Room", "Exit")
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-
-
-_CONNECT_CHANNEL = None
 
 #
 # Base class to inherit from.
@@ -789,32 +783,15 @@ class Character(Object):
         We stove away the character when logging off, otherwise the character object will
         remain in the room also after the player logged off ("headless", so to say).
         """
-        global _CONNECT_CHANNEL
-        if not _CONNECT_CHANNEL:
-            try:
-                _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
-            except Exception, e:
-                logger.log_trace()
-
         if self.location: # have to check, in case of multiple connections closing
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
             self.db.prelogout_location = self.location
             self.location = None
-        if _CONNECT_CHANNEL:
-            now = datetime.datetime.now()
-            now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
-            _CONNECT_CHANNEL.tempmsg("[%s, %s]: {R%s disconnected{n" % (_CONNECT_CHANNEL.key, now, self.key))
 
     def at_post_login(self):
         """
         This recovers the character again after having been "stoved away" at disconnect.
         """
-        global _CONNECT_CHANNEL
-        if not _CONNECT_CHANNEL:
-            try:
-                _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
-            except Exception, e:
-                logger.log_trace()
         if self.db.prelogout_location:
             # try to recover
             self.location = self.db.prelogout_location
@@ -828,13 +805,6 @@ class Character(Object):
         self.location.at_object_receive(self, self.location)
         # call look
         self.execute_cmd("look")
-        # send to connect channel, if available
-        if _CONNECT_CHANNEL:
-            now = datetime.datetime.now()
-            now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
-            _CONNECT_CHANNEL.tempmsg("[%s, %s]: {G%s connected{n" % (_CONNECT_CHANNEL.key, now, self.key))
-
-
 #
 # Base Room object
 #
