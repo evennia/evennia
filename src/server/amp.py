@@ -27,16 +27,6 @@ from twisted.internet import protocol
 from twisted.internet.defer import Deferred
 from src.utils.utils import to_str, variable_from_module
 
-# these are only needed on the server side, so we delay loading of them
-# so as to not have to load them on the portal too. Note: It's doubtful
-# if this really matters, considering many of the
-# protocols require import of django components (at least settings).
-#_ServerConfig = None
-#_ScriptDB = None
-#_PlayerDB = None
-#_ServerSession = None
-#_ = None #i18n hook
-
 # communication bits
 
 PCONN = chr(1)       # portal session connect
@@ -61,8 +51,8 @@ def get_restart_mode(restart_file):
 
 class AmpServerFactory(protocol.ServerFactory):
     """
-    This factory creates new AMPProtocol protocol instances to use for accepting
-    connections from TCPServer.
+    This factory creates the Server as a new AMPProtocol instance for accepting
+    connections from the Portal.
     """
     def __init__(self, server):
         """
@@ -83,10 +73,7 @@ class AmpServerFactory(protocol.ServerFactory):
 
 class AmpClientFactory(protocol.ReconnectingClientFactory):
     """
-    This factory creates new AMPProtocol protocol instances to use to connect
-    to the MUD server. It also maintains the portal attribute
-    on the ProxyService instance, which is used for piping input
-    from Telnet to the MUD server.
+    This factory creates an instance of the Portal, an AMPProtocol instances to use to connect
     """
     # Initial reconnect delay in seconds.
     initialDelay = 1

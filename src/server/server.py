@@ -190,9 +190,6 @@ class Evennia(object):
         from src.objects.models import ObjectDB
         #from src.players.models import PlayerDB
 
-        # clear eventual lingering session storages
-        ObjectDB.objects.clear_all_sessids()
-
         #update eventual changed defaults
         self.update_defaults()
 
@@ -209,6 +206,8 @@ class Evennia(object):
                 SERVER_STARTSTOP_MODULE.at_server_reload_start()
             elif mode in ('reset', 'shutdown'):
                 SERVER_STARTSTOP_MODULE.at_server_cold_start()
+                # clear eventual lingering session storages
+                ObjectDB.objects.clear_all_sessids()
             # always call this regardless of start type
             SERVER_STARTSTOP_MODULE.at_server_start()
 
@@ -230,20 +229,6 @@ class Evennia(object):
             with open(SERVER_RESTART, 'w') as f:
                 f.write(str(mode))
         return mode
-
-        #if mode == None:
-        #    f = open(SERVER_RESTART, 'r')
-        #    if os.path.exists(SERVER_RESTART) and 'True' == f.read():
-        #        mode = 'reload'
-        #    else:
-        #        mode = 'shutdown'
-        #    f.close()
-        #else:
-        #    restart = mode in ('reload', 'reset')
-        #    f = open(SERVER_RESTART, 'w')
-        #    f.write(str(restart))
-        #    f.close()
-        #return mode
 
     @defer.inlineCallbacks
     def shutdown(self, mode=None, _reactor_stopping=False):

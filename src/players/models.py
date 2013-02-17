@@ -432,6 +432,8 @@ class PlayerDB(TypedObject):
             from src.server.sessionhandler import SESSIONS as _SESSIONS
         _SESSIONS.disconnect(sessid=sessid)
 
+
+
     def connect_session_to_character(self, sessid, character, force=False):
         """
         Connect the given session to a character through this player.
@@ -487,6 +489,22 @@ class PlayerDB(TypedObject):
                 del cache[sessid]
             set_prop_cache(self, "_characters", cache)
         return char
+
+    def reconnect_session_to_character(self, sessid):
+        """
+        Auto-re-connect a session to a character. This is called by the sessionhandler
+        during a server reload. It goes through the characters stored in this player's
+        db_objs many2many fields and checks if any of those has the given sessid
+        stored on themselves - if so they connect them. This should ONLY be called
+        automatically by sessionhandler after a reload - after a portal shutdown
+        the portal sessids will be out of sync with whatever is stored on character
+        objects which could lead to a session being linked to the wrong character.
+        """
+        char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
+        if not char:
+            print "No reconnecting character found"
+            return
+        self.connect_session_to_character(sessid, char, force=True)
 
     def get_session(self, sessid):
         """

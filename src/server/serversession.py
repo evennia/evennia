@@ -56,6 +56,8 @@ class ServerSession(Session):
             self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
             self.cmdset.update(init_mode=True)
             return
+        else:
+            self.player.reconnect_session_to_character(self.sessid)
 
     def session_login(self, player):
         """

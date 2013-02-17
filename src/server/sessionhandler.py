@@ -181,7 +181,7 @@ class ServerSessionHandler(SessionHandler):
         _ScriptDB.objects.validate(init_mode=init_mode)
         _ServerConfig.objects.conf("server_restart_mode", delete=True)
         # announce the reconnection
-        self.announce_all(_(" ... server restarted."))
+        self.announce_all(_(" ... Server restarted."))
 
     def portal_shutdown(self):
         """
@@ -431,8 +431,8 @@ class PortalSessionHandler(SessionHandler):
         serversessions - dictionary {sessid:{property:value},...} describing the properties
                          to sync on all sessions
         """
-        to_save = [sessid for sessid, syncdata in serversessions if sessid in self.sessions]
-        to_delete = [sessid for sessid, syncdata in serversessions if sessid not in to_save]
+        to_save = [sessid for sessid in serversessions if sessid in self.sessions]
+        to_delete = [sessid for sessid in serversessions if sessid not in to_save]
         # save protocols
         for sessid in to_save:
             self.sessions[sessid].load_sync_data(serversessions[sessid])
