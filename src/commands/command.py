@@ -118,14 +118,12 @@ class Command(object):
     # used by the help system to group commands in lists.
     help_category = "general"
 
-    # this normally does not need to be changed. It allows to turn off
-    # auto-help entry creation for individual commands.
+    # This allows to turn off auto-help entry creation for individual commands.
     auto_help = True
-    # There is also the property 'obj'. This gets set by the system
-    # on the fly to tie this particular command to a certain in-game entity.
-    # self.obj should NOT be defined here since it will not be overwritten
-    # if it already exists.
-
+    # auto-set (by Evennia on command instantiation) are:
+    #   obj - which object this command is defined on
+    #   sessid - which session-id (if any) is responsible for triggering this command
+    #
 
     def __init__(self):
         "the lockhandler works the same as for objects."
@@ -189,6 +187,29 @@ class Command(object):
         it's using the Evennia permission system directly.
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
+
+    def msg(self, msg="", data=None, from_obj=None, to_obj=None, all_sessions=False):
+        """
+        This is a shortcut instad of calling msg() directly on an object - it will
+        determine
+
+        detect if caller is an Object or a Player and also appends self.sessid
+        automatically.
+
+        msg - text string of message to send
+        data - optional dictionary of data
+        from_obj - source of message. Defaults to self.caller.
+        to_obj - target object of message. Defaults to self.caller
+        all_sessions (bool) - default is to send only to the session connected to
+                              the target object
+        """
+        from_obj = from_obj or self.caller
+        to_obj = to_obj or from_obj
+        if hasattr(to_obj, "sessid"):
+            sessid = all_sessions and None or to_obj.sessid
+        else:
+            sessid = None
+        to_obj.msg(msg, from_obj=from_obj, data=data, sessid=sessid)
 
     # Common Command hooks
 

@@ -423,16 +423,23 @@ class PlayerDB(TypedObject):
             # a non-character session; this goes to player directly
             _GA(self, "execute_cmd")(ingoing_string, sessid=sessid)
 
-    def disconnect_session_from_player(self, sessid):
+    def get_session_from_sessid(self, sessid):
         """
-        Access method for disconnecting a given session from the player.
+        Get the session object from sessid. If session with sessid is not
+        connected to this player, return None.
         """
         global _SESSIONS
         if not _SESSIONS:
             from src.server.sessionhandler import SESSIONS as _SESSIONS
-        _SESSIONS.disconnect(sessid=sessid)
+        return _SESSIONS.sessions_from_player(self, sessid=sessid)
 
-
+    def disconnect_session_from_player(self, sessid):
+        """
+        Access method for disconnecting a given session from the player.
+        """
+        session = self.get_session_from_sessid(sessid)
+        if session:
+            session.sessionhandler.disconnect(session)
 
     def connect_session_to_character(self, sessid, character, force=False):
         """
@@ -502,7 +509,6 @@ class PlayerDB(TypedObject):
         """
         char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
         if not char:
-            print "No reconnecting character found"
             return
         self.connect_session_to_character(sessid, char, force=True)
 

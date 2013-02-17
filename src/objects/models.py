@@ -584,7 +584,6 @@ class ObjectDB(TypedObject):
         if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
             return self
 
-
         if use_nicks:
             nick = None
             nicktype = "object"
@@ -670,7 +669,7 @@ class ObjectDB(TypedObject):
                 break
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, sessid=sessid)
 
-    def msg(self, message, from_obj=None, data=None):
+    def msg(self, msg=None, from_obj=None, data=None, sessid=0):
         """
         Emits something to a session attached to the object.
 
@@ -678,10 +677,14 @@ class ObjectDB(TypedObject):
         from_obj (obj): object that is sending.
         data (object): an optional data object that may or may not
                        be used by the protocol.
+        sessid (int): sessid to relay to, if any.
+                      If set to 0 (default), use self.sessid automatically
+                      If None, echo to all connected sessions
         """
         if _GA(self, 'player'):
             # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
-            _GA(_GA(self, 'player'), "typeclass").msg(message, from_obj=from_obj, data=data, sessid=_GA(self, "sessid"))
+            _GA(_GA(self, 'player'), "typeclass").msg(msg, from_obj=from_obj, data=data,
+                                                      sessid=(sessid==0 and _GA(self, "sessid") or sessid or None))
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"

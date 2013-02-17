@@ -59,23 +59,12 @@ class ServerSession(Session):
         else:
             self.player.reconnect_session_to_character(self.sessid)
 
-    def session_login(self, player):
+    def at_login(self, player):
         """
-        Startup mechanisms that need to run at login. This is called
-        by the login command (which need to have handled authentication
-        already before calling this method)
+        Hook called by sessionhandler when the session becomes authenticated.
 
-        player - the connected player
+        player - the player associated with the session
         """
-
-        # we have to check this first before uid has been assigned
-        # this session.
-
-        if not self.sessionhandler.sessions_from_player(player):
-            player.is_connected = True
-
-        # actually do the login by assigning session data
-
         self.player = player
         self.user = player.user
         self.uid = self.user.id
@@ -87,31 +76,9 @@ class ServerSession(Session):
         self.user.last_login = datetime.now()
         self.user.save()
 
-        # player init
-        player.at_init()
-
-        # Check if this is the first time the *player* logs in
-        if player.db.FIRST_LOGIN:
-            player.at_first_login()
-            del player.db.FIRST_LOGIN
-
-        player.at_pre_login()
-
-        self.log(_('Logged in: %(self)s') % {'self': self})
-
-        # start (persistent) scripts on this object
-        #ScriptDB.objects.validate(obj=self.player.character)
-
-        #add session to connected list
-        self.sessionhandler.login(self)
-
-        player.at_post_login()
-
-    def session_disconnect(self):
+    def at_disconnect(self):
         """
-        Clean up the session, removing it from the game and doing some
-        accounting. This method is used also for non-loggedin
-        accounts.
+        Hook called by sessionhandler when disconnecting this session.
         """
         if self.logged_in:
             sessid = self.sessid
@@ -123,8 +90,9 @@ class ServerSession(Session):
             uaccount.save()
             self.logged_in = False
             if not self.sessionhandler.sessions_from_player(player):
+                # no more sessions connected to this player
                 player.is_connected = False
-        self.sessionhandler.disconnect(self)
+
 
     def get_player(self):
         """
@@ -268,12 +236,12 @@ class ServerSession(Session):
 
     # easy-access functions
 
-    def login(self, player):
-        "alias for at_login"
-        self.session_login(player)
-    def disconnect(self):
-        "alias for session_disconnect"
-        self.session_disconnect()
+    #def login(self, player):
+    #    "alias for at_login"
+    #    self.session_login(player)
+    #def disconnect(self):
+    #    "alias for session_disconnect"
+    #    self.session_disconnect()
     def msg(self, string='', data=None):
         "alias for at_data_out"
         self.data_out(string, data=data)

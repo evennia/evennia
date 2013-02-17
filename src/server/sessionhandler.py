@@ -199,6 +199,7 @@ class ServerSessionHandler(SessionHandler):
         """
         session = self.sessions.get(session.sessid, None)
         if session:
+            session.at_disconnect()
             sessid = session.sessid
             del self.sessions[sessid]
             # inform portal that session should be closed.
@@ -206,7 +207,7 @@ class ServerSessionHandler(SessionHandler):
                                                              operation=SDISCONN,
                                                              data=reason)
 
-    def login(self, session):
+    def login(self, session, player):
         """
         Log in the previously unloggedin session and the player we by
         now should know is connected to it. After this point we
@@ -214,15 +215,41 @@ class ServerSessionHandler(SessionHandler):
         """
         # prep the session with player/user info
 
+        # we have to check this first before uid has been assigned
+        # this session.
+
+        if not self.sessions_from_player(player):
+            player.is_connected = True
+
+        # sets up and assigns all properties on the session
+        session.at_login(player)
+
+        # player init
+        player.at_init()
+
+        # Check if this is the first time the *player* logs in
+        if player.db.FIRST_LOGIN:
+            player.at_first_login()
+            del player.db.FIRST_LOGIN
+
+        player.at_pre_login()
+
+        session.log(_('Logged in: %(self)s') % {'self': self})
+
+        # start (persistent) scripts on this object
+        #ScriptDB.objects.validate(obj=self.player.character)
+
         if MULTISESSION_MODE == 0:
             # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
+
         session.logged_in = True
-        # sync the portal to this session
+        # sync the portal to the session
         sessdata = session.get_sync_data()
         self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
                                                          operation=SLOGIN,
                                                          data=sessdata)
+        player.at_post_login()
 
     def all_sessions_portal_sync(self):
         """

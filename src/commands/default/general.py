@@ -388,7 +388,11 @@ class CmdQuit(MuxCommand):
     Usage:
       @quit
 
-    Gracefully disconnect from the game.
+    Switch:
+      all - disconnect all connected sessions
+
+    Gracefully disconnect your current session from the
+    game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
     locks = "cmd:all()"
@@ -400,10 +404,20 @@ class CmdQuit(MuxCommand):
         else:
             player = self.caller
 
-        player.msg("{RQuitting{n. Hope to see you soon again.", sessid=self.sessid)
-        player.disconnect_session_from_player(self.sessid)
-        #for session in self.caller.sessions:
-        #    session.session_disconnect()
+        if 'all' in self.switches:
+            player.msg("{RQuitting{n all sessions. Hope to see you soon again.", sessid=self.sessid)
+            for session in player.get_all_sessions():
+                player.disconnect_session_from_player(session.sessid)
+        else:
+            nsess = len(player.get_all_sessions())
+            if nsess == 2:
+                player.msg("{RQuitting{n. One session is still connected.", sessid=self.sessid)
+            elif nsess > 2:
+                player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), sessid=self.sessid)
+            else:
+                # we are quitting the last available session
+                player.msg("{RQuitting{n. Hope to see you soon again.", sessid=self.sessid)
+            player.disconnect_session_from_player(self.sessid)
 
 class CmdWho(MuxCommand):
     """

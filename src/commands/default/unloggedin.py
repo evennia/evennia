@@ -97,7 +97,7 @@ class CmdUnconnectedConnect(MuxCommand):
         #      at_pre_login()
         #   player.at_post_login()     - calls look if no character is set
         #   character.at_post_login()  - this calls look command by default
-        session.session_login(player)
+        session.sessionhandler.login(session, player)
 
 class CmdUnconnectedCreate(MuxCommand):
     """
@@ -224,8 +224,8 @@ class CmdUnconnectedQuit(MuxCommand):
     def func(self):
         "Simply close the connection."
         session = self.caller
-        session.msg("Good bye! Disconnecting ...")
-        session.session_disconnect()
+        #session.msg("Good bye! Disconnecting ...")
+        session.sessionhandler.disconnect(session, "Good bye! Disconnecting ...")
 
 class CmdUnconnectedLook(MuxCommand):
     """
