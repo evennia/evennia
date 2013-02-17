@@ -16,7 +16,11 @@ import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
 
-_PLAYERDB = None
+# delayed imports
+_PlayerDB = None
+_ServerSession = None
+_ServerConfig = None
+_ScriptDB = None
 
 # AMP signals
 PCONN = chr(1)       # portal session connect
@@ -35,6 +39,20 @@ SERVERNAME = settings.SERVERNAME
 #ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+
+def delayed_import():
+    "Helper method for delayed import of all needed entities"
+    global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
+    if not _ServerSession:
+        from src.server.serversession import ServerSession as _ServerSession
+    if not _PlayerDB:
+        from src.players.models import PlayerDB as _PlayerDB
+    if not _ServerConfig:
+        from src.server.models import ServerConfig as _ServerConfig
+    if not _ScriptDB:
+        from src.scripts.models import ScriptDB as _ScriptDB
+    # including once to avoid warnings in Python syntax checkers
+    _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
 
 #-----------------------------------------------------------
 # SessionHandler base class
@@ -99,13 +117,29 @@ class ServerSessionHandler(SessionHandler):
         self.server = None
         self.server_data = {"servername":SERVERNAME}
 
-    def portal_connect(self, sessid, session):
+    def portal_connect(self, portalsession):
         """
         Called by Portal when a new session has connected.
         Creates a new, unlogged-in game session.
+
+        portalsession is a dictionary of all property:value keys
+                      defining the session and which is marked to
+                      be synced.
         """
-        self.sessions[sessid] = session
-        session.execute_cmd(CMD_LOGINSTART)
+        delayed_import()
+        global _ServerSession, _PlayerDB, _ScriptDB
+
+        sess = _ServerSession()
+        sess.sessionhandler = self
+        sess.load_sync_data(portalsession)
+        if sess.logged_in and sess.uid:
+            # this can happen in the case of auto-authenticating protocols like SSH
+            sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
+        sess.at_sync()
+        # validate all script
+        _ScriptDB.objects.validate()
+        self.sessions[sess.sessid] = sess
+        sess.execute_cmd(CMD_LOGINSTART)
 
     def portal_disconnect(self, sessid):
         """
@@ -118,20 +152,36 @@ class ServerSessionHandler(SessionHandler):
             del self.sessions[session.sessid]
             self.session_count(-1)
 
-    def portal_session_sync(self, sesslist):
+    def portal_session_sync(self, portalsessions):
         """
         Syncing all session ids of the portal with the ones of the server. This is instantiated
         by the portal when reconnecting.
 
-        sesslist is a complete list of (sessid, session) pairs, matching the list on the portal.
-                 if session was logged in, the amp handler will have logged them in before this point.
+        portalsessions is a dictionary {sessid: {property:value},...} defining
+                      each session and the properties in it which should be synced.
         """
+        delayed_import()
+        global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
+
         for sess in self.sessions.values():
             # we delete the old session to make sure to catch eventual lingering references.
             del sess
-        for sess in sesslist:
-            self.sessions[sess.sessid] = sess
+
+        for sessid, sessdict in portalsessions.items():
+            sess = _ServerSession()
+            sess.sessionhandler = self
+            sess.load_sync_data(sessdict)
+            if sess.uid:
+                sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
+            self.sessions[sessid] = sess
             sess.at_sync()
+
+        # after sync is complete we force-validate all scripts (this also starts them)
+        init_mode = _ServerConfig.objects.conf("server_restart_mode", default=None)
+        _ScriptDB.objects.validate(init_mode=init_mode)
+        _ServerConfig.objects.conf("server_restart_mode", delete=True)
+        # announce the reconnection
+        self.announce_all(_(" ... server restarted."))
 
     def portal_shutdown(self):
         """
@@ -367,12 +417,34 @@ class PortalSessionHandler(SessionHandler):
             del session
         self.sessions = {}
 
+    def server_logged_in(self, sessid, data):
+        "The server tells us that the session has been authenticated. Updated it."
+        sess = self.get_session(sessid)
+        sess.load_sync_data(data)
+
+    def server_session_sync(self, serversessions):
+        """
+        Server wants to save data to the portal, maybe because it's about to shut down.
+        We don't overwrite any sessions here, just update them in-place and remove
+        any that are out of sync (which should normally not be the case)
+
+        serversessions - dictionary {sessid:{property:value},...} describing the properties
+                         to sync on all sessions
+        """
+        to_save = [sessid for sessid, syncdata in serversessions if sessid in self.sessions]
+        to_delete = [sessid for sessid, syncdata in serversessions if sessid not in to_save]
+        # save protocols
+        for sessid in to_save:
+            self.sessions[sessid].load_sync_data(serversessions[sessid])
+        # disconnect out-of-sync missing protocols
+        for sessid in to_delete:
+            self.server_disconnect(sessid)
+
     def count_loggedin(self, include_unloggedin=False):
         """
         Count loggedin connections, alternatively count all connections.
         """
         return len(self.get_sessions(include_unloggedin=include_unloggedin))
-
 
     def session_from_suid(self, suid):
         """

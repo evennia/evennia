@@ -31,11 +31,11 @@ from src.utils.utils import to_str, variable_from_module
 # so as to not have to load them on the portal too. Note: It's doubtful
 # if this really matters, considering many of the
 # protocols require import of django components (at least settings).
-_ServerConfig = None
-_ScriptDB = None
-_PlayerDB = None
-_ServerSession = None
-_ = None #i18n hook
+#_ServerConfig = None
+#_ScriptDB = None
+#_PlayerDB = None
+#_ServerSession = None
+#_ = None #i18n hook
 
 # communication bits
 
@@ -46,7 +46,7 @@ SLOGIN = chr(4)      # server session login
 SDISCONN = chr(5)    # server session disconnect
 SDISCONNALL = chr(6) # server session disconnect all
 SSHUTD = chr(7)      # server shutdown
-SSYNC = chr(8)       # server session sync
+SSYNC = chr(8)       # server sessigon sync
 
 MAXLEN = 65535 # max allowed data length in AMP protocol
 
@@ -121,7 +121,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 1
         else:
-            # Don't translate this; avoiding loading django on portal side.
+            # Don't translate this; avoid loading django on portal side.
             self.maxDelay = 10
             self.portal.sessions.announce_all(" ... Portal lost connection to Server.")
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
@@ -312,6 +312,10 @@ class AMPProtocol(amp.AMP):
     def amp_msg_portal2server(self, sessid, msg, ipart, nparts, data):
         """
         Relays message to server. This method is executed on the Server.
+
+        Since AMP has a limit of 65355 bytes per message, it's possible the
+        data comes in multiple chunks; if so (nparts>1) we buffer the data
+        and wait for the remaining parts to arrive before continuing.
         """
         #print "msg portal -> server (server side):", sessid, msg
         global MSGBUFFER
@@ -437,34 +441,13 @@ class AMPProtocol(amp.AMP):
 
         """
         data = loads(data)
+        server_sessionhandler = self.factory.server.sessions
 
         #print "serveradmin (server side):", sessid, operation, data
 
-        # late import of django-related stuff. This avoids having to
-        # load these also for the portal side.
-        global _ServerConfig, _ScriptDB, _PlayerDB, _ServerSession, _
-        if not _ServerConfig:
-            from src.server.models import ServerConfig as _ServerConfig
-        if not _ScriptDB:
-            from src.scripts.models import ScriptDB as _ScriptDB
-        if not _PlayerDB:
-            from src.players.models import PlayerDB as _PlayerDB
-        if not _ServerSession:
-            from src.server.serversession import ServerSession as _ServerSession
-        if not _:
-            from django.utils.translation import ugettext as _
-
         if operation == PCONN: #portal_session_connect
             # create a new session and sync it
-            sess = _ServerSession()
-            sess.sessionhandler = self.factory.server.sessions
-            sess.load_sync_data(data)
-            if sess.logged_in and sess.uid:
-                # this can happen in the case of auto-authenticating protocols like SSH
-                sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
-            sess.at_sync() # this runs initialization without acr
-
-            self.factory.server.sessions.portal_connect(sessid, sess)
+            server_sessionhandler.portal_connect(data)
 
         elif operation == PDISCONN: #'portal_session_disconnect'
             # session closed from portal side
@@ -474,23 +457,7 @@ class AMPProtocol(amp.AMP):
             # force a resync of sessions when portal reconnects to server (e.g. after a server reboot)
             # the data kwarg contains a dict {sessid: {arg1:val1,...}} representing the attributes
             # to sync for each session.
-            sesslist = []
-            server_sessionhandler = self.factory.server.sessions
-            for sessid, sessdict in data.items():
-                sess = _ServerSession()
-                sess.sessionhandler = server_sessionhandler
-                sess.load_sync_data(sessdict)
-                if sess.uid:
-                    sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
-                sesslist.append(sess)
-            # replace sessions on server
-            server_sessionhandler.portal_session_sync(sesslist)
-            # after sync is complete we force-validate all scripts (this starts everything)
-            init_mode = _ServerConfig.objects.conf("server_restart_mode", default=None)
-            _ScriptDB.objects.validate(init_mode=init_mode)
-            _ServerConfig.objects.conf("server_restart_mode", delete=True)
-            # let the server announce the reconnection
-            server_sessionhandler.announce_all(_(" ... Server restarted."))
+            server_sessionhandler.portal_session_sync(data)
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
 
@@ -517,20 +484,20 @@ class AMPProtocol(amp.AMP):
         operations on the portal. This is executed on the Portal.
         """
         data = loads(data)
+        portal_sessionhandler = self.factory.portal.sessions
 
         #print "portaladmin (portal side):", sessid, ord(operation), data
         if operation == SLOGIN: # 'server_session_login'
             # a session has authenticated; sync it.
-            sess = self.factory.portal.sessions.get_session(sessid)
-            sess.load_sync_data(data)
+            portal_sessionhandler.server_logged_in(sessid, data)
 
         elif operation == SDISCONN: #'server_session_disconnect'
             # the server is ordering to disconnect the session
-            self.factory.portal.sessions.server_disconnect(sessid, reason=data)
+            portal_sessionhandler.server_disconnect(sessid, reason=data)
 
         elif operation == SDISCONNALL: #'server_session_disconnect_all'
             # server orders all sessions to disconnect
-            self.factory.portal.sessions.server_disconnect_all(reason=data)
+            portal_sessionhandler.server_disconnect_all(reason=data)
 
         elif operation == SSHUTD: #server_shutdown'
             # the server orders the portal to shut down
@@ -538,19 +505,9 @@ class AMPProtocol(amp.AMP):
 
         elif operation == SSYNC: #'server_session_sync'
             # server wants to save session data to the portal, maybe because
-            # it's about to shut down. We don't overwrite any sessions,
-            # just update data on them and remove eventual ones that are
-            # out of sync (shouldn't happen normally).
-            portal_sessionhandler = self.factory.portal.sessions
-            to_save = [sessid for sessid in data if sessid in portal_sessionhandler.sessions]
-            to_delete = [sessid for sessid in data if sessid not in to_save]
-            # save protocols
-            for sessid in to_save:
-                portal_sessionhandler.sessions[sessid].load_sync_data(data[sessid])
-            # disconnect missing protocols
-            for sessid in to_delete:
-                portal_sessionhandler.server_disconnect(sessid)
-            # save a flag in case connection is soon lost.
+            # it's about to shut down.
+            portal_sessionhandler.server_session_sync(data)
+            # set a flag in case we are about to shut down soon
             self.factory.server_restart_mode = True
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
