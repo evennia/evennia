@@ -35,7 +35,7 @@ from django.utils.translation import ugettext as _
 
 #__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
 
-
+_ScriptDB = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 _GA = object.__getattribute__
@@ -900,6 +900,10 @@ class ObjectDB(TypedObject):
         objects to their respective home locations, as well as clean
         up all exits to/from the object.
         """
+        global _ScriptDB
+        if not _ScriptDB:
+            from src.scripts.models import ScriptDB as _ScriptDB
+
         if _GA(self, "delete_iter") > 0:
             # make sure to only call delete once on this object
             # (avoid recursive loops)
@@ -924,8 +928,10 @@ class ObjectDB(TypedObject):
             _SA(_GA(self, "player"), "character", None)
         _SA(self, "player", None)
 
-        for script in _GA(self, "scripts").all():
+        for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
             script.stop()
+        #for script in _GA(self, "scripts").all():
+        #    script.stop()
 
         # if self.player:
         #     self.player.user.is_active = False

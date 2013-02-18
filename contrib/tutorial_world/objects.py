@@ -773,8 +773,8 @@ class Weapon(TutorialObject):
         super(Weapon, self).at_object_creation()
         self.db.hit = 0.4    # hit chance
         self.db.parry = 0.8  # parry chance
-        self.damage = 8.0
-        self.magic = False
+        self.db.damage = 8.0
+        self.db.magic = False
         self.cmdset.add_default(CmdSetWeapon, permanent=True)
 
     def reset(self):
