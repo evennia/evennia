@@ -270,10 +270,10 @@ def cmdhandler(caller, raw_string, testing=False):
             # (return value is normally None)
             ret = yield cmd.func()
 
-            if hasattr(cmd, "funcparts"):
+            if hasattr(cmd, "func_parts"):
                 # yield on command parts (for multi-part delayed commands)
-                for funcpart in make_iter(cmd.funcparts):
-                    err = yield funcpart()
+                for func_part in make_iter(cmd.func_parts):
+                    err = yield func_part()
                     # returning anything but a deferred/None will kill the chain
                     if err: break
 
