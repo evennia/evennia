@@ -43,7 +43,7 @@ from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import logger, utils
 from src.commands.cmdset import CmdSet
 from src.commands.cmdparser import at_multimatch_cmd
-from src.utils.utils import string_suggestions
+from src.utils.utils import string_suggestions, make_iter
 
 from django.utils.translation import ugettext as _
 
@@ -254,7 +254,7 @@ def cmdhandler(caller, raw_string, testing=False):
             cmd.raw_string = unformatted_raw_string
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
-                # cmd.obj are automatically made available.
+                # cmd.obj is automatically made available.
                 # we make sure to validate its scripts.
                 yield cmd.obj.scripts.validate()
 
@@ -269,6 +269,11 @@ def cmdhandler(caller, raw_string, testing=False):
             yield cmd.parse()
             # (return value is normally None)
             ret = yield cmd.func()
+
+            if hasattr(cmd, "funcparts"):
+                # yield on command parts (for multi-part delayed commands)
+                for funcpart in make_iter(cmd.funcparts):
+                    yield funcpart()
 
             # post-command hook
             yield cmd.at_post_cmd()
