@@ -526,7 +526,7 @@ class CmdAbout(MuxCommand):
          {cEvennia{n %s{n
          MUD/MUX/MU* development system
 
-         {wLicence{n Artistic Licence/GPL
+         {wLicence{n BSD 3-Clause Licence
          {wWeb{n http://www.evennia.com
          {wIrc{n #evennia on FreeNode
          {wForum{n http://www.evennia.com/discussions
