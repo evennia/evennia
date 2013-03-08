@@ -23,17 +23,15 @@ mob implementation.
 
 """
 
+from ev import Object, CmdSet, default_cmds
 from contrib import menusystem
-from game.gamesrc.objects.baseobjects import Object
-from game.gamesrc.commands.basecmdset import CmdSet
-from game.gamesrc.commands.basecommand import MuxCommand
 
 
 #
 # The talk command
 #
 
-class CmdTalk(MuxCommand):
+class CmdTalk(default_cmds.MuxCommand):
     """
     talks to an npc
 
