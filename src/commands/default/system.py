@@ -35,7 +35,7 @@ class CmdReload(MuxCommand):
     Reload the system
 
     Usage:
-      @reload
+      @reload [reason]
 
     This restarts the server. The Portal is not
     affected. Non-persistent scripts will survive a @reload (use
@@ -49,7 +49,10 @@ class CmdReload(MuxCommand):
         """
         Reload the system.
         """
-        SESSIONS.announce_all(" Server restarting ...")
+        reason = ""
+        if self.args:
+            reason = "(Reason: %s) " % self.args.rstrip(".")
+        SESSIONS.announce_all(" Server restarting %s..." % reason)
         SESSIONS.server.shutdown(mode='reload')
 
 class CmdReset(MuxCommand):
@@ -94,7 +97,8 @@ class CmdShutdown(MuxCommand):
     def func(self):
         "Define function"
         try:
-            session = self.caller.sessions[0]
+            # Only allow shutdown if caller has session
+            self.caller.sessions[0]
         except Exception:
             return
         self.caller.msg('Shutting down server ...')
@@ -417,12 +421,14 @@ class CmdService(MuxCommand):
 
     Switches:
       list   - shows all available services (default)
-      start  - activates a service
-      stop   - stops a service
+      start  - activates or reactivate a service
+      stop   - stops/inactivate a service (can often be restarted)
+      delete - tries to permanently remove a service
 
     Service management system. Allows for the listing,
     starting, and stopping of services. If no switches
-    are given, services will be listed.
+    are given, services will be listed. Note that to operate on the
+    service you have to supply the full (green or red) name as given in the list.
     """
 
     key = "@service"
@@ -436,8 +442,8 @@ class CmdService(MuxCommand):
         caller = self.caller
         switches = self.switches
 
-        if switches and switches[0] not in ["list", "start", "stop"]:
-            caller.msg("Usage: @service/<start|stop|list> [service]")
+        if switches and switches[0] not in ("list", "start", "stop", "delete"):
+            caller.msg("Usage: @service/<list|start|stop|delete> [servicename]")
             return
 
         # get all services
@@ -450,7 +456,7 @@ class CmdService(MuxCommand):
             # Just display the list of installed services and their
             # status, then exit.
             string = "-" * 78
-            string += "\n{wServices{n (use @services/start|stop):"
+            string += "\n{wServices{n (use @services/start|stop|delete):"
 
             for service in service_collection.services:
                 if service.running:
@@ -469,26 +475,35 @@ class CmdService(MuxCommand):
             service = service_collection.getServiceNamed(self.args)
         except Exception:
             string = 'Invalid service name. This command is case-sensitive. '
-            string += 'See @service/list for valid services.'
+            string += 'See @service/list for valid service name (enter the full name exactly).'
             caller.msg(string)
             return
 
-        if switches[0] == "stop":
-            # Stopping a service gracefully closes it and disconnects
+        if switches[0] in ("stop", "delete"):
+            # Stopping/killing a service gracefully closes it and disconnects
             # any connections (if applicable).
 
+            delmode = switches[0] == "delete"
             if not service.running:
                 caller.msg('That service is not currently running.')
                 return
             if service.name[:7] == 'Evennia':
-                string = "You seem to be shutting down a core Evennia* service. Note that"
-                string += "Stopping some TCP port services will *not* disconnect users *already*"
+                if delmode:
+                    caller.msg("You cannot remove a core Evennia service (named 'Evennia***').")
+                    return
+                string = "You seem to be shutting down a core Evennia service (named 'Evennia***'). Note that"
+                string += "stopping some TCP port services will *not* disconnect users *already*"
                 string += "connected on those ports, but *may* instead cause spurious errors for them. To "
                 string += "safely and permanently remove ports, change settings file and restart the server."
                 caller.msg(string)
 
-            service.stopService()
-            caller.msg("Stopping service '%s'." % self.args)
+            if delmode:
+                service.stopService()
+                service_collection.removeService(service)
+                caller.msg("Stopped and removed service '%s'." % self.args)
+            else:
+                service.stopService()
+                caller.msg("Stopped service '%s'." % self.args)
             return
 
         if switches[0] == "start":
