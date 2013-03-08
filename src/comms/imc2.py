@@ -434,7 +434,7 @@ def create_connection(channel, imc2_channel):
         # how the evennia channel will be able to contact this protocol in reverse
         send_code =   "from src.comms.imc2 import IMC2_CLIENT\n"
         send_code +=  "data={'channel':from_channel}\n"
-        send_code +=  "IMC2_CLIENT.msg_imc2(message, from_obj=from_obj, data=data)\n"
+        send_code +=  "IMC2_CLIENT.msg_imc2(message, senders=[self])\n"
         conn = ExternalChannelConnection(db_channel=channel, db_external_key=key, db_external_send_code=send_code,
                                          db_external_config=config)
         conn.save()
