@@ -241,6 +241,10 @@ class Enemy(Mob):
                 elif not ostring:
                     ostring = "%s falls to the ground!" % target.key
                 self.location.msg_contents(ostring, exclude=[target])
+                # Pursue any stragglers after the battle
+                self.battle_mode = False
+                self.roam_mode = False
+                self.pursue_mode = True
         else:
             # no players found, this could mean they have fled. Switch to pursue mode.
             self.battle_mode = False

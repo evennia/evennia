@@ -496,7 +496,7 @@ def uses_database(name="sqlite3"):
         engine = settings.DATABASE_ENGINE
     return engine == "django.db.backends.%s" % name
 
-def delay(to_return, delay=2, callback=None):
+def delay(delay=2, retval=None, callback=None):
     """
     Delay the return of a value.
     Inputs:
@@ -508,7 +508,7 @@ def delay(to_return, delay=2, callback=None):
     """
     d = defer.Deferred()
     callb = callback or d.callback
-    reactor.callLater(delay, callb, to_return)
+    reactor.callLater(delay, callb, retval)
     return d
 
 _FROM_MODEL_MAP = None
