@@ -175,7 +175,7 @@ class MuxCommandOOC(MuxCommand):
 
     This class makes sure that caller is always a Player object, while
     creating a new property "character" that is set only if a
-    character is actually attached to the Player.
+    character is actually attached to this Player and Session.
     """
     def parse(self):
         """

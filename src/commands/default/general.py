@@ -769,6 +769,12 @@ class CmdColorTest(MuxCommand):
 
 #------------------------------------------------------------
 # OOC commands
+#
+# Note that in  commands inheriting from MuxCommandOOC,
+# self.caller is always the Player object, not the Character.
+# A property self.character can be used to access the
+# connecter character (this can be None if no character is
+# currently controlled by the Player).
 #------------------------------------------------------------
 
 class CmdOOCLook(MuxCommandOOC, CmdLook):
@@ -809,24 +815,33 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         # caller is always a player at this point.
         player = self.caller
         sessid = self.sessid
-        # get all our characters
+        # get all our characters and sessions
         characters = player.db._playable_characters
-        string = "You are logged in as {g%s{n." % player.key
-        string += "\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
+        sessions = player.get_all_sessions()
+
+        sessidstr = sessid and "(session id %i)" % sessid or ""
+        string = "You are logged in as {g%s{n%s." % (player.key, sessidstr)
+
+        string += "\n\nSession(s) connected:"
+        for sess in sessions:
+            csessid = sess.sessid
+            string += "\n %s %s" % (sessid == csessid and "{w%i{n" % csessid or csessid, sess.address)
+        string += "\n\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
         if characters:
             string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
             for char in characters:
                 csessid = char.sessid
                 if csessid:
                     # character is already puppeted
-                    if player.get_session(csessid):
-                        string += "\n - {G%s{n (played by you in another session)" % char.key
+                    sess = player.get_session(csessid)
+                    if sess:
+                        string += "\n - {G%s{n (played by you from session with id %i)" % (char.key, sess.sessid)
                     else:
                         string += "\n - {R%s{n (played by someone else)" % char.key
                 else:
                     # character is "free to puppet"
                     string += "\n - %s" % char.key
-        player.msg(string)
+        self.msg(string)
 
     def func(self):
         "implement the ooc look command"
@@ -957,7 +972,7 @@ class CmdIC(MuxCommandOOC):
 
 class CmdOOC(MuxCommandOOC):
     """
-    @ooc - go ooc
+    go ooc
 
     Usage:
       @ooc
@@ -976,9 +991,6 @@ class CmdOOC(MuxCommandOOC):
         "Implement function"
 
         caller = self.caller
-
-        if utils.inherits_from(caller, "src.objects.objects.Object"):
-            caller = self.caller.player
 
         old_char = caller.get_character(sessid=self.sessid)
         if not old_char:

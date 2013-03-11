@@ -170,12 +170,21 @@ class LockHandler(object):
         self.log_obj = None
         self.reset_flag = False
         self._cache_locks(self.obj.lock_storage)
-        # we handle bypass checks already here for efficiency. We need to grant access to superusers and
-        # to protocol instances where the superuser status cannot be determined (can happen at
-        # some rare cases during login).
+        # we handle bypass checks already here for efficiency. We need to grant access to superusers.
+        # We need to check both directly on the object (players), through obj.player and using the
+        # get_player method (this sits on serversessions, in some rare cases where a check is done
+        # before the login process has yet been fully finalized)
         self.lock_bypass = ((hasattr(obj, "is_superuser") and obj.is_superuser)
                             or (hasattr(obj, "player") and hasattr(obj.player, "is_superuser") and obj.player.is_superuser)
                             or (hasattr(obj, "get_player") and (not obj.get_player() or obj.get_player().is_superuser)))
+        if obj.key == "Griatch":
+            print "SETTING lock_bypass:", obj, self.lock_bypass, "<-",
+            print (hasattr(obj, "is_superuser") and obj.is_superuser),
+            print (hasattr(obj, "player") and hasattr(obj.player, "is_superuser") and obj.player.is_superuser),
+            print (hasattr(obj, "get_player") and (not obj.get_player() or obj.get_player().is_superuser)),
+            if hasattr(obj, "player"):
+                print obj.player and obj.player.is_superuser
+
     def __str__(self):
         return ";".join(self.locks[key][2] for key in sorted(self.locks))
 

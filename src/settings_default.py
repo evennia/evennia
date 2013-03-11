@@ -63,7 +63,7 @@ SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 SSL_INTERFACES = ['0.0.0.0']
 # Multisession modes allow a player (=account) to connect to the game simultaneously
-# with multiple clients in various ways according to the set mode:
+# with multiple clients (=sessions) in various ways according to the set mode:
 #  0 - no multisession - when a new session is connected, the old one is disconnected
 #  1 - multiple sessions, one player, one character, each session getting the same data
 #  2 - multiple sessions, one player, each session controlling different characters

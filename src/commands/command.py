@@ -188,27 +188,34 @@ class Command(object):
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
-    def msg(self, msg="", data=None, from_obj=None, to_obj=None, all_sessions=False):
+    def msg(self, msg="", to_obj=None, from_obj=None, data=None, sessid=None, all_sessions=False):
         """
         This is a shortcut instad of calling msg() directly on an object - it will
-        determine
-
         detect if caller is an Object or a Player and also appends self.sessid
         automatically.
 
         msg - text string of message to send
-        data - optional dictionary of data
-        from_obj - source of message. Defaults to self.caller.
         to_obj - target object of message. Defaults to self.caller
+        from_obj - source of message. Defaults to to_obj
+        data - optional dictionary of data
+        sessid - supply data only to a unique sessid (normally not used - this is only potentially useful if
+                 to_obj is a Player object different from self.caller or self.caller.player)
         all_sessions (bool) - default is to send only to the session connected to
                               the target object
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
-        if hasattr(to_obj, "sessid"):
-            sessid = all_sessions and None or to_obj.sessid
-        else:
-            sessid = None
+        if not sessid:
+            if hasattr(to_obj, "sessid"):
+                # this is the case when to_obj is e.g. a Character
+                sessid = all_sessions and None or to_obj.sessid
+            elif to_obj == self.caller:
+                # this is the case if to_obj is the calling Player
+                sessid = all_sessions and None or self.sessid
+            else:
+                # if to_obj is a different Player, all their sessions
+                # will be notified unless sessid was given specifically
+                sessid = None
         to_obj.msg(msg, from_obj=from_obj, data=data, sessid=sessid)
 
     # Common Command hooks

@@ -390,9 +390,7 @@ class PlayerDB(TypedObject):
                 pass
         outgoing_string = utils.to_str(outgoing_string, force_string=True)
 
-        session = None
-        if sessid:
-            session = _GA(self, "get_session")(sessid)
+        session = sessid and _GA(self, "get_session")(sessid) or None
         if session:
             char = _GA(self, "get_character")(sessid=sessid)
             if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
