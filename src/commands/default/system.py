@@ -136,7 +136,7 @@ class CmdPy(MuxCommand):
     """
     key = "@py"
     aliases = ["!"]
-    locks = "cmd:all()"#"cmd:perm(py) or perm(Immortals)"
+    locks = "cmd:perm(py) or perm(Immortals)"
     help_category = "System"
 
     def func(self):

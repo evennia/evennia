@@ -834,13 +834,18 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
                 if csessid:
                     # character is already puppeted
                     sess = player.get_session(csessid)
-                    if sess:
+                    if hasattr(char.locks, "lock_bypass") and char.locks.lock_bypass:
+                        string += "\n - {G%s{n (superuser character) (played by you from session with id %i)" % (char.key, sess.sessid)
+                    elif sess:
                         string += "\n - {G%s{n (played by you from session with id %i)" % (char.key, sess.sessid)
                     else:
                         string += "\n - {R%s{n (played by someone else)" % char.key
                 else:
                     # character is "free to puppet"
-                    string += "\n - %s" % char.key
+                    if player.is_superuser and char.get_attribute("_superuser_character"):
+                        string += "\n - %s (superuser character)" % (char.key)
+                    else:
+                        string += "\n - %s" % char.key
         self.msg(string)
 
     def func(self):
@@ -878,7 +883,7 @@ class CmdCharCreate(MuxCommandOOC):
         key = self.lhs
         desc = self.rhs
         if player.db._playable_characters and len(player.db._playable_characters) >= self.MAX_NR_CHARACTERS:
-            player.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
+            self.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
             return
         # create the character
         from src.objects.models import ObjectDB
@@ -892,7 +897,7 @@ class CmdCharCreate(MuxCommandOOC):
         player.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
-        player.msg("Created new character %s." % new_character.key)
+        self.msg("Created new character %s." % new_character.key)
 
 
 class CmdIC(MuxCommandOOC):
@@ -930,7 +935,7 @@ class CmdIC(MuxCommandOOC):
         if not self.args:
             new_character = caller.db.last_puppet
             if not new_character:
-                caller.msg("Usage: @ic <character>")
+                self.msg("Usage: @ic <character>")
                 return
         if not new_character:
             # search for a matching character
@@ -938,24 +943,24 @@ class CmdIC(MuxCommandOOC):
             if new_character:
                 new_character = new_character[0]
             else:
-                # the search method handles error messages etc.
+                self.msg("That is not a valid character choice.")
                 return
         # permission checks
         if caller.get_character(sessid=sessid, character=new_character):
-            caller.msg("{RYou already act as {c%s{n." % new_character.name)
+            self.msg("{RYou already act as {c%s{n." % new_character.name)
             return
         if new_character.player:
             if new_character.sessid == sessid:
-                caller.msg("{RYou already act as {c%s{n from another session." % new_character.name)
+                self.msg("{RYou already act as {c%s{n from another session." % new_character.name)
                 return
             elif not caller.get_character(character=new_character):
-                caller.msg("{c%s{r is already acted by another player.{n" % new_character.name)
+                self.msg("{c%s{r is already acted by another player.{n" % new_character.name)
                 return
         if not new_character.access(caller, "puppet"):
-            caller.msg("{rYou may not become %s.{n" % new_character.name)
+            self.msg("{rYou may not become %s.{n" % new_character.name)
             return
         if caller.connect_character(new_character, sessid=sessid):
-            new_character.msg("\n{gYou become {c%s{n.\n" % new_character.name)
+            self.msg("\n{gYou become {c%s{n.\n" % new_character.name)
             caller.db.last_puppet = old_character
             if not new_character.location:
             # this might be due to being hidden away at logout; check
@@ -968,7 +973,7 @@ class CmdIC(MuxCommandOOC):
                     new_character.location.at_object_receive(new_character, new_character.location)
             new_character.execute_cmd("look")
         else:
-            caller.msg("{rYou cannot become {C%s{n." % new_character.name)
+            msg.msg("{rYou cannot become {C%s{n." % new_character.name)
 
 class CmdOOC(MuxCommandOOC):
     """
@@ -995,7 +1000,7 @@ class CmdOOC(MuxCommandOOC):
         old_char = caller.get_character(sessid=self.sessid)
         if not old_char:
             string = "You are already OOC."
-            caller.msg(string)
+            self.msg(string)
             return
 
         caller.db.last_puppet = old_char
@@ -1007,6 +1012,6 @@ class CmdOOC(MuxCommandOOC):
 
         # disconnect
         err = caller.disconnect_character(self.character)
-        caller.msg("\n{GYou go OOC.{n\n")
+        self.msg("\n{GYou go OOC.{n\n")
         caller.execute_cmd("look")
 

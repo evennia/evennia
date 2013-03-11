@@ -250,6 +250,7 @@ class ObjectDB(TypedObject):
         a TypedObject, so as to not create a loop.
         """
         return get_field_cache(self, "player")
+
     #@player.setter
     def __player_set(self, player):
         "Setter. Allows for self.player = value"
@@ -260,6 +261,7 @@ class ObjectDB(TypedObject):
         # bypass lockchecks unless they start the game connected
         # to the character in question.
         self.locks.cache_lock_bypass(self)
+
     #@player.deleter
     def __player_del(self):
         "Deleter. Allows for del self.player"
@@ -482,11 +484,11 @@ class ObjectDB(TypedObject):
     has_player = property(__has_player_get)
     is_player = property(__has_player_get)
 
-    #@property
-    def __is_superuser_get(self):
-        "Check if user has a player, and if so, if it is a superuser."
-        return any(_GA(self, "sessions")) and _GA(_GA(self, "player"), "is_superuser")
-    is_superuser = property(__is_superuser_get)
+    ##@property
+    #def __is_superuser_get(self):
+    #    "Check if user has a player, and if so, if it is a superuser."
+    #    return any(_GA(self, "sessions")) and _GA(_GA(self, "player"), "is_superuser")
+    #is_superuser = property(__is_superuser_get)
 
     # contents
 
