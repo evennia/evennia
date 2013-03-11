@@ -60,6 +60,7 @@ def create_objects():
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
 
     god_character.save()
+    god_character.set_attribute("_superuser_character", True)
 
     # Limbo is the default "nowhere" starting room
 
