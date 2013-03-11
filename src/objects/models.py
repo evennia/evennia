@@ -256,6 +256,10 @@ class ObjectDB(TypedObject):
         if inherits_from(player, TypeClass):
             player = player.dbobj
         set_field_cache(self, "player", player)
+        # we must set this here or superusers won't be able to
+        # bypass lockchecks unless they start the game connected
+        # to the character in question.
+        self.locks.cache_lock_bypass(self)
     #@player.deleter
     def __player_del(self):
         "Deleter. Allows for del self.player"
