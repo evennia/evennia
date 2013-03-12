@@ -9,6 +9,8 @@ from src.utils import utils, search, create
 from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
+from settings import MAX_NR_CHARACTERS
+
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
            "CmdInventory", "CmdGet", "CmdDrop", "CmdGive", "CmdQuit", "CmdWho",
@@ -819,7 +821,7 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         characters = player.db._playable_characters
         sessions = player.get_all_sessions()
 
-        sessidstr = sessid and "(session id %i)" % sessid or ""
+        sessidstr = sessid and " (session id %i)" % sessid or ""
         string = "You are logged in as {g%s{n%s." % (player.key, sessidstr)
 
         string += "\n\nSession(s) connected:"
@@ -835,17 +837,18 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
                     # character is already puppeted
                     sess = player.get_session(csessid)
                     if hasattr(char.locks, "lock_bypass") and char.locks.lock_bypass:
-                        string += "\n - {G%s{n (superuser character) (played by you from session with id %i)" % (char.key, sess.sessid)
+                        string += "\n - {G%s{n [superuser character] (played by you from session with id %i)" % (char.key, sess.sessid)
                     elif sess:
-                        string += "\n - {G%s{n (played by you from session with id %i)" % (char.key, sess.sessid)
+                        string += "\n - {G%s{n [%s] (played by you session id %i)" % (char.key, ", ".join(char.permissions), sess.sessid)
                     else:
-                        string += "\n - {R%s{n (played by someone else)" % char.key
+                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions))
                 else:
                     # character is "free to puppet"
                     if player.is_superuser and char.get_attribute("_superuser_character"):
-                        string += "\n - %s (superuser character)" % (char.key)
+                        string += "\n - %s [Superuser character]" % (char.key)
                     else:
-                        string += "\n - %s" % char.key
+                        string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions))
+        string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
         self.msg(string)
 
     def func(self):
@@ -871,8 +874,6 @@ class CmdCharCreate(MuxCommandOOC):
     key = "@charcreate"
     locks = "cmd:all()"
     help_category = "General"
-
-    MAX_NR_CHARACTERS = 2
 
     def func(self):
         "create the new character"

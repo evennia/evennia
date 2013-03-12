@@ -62,12 +62,6 @@ SSL_ENABLED = False
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 SSL_INTERFACES = ['0.0.0.0']
-# Multisession modes allow a player (=account) to connect to the game simultaneously
-# with multiple clients (=sessions) in various ways according to the set mode:
-#  0 - no multisession - when a new session is connected, the old one is disconnected
-#  1 - multiple sessions, one player, one character, each session getting the same data
-#  2 - multiple sessions, one player, each session controlling different characters
-MULTISESSION_MODE = 0
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.
@@ -203,6 +197,9 @@ MSSP_META_MODULE = ""
 # Module holding server-side custom functions for out-of-band protocols to call.
 # Note that OOB_ENABLED must be True for this to be used.
 OOB_FUNC_MODULE = "" # Not yet available in Evennia - do not use!
+# Tuple of modules implementing lock functions. All callable functions
+# inside these modules will be available as lock functions.
+LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 
 ######################################################################
 # Default command sets
@@ -285,18 +282,23 @@ TIME_MONTH_PER_YEAR = 12
 
 
 ######################################################################
-# In-Game access
+# Default Player setup and access
 ######################################################################
 
+# Multisession modes allow a player (=account) to connect to the game simultaneously
+# with multiple clients (=sessions) in various ways according to the set mode:
+#  0 - no multisession - when a new session is connected, the old one is disconnected
+#  1 - multiple sessions, one player, one character, each session getting the same data
+#  2 - multiple sessions, one player, each session controlling different characters
+MULTISESSION_MODE = 0
+# The maximum number of characters allowed for MULTISESSION_MODE 1 or 2. This is checked
+# by the default char-creation commands in this mode. Forced to 1 for MULTISESSION_MODE=0.
+MAX_NR_CHARACTERS = 2
 # The access hiearchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it.
 PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immortals")
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
-# Tuple of modules implementing lock functions. All callable functions
-# inside these modules will be available as lock functions.
-LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
-
 
 ######################################################################
 # In-game Channels created from server start
