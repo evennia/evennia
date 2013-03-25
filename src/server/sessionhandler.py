@@ -36,7 +36,6 @@ SSYNC = chr(8)       # server session sync
 from django.utils.translation import ugettext as _
 
 SERVERNAME = settings.SERVERNAME
-#ALLOW_MULTISESSION = settings.ALLOW_MULTISESSION
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 

@@ -17,23 +17,6 @@ attributes on the Player.  Within the game we should normally use the
 Player manager's methods to create users, since that automatically
 adds the profile extension.
 
-The default Django permission system is geared towards web-use, and is
-defined on a per-application basis permissions. In django terms,
-'src/objects' is one application, 'src/scripts' another, indeed all
-folders in /src with a model.py inside them is an application. Django
-permissions thus have the form
-e.g. 'applicationlabel.permissionstring' and django automatically
-defines a set of these for editing each application from its automatic
-admin interface. These are still available should you want them.
-
-For most in-game mud-use however, like commands and other things, it
-does not make sense to tie permissions to the applications in src/ -
-To the user these should all just be considered part of the game
-engine. So instead we define our own separate permission system here,
-borrowing heavily from the django original, but allowing the
-permission string to look however we want, making them unrelated to
-the applications.
-
 To make the Player model more flexible for your own game, it can also
 persistently store attributes of its own. This is ideal for extra
 account info and OOC account configuration variables etc.
@@ -59,6 +42,7 @@ __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
 
 _SESSIONS = None
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -390,7 +374,7 @@ class PlayerDB(TypedObject):
                 pass
         outgoing_string = utils.to_str(outgoing_string, force_string=True)
 
-        session = sessid and _GA(self, "get_session")(sessid) or None
+        session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
         if session:
             char = _GA(self, "get_character")(sessid=sessid)
             if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
@@ -411,8 +395,9 @@ class PlayerDB(TypedObject):
 
         ingoing_string - text string (i.e. command string)
         data - dictionary of optional data
-        session - session sending this data
+        sessid - session sending this data
         """
+        if _MULTISESSION_MODE < 2: sessid = None
         character = _GA(self, "get_character")(sessid=sessid)
         if character:
             # execute command on character
@@ -555,7 +540,8 @@ class PlayerDB(TypedObject):
             return char and (return_dbobj and char[0] or char[0].typeclass) or None
         else:
             # no sessid given - return all available characters
-            return list(return_dbobj and o or o.typeclass for o in self.db_objs.all())
+            chars = list(return_dbobj and o or o.typeclass for o in self.db_objs.all())
+            return len(chars) == 1 and chars[0] or chars
 
     def get_all_characters(self):
         """

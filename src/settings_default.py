@@ -285,17 +285,17 @@ TIME_MONTH_PER_YEAR = 12
 # Default Player setup and access
 ######################################################################
 
-# Multisession modes allow a player (=account) to connect to the game simultaneously
+# Different Multisession modes allow a player (=account) to connect to the game simultaneously
 # with multiple clients (=sessions) in various ways according to the set mode:
-#  0 - no multisession - when a new session is connected, the old one is disconnected
+#  0 - single session, one player, one character, when a new session is connected, the old one is disconnected
 #  1 - multiple sessions, one player, one character, each session getting the same data
 #  2 - multiple sessions, one player, each session controlling different characters
 MULTISESSION_MODE = 0
 # The maximum number of characters allowed for MULTISESSION_MODE 1 or 2. This is checked
-# by the default char-creation commands in this mode. Forced to 1 for MULTISESSION_MODE=0.
+# by the default char-creation commands in this mode. Forced to 1 for MULTISESSION_MODE 0.
 MAX_NR_CHARACTERS = 2
 # The access hiearchy, in climbing order. A higher permission in the
-# hierarchy includes access of all levels below it.
+# hierarchy includes access of all levels below it. Used by the perm()/pperm() lock functions.
 PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immortals")
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
