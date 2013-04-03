@@ -233,7 +233,7 @@ class ServerSessionHandler(SessionHandler):
 
         player.at_pre_login()
 
-        session.log(_('Logged in: %(self)s') % {'self': self})
+        session.log(_('Logged in: %(self)s') % {'self': player})
 
         # start (persistent) scripts on this object
         #ScriptDB.objects.validate(obj=self.player.character)
@@ -275,12 +275,12 @@ class ServerSessionHandler(SessionHandler):
 
     def disconnect_duplicate_sessions(self, curr_session, reason = _("Logged in from elsewhere. Disconnecting.") ):
         """
-        Disconnects any existing sessions with the same game object.
+        Disconnects any existing sessions with the same user.
         """
-        curr_char = curr_session.get_character()
+        uid = curr_session.uid
         doublet_sessions = [sess for sess in self.sessions.values()
                             if sess.logged_in
-                            and sess.get_character() == curr_char
+                            and sess.uid == uid
                             and sess != curr_session]
         for session in doublet_sessions:
             self.disconnect(session, reason)

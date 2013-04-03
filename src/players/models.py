@@ -36,7 +36,7 @@ from src.typeclasses.typeclass import TypeClass
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import logger, utils
-from src.utils.utils import inherits_from
+from src.utils.utils import inherits_from, make_iter
 
 __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
 
@@ -182,50 +182,17 @@ class PlayerDB(TypedObject):
     #@property
     def objs_get(self):
         "Getter. Allows for value = self.obj"
-        return self.db_objs.all()
-        #return get_field_cache(self, "objs").all()
-    #@obj.setter
+        return list(self.db_objs.all())
+    #@objs.setter
     def objs_set(self, value):
-        "Setter. Allows for self.obj = value"
-        global _TYPECLASS
-        if not _TYPECLASS:
-            from src.typeclasses.typeclass import TypeClass as _TYPECLASS
-
-        if isinstance(value, _TYPECLASS):
-            value = value.dbobj
-        try:
-            self.db_objs.add(value)
-            self.save()
-            #set_field_cache(self, "obj", value)
-        except Exception:
-            logger.log_trace()
-            raise Exception("Cannot assign %s as a player object!" % value)
+        "Setter. Allows for self.objs = value"
+        raise Exception("Use access methods to add new characters instead.")
     #@obj.deleter
     def objs_del(self):
         "Deleter. Allows for del self.obj"
-        self.db_objs.clear()
-        self.save()
-        #del_field_cache(self, "obj")
+        raise Exception("Use access methods to delete new characters instead.")
     objs = property(objs_get, objs_set, objs_del)
-
-    # whereas the name 'obj' is consistent with the rest of the code,
-    # 'character' is a more intuitive property name, so we
-    # define this too, as an alias to player.obj.
-    #@property
-    def character_get(self):
-        "Getter. Allows for value = self.character"
-        return get_field_cache(self, "obj")
-    #@character.setter
-    def character_set(self, character):
-        "Setter. Allows for self.character = value"
-        if inherits_from(character, TypeClass):
-            character = character.dbobj
-        set_field_cache(self, "obj", character)
-    #@character.deleter
-    def character_del(self):
-        "Deleter. Allows for del self.character"
-        del_field_cache(self, "obj")
-    character = property(character_get, character_set, character_del)
+    characters = property(objs_get, objs_set, objs_del)
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
@@ -407,6 +374,22 @@ class PlayerDB(TypedObject):
             # a non-character session; this goes to player directly
             _GA(self, "execute_cmd")(ingoing_string, sessid=sessid)
 
+    def get_session(self, sessid):
+        """
+        Return session with given sessid connected to this player.
+        """
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        return _SESSIONS.sessions_from_player(self, sessid=sessid)
+
+    def get_all_sessions(self):
+        "Return all sessions connected to this player"
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        return _SESSIONS.sessions_from_player(self)
+
     def get_session_from_sessid(self, sessid):
         """
         Get the session object from sessid. If session with sessid is not
@@ -421,8 +404,8 @@ class PlayerDB(TypedObject):
         """
         Access method for disconnecting a given session from the player.
         """
-        session = self.get_session_from_sessid(sessid)
-        if session:
+        sessions = self.get_session_from_sessid(sessid)
+        for session in make_iter(sessions):
             session.sessionhandler.disconnect(session)
 
     def connect_session_to_character(self, sessid, character, force=False):
@@ -454,10 +437,11 @@ class PlayerDB(TypedObject):
             # start (persistent) scripts on this object
             #ScriptDB.objects.validate(obj=character)
             pass
-        if character.db.FIRST_LOGIN:
+        if character.db._first_login:
             character.at_first_login()
-            del character.db.FIRST_LOGIN
+            del character.db._first_login
         character.at_pre_login()
+        print "player: calling at_post_login on char"
         character.at_post_login()
         return True
 
@@ -494,23 +478,8 @@ class PlayerDB(TypedObject):
         char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
         if not char:
             return
-        self.connect_session_to_character(sessid, char, force=True)
+        _GA(self, "connect_session_to_character")(sessid, char, force=True)
 
-    def get_session(self, sessid):
-        """
-        Return session with given sessid connected to this player.
-        """
-        global _SESSIONS
-        if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
-        return _SESSIONS.sessions_from_player(self, sessid=sessid)
-
-    def get_all_sessions(self):
-        "Return all sessions connected to this player"
-        global _SESSIONS
-        if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
-        return _SESSIONS.sessions_from_player(self)
 
     def get_character(self, sessid=None, character=None, return_dbobj=False):
         """
@@ -550,14 +519,23 @@ class PlayerDB(TypedObject):
         """
         return _GA(self, "get_character")(sessid=None, character=None)
 
+    def get_all_connected_characters(self):
+        """
+        Return all characters with an active session connected
+        to them through this player
+        """
+        chars = make_iter(_GA(self, "get_character")(sessid=None, character=None))
+        sessids = [sess.sessid for sess in _GA(self, "get_all_sessions")()]
+        return [char for char in chars if char.sessid in sessids]
+
     def connect_character(self, character, sessid=None):
         """
-        Use the Player to connect a Character to a session. Note that
-        we don't do any access checks at this point. Note that if the
+        Use the Player to connect a Character to the Player. Note that
+        we don't do any access checks at this point. If the
         game was fully restarted (including the Portal), this must be
         used, since sessids will have changed as players reconnect.
 
-        if sessid is given, also connect the sessid to the character.
+        if sessid is given, also connect the sessid to the character directly.
         """
         # first disconnect any other character from this session
         char = character.dbobj
@@ -589,7 +567,6 @@ class PlayerDB(TypedObject):
             [cache.pop(sessid) for sessid,stored_char in cache.items() if stored_char==char]
             set_prop_cache(self, "_characters", cache)
         return char
-
 
     def disconnect_all_characters(self):
         for char in self.db_objs.all():

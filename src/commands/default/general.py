@@ -903,9 +903,14 @@ class CmdCharCreate(MuxCommandOOC):
 
         new_character = create.create_object(typeclass, key=key, location=default_home,
                                              home=default_home, permissions=permissions)
+        # only allow creator (and immortals) to puppet this char
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                                (new_character.id, player.id))
         player.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
+        else:
+            new_character.db.desc = "This is a Player."
         self.msg("Created new character %s." % new_character.key)
 
 
@@ -942,7 +947,7 @@ class CmdIC(MuxCommandOOC):
 
         new_character = None
         if not self.args:
-            new_character = caller.db.last_puppet
+            new_character = caller.db._last_puppet
             if not new_character:
                 self.msg("Usage: @ic <character>")
                 return
@@ -960,7 +965,10 @@ class CmdIC(MuxCommandOOC):
             return
         if new_character.player:
             if new_character.sessid == sessid:
-                self.msg("{RYou already act as {c%s{n from another session." % new_character.name)
+                self.msg("{RYou already act as {c%s{n." % new_character.name)
+                return
+            elif new_character.player == caller:
+                self.msg("{RYou already act as {c%s{n in another session." % new_character.name)
                 return
             elif not caller.get_character(character=new_character):
                 self.msg("{c%s{r is already acted by another player.{n" % new_character.name)
@@ -972,7 +980,7 @@ class CmdIC(MuxCommandOOC):
             self.msg("\n{gYou become {c%s{n.\n" % new_character.name)
             caller.db.last_puppet = old_character
             if not new_character.location:
-            # this might be due to being hidden away at logout; check
+                # this might be due to being hidden away at logout; check
                 loc = new_character.db.prelogout_location
                 if not loc: # still no location; use home
                     loc = new_character.home
@@ -1012,7 +1020,7 @@ class CmdOOC(MuxCommandOOC):
             self.msg(string)
             return
 
-        caller.db.last_puppet = old_char
+        caller.db._last_puppet = old_char
         # save location as if we were disconnecting from the game entirely.
         if old_char.location:
             old_char.location.msg_contents("%s has left the game." % old_char.key, exclude=[old_char])

@@ -143,7 +143,7 @@ class ServerSession(Session):
             return
         if self.logged_in:
             # the inmsg handler will relay to the right place
-            self.player.inmsg(command_string, self.sessid)
+            self.player.inmsg(command_string, sessid=self.sessid)
         else:
             # we are not logged in. Use the session directly
             # (it uses the settings.UNLOGGEDIN cmdset)

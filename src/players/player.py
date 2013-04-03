@@ -18,6 +18,7 @@ from src.comms.models import Channel
 from src.utils import logger
 __all__ = ("Player",)
 
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
 _CMDSET_OOC = settings.CMDSET_OOC
 _CONNECT_CHANNEL = None
 
@@ -322,9 +323,11 @@ class Player(TypeClass):
         at_post_login hook.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-        # Character.at_post_login also looks around. Only use
-        # this as a backup when logging in without a character
-        self.execute_cmd("look")
+
+        if _MULTISESSION_MODE == 2 or not self.get_all_characters():
+            # Character.at_post_login also looks around. Only use
+            # this as a backup when logging in without a character
+            self.execute_cmd("look")
 
     def at_disconnect(self, reason=None):
         """

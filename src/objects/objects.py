@@ -794,6 +794,7 @@ class Character(Object):
         """
         This recovers the character again after having been "stoved away" at disconnect.
         """
+        print "char:at_post_login", self
         if self.db.prelogout_location:
             # try to recover
             self.location = self.db.prelogout_location

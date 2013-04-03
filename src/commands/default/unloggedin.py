@@ -92,12 +92,11 @@ class CmdUnconnectedConnect(MuxCommand):
             return
 
         # actually do the login. This will call all other hooks:
-        #   session.at_init()
-        #   if character:
-        #      at_first_login()  # only once
-        #      at_pre_login()
-        #   player.at_post_login()     - calls look if no character is set
-        #   character.at_post_login()  - this calls look command by default
+        #   session.at_login()
+        #   player.at_init()         # always called when object is loaded from disk
+        #   player.at_pre_login()
+        #   player.at_first_login()  # only once
+        #   player.at_post_login()
         session.sessionhandler.login(session, player)
 
 class CmdUnconnectedCreate(MuxCommand):
@@ -199,7 +198,8 @@ class CmdUnconnectedCreate(MuxCommand):
                 # If no description is set, set a default description
                 if not new_character.db.desc:
                     new_character.db.desc = "This is a Player."
-
+                # set flag for triggering first-time login hook
+                new_character.db._first_login = True
 
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"
