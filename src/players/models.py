@@ -397,7 +397,8 @@ class PlayerDB(TypedObject):
         data - dictionary of optional data
         sessid - session sending this data
         """
-        if _MULTISESSION_MODE < 2: sessid = None
+        if _MULTISESSION_MODE < 2:
+            sessid = None
         character = _GA(self, "get_character")(sessid=sessid)
         if character:
             # execute command on character

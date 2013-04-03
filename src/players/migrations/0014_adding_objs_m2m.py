@@ -22,6 +22,8 @@ class Migration(SchemaMigration):
                 if player.db_obj:
                     player.db_objs.add(player.db_obj)
                     player.save()
+                    # set attribute for multisession_mode 2 use
+                    player.set_attribute("_playable_characters", [player.db_obj])
 
     def backwards(self, orm):
         # Removing M2M table for field db_objs on 'PlayerDB'
