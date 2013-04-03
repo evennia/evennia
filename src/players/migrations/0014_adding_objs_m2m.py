@@ -22,13 +22,15 @@ class Migration(SchemaMigration):
         db.create_unique('players_playerdb_db_objs', ['playerdb_id', 'objectdb_id'])
 
         if not db.dry_run:
-            for player in orm.PlayerDB.objects.all():
+            for player in orm["players.PlayerDB"].objects.all():
                 # move data from old field to new
                 if player.db_obj:
                     player.db_objs.add(player.db_obj)
                     player.save()
                     # set attribute for multisession_mode 2 use
-                    player.set_attribute("_playable_characters", [player.db_obj])
+                    attr = orm["players.PlayerAttribute"](db_obj=player, db_key="_playable_characters")
+                    attr.value = [player.db_obj]
+                    attr.save()
 
     def backwards(self, orm):
         # Deleting field 'ObjectDB.db_sessid'
