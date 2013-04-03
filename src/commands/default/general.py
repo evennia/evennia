@@ -9,7 +9,9 @@ from src.utils import utils, search, create
 from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
 
-from settings import MAX_NR_CHARACTERS
+from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
+# force max nr chars to 1 if mode is 0 or 1
+MAX_NR_CHARACTERS = MULTISESSION_MODE < 2 and 1 or MAX_NR_CHARACTERS
 
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdPassword", "CmdNick",
@@ -822,7 +824,7 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         sessions = player.get_all_sessions()
 
         sessidstr = sessid and " (session id %i)" % sessid or ""
-        string = "You are logged in as {g%s{n%s." % (player.key, sessidstr)
+        string = "%sYou are logged in as {g%s{n%s." % (" "*10,player.key, sessidstr)
 
         string += "\n\nSession(s) connected:"
         for sess in sessions:
@@ -830,7 +832,8 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
             string += "\n %s %s" % (sessid == csessid and "{w%i{n" % csessid or csessid, sess.address)
         string += "\n\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
         if characters:
-            string += "\n\nAvailable character%s:"  % (len(characters) > 1 and "s" or "")
+            string += "\n\nAvailable character%s%s:"  % (len(characters) > 1 and "s" or "",
+                                                         MAX_NR_CHARACTERS > 1 and " (out of a maximum of %i)" % MAX_NR_CHARACTERS or "")
             for char in characters:
                 csessid = char.sessid
                 if csessid:
@@ -854,6 +857,11 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
     def func(self):
         "implement the ooc look command"
 
+        if MULTISESSION_MODE < 2:
+            # only one character allowed
+            string = "You are out-of-character (OOC).\nUse {w@ic{n to get back into the game."
+            self.msg(string)
+            return
         if utils.inherits_from(self.caller, "src.objects.objects.Object"):
             # An object of some type is calling. Use default look instead.
             super(CmdOOCLook, self).func()

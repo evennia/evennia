@@ -17,6 +17,7 @@ from src.commands.cmdhandler import CMD_LOGINSTART
 # limit symbol import for API
 __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate", "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
 
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 CONNECTION_SCREEN = ""
 try:
@@ -164,12 +165,6 @@ class CmdUnconnectedCreate(MuxCommand):
                 new_player = create.create_player(playername, None, password,
                                                      permissions=permissions)
 
-                # create character to go with player
-                new_character = create.create_object(typeclass, key=playername,
-                                          location=default_home, home=default_home,
-                                          permissions=permissions)
-                # set list
-                new_player.db._playable_characters.append(new_character)
 
             except Exception, e:
                 session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
@@ -187,14 +182,24 @@ class CmdUnconnectedCreate(MuxCommand):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
 
-            # allow only the character itself and the player to puppet this character (and Immortals).
-            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                    (new_character.id, new_player.id))
 
+            if MULTISESSION_MODE < 2:
+                # if we only allow one character, create one with the same name as Player
+                # (in mode 2, the character must be created manually once logging in)
+                new_character = create.create_object(typeclass, key=playername,
+                                          location=default_home, home=default_home,
+                                          permissions=permissions)
+                # set playable character list
+                new_player.db._playable_characters.append(new_character)
 
-            # If no description is set, set a default description
-            if not new_character.db.desc:
-                new_character.db.desc = "This is a Player."
+                # allow only the character itself and the player to puppet this character (and Immortals).
+                new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                                        (new_character.id, new_player.id))
+
+                # If no description is set, set a default description
+                if not new_character.db.desc:
+                    new_character.db.desc = "This is a Player."
+
 
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"

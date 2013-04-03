@@ -286,14 +286,16 @@ TIME_MONTH_PER_YEAR = 12
 ######################################################################
 
 # Different Multisession modes allow a player (=account) to connect to the game simultaneously
-# with multiple clients (=sessions) in various ways according to the set mode:
+# with multiple clients (=sessions). In modes 0,1 there is only one character created to the same
+# name as the account at first login. In modes 1,2 no default character will be created and
+# the MAX_NR_CHARACTERS value (below) defines how many characters are allowed.
 #  0 - single session, one player, one character, when a new session is connected, the old one is disconnected
 #  1 - multiple sessions, one player, one character, each session getting the same data
-#  2 - multiple sessions, one player, each session controlling different characters
+#  2 - multiple sessions, one player, many characters, each session getting data from different characters
 MULTISESSION_MODE = 0
-# The maximum number of characters allowed for MULTISESSION_MODE 1 or 2. This is checked
-# by the default char-creation commands in this mode. Forced to 1 for MULTISESSION_MODE 0.
-MAX_NR_CHARACTERS = 2
+# The maximum number of characters allowed for MULTISESSION_MODE 2. This is checked
+# by the default ooc char-creation command. Forced to 1 for MULTISESSION_MODE 0 and 1.
+MAX_NR_CHARACTERS = 1
 # The access hiearchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm() lock functions.
 PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immortals")
