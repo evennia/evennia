@@ -9,6 +9,11 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding M2M table for field db_objs on 'PlayerDB'
+        # Adding field 'ObjectDB.db_sessid'
+        db.add_column('objects_objectdb', 'db_sessid',
+                      self.gf('django.db.models.fields.IntegerField')(null=True),
+                      keep_default=False)
+
         db.create_table('players_playerdb_db_objs', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('playerdb', models.ForeignKey(orm['players.playerdb'], null=False)),
@@ -26,6 +31,8 @@ class Migration(SchemaMigration):
                     player.set_attribute("_playable_characters", [player.db_obj])
 
     def backwards(self, orm):
+        # Deleting field 'ObjectDB.db_sessid'
+        db.delete_column('objects_objectdb', 'db_sessid')
         # Removing M2M table for field db_objs on 'PlayerDB'
         db.delete_table('players_playerdb_db_objs')
 
