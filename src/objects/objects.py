@@ -106,11 +106,11 @@ class Object(TypeClass):
                               inside a deleted object are automatically moved to their <home>, they don't need to be removed here.
 
          at_init()            - called whenever typeclass is cached from memory, at least once every server restart/reload
-         at_cmdset_get()      - this is called just before the command handler requests a cmdset from this object
-         at_first_login()     - (player-controlled objects only) called once, the very first time user logs in.
-         at_pre_login()       - (player-controlled objects only) called every time the user connects, after they have identified, before other setup
-         at_post_login()      - (player-controlled objects only) called at the end of login, just before setting the player loose in the world.
-         at_disconnect()      - (player-controlled objects only) called just before the user disconnects (or goes linkless)
+         at_cmdset_get()      - this is called just before the command handler requests a cmdset from this objecth
+         at_pre_puppet(player)- (player-controlled objects only) called just before puppeting
+         at_post_puppet()     - (player-controlled objects only) called just after completing connection player<->object
+         at_pre_unpuppet()    - (player-controlled objects only) called just before un-puppeting
+         at_post_unpuppet(player) - (player-controlled objects only) called just after disconnecting player<->object link
          at_server_reload()   - called before server is reloaded
          at_server_shutdown() - called just before server is fully shut down
 
@@ -458,32 +458,65 @@ class Object(TypeClass):
         """
         pass
 
-    def at_first_login(self):
+    def at_pre_puppet(self, player):
         """
-        Only called once, the very first
-        time the user logs in.
-        """
-        pass
-    def at_pre_login(self):
-        """
-        Called every time the user logs in,
-        before they are actually logged in.
-        """
-        pass
-    def at_post_login(self):
-        """
-        Called at the end of the login
-        process, just before letting
-        them loose.
+        Called just before a Player connects to this object
+        to puppet it.
+
+        player - connecting player object
         """
         pass
 
-    def at_disconnect(self):
+    def at_post_puppet(self):
         """
-        Called just before user
-        is disconnected.
+        Called just after puppeting has been completed and
+        all Player<->Object links have been established.
         """
         pass
+
+    def at_pre_unpuppet(self):
+        """
+        Called just before beginning to un-connect a puppeting
+        from this Player.
+        """
+        pass
+
+    def at_post_unpuppet(self, player):
+        """
+        Called just after the Player successfully disconnected
+        from this object, severing all connections.
+
+        player - the player object that just disconnected from
+                 this object.
+        """
+        pass
+
+    #def at_first_login(self):
+    #    """
+    #    Only called once, the very first
+    #    time the user logs in.
+    #    """
+    #    pass
+    #def at_pre_login(self):
+    #    """
+    #    Called every time the user logs in,
+    #    before they are actually logged in.
+    #    """
+    #    pass
+    #def at_post_login(self):
+    #    """
+    #    Called at the end of the login
+    #    process, just before letting
+    #    them loose.
+    #    """
+    #    pass
+
+    #def at_disconnect(self):
+    #    """
+    #    Called just before user
+    #    is disconnected.
+    #    """
+    #    pass
 
     def at_server_reload(self):
         """
@@ -780,21 +813,12 @@ class Character(Object):
         "Default is to look around after a move."
         self.execute_cmd('look')
 
-    def at_disconnect(self):
+    def at_pre_puppet(self, player):
         """
-        We stove away the character when logging off, otherwise the character object will
-        remain in the room also after the player logged off ("headless", so to say).
+        This recovers the character again after having been "stoved away" at the unpuppet
         """
-        if self.location: # have to check, in case of multiple connections closing
-            self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
-            self.db.prelogout_location = self.location
-            self.location = None
+        print "object at_pre_puppet", self, player
 
-    def at_post_login(self):
-        """
-        This recovers the character again after having been "stoved away" at disconnect.
-        """
-        print "char:at_post_login", self
         if self.db.prelogout_location:
             # try to recover
             self.location = self.db.prelogout_location
@@ -806,8 +830,24 @@ class Character(Object):
 
         self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         self.location.at_object_receive(self, self.location)
+
+    def at_post_puppet(self):
+        "Once puppeting is complete, make sure to view the location."
         # call look
+        print "object at_post_puppet", self
         self.execute_cmd("look")
+
+    def at_post_unpuppet(self, player):
+        """
+        We stove away the character when the player goes ooc/logs off, otherwise the character object will
+        remain in the room also after the player logged off ("headless", so to say).
+        """
+        print "at_post_unpuppet", player
+        if self.location: # have to check, in case of multiple connections closing
+            self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+            self.db.prelogout_location = self.location
+            self.location = None
+
 #
 # Base Room object
 #

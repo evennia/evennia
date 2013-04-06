@@ -978,7 +978,7 @@ class CmdIC(MuxCommandOOC):
             return
         if caller.connect_character(new_character, sessid=sessid):
             self.msg("\n{gYou become {c%s{n.\n" % new_character.name)
-            caller.db.last_puppet = old_character
+            caller.db._last_puppet = old_character
             if not new_character.location:
                 # this might be due to being hidden away at logout; check
                 loc = new_character.db.prelogout_location

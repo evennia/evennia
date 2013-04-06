@@ -17,6 +17,7 @@ from src.commands import cmdhandler, cmdsethandler
 from src.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND
+_GA = object.__getattribute__
 
 # load optional out-of-band function module
 OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
@@ -57,7 +58,7 @@ class ServerSession(Session):
             self.cmdset.update(init_mode=True)
             return
         else:
-            self.player.reconnect_session_to_character(self.sessid)
+            self.player.server_reconnect_session_to_character(self.sessid)
 
     def at_login(self, player):
         """
@@ -83,16 +84,17 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            if player.get_character(sessid):
-                player.disconnect_session_from_character(sessid)
-            uaccount = player.user
+            print "session at_disconnect", self
+            _GA(player.dbobj, "disconnect_session_from_character")(sessid)
+            uaccount = _GA(player.dbobj, "user")
             uaccount.last_login = datetime.now()
             uaccount.save()
+            # calling player hook
+            _GA(player.typeclass, "at_disconnect")()
             self.logged_in = False
             if not self.sessionhandler.sessions_from_player(player):
                 # no more sessions connected to this player
                 player.is_connected = False
-
 
     def get_player(self):
         """

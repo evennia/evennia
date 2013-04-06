@@ -31,6 +31,7 @@ from django.utils.encoding import smart_str
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
 from src.players import manager
+from src.scripts.models import ScriptDB
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.typeclasses.typeclass import TypeClass
 from src.commands.cmdsethandler import CmdSetHandler
@@ -364,8 +365,6 @@ class PlayerDB(TypedObject):
         data - dictionary of optional data
         sessid - session sending this data
         """
-        if _MULTISESSION_MODE < 2:
-            sessid = None
         character = _GA(self, "get_character")(sessid=sessid)
         if character:
             # execute command on character
@@ -406,15 +405,18 @@ class PlayerDB(TypedObject):
         """
         sessions = self.get_session_from_sessid(sessid)
         for session in make_iter(sessions):
+            # this will also trigger disconnection of character(s)
             session.sessionhandler.disconnect(session)
 
-    def connect_session_to_character(self, sessid, character, force=False):
+    def connect_session_to_character(self, sessid, character, force=False, call_hooks=True):
         """
         Connect the given session to a character through this player.
         Note that this assumes the character has previously been
         linked to the player using self.connect_character().
 
         force - drop existing connection to other character
+        call_hooks - call puppet/unpuppet hooks. This is not wanted e.g. if
+                     server is reloading
 
         Returns True if connection was successful, False otherwise
         """
@@ -425,24 +427,21 @@ class PlayerDB(TypedObject):
                 _GA(self, "disconnect_session_from_character")(sessid)
             else:
                 return
+        # pre-puppet hook
+        if call_hooks:
+            # if e.g. server reloads we don't want to call any hooks anew
+            _GA(character.typeclass, "at_pre_puppet")(self.typeclass)
         # do the connection
         character.sessid = sessid
         # update cache
         cache = get_prop_cache(self, "_characters") or {}
         cache[sessid] = character
         set_prop_cache(self, "_characters", cache)
-        # call hooks
-        character.at_init()
-        if character:
-            # start (persistent) scripts on this object
-            #ScriptDB.objects.validate(obj=character)
-            pass
-        if character.db._first_login:
-            character.at_first_login()
-            del character.db._first_login
-        character.at_pre_login()
-        print "player: calling at_post_login on char"
-        character.at_post_login()
+        # start/validate (persistent) scripts on this object
+        ScriptDB.objects.validate(obj=character)
+        # post-puppet hook
+        if call_hooks:
+            _GA(character.typeclass, "at_post_puppet")()
         return True
 
     def disconnect_session_from_character(self, sessid):
@@ -451,21 +450,26 @@ class PlayerDB(TypedObject):
         connection to the Player)
         returns the newly disconnected character, if it existed
         """
+        print "player disconnect_session_from_character", sessid
         if not sessid:
             return
         char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
+        print char
         if char:
             # call hook before disconnecting
-            _GA(char.typeclass, "at_disconnect")()
+            _GA(char.typeclass, "at_pre_unpuppet")()
             del char.sessid
             # update cache
             cache = get_prop_cache(self, "_characters") or {}
             if sessid in cache:
                 del cache[sessid]
             set_prop_cache(self, "_characters", cache)
+            # call post-unpuppet hook
+            _GA(char.typeclass, "at_post_unpuppet")(self.typeclass)
+        print "... leaving player disconnect_session_from_character", sessid
         return char
 
-    def reconnect_session_to_character(self, sessid):
+    def server_reconnect_session_to_character(self, sessid):
         """
         Auto-re-connect a session to a character. This is called by the sessionhandler
         during a server reload. It goes through the characters stored in this player's
@@ -478,19 +482,20 @@ class PlayerDB(TypedObject):
         char = _GA(self, "get_character")(sessid=sessid, return_dbobj=True)
         if not char:
             return
-        _GA(self, "connect_session_to_character")(sessid, char, force=True)
+        _GA(self, "connect_session_to_character")(sessid, char, force=True, call_hooks=False)
 
 
     def get_character(self, sessid=None, character=None, return_dbobj=False):
         """
-        Get the character connected to this player and sessid
+        Get the character connected to this player and sessid. This is the main
+        method for retrieving the character from the player's end.
 
         sessid - return character connected to this sessid,
         character - return character if connected to this player, else None.
 
         Combining both keywords will check the entire connection - if the
         given session is currently connected to the given char. If no
-        keywords are given, returns all connected characters.
+        keywords are given, returns all connected characters as a list.
         """
         cache = get_prop_cache(self, "_characters") or {}
         if sessid:

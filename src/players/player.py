@@ -296,9 +296,10 @@ class Player(TypeClass):
 
     def at_pre_login(self):
         """
-        Called every time the user logs in,
-        before they are actually logged in.
+        Called every time the user logs in, just before the actual
+        login-state is set.
         """
+        print "player at_pre_login", self
         pass
 
     def _send_to_connect_channel(self, message):
@@ -322,6 +323,7 @@ class Player(TypeClass):
         them loose. This is called before an eventual Character's
         at_post_login hook.
         """
+        print "player at_post_login", self
         self._send_to_connect_channel("{G%s connected{n" % self.key)
 
         if _MULTISESSION_MODE == 2 or not self.get_all_characters():
@@ -331,10 +333,11 @@ class Player(TypeClass):
 
     def at_disconnect(self, reason=None):
         """
-        Called just before user
-        is disconnected.
+        Called just before user is disconnected.
         """
-        self._send_to_connect_channel("{R%s disconnected{n" % self.key)
+        print "player at_disconnect", self
+        reason = reason and "(%s)" % reason or ""
+        self._send_to_connect_channel("{R%s disconnected %s{n" % (self.key, reason))
 
     def at_message_receive(self, message, from_obj=None):
         """

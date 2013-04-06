@@ -61,7 +61,7 @@ def create_objects():
 
     god_character.save()
     god_character.set_attribute("_superuser_character", True)
-    gor_character.set_attribute("_first_login", True)
+    god_character.set_attribute("_first_login", True)
 
     # Limbo is the default "nowhere" starting room
 
