@@ -47,7 +47,8 @@ class ExampleObject(Object):
      date_created (string) - time stamp of object creation
      permissions (list of strings) - list of permission strings
 
-     player (Player) - controlling player (will also return offline player)
+     player (Player) - controlling player (if any, only set together with sessid below)
+     sessid (int, read-only) - session id (if any, only set together with player above)
      location (Object) - current location. Is None if this is a room
      home (Object) - safety start-location
      sessions (list of Sessions, read-only) - returns all sessions connected to this object
@@ -91,10 +92,10 @@ class ExampleObject(Object):
 
      at_init()            - called whenever typeclass is cached from memory, at least once every server restart/reload
      at_cmdset_get()      - this is called just before the command handler requests a cmdset from this object
-     at_first_login()     - (player-controlled objects only) called once, the very first time user logs in.
-     at_pre_login()       - (player-controlled objects only) called every time the user connects, after they have identified, before other setup
-     at_post_login()      - (player-controlled objects only) called at the end of login, just before setting the player loose in the world.
-     at_disconnect()      - (player-controlled objects only) called just before the user disconnects (or goes linkless)
+     at_pre_puppet(player)- (player-controlled objects only) called just before puppeting
+     at_post_puppet()     - (player-controlled objects only) called just after completing connection player<->object
+     at_pre_unpuppet()    - (player-controlled objects only) called just before un-puppeting
+     at_post_unpuppet(player) - (player-controlled objects only) called just after disconnecting player<->object link
      at_server_reload()   - called before server is reloaded
      at_server_shutdown() - called just before server is fully shut down
 

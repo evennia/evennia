@@ -62,7 +62,8 @@ class Object(TypeClass):
          date_created (string) - time stamp of object creation
          permissions (list of strings) - list of permission strings
 
-         player (Player) - controlling player (will also return offline player)
+         player (Player) - controlling player (if any, only set together with sessid below)
+         sessid (int, read-only) - session id (if any, only set together with player above)
          location (Object) - current location. Is None if this is a room
          home (Object) - safety start-location
          sessions (list of Sessions, read-only) - returns all sessions connected to this object
@@ -490,33 +491,6 @@ class Object(TypeClass):
                  this object.
         """
         pass
-
-    #def at_first_login(self):
-    #    """
-    #    Only called once, the very first
-    #    time the user logs in.
-    #    """
-    #    pass
-    #def at_pre_login(self):
-    #    """
-    #    Called every time the user logs in,
-    #    before they are actually logged in.
-    #    """
-    #    pass
-    #def at_post_login(self):
-    #    """
-    #    Called at the end of the login
-    #    process, just before letting
-    #    them loose.
-    #    """
-    #    pass
-
-    #def at_disconnect(self):
-    #    """
-    #    Called just before user
-    #    is disconnected.
-    #    """
-    #    pass
 
     def at_server_reload(self):
         """
