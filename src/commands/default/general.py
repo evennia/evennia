@@ -895,8 +895,8 @@ class CmdCharCreate(MuxCommandOOC):
             return
         key = self.lhs
         desc = self.rhs
-        if player.db._playable_characters and len(player.db._playable_characters) >= self.MAX_NR_CHARACTERS:
-            self.msg("You may only create a maximum of %i characters." % self.MAX_NR_CHARACTERS)
+        if player.db._playable_characters and len(player.db._playable_characters) >= MAX_NR_CHARACTERS:
+            self.msg("You may only create a maximum of %i characters." % MAX_NR_CHARACTERS)
             return
         # create the character
         from src.objects.models import ObjectDB
