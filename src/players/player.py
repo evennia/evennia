@@ -292,6 +292,7 @@ class Player(TypeClass):
         Only called once, the very first
         time the user logs in.
         """
+        print "player at_first_login", self
         pass
 
     def at_pre_login(self):

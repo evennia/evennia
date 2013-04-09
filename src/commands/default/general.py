@@ -967,7 +967,7 @@ class CmdIC(MuxCommandOOC):
             if new_character.sessid == sessid:
                 self.msg("{RYou already act as {c%s{n." % new_character.name)
                 return
-            elif new_character.player == caller:
+            elif new_character.sessid and new_character.player == caller:
                 self.msg("{RYou already act as {c%s{n in another session." % new_character.name)
                 return
             elif not caller.get_character(character=new_character):
@@ -990,7 +990,7 @@ class CmdIC(MuxCommandOOC):
                     new_character.location.at_object_receive(new_character, new_character.location)
             new_character.execute_cmd("look")
         else:
-            msg.msg("{rYou cannot become {C%s{n." % new_character.name)
+            self.msg("{rYou cannot become {C%s{n." % new_character.name)
 
 class CmdOOC(MuxCommandOOC):
     """

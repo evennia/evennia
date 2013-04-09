@@ -3,9 +3,13 @@
 Central API for the Evennia MUD/MUX/MU* creation system.
 
 This is basically a set of shortcuts for accessing things in src/ with less boiler plate.
-Import this from your code or explore it interactively from a python shell.
+Import this from your code, use it with @py from in-game or explore it interactively from
+a python shell.
 
 Notes:
+
+ 0) Use ev.help(), ev.managers.help(), ev.default_cmds.help() and syscmdkeys.help() to
+    view the API structure and explore which variables/methods are available.
 
  1) You should import things explicitly from the root of this module - you can not use
     dot-notation to import deeper. Hence, to access a default command, you can do
@@ -133,10 +137,36 @@ from src.utils import gametime
 from src.utils import ansi
 
 ######################################################################
-# API containers
+# API containers and helper functions
 ######################################################################
 
-class DBmanagers(object):
+def help(header=False):
+    """
+    Main Evennia API.
+       ev.help() views API contents
+       ev.help(True) or ev.README shows module instructions
+
+       See www.evennia.com for the full documentation.
+    """
+    if header:
+        return __doc__
+    else:
+        import ev
+        names = [var for var in ev.__dict__ if not var.startswith('_')]
+        return ", ".join(names)
+
+class _EvContainer(object):
+    """
+    Parent for other containers
+
+    """
+    def help(self):
+        "Returns list of contents"
+        names = [name for name in self.__class__.__dict__ if not name.startswith('_')]
+        names += [name for name in self.__dict__ if not name.startswith('_')]
+        return self.__doc__ + "-"*60 + "\n" + ", ".join(names)
+
+class DBmanagers(_EvContainer):
     """
     Links to instantiated database managers.
 
@@ -149,9 +179,6 @@ class DBmanagers(object):
     externalconnections - ExternalChannelConnection.objects
     objects - ObjectDB.objects
 
-    Use by doing "from ev import managers",
-    you can then access the desired manager
-    on the imported managers object.
     """
     from src.help.models import HelpEntry
     from src.players.models import PlayerDB
@@ -171,13 +198,17 @@ class DBmanagers(object):
     serverconfigs = ServerConfig.objects
     del HelpEntry, PlayerDB, ScriptDB, Msg, Channel, PlayerChannelConnection,
     del ExternalChannelConnection, ObjectDB, ServerConfig
+
 managers = DBmanagers()
 del DBmanagers
 
-class DefaultCmds(object):
+class DefaultCmds(_EvContainer):
     """
-    This container holds direct shortcuts to all default commands in
-    Evennia.
+    This container holds direct shortcuts to all default commands in Evennia.
+
+    To access in code, do 'from ev import default_cmds' then
+    access the properties on the imported default_cmds object.
+
     """
 
     from src.commands.default.cmdset_default import DefaultCmdSet
@@ -206,7 +237,7 @@ class DefaultCmds(object):
 default_cmds = DefaultCmds()
 del DefaultCmds
 
-class SystemCmds(object):
+class SystemCmds(_EvContainer):
     """
     Creating commands with keys set to these constants will make
     them system commands called as a replacement by the parser when
@@ -224,9 +255,6 @@ class SystemCmds(object):
     To access in code, do 'from ev import syscmdkeys' then
     access the properties on the imported syscmdkeys object.
 
-    For example, try objects.all() to get all
-    ObjectDB objects in the database.
-
     """
     from src.commands import cmdhandler
     CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -237,4 +265,4 @@ class SystemCmds(object):
     del cmdhandler
 syscmdkeys = SystemCmds()
 del SystemCmds
-
+del _EvContainer

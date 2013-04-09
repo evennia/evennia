@@ -198,8 +198,6 @@ class CmdUnconnectedCreate(MuxCommand):
                 # If no description is set, set a default description
                 if not new_character.db.desc:
                     new_character.db.desc = "This is a Player."
-                # set flag for triggering first-time login hook
-                new_character.db._first_login = True
 
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"

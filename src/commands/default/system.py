@@ -130,6 +130,9 @@ class CmdPy(MuxCommand):
       ev                         : the evennia API
       inherits_from(obj, parent) : check object inheritance
 
+    You can explore The evennia API from inside the game by calling
+    ev.help(), ev.managers.help() etc.
+
     {rNote: In the wrong hands this command is a severe security risk.
     It should only be accessible by trusted server admins/superusers.{n
 
