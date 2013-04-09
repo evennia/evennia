@@ -43,6 +43,10 @@ class ServerSession(Session):
     through their session.
 
     """
+    def __init__(self):
+        "Initiate to avoid AttributeErrors down the line"
+        self.puppet = None
+
     def at_sync(self):
         """
         This is called whenever a session has been resynced with the portal.
@@ -62,7 +66,7 @@ class ServerSession(Session):
             self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
             self.cmdset.update(init_mode=True)
         elif self.puid:
-            self.puppet = None
+            # reconnect puppet (puid is only set if we are coming back from a server reload)
             obj = _ObjectDB.objects.get(id=self.puid)
             self.player.puppet_object(self.sessid, obj, normal_mode=False)
 
@@ -92,7 +96,6 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            print "session at_disconnect", self
             _GA(player.dbobj, "unpuppet_object")(sessid)
             uaccount = _GA(player.dbobj, "user")
             uaccount.last_login = datetime.now()

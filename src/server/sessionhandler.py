@@ -212,7 +212,6 @@ class ServerSessionHandler(SessionHandler):
         now should know is connected to it. After this point we
         assume the session to be logged in one way or another.
         """
-        # prep the session with player/user info
 
         # we have to check this first before uid has been assigned
         # this session.

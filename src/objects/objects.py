@@ -817,8 +817,6 @@ class Character(Object):
         """
         This recovers the character again after having been "stoved away" at the unpuppet
         """
-        print "object at_pre_puppet", self, player
-
         if self.db.prelogout_location:
             # try to recover
             self.location = self.db.prelogout_location
@@ -831,18 +829,11 @@ class Character(Object):
         self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         self.location.at_object_receive(self, self.location)
 
-    def at_post_puppet(self):
-        "Once puppeting is complete, make sure to view the location."
-        # call look
-        print "object at_post_puppet", self
-        self.execute_cmd("look")
-
     def at_post_unpuppet(self, player):
         """
         We stove away the character when the player goes ooc/logs off, otherwise the character object will
         remain in the room also after the player logged off ("headless", so to say).
         """
-        print "at_post_unpuppet", player
         if self.location: # have to check, in case of multiple connections closing
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
             self.db.prelogout_location = self.location

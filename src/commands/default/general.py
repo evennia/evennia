@@ -464,7 +464,7 @@ class CmdWho(MuxCommand):
 
             delta_cmd = time.time() - session.cmd_last_visible
             delta_conn = time.time() - session.conn_time
-            plr_pobject = session.get_character()
+            plr_pobject = session.get_puppet()
             if not plr_pobject:
                 plr_pobject = session.get_player()
                 show_session_data = False
@@ -562,7 +562,7 @@ class CmdSessions(MuxCommand):
         table = [["sessid"], ["host"], ["character"], ["location"]]
         for sess in sorted(sessions, key=lambda x:x.sessid):
             sessid = sess.sessid
-            char = player.get_character(sessid)
+            char = player.get_puppet(sessid)
             table[0].append(str(sess.sessid))
             table[1].append(str(sess.address[0]))
             table[2].append(char and str(char) or "None")
@@ -750,7 +750,7 @@ class CmdColorTest(MuxCommand):
             string = "ANSI colors:"
             for row in table:
                 string += "\n" + "".join(row)
-            print string
+            #print string
             self.caller.msg(string)
             self.caller.msg("{{X and %%cx are black-on-black)")
         elif self.args == "xterm256":
@@ -939,7 +939,7 @@ class CmdIC(MuxCommandOOC):
 
     def func(self):
         """
-        Simple puppet method
+        Main puppet method
         """
         player = self.caller
         sessid = self.sessid
@@ -977,7 +977,7 @@ class CmdIC(MuxCommandOOC):
             return
         if player.puppet_object(sessid, new_character):
             self.msg("\n{gYou become {c%s{n.\n" % new_character.name)
-            player.db._last_puppet = old_character
+            player.db._last_puppet = new_character
             if not new_character.location:
                 # this might be due to being hidden away at logout; check
                 loc = new_character.db.prelogout_location

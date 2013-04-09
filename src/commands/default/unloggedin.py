@@ -198,6 +198,8 @@ class CmdUnconnectedCreate(MuxCommand):
                 # If no description is set, set a default description
                 if not new_character.db.desc:
                     new_character.db.desc = "This is a Player."
+                # We need to set this to have @ic auto-connect to this character
+                new_player.db._last_puppet = new_character
 
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"

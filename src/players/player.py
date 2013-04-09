@@ -292,7 +292,6 @@ class Player(TypeClass):
         Only called once, the very first
         time the user logs in.
         """
-        print "player at_first_login", self
         pass
 
     def at_pre_login(self):
@@ -300,7 +299,6 @@ class Player(TypeClass):
         Called every time the user logs in, just before the actual
         login-state is set.
         """
-        print "player at_pre_login", self
         pass
 
     def _send_to_connect_channel(self, message):
@@ -324,19 +322,21 @@ class Player(TypeClass):
         them loose. This is called before an eventual Character's
         at_post_login hook.
         """
-        print "player at_post_login", self
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-
-        if _MULTISESSION_MODE == 2:
-            # Character.at_post_login also looks around. Only use
-            # this as a backup when logging in without a character
+        if _MULTISESSION_MODE in (0, 1):
+            # in these modes we should have only one character available. We
+            # try to auto-connect to it by calling the @ic command
+            # (this relies on player.db._last_puppet being set)
+            self.execute_cmd("@ic")
+        elif _MULTISESSION_MODE == 2:
+            # In this mode we by default end up at a character selection
+            # screen. We execute look on the player.
             self.execute_cmd("look")
 
     def at_disconnect(self, reason=None):
         """
         Called just before user is disconnected.
         """
-        print "player at_disconnect", self
         reason = reason and "(%s)" % reason or ""
         self._send_to_connect_channel("{R%s disconnected %s{n" % (self.key, reason))
 
