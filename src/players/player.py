@@ -256,7 +256,7 @@ class Player(TypeClass):
         to store attributes all players should have,
         like configuration values etc.
         """
-        # set an attribute holding the characters this player has
+        # set an (empty) attribute holding the characters this player has
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
         self.set_attribute("_playable_characters", [], lockstring=lockstring)
 
@@ -323,11 +323,17 @@ class Player(TypeClass):
         at_post_login hook.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-        if _MULTISESSION_MODE in (0, 1):
-            # in these modes we should have only one character available. We
+        if _MULTISESSION_MODE == 0:
+            # in this mode we should have only one character available. We
             # try to auto-connect to it by calling the @ic command
             # (this relies on player.db._last_puppet being set)
             self.execute_cmd("@ic")
+        elif _MULTISESSION_MODE == 1:
+            # in this mode the first session to connect acts like mode 0,
+            # the following sessions "share" the same view and should
+            # not perform any actions
+            if not self.get_all_puppets():
+                self.execute_cmd("@ic")
         elif _MULTISESSION_MODE == 2:
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.

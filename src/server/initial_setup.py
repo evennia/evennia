@@ -63,6 +63,7 @@ def create_objects():
     god_character.set_attribute("_superuser_character", True)
     god_player.set_attribute("_first_login", True)
     god_player.set_attribute("_last_puppet", god_character)
+    god_player.db._playable_characters.append(god_character)
 
     # Limbo is the default "nowhere" starting room
 
@@ -84,8 +85,6 @@ def create_objects():
         god_character.location = limbo_obj
     if not god_character.home:
         god_character.home = limbo_obj
-    # store in list as playable character
-    god_player.db._playable_characters.append(god_character)
 
 def create_channels():
     """

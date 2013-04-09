@@ -824,13 +824,17 @@ class CmdOOCLook(MuxCommandOOC, CmdLook):
         sessions = player.get_all_sessions()
 
         sessidstr = sessid and " (session id %i)" % sessid or ""
-        string = "%sYou are logged in as {g%s{n%s." % (" "*10,player.key, sessidstr)
+        string = "You are logged in as {g%s{n%s." % (player.key, sessidstr)
 
         string += "\n\nSession(s) connected:"
         for sess in sessions:
             csessid = sess.sessid
             string += "\n %s %s" % (sessid == csessid and "{w%i{n" % csessid or csessid, sess.address)
         string += "\n\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
+        if not characters:
+            string += "\nYou don't have any character yet. Use {w@charcreate <name> [=description]{n to create one."
+        elif len(characters) < MAX_NR_CHARACTERS:
+            string += "\nUse {w@charcreate <name> [=description]{n to create a new character (max %i)" % MAX_NR_CHARACTERS
         if characters:
             string += "\n\nAvailable character%s%s:"  % (len(characters) > 1 and "s" or "",
                                                          MAX_NR_CHARACTERS > 1 and " (out of a maximum of %i)" % MAX_NR_CHARACTERS or "")

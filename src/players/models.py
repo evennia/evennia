@@ -126,8 +126,6 @@ class PlayerDB(TypedObject):
 
     The PlayerDB adds the following properties:
       user - Connected User object. django field, needs to be save():d.
-      obj - game object controlled by player
-      character - alias for obj
       name - alias for user.username
       sessions - sessions connected to this player
       is_superuser - bool if this player is a superuser
@@ -144,11 +142,6 @@ class PlayerDB(TypedObject):
     # this profile model. It is required by django.
     user = models.ForeignKey(User, unique=True, db_index=True,
       help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
-    # the in-game object connected to this player (if any).
-    # Use the property 'obj' to access.
-    db_objs = models.ManyToManyField("objects.ObjectDB", null=True,
-                                     verbose_name="characters", related_name="objs_set",
-                                     help_text="In-game objects.")
     # store a connected flag here too, not just in sessionhandler.
     # This makes it easier to track from various out-of-process locations
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
@@ -327,7 +320,7 @@ class PlayerDB(TypedObject):
         session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
         if session:
             obj = session.puppet
-            if char and not char.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
+            if obj and not obj.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
                 # if hook returns false, cancel send
                 return
             session.msg(outgoing_string, data)
@@ -347,6 +340,11 @@ class PlayerDB(TypedObject):
         data - dictionary of optional data
         session - session sending this data (no need to look it up again)
         """
+        if _MULTISESSION_MODE == 1:
+            # many sessions - one puppet
+            sessions = [session for session in self.get_all_sessions() if session.puppet]
+            session = sessions and sessions[0] or session
+
         puppet = session.puppet
         if puppet:
             # execute command on the puppeted object (this will include
