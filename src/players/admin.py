@@ -97,10 +97,7 @@ class PlayerInline(admin.StackedInline):
         ("In-game Player data",
          {'fields':('db_typeclass_path', 'db_cmdset_storage'),
           'description':"<i>These fields define in-game-specific properties for the Player object in-game.</i>"}),
-        ("Evennia In-game Character",
-         {'fields':('db_obj',),
-          'description': "<i>To actually play the game, a Player must control a Character. This could be added in-game instead of from here if some sort of character creation system is in play. If not, you should normally create a new Character here rather than assigning an existing one. Observe that the admin does not check for puppet-access rights when assigning Characters! If not creating a new Character, make sure the one you assign is not puppeted by someone else!</i>"}))
-
+        )
 
     extra = 1
     max_num = 1
@@ -145,11 +142,5 @@ class UserAdmin(BaseUserAdmin):
                                  typeclass=typeclass,
                                  player_dbobj=playerobj,
                                  create_character=False)
-
-#        if playerdb.db_obj:
-#            playerdb.db_obj.db_player = playerdb
-#            playerdb.db_obj.save()
-
-        #assert False, (form.instance, form.instance.get_profile())
 
 admin.site.register(User, UserAdmin)
