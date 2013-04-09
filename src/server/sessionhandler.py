@@ -138,7 +138,7 @@ class ServerSessionHandler(SessionHandler):
         # validate all script
         _ScriptDB.objects.validate()
         self.sessions[sess.sessid] = sess
-        sess.execute_cmd(CMD_LOGINSTART)
+        sess.data_in(CMD_LOGINSTART)
 
     def portal_disconnect(self, sessid):
         """
@@ -196,7 +196,7 @@ class ServerSessionHandler(SessionHandler):
         Called from server side to remove session and inform portal
         of this fact.
         """
-        session = self.sessions.get(session.sessid, None)
+        session = self.sessions.get(session.sessid)
         if session:
             session.at_disconnect()
             sessid = session.sessid
@@ -305,16 +305,19 @@ class ServerSessionHandler(SessionHandler):
         """
         return len(set(session.uid for session in self.sessions.values() if session.logged_in))
 
-    def sessions_from_player(self, player, sessid=None):
+    def session_from_player(self, player, sessid):
         """
-        Given a player, return any matching sessions.
+        Given a player and a session id, return the actual session object
+        """
+        session = self.sessions.get(sessid)
+        return session and session.logged_in and player.uid == session.uid and session or None
+
+    def sessions_from_player(self, player):
+        """
+        Given a player, return all matching sessions.
         """
         uid = player.uid
-        if sessid:
-            session = self.sessions.get(sessid)
-            return session and session.logged_in and session.uid == uid and session or None
-        else:
-            return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
+        return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_character(self, character):
         """
@@ -345,7 +348,7 @@ class ServerSessionHandler(SessionHandler):
         """
         session = self.sessions.get(sessid, None)
         if session:
-            session.execute_cmd(string)
+            session.data_in(string)
 
         # ignore 'data' argument for now; this is otherwise the place
         # to put custom effects on the server due to data input, e.g.

@@ -147,7 +147,8 @@ class ObjectDB(TypedObject):
       ndb - non-persistent attribute storage
 
     The ObjectDB adds the following properties:
-      player - optional connected player
+      player - optional connected player (always together with sessid)
+      sessid - optional connection session id (always together with player)
       location - in-game location of object
       home - safety location for object (handler)
 

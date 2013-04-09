@@ -18,6 +18,7 @@ from src.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
+_ObjectDB = None
 
 # load optional out-of-band function module
 OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
@@ -51,14 +52,19 @@ class ServerSession(Session):
         Since this is often called after a server restart we need to set up
         the session as it was.
         """
+        global _ObjectDB
+        if not _ObjectDB:
+            from src.objects.models import ObjectDB as _ObjectDB
+
         if not self.logged_in:
             # assign the unloggedin-command set.
             self.cmdset = cmdsethandler.CmdSetHandler(self)
             self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
             self.cmdset.update(init_mode=True)
-            return
-        else:
-            self.player.server_reconnect_session_to_character(self.sessid)
+        elif self.puid:
+            self.puppet = None
+            obj = _ObjectDB.objects.get(id=self.puid)
+            self.player.puppet_object(self.sessid, obj, normal_mode=False)
 
     def at_login(self, player):
         """
@@ -72,6 +78,8 @@ class ServerSession(Session):
         self.uname = self.user.username
         self.logged_in = True
         self.conn_time = time.time()
+        self.puid = None
+        self.puppet = None
 
         # Update account's last login time.
         self.user.last_login = datetime.now()
@@ -85,7 +93,7 @@ class ServerSession(Session):
             sessid = self.sessid
             player = self.player
             print "session at_disconnect", self
-            _GA(player.dbobj, "disconnect_session_from_character")(sessid)
+            _GA(player.dbobj, "unpuppet_object")(sessid)
             uaccount = _GA(player.dbobj, "user")
             uaccount.last_login = datetime.now()
             uaccount.save()
@@ -102,12 +110,13 @@ class ServerSession(Session):
         """
         return self.logged_in and self.player
 
-    def get_character(self):
+    def get_puppet(self):
         """
         Returns the in-game character associated with this session.
         This returns the typeclass of the object.
         """
-        return self.logged_in and self.player.get_character(self.sessid) or None
+        return self.logged_in and self.puppet
+    get_character = get_puppet
 
     def log(self, message, channel=True):
         """
@@ -135,9 +144,11 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = time.time()
 
-    def execute_cmd(self, command_string):
+    def data_in(self, command_string):
         """
-        Execute a command string on the server.
+        Send Player->Evennia. This will in effect
+        execute a command string on the server.
+        Eventual extra data moves through oob_data_in
         """
         # handle the 'idle' command
         if str(command_string).strip() == IDLE_COMMAND:
@@ -145,17 +156,19 @@ class ServerSession(Session):
             return
         if self.logged_in:
             # the inmsg handler will relay to the right place
-            self.player.inmsg(command_string, sessid=self.sessid)
+            self.player.inmsg(command_string, self)
         else:
-            # we are not logged in. Use the session directly
+            # we are not logged in. Execute cmd with the the session directly
             # (it uses the settings.UNLOGGEDIN cmdset)
             cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
+    execute_cmd = data_in # alias
 
     def data_out(self, msg, data=None):
         """
         Send Evennia -> Player
         """
         self.sessionhandler.data_out(self, msg, data)
+
 
     def oob_data_in(self, data):
         """
@@ -249,7 +262,7 @@ class ServerSession(Session):
         self.data_out(string, data=data)
 
 
-    # Dummy API hooks for use a non-loggedin operation
+    # Dummy API hooks for use during non-loggedin operation
 
     def at_cmdset_get(self):
         "dummy hook all objects with cmdsets need to have"

@@ -34,9 +34,9 @@ class Session(object):
 
     # names of attributes that should be affected by syncing.
     _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid', 'uname',
-                      'logged_in', 'cid', 'encoding',
+                      'logged_in', 'puid', 'encoding',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
-                      'server_data')
+                      'protocol_flags', 'server_data')
 
     def init_session(self, protocol_key, address, sessionhandler):
         """
@@ -63,15 +63,15 @@ class Session(object):
         # if user has authenticated already or not
         self.logged_in = False
 
-        # database id of character/object connected to this player session (if any)
-        self.cid = None
-        self.encoding = "utf-8"
+        # database id of puppeted object (if any)
+        self.puid = None
 
         # session time statistics
         self.conn_time = time.time()
         self.cmd_last_visible = self.conn_time
         self.cmd_last = self.conn_time
         self.cmd_total = 0
+        self.encoding = "utf-8"
 
         self.protocol_flags = {}
         self.server_data = {}

@@ -327,7 +327,7 @@ class Player(TypeClass):
         print "player at_post_login", self
         self._send_to_connect_channel("{G%s connected{n" % self.key)
 
-        if _MULTISESSION_MODE == 2 or not self.get_all_characters():
+        if _MULTISESSION_MODE == 2:
             # Character.at_post_login also looks around. Only use
             # this as a backup when logging in without a character
             self.execute_cmd("look")
