@@ -191,21 +191,6 @@ class ServerSessionHandler(SessionHandler):
                                                          data="")
     # server-side access methods
 
-    def disconnect(self, session, reason=""):
-        """
-        Called from server side to remove session and inform portal
-        of this fact.
-        """
-        session = self.sessions.get(session.sessid)
-        if session:
-            session.at_disconnect()
-            sessid = session.sessid
-            del self.sessions[sessid]
-            # inform portal that session should be closed.
-            self.server.amp_protocol.call_remote_PortalAdmin(sessid,
-                                                             operation=SDISCONN,
-                                                             data=reason)
-
     def login(self, session, player):
         """
         Log in the previously unloggedin session and the player we by
@@ -232,14 +217,13 @@ class ServerSessionHandler(SessionHandler):
 
         player.at_pre_login()
 
-        session.log(_('Logged in: %(self)s') % {'self': player})
-
-        # start (persistent) scripts on this object
-        #ScriptDB.objects.validate(obj=self.player.character)
-
         if MULTISESSION_MODE == 0:
             # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
+
+        nsess = len(self.sessions_from_player(player))
+        totalstring = "%i session%s total" % (nsess, nsess > 1 and "s" or "")
+        session.log(_('Logged in: %s %s (%s)' % (player, session.address, totalstring)))
 
         session.logged_in = True
         # sync the portal to the session
@@ -248,6 +232,29 @@ class ServerSessionHandler(SessionHandler):
                                                          operation=SLOGIN,
                                                          data=sessdata)
         player.at_post_login()
+
+    def disconnect(self, session, reason=""):
+        """
+        Called from server side to remove session and inform portal
+        of this fact.
+        """
+        session = self.sessions.get(session.sessid)
+        if not session:
+            return
+
+        if hasattr(session, "player") and session.player:
+            # only log accounts logging off
+            nsess = len(self.sessions_from_player(session.player)) - 1
+            remaintext = nsess and "%i session%s remaining" % (nsess, nsess > 1 and "s" or "") or "no more sessions"
+            session.log(_('Logged out: %s %s (%s)' % (session.player, session.address, remaintext)))
+
+        session.at_disconnect()
+        sessid = session.sessid
+        del self.sessions[sessid]
+        # inform portal that session should be closed.
+        self.server.amp_protocol.call_remote_PortalAdmin(sessid,
+                                                         operation=SDISCONN,
+                                                         data=reason)
 
     def all_sessions_portal_sync(self):
         """
