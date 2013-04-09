@@ -187,8 +187,8 @@ class MuxCommandOOC(MuxCommand):
             # caller is an Object/Character
             self.character = self.caller
             self.caller = self.caller.player
-        elif hasattr(self.caller, "character"):
+        elif utils.inherits_from(self.caller, "src.players.players.Player"):
             # caller was already a Player
-            self.character = self.caller.get_character(sessid=self.sessid)
+            self.character = self.caller.get_puppet(self.sessid)
         else:
             self.character = None

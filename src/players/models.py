@@ -484,6 +484,18 @@ class PlayerDB(TypedObject):
             return puppets
         return [puppet.typeclass for puppet in puppets]
 
+    def __get_single_puppet(self):
+        """
+        This is a legacy convenience link for users of
+        MULTISESSION_MODE 0 or 1. It will return
+        only the first puppet. For mode 2, this returns
+        a list of all characters.
+        """
+        puppets = self.get_all_puppets()
+        if _MULTISESSION_MODE in (0, 1):
+            return puppets and puppets[0] or None
+        return puppets
+    character = property(__get_single_puppet)
 
     # utility methods
 
