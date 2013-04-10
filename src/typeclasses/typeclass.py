@@ -81,8 +81,9 @@ class TypeClass(object):
         if not any('src.typeclasses.models.TypedObject' in str(mro) for mro in dbobj_mro):
             raise Exception("dbobj is not a TypedObject: %s: %s" % (dbobj_cls, dbobj_mro))
 
-        # store the reference to the database model instance
+        # we should always be able to use dbobj/typeclass to get back an object of the desired type
         _SA(self, 'dbobj', dbobj)
+        _SA(self, 'typeclass', self)
 
     def __getattribute__(self, propname):
         """
@@ -95,10 +96,6 @@ class TypeClass(object):
         property on the class, it will NOT be
         accessible through getattr.
         """
-        if propname == 'dbobj':
-            return _GA(self, 'dbobj')
-        if propname == 'typeclass':
-            return self
         if propname.startswith('__') and propname.endswith('__'):
             # python specials are parsed as-is (otherwise things like
             # isinstance() fail to identify the typeclass)

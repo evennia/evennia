@@ -250,7 +250,13 @@ class ObjectDB(TypedObject):
         We have to be careful here since Player is also
         a TypedObject, so as to not create a loop.
         """
-        return get_field_cache(self, "player")
+        player = get_field_cache(self, "player")
+        if player:
+            try:
+                return player.typeclass
+            except Exception,e:
+                print "player_get:", e
+        return player
 
     #@player.setter
     def __player_set(self, player):
@@ -470,8 +476,8 @@ class ObjectDB(TypedObject):
         Retrieve sessions connected to this object.
         """
         # if the player is not connected, this will simply be an empty list.
-        if _GA(self, "player"):
-            return _GA(_GA(self, "player"), "sessions")
+        if _GA(self, "db_player"):
+            return _GA(_GA(self, "db_player"), "get_all_sessions")()
         return []
     sessions = property(__sessions_get)
 
