@@ -13,7 +13,7 @@ class Migration(DataMigration):
         try:
             for player in orm.PlayerDB.objects.all():
                 if not player.db_cmdset_storage:
-                    player.db_cmdset_storage = settings.CMDSET_OOC
+                    player.db_cmdset_storage = settings.CMDSET_PLAYER
                     player.save()
         except utils.DatabaseError:
             # this will happen if we start db from scratch (ignore in that case)

@@ -428,7 +428,11 @@ def error_check_python_modules():
     from src.commands import cmdsethandler
     cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None)
     cmdsethandler.import_cmdset(settings.CMDSET_DEFAULT, None)
-    cmdsethandler.import_cmdset(settings.CMDSET_OOC, None)
+    if hasattr(settings, "CMDSET_OOC"):
+        string = "settings.CMDSET_OOC was renamed to CMDSET_PLAYER."
+        string += "Also default cmdset location in src was renamed (see src.settings_default.py)."
+        raise DeprecationWarning(string)
+    cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None)
     # typeclasses
     imp(settings.BASE_PLAYER_TYPECLASS)
     imp(settings.BASE_OBJECT_TYPECLASS)

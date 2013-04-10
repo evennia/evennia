@@ -86,7 +86,7 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     your default set. Next you change settings.CMDSET_UNLOGGEDIN to
     point to this class.
     """
-    key = "Unloggedin"
+    key = "DefaultUnloggedin"
 
     def at_cmdset_creation(self):
         """
@@ -99,19 +99,19 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
         # any commands you add below will overload the default ones.
         #
 
-class OOCCmdSet(default_cmds.OOCCmdSet):
+class PlayerCmdSet(default_cmds.PlayerCmdSet):
     """
     This is set is available to the player when they have no
     character connected to them (i.e. they are out-of-character, ooc).
     """
-    key = "OOC"
+    key = "DefaultPlayer"
 
     def at_cmdset_creation(self):
         """
         Populates the cmdset
         """
         # calling setup in src.commands.default.cmdset_ooc
-        super(OOCCmdSet, self).at_cmdset_creation()
+        super(PlayerCmdSet, self).at_cmdset_creation()
         #
         # any commands you add below will overload the default ones.
         #

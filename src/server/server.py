@@ -133,7 +133,7 @@ class Evennia(object):
         objects.
         """
         # setting names
-        settings_names = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
+        settings_names = ("CMDSET_DEFAULT", "CMDSET_PLAYER", "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
                           "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS", "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS")
         # get previous and current settings so they can be compared
         settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],

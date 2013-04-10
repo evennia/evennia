@@ -1,6 +1,6 @@
 """
 The command template for the default MUX-style command set. There
-is also an OOC version that makes sure caller is a Player object.
+is also an Player/OOC version that makes sure caller is a Player object.
 """
 
 from src.utils import utils
@@ -163,13 +163,13 @@ class MuxCommand(Command):
         string += "-" * 50
         self.caller.msg(string)
 
-class MuxCommandOOC(MuxCommand):
+class MuxPlayerCommand(MuxCommand):
     """
-    This is an OOC version of the MuxCommand. Since OOC commands sit
+    This is an on-Player version of the MuxCommand. Since these commands sit
     on Players rather than on Characters/Objects, we need to check
     this in the parser.
 
-    OOC commands are strictly speaking also available when IC, it's
+    Player commands are available also when puppeting a Character, it's
     just that they are applied with a lower priority and are always
     available, also when disconnected from a character (i.e. "ooc").
 
@@ -181,7 +181,7 @@ class MuxCommandOOC(MuxCommand):
         """
         We run the parent parser as usual, then fix the result
         """
-        super(MuxCommandOOC, self).parse()
+        super(MuxPlayerCommand, self).parse()
 
         if utils.inherits_from(self.caller, "src.objects.objects.Object"):
             # caller is an Object/Character

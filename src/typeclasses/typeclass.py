@@ -91,8 +91,6 @@ class TypeClass(object):
         transparently include the properties on
         self.dbobj. Note that dbobj properties have
         priority, so if you define a same-named
-
-
         property on the class, it will NOT be
         accessible through getattr.
         """

@@ -19,7 +19,7 @@ from src.utils import logger
 __all__ = ("Player",)
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
-_CMDSET_OOC = settings.CMDSET_OOC
+_CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
 
@@ -239,14 +239,11 @@ class Player(TypeClass):
         self.db.encoding = "utf-8"
 
         # A basic security setup
-        self.locks.add("examine:perm(Wizards)")
-        self.locks.add("edit:perm(Wizards)")
-        self.locks.add("delete:perm(Wizards)")
-        self.locks.add("boot:perm(Wizards)")
-        self.locks.add("msg:all()")
+        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:all()"
+        self.locks.add(lockstring)
 
         # The ooc player cmdset
-        self.cmdset.add_default(_CMDSET_OOC, permanent=True)
+        self.cmdset.add_default(_CMDSET_PLAYER, permanent=True)
 
     def at_player_creation(self):
         """

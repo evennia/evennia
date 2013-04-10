@@ -80,10 +80,10 @@ class PlayerForm(forms.ModelForm):
                                       required=False,
                                       help_text="In-game lock definition string. If not given, defaults will be used. This string should be on the form <i>type:lockfunction(args);type2:lockfunction2(args);...")
     db_cmdset_storage = forms.CharField(label="cmdset",
-                                        initial=settings.CMDSET_OOC,
+                                        initial=settings.CMDSET_PLAYER,
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         required=False,
-                                        help_text="python path to player cmdset class (settings.CMDSET_OOC by default)")
+                                        help_text="python path to player cmdset class (set in settings.CMDSET_PLAYER by default)")
 
 class PlayerInline(admin.StackedInline):
     "Inline creation of Player"

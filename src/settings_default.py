@@ -219,7 +219,7 @@ CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
 # Default set for logged in player with characters (fallback)
 CMDSET_DEFAULT = "src.commands.default.cmdset_default.DefaultCmdSet"
 # Command set for players without a character (ooc)
-CMDSET_OOC = "src.commands.default.cmdset_ooc.OOCCmdSet"
+CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
 
 ######################################################################
 # Typeclasses

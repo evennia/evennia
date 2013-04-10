@@ -10,7 +10,7 @@ class UnloggedinCmdSet(CmdSet):
     """
     Sets up the unlogged cmdset.
     """
-    key = "Unloggedin"
+    key = "DefaultUnloggedin"
     priority = 0
 
     def at_cmdset_creation(self):

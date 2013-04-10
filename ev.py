@@ -212,9 +212,9 @@ class DefaultCmds(_EvContainer):
     """
 
     from src.commands.default.cmdset_default import DefaultCmdSet
-    from src.commands.default.cmdset_ooc import OOCCmdSet
+    from src.commands.default.cmdset_player import PlayerCmdSet
     from src.commands.default.cmdset_unloggedin import UnloggedinCmdSet
-    from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
+    from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
     def __init__(self):
         "populate the object with commands"
@@ -224,13 +224,14 @@ class DefaultCmds(_EvContainer):
             cmdlist = utils.variable_from_module(module, module.__all__)
             self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
-        from src.commands.default import admin, batchprocess, building, comms, general, help, system, unloggedin
+        from src.commands.default import admin, batchprocess, building, comms, general, player, help, system, unloggedin
         add_cmds(admin)
         add_cmds(building)
         add_cmds(batchprocess)
         add_cmds(building)
         add_cmds(comms)
         add_cmds(general)
+        add_cmds(player)
         add_cmds(help)
         add_cmds(system)
         add_cmds(unloggedin)

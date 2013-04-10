@@ -1,35 +1,37 @@
 """
 
-This is the cmdset for OutOfCharacter (OOC) commands.  These are
+This is the cmdset for Player (OOC) commands.  These are
 stored on the Player object and should thus be able to handle getting
 a Player object as caller rather than a Character.
 
 """
-from src.commands.cmdset import CmdSet
-from src.commands.default import help, comms, general, admin, system
 
-from src.commands.default import building
-class OOCCmdSet(CmdSet):
+from src.commands.cmdset import CmdSet
+from src.commands.default import help, comms, admin, system
+from src.commands.default import building, player
+
+class PlayerCmdSet(CmdSet):
     """
     Implements the player command set.
     """
 
-    key = "DefaultOOC"
+    key = "DefaultPlayer"
     priority = -5
 
     def at_cmdset_creation(self):
         "Populates the cmdset"
 
         # General commands
-        self.add(general.CmdOOCLook())
-        self.add(general.CmdIC())
-        self.add(general.CmdOOC())
-        self.add(general.CmdCharCreate())
-        self.add(general.CmdEncoding())
-        self.add(general.CmdQuit())
-        self.add(general.CmdPassword())
+        self.add(player.CmdOOCLook())
+        self.add(player.CmdIC())
+        self.add(player.CmdOOC())
+        self.add(player.CmdCharCreate())
+        self.add(player.CmdEncoding())
+        self.add(player.CmdQuit())
+        self.add(player.CmdPassword())
+        self.add(player.CmdColorTest())
 
-        # test
+        # testing
         self.add(building.CmdExamine())
 
         # Help command

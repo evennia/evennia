@@ -12,7 +12,7 @@ from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChan
 from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils
-from src.commands.default.muxcommand import MuxCommand, MuxCommandOOC
+from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
 __all__ = ("CommCommand", "CmdAddCom", "CmdDelCom", "CmdAllCom",
@@ -624,7 +624,7 @@ class CmdCdesc(MuxCommand):
         channel.save()
         caller.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
 
-class CmdPage(MuxCommandOOC):
+class CmdPage(MuxPlayerCommand):
     """
     page - send private message
 
@@ -649,7 +649,7 @@ class CmdPage(MuxCommandOOC):
     def func(self):
         "Implement function using the Msg methods"
 
-        # this is a MuxCommandOOC, which means caller will be a Player.
+        # this is a MuxPlayerCommand, which means caller will be a Player.
         caller = self.caller
 
         # get the messages we've sent (not to channels)
