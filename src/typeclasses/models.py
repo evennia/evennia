@@ -297,7 +297,7 @@ class Attribute(SharedMemoryModel):
     The Attribute class defines the following properties:
       key - primary identifier
       mode - which type of data is stored in attribute
-      permissions - perm strings
+      lock_storage - perm strings
       obj - which object the attribute is defined on
       date_created - when the attribute was created
       value - the data stored in the attribute

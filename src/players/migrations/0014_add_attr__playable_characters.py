@@ -1,24 +1,43 @@
 # -*- coding: utf-8 -*-
-import datetime
+import datetime, pickle
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from src.typeclasses.models import PackedDBobject
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+
+        lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
+        lockstring2 = "attrread:false();attredit:false();attrcreate:false()"
         if not db.dry_run:
             for player in orm['players.PlayerDB'].objects.all():
-                attr = orm['players.PlayerAttribute']()
-                attr.db_obj = player
-                attr.save()
                 char = player.db_obj
-                attr.db_obj.value = [char] or []
+                if char:
+                    val = pickle.dumps(("iter", [PackedDBobject(char.id, "objectdb", char.db_key)]))
+                else:
+                    val = pickle.dumps(("iter", []))
+                orm['players.PlayerAttribute'].objects.create(db_key="_playable_characters",
+                                                              db_obj=player,
+                                                              db_lock_storage=lockstring,
+                                                              db_value=val)
+                suser = char and char.id == 1
+                if suser:
+                    # move the superuser unmask attribute for the superuser (note that this
+                    # is not a security risk, it only works if player's superuser bit is set too)
+                    val = pickle.dumps(("simple", suser))
+                    orm['objects.ObjAttribute'].objects.create(db_key="_superuser_character",
+                                                                  db_obj=char,
+                                                                  db_lock_storage=lockstring2,
+                                                                  db_value=val)
+
 
     def backwards(self, orm):
         "Write your backwards methods here."
+        raise RuntimeError("This migration cannot be reverted.")
 
     models = {
         'auth.group': {
@@ -63,6 +82,15 @@ class Migration(DataMigration):
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['players.PlayerDB']"}),
+            'db_value': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        'objects.objattribute': {
+            'Meta': {'object_name': 'ObjAttribute'},
+            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
+            'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
+            'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['objects.ObjectDB']"}),
             'db_value': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
