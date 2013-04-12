@@ -4,6 +4,9 @@ This is the cmdset for Player (OOC) commands.  These are
 stored on the Player object and should thus be able to handle getting
 a Player object as caller rather than a Character.
 
+Note - in order for session-rerouting (in MULTISESSION_MODE=2) to
+function, all commands in this cmdset should use the self.msg()
+command method rather than caller.msg().
 """
 
 from src.commands.cmdset import CmdSet
@@ -26,11 +29,12 @@ class PlayerCmdSet(CmdSet):
         self.add(player.CmdIC())
         self.add(player.CmdOOC())
         self.add(player.CmdCharCreate())
+        self.add(player.CmdSessions())
+        self.add(player.CmdWho())
         self.add(player.CmdEncoding())
         self.add(player.CmdQuit())
         self.add(player.CmdPassword())
         self.add(player.CmdColorTest())
-        self.add(player.CmdSessions())
 
         # testing
         self.add(building.CmdExamine())

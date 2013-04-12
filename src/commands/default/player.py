@@ -11,6 +11,10 @@ access the character when these commands are triggered with
 a connected character (such as the case of the @ooc command), it
 is None if we are OOC.
 
+Note that under MULTISESSION_MODE=2, Player- commands should use
+self.msg() and similar methods to reroute returns to the correct
+method. Otherwise all text will be returned to all connected sessions.
+
 """
 import time
 from django.conf import settings
@@ -301,12 +305,9 @@ class CmdSessions(MuxPlayerCommand):
 
         # make sure we work on the player, not on the character
         player = self.caller
-        if hasattr(player, "player"):
-            player = player.player
-
         sessions = player.get_all_sessions()
 
-        table = [["sessid"], ["host"], ["character"], ["location"]]
+        table = [["sessid"], ["host"], ["puppet/character"], ["location"]]
         for sess in sorted(sessions, key=lambda x:x.sessid):
             sessid = sess.sessid
             char = player.get_puppet(sessid)
@@ -315,7 +316,7 @@ class CmdSessions(MuxPlayerCommand):
             table[2].append(char and str(char) or "None")
             table[3].append(char and str(char.location) or "N/A")
         ftable = utils.format_table(table, 5)
-        string = ""
+        string = "{wYour current session(s):{n"
         for ir, row in enumerate(ftable):
             if ir == 0:
                 string += "\n" + "{w%s{n" % ("".join(row))
@@ -344,13 +345,13 @@ class CmdWho(MuxPlayerCommand):
         Get all connected players by polling session.
         """
 
-        caller = self.caller
+        player = self.caller
         session_list = SESSIONS.get_sessions()
 
         if self.cmdstring == "doing":
             show_session_data = False
         else:
-            show_session_data = caller.check_permstring("Immortals") or caller.check_permstring("Wizards")
+            show_session_data = player.check_permstring("Immortals") or player.check_permstring("Wizards")
 
         if show_session_data:
             table = [["Player Name"], ["On for"], ["Idle"], ["Room"], ["Cmds"], ["Host"]]
@@ -396,7 +397,7 @@ class CmdWho(MuxPlayerCommand):
         else:
             string += '\n%d players logged in.' % nplayers
 
-        caller.msg(string)
+        self.msg(string)
 
 class CmdEncoding(MuxPlayerCommand):
     """
@@ -427,21 +428,19 @@ class CmdEncoding(MuxPlayerCommand):
         """
         Sets the encoding.
         """
-        caller = self.caller
-        if hasattr(caller, 'player'):
-            caller = caller.player
+        player = self.caller
 
         if 'clear' in self.switches:
             # remove customization
-            old_encoding = caller.db.encoding
+            old_encoding = player.db.encoding
             if old_encoding:
                 string = "Your custom text encoding ('%s') was cleared." % old_encoding
             else:
                 string = "No custom encoding was set."
-            del caller.db.encoding
+            del player.db.encoding
         elif not self.args:
             # just list the encodings supported
-            pencoding = caller.db.encoding
+            pencoding = player.db.encoding
             string = ""
             if pencoding:
                 string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding
@@ -452,11 +451,11 @@ class CmdEncoding(MuxPlayerCommand):
                 string = "No encodings found."
         else:
             # change encoding
-            old_encoding = caller.db.encoding
+            old_encoding = player.db.encoding
             encoding = self.args
-            caller.db.encoding = encoding
+            player.db.encoding = encoding
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
-        caller.msg(string.strip())
+        self.msg(string.strip())
 
 class CmdPassword(MuxPlayerCommand):
     """
@@ -473,28 +472,25 @@ class CmdPassword(MuxPlayerCommand):
     def func(self):
         "hook function."
 
-        caller = self.caller
-        if hasattr(caller, "player"):
-            caller = caller.player
-
+        player = self.caller
         if not self.rhs:
-            caller.msg("Usage: @password <oldpass> = <newpass>")
+            self.msg("Usage: @password <oldpass> = <newpass>")
             return
         oldpass = self.lhslist[0] # this is already stripped by parse()
         newpass = self.rhslist[0] #               ''
         try:
-            uaccount = caller.user
+            uaccount = player.user
         except AttributeError:
-            caller.msg("This is only applicable for players.")
+            self.msg("This is only applicable for players.")
             return
         if not uaccount.check_password(oldpass):
-            caller.msg("The specified old password isn't correct.")
+            self.msg("The specified old password isn't correct.")
         elif len(newpass) < 3:
-            caller.msg("Passwords must be at least three characters long.")
+            self.msg("Passwords must be at least three characters long.")
         else:
             uaccount.set_password(newpass)
             uaccount.save()
-            caller.msg("Password changed.")
+            self.msg("Password changed.")
 
 class CmdQuit(MuxPlayerCommand):
     """
@@ -514,11 +510,7 @@ class CmdQuit(MuxPlayerCommand):
 
     def func(self):
         "hook function"
-        # always operate on the player
-        if hasattr(self.caller, "player"):
-            player = self.caller.player
-        else:
-            player = self.caller
+        player = self.caller
 
         if 'all' in self.switches:
             player.msg("{RQuitting{n all sessions. Hope to see you soon again.", sessid=self.sessid)
@@ -556,8 +548,9 @@ class CmdColorTest(MuxPlayerCommand):
     def func(self):
         "Show color tables"
 
+        player = self.caller
         if not self.args or not self.args in ("ansi", "xterm256"):
-            self.caller.msg("Usage: @color ansi|xterm256")
+            self.msg("Usage: @color ansi|xterm256")
             return
 
         if self.args == "ansi":
@@ -567,15 +560,15 @@ class CmdColorTest(MuxPlayerCommand):
             # show all ansi color-related codes
             col1 = ["%s%s{n" % (code, code.replace("{","{{")) for code, _ in ap.ext_ansi_map[:-1]]
             hi = "%ch"
-            col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
-            col3 = ["%s%s{n" % (hi+code, (hi+code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[:-2]]
+            col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
+            col3 = ["%s%s{n" % (hi+code, (hi+code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
             table = utils.format_table([col1, col2, col3], extra_space=1)
             string = "ANSI colors:"
             for row in table:
                 string += "\n" + "".join(row)
             #print string
-            self.caller.msg(string)
-            self.caller.msg("{{X and %%cx are black-on-black)")
+            self.msg(string)
+            self.msg("({{X and %%cx are black-on-black\n %%r - return, %%t - tab, %%b - space)")
         elif self.args == "xterm256":
             table = [[],[],[],[],[],[],[],[],[],[],[],[]]
             for ir in range(6):
@@ -588,10 +581,10 @@ class CmdColorTest(MuxPlayerCommand):
                                                                         5-ir,5-ig,5-ib,
                                                                         "{{b%i%i%i" % (ir,ig,ib)))
             table = utils.format_table(table)
-            string = "Xterm256 colors:"
+            string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
                 string += "\n" + "".join(row)
-            self.caller.msg(string)
-            self.caller.msg("(e.g. %%c123 and %%cb123 also work)")
+            self.msg(string)
+            self.msg("(e.g. %%c123 and %%cb123 also work)")
 
 

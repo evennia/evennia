@@ -25,7 +25,7 @@ _DA = object.__delattr__
 # to *in-game* safety (if you can edit typeclasses you have
 # full access anyway), so no protection against changing
 # e.g. 'locks' or 'permissions' should go here.
-PROTECTED = ('id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass',
+PROTECTED = ('id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass', 'db_player', 'player',
              'attr', 'save', 'delete', 'db_model_name','attribute_class',
              'typeclass_paths')
 

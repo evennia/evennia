@@ -1657,8 +1657,10 @@ class TypedObject(SharedMemoryModel):
         This explicitly checks if we hold particular permission without involving
         any locks.
         """
-        if self.player and self.player.is_superuser:
-            return True
+        if hasattr(self, "player"):
+            if self.player and self.player.is_superuser: return True
+        else:
+            if self.is_superuser: return True
 
         if not permstring:
             return False
