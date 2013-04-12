@@ -101,7 +101,7 @@ class CmdShutdown(MuxCommand):
             self.caller.sessions[0]
         except Exception:
             return
-        self.caller.msg('Shutting down server ...')
+        self.msg('Shutting down server ...')
         announcement = "\nServer is being SHUT DOWN!\n"
         if self.args:
             announcement += "%s\n" % self.args
@@ -150,7 +150,7 @@ class CmdPy(MuxCommand):
 
         if not pycode:
             string = "Usage: @py <code>"
-            caller.msg(string)
+            self.msg(string)
             return
 
         # check if caller is a player
@@ -164,9 +164,9 @@ class CmdPy(MuxCommand):
                           'inherits_from':utils.inherits_from}
 
         try:
-            caller.msg(">>> %s" % pycode, data={"raw":True}, sessid=self.sessid)
+            self.msg(">>> %s" % pycode, data={"raw":True}, sessid=self.sessid)
         except TypeError:
-            caller.msg(">>> %s" % pycode, data={"raw":True})
+            self.msg(">>> %s" % pycode, data={"raw":True})
 
 
         mode = "eval"
@@ -197,9 +197,9 @@ class CmdPy(MuxCommand):
 
         if ret != None:
             try:
-                caller.msg(ret, sessid=self.sessid)
+                self.msg(ret, sessid=self.sessid)
             except TypeError:
-                caller.msg(ret)
+                self.msg(ret)
 
 
 # helper function. Kept outside so it can be imported and run

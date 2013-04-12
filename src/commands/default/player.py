@@ -307,14 +307,15 @@ class CmdSessions(MuxPlayerCommand):
         player = self.caller
         sessions = player.get_all_sessions()
 
-        table = [["sessid"], ["host"], ["puppet/character"], ["location"]]
+        table = [["sessid"], ['protocol'], ["host"], ["puppet/character"], ["location"]]
         for sess in sorted(sessions, key=lambda x:x.sessid):
             sessid = sess.sessid
             char = player.get_puppet(sessid)
             table[0].append(str(sess.sessid))
-            table[1].append(str(sess.address[0]))
-            table[2].append(char and str(char) or "None")
-            table[3].append(char and str(char.location) or "N/A")
+            table[1].append(str(sess.protocol_key))
+            table[2].append(type(sess.address)==tuple and sess.address[0] or sess.address)
+            table[3].append(char and str(char) or "None")
+            table[4].append(char and str(char.location) or "N/A")
         ftable = utils.format_table(table, 5)
         string = "{wYour current session(s):{n"
         for ir, row in enumerate(ftable):

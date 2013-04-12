@@ -293,7 +293,7 @@ class CmdDelPlayer(MuxCommand):
             caller = caller.player
 
         if not args:
-            caller.msg("Usage: @delplayer[/delobj] <player/user name or #id> [: reason]")
+            self.msg("Usage: @delplayer[/delobj] <player/user name or #id> [: reason]")
             return
 
         reason = ""
@@ -318,7 +318,7 @@ class CmdDelPlayer(MuxCommand):
                     user = User.objects.get(username__iexact=args)
                 except Exception:
                     string = "No Player nor User found matching '%s'." % args
-                    caller.msg(string)
+                    self.msg(string)
                     return
             try:
                 player = user.get_profile()
@@ -327,7 +327,7 @@ class CmdDelPlayer(MuxCommand):
 
             if player and not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete this player."
-                caller.msg(string)
+                self.msg(string)
                 return
 
             string = ""
@@ -339,7 +339,7 @@ class CmdDelPlayer(MuxCommand):
                 string = "Player %s was deleted." % name
             else:
                 string += "The User %s was deleted. It had no Player associated with it." % name
-            caller.msg(string)
+            self.msg(string)
             return
 
         elif utils.is_iter(players):
@@ -356,13 +356,13 @@ class CmdDelPlayer(MuxCommand):
 
             if not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete that player."
-                caller.msg(string)
+                self.msg(string)
                 return
 
             uname = user.username
             # boot the player then delete
             if character and character.has_player:
-                caller.msg("Booting and informing player ...")
+                self.msg("Booting and informing player ...")
                 string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
                 if reason:
                     string += " Reason given:\n  '%s'" % reason
@@ -374,7 +374,7 @@ class CmdDelPlayer(MuxCommand):
                    session.disconnect()
             user.delete()
             player.delete()
-            caller.msg("Player %s was successfully deleted." % uname)
+            self.msg("Player %s was successfully deleted." % uname)
 
 
 class CmdEmit(MuxCommand):
@@ -459,7 +459,7 @@ class CmdEmit(MuxCommand):
 
 class CmdNewPassword(MuxCommand):
     """
-    @setpassword
+    @userpassword
 
     Usage:
       @userpassword <user obj> = <new password>
@@ -477,7 +477,7 @@ class CmdNewPassword(MuxCommand):
         caller = self.caller
 
         if not self.rhs:
-            caller.msg("Usage: @userpassword <user obj> = <new password>")
+            self.msg("Usage: @userpassword <user obj> = <new password>")
             return
 
         # the player search also matches 'me' etc.
@@ -486,7 +486,7 @@ class CmdNewPassword(MuxCommand):
             return
         player.user.set_password(self.rhs)
         player.user.save()
-        caller.msg("%s - new password set to '%s'." % (player.name, self.rhs))
+        self.msg("%s - new password set to '%s'." % (player.name, self.rhs))
         if player.character != caller:
             player.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
 

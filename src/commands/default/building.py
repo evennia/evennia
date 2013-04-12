@@ -1700,7 +1700,7 @@ class CmdExamine(ObjManipCommand):
             to format and output the result.
             """
             string = self.format_output(obj, cmdset)
-            caller.msg(string.strip())
+            self.msg(string.strip())
 
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
@@ -1713,7 +1713,7 @@ class CmdExamine(ObjManipCommand):
                 # using callback for printing result whenever function returns.
                 get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
             else:
-                caller.msg("You need to supply a target to examine.")
+                self.msg("You need to supply a target to examine.")
             return
 
         # we have given a specific target object

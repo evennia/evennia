@@ -62,20 +62,20 @@ class ChannelCommand(command.Command):
         channelkey, msg = self.args
         caller = self.caller
         if not msg:
-            caller.msg("Say what?")
+            self.msg("Say what?")
             return
         channel = Channel.objects.get_channel(channelkey)
 
         if not channel:
-            caller.msg("Channel '%s' not found." % channelkey)
+            self.msg("Channel '%s' not found." % channelkey)
             return
         if not channel.has_connection(caller):
             string = "You are not connected to channel '%s'."
-            caller.msg(string % channelkey)
+            self.msg(string % channelkey)
             return
         if not channel.access(caller, 'send'):
             string = "You are not permitted to send to channel '%s'."
-            caller.msg(string % channelkey)
+            self.msg(string % channelkey)
             return
         msg = "[%s] %s: %s" % (channel.key, caller.name, msg)
         # we can't use the utils.create function to make the Msg,

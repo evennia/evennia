@@ -172,7 +172,7 @@ def cmdhandler(caller, raw_string, testing=False, sessid=None):
     raw_string - the command string given on the command line
     testing - if we should actually execute the command or not.
               if True, the command instance will be returned instead.
-
+    sessid - the session id calling this handler, if any
     Note that this function returns a deferred!
     """
     try: # catch bugs in cmdhandler itself
@@ -240,6 +240,7 @@ def cmdhandler(caller, raw_string, testing=False, sessid=None):
                 if syscmd:
                     # replace system command with custom version
                     cmd = syscmd
+                cmd.sessid = sessid
                 sysarg = "%s:%s" % (cmdname, args)
                 raise ExecSystemCommand(cmd, sysarg)
 

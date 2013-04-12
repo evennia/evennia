@@ -15,7 +15,7 @@ from src.utils import create, utils
 from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
-__all__ = ("CommCommand", "CmdAddCom", "CmdDelCom", "CmdAllCom",
+__all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
            "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
            "CmdCWho", "CmdChannelCreate", "CmdCset", "CmdCdesc",
            "CmdPage", "CmdIRC2Chan", "CmdIMC2Chan", "CmdIMCInfo",
@@ -33,33 +33,14 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
         if channels:
             return channels[0]
         if not silent:
-            caller.msg("Channel '%s' not found." % channelname)
+            self.msg("Channel '%s' not found." % channelname)
         return None
     elif len(channels) > 1:
         matches = ", ".join(["%s(%s)" % (chan.key, chan.id) for chan in channels])
         if not silent:
-            caller.msg("Multiple channels match (be more specific): \n%s" % matches)
+            self.msg("Multiple channels match (be more specific): \n%s" % matches)
         return None
     return channels[0]
-
-class CommCommand(MuxCommand):
-    """
-    This is a parent for comm-commands. Since
-    These commands are to be available to the
-    Player, we make sure to homogenize the caller
-    here, so it's always seen as a player to the
-    command body.
-    """
-
-    def parse(self):
-        "overload parts of parse"
-
-        # run parent
-        super(CommCommand, self).parse()
-        # fix obj->player
-        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
-            # an object. Convert it to its player.
-            self.caller = self.caller.player
 
 class CmdAddCom(MuxCommand):
     """
@@ -87,7 +68,7 @@ class CmdAddCom(MuxCommand):
         player = caller
 
         if not args:
-            caller.msg("Usage: addcom [alias =] channelname.")
+            self.msg("Usage: addcom [alias =] channelname.")
             return
 
         if self.rhs:
@@ -105,7 +86,7 @@ class CmdAddCom(MuxCommand):
 
         # check permissions
         if not channel.access(player, 'listen'):
-            caller.msg("%s: You are not allowed to listen to this channel." % channel.key)
+            self.msg("%s: You are not allowed to listen to this channel." % channel.key)
             return
 
         string = ""
@@ -113,7 +94,7 @@ class CmdAddCom(MuxCommand):
             # we want to connect as well.
             if not channel.connect_to(player):
                 # if this would have returned True, the player is connected
-                caller.msg("%s: You are not allowed to join this channel." % channel.key)
+                self.msg("%s: You are not allowed to join this channel." % channel.key)
                 return
             else:
                 string += "You now listen to the channel %s. " % channel.key
@@ -124,10 +105,10 @@ class CmdAddCom(MuxCommand):
             # create a nick and add it to the caller.
             caller.nicks.add(alias, channel.key, nick_type="channel")
             string += " You can now refer to the channel %s with the alias '%s'."
-            caller.msg(string % (channel.key, alias))
+            self.msg(string % (channel.key, alias))
         else:
             string += " No alias added."
-            caller.msg(string)
+            self.msg(string)
 
 
 class CmdDelCom(MuxCommand):
@@ -154,7 +135,7 @@ class CmdDelCom(MuxCommand):
         player = caller
 
         if not self.args:
-            caller.msg("Usage: delcom <alias or channel>")
+            self.msg("Usage: delcom <alias or channel>")
             return
         ostring = self.args.lower()
 
@@ -162,7 +143,7 @@ class CmdDelCom(MuxCommand):
         if channel:
             # we have given a channel name - unsubscribe
             if not channel.has_connection(player):
-                caller.msg("You are not listening to that channel.")
+                self.msg("You are not listening to that channel.")
                 return
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
@@ -170,20 +151,20 @@ class CmdDelCom(MuxCommand):
                          if nick.db_real.lower() == chkey]:
                 nick.delete()
             channel.disconnect_from(player)
-            caller.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
+            self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
             return
         else:
             # we are removing a channel nick
             channame = caller.nicks.get(ostring, nick_type="channel")
             channel = find_channel(caller, channame, silent=True)
             if not channel:
-                caller.msg("No channel with alias '%s' was found." % ostring)
+                self.msg("No channel with alias '%s' was found." % ostring)
             else:
                 if caller.nicks.has(ostring, nick_type="channel"):
                     caller.nicks.delete(ostring, nick_type="channel")
-                    caller.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
+                    self.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
                 else:
-                    caller.msg("You had no such alias defined for this channel.")
+                    self.msg("You had no such alias defined for this channel.")
 
 class CmdAllCom(MuxCommand):
     """
@@ -210,7 +191,7 @@ class CmdAllCom(MuxCommand):
         args = self.args
         if not args:
             caller.execute_cmd("@channels")
-            caller.msg("(Usage: allcom on | off | who | destroy)")
+            self.msg("(Usage: allcom on | off | who | destroy)")
             return
 
         if args == "on":
@@ -241,10 +222,10 @@ class CmdAllCom(MuxCommand):
                     string += "  " + ", ".join([conn.player.key for conn in conns])
                 else:
                     string += "  <None>"
-            caller.msg(string.strip())
+            self.msg(string.strip())
         else:
             # wrong input
-            caller.msg("Usage: allcom on | off | who | clear")
+            self.msg("Usage: allcom on | off | who | clear")
 
 class CmdChannels(MuxCommand):
     """
@@ -271,7 +252,7 @@ class CmdChannels(MuxCommand):
         # all channels we have available to listen to
         channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
         if not channels:
-            caller.msg("No channels available.")
+            self.msg("No channels available.")
             return
         # all channel we are already subscribed to
         subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
@@ -295,7 +276,7 @@ class CmdChannels(MuxCommand):
                     string += "\n{w" + "".join(row) + "{n"
                 else:
                     string += "\n" + "".join(row)
-            self.caller.msg(string)
+            self.msg(string)
 
         string = "\nChannel subscriptions:"
         if not subs:
@@ -315,7 +296,7 @@ class CmdChannels(MuxCommand):
                     string += "\n{w" + "".join(row) + "{n"
                 else:
                     string += "\n" + "".join(row)
-        caller.msg(string)
+        self.msg(string)
 
 class CmdCdestroy(MuxCommand):
     """
@@ -336,14 +317,14 @@ class CmdCdestroy(MuxCommand):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: @cdestroy <channelname>")
+            self.msg("Usage: @cdestroy <channelname>")
             return
         channel = find_channel(caller, self.args)
         if not channel:
-            caller.msg("Could not find channel %s." % self.args)
+            self.msg("Could not find channel %s." % self.args)
             return
         if not channel.access(caller, 'control'):
-            caller.msg("You are not allowed to do that.")
+            self.msg("You are not allowed to do that.")
             return
 
         message = "%s is being destroyed. Make sure to change your aliases." % channel
@@ -351,7 +332,7 @@ class CmdCdestroy(MuxCommand):
         channel.msg(msgobj)
         channel.delete()
         CHANNELHANDLER.update()
-        caller.msg("%s was destroyed." % channel)
+        self.msg("%s was destroyed." % channel)
 
 class CmdCBoot(MuxCommand):
     """
@@ -376,7 +357,7 @@ class CmdCBoot(MuxCommand):
 
         if not self.args or not self.rhs:
             string = "Usage: @cboot[/quiet] <channel> = <player> [:reason]"
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         channel = find_channel(self.caller, self.lhs)
@@ -388,18 +369,18 @@ class CmdCBoot(MuxCommand):
             searchstring = playername.lstrip('*')
         else:
             searchstring = self.rhs.lstrip('*')
-        player = self.caller.search(searchstring, player=True)
+        player = self.search(searchstring, player=True)
         if not player:
             return
         if reason:
             reason = " (reason: %s)" % reason
         if not channel.access(self.caller, "control"):
             string = "You don't control this channel."
-            self.caller.msg(string)
+            self.msg(string)
             return
         if not PlayerChannelConnection.objects.has_connection(player, channel):
             string = "Player %s is not connected to channel %s." % (player.key, channel.key)
-            self.caller.msg(string)
+            self.msg(string)
             return
         if not "quiet" in self.switches:
             string = "%s boots %s from channel.%s" % (self.caller, player.key, reason)
@@ -440,24 +421,24 @@ class CmdCemit(MuxCommand):
 
         if not self.args or not self.rhs:
             string = "Usage: @cemit[/switches] <channel> = <message>"
-            self.caller.msg(string)
+            self.msg(string)
             return
         channel = find_channel(self.caller, self.lhs)
         if not channel:
             return
         if not channel.access(self.caller, "control"):
             string = "You don't control this channel."
-            self.caller.msg(string)
+            self.msg(string)
             return
         message = self.rhs
         if "sendername" in self.switches:
-            message = "%s: %s" % (self.caller.key, message)
+            message = "%s: %s" % (self.key, message)
         if not "noheader" in self.switches:
             message = "[%s] %s" % (channel.key, message)
         channel.msg(message)
         if not "quiet" in self.switches:
             string = "Sent to channel %s: %s" % (channel.key, message)
-            self.caller.msg(string)
+            self.msg(string)
 
 class CmdCWho(MuxCommand):
     """
@@ -477,7 +458,7 @@ class CmdCWho(MuxCommand):
 
         if not self.args:
             string = "Usage: @cwho <channel>"
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         channel = find_channel(self.caller, self.lhs)
@@ -485,7 +466,7 @@ class CmdCWho(MuxCommand):
             return
         if not channel.access(self.caller, "listen"):
             string = "You can't access this channel."
-            self.caller.msg(string)
+            self.msg(string)
         string = "\n{CChannel subscriptions{n"
         string += "\n{w%s:{n\n" % channel.key
         conns = PlayerChannelConnection.objects.get_all_connections(channel)
@@ -493,7 +474,7 @@ class CmdCWho(MuxCommand):
             string += "  " + ", ".join([conn.player.key for conn in conns])
         else:
             string += "  <None>"
-        self.caller.msg(string.strip())
+        self.msg(string.strip())
 
 class CmdChannelCreate(MuxCommand):
     """
@@ -516,7 +497,7 @@ class CmdChannelCreate(MuxCommand):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage @ccreate <channelname>[;alias;alias..] = description")
+            self.msg("Usage @ccreate <channelname>[;alias;alias..] = description")
             return
 
         description = ""
@@ -533,13 +514,13 @@ class CmdChannelCreate(MuxCommand):
                        for alias in aliases.split(';') if alias.strip()]
         channel = Channel.objects.channel_search(channame)
         if channel:
-            caller.msg("A channel with that name already exists.")
+            self.msg("A channel with that name already exists.")
             return
         # Create and set the channel up
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
         new_chan = create.create_channel(channame, aliases, description, locks=lockstring)
         new_chan.connect_to(caller)
-        caller.msg("Created channel %s and connected to it." % new_chan.key)
+        self.msg("Created channel %s and connected to it." % new_chan.key)
 
 
 class CmdCset(MuxCommand):
@@ -563,7 +544,7 @@ class CmdCset(MuxCommand):
 
         if not self.args:
             string = "Usage: @cset channel [= lockstring]"
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         channel = find_channel(self.caller, self.lhs)
@@ -573,19 +554,19 @@ class CmdCset(MuxCommand):
             # no =, so just view the current locks
             string = "Current locks on %s:" % channel.key
             string = "%s\n %s" % (string, channel.locks)
-            self.caller.msg(string)
+            self.msg(string)
             return
         # we want to add/change a lock.
         if not channel.access(self.caller, "control"):
             string = "You don't control this channel."
-            self.caller.msg(string)
+            self.msg(string)
             return
         # Try to add the lock
         channel.locks.add(self.rhs)
         string = "Lock(s) applied. "
         string += "Current locks on %s:" % channel.key
         string = "%s\n %s" % (string, channel.locks)
-        self.caller.msg(string)
+        self.msg(string)
 
 
 class CmdCdesc(MuxCommand):
@@ -609,20 +590,20 @@ class CmdCdesc(MuxCommand):
         caller = self.caller
 
         if not self.rhs:
-            caller.msg("Usage: @cdesc <channel> = <description>")
+            self.msg("Usage: @cdesc <channel> = <description>")
             return
         channel = find_channel(caller, self.lhs)
         if not channel:
-            caller.msg("Channel '%s' not found." % self.lhs)
+            self.msg("Channel '%s' not found." % self.lhs)
             return
         #check permissions
         if not caller.access(caller, 'control'):
-            caller.msg("You cant admin this channel.")
+            self.msg("You cant admin this channel.")
             return
         # set the description
         channel.desc = self.rhs
         channel.save()
-        caller.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
+        self.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
 
 class CmdPage(MuxPlayerCommand):
     """
@@ -661,10 +642,10 @@ class CmdPage(MuxPlayerCommand):
         if 'last' in self.switches:
             if pages_we_sent:
                 recv = ",".join(obj.key for obj in pages_we_sent[-1].receivers)
-                caller.msg("You last paged {c%s{n:%s" % (recv, pages_we_sent[-1].message))
+                self.msg("You last paged {c%s{n:%s" % (recv, pages_we_sent[-1].message))
                 return
             else:
-                caller.msg("You haven't paged anyone yet.")
+                self.msg("You haven't paged anyone yet.")
                 return
 
         if not self.args or not self.rhs:
@@ -676,7 +657,7 @@ class CmdPage(MuxPlayerCommand):
                 try:
                     number = int(self.args)
                 except ValueError:
-                    caller.msg("Usage: tell [<player> = msg]")
+                    self.msg("Usage: tell [<player> = msg]")
                     return
 
             if len(pages) > number:
@@ -694,7 +675,7 @@ class CmdPage(MuxPlayerCommand):
                 string = "Your latest pages:\n %s" % lastpages
             else:
                 string = "You haven't paged anyone yet."
-            caller.msg(string)
+            self.msg(string)
             return
 
 
@@ -706,7 +687,7 @@ class CmdPage(MuxPlayerCommand):
             if pages_we_sent:
                 receivers = pages_we_sent[-1].receivers
             else:
-                caller.msg("Who do you want to page?")
+                self.msg("Who do you want to page?")
                 return
         else:
             receivers = self.lhslist
@@ -718,12 +699,12 @@ class CmdPage(MuxPlayerCommand):
             elif hasattr(receiver, 'character'):
                 pobj = receiver.character
             else:
-                caller.msg("Who do you want to page?")
+                self.msg("Who do you want to page?")
                 return
             if pobj:
                 recobjs.append(pobj)
         if not recobjs:
-            caller.msg("Noone found to page.")
+            self.msg("Noone found to page.")
             return
 
         header = "{wPlayer{n {c%s{n {wpages:{n" % caller.key
@@ -751,8 +732,8 @@ class CmdPage(MuxPlayerCommand):
             else:
                 received.append("{c%s{n" % pobj.name)
         if rstrings:
-            caller.msg(rstrings = "\n".join(rstrings))
-        caller.msg("You paged %s with: '%s'." % (", ".join(received), message))
+            self.msg(rstrings = "\n".join(rstrings))
+        self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 
 class CmdIRC2Chan(MuxCommand):
@@ -786,7 +767,7 @@ class CmdIRC2Chan(MuxCommand):
 
         if not settings.IRC_ENABLED:
             string = """IRC is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if 'list' in self.switches:
@@ -804,14 +785,14 @@ class CmdIRC2Chan(MuxCommand):
                         string += "{w%s{n" % "".join(row)
                     else:
                         string += "\n" + "".join(row)
-                self.caller.msg(string)
+                self.msg(string)
             else:
-                self.caller.msg("No connections found.")
+                self.msg("No connections found.")
             return
 
         if not self.args or not self.rhs:
             string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
-            self.caller.msg(string)
+            self.msg(string)
             return
         channel = self.lhs
         self.rhs = self.rhs.replace('#', ' ') # to avoid Python comment issues
@@ -820,7 +801,7 @@ class CmdIRC2Chan(MuxCommand):
             irc_channel = "#%s" % irc_channel
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
@@ -830,9 +811,9 @@ class CmdIRC2Chan(MuxCommand):
 
             ok = irc.delete_connection(channel, irc_network, irc_port, irc_channel, irc_botname)
             if not ok:
-                self.caller.msg("IRC connection/bot could not be removed, does it exist?")
+                self.msg("IRC connection/bot could not be removed, does it exist?")
             else:
-                self.caller.msg("IRC connection destroyed.")
+                self.msg("IRC connection destroyed.")
             return
 
         channel = find_channel(self.caller, channel)
@@ -840,9 +821,9 @@ class CmdIRC2Chan(MuxCommand):
             return
         ok = irc.create_connection(channel, irc_network, irc_port, irc_channel, irc_botname)
         if not ok:
-            self.caller.msg("This IRC connection already exists.")
+            self.msg("This IRC connection already exists.")
             return
-        self.caller.msg("Connection created. Starting IRC bot.")
+        self.msg("Connection created. Starting IRC bot.")
 
 class CmdIMC2Chan(MuxCommand):
     """
@@ -875,7 +856,7 @@ class CmdIMC2Chan(MuxCommand):
 
         if not settings.IMC2_ENABLED:
             string = """IMC is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if 'list' in self.switches:
@@ -894,14 +875,14 @@ class CmdIMC2Chan(MuxCommand):
                         string += "{w%s{n" % "".join(row)
                     else:
                         string += "\n" + "".join(row)
-                self.caller.msg(string)
+                self.msg(string)
             else:
-                self.caller.msg("No connections found.")
+                self.msg("No connections found.")
             return
 
         if not self.args or not self.rhs:
             string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2_channel>"
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         channel = self.lhs
@@ -912,9 +893,9 @@ class CmdIMC2Chan(MuxCommand):
             # also if the channel no longer exists.
             ok = imc2.delete_connection(channel, imc2_channel)
             if not ok:
-                self.caller.msg("IMC2 connection could not be removed, does it exist?")
+                self.msg("IMC2 connection could not be removed, does it exist?")
             else:
-                self.caller.msg("IMC2 connection destroyed.")
+                self.msg("IMC2 connection destroyed.")
             return
 
         # actually get the channel object
@@ -924,9 +905,9 @@ class CmdIMC2Chan(MuxCommand):
 
         ok = imc2.create_connection(channel, imc2_channel)
         if not ok:
-            self.caller.msg("The connection %s <-> %s  already exists." % (channel.key, imc2_channel))
+            self.msg("The connection %s <-> %s  already exists." % (channel.key, imc2_channel))
             return
-        self.caller.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
+        self.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
 
 
 class CmdIMCInfo(MuxCommand):
@@ -958,7 +939,7 @@ class CmdIMCInfo(MuxCommand):
 
         if not settings.IMC2_ENABLED:
             string = """IMC is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if "update" in self.switches:
@@ -974,7 +955,7 @@ class CmdIMCInfo(MuxCommand):
                     del IMC2_MUDLIST.mud_list[name]
             # update channel list
             IMC2_CLIENT.send_packet(pck.IMC2PacketIceRefresh())
-            self.caller.msg("IMC2 lists were re-synced.")
+            self.msg("IMC2 lists were re-synced.")
 
         elif "games" in self.switches or "muds" in self.switches or self.cmdstring == "@imclist":
             # list muds
@@ -1000,15 +981,15 @@ class CmdIMCInfo(MuxCommand):
                     else:
                         string += "\n" + "".join(row)
             string += "\n %i Muds found." % nmuds
-            self.caller.msg(string)
+            self.msg(string)
 
         elif "whois" in self.switches or self.cmdstring == "@imcwhois":
             # find out about a player
             if not self.args:
-                self.caller.msg("Usage: @imcwhois <playername>")
+                self.msg("Usage: @imcwhois <playername>")
                 return
             from src.comms.imc2 import IMC2_CLIENT
-            self.caller.msg("Sending IMC whois request. If you receive no response, no matches were found.")
+            self.msg("Sending IMC whois request. If you receive no response, no matches were found.")
             IMC2_CLIENT.msg_imc2(None, from_obj=self.caller, packet_type="imcwhois", data={"target":self.args})
 
         elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
@@ -1034,12 +1015,12 @@ class CmdIMCInfo(MuxCommand):
                 else:
                     string += "\n" + "".join(row)
             string += "\n %i Channels found." % nchans
-            self.caller.msg(string)
+            self.msg(string)
 
         else:
             # no valid inputs
             string = "Usage: imcinfo|imcchanlist|imclist"
-            self.caller.msg(string)
+            self.msg(string)
 
 # unclear if this is working ...
 class CmdIMCTell(MuxCommand):
@@ -1064,14 +1045,14 @@ class CmdIMCTell(MuxCommand):
 
         if not settings.IMC2_ENABLED:
             string = """IMC is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         from src.comms.imc2 import IMC2_CLIENT
 
         if not self.args or not '@' in self.lhs or not self.rhs:
             string = "Usage: imctell User@Mud = <msg>"
-            self.caller.msg(string)
+            self.msg(string)
             return
         target, destination = self.lhs.split("@", 1)
         message = self.rhs.strip()
@@ -1080,7 +1061,7 @@ class CmdIMCTell(MuxCommand):
         # send to imc2
         IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", data=data)
 
-        self.caller.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
+        self.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
 
 
 # RSS connection
@@ -1116,7 +1097,7 @@ class CmdRSS2Chan(MuxCommand):
 
         if not settings.RSS_ENABLED:
             string = """RSS is not enabled. You need to activate it in game/settings.py."""
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if 'list' in self.switches:
@@ -1134,14 +1115,14 @@ class CmdRSS2Chan(MuxCommand):
                         string += "{w%s{n" % "".join(row)
                     else:
                         string += "\n" + "".join(row)
-                self.caller.msg(string)
+                self.msg(string)
             else:
-                self.caller.msg("No connections found.")
+                self.msg("No connections found.")
             return
 
         if not self.args or not self.rhs:
             string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
-            self.caller.msg(string)
+            self.msg(string)
             return
         channel = self.lhs
         url = self.rhs
@@ -1153,9 +1134,9 @@ class CmdRSS2Chan(MuxCommand):
 
             ok = rss.delete_connection(channel, url)
             if not ok:
-                self.caller.msg("RSS connection/reader could not be removed, does it exist?")
+                self.msg("RSS connection/reader could not be removed, does it exist?")
             else:
-                self.caller.msg("RSS connection destroyed.")
+                self.msg("RSS connection destroyed.")
             return
 
         channel = find_channel(self.caller, channel)
@@ -1166,6 +1147,6 @@ class CmdRSS2Chan(MuxCommand):
             interval = 10*60
         ok = rss.create_connection(channel, url, interval)
         if not ok:
-            self.caller.msg("This RSS connection already exists.")
+            self.msg("This RSS connection already exists.")
             return
-        self.caller.msg("Connection created. Starting RSS reader.")
+        self.msg("Connection created. Starting RSS reader.")

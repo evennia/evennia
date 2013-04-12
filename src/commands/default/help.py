@@ -113,7 +113,7 @@ class CmdHelp(Command):
             [hdict_cmd[cmd.help_category].append(cmd.key) for cmd in all_cmds]
             [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
             # report back
-            caller.msg(format_help_list(hdict_cmd, hdict_topic))
+            self.msg(format_help_list(hdict_cmd, hdict_topic))
             return
 
         # Try to access a particular command
@@ -129,23 +129,23 @@ class CmdHelp(Command):
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]
         if len(match) == 1:
-            caller.msg(format_help_entry(match[0].key, match[0].__doc__, aliases=match[0].aliases, suggested=suggestions))
+            self.msg(format_help_entry(match[0].key, match[0].__doc__, aliases=match[0].aliases, suggested=suggestions))
             return
 
         # try an exact database help entry match
         match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
         if len(match) == 1:
-            caller.msg(format_help_entry(match[0].key, match[0].entrytext, suggested=suggestions))
+            self.msg(format_help_entry(match[0].key, match[0].entrytext, suggested=suggestions))
             return
 
         # try to see if a category name was entered
         if query in all_categories:
-            caller.msg(format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
+            self.msg(format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
                                         {query:[topic.key for topic in all_topics if topic.help_category==query]}))
             return
 
         # no exact matches found. Just give suggestions.
-        caller.msg(format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
+        self.msg(format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 class CmdSetHelp(MuxCommand):
     """
@@ -187,7 +187,7 @@ class CmdSetHelp(MuxCommand):
         lhslist = self.lhslist
 
         if not self.args:
-            caller.msg("Usage: @sethelp/[add|del|append|merge] <topic>[,category[,locks,..] = <text>")
+            self.msg("Usage: @sethelp/[add|del|append|merge] <topic>[,category[,locks,..] = <text>")
             return
 
         topicstr = ""
@@ -201,7 +201,7 @@ class CmdSetHelp(MuxCommand):
             pass
 
         if not topicstr:
-            caller.msg("You have to define a topic!")
+            self.msg("You have to define a topic!")
             return
         # check if we have an old entry with the same name
         try:
@@ -212,29 +212,29 @@ class CmdSetHelp(MuxCommand):
         if 'append' in switches or "merge" in switches:
             # merge/append operations
             if not old_entry:
-                caller.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
+                self.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
                 return
             if not self.rhs:
-                caller.msg("You must supply text to append/merge.")
+                self.msg("You must supply text to append/merge.")
                 return
             if 'merge' in switches:
                 old_entry.entrytext += " " + self.rhs
             else:
                 old_entry.entrytext += "\n\n%s" % self.rhs
-            caller.msg("Entry updated:\n%s" % old_entry.entrytext)
+            self.msg("Entry updated:\n%s" % old_entry.entrytext)
             return
         if 'delete' in switches or 'del' in switches:
             # delete the help entry
             if not old_entry:
-                caller.msg("Could not find topic '%s'" % topicstr)
+                self.msg("Could not find topic '%s'" % topicstr)
                 return
             old_entry.delete()
-            caller.msg("Deleted help entry '%s'." % topicstr)
+            self.msg("Deleted help entry '%s'." % topicstr)
             return
 
         # at this point it means we want to add a new help entry.
         if not self.rhs:
-            caller.msg("You must supply a help text to add.")
+            self.msg("You must supply a help text to add.")
             return
         if old_entry:
             if 'for' in switches or 'force' in switches:
@@ -245,14 +245,14 @@ class CmdSetHelp(MuxCommand):
                 old_entry.locks.clear()
                 old_entry.locks.add(lockstring)
                 old_entry.save()
-                caller.msg("Overwrote the old topic '%s' with a new one." % topicstr)
+                self.msg("Overwrote the old topic '%s' with a new one." % topicstr)
             else:
-                caller.msg("Topic '%s' already exists. Use /force to overwrite or /append or /merge to add text to it." % topicstr)
+                self.msg("Topic '%s' already exists. Use /force to overwrite or /append or /merge to add text to it." % topicstr)
         else:
             # no old entry. Create a new one.
             new_entry = create.create_help_entry(topicstr,
                                                  self.rhs, category, lockstring)
             if new_entry:
-                caller.msg("Topic '%s' was successfully created." % topicstr)
+                self.msg("Topic '%s' was successfully created." % topicstr)
             else:
-                caller.msg("Error when creating topic '%s'! Maybe it already exists?" % topicstr)
+                self.msg("Error when creating topic '%s'! Maybe it already exists?" % topicstr)
