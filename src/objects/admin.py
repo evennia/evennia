@@ -41,7 +41,7 @@ class ObjectCreateForm(forms.ModelForm):
                                      widget=forms.TextInput(attrs={'size':'78'}),
                                      help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
     db_cmdset_storage = forms.CharField(label="CmdSet",
-                                        initial=settings.CMDSET_DEFAULT,
+                                        initial=settings.CMDSET_CHARACTER,
                                         required=False,
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="Most non-character objects don't need a cmdset and can leave this field blank.")

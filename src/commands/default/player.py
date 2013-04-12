@@ -20,7 +20,8 @@ from src.utils import utils, create, search
 
 from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
 # limit symbol import for API
-__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit", "CmdEncoding", "CmdWho", "CmdColorTest")
+__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
+           "CmdEncoding", "CmdSessions", "CmdWho", "CmdColorTest")
 
 # force max nr chars to 1 if mode is 0 or 1
 MAX_NR_CHARACTERS = MULTISESSION_MODE < 2 and 1 or MAX_NR_CHARACTERS
@@ -280,6 +281,47 @@ class CmdOOC(MuxPlayerCommand):
             player.execute_cmd("look")
         else:
             raise RuntimeError("Could not unpuppet!")
+
+class CmdSessions(MuxPlayerCommand):
+    """
+    check connected session(s)
+
+    Usage:
+      @sessions
+
+    Lists the sessions currently connected to your account.
+
+    """
+    key = "@sessions"
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        "Implement function"
+
+        # make sure we work on the player, not on the character
+        player = self.caller
+        if hasattr(player, "player"):
+            player = player.player
+
+        sessions = player.get_all_sessions()
+
+        table = [["sessid"], ["host"], ["character"], ["location"]]
+        for sess in sorted(sessions, key=lambda x:x.sessid):
+            sessid = sess.sessid
+            char = player.get_puppet(sessid)
+            table[0].append(str(sess.sessid))
+            table[1].append(str(sess.address[0]))
+            table[2].append(char and str(char) or "None")
+            table[3].append(char and str(char.location) or "N/A")
+        ftable = utils.format_table(table, 5)
+        string = ""
+        for ir, row in enumerate(ftable):
+            if ir == 0:
+                string += "\n" + "{w%s{n" % ("".join(row))
+            else:
+                string += "\n" + "".join(row)
+        self.msg(string)
 
 class CmdWho(MuxPlayerCommand):
     """

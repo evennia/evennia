@@ -122,14 +122,14 @@ class TestGeneral(CommandTest):
         #self.call(general.CmdQuit(), "", "You are already home")
 
 from src.commands.default import help
-from src.commands.default.cmdset_default import DefaultCmdSet
+from src.commands.default.cmdset_character import CharacterCmdSet
 class TestHelp(CommandTest):
     CID = 2
     def test_cmds(self):
         sep = "-"*78 + "\n"
-        self.call(help.CmdHelp(), "", sep + "   Command help entries", cmdset=DefaultCmdSet())
+        self.call(help.CmdHelp(), "", sep + "   Command help entries", cmdset=CharacterCmdSet())
         self.call(help.CmdSetHelp(), "testhelp, General = This is a test", "Topic 'testhelp' was successfully created.")
-        self.call(help.CmdHelp(), "testhelp", sep + "Help topic for testhelp", cmdset=DefaultCmdSet())
+        self.call(help.CmdHelp(), "testhelp", sep + "Help topic for testhelp", cmdset=CharacterCmdSet())
 
 
 from src.commands.default import system

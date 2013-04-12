@@ -21,7 +21,7 @@ class PlayerCmdSet(CmdSet):
     def at_cmdset_creation(self):
         "Populates the cmdset"
 
-        # General commands
+        # Player-specific commands
         self.add(player.CmdOOCLook())
         self.add(player.CmdIC())
         self.add(player.CmdOOC())
@@ -30,6 +30,7 @@ class PlayerCmdSet(CmdSet):
         self.add(player.CmdQuit())
         self.add(player.CmdPassword())
         self.add(player.CmdColorTest())
+        self.add(player.CmdSessions())
 
         # testing
         self.add(building.CmdExamine())

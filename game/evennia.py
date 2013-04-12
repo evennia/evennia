@@ -425,14 +425,15 @@ def error_check_python_modules():
     for path in settings.LOCK_FUNC_MODULES:
         imp(path, split=False)
     # cmdsets
+
+    deprstring = "settings.%s should be renamed to %s. If defaults are used, their path/classname must be updated (see src/settings_default.py)."
+    if hasattr(settings, "CMDSET_DEFAULT"): raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
+    if hasattr(settings, "CMDSET_OOC"): raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
+
     from src.commands import cmdsethandler
-    cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None)
-    cmdsethandler.import_cmdset(settings.CMDSET_DEFAULT, None)
-    if hasattr(settings, "CMDSET_OOC"):
-        string = "settings.CMDSET_OOC was renamed to CMDSET_PLAYER."
-        string += "Also default cmdset location in src was renamed (see src.settings_default.py)."
-        raise DeprecationWarning(string)
-    cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None)
+    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
+    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
+    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
     # typeclasses
     imp(settings.BASE_PLAYER_TYPECLASS)
     imp(settings.BASE_OBJECT_TYPECLASS)

@@ -772,7 +772,7 @@ class Character(Object):
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
                                  "call:false()"])) # no commands can be called on character from outside
         # add the default cmdset
-        self.cmdset.add_default(settings.CMDSET_DEFAULT, permanent=True)
+        self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
 
     def at_object_creation(self):
         """

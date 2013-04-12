@@ -7,7 +7,7 @@ from src.utils import utils
 from src.commands.command import Command
 
 # limit symbol import for API
-__all__ = ("MuxCommand",)
+__all__ = ("MuxCommand", "MuxPlayerCommand")
 
 class MuxCommand(Command):
     """

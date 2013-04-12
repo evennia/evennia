@@ -1,18 +1,19 @@
 """
-This module ties together all the commands of the default command
-set.  Note that some commands, such as communication-commands are
-instead put in the OOC cmdset.
+This module ties together all the commands default Character objects have
+available (i.e. IC commands). Note that some commands, such as communication-commands are
+instead put on the player level, in the Player cmdset. Player commands remain
+available also to Characters.
 """
 from src.commands.cmdset import CmdSet
 from src.commands.default import general, help, admin, system
 from src.commands.default import building
 from src.commands.default import batchprocess
 
-class DefaultCmdSet(CmdSet):
+class CharacterCmdSet(CmdSet):
     """
     Implements the default command set.
     """
-    key = "DefaultMUX"
+    key = "DefaultCharacter"
     priority = 0
 
     def at_cmdset_creation(self):
@@ -21,7 +22,6 @@ class DefaultCmdSet(CmdSet):
         # The general commands
         self.add(general.CmdLook())
         self.add(general.CmdHome())
-        self.add(general.CmdWho())
         self.add(general.CmdInventory())
         self.add(general.CmdPose())
         self.add(general.CmdNick())
@@ -30,8 +30,6 @@ class DefaultCmdSet(CmdSet):
         self.add(general.CmdGive())
         self.add(general.CmdSay())
         self.add(general.CmdAccess())
-        self.add(general.CmdColorTest())
-        self.add(general.CmdSessions())
 
         # The help system
         self.add(help.CmdHelp())

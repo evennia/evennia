@@ -147,7 +147,7 @@ class PlayerDB(TypedObject):
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
-                                         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_DEFAULT.")
+                                         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
 
     # Database manager
     objects = manager.PlayerManager()

@@ -217,7 +217,7 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # Command set used before player has logged in
 CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
 # Default set for logged in player with characters (fallback)
-CMDSET_DEFAULT = "src.commands.default.cmdset_default.DefaultCmdSet"
+CMDSET_CHARACTER = "src.commands.default.cmdset_character.CharacterCmdSet"
 # Command set for players without a character (ooc)
 CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
 

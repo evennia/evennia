@@ -211,7 +211,7 @@ class DefaultCmds(_EvContainer):
 
     """
 
-    from src.commands.default.cmdset_default import DefaultCmdSet
+    from src.commands.default.cmdset_character import CharacterCmdSet
     from src.commands.default.cmdset_player import PlayerCmdSet
     from src.commands.default.cmdset_unloggedin import UnloggedinCmdSet
     from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand

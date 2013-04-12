@@ -4,15 +4,15 @@ Example command set template module.
 To create new commands to populate the cmdset, see
 examples/command.py.
 
-To extend the default command set:
+To extend the character command set:
   - copy this file up one level to gamesrc/commands and name it
     something fitting.
-  - change settings.CMDSET_DEFAULT to point to the new module's
-    DefaultCmdSet
-  - import/add commands at the end of DefaultCmdSet's add() method.
+  - change settings.CMDSET_CHARACTER to point to the new module's
+    CharacterCmdSet class
+  - import/add commands at the end of CharacterCmdSet's add() method.
 
-To extend OOC cmdset:
-  - like default set, but point settings.CMDSET_OOC on your new cmdset.
+To extend Player cmdset:
+  - like character set, but point settings.PLAYER on your new cmdset.
 
 To extend Unloggedin cmdset:
   - like default set, but point settings.CMDSET_UNLOGGEDIN on your new cmdset.
@@ -44,29 +44,29 @@ class ExampleCmdSet(CmdSet):
         This is the only method defined in a cmdset, called during
         its creation. It should populate the set with command instances.
 
-        Here we just add the empty base Command object. It prints some info.
+        As and example we just add the empty base Command object. It prints some info.
         """
         self.add(Command())
 
 
-class DefaultCmdSet(default_cmds.DefaultCmdSet):
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
     This is an example of how to overload the default command
-    set defined in src/commands/default/cmdset_default.py.
+    set defined in src/commands/default/cmdset_character.py.
 
     Here we copy everything by calling the parent, but you can
     copy&paste any combination of the default command to customize
-    your default set. Next you change settings.CMDSET_DEFAULT to point
+    your default set. Next you change settings.CMDSET_CHARACTER to point
     to this class.
     """
-    key = "DefaultMUX"
+    key = "DefaultCharacter"
 
     def at_cmdset_creation(self):
         """
         Populates the cmdset
         """
-        # calling setup in src.commands.default.cmdset_default
-        super(DefaultCmdSet, self).at_cmdset_creation()
+        # calling setup in src.commands.default.cmdset_character
+        super(CharacterCmdSet, self).at_cmdset_creation()
 
         #
         # any commands you add below will overload the default ones.
