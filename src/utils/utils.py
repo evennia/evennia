@@ -434,39 +434,6 @@ def inherits_from(obj, parent):
         parent_path = "%s.%s" % (parent.__class__.__module__, parent.__class__.__name__)
     return any(1 for obj_path in obj_paths if obj_path == parent_path)
 
-def format_table(table, extra_space=1):
-    """
-    Takes a table of collumns: [[val,val,val,...], [val,val,val,...], ...]
-    where each val will be placed on a separate row in the column. All
-    collumns must have the same number of rows (some positions may be
-    empty though).
-
-    The function formats the columns to be as wide as the widest member
-    of each column.
-
-    extra_space defines how much extra padding should minimum be left between
-    collumns.
-
-    print the resulting list e.g. with
-
-    for ir, row in enumarate(ftable):
-        if ir == 0:
-            # make first row white
-            string += "\n{w" + ""join(row) + "{n"
-        else:
-            string += "\n" + "".join(row)
-    print string
-
-    """
-    if not table:
-        return [[]]
-
-    max_widths = [max([len(str(val)) for val in col]) for col in table]
-    ftable = []
-    for irow in range(len(table[0])):
-        ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
-                       for icol, col in enumerate(table)])
-    return ftable
 
 def server_services():
     """
@@ -989,3 +956,40 @@ def string_partial_matching(alternatives, inp, ret_index=True):
         return matches[max(matches)]
     return []
 
+def format_table(table, extra_space=1):
+    """
+    Note: src.utils.prettytable is more powerful than this, but this
+    function can be useful when the number of columns and rows are
+    unknown and must be calculated on the fly.
+
+    Takes a table of collumns: [[val,val,val,...], [val,val,val,...], ...]
+    where each val will be placed on a separate row in the column. All
+    collumns must have the same number of rows (some positions may be
+    empty though).
+
+    The function formats the columns to be as wide as the widest member
+    of each column.
+
+    extra_space defines how much extra padding should minimum be left between
+    collumns.
+
+    print the resulting list e.g. with
+
+    for ir, row in enumarate(ftable):
+        if ir == 0:
+            # make first row white
+            string += "\n{w" + ""join(row) + "{n"
+        else:
+            string += "\n" + "".join(row)
+    print string
+
+    """
+    if not table:
+        return [[]]
+
+    max_widths = [max([len(str(val)) for val in col]) for col in table]
+    ftable = []
+    for irow in range(len(table[0])):
+        ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
+                       for icol, col in enumerate(table)])
+    return ftable

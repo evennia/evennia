@@ -17,7 +17,7 @@ from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
-from src.utils import logger, utils, gametime, create, is_pypy
+from src.utils import logger, utils, gametime, create, is_pypy, prettytable
 from src.commands.default.muxcommand import MuxCommand
 
 # delayed imports
@@ -210,47 +210,20 @@ def format_script_list(scripts):
     if not scripts:
         return "<No scripts>"
 
-    table = [["id"], ["obj"], ["key"], ["intval"], ["next"], ["rept"], ["db"], ["typeclass"], ["desc"]]
+    table = prettytable.PrettyTable(["{wid","{wobj","{wkey","{wintval","{wnext","{wrept","{wdb"," {wtypeclass","{wdesc"],align='r')
+    table.align = 'r'
     for script in scripts:
-
-        table[0].append(script.id)
-        if not hasattr(script, 'obj') or not script.obj:
-            table[1].append("<Global>")
-        else:
-            table[1].append(script.obj.key)
-        table[2].append(script.key)
-        if not hasattr(script, 'interval') or script.interval < 0:
-            table[3].append("--")
-        else:
-            table[3].append("%ss" % script.interval)
-        next = script.time_until_next_repeat()
-        if not next:
-            table[4].append("--")
-        else:
-            table[4].append("%ss" % next)
-
-        if not hasattr(script, 'repeats') or not script.repeats:
-            table[5].append("--")
-        else:
-            table[5].append("%s" % script.repeats)
-        if script.persistent:
-            table[6].append("*")
-        else:
-            table[6].append("-")
-        typeclass_path = script.typeclass_path.rsplit('.', 1)
-        table[7].append("%s" % typeclass_path[-1])
-        table[8].append(script.desc)
-
-    ftable = utils.format_table(table)
-    string = ""
-    for irow, row in enumerate(ftable):
-        if irow == 0:
-            srow = "\n" + "".join(row)
-            srow = "{w%s{n" % srow.rstrip()
-        else:
-            srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
-        string += srow.rstrip()
-    return string.strip()
+        nextrep = script.time_until_next_repeat()
+        table.add_row([script.id,
+                       (not hasattr(script, 'obj') or not script.obj) and "<Global>" or script.obj.key,
+                       script.key,
+                       (not hasattr(script, 'interval') or script.interval < 0) and "--" or "%ss" % script.interval,
+                       not nextrep and "--" or "%ss" % nextrep,
+                       (not hasattr(script, 'repeats') or not script.repeats) and "--" or "%i" % script.repeats,
+                       script.persistent and "*" or "-",
+                       script.typeclass_path.rsplit('.', 1)[-1],
+                       script.desc])
+    return "%s" % table
 
 
 class CmdScripts(MuxCommand):
@@ -352,7 +325,7 @@ class CmdScripts(MuxCommand):
 
 class CmdObjects(MuxCommand):
     """
-    Give a summary of object types in database
+    @objects - Give a summary of object types in database
 
     Usage:
       @objects [<nr>]
@@ -376,54 +349,81 @@ class CmdObjects(MuxCommand):
         else:
             nlim = 10
 
-        string = "\n{wDatabase totals:{n"
-
-        nplayers = PlayerDB.objects.count()
         nobjs = ObjectDB.objects.count()
         base_char_typeclass = settings.BASE_CHARACTER_TYPECLASS
         nchars = ObjectDB.objects.filter(db_typeclass_path=base_char_typeclass).count()
         nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=base_char_typeclass).count()
         nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
+        nother = nobjs - nchars - nrooms - nexits
 
-        string += "\n{wPlayers:{n %i" % nplayers
-        string += "\n{wObjects:{n %i" % nobjs
-        string += "\n{w Characters (BASE_CHARACTER_TYPECLASS):{n %i" % nchars
-        string += "\n{w Rooms (location==None):{n %i" % nrooms
-        string += "\n{w Exits (destination!=None):{n %i" % nexits
-        string += "\n{w Other:{n %i\n" % (nobjs - nchars - nrooms - nexits)
+        # total object sum table
+        totaltable = prettytable.PrettyTable(["{wtype","{wcomment","{wcount", "{w%%"])
+        totaltable.align = 'l'
+        totaltable.add_row(["Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars)/nobjs)*100)])
+        totaltable.add_row(["Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms)/nobjs)*100)])
+        totaltable.add_row(["Exits", "(destination!=None)", nexits, "%.2f" % ((float(nexits)/nobjs)*100)])
+        totaltable.add_row(["Other", "", nother, "%.2f" % ((float(nother)/nobjs)*100)])
 
+        # typeclass table
+        typetable = prettytable.PrettyTable(["{wtypeclass","{wcount", "{w%%"])
+        typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
-        table = [["Count"], ["Typeclass"]]
         for path, count in dbtotals.items():
-            table[0].append(count)
-            table[1].append(path)
-        ftable = utils.format_table(table, 3)
-        for irow, row in enumerate(ftable):
-            srow = "\n" + "".join(row)
-            srow = srow.rstrip()
-            if irow == 0:
-                srow = "{w%s{n" % srow
-            string += srow
+            typetable.add_row([path, count, "%.2f" % ((float(count)/nobjs)*100)])
 
-        string += "\n\n{wLast %s Objects created:{n" % min(nobjs, nlim)
+        # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
+        latesttable = prettytable.PrettyTable(["{wcreated","{wdbref","{wname","{wtypeclass"])
+        latesttable.align = 'l'
+        for obj in objs:
+            latesttable.add_row([utils.datetime_format(obj.date_created), obj.dbref, obj.key, obj.typeclass.path])
 
-        table = [["Created"], ["dbref"], ["name"], ["typeclass"]]
-        for i, obj in enumerate(objs):
-            table[0].append(utils.datetime_format(obj.date_created))
-            table[1].append(obj.dbref)
-            table[2].append(obj.key)
-            table[3].append(str(obj.typeclass.path))
-        ftable = utils.format_table(table, 5)
-        for irow, row in enumerate(ftable):
-            srow = "\n" + "".join(row)
-            srow = srow.rstrip()
-            if irow == 0:
-                srow = "{w%s{n" % srow
-            string += srow
-
+        string = "\n{wObject subtype totals (out of %i Objects):{n\n%s" % (nobjs, totaltable)
+        string += "\n{wObject typeclass distribution:{n\n%s" % typetable
+        string += "\n{wLast %s Objects created:{n\n%s" % (min(nobjs, nlim), latesttable)
         caller.msg(string)
 
+class CmdPlayers(MuxCommand):
+    """
+    @players - give a summary of all registed Players
+
+    Usage:
+      @players [nr]
+
+    Lists statistics about the Players registered with the game.
+    It will list the <nr> amount of latest registered players
+    If not given, <nr> defaults to 10.
+    """
+    key = "@players"
+    aliases = ["@listplayers"]
+    locks = "cmd:perm(listplayers) or perm(Admins)"
+    def func(self):
+        "List the players"
+
+        caller = self.caller
+        if self.args and self.args.is_digit():
+            nlim = int(self.args)
+        else:
+            nlim = 10
+
+        nplayers = PlayerDB.objects.count()
+
+        # typeclass table
+        dbtotals = PlayerDB.objects.object_totals()
+        typetable = prettytable.PrettyTable(["{wtypeclass", "{wcount", "{w%%"])
+        typetable.align = 'l'
+        for path, count in dbtotals.items():
+            typetable.add_row([path, count, "%.2f" % ((float(count)/nplayers)*100)])
+        # last N table
+        plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
+        latesttable = prettytable.PrettyTable(["{wcreated", "{wdbref","{wname","{wtypeclass"])
+        latesttable.align = 'l'
+        for ply in plyrs:
+            latesttable.add_row([utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.typeclass.path])
+
+        string = "\n{wPlayer typeclass distribution:{n\n%s" % typetable
+        string += "\n{wLast %s Players created:{n\n%s" % (min(nplayers, nlim), latesttable)
+        caller.msg(string)
 
 class CmdService(MuxCommand):
     """
@@ -468,18 +468,11 @@ class CmdService(MuxCommand):
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
-            string = "-" * 78
-            string += "\n{wServices{n (use @services/start|stop|delete):"
-
+            table = prettytable.PrettyTable(["{wService{n (use @services/start|stop|delete)", "{wstatus"])
+            table.align = 'l'
             for service in service_collection.services:
-                if service.running:
-                    status = 'Running'
-                    string += '\n * {g%s{n (%s)' % (service.name, status)
-                else:
-                    status = 'Inactive'
-                    string += '\n   {R%s{n (%s)' % (service.name, status)
-            string += "\n" + "-" * 78
-            caller.msg(string)
+                table.add_row([service.name, service.running and "{gRunning" or "{rNot Running"])
+            caller.msg(str(table))
             return
 
         # Get the service to start / stop
@@ -581,7 +574,7 @@ class CmdTime(MuxCommand):
     Usage:
       @time
 
-    Server local time.
+    Server time statistics.
     """
     key = "@time"
     aliases = "@uptime"
@@ -589,30 +582,14 @@ class CmdTime(MuxCommand):
     help_category = "System"
 
     def func(self):
-        "Show times."
-
-        table = [["Current server uptime:",
-                  "Total server running time:",
-                  "Total in-game time (realtime x %g):" % (gametime.TIMEFACTOR),
-                  "Server time stamp:"
-                  ],
-                 [utils.time_format(time.time() - SESSIONS.server.start_time, 3),
-                  utils.time_format(gametime.runtime(format=False), 2),
-                  utils.time_format(gametime.gametime(format=False), 2),
-                  datetime.datetime.now()
-                  ]]
-        if utils.host_os_is('posix'):
-            loadavg = os.getloadavg()
-            table[0].append("Server load (per minute):")
-            table[1].append("%g" % (loadavg[0]))
-        stable = []
-        for col in table:
-            stable.append([str(val).strip() for val in col])
-        ftable = utils.format_table(stable, 5)
-        string = ""
-        for row in ftable:
-            string += "\n " + "{w%s{n" % row[0] + "".join(row[1:])
-        self.caller.msg(string)
+        "Show server time data in a table."
+        table = prettytable.PrettyTable(["{wserver time statistic","{wtime"])
+        table.align = 'l'
+        table.add_row(["Current server uptime", utils.time_format(time.time() - SESSIONS.server.start_time, 3)])
+        table.add_row(["Total server running time", utils.time_format(gametime.runtime(format=False), 2)])
+        table.add_row(["Total in-game time (realtime x %g" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(format=False), 2)])
+        table.add_row(["Server time stamp", datetime.datetime.now()])
+        self.caller.msg(str(table))
 
 class CmdServerLoad(MuxCommand):
     """
@@ -656,92 +633,60 @@ class CmdServerLoad(MuxCommand):
 
         if not utils.host_os_is('posix'):
             string = "Process listings are only available under Linux/Unix."
-        else:
-            global _resource, _idmapper
-            if not _resource:
-                import resource as _resource
-            if not _idmapper:
-                from src.utils.idmapper import base as _idmapper
+            caller.msg(string)
+            return
 
-            import resource
-            loadavg = os.getloadavg()
-            psize = _resource.getpagesize()
-            pid = os.getpid()
-            rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1024.0
-            vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0
+        global _resource, _idmapper
+        if not _resource:
+            import resource as _resource
+        if not _idmapper:
+            from src.utils.idmapper import base as _idmapper
 
-            rusage = resource.getrusage(resource.RUSAGE_SELF)
-            table = [["Server load (1 min):",
-                      "Process ID:",
-                      "Bytes per page:",
-                      "CPU time used:",
-                      "Resident memory:",
-                      "Virtual memory:",
-                      "Page faults:",
-                      "Disk I/O:",
-                      "Network I/O:",
-                      "Context switching:"
-                      ],
-                     ["%g" % loadavg[0],
-                      "%10d" % pid,
-                      "%10d " % psize,
-                      "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime),
-                      #"%10d shared" % rusage.ru_ixrss,
-                      #"%10d pages" % rusage.ru_maxrss,
-                      "%10.2f MB" % rmem,
-                      "%10.2f MB" % vmem,
-                      "%10d hard" % rusage.ru_majflt,
-                      "%10d reads" % rusage.ru_inblock,
-                      "%10d in" % rusage.ru_msgrcv,
-                      "%10d vol" % rusage.ru_nvcsw
-                    ],
-                     ["", "", "",
-                      "(user: %gs)" % rusage.ru_stime,
-                      "", #"%10d private" % rusage.ru_idrss,
-                      "", #"%10d bytes" % (rusage.ru_maxrss * psize),
-                      "%10d soft" % rusage.ru_minflt,
-                      "%10d writes" % rusage.ru_oublock,
-                      "%10d out" % rusage.ru_msgsnd,
-                      "%10d forced" % rusage.ru_nivcsw
-                      ],
-                     ["", "", "", "",
-                      "", #"%10d stack" % rusage.ru_isrss,
-                      "",
-                      "%10d swapouts" % rusage.ru_nswap,
-                      "", "",
-                      "%10d sigs" % rusage.ru_nsignals
-                    ]
-                     ]
-            stable = []
-            for col in table:
-                stable.append([str(val).strip() for val in col])
-            ftable = utils.format_table(stable, 5)
-            string = ""
-            for row in ftable:
-                string += "\n " + "{w%s{n" % row[0] + "".join(row[1:])
+        import resource
+        loadavg = os.getloadavg()
+        psize = _resource.getpagesize()
+        pid = os.getpid()
+        rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1024.0  # resident memory
+        vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0  # virtual memory
+        pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read()) # percent of resident memory to total
+        rusage = resource.getrusage(resource.RUSAGE_SELF)
 
-            if not is_pypy:
-                # Cache size measurements are not available on PyPy because it lacks sys.getsizeof
+        # load table
+        loadtable = prettytable.PrettyTable(["property", "statistic"])
+        loadtable.align = 'l'
+        loadtable.add_row(["Server load (1 min)","%g" % loadavg[0]])
+        loadtable.add_row(["Process ID","%g" % pid]),
+        loadtable.add_row(["Bytes per page","%g " % psize])
+        loadtable.add_row(["CPU time used (total)", "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime)])
+        loadtable.add_row(["CPU time used (user)", "%s (%gs)" % (utils.time_format(rusage.ru_stime), rusage.ru_stime)])
+        loadtable.add_row(["Memory usage","%g MB (%g%%)" % (rmem, pmem)])
+        loadtable.add_row(["Virtual address space\n {x(resident+swap+caching){n", "%g MB" % vmem])
+        loadtable.add_row(["Page faults","%g hard, %g soft, %g swapouts" % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap)])
+        loadtable.add_row(["Disk I/O", "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock)])
+        loadtable.add_row(["Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd)])
+        loadtable.add_row(["Context switching", "%g vol, %g forced, %g signals" % (rusage.ru_nvcsw, rusage.ru_nivcsw, rusage.ru_nsignals)])
 
-                # object cache size
-                cachedict = _idmapper.cache_size()
-                totcache = cachedict["_total"]
-                string += "\n{w Database entity (idmapper) cache usage:{n %5.2f MB (%i items)" % (totcache[1], totcache[0])
-                sorted_cache = sorted([(key, tup[0], tup[1]) for key, tup in cachedict.items() if key !="_total" and tup[0] > 0],
-                                        key=lambda tup: tup[2], reverse=True)
-                table = [[tup[0] for tup in sorted_cache],
-                         ["%5.2f MB" % tup[2] for tup in sorted_cache],
-                         ["%i item(s)" % tup[1] for tup in sorted_cache]]
-                ftable = utils.format_table(table, 5)
-                for row in ftable:
-                    string += "\n  " + row[0] + row[1] + row[2]
-                # get sizes of other caches
-                attr_cache_info, field_cache_info, prop_cache_info = get_cache_sizes()
-                #size = sum([sum([getsizeof(obj) for obj in dic.values()]) for dic in _attribute_cache.values()])/1024.0
-                #count = sum([len(dic) for dic in _attribute_cache.values()])
-                string += "\n{w On-entity Attribute cache usage:{n %5.2f MB (%i attrs)" % (attr_cache_info[1], attr_cache_info[0])
-                string += "\n{w On-entity Field cache usage:{n %5.2f MB (%i fields)" % (field_cache_info[1], field_cache_info[0])
-                string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
+        string = "{wServer CPU and Memory load:{n\n%s" % loadtable
+
+        if not is_pypy:
+            # Cache size measurements are not available on PyPy because it lacks sys.getsizeof
+
+            # object cache size
+            cachedict = _idmapper.cache_size()
+            totcache = cachedict["_total"]
+            sorted_cache = sorted([(key, tup[0], tup[1]) for key, tup in cachedict.items() if key !="_total" and tup[0] > 0],
+                                    key=lambda tup: tup[2], reverse=True)
+            memtable = prettytable.PrettyTable(["entity name", "number", "cache (MB)", "idmapper %%"])
+            memtable.align = 'l'
+            for tup in sorted_cache:
+                memtable.add_row([tup[0], "%i" % tup [1], "%5.2f" % tup[2], "%.2f" % (float(tup[2]/totcache[1])*100)])
+
+            # get sizes of other caches
+            attr_cache_info, field_cache_info, prop_cache_info = get_cache_sizes()
+            string += "\n{w Entity idmapper cache usage:{n %5.2f MB (%i items)\n%s" % (totcache[1], totcache[0], memtable)
+            string += "\n{w On-entity Attribute cache usage:{n %5.2f MB (%i attrs)" % (attr_cache_info[1], attr_cache_info[0])
+            string += "\n{w On-entity Field cache usage:{n %5.2f MB (%i fields)" % (field_cache_info[1], field_cache_info[0])
+            string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
 
         caller.msg(string)
 

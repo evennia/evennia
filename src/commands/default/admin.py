@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.server.sessionhandler import SESSIONS
 from src.server.models import ServerConfig
-from src.utils import utils
+from src.utils import utils, prettytable
 from src.commands.default.muxcommand import MuxCommand
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
@@ -106,29 +106,17 @@ IPREGEX = re.compile(r"[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}")
 def list_bans(banlist):
     """
     Helper function to display a list of active bans. Input argument
-    is the banlist read into the two commands @ban and @undban below.
+    is the banlist read into the two commands @ban and @unban below.
     """
     if not banlist:
         return "No active bans were found."
 
-    table = [["id"], ["name/ip"], ["date"], ["reason"]]
-    table[0].extend([str(i+1) for i in range(len(banlist))])
-    for ban in banlist:
-        if ban[0]:
-            table[1].append(ban[0])
-        else:
-            table[1].append(ban[1])
-    table[2].extend([ban[3] for ban in banlist])
-    table[3].extend([ban[4] for ban in banlist])
-    ftable = utils.format_table(table, 4)
-    string = "{wActive bans:{x"
-    for irow, row in enumerate(ftable):
-        if irow == 0:
-            srow = "\n" + "".join(row)
-            srow = "{w%s{n" % srow.rstrip()
-        else:
-            srow = "\n" + "{w%s{n" % row[0] + "".join(row[1:])
-        string += srow.rstrip()
+    table = prettytable.PrettyTable(["{wid", "{wname/ip", "{wdate", "{wreason"])
+    for inum, ban in enumerate(banlist):
+        table.add_row([str(inum+1),
+                       ban[0] and ban[0] or ban[1],
+                       ban[3], ban[4]])
+    string = "{wActive bans:{n\n%s" % table
     return string
 
 class CmdBan(MuxCommand):

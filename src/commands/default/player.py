@@ -20,7 +20,7 @@ import time
 from django.conf import settings
 from src.server.sessionhandler import SESSIONS
 from src.commands.default.muxcommand import MuxPlayerCommand
-from src.utils import utils, create, search
+from src.utils import utils, create, search, prettytable
 
 from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
 # limit symbol import for API
@@ -302,27 +302,18 @@ class CmdSessions(MuxPlayerCommand):
 
     def func(self):
         "Implement function"
-
-        # make sure we work on the player, not on the character
         player = self.caller
         sessions = player.get_all_sessions()
 
-        table = [["sessid"], ['protocol'], ["host"], ["puppet/character"], ["location"]]
+        table = prettytable.PrettyTable(["{wsessid", "{wprotocol", "{whost", "{wpuppet/character", "{wlocation"])
         for sess in sorted(sessions, key=lambda x:x.sessid):
             sessid = sess.sessid
             char = player.get_puppet(sessid)
-            table[0].append(str(sess.sessid))
-            table[1].append(str(sess.protocol_key))
-            table[2].append(type(sess.address)==tuple and sess.address[0] or sess.address)
-            table[3].append(char and str(char) or "None")
-            table[4].append(char and str(char.location) or "N/A")
-        ftable = utils.format_table(table, 5)
-        string = "{wYour current session(s):{n"
-        for ir, row in enumerate(ftable):
-            if ir == 0:
-                string += "\n" + "{w%s{n" % ("".join(row))
-            else:
-                string += "\n" + "".join(row)
+            table.add_row([str(sessid), str(sess.protocol_key),
+                           type(sess.address)==tuple and sess.address[0] or sess.address,
+                           char and str(char) or "None",
+                           char and str(char.location) or "N/A"])
+        string = "{wYour current session(s):{n\n%s" % table
         self.msg(string)
 
 class CmdWho(MuxPlayerCommand):
@@ -354,51 +345,35 @@ class CmdWho(MuxPlayerCommand):
         else:
             show_session_data = player.check_permstring("Immortals") or player.check_permstring("Wizards")
 
-        if show_session_data:
-            table = [["Player Name"], ["On for"], ["Idle"], ["Room"], ["Cmds"], ["Host"]]
-        else:
-            table = [["Player Name"], ["On for"], ["Idle"]]
-
-        for session in session_list:
-            if not session.logged_in:
-                continue
-
-            delta_cmd = time.time() - session.cmd_last_visible
-            delta_conn = time.time() - session.conn_time
-            plr_pobject = session.get_puppet()
-            if not plr_pobject:
-                plr_pobject = session.get_player()
-                show_session_data = False
-                table = [["Player Name"], ["On for"], ["Idle"]]
-            if show_session_data:
-                table[0].append(plr_pobject.name[:25])
-                table[1].append(utils.time_format(delta_conn, 0))
-                table[2].append(utils.time_format(delta_cmd, 1))
-                table[3].append(plr_pobject.location and plr_pobject.location.id or "None")
-                table[4].append(session.cmd_total)
-                table[5].append(session.address[0])
-            else:
-                table[0].append(plr_pobject.name[:25])
-                table[1].append(utils.time_format(delta_conn,0))
-                table[2].append(utils.time_format(delta_cmd,1))
-
-        stable = []
-        for row in table: # prettify values
-            stable.append([str(val).strip() for val in row])
-        ftable = utils.format_table(stable, 5)
-        string = ""
-        for ir, row in enumerate(ftable):
-            if ir == 0:
-                string += "\n" + "{w%s{n" % ("".join(row))
-            else:
-                string += "\n" + "".join(row)
         nplayers = (SESSIONS.player_count())
-        if nplayers == 1:
-            string += '\nOne player logged in.'
+        if show_session_data:
+            table = prettytable.PrettyTable(["{wPlayer Name","{wOn for", "{wIdle", "{wRoom", "{wCmds", "{wHost"])
+            for session in session_list:
+                if not session.logged_in: continue
+                delta_cmd = time.time() - session.cmd_last_visible
+                delta_conn = time.time() - session.conn_time
+                plr_pobject = session.get_puppet()
+                plr_pobject = plr_pobject or session.get_player()
+                table.add_row([utils.crop(plr_pobject.name, width=25),
+                               utils.time_format(delta_conn, 0),
+                               utils.time_format(delta_cmd, 1),
+                               hasattr(plr_pobject, "location") and plr_pobject.location or "None",
+                               session.cmd_total, type(session.address==tuple) and session.address[0] or session.address])
         else:
-            string += '\n%d players logged in.' % nplayers
+            table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{Idle"])
+            for session in session_list:
+                if not session.logged_in: continue
+                delta_cmd = time.time() - session.cmd_last_visible
+                delta_conn = time.time() - session.conn_time
+                plr_pobject = session.get_puppet()
+                plr_pobject = plr_pobject or session.get_player()
+                table.add_row([utils.crop(plr_pobject.name, width=25),
+                               utils.time.format(delta_conn, 0),
+                               utils,time_format(delta_cmd, 1)])
 
+        string = "{wPlayers:\n%s\n%s logged in." % (table, nplayers==1 and "One player" or nplayer)
         self.msg(string)
+
 
 class CmdEncoding(MuxPlayerCommand):
     """
@@ -546,15 +521,29 @@ class CmdColorTest(MuxPlayerCommand):
     locks = "cmd:all()"
     help_category = "General"
 
+    def table_format(self, table):
+       """
+       Helper method to format the ansi/xterm256 tables.
+       Takes a table of columns [[val,val,...],[val,val,...],...]
+       """
+       if not table:
+           return [[]]
+
+       extra_space = 1
+       max_widths = [max([len(str(val)) for val in col]) for col in table]
+       ftable = []
+       for irow in range(len(table[0])):
+           ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
+                          for icol, col in enumerate(table)])
+       return ftable
+
     def func(self):
         "Show color tables"
 
         player = self.caller
-        if not self.args or not self.args in ("ansi", "xterm256"):
-            self.msg("Usage: @color ansi|xterm256")
-            return
 
-        if self.args == "ansi":
+        if self.args.startswith("a"):
+            # show ansi 16-color table
             from src.utils import ansi
             ap = ansi.ANSI_PARSER
             # ansi colors
@@ -570,7 +559,9 @@ class CmdColorTest(MuxPlayerCommand):
             #print string
             self.msg(string)
             self.msg("({{X and %%cx are black-on-black\n %%r - return, %%t - tab, %%b - space)")
-        elif self.args == "xterm256":
+
+        elif self.args.startswith("x"):
+            # show xterm256 table
             table = [[],[],[],[],[],[],[],[],[],[],[],[]]
             for ir in range(6):
                 for ig in range(6):
@@ -581,11 +572,13 @@ class CmdColorTest(MuxPlayerCommand):
                         table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir,ig,ib,
                                                                         5-ir,5-ig,5-ib,
                                                                         "{{b%i%i%i" % (ir,ig,ib)))
-            table = utils.format_table(table)
+            table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
                 string += "\n" + "".join(row)
             self.msg(string)
             self.msg("(e.g. %%c123 and %%cb123 also work)")
-
+        else:
+            # malformed input
+            self.msg("Usage: @color ansi|xterm256")
 

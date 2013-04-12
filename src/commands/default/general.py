@@ -2,7 +2,7 @@
 General Character commands usually availabe to all characters
 """
 from django.conf import settings
-from src.utils import utils
+from src.utils import utils, prettytable
 from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand
 
@@ -124,20 +124,13 @@ class CmdNick(MuxCommand):
 
         caller = self.caller
         switches = self.switches
-
         nicks = Nick.objects.filter(db_obj=caller.dbobj).exclude(db_type="channel")
+
         if 'list' in switches:
-            string = "{wDefined Nicks:{n"
-            cols = [["Type"],["Nickname"],["Translates-to"] ]
+            table = prettytable.PrettyTable(["{wNickType", "{wNickname", "{wTranslates-to"])
             for nick in nicks:
-                cols[0].append(nick.db_type)
-                cols[1].append(nick.db_nick)
-                cols[2].append(nick.db_real)
-            for ir, row in enumerate(utils.format_table(cols)):
-                if ir == 0:
-                    string += "\n{w" + "".join(row) + "{n"
-                else:
-                    string += "\n" + "".join(row)
+                table.add_row([nick.db_type, nick.db_nick, nick.db_real])
+            string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
         if 'clearall' in switches:
@@ -197,19 +190,12 @@ class CmdInventory(MuxCommand):
         if not items:
             string = "You are not carrying anything."
         else:
-            # format item list into nice collumns
-            cols = [[],[]]
+            table = prettytable.PrettyTable(["name", "desc"])
+            table.header = False
+            table.border = False
             for item in items:
-                cols[0].append(item.name)
-                desc = item.db.desc
-                if not desc:
-                    desc = ""
-                cols[1].append(utils.crop(str(desc)))
-            # auto-format the columns to make them evenly wide
-            ftable = utils.format_table(cols)
-            string = "You are carrying:"
-            for row in ftable:
-                string += "\n " + "{C%s{n - %s" % (row[0], row[1])
+                table.add_row(["{C%s{n" % item.name, item.db.desc and item.db.desc or ""])
+            string = "{wYou are carrying:\n%s" % table
         self.caller.msg(string)
 
 class CmdGet(MuxCommand):

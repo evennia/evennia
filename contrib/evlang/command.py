@@ -13,6 +13,7 @@ a ScriptableObject. It will handle access checks.
 
 from ev import utils
 from ev import default_cmds
+from src.utils import prettytable
 
 #------------------------------------------------------------
 # Evlang-related commands
@@ -94,17 +95,10 @@ class CmdCode(default_cmds.MuxCommand):
                 scripts.extend([(name, "--", "--") for name in evlang_locks if name not in evlang_scripts])
                 scripts = sorted(scripts, key=lambda p: p[0])
 
-            table = [["type"] + [tup[0] for tup in scripts],
-                     ["creator"] + [tup[1] for tup in scripts],
-                     ["code"] + [tup[2] for tup in scripts]]
-            ftable = utils.format_table(table, extra_space=5)
-            string = "{wEvlang scripts on %s:{n" % obj.key
-            for irow, row in enumerate(ftable):
-                if irow == 0:
-                    string += "\n" + "".join("{w%s{n" % col for col in row)
-                else:
-                    string += "\n" + "".join(col for col in row)
-
+            table = prettytable.PrettyTable(["{wtype", "{wcreator", "{wcode"])
+            for tup in scripts:
+                table.add_row([tup[0], tup[1], tup[2]])
+            string = "{wEvlang scripts on %s:{n\n%s" % (obj.key, table)
             caller.msg(string)
             return
 
@@ -131,6 +125,3 @@ class CmdCode(default_cmds.MuxCommand):
             # debug mode
             caller.msg("{wDebug: running script (look out for errors below) ...{n\n" + "-"*68)
             obj.ndb.evlang.run_by_name(codetype, caller, quiet=False)
-
-
-

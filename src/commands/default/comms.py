@@ -11,7 +11,7 @@ from django.conf import settings
 from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
 from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
-from src.utils import create, utils
+from src.utils import create, utils, prettytable
 from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
@@ -33,12 +33,12 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
         if channels:
             return channels[0]
         if not silent:
-            self.msg("Channel '%s' not found." % channelname)
+            caller.msg("Channel '%s' not found." % channelname)
         return None
     elif len(channels) > 1:
         matches = ", ".join(["%s(%s)" % (chan.key, chan.id) for chan in channels])
         if not silent:
-            self.msg("Multiple channels match (be more specific): \n%s" % matches)
+            caller.msg("Multiple channels match (be more specific): \n%s" % matches)
         return None
     return channels[0]
 
@@ -238,6 +238,7 @@ class CmdChannels(MuxCommand):
 
     Lists all channels available to you, wether you listen to them or not.
     Use 'comlist" to only view your current channel subscriptions.
+    Use addcom/delcom to join and leave channels
     """
     key = "@channels"
     aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
@@ -257,46 +258,27 @@ class CmdChannels(MuxCommand):
         # all channel we are already subscribed to
         subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
 
-        if self.cmdstring != "comlist":
-
-            string = "\nChannels available:"
-            cols = [[" "], ["Channel"], ["Aliases"], ["Perms"], ["Description"]]
-            for chan in channels:
-                if chan in subs:
-                    cols[0].append(">")
-                else:
-                    cols[0].append(" ")
-                cols[1].append(chan.key)
-                cols[2].append(",".join(chan.aliases))
-                cols[3].append(str(chan.locks))
-                cols[4].append(chan.desc)
-            # put into table
-            for ir, row in enumerate(utils.format_table(cols)):
-                if ir == 0:
-                    string += "\n{w" + "".join(row) + "{n"
-                else:
-                    string += "\n" + "".join(row)
-            self.msg(string)
-
-        string = "\nChannel subscriptions:"
-        if not subs:
-            string += "(None)"
-        else:
-            nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
-            cols = [[" "], ["Channel"], ["Aliases"], ["Description"]]
+        if self.cmdstring == "comlist":
+            # just display the subscribed channels with no extra info
+            comtable = prettytable.PrettyTable(["{wchannel","{wmy aliases", "{wdescription"])
             for chan in subs:
-                cols[0].append(" ")
-                cols[1].append(chan.key)
-                cols[2].append(",".join([nick.db_nick for nick in nicks
-                                         if nick.db_real.lower() == chan.key.lower()] + chan.aliases))
-                cols[3].append(chan.desc)
-            # put into table
-            for ir, row in enumerate(utils.format_table(cols)):
-                if ir == 0:
-                    string += "\n{w" + "".join(row) + "{n"
-                else:
-                    string += "\n" + "".join(row)
-        self.msg(string)
+                clower = chan.key.lower()
+                nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
+                comtable.add_row(["%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
+                                  "%s".join(nick.db_nick for nick in nicks if nick.db_real.lower()==clower()),
+                                  chan.desc])
+            caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
+        else:
+            # full listing (of channels caller is able to listen to)
+            comtable = prettytable.PrettyTable(["{wsub","{wchannel","{wmy aliases","{wlocks","{wdescription"])
+            for chan in channels:
+                nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
+                comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
+                                  "%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
+                                  "%s".join(nick.db_nick for nick in nicks if nick.db_real.lower()==clower()),
+                                  chan.locks,
+                                  chan.desc])
+            caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
 class CmdCdestroy(MuxCommand):
     """
@@ -774,17 +756,10 @@ class CmdIRC2Chan(MuxCommand):
             # show all connections
             connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='irc_')
             if connections:
-                cols = [["Evennia channel"], ["IRC channel"]]
+                table = prettytable.PrettyTable(["Evennia channel", "IRC channel"])
                 for conn in connections:
-                    cols[0].append(conn.channel.key)
-                    cols[1].append(" ".join(conn.external_config.split('|')))
-                ftable = utils.format_table(cols)
-                string = ""
-                for ir, row in enumerate(ftable):
-                    if ir == 0:
-                        string += "{w%s{n" % "".join(row)
-                    else:
-                        string += "\n" + "".join(row)
+                    table.add_row([conn.channel.key, " ".join(conn.external_config.split('|'))])
+                string = "{wIRC connections:{n\n%s" % table
                 self.msg(string)
             else:
                 self.msg("No connections found.")
@@ -863,18 +838,10 @@ class CmdIMC2Chan(MuxCommand):
             # show all connections
             connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
             if connections:
-                cols = [["Evennia channel"], ["<->"], ["IMC channel"]]
+                table = prettytable.PrettyTable(["Evennia channel", "IMC channel"])
                 for conn in connections:
-                    cols[0].append(conn.channel.key)
-                    cols[1].append("")
-                    cols[2].append(conn.external_config)
-                ftable = utils.format_table(cols)
-                string = ""
-                for ir, row in enumerate(ftable):
-                    if ir == 0:
-                        string += "{w%s{n" % "".join(row)
-                    else:
-                        string += "\n" + "".join(row)
+                    table.add_row([conn.channel.key, conn.external_config])
+                string = "{wIMC connections:{n\n%s" % table
                 self.msg(string)
             else:
                 self.msg("No connections found.")
@@ -966,20 +933,11 @@ class CmdIMCInfo(MuxCommand):
             string = ""
             nmuds = 0
             for network in networks:
-                string += "\n {GMuds registered on %s:{n" % network
-                cols = [["Name"], ["Url"], ["Host"], ["Port"]]
+                table = prettytable.PrettyTable(["Name", "Url", "Host", "Port"])
                 for mud in (mud for mud in muds if mud.networkname == network):
                     nmuds += 1
-                    cols[0].append(mud.name)
-                    cols[1].append(mud.url)
-                    cols[2].append(mud.host)
-                    cols[3].append(mud.port)
-                ftable = utils.format_table(cols)
-                for ir, row in enumerate(ftable):
-                    if ir == 0:
-                        string += "\n{w" + "".join(row) + "{n"
-                    else:
-                        string += "\n" + "".join(row)
+                    table.add_row([mud.name, mud.url, mud.host, mud.port])
+                string += "\n{wMuds registered on %s:{n\n%s" % (network, table)
             string += "\n %i Muds found." % nmuds
             self.msg(string)
 
@@ -999,24 +957,13 @@ class CmdIMCInfo(MuxCommand):
             channels = IMC2_CHANLIST.get_channel_list()
             string = ""
             nchans = 0
-            string += "\n {GChannels on %s:{n" % IMC2_CLIENT.factory.network
-            cols = [["Full name"], ["Name"], ["Owner"], ["Perm"], ["Policy"]]
-            for channel in channels:
+            table = prettytable.PrettyTable(["Full name", "Name", "Owner", "Perm", "Policy"])
+            for chan in channels:
                 nchans += 1
-                cols[0].append(channel.name)
-                cols[1].append(channel.localname)
-                cols[2].append(channel.owner)
-                cols[3].append(channel.level)
-                cols[4].append(channel.policy)
-            ftable = utils.format_table(cols)
-            for ir, row in enumerate(ftable):
-                if ir == 0:
-                    string += "\n{w" + "".join(row) + "{n"
-                else:
-                    string += "\n" + "".join(row)
-            string += "\n %i Channels found." % nchans
+                table.add_row([chan.name, chan.localname, chan.owner, chan.level, chan.policy])
+            string += "\n{wChannels on %s:{n\n%s" % (IMC2_CLIENT.factory.network, table)
+            string += "\n%i Channels found." % nchans
             self.msg(string)
-
         else:
             # no valid inputs
             string = "Usage: imcinfo|imcchanlist|imclist"
@@ -1104,17 +1051,10 @@ class CmdRSS2Chan(MuxCommand):
             # show all connections
             connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='rss_')
             if connections:
-                cols = [["Evennia-channel"], ["RSS-url"]]
+                table = prettytable.PrettyTable(["Evennia channel", "RSS url"])
                 for conn in connections:
-                    cols[0].append(conn.channel.key)
-                    cols[1].append(conn.external_config.split('|')[0])
-                ftable = utils.format_table(cols)
-                string = ""
-                for ir, row in enumerate(ftable):
-                    if ir == 0:
-                        string += "{w%s{n" % "".join(row)
-                    else:
-                        string += "\n" + "".join(row)
+                    table.add_row([conn.channel.key, conn.external_config.split('|')[0]])
+                string = "{wConnections to RSS:{n\n%s" % table
                 self.msg(string)
             else:
                 self.msg("No connections found.")
