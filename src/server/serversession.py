@@ -164,6 +164,7 @@ class ServerSession(Session):
             # we are not logged in. Execute cmd with the the session directly
             # (it uses the settings.UNLOGGEDIN cmdset)
             cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
+        self.update_session_counters()
     execute_cmd = data_in # alias
 
     def data_out(self, msg, data=None):
