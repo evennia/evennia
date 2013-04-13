@@ -173,7 +173,6 @@ class ServerSession(Session):
         """
         self.sessionhandler.data_out(self, msg, data)
 
-
     def oob_data_in(self, data):
         """
         This receives out-of-band data from the Portal.

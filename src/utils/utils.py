@@ -478,6 +478,7 @@ def delay(delay=2, retval=None, callback=None):
     reactor.callLater(delay, callb, retval)
     return d
 
+
 _FROM_MODEL_MAP = None
 _TO_DBOBJ = lambda o: (hasattr(o, "dbobj") and o.dbobj) or o
 _TO_PACKED_DBOBJ = lambda natural_key, dbref: ('__packed_dbobj__', natural_key, dbref)
@@ -672,6 +673,8 @@ def run_async(to_execute, *args, **kwargs):
     if callback:
         deferred.addCallback(callback, **callback_kwargs)
     deferred.addErrback(errback, **errback_kwargs)
+
+#
 
 def check_evennia_dependencies():
     """

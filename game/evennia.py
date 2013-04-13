@@ -156,7 +156,7 @@ try:
     test = ObjectDB.objects.get(id=1)
 except ObjectDB.DoesNotExist:
     pass # this is fine at this point
-except DatabaseError:
+except DatabaseError,e:
     print """
     Your database does not seem to be set up correctly.
 
@@ -172,6 +172,7 @@ except DatabaseError:
 
     When you have a database set up, rerun evennia.py.
     """
+    print e
     sys.exit()
 
 # Add this to the environmental variable for the 'twistd' command.

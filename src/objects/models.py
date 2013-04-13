@@ -195,6 +195,7 @@ class ObjectDB(TypedObject):
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, blank=True,
                                          help_text="optional python path to a cmdset class.")
+
     # Database manager
     objects = ObjectManager()
 
