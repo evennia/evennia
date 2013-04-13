@@ -334,6 +334,10 @@ def to_attr(data):
 
 class Migration(DataMigration):
 
+    depends_on = (
+                 ("objects", "0018_add_picklefield"),
+                    )
+
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
@@ -361,8 +365,7 @@ class Migration(DataMigration):
                 """
                 Convert db-stored dbref back to object
                 """
-                mclass = orm[data.db_model].model_class()
-                #mclass = CTYPEGET(model=data.db_model).model_class()
+                mclass = CTYPEGET(model=data.db_model).model_class()
                 try:
                     return mclass.objects.get(id=data.id)
 

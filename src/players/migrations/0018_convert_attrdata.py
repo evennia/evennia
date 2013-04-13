@@ -270,7 +270,9 @@ class PackedSet(set):
 
 
 class Migration(DataMigration):
-
+    depends_on = (
+                 ("objects", "0018_add_picklefield"),
+                    )
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
@@ -298,8 +300,7 @@ class Migration(DataMigration):
                 """
                 Convert db-stored dbref back to object
                 """
-                mclass = orm[data.db_model].model_class()
-                #mclass = CTYPEGET(model=data.db_model).model_class()
+                mclass = CTYPEGET(model=data.db_model).model_class()
                 try:
                     return mclass.objects.get(id=data.id)
 
@@ -343,18 +344,18 @@ class Migration(DataMigration):
                 # all types of iterables
                 return iter_id2db(data)
 
-            if not db.dry_run:
-                    for attr in orm['players.PlayerAttribute'].objects.all():
-                        # repack attr into new format and reimport
-                        datatuple = loads(to_str(attr.db_value))
-                        python_data = from_attr(datatuple)
-                        new_data = to_pickle(python_data)
-                        attr.db_value2 = new_data # new pickleObjectField
-                        attr.save()
+        if not db.dry_run:
+            for attr in orm['players.PlayerAttribute'].objects.all():
+                # repack attr into new format and reimport
+                datatuple = loads(to_str(attr.db_value))
+                python_data = from_attr(datatuple)
+                new_data = to_pickle(python_data)
+                attr.db_value2 = new_data # new pickleObjectField
+                attr.save()
 
-            def backwards(self, orm):
-                "Write your backwards methods here."
-                raise RuntimeError("This migration cannot be reversed.")
+        def backwards(self, orm):
+            "Write your backwards methods here."
+            raise RuntimeError("This migration cannot be reversed.")
 
     models = {
         'auth.group': {
