@@ -1566,7 +1566,7 @@ class CmdExamine(ObjManipCommand):
         """
         if crop and isinstance(value, basestring):
             value = utils.crop(value)
-            value = repr(value)
+            value = utils.to_unicode(vale)
         string = "\n %s = %s" % (attr, value)
         string = raw(string)
         return string
