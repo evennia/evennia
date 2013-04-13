@@ -27,12 +27,12 @@ these to create custom managers.
 """
 
 import sys
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+#try:
+#    import cPickle as pickle
+#except ImportError:
+#    import pickle
 import traceback
-from collections import defaultdict
+#from collections import defaultdict
 
 from django.db import models, IntegrityError
 from django.conf import settings
@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_attr_cache, set_attr_cache, del_attr_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
 from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
@@ -59,8 +59,8 @@ _CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-_PLOADS = pickle.loads
-_PDUMPS = pickle.dumps
+#_PLOADS = pickle.loads
+#_PDUMPS = pickle.dumps
 
 #------------------------------------------------------------
 #
@@ -415,9 +415,8 @@ class Attribute(SharedMemoryModel):
             value = from_pickle(self.db_value2, db_obj=self)
             self.cached_value = value
             self.no_cache = False
-        else:
-            # normally the memory cache holds the latest data so no db access is needed.
-            return self.cached_value
+        return self.cached_value
+
         #if self.no_cache:
         #    # re-create data from database and cache it
         #    try:
@@ -1360,7 +1359,7 @@ class TypedObject(SharedMemoryModel):
         try:
             attrib_obj.value = new_value
         except IntegrityError:
-            # this can happen if the cache was stale and the databse object is
+            # this can happen if the cache was stale and the database object is
             # missing. If so we need to clean self.hashid from the cache
             flush_attr_cache(self)
             self.delete()

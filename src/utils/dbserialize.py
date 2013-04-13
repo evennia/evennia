@@ -28,6 +28,7 @@ from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from src.utils.utils import to_str
+from src.utils import logger
 
 HIGHEST_PROTOCOL = 2
 
@@ -35,13 +36,21 @@ HIGHEST_PROTOCOL = 2
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
-_FROM_MODEL_MAP = defaultdict(str)
-_FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
-_TO_MODEL_MAP = defaultdict(str)
-_TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+_FROM_MODEL_MAP = None
+_TO_MODEL_MAP = None
 _TO_TYPECLASS = lambda o: hasattr(o, 'typeclass') and o.typeclass or o
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
+_TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:%f")
 
+def _init_globals():
+    "Lazy importing to avoid circular collisions"
+    global _FROM_MODEL_MAP, _TO_MODEL_MAP
+    if not _FROM_MODEL_MAP:
+        _FROM_MODEL_MAP = defaultdict(str)
+        _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
+    if not _TO_MODEL_MAP:
+        _TO_MODEL_MAP = defaultdict(str)
+        _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions
@@ -64,33 +73,39 @@ class SaverMutable(object):
     """
     def __init__(self, *args, **kwargs):
         "store all properties for tracking the tree"
+        self._parent = kwargs.pop("parent", None)
         self._db_obj = kwargs.pop("db_obj", None)
-        self._parent = None
         self._data = None
     def _save_tree(self):
         "recursively traverse back up the tree, save when we reach the root"
         if self._parent:
             self._parent._save_tree()
-        else:
-            try:
-                self._db_obj.value = self
-            except AttributeError:
-                raise AttributeError("SaverMutable %s lacks dobj at its root." % self)
-    def _convert_mutables(self, item):
+        elif self._db_obj:
+            self._db_obj.value = self
+        logger.log_err("SaverMutable %s has no root Attribute to save to." % self)
+    def _convert_mutables(self, data):
         "converts mutables to Saver* variants and assigns .parent property"
-        dtype = type(item)
-        if dtype in (basestring, int, long, float, bool, tuple):
+        def process_tree(item, parent):
+            "recursively populate the tree, storing parents"
+            dtype = type(item)
+            if dtype in (basestring, int, long, float, bool, tuple):
+                return item
+            elif dtype == list:
+                dat = SaverList(parent=parent)
+                dat._data.extend(process_tree(val, dat) for val in item)
+                return dat
+            elif dtype == dict:
+                dat = SaverDict(parent=parent)
+                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
+                return dat
+            elif dtype == set:
+                dat = SaverSet(parent=parent)
+                dat._data.update(process_tree(val, dat) for val in item)
+                return dat
             return item
-        elif dtype == list:
-            item = SaverList(item)
-            item._parent = self
-        elif dtype == dict:
-            item = SaverDict(item)
-            item._parent = self
-        elif dtype == set:
-            item = SaverSet(item)
-            item._parent = self
-        return item
+        return process_tree(data, self)
+
+
     def __repr__(self):
         return self._data.__repr__()
     def __len__(self):
@@ -105,6 +120,7 @@ class SaverMutable(object):
     @_save
     def __delitem__(self, key):
         self._data.__delitem__(key)
+
 
 class SaverList(SaverMutable, MutableSequence):
     """
@@ -149,13 +165,14 @@ class SaverSet(SaverMutable, MutableSet):
 def _pack_dbobj(item):
     """
     Check and convert django database objects to an internal representation.
-    This either returns the original input item or a tuple ("__packed_dbobj__", key, obj, id)
+    This either returns the original input item or a tuple ("__packed_dbobj__", key, creation_time, id)
     """
+    _init_globals()
     obj =  hasattr(item, 'dbobj') and item.dbobj or item
-    natural_key = _FROM_MODEL_MAP[hasattr(obj, "id") and hasattr("db_date_created") and
+    natural_key = _FROM_MODEL_MAP[hasattr(obj, "id") and hasattr(obj, "db_date_created") and
                                   hasattr(obj, '__class__') and obj.__class__.__name__.lower()]
-    # build the internal representation as a tuple ("__packed_dbobj__", key, obj, id)
-    return natural_key and ('__packed_dbobj__', natural_key, _GA(obj, "db_date_created"), _GA(obj, id)) or item
+    # build the internal representation as a tuple ("__packed_dbobj__", key, creation_time, id)
+    return natural_key and ('__packed_dbobj__', natural_key, _TO_DATESTRING(obj), _GA(obj, "id")) or item
 
 def _unpack_dbobj(item):
     """
@@ -164,12 +181,13 @@ def _unpack_dbobj(item):
     This either returns the original input or converts the internal store back
     to a database representation (its typeclass is returned if applicable).
     """
+    _init_globals()
     try:
         obj = item[3] and _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[3]))
     except ObjectDoesNotExist:
         return None
     # even if we got back a match, check the sanity of the date (some databases may 're-use' the id)
-    return obj and obj.db_data_created == item[3] and obj or None
+    return _TO_DATESTRING(obj.dbobj) == item[2] and obj or None
 
 def to_pickle(data):
     """
@@ -186,7 +204,7 @@ def to_pickle(data):
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype in (list, SaverList):
-            return [key for key in item]
+            return [process_item(val) for val in item]
         elif dtype in (dict, SaverDict):
             return dict((key, process_item(val)) for key, val in item.items())
         elif dtype in (set, SaverSet):
@@ -237,7 +255,7 @@ def from_pickle(data, db_obj=None):
                 return [process_item(val) for val in item]
         return item
 
-    def process_item_to_savers(item):
+    def process_tree(item, parent):
         "Recursive processor, convertion and identification of data"
         dtype = type(item)
         if dtype in (basestring, int, long, float, bool):
@@ -246,19 +264,27 @@ def from_pickle(data, db_obj=None):
             # this must be checked before tuple
             return _unpack_dbobj(item)
         elif dtype == tuple:
-            return tuple(process_item_to_savers(val) for val in item)
+            return tuple(process_tree(val) for val in item)
         elif dtype == list:
-            return SaverList(process_item_to_savers(val) for val in item)
+            dat = SaverList(parent=parent)
+            dat._data.extend(process_tree(val, dat) for val in item)
+            return dat
         elif dtype == dict:
-            return SaverDict((key, process_item_to_savers(val)) for key, val in item.items())
+            dat = SaverDict(parent=parent)
+            dat._data.update(dict((key, process_tree(val, dat)) for key, val in item.items()))
+            return dat
         elif dtype == set:
-            return SaverSet(process_item_to_savers(val) for val in item)
+            dat = SaverSet(parent=parent)
+            dat._data.update(set(process_tree(val, dat) for val in item))
+            return dat
         elif hasattr(item, '__iter__'):
             try:
                 # we try to conserve the iterable class if it accepts an iterator
-                return item.__class__(process_item_to_savers(val) for val in item)
+                return item.__class__(process_tree(val, parent) for val in item)
             except (AttributeError, TypeError):
-                return SaverList(process_item_to_savers(val) for val in item)
+                dat = SaverList(parent=parent)
+                dat._data.extend(process_tree(val, dat) for val in item)
+                return dat
         return item
 
     if db_obj:
@@ -266,11 +292,17 @@ def from_pickle(data, db_obj=None):
         # is only relevant if the "root" is an iterable of the right type.
         dtype = type(data)
         if dtype == list:
-            return process_item_to_savers(SaverList(data, db_obj=db_obj))
+            dat = SaverList(db_obj=db_obj)
+            dat._data.extend(process_tree(val, parent=dat) for val in data)
+            return dat
         elif dtype == dict:
-            return process_item_to_savers(SaverDict(data, db_obj=db_obj))
+            dat = SaverDict(db_obj=db_obj)
+            dat._data.update((key, process_tree(val, parent=dat)) for key, val in data.items())
+            return dat
         elif dtype == set:
-            return process_item_to_savers(SaverSet(data, db_obj=db_obj))
+            dat = SaverSet(db_obj=db_obj)
+            dat._data.update(process_tree(val, parent=dat) for val in data)
+            return dat
     return process_item(data)
 
 def do_pickle(data):
