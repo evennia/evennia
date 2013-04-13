@@ -30,6 +30,8 @@ from django.contrib.contenttypes.models import ContentType
 from src.utils.utils import to_str
 from src.utils import logger
 
+__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
+
 HIGHEST_PROTOCOL = 2
 
 # initialization and helpers
@@ -43,7 +45,7 @@ _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__pac
 _TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:%f")
 
 def _init_globals():
-    "Lazy importing to avoid circular collisions"
+    "Lazy importing to avoid circular import issues"
     global _FROM_MODEL_MAP, _TO_MODEL_MAP
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
@@ -64,7 +66,7 @@ def _save(method):
         return ret
     return save_wrapper
 
-class SaverMutable(object):
+class _SaverMutable(object):
     """
     Parent class for properly handling  of nested mutables in
     an Attribute. If not used something like
@@ -82,7 +84,7 @@ class SaverMutable(object):
             self._parent._save_tree()
         elif self._db_obj:
             self._db_obj.value = self
-        logger.log_err("SaverMutable %s has no root Attribute to save to." % self)
+        logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
     def _convert_mutables(self, data):
         "converts mutables to Saver* variants and assigns .parent property"
         def process_tree(item, parent):
@@ -105,7 +107,6 @@ class SaverMutable(object):
             return item
         return process_tree(data, self)
 
-
     def __repr__(self):
         return self._data.__repr__()
     def __len__(self):
@@ -121,32 +122,31 @@ class SaverMutable(object):
     def __delitem__(self, key):
         self._data.__delitem__(key)
 
-
-class SaverList(SaverMutable, MutableSequence):
+class _SaverList(_SaverMutable, MutableSequence):
     """
     A list that saves itself to an Attribute when updated.
     """
     def __init__(self, *args, **kwargs):
-        super(SaverList, self).__init__(*args, **kwargs)
+        super(_SaverList, self).__init__(*args, **kwargs)
         self._data = list(*args)
     @_save
     def insert(self, index, value):
         self._data.insert(index, self._convert_mutables(value))
 
-class SaverDict(SaverMutable, MutableMapping):
+class _SaverDict(_SaverMutable, MutableMapping):
     """
     A dict that stores changes to an Attribute when updated
     """
     def __init__(self, *args, **kwargs):
-        super(SaverDict, self).__init__(*args, **kwargs)
+        super(_SaverDict, self).__init__(*args, **kwargs)
         self._data = dict(*args)
 
-class SaverSet(SaverMutable, MutableSet):
+class _SaverSet(_SaverMutable, MutableSet):
     """
     A set that saves to an Attribute when updated
     """
     def __init__(self, *args, **kwargs):
-        super(SaverSet, self).__init__(*args, **kwargs)
+        super(_SaverSet, self).__init__(*args, **kwargs)
         self._data = set(*args)
     def __contains__(self, value):
         return self._data.__contains__(value)
@@ -159,7 +159,7 @@ class SaverSet(SaverMutable, MutableSet):
 
 
 #
-# serialization access functions
+# serialization helpers
 #
 
 def _pack_dbobj(item):
@@ -189,6 +189,10 @@ def _unpack_dbobj(item):
     # even if we got back a match, check the sanity of the date (some databases may 're-use' the id)
     return _TO_DATESTRING(obj.dbobj) == item[2] and obj or None
 
+#
+# Access methods
+#
+
 def to_pickle(data):
     """
     This prepares data on arbitrary form to be pickled. It handles any nested structure
@@ -203,11 +207,11 @@ def to_pickle(data):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
-        elif dtype in (list, SaverList):
+        elif dtype in (list, _SaverList):
             return [process_item(val) for val in item]
-        elif dtype in (dict, SaverDict):
+        elif dtype in (dict, _SaverDict):
             return dict((key, process_item(val)) for key, val in item.items())
-        elif dtype in (set, SaverSet):
+        elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif hasattr(item, '__item__'):
             # we try to conserve the iterable class, if not convert to list
@@ -230,7 +234,7 @@ def from_pickle(data, db_obj=None):
              property that saves assigned data to the database.
 
     If db_obj is given, this function will convert lists, dicts and sets to their
-    SaverList, SaverDict and SaverSet counterparts.
+    _SaverList, _SaverDict and _SaverSet counterparts.
 
     """
     def process_item(item):
@@ -266,15 +270,15 @@ def from_pickle(data, db_obj=None):
         elif dtype == tuple:
             return tuple(process_tree(val) for val in item)
         elif dtype == list:
-            dat = SaverList(parent=parent)
+            dat = _SaverList(parent=parent)
             dat._data.extend(process_tree(val, dat) for val in item)
             return dat
         elif dtype == dict:
-            dat = SaverDict(parent=parent)
+            dat = _SaverDict(parent=parent)
             dat._data.update(dict((key, process_tree(val, dat)) for key, val in item.items()))
             return dat
         elif dtype == set:
-            dat = SaverSet(parent=parent)
+            dat = _SaverSet(parent=parent)
             dat._data.update(set(process_tree(val, dat) for val in item))
             return dat
         elif hasattr(item, '__iter__'):
@@ -282,7 +286,7 @@ def from_pickle(data, db_obj=None):
                 # we try to conserve the iterable class if it accepts an iterator
                 return item.__class__(process_tree(val, parent) for val in item)
             except (AttributeError, TypeError):
-                dat = SaverList(parent=parent)
+                dat = _SaverList(parent=parent)
                 dat._data.extend(process_tree(val, dat) for val in item)
                 return dat
         return item
@@ -292,15 +296,15 @@ def from_pickle(data, db_obj=None):
         # is only relevant if the "root" is an iterable of the right type.
         dtype = type(data)
         if dtype == list:
-            dat = SaverList(db_obj=db_obj)
+            dat = _SaverList(db_obj=db_obj)
             dat._data.extend(process_tree(val, parent=dat) for val in data)
             return dat
         elif dtype == dict:
-            dat = SaverDict(db_obj=db_obj)
+            dat = _SaverDict(db_obj=db_obj)
             dat._data.update((key, process_tree(val, parent=dat)) for key, val in data.items())
             return dat
         elif dtype == set:
-            dat = SaverSet(db_obj=db_obj)
+            dat = _SaverSet(db_obj=db_obj)
             dat._data.update(process_tree(val, parent=dat) for val in data)
             return dat
     return process_item(data)
