@@ -9,13 +9,44 @@ try:
 except ImportError:
     import pickle
 from src.utils.utils import to_str, to_unicode
-from src.typeclasses.models import PackedDBobject
+#from src.typeclasses.models import PackedDBobject
 
 from django.contrib.contenttypes.models import ContentType
 CTYPEGET = ContentType.objects.get
 GA = object.__getattribute__
 SA = object.__setattr__
 DA = object.__delattr__
+
+class PackedDBobject(object):
+    """
+    Attribute helper class.
+    A container for storing and easily identifying database objects in
+    the database (which doesn't suppport storing db_objects directly).
+    """
+    def __init__(self, ID, db_model, db_key):
+        self.id = ID
+        self.db_model = db_model
+        self.key = db_key
+    def __str__(self):
+        return "%s(#%s)" % (self.key, self.id)
+    def __unicode__(self):
+        return u"%s(#%s)" % (self.key, self.id)
+
+class PackedDBobject(object):
+    """
+    Attribute helper class.
+    A container for storing and easily identifying database objects in
+    the database (which doesn't suppport storing db_objects directly).
+    """
+    def __init__(self, ID, db_model, db_key):
+        self.id = ID
+        self.db_model = db_model
+        self.key = db_key
+    def __str__(self):
+        return "%s(#%s)" % (self.key, self.id)
+    def __unicode__(self):
+        return u"%s(#%s)" % (self.key, self.id)
+
 
 class PackedDict(dict):
     """

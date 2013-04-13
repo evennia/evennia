@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding index on 'ObjectDB', fields ['db_key']
         db.create_index('objects_objectdb', ['db_key'])
 
@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Removing index on 'ObjAttribute', fields ['db_key']
         db.delete_index('objects_objattribute', ['db_key'])
 

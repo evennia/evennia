@@ -9,7 +9,7 @@ try:
 except ImportError:
     import pickle
 from src.utils.utils import to_str, to_unicode
-from src.typeclasses.models import PackedDBobject
+#from src.typeclasses.models import PackedDBobject
 
 from django.contrib.contenttypes.models import ContentType
 CTYPEGET = ContentType.objects.get
@@ -17,66 +17,82 @@ GA = object.__getattribute__
 SA = object.__setattr__
 DA = object.__delattr__
 
+class PackedDBobject(object):
+    """
+    Attribute helper class.
+    A container for storing and easily identifying database objects in
+    the database (which doesn't suppport storing db_objects directly).
+    """
+    def __init__(self, ID, db_model, db_key):
+        self.id = ID
+        self.db_model = db_model
+        self.key = db_key
+    def __str__(self):
+        return "%s(#%s)" % (self.key, self.id)
+    def __unicode__(self):
+        return u"%s(#%s)" % (self.key, self.id)
+
+
 class PackedDict(dict):
     """
     Attribute helper class.
-    A variant of dict that stores itself to the database when 
-    updating one of its keys. This is called and handled by 
-    Attribute.validate_data(). 
+    A variant of dict that stores itself to the database when
+    updating one of its keys. This is called and handled by
+    Attribute.validate_data().
     """
     def __init__(self, db_obj, *args, **kwargs):
         """
         Sets up the packing dict. The db_store variable
         is set by Attribute.validate_data() when returned in
-        order to allow custom updates to the dict. 
+        order to allow custom updates to the dict.
 
          db_obj - the Attribute object storing this dict.
-         
+
         """
         self.db_obj = db_obj
         super(PackedDict, self).__init__(*args, **kwargs)
     def __str__(self):
         return "{%s}" % ", ".join("%s:%s" % (key, str(val)) for key, val in self.items())
-    def __setitem__(self, *args, **kwargs):                
+    def __setitem__(self, *args, **kwargs):
         "assign item to this dict"
         super(PackedDict, self).__setitem__(*args, **kwargs)
         self.db_obj.value = self
-    def clear(self, *args, **kwargs):                
+    def clear(self, *args, **kwargs):
         "Custom clear"
         super(PackedDict, self).clear(*args, **kwargs)
         self.db_obj.value = self
-    def pop(self, *args, **kwargs):                
+    def pop(self, *args, **kwargs):
         "Custom pop"
         super(PackedDict, self).pop(*args, **kwargs)
         self.db_obj.value = self
-    def popitem(self, *args, **kwargs):                
+    def popitem(self, *args, **kwargs):
         "Custom popitem"
         super(PackedDict, self).popitem(*args, **kwargs)
         self.db_obj.value = self
-    def update(self, *args, **kwargs):                
+    def update(self, *args, **kwargs):
         "Custom update"
         super(PackedDict, self).update(*args, **kwargs)
         self.db_obj.value = self
-                
+
 class PackedList(list):
     """
     Attribute helper class.
-    A variant of list that stores itself to the database when 
-    updating one of its keys. This is called and handled by 
-    Attribute.validate_data(). 
+    A variant of list that stores itself to the database when
+    updating one of its keys. This is called and handled by
+    Attribute.validate_data().
     """
     def __init__(self, db_obj, *args, **kwargs):
         """
-        Sets up the packing list. 
+        Sets up the packing list.
          db_obj - the Attribute object storing this dict.
         """
         self.db_obj = db_obj
         super(PackedList, self).__init__(*args, **kwargs)
     def __str__(self):
         return "[%s]" % ", ".join(str(val) for val in self)
-    def __setitem__(self, *args, **kwargs):                
+    def __setitem__(self, *args, **kwargs):
         "Custom setitem that stores changed list to database."
-        super(PackedList, self).__setitem__(*args, **kwargs)        
+        super(PackedList, self).__setitem__(*args, **kwargs)
         self.db_obj.value = self
     def append(self, *args, **kwargs):
         "Custom append"
@@ -123,13 +139,13 @@ def to_attr(data):
     (and any nested combination of them) this way, all other
     iterables are stored and returned as lists.
 
-    data storage format: 
+    data storage format:
        (simple|dbobj|iter, <data>)
-    where 
+    where
        simple - a single non-db object, like a string or number
        dbobj - a single dbobj
        iter - any iterable object - will be looped over recursively
-              to convert dbobj->id. 
+              to convert dbobj->id.
 
     """
 
@@ -140,7 +156,7 @@ def to_attr(data):
         """
         dtype = type(item)
         if dtype in (basestring, int, float): # check the most common types first, for speed
-            return item 
+            return item
         elif hasattr(item, "id") and hasattr(item, "db_model_name") and hasattr(item, "db_key"):
             db_model_name = item.db_model_name
             if db_model_name == "typeclass":
@@ -166,8 +182,8 @@ def to_attr(data):
         if db_model_name == "typeclass":
             # typeclass cannot help us, we want the actual child object model name
             db_model_name = GA(data.dbobj, "db_model_name")
-        return ("dbobj", PackedDBobject(data.id, db_model_name, data.db_key))        
-    elif hasattr(data, "__iter__"): 
+        return ("dbobj", PackedDBobject(data.id, db_model_name, data.db_key))
+    elif hasattr(data, "__iter__"):
         return ("iter", iter_db2id(data))
     else:
         return ("simple", data)
@@ -175,21 +191,21 @@ def to_attr(data):
 def from_attr(attr, datatuple):
     """
     Retrieve data from a previously stored attribute. This
-    is always a dict with keys type and data.                 
+    is always a dict with keys type and data.
 
-    datatuple comes from the database storage and has 
-    the following format: 
+    datatuple comes from the database storage and has
+    the following format:
        (simple|dbobj|iter, <data>)
     where
         simple - a single non-db object, like a string. is returned as-is.
-        dbobj - a single dbobj-id. This id is retrieved back from the database. 
+        dbobj - a single dbobj-id. This id is retrieved back from the database.
         iter - an iterable. This is traversed iteratively, converting all found
-               dbobj-ids back to objects. Also, all lists and dictionaries are 
-               returned as their PackedList/PackedDict counterparts in order to 
+               dbobj-ids back to objects. Also, all lists and dictionaries are
+               returned as their PackedList/PackedDict counterparts in order to
                allow in-place assignment such as obj.db.mylist[3] = val. Mylist
-               is then a PackedList that saves the data on the fly. 
+               is then a PackedList that saves the data on the fly.
     """
-    # nested functions 
+    # nested functions
     def id2db(data):
         """
         Convert db-stored dbref back to object
@@ -202,39 +218,39 @@ def from_attr(attr, datatuple):
             try:
                 return mclass.objects.get(id=data.id)
             except mclass.DoesNotExist: # could happen if object was deleted in the interim.
-                return None                
+                return None
 
     def iter_id2db(item):
         """
         Recursively looping through stored iterables, replacing ids with actual objects.
         We return PackedDict and PackedLists instead of normal lists; this is needed in order for
         the user to do dynamic saving of nested in-place, such as obj.db.attrlist[2]=3. What is
-        stored in the database are however always normal python primitives. 
+        stored in the database are however always normal python primitives.
         """
         dtype = type(item)
         if dtype in (basestring, int, float): # check the most common types first, for speed
-            return item 
+            return item
         elif dtype == PackedDBobject:
             return id2db(item)
-        elif dtype == tuple:                        
+        elif dtype == tuple:
             return tuple([iter_id2db(val) for val in item])
         elif dtype in (dict, PackedDict):
             return attr, dict(zip([key for key in item.keys()],
                                              [iter_id2db(val) for val in item.values()]))
         elif hasattr(item, '__iter__'):
             return list(iter_id2db(val) for val in item)
-        else: 
-            return item 
+        else:
+            return item
 
     typ, data = datatuple
 
-    if typ == 'simple': 
+    if typ == 'simple':
         # single non-db objects
         return data
-    elif typ == 'dbobj': 
-        # a single stored dbobj        
+    elif typ == 'dbobj':
+        # a single stored dbobj
         return id2db(data)
-    elif typ == 'iter': 
+    elif typ == 'iter':
         # all types of iterables
         return iter_id2db(data)
 

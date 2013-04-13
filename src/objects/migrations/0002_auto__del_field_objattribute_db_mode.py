@@ -4,36 +4,80 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+# overloading pickle to have it find the PackedDBobj in this module
+import pickle
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+renametable = {
+        'src.typeclasses.models': 'src.objects.migrations.0019_convert_attrdata',
+        'PackedDBobject': 'PackedDBobject',
+}
+
+def mapname(name):
+    if name in renametable:
+        return renametable[name]
+    return name
+
+def mapped_load_global(self):
+    module = mapname(self.readline()[:-1])
+    name = mapname(self.readline()[:-1])
+    klass = self.find_class(module, name)
+    self.append(klass)
+
+def loads(str):
+    file = StringIO(str)
+    unpickler = pickle.Unpickler(file)
+    unpickler.dispatch[pickle.GLOBAL] = mapped_load_global
+    return unpickler.load()
+
+class PackedDBobject(object):
+    """
+    Attribute helper class.
+    A container for storing and easily identifying database objects in
+    the database (which doesn't suppport storing db_objects directly).
+    """
+    def __init__(self, ID, db_model, db_key):
+        self.id = ID
+        self.db_model = db_model
+        self.key = db_key
+    def __str__(self):
+        return "%s(#%s)" % (self.key, self.id)
+    def __unicode__(self):
+        return u"%s(#%s)" % (self.key, self.id)
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Deleting field 'ObjAttribute.db_mode'        
 
-        from src.objects.models import ObjAttribute
-        from src.typeclasses.models import PackedDBobject
-        for attr in ObjAttribute.objects.all():
-            # resave attributes
-            db_mode = attr.db_mode
-            if db_mode and db_mode != 'pickle':
-                # an object. We need to resave this.
-                if db_mode == 'object':
-                    val = PackedDBobject(attr.db_value, "objectdb")
-                elif db_mode == 'player':
-                    val = PackedDBobject(attr.db_value, "playerdb")
-                elif db_mode == 'script':
-                    val = PackedDBobject(attr.db_value, "scriptdb")
-                elif db_mode == 'help':
-                    val = PackedDBobject(attr.db_value, "helpentry")
-                else:
-                    val = PackedDBobject(attr.db_value, db_mode) # channel, msg
-                attr.value = val
+        # Deleting field 'ObjAttribute.db_mode'
+
+        if not db.dry_run:
+            for attr in orm["objects.ObjAttribute"].objects.all():
+                # resave attributes
+                db_mode = attr.db_mode
+                if db_mode and db_mode != 'pickle':
+                    # an object. We need to resave this.
+                    if db_mode == 'object':
+                        val = PackedDBobject(attr.db_value, "objectdb")
+                    elif db_mode == 'player':
+                        val = PackedDBobject(attr.db_value, "playerdb")
+                    elif db_mode == 'script':
+                        val = PackedDBobject(attr.db_value, "scriptdb")
+                    elif db_mode == 'help':
+                        val = PackedDBobject(attr.db_value, "helpentry")
+                    else:
+                        val = PackedDBobject(attr.db_value, db_mode) # channel, msg
+                    attr.value = val
 
         db.delete_column('objects_objattribute', 'db_mode')
 
 
     def backwards(self, orm):
-        
+
         # Adding field 'ObjAttribute.db_mode'
         db.add_column('objects_objattribute', 'db_mode', self.gf('django.db.models.fields.CharField')(max_length=20, null=True, blank=True), keep_default=False)
 
