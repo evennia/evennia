@@ -32,7 +32,7 @@ Modified for Evennia by Griatch.
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
-#import six # not in default syslib
+#import six # this is actually a pypy component, not in default syslib
 import django
 from django.db import models
 
