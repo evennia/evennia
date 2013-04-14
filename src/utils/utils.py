@@ -588,7 +588,7 @@ def check_evennia_dependencies():
     # defining the requirements
     python_min = '2.6'
     twisted_min = '10.0'
-    django_min = '1.2'
+    django_min = '1.4'
     south_min = '0.7'
     nt_stop_python_min = '2.7'
 
@@ -600,8 +600,9 @@ def check_evennia_dependencies():
     if pversion < python_min:
         errstring += "\n WARNING: Python %s used. Evennia recommends version %s or higher (but not 3.x)." % (pversion, python_min)
     if os.name == 'nt' and pversion < nt_stop_python_min:
-        errstring += "\n WARNING: Windows requires Python %s or higher in order to restart/stop the server from the command line."
-        errstring += "\n          (You need to restart/stop from inside the game.)" % nt_stop_python_min
+        errstring += "\n WARNING: Python %s used. Windows requires Python %s or higher in order to" % (pversion, nt_stop_python_min)
+        errstring += " restart/stop the server from the command line."
+        errstring += "\n          (You need to restart/stop from inside the game.)"
     # Twisted
     try:
         import twisted

@@ -134,5 +134,5 @@ if __name__ == "__main__":
             nothing about MUDs).  Instead, just start Evennia with the
             webserver component active (this is the default).
             """
-        from django.core.management import execute_manager
-        execute_manager(settings)
+        from django.core.management import execute_from_command_line
+        execute_from_command_line(sys.argv)

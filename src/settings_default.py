@@ -40,6 +40,10 @@ TELNET_OOB_ENABLED = False # OBS - currently not fully implemented - do not use!
 # (Obs - further web configuration can be found below
 # in the section  'Config for Django web features')
 WEBSERVER_ENABLED = True
+# This is a security setting protecting against host poisoning
+# attacks.  It defaults to allowing all. In production, make
+# sure to change this to your actual host addresses/IPs.
+ALLOWED_HOSTS = ["*"]
 # A list of ports the Evennia webserver listens on
 WEBSERVER_PORTS = [8000]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.

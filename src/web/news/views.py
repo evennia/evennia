@@ -5,7 +5,7 @@ like news-categories/topics and searchable archives.
 
 """
 
-import django.views.generic.list_detail as gv_list_detail
+from django.views.generic import ListView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.conf import settings
@@ -66,8 +66,9 @@ def news_archive(request):
         "browse_url": "/news/archive",
         "sidebar": sidebar
     }
-    
-    return gv_list_detail.object_list(request, news_entries, template_name='news/archive.html', extra_context=pagevars, paginate_by=entries_per_page)
+    view = ListView.as_view(queryset=news_entries)
+    return view(request, template_name='news/archive.html',  \
+        extra_context=pagevars, paginate_by=entries_per_page)
 
 def search_form(request):
     """
@@ -124,5 +125,5 @@ def search_results(request):
         "browse_url": "/news/search/results",
         "sidebar": sidebar
     }
-    
-    return gv_list_detail.object_list(request, news_entries, template_name='news/archive.html', extra_context=pagevars, paginate_by=entries_per_page)
+    view = ListView.as_view(queryset=news_entries)
+    return view(request, news_entries, template_name='news/archive.html', extra_context=pagevars, paginate_by=entries_per_page)
