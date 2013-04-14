@@ -368,7 +368,7 @@ class CmdWho(MuxPlayerCommand):
                 table.add_row([utils.crop(plr_pobject.name, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1),
-                               hasattr(plr_pobject, "location") and plr_pobject.location or "None",
+                               hasattr(plr_pobject, "location") and plr_pobject.location.key or "None",
                                session.cmd_total,
                                session.protocol_key,
                                isinstance(session.address, tuple) and session.address[0] or session.address])
