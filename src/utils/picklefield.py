@@ -22,14 +22,21 @@
 #   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #   OTHER DEALINGS IN THE SOFTWARE.
 
+"""
+Pickle field implementation for Django.
 
-"""Pickle field implementation for Django."""
+Modified for Evennia by Griatch.
+
+"""
+
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
 import six
 import django
 from django.db import models
+
+from src.utils.dbserialize import to_pickle
 
 # django 1.5 introduces force_text instead of force_unicode
 try:

@@ -107,8 +107,7 @@ class Attribute(SharedMemoryModel):
 
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
-    db_value = models.TextField('value', blank=True, null=True)
-    db_value2 = PickledObjectField('value2', null=True)
+    db_value = PickledObjectField('value2', null=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
     # references the object the attribute is linked to (this is set
@@ -196,23 +195,10 @@ class Attribute(SharedMemoryModel):
         """
         if self.no_cache:
             # re-create data from database and cache it
-            value = from_pickle(self.db_value2, db_obj=self)
+            value = from_pickle(self.db_value, db_obj=self)
             self.cached_value = value
             self.no_cache = False
         return self.cached_value
-
-        #if self.no_cache:
-        #    # re-create data from database and cache it
-        #    try:
-        #        value = self.__from_attr(_PLOADS(to_str(self.db_value)))
-        #    except pickle.UnpicklingError:
-        #        value = self.db_value
-        #    self.cached_value = value
-        #    self.no_cache = False
-        #    return value
-        #else:
-        #    # normally the memory cache holds the latest data so no db access is needed.
-        #    return self.cached_value
 
     #@value.setter
     def __value_set(self, new_value):
@@ -222,17 +208,9 @@ class Attribute(SharedMemoryModel):
         to_store = to_pickle(new_value)
         self.cached_value = from_pickle(to_store, db_obj=self)
         self.no_cache = False
-        self.db_value2 = to_store
+        self.db_value = to_store
         self.save()
         self.at_set(self.cached_value)
-
-        #new_value = self.__to_attr(new_value)
-        #self.cached_value = self.__from_attr(new_value)
-        #self.no_cache = False
-        #self.db_value = to_unicode(_PDUMPS(to_str(new_value)))
-        #self.save()
-        ## call attribute hook
-        #self.at_set(new_value)
 
     #@value.deleter
     def __value_del(self):
@@ -268,151 +246,6 @@ class Attribute(SharedMemoryModel):
 
     def __unicode__(self):
         return u"%s(%s)" % (self.key, self.id)
-
-    # operators on various data
-
-    #def __to_attr(self, data):
-    #    """
-    #    Convert data to proper attr data format before saving
-
-    #    We have to make sure to not store database objects raw, since
-    #    this will crash the system. Instead we must store their IDs
-    #    and make sure to convert back when the attribute is read back
-    #    later.
-
-    #    Due to this it's criticial that we check all iterables
-    #    recursively, converting all found database objects to a form
-    #    the database can handle. We handle lists, tuples and dicts
-    #    (and any nested combination of them) this way, all other
-    #    iterables are stored and returned as lists.
-
-    #    data storage format:
-    #       (simple|dbobj|iter, <data>)
-    #    where
-    #       simple - a single non-db object, like a string or number
-    #       dbobj - a single dbobj
-    #       iter - any iterable object - will be looped over recursively
-    #              to convert dbobj->id.
-
-    #    """
-
-    #    def iter_db2id(item):
-    #        """
-    #        recursively looping through stored iterables, replacing objects with ids.
-    #        (Python only builds nested functions once, so there is no overhead for nesting)
-    #        """
-    #        dtype = type(item)
-    #        if dtype in (basestring, int, float): # check the most common types first, for speed
-    #            return item
-    #        elif hasattr(item, "id") and hasattr(item, "_db_model_name") and hasattr(item, "db_key"):
-    #            db_model_name = item._db_model_name # don't use _GA here, could be typeclass
-    #            if db_model_name == "typeclass":
-    #                db_model_name = _GA(item.dbobj, "_db_model_name")
-    #            return PackedDBobject(item.id, db_model_name, item.db_key)
-    #        elif dtype == tuple:
-    #            return tuple(iter_db2id(val) for val in item)
-    #        elif dtype in (dict, PackedDict):
-    #            return dict((key, iter_db2id(val)) for key, val in item.items())
-    #        elif dtype in (set, PackedSet):
-    #            return set(iter_db2id(val) for val in item)
-    #        elif hasattr(item, '__iter__'):
-    #            return list(iter_db2id(val) for val in item)
-    #        else:
-    #            return item
-
-    #    dtype = type(data)
-
-    #    if dtype in (basestring, int, float):
-    #        return ("simple",data)
-    #    elif hasattr(data, "id") and hasattr(data, "_db_model_name") and hasattr(data, 'db_key'):
-    #        # all django models (objectdb,scriptdb,playerdb,channel,msg,typeclass)
-    #        # have the protected property _db_model_name hardcoded on themselves for speed.
-    #        db_model_name = data._db_model_name # don't use _GA here, could be typeclass
-    #        if db_model_name == "typeclass":
-    #            # typeclass cannot help us, we want the actual child object model name
-    #            db_model_name = _GA(data.dbobj,"_db_model_name")
-    #        return ("dbobj", PackedDBobject(data.id, db_model_name, data.db_key))
-    #    elif hasattr(data, "__iter__"):
-    #        return ("iter", iter_db2id(data))
-    #    else:
-    #        return ("simple", data)
-
-
-    #def __from_attr(self, datatuple):
-    #    """
-    #    Retrieve data from a previously stored attribute. This
-    #    is always a dict with keys type and data.
-
-    #    datatuple comes from the database storage and has
-    #    the following format:
-    #       (simple|dbobj|iter, <data>)
-    #    where
-    #        simple - a single non-db object, like a string. is returned as-is.
-    #        dbobj - a single dbobj-id. This id is retrieved back from the database.
-    #        iter - an iterable. This is traversed iteratively, converting all found
-    #               dbobj-ids back to objects. Also, all lists and dictionaries are
-    #               returned as their PackedList/PackedDict counterparts in order to
-    #               allow in-place assignment such as obj.db.mylist[3] = val. Mylist
-    #               is then a PackedList that saves the data on the fly.
-    #    """
-    #    # nested functions
-    #    def id2db(data):
-    #        """
-    #        Convert db-stored dbref back to object
-    #        """
-    #        mclass = _CTYPEGET(model=data.db_model).model_class()
-    #        try:
-    #            return mclass.objects.dbref_search(data.id)
-
-    #        except AttributeError:
-    #            try:
-    #                return mclass.objects.get(id=data.id)
-    #            except mclass.DoesNotExist: # could happen if object was deleted in the interim.
-    #                return None
-
-    #    def iter_id2db(item, parent=None):
-    #        """
-    #        Recursively looping through stored iterables, replacing ids with actual objects.
-    #        We return PackedDict and PackedLists instead of normal lists; this is needed in order for
-    #        the user to do dynamic saving of nested in-place, such as obj.db.attrlist[2]=3. What is
-    #        stored in the database are however always normal python primitives.
-    #        """
-    #        dtype = type(item)
-    #        if dtype in (basestring, int, float): # check the most common types first, for speed
-    #            return item
-    #        elif dtype == PackedDBobject:
-    #            return id2db(item)
-    #        elif dtype == tuple:
-    #            return tuple([iter_id2db(val) for val in item])
-    #        elif dtype in (dict, PackedDict):
-    #            pdict = PackedDict(self)
-    #            pdict.update(dict(zip([key for key in item.keys()],
-    #                                  [iter_id2db(val, pdict) for val in item.values()])))
-    #            pdict.parent = parent
-    #            return pdict
-    #        elif dtype in (set, PackedSet):
-    #            pset = PackedSet(self)
-    #            pset.update(set(iter_id2db(val) for val in item))
-    #            return pset
-    #        elif hasattr(item, '__iter__'):
-    #            plist = PackedList(self)
-    #            plist.extend(list(iter_id2db(val, plist) for val in item))
-    #            plist.parent = parent
-    #            return plist
-    #        else:
-    #            return item
-
-    #    typ, data = datatuple
-
-    #    if typ == 'simple':
-    #        # single non-db objects
-    #        return data
-    #    elif typ == 'dbobj':
-    #        # a single stored dbobj
-    #        return id2db(data)
-    #    elif typ == 'iter':
-    #        # all types of iterables
-    #        return iter_id2db(data)
 
     def access(self, accessing_obj, access_type='read', default=False):
         """

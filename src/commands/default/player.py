@@ -72,36 +72,42 @@ class CmdOOCLook(MuxPlayerCommand):
         characters = player.db._playable_characters
         sessions = player.get_all_sessions()
 
-        sessidstr = sessid and " (session id %i)" % sessid or ""
-        string = "You are logged in as {g%s{n%s." % (player.key, sessidstr)
+        # text shown when looking in the ooc area
+        string = "Account {g%s{n (you are Out-of-Character)" % (player.key)
 
-        string += "\n\nSession(s) connected:"
-        for sess in sessions:
+        nsess = len(sessions)
+        string += nsess == 1 and "\n\n{wConnected session:{n" or "\n\n{wConnected sessions (%i):{n" % nsess
+        for isess, sess in enumerate(sessions):
             csessid = sess.sessid
-            string += "\n %s %s" % (sessid == csessid and "{w%i{n" % csessid or csessid, sess.address)
-        string += "\n\nUse {w@ic <character>{n to enter the game, {w@occ{n to get back here."
-        if not characters:
-            string += "\nYou don't have any character yet. Use {w@charcreate <name> [=description]{n to create one."
-        elif len(characters) < MAX_NR_CHARACTERS:
-            string += "\nUse {w@charcreate <name> [=description]{n to create a new character (max %i)" % MAX_NR_CHARACTERS
+            addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address))
+            string += "\n %s %s" % (sessid == csessid and "{w%s{n" % (isess + 1) or (isess + 1), addr)
+        string += "\n\n {whelp{n - more commands"
+        string += "\n {wooc <Text>{n - talk on public channel"
+        if len(characters) < MAX_NR_CHARACTERS:
+            if not characters:
+                string += "\n\n You don't have any character yet. See {whelp @charcreate{n for creating one."
+            else:
+                string += "\n {w@charcreate <name> [=description]{n - create new character (max %i)" % MAX_NR_CHARACTERS
         if characters:
+            string += "\n {w@ic <character>{n - enter the game ({w@ooc{n to get back here)"
             string += "\n\nAvailable character%s%s:"  % (len(characters) > 1 and "s" or "",
-                                                         MAX_NR_CHARACTERS > 1 and " (out of a maximum of %i)" % MAX_NR_CHARACTERS or "")
+                                                         MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
             for char in characters:
                 csessid = char.sessid
                 if csessid:
                     # character is already puppeted
                     sess = player.get_session(csessid)
+                    sid = sess in sessions and sessions.index(sess) + 1
                     if hasattr(char.locks, "lock_bypass") and char.locks.lock_bypass:
-                        string += "\n - {G%s{n [superuser character] (played by you from session with id %i)" % (char.key, sess.sessid)
+                        string += "\n - {G%s{n [superuser character] (played by you in session %i)" % (char.key, sid)
                     elif sess:
-                        string += "\n - {G%s{n [%s] (played by you session id %i)" % (char.key, ", ".join(char.permissions), sess.sessid)
+                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions), sid)
                     else:
                         string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions))
                 else:
                     # character is "free to puppet"
                     if player.is_superuser and char.get_attribute("_superuser_character"):
-                        string += "\n - %s [Superuser character]" % (char.key)
+                        string += "\n - %s [superuser character]" % (char.key)
                     else:
                         string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions))
         string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
@@ -109,7 +115,6 @@ class CmdOOCLook(MuxPlayerCommand):
 
     def func(self):
         "implement the ooc look command"
-
         if MULTISESSION_MODE < 2:
             # only one character allowed
             string = "You are out-of-character (OOC).\nUse {w@ic{n to get back into the game."
@@ -123,6 +128,7 @@ class CmdOOCLook(MuxPlayerCommand):
         else:
             self.no_look_target()
 
+
 class CmdCharCreate(MuxPlayerCommand):
     """
     Create a character
@@ -130,7 +136,10 @@ class CmdCharCreate(MuxPlayerCommand):
     Usage:
       @charcreate <charname> [= desc]
 
-    Create a new character, optionally giving it a description.
+    Create a new character, optionally giving it a description. You
+    may use upper-case letters in the name - you will nevertheless
+    always be able to access your character using lower-case letters
+    if you want.
     """
     key = "@charcreate"
     locks = "cmd:all()"
@@ -164,7 +173,7 @@ class CmdCharCreate(MuxPlayerCommand):
             new_character.db.desc = desc
         else:
             new_character.db.desc = "This is a Player."
-        self.msg("Created new character %s." % new_character.key)
+        self.msg("Created new character %s. Use {w@ic %s{n to enter the game as this character." % (new_character.key, new_character.key))
 
 
 class CmdIC(MuxPlayerCommand):
@@ -340,6 +349,8 @@ class CmdWho(MuxPlayerCommand):
         player = self.caller
         session_list = SESSIONS.get_sessions()
 
+        session_list = sorted(session_list, key=lambda o: o.player.key)
+
         if self.cmdstring == "doing":
             show_session_data = False
         else:
@@ -347,7 +358,7 @@ class CmdWho(MuxPlayerCommand):
 
         nplayers = (SESSIONS.player_count())
         if show_session_data:
-            table = prettytable.PrettyTable(["{wPlayer Name","{wOn for", "{wIdle", "{wRoom", "{wCmds", "{wHost"])
+            table = prettytable.PrettyTable(["{wPlayer Name","{wOn for", "{wIdle", "{wRoom", "{wCmds", "{wProtocol", "{wHost"])
             for session in session_list:
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible
@@ -358,7 +369,9 @@ class CmdWho(MuxPlayerCommand):
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1),
                                hasattr(plr_pobject, "location") and plr_pobject.location or "None",
-                               session.cmd_total, type(session.address==tuple) and session.address[0] or session.address])
+                               session.cmd_total,
+                               session.protocol_key,
+                               isinstance(session.address, tuple) and session.address[0] or session.address])
         else:
             table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{Idle"])
             for session in session_list:
@@ -371,7 +384,7 @@ class CmdWho(MuxPlayerCommand):
                                utils.time.format(delta_conn, 0),
                                utils,time_format(delta_cmd, 1)])
 
-        string = "{wPlayers:\n%s\n%s logged in." % (table, nplayers==1 and "One player" or nplayer)
+        string = "{wPlayers:\n%s\n%s unique accounts logged in." % (table, nplayers==1 and "One player" or nplayers)
         self.msg(string)
 
 
