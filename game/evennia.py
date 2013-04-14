@@ -159,6 +159,7 @@ except ObjectDB.DoesNotExist:
 except DatabaseError,e:
     print """
     Your database does not seem to be set up correctly.
+    (error was '%s')
 
     Please run:
 
@@ -171,8 +172,7 @@ except DatabaseError,e:
          python manage.py migrate
 
     When you have a database set up, rerun evennia.py.
-    """
-    print e
+    """ % e
     sys.exit()
 
 # Add this to the environmental variable for the 'twistd' command.

@@ -479,103 +479,6 @@ def delay(delay=2, retval=None, callback=None):
     return d
 
 
-_FROM_MODEL_MAP = None
-_TO_DBOBJ = lambda o: (hasattr(o, "dbobj") and o.dbobj) or o
-_TO_PACKED_DBOBJ = lambda natural_key, dbref: ('__packed_dbobj__', natural_key, dbref)
-_DUMPS = None
-def to_pickle(data, do_pickle=True, emptypickle=True):
-    """
-    Prepares object for being pickled. This will remap database models
-    into an intermediary format, making them easily retrievable later.
-
-    obj - a python object to prepare for pickling
-    do_pickle - return a pickled object
-    emptypickle - allow pickling also a None/empty value (False will be pickled)
-                  This has no effect if do_pickle is False
-
-    Database objects are stored as ('__packed_dbobj__', <natural_key_tuple>, <dbref>)
-    """
-    # prepare globals
-    global _DUMPS, _FROM_MODEL_MAP
-    _DUMPS = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
-    if not _DUMPS:
-        _DUMPS = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
-    if not _FROM_MODEL_MAP:
-        _FROM_MODEL_MAP = defaultdict(str)
-        _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
-
-    def iter_db2id(item):
-        "recursively looping over iterable items, finding dbobjs"
-        dtype = type(item)
-        if dtype in (basestring, int, float):
-            return item
-        elif dtype == tuple:
-            return tuple(iter_db2id(val) for val in item)
-        elif dtype == dict:
-            return dict((key, iter_db2id(val)) for key, val in item.items())
-        elif hasattr(item, '__iter__'):
-            return [iter_db2id(val) for val in item]
-        else:
-            item = _TO_DBOBJ(item)
-            natural_key = _FROM_MODEL_MAP[hasattr(item, "id") and hasattr(item, '__class__') and item.__class__.__name__.lower()]
-            if natural_key:
-                return _TO_PACKED_DBOBJ(natural_key, item.id)
-        return item
-    # do recursive conversion
-    data = iter_db2id(data)
-    if do_pickle and not (not emptypickle and not data and data != False):
-        print "_DUMPS2:", _DUMPS
-        return _DUMPS(data)
-    return data
-
-_TO_MODEL_MAP = None
-_IS_PACKED_DBOBJ = lambda o: type(o)== tuple and len(o)==3 and o[0]=='__packed_dbobj__'
-_TO_TYPECLASS = lambda o: (hasattr(o, 'typeclass') and o.typeclass) or o
-_LOADS = None
-from django.db import transaction
-@transaction.autocommit
-def from_pickle(data, do_pickle=True):
-    """
-    Converts back from a data stream prepared with to_pickle. This will
-    re-acquire database objects stored in the special format.
-
-    obj - an object or a pickle, as indicated by the do_pickle flag
-    do_pickle - actually unpickle the input before continuing
-    """
-    # prepare globals
-    global _LOADS, _TO_MODEL_MAP
-    if not _LOADS:
-        _LOADS = lambda data: pickle.loads(to_str(data))
-    if not _TO_MODEL_MAP:
-        _TO_MODEL_MAP = defaultdict(str)
-        _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
-
-    def iter_id2db(item):
-        "Recreate all objects recursively"
-        dtype = type(item)
-        if dtype in (basestring, int, float):
-            return item
-        elif _IS_PACKED_DBOBJ(item): # this is a tuple and must be done before tuple-check
-            #print item[1], item[2]
-            if item[2]: #Not sure why this could ever be None, but it can
-                return  _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[2]))
-            return None
-        elif dtype == tuple:
-            return tuple(iter_id2db(val) for val in item)
-        elif dtype == dict:
-            return dict((key, iter_id2db(val)) for key, val in item.items())
-        elif hasattr(item, '__iter__'):
-            return [iter_id2db(val) for val in item]
-        return item
-    if do_pickle:
-        data = _LOADS(data)
-    # we have to make sure the database is in a safe state
-    # (this is relevant for multiprocess operation)
-    transaction.commit()
-    # do recursive conversion
-    return iter_id2db(data)
-
-
 _TYPECLASSMODELS = None
 _OBJECTMODELS = None
 def clean_object_caches(obj):
@@ -996,3 +899,4 @@ def format_table(table, extra_space=1):
         ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
                        for icol, col in enumerate(table)])
     return ftable
+

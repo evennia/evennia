@@ -7,12 +7,46 @@ from functools import update_wrapper
 from django.db import models
 from src.utils import idmapper
 from src.utils.utils import make_iter
+from src.utils.dbserialize import to_pickle
+
 __all__ = ("AttributeManager", "TypedObjectManager")
 
 # Managers
 
+def _attr_pickled(method):
+    """
+    decorator for safely handling attribute searches
+    - db_value is a pickled field and this is required
+    in order to be able for pickled django objects directly.
+    """
+    def wrapper(self, *args, **kwargs):
+        "wrap all queries searching the db_value field in some way"
+        self.__doc__ = method.__doc__
+        for key in (key for key in kwargs if key.startswith('db_value')):
+            kwargs[key] = to_pickle(kwargs[key])
+        return method(self, *args, **kwargs)
+    return update_wrapper(wrapper, method)
+
 class AttributeManager(models.Manager):
     "Manager for handling Attributes."
+    @_attr_pickled
+    def get(self, *args, **kwargs):
+        return super(AttributeManager, self).get(*args, **kwargs)
+    @_attr_pickled
+    def filter(self,*args, **kwargs):
+        return super(AttributeManager, self).filter(*args, **kwargs)
+    @_attr_pickled
+    def exclude(self,*args, **kwargs):
+        return super(AttributeManager, self).exclude(*args, **kwargs)
+    @_attr_pickled
+    def values(self,*args, **kwargs):
+        return super(AttributeManager, self).values(*args, **kwargs)
+    @_attr_pickled
+    def values_list(self,*args, **kwargs):
+        return super(AttributeManager, self).values_list(*args, **kwargs)
+    @_attr_pickled
+    def exists(self,*args, **kwargs):
+        return super(AttributeManager, self).exists(*args, **kwargs)
 
     def attr_namesearch(self, searchstr, obj, exact_match=True):
         """
@@ -27,6 +61,14 @@ class AttributeManager(models.Manager):
         else:
             return self.filter(db_obj=obj).filter(
                 db_key__icontains=searchstr)
+
+    def attr_valuesearch(self, searchstr, obj=None):
+        """
+        Searches for Attributes with a given value on obj
+        """
+        if obj:
+            return self.filter(db_obj=obj, db_value=searchstr)
+        return self.filter(db_value=searchstr)
 
 #
 # helper functions for the TypedObjectManager.

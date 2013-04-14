@@ -19,6 +19,7 @@ be out of sync with the database.
 
 """
 
+from functools import update_wrapper
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
 try:
     from cPickle import dumps, loads
@@ -32,7 +33,7 @@ from src.utils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
-HIGHEST_PROTOCOL = 2
+PICKLE_PROTOCOL = 2
 
 # initialization and helpers
 
@@ -61,10 +62,11 @@ def _init_globals():
 def _save(method):
     "method decorator that saves data to Attribute"
     def save_wrapper(self, *args, **kwargs):
+        self.__doc__ = method.__doc__
         ret = method(self, *args, **kwargs)
         self._save_tree()
         return ret
-    return save_wrapper
+    return update_wrapper(save_wrapper, method)
 
 class _SaverMutable(object):
     """
@@ -311,7 +313,7 @@ def from_pickle(data, db_obj=None):
 
 def do_pickle(data):
     "Perform pickle to string"
-    return to_str(dumps(data, protocol=HIGHEST_PROTOCOL))
+    return to_str(dumps(data, protocol=PICKLE_PROTOCOL))
 
 def do_unpickle(data):
     "Retrieve pickle from pickled string"

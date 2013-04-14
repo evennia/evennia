@@ -31,7 +31,8 @@ _return statement, to test it really is asynchronous.
 from twisted.protocols import amp
 from twisted.internet import threads
 from contrib.procpools.ampoule.child import AMPChild
-from src.utils.utils import to_pickle, from_pickle, clean_object_caches, to_str
+from src.utils.dbserialize import to_pickle, from_pickle, do_pickle, do_unpickle
+from src.utils.utils import clean_object_caches, to_str
 from src.utils import logger
 from src import PROC_MODIFIED_OBJS
 
@@ -110,12 +111,11 @@ class PythonProcPoolChild(AMPChild):
                 self.returns.extend(list(args))
             def get_returns(self):
                 lr = len(self.returns)
-                if lr == 0:
-                    return ""
-                elif lr == 1:
-                    return to_pickle(self.returns[0], emptypickle=False) or ""
+                val = lr and (lr == 1 and self.returns[0] or self.returns) or None
+                if val not in (None, [], ()):
+                    return do_pickle(to_pickle(val))
                 else:
-                    return to_pickle(self.returns, emptypickle=False) or ""
+                    return ""
         _return = Ret()
 
 
@@ -123,14 +123,17 @@ class PythonProcPoolChild(AMPChild):
         if environment:
             # load environment
             try:
-                environment = from_pickle(environment)
+                environment = from_pickle(do_unpickle(environment))
                 available_vars.update(environment)
             except Exception:
                 logger.log_trace()
         # try to execute with eval first
         try:
             ret = eval(source, {}, available_vars)
-            ret = _return.get_returns() or to_pickle(ret, emptypickle=False) or ""
+            if ret not in (None, [], ()):
+                ret = _return.get_returns() or do_pickle(to_pickle(ret))
+            else:
+                ret = ""
         except Exception:
             # use exec instead
             exec source in available_vars
@@ -141,7 +144,10 @@ class PythonProcPoolChild(AMPChild):
         objs = objs + list(set([o.location for o in objs if hasattr(o, "location") and o.location]))
         #print "objs:", objs
         #print "to_pickle", to_pickle(objs, emptypickle=False, do_pickle=False)
-        to_recache = to_pickle(objs, emptypickle=False) or ""
+        if objs not in (None, [], ()):
+            to_recache = do_pickle(to_pickle(objs))
+        else:
+            to_recache = ""
         # empty the list without loosing memory reference
         PROC_MODIFIED_OBJS[:] = []
         return {'response': ret,
@@ -250,8 +256,8 @@ def run_async(to_execute, *args, **kwargs):
     # helper converters for callbacks/errbacks
     def convert_return(f):
         def func(ret, *args, **kwargs):
-            rval = ret["response"] and from_pickle(ret["response"])
-            reca = ret["recached"] and from_pickle(ret["recached"])
+            rval = ret["response"] and from_pickle(do_unpickle(ret["response"]))
+            reca = ret["recached"] and from_pickle(do_unpickle(ret["recached"]))
             # recache all indicated objects
             [clean_object_caches(obj) for obj in reca]
             if f: return f(rval, *args, **kwargs)
@@ -283,7 +289,8 @@ def run_async(to_execute, *args, **kwargs):
             # run source code in process pool
             cmdargs = {"_timeout":use_timeout}
             cmdargs["source"] = to_str(to_execute)
-            cmdargs["environment"] = to_pickle(kwargs, emptypickle=False) or ""
+            if kwargs: cmdargs["environment"] = do_pickle(to_pickle(kwargs))
+            else: cmdargs["environment"] = ""
             # defer to process pool
             deferred = _PPOOL.doWork(ExecuteCode, **cmdargs)
         elif callable(to_execute):
@@ -291,7 +298,7 @@ def run_async(to_execute, *args, **kwargs):
             callname = to_execute.__name__
             cmdargs = {"_timeout":use_timeout}
             cmdargs["source"] = "_return(%s(*args,**kwargs))" % callname
-            cmdargs["environment"] = to_pickle({callname:to_execute, "args":args, "kwargs":kwargs})
+            cmdargs["environment"] = do_pickle(to_pickle({callname:to_execute, "args":args, "kwargs":kwargs}))
             deferred = _PPOOL.doWork(ExecuteCode, **cmdargs)
         else:
             raise RuntimeError("'%s' could not be handled by the process pool" % to_execute)

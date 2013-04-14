@@ -5,7 +5,6 @@ try: import cPickle as pickle
 except ImportError: import pickle
 from django.db.models import Q
 from django.conf import settings
-#from django.contrib.auth.models import User
 from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
