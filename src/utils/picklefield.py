@@ -32,11 +32,8 @@ Modified for Evennia by Griatch.
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
-import six
 import django
 from django.db import models
-
-from src.utils.dbserialize import to_pickle
 
 # django 1.5 introduces force_text instead of force_unicode
 try:
@@ -49,15 +46,8 @@ try:
     from cPickle import loads, dumps # cpython 2.x
 except ImportError:
     from pickle import loads, dumps # cpython 3.x, other interpreters
-try:
-    from django.utils import simplejson as json
-except ImportError:
-    import json
 
 DEFAULT_PROTOCOL = 2
-#from picklefield import DEFAULT_PROTOCOL
-#from picklefield.compat import force_text, loads, dumps
-
 
 class PickledObject(str):
     """
