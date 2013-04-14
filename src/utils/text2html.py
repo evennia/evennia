@@ -113,7 +113,7 @@ class TextToHTMLparser(object):
 
     def convert_urls(self, text):
         "Replace urls (http://...) by valid HTML"
-        regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$]+))"
+        regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$\"\']+))"
         # -> added target to output prevent the web browser from attempting to
         # change pages (and losing our webclient session).
         return re.sub(regexp, r'<a href="\1" target="_blank">\1</a>', text)
