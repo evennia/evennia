@@ -40,6 +40,12 @@ class Migration(DataMigration):
                                                               db_obj=player,
                                                               db_lock_storage=lockstring,
                                                               db_value=val)
+                if char:
+                    val = pickle.dumps(("dbobj", PackedDBobject(char.id, "objectdb", char.db_key)))
+                    orm['players.PlayerAttribute'].objects.create(db_key="_last_puppet",
+                                                                  db_obj=player,
+                                                                  db_value=val)
+
                 suser = char and char.id == 1
                 if suser:
                     # move the superuser unmask attribute for the superuser (note that this
