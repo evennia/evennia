@@ -95,15 +95,15 @@ class _SaverMutable(object):
             if dtype in (basestring, int, long, float, bool, tuple):
                 return item
             elif dtype == list:
-                dat = SaverList(parent=parent)
+                dat = _SaverList(parent=parent)
                 dat._data.extend(process_tree(val, dat) for val in item)
                 return dat
             elif dtype == dict:
-                dat = SaverDict(parent=parent)
+                dat = _SaverDict(parent=parent)
                 dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
             elif dtype == set:
-                dat = SaverSet(parent=parent)
+                dat = _SaverSet(parent=parent)
                 dat._data.update(process_tree(val, dat) for val in item)
                 return dat
             return item
