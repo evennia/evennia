@@ -132,6 +132,10 @@ class _SaverList(_SaverMutable, MutableSequence):
         super(_SaverList, self).__init__(*args, **kwargs)
         self._data = list(*args)
     @_save
+    def __add__(self, otherlist):
+        self._data = self._data.__add__(otherlist)
+        return self._data
+    @_save
     def insert(self, index, value):
         self._data.insert(index, self._convert_mutables(value))
 

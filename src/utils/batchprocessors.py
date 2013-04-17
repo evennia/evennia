@@ -170,7 +170,6 @@ import codecs
 import traceback, sys
 from traceback import format_exc
 from django.conf import settings
-from django.core.management import setup_environ
 from src.utils import logger
 from src.utils import utils
 from game import settings as settings_module
@@ -485,15 +484,14 @@ class BatchCodeProcessor(object):
         extra_environ - dict with environment variables
         """
         # define the execution environment
-        environ = "setup_environ(settings_module)"
-        environdict = {"setup_environ":setup_environ,
-                       "settings_module":settings_module}
+        environ = "settings_module.configure()"
+        environdict = {"settings_module":settings}
         if extra_environ:
             for key, value in extra_environ.items():
                 environdict[key] = value
 
         # merge all into one block
-        code = "%s # auto-added by Evennia\n%s" % (environ, codedict['code'])
+        code = "# auto-added by Evennia\ntry:%s\nexcept RuntimeError:pass\nfinally:del settings_module\n%s" % (environ, codedict['code'])
         if debug:
             # try to delete marked objects
             for obj in codedict['objs']:

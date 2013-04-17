@@ -384,7 +384,7 @@ class CmdWho(MuxPlayerCommand):
                                utils.time.format(delta_conn, 0),
                                utils,time_format(delta_cmd, 1)])
 
-        string = "{wPlayers:\n%s\n%s unique accounts logged in." % (table, nplayers==1 and "One player" or nplayers)
+        string = "{wPlayers:{n\n%s\n%s unique accounts logged in." % (table, nplayers==1 and "One player" or nplayers)
         self.msg(string)
 
 

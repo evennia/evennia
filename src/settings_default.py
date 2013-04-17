@@ -430,7 +430,6 @@ MEDIA_URL = '/media/'
 # to use a trailing slash. Django1.4+ will look for admin files under
 # STATIC_URL/admin.
 STATIC_URL = '/media/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/" # needed for backwards compatibility django < 1.4
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'

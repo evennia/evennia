@@ -48,7 +48,6 @@ Notes:
     this API.
 """
 
-
 import sys, os
 
 ######################################################################
@@ -89,10 +88,14 @@ if __name__ == "__main__":
 ######################################################################
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from django.core.management import setup_environ
 from game import settings
-setup_environ(settings)
-del setup_environ
+try:
+    from django.conf import settings as settings2
+    settings2.configure()
+except RuntimeError:
+    pass
+finally:
+    del settings2
 from django.conf import settings as settings_full
 del sys, os
 

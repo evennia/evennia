@@ -81,10 +81,14 @@ from twisted.internet.defer import inlineCallbacks
 
 # set up django, if necessary
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from django.core.management import setup_environ
 from game import settings
-setup_environ(settings)
-#from src.utils.utils import run_async as thread_run_async
+try:
+    from django.conf import settings as settings2
+    settings2.configure()
+except RuntimeError:
+    pass
+finally:
+    del settings2
 
 _LOGGER = None
 
