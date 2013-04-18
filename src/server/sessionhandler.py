@@ -231,7 +231,7 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
                                                          operation=SLOGIN,
                                                          data=sessdata)
-        player.at_post_login()
+        player.at_post_login(sessid=session.sessid)
 
     def disconnect(self, session, reason=""):
         """

@@ -84,7 +84,7 @@ class Player(TypeClass):
          at_init()
          at_cmdset_get()
          at_first_login()
-         at_post_login()
+         at_post_login(sessid=None)
          at_disconnect()
          at_message_receive()
          at_message_send()
@@ -313,7 +313,7 @@ class Player(TypeClass):
         else:
             logger.log_infomsg("[%s]: %s" % (now, message))
 
-    def at_post_login(self):
+    def at_post_login(self, sessid=None):
         """
         Called at the end of the login process, just before letting
         them loose. This is called before an eventual Character's
@@ -324,17 +324,17 @@ class Player(TypeClass):
             # in this mode we should have only one character available. We
             # try to auto-connect to it by calling the @ic command
             # (this relies on player.db._last_puppet being set)
-            self.execute_cmd("@ic")
+            self.execute_cmd("@ic", sessid=sessid)
         elif _MULTISESSION_MODE == 1:
             # in this mode the first session to connect acts like mode 0,
             # the following sessions "share" the same view and should
             # not perform any actions
             if not self.get_all_puppets():
-                self.execute_cmd("@ic")
+                self.execute_cmd("@ic", sessid=sessid)
         elif _MULTISESSION_MODE == 2:
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
-            self.execute_cmd("look")
+            self.execute_cmd("look", sessid=sessid)
 
     def at_disconnect(self, reason=None):
         """

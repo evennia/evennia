@@ -61,7 +61,7 @@ class ExamplePlayer(Player):
 
      msg(outgoing_string, from_obj=None, data=None)
      swap_character(new_character, delete_old_character=False)
-     execute_cmd(raw_string)
+     execute_cmd(raw_string, sessid=None)
      search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
      is_typeclass(typeclass, exact=False)
      swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
@@ -79,7 +79,7 @@ class ExamplePlayer(Player):
      at_init()
      at_cmdset_get()
      at_first_login()
-     at_post_login()
+     at_post_login(sessid=None)
      at_disconnect()
      at_message_receive()
      at_message_send()

@@ -407,7 +407,7 @@ class PlayerDB(TypedObject):
             return False
         if normal_mode and session.puppet:
             # cleanly unpuppet eventual previous object puppeted by this session
-            self.unpuppet_object(self, sessid)
+            self.unpuppet_object(sessid)
         if obj.player and obj.player.is_connected and obj.player != self:
             # we don't allow to puppet an object already controlled by an active
             # player. To kick a player, call unpuppet_object on them explicitly.

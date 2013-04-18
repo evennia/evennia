@@ -803,6 +803,15 @@ class Character(Object):
         self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         self.location.at_object_receive(self, self.location)
 
+    def at_post_puppet(self):
+        """
+        Called just after puppeting has completed.
+        """
+        self.msg("\nYou become {c%s{n.\n" % self.name)
+        self.execute_cmd("look")
+        if self.location:
+            self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+
     def at_post_unpuppet(self, player):
         """
         We stove away the character when the player goes ooc/logs off, otherwise the character object will

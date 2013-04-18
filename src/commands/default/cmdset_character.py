@@ -58,7 +58,6 @@ class CharacterCmdSet(CmdSet):
         self.add(building.CmdTeleport())
         self.add(building.CmdSetObjAlias())
         self.add(building.CmdListCmdSets())
-        self.add(building.CmdDebug())
         self.add(building.CmdWipe())
         self.add(building.CmdSetAttribute())
         self.add(building.CmdName())

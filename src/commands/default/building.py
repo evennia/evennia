@@ -6,14 +6,14 @@ Building and world design commands
 from django.conf import settings
 from src.objects.models import ObjectDB, ObjAttribute
 from src.players.models import PlayerAttribute
-from src.utils import create, utils, debug
+from src.utils import create, utils
 from src.utils.ansi import raw
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
 
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
-           "CmdCpAttr", "CmdMvAttr", "CmdCreate", "CmdDebug",
+           "CmdCpAttr", "CmdMvAttr", "CmdCreate",
            "CmdDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
            "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
@@ -425,49 +425,6 @@ class CmdCreate(ObjManipCommand):
                     obj.move_to(caller.location, quiet=True)
         if string:
            caller.msg(string)
-
-
-class CmdDebug(MuxCommand):
-    """
-    Debug game entities
-
-    Usage:
-      @debug[/switch] <path to code>
-
-    Switches:
-      obj - debug an object
-      script - debug a script
-
-    Examples:
-      @debug/script game.gamesrc.scripts.myscript.MyScript
-      @debug/script myscript.MyScript
-      @debug/obj examples.red_button.RedButton
-
-    This command helps when debugging the codes of objects and scripts.
-    It creates the given object and runs tests on its hooks.
-    """
-
-    key = "@debug"
-    locks = "cmd:perm(debug) or perm(Builders)"
-    help_category = "Building"
-
-    def func(self):
-        "Running the debug"
-
-        if not self.args or not self.switches:
-            self.caller.msg("Usage: @debug[/obj][/script] <path>")
-            return
-
-        path = self.args
-
-        if 'obj' in self.switches or 'object' in self.switches:
-            # create and debug the object
-            self.caller.msg(debug.debug_object(path, self.caller))
-            self.caller.msg(debug.debug_object_scripts(path, self.caller))
-
-        elif 'script' in self.switches:
-            self.caller.msg(debug.debug_syntax_script(path))
-
 
 class CmdDesc(MuxCommand):
     """

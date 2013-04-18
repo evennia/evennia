@@ -96,7 +96,7 @@ class CmdUnconnectedConnect(MuxCommand):
         #   player.at_init()         # always called when object is loaded from disk
         #   player.at_pre_login()
         #   player.at_first_login()  # only once
-        #   player.at_post_login()
+        #   player.at_post_login(sessid=sessid)
         session.sessionhandler.login(session, player)
 
 class CmdUnconnectedCreate(MuxCommand):
