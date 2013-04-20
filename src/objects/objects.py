@@ -797,11 +797,13 @@ class Character(Object):
         if self.location == None:
             # make sure location is never None (home should always exist)
             self.location = self.home
-        # save location again to be sure
-        self.db.prelogout_location = self.location
-
-        self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
-        self.location.at_object_receive(self, self.location)
+        if self.location:
+            # save location again to be sure
+            self.db.prelogout_location = self.location
+            self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+            self.location.at_object_receive(self, self.location)
+        else:
+            player.msg("{r%s has no location and no home is set.{n" % self)
 
     def at_post_puppet(self):
         """

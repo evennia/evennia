@@ -65,7 +65,7 @@ class CmdBoot(MuxCommand):
                     break
         else:
             # Boot by player object
-            pobj = caller.search("*%s" % args, global_search=True, player=True)
+            pobj = caller.search("*%s" % args.lstrip('*'), global_search=True, player=True)
             if not pobj:
                 return
             if pobj.character.has_player:
