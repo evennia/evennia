@@ -224,7 +224,7 @@ class CmdIC(MuxPlayerCommand):
                 return
         if not new_character:
             # search for a matching character
-            new_character = search.objects(self.args, player)
+            new_character = search.object_search(self.args, player)
             if new_character:
                 new_character = new_character[0]
             else:

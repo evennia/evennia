@@ -822,6 +822,7 @@ class TypedObject(SharedMemoryModel):
             return any((cls for cls in self.typeclass.__class__.mro()
                         if any(("%s.%s" % (_GA(cls,"__module__"), _GA(cls,"__name__")) == typec for typec in typeclasses))))
 
+
     #
     # Object manipulation methods
     #
@@ -874,7 +875,6 @@ class TypedObject(SharedMemoryModel):
         # this will automatically use a default class if
         # there is an error with the given typeclass.
         new_typeclass = self.typeclass
-        print new_typeclass
         if self.typeclass_path != new_typeclass.path and no_default:
             # something went wrong; the default was loaded instead,
             # and we don't allow that; instead we return to previous.

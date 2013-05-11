@@ -48,30 +48,45 @@ HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_c
 #  is reachable from within each command class
 #  by using self.caller.search()!
 #
+#    def object_search(self, ostring=None,
+#                      attribute_name=None,
+#                      typeclass=None,
+#                      candidates=None,
+#                      exact=True):
+#
+#        Search globally or in a list of candidates and return results. The result is always an Object.
+#        Always returns a list.
+#
+#        Arguments:
+#        ostring: (str) The string to compare names against. By default (if not attribute_name
+#                  is set), this will search object.key and object.aliases in order. Can also
+#                  be on the form #dbref, which will, if exact=True be matched against primary key.
+#        attribute_name: (str): Use this named ObjectAttribute to match ostring against, instead
+#                  of the defaults.
+#        typeclass (str or TypeClass): restrict matches to objects having this typeclass. This will help
+#                   speed up global searches.
+#        candidates (list obj ObjectDBs): If supplied, search will only be performed among the candidates
+#                  in this list. A common list of candidates is the contents of the current location searched.
+#        exact (bool): Match names/aliases exactly or partially. Partial matching matches the
+#                  beginning of words in the names/aliases, using a matching routine to separate
+#                  multiple matches in names with multiple components (so "bi sw" will match
+#                  "Big sword"). Since this is more expensive than exact matching, it is
+#                  recommended to be used together with the objlist keyword to limit the number
+#                  of possibilities. This value has no meaning if searching for attributes/properties.
+#
+#        Returns:
+#        A list of matching objects (or a list with one unique match)
 #    def object_search(self, ostring, caller=None,
 #                      candidates=None,
 #                      attribute_name=None):
-#        """
-#        Search as an object and return results.
 #
-#        ostring: (string) The string to compare names against.
-#                  Can be a dbref. If name is appended by *, a player is searched for.
-#        caller: (Object) The object performing the search.
-#        candidates (list of Objects): restrict search only to those objects
-#        attribute_name: (string) Which attribute to search in each object.
-#                                 If None, the default 'name' attribute is used.
-#        """
-
 search_object = ObjectDB.objects.object_search
 search_objects = search_object
+object_search = search_object
 objects = search_objects
+
 #
 # Search for players
-#
-# NOTE: Most usually you would do such searches from
-#   from inseide command definitions using
-#   self.caller.search() by appending an '*' to the
-#   beginning of the search criterion.
 #
 # def player_search(self, ostring):
 #     """
@@ -83,6 +98,7 @@ objects = search_objects
 
 search_player = PlayerDB.objects.player_search
 search_players = search_player
+player_search = search_player
 players = search_players
 
 #
@@ -100,6 +116,7 @@ players = search_players
 
 search_script = ScriptDB.objects.script_search
 search_scripts = search_script
+script_search = search_script
 scripts = search_scripts
 #
 # Searching for communication messages
@@ -120,6 +137,7 @@ scripts = search_scripts
 
 search_message = Msg.objects.message_search
 search_messages = search_message
+message_search = search_message
 messages = search_messages
 
 #
@@ -134,6 +152,7 @@ messages = search_messages
 
 search_channel = Channel.objects.channel_search
 search_channels = search_channel
+channel_search = search_channel
 channels = search_channels
 
 #
@@ -149,4 +168,5 @@ channels = search_channels
 
 search_help_entry = HelpEntry.objects.search_help
 search_help_entries = search_help_entry
+help_entry_search = search_help_entry
 help_entries = search_help_entries

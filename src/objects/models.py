@@ -550,7 +550,6 @@ class ObjectDB(TypedObject):
                typeclass=None,
                location=None,
                attribute_name=None,
-               attribute_value=None,
                quiet=False,
                exact=False):
         """
@@ -559,26 +558,25 @@ class ObjectDB(TypedObject):
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
         objects in self's current location or inventory is searched.
+        Note: to find Players, use eg. ev.player_search.
 
         Inputs:
 
-        ostring: (str) The string to match object.key against. Special strings:
-                        *<string> - search only for objects of type settings.CHARACTER_DEFAULT
+        ostring (str): Primary search criterion. Will be matched against object.key (with object.aliases second)
+                       unless the keyword attribute_name specifies otherwise. Special strings:
                         #<num> - search by unique dbref. This is always a global search.
                         me,self - self-reference to this object
                         <num>-<string> - can be used to differentiate between multiple same-named matches
-        global_search: Search all objects globally. This is overruled by "location" keyword.
-        use_nicks : Use nickname-replace (nick of type "object") on the search string
-        typeclass : Limit search only to Objects with this typeclass. Overrides the
-                   use of the *-operator at the beginning of the string.
-        location : Specify a location to search, if different from the self's given location
+        global_search (bool): Search all objects globally. This is overruled by "location" keyword.
+        use_nicks (bool): Use nickname-replace (nicktype "object") on the search string
+        typeclass (str or Typeclass): Limit search only to Objects with this typeclass. May be a list of typeclasses
+                    for a broader search.
+        location (Object): Specify a location to search, if different from the self's given location
                    plus its contents. This can also be a list of locations.
-        attribute_name: Match only objects also having Attributes with this name
-        attribute_value: Match only objects where obj.db.attribute_name also has this value
-
-        quiet - don't display default error messages - return multiple matches as a list and
+        attribute_name (str): Use this named Attribute to match ostring against, instead of object.key.
+        quiet (bool) - don't display default error messages - return multiple matches as a list and
                 no matches as None. If not set (default), will echo error messages and return None.
-        exact - if unset (default) - prefers to match to beginning of string rather than not matching
+        exact (bool) - if unset (default) - prefers to match to beginning of string rather than not matching
                                      at all. If set, requires exact mathing of entire string.
 
         Returns:
@@ -606,9 +604,6 @@ class ObjectDB(TypedObject):
         if use_nicks:
             nick = None
             nicktype = "object"
-            if player or ostring.startswith('*'):
-                ostring = ostring.lstrip("*")
-                nicktype = "player"
             # look up nicks
             nicks = ObjectNick.objects.filter(db_obj=self, db_type=nicktype)
             if self.has_player:
@@ -619,8 +614,8 @@ class ObjectDB(TypedObject):
                     break
 
         candidates=None
-        if global_search or (global_dbref and ostring.startswith("#")):
-            # only allow exact matching if searching the entire database
+        if global_search or (ostring.startswith("#") and len(ostring) > 1 and ostring[1:].isdigit()):
+            # only allow exact matching if searching the entire database or unique #dbrefs
             exact = True
         elif location:
             # location(s) were given
@@ -638,16 +633,14 @@ class ObjectDB(TypedObject):
             # db manager expects database objects
             candidates = [obj.dbobj for obj in candidates]
 
-        results = ObjectDB.objects.object_search(ostring, caller=self,
+        results = ObjectDB.objects.object_search(ostring=ostring,
+                                                 typeclass=typeclass,
                                                  attribute_name=attribute_name,
                                                  candidates=candidates,
                                                  exact=exact)
-        if ignore_errors:
+        if quiet:
             return results
-        result = _AT_SEARCH_RESULT(self, ostring, results, global_search)
-        if player and result:
-            return result.player
-        return result
+        return  _AT_SEARCH_RESULT(self, ostring, results, global_search)
 
 
     #

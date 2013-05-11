@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.server.sessionhandler import SESSIONS
 from src.server.models import ServerConfig
-from src.utils import utils, prettytable
+from src.utils import utils, prettytable, search
 from src.commands.default.muxcommand import MuxCommand
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
@@ -65,24 +65,22 @@ class CmdBoot(MuxCommand):
                     break
         else:
             # Boot by player object
-            pobj = caller.search("*%s" % args.lstrip('*'), global_search=True, player=True)
+            pobj = search.player_search(args)
             if not pobj:
+                self.caller("Player %s was not found." % pobj.key)
                 return
-            if pobj.character.has_player:
-                if not pobj.access(caller, 'boot'):
-                    string = "You don't have the permission to boot %s."
-                    pobj.msg(string)
-                    return
-                # we have a bootable object with a connected user
-                matches = SESSIONS.sessions_from_player(pobj)
-                for match in matches:
-                    boot_list.append(match)
-            else:
-                caller.msg("That object has no connected player.")
+            pobj = pobj[0]
+            if not pobj.access(caller, 'boot'):
+                string = "You don't have the permission to boot %s."
+                pobj.msg(string)
                 return
+            # we have a bootable object with a connected user
+            matches = SESSIONS.sessions_from_player(pobj)
+            for match in matches:
+                boot_list.append(match)
 
         if not boot_list:
-            caller.msg("No matches found.")
+            caller.msg("No matching sessions found. The Player does not seem to be online.")
             return
 
         # Carry out the booting of the sessions in the boot list.
@@ -96,8 +94,7 @@ class CmdBoot(MuxCommand):
         for session in boot_list:
             name = session.uname
             session.msg(feedback)
-            session.disconnect()
-            caller.msg("You booted %s." % name)
+            pobj.disconnect_session_from_player(session.sessid)
 
 
 # regex matching IP addresses with wildcards, eg. 233.122.4.*
