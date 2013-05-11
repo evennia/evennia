@@ -259,6 +259,7 @@ class LockHandler(object):
         get_player method (this sits on serversessions, in some rare cases where a check is done
         before the login process has yet been fully finalized)
         """
+        #print "_superuser_character:", hasattr(obj, "get_attribute") and obj.get_attribute("_superuser_character")
         self.lock_bypass = (hasattr(obj, "is_superuser") and obj.is_superuser
                             or ((hasattr(obj, "get_attribute") and obj.get_attribute("_superuser_character"))
                                  and ((hasattr(obj, "player") and hasattr(obj.player, "is_superuser") and obj.player.is_superuser)

@@ -71,6 +71,7 @@ class CmdOOCLook(MuxPlayerCommand):
         # get all our characters and sessions
         characters = player.db._playable_characters
         sessions = player.get_all_sessions()
+        is_su = player.is_superuser
 
         # text shown when looking in the ooc area
         string = "Account {g%s{n (you are Out-of-Character)" % (player.key)
@@ -83,15 +84,22 @@ class CmdOOCLook(MuxPlayerCommand):
             string += "\n %s %s" % (sessid == csessid and "{w%s{n" % (isess + 1) or (isess + 1), addr)
         string += "\n\n {whelp{n - more commands"
         string += "\n {wooc <Text>{n - talk on public channel"
-        if len(characters) < MAX_NR_CHARACTERS:
+
+        if is_su or len(characters) < MAX_NR_CHARACTERS:
             if not characters:
                 string += "\n\n You don't have any character yet. See {whelp @charcreate{n for creating one."
             else:
-                string += "\n {w@charcreate <name> [=description]{n - create new character (max %i)" % MAX_NR_CHARACTERS
+                string += "\n {w@charcreate <name> [=description]{n - create new character"
+
         if characters:
+            string_s_ending = len(characters) > 1 and "s" or ""
             string += "\n {w@ic <character>{n - enter the game ({w@ooc{n to get back here)"
-            string += "\n\nAvailable character%s%s:"  % (len(characters) > 1 and "s" or "",
+            if is_su:
+                string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
+            else:
+                string += "\n\nAvailable character%s%s:"  % (string_s_ending,
                                                          MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
+
             for char in characters:
                 csessid = char.sessid
                 if csessid:
@@ -153,7 +161,9 @@ class CmdCharCreate(MuxPlayerCommand):
             return
         key = self.lhs
         desc = self.rhs
-        if player.db._playable_characters and len(player.db._playable_characters) >= MAX_NR_CHARACTERS:
+        if not player.is_superuser and \
+            (player.db._playable_characters and
+                len(player.db._playable_characters) >= MAX_NR_CHARACTERS):
             self.msg("You may only create a maximum of %i characters." % MAX_NR_CHARACTERS)
             return
         # create the character
@@ -227,8 +237,10 @@ class CmdIC(MuxPlayerCommand):
         if new_character.player:
             # may not puppet an already puppeted character
             if new_character.sessid and new_character.player == player:
-                self.msg("{RYou already act as {c%s{n in another session." % new_character.name)
-                return
+                # as a safeguard we allow "taking over chars from your own sessions.
+                player.msg("{c%s{n{R is now acted from another of your sessions.{n" % (new_character.name), sessid=new_character.sessid)
+                player.unpuppet_object(new_character.sessid)
+                self.msg("Taking over {c%s{n from another of your sessions." % new_character.name)
             elif new_character.player != player and new_character.player.is_connected:
                 self.msg("{c%s{r is already acted by another player.{n" % new_character.name)
                 return

@@ -673,6 +673,7 @@ class TypedObject(SharedMemoryModel):
 
                 # try to import and analyze the result
                 typeclass = _GA(self, "_path_import")(tpath)
+                #print "typeclass:",typeclass,tpath
                 if callable(typeclass):
                     # we succeeded to import. Cache and return.
                     _SA(self, "typeclass_path", tpath)
@@ -750,27 +751,6 @@ class TypedObject(SharedMemoryModel):
         else:
             _SA(self, "typeclass_last_errmsg", message.strip())
         return
-
-        #infochan = None
-        #cmessage = message
-        #try:
-        #    from src.comms.models import Channel
-        #    infochan = settings.CHANNEL_MUDINFO
-        #    infochan = Channel.objects.get_channel(infochan[0])
-        #    if infochan:
-        #        cname = infochan.key
-        #        cmessage = "\n".join(["[%s]: %s" % (cname, line) for line in message.split('\n') if line])
-        #        cmessage = cmessage.strip()
-        #        infochan.msg(cmessage)
-        #    else:
-        #        # no mudinfo channel is found. Log instead.
-        #        cmessage = "\n".join(["[NO MUDINFO CHANNEL]: %s" % line for line in message.split('\n')])
-        #    logger.log_errmsg(cmessage)
-        #except Exception:
-        #    if ServerConfig.objects.conf("server_starting_mode"):
-        #        print cmessage
-        #    else:
-        #        logger.log_trace(cmessage)
 
     def _get_default_typeclass(self, cache=False, silent=False, save=False):
         """
@@ -882,7 +862,7 @@ class TypedObject(SharedMemoryModel):
         """
         if callable(new_typeclass):
             # this is an actual class object - build the path
-            cls = new_typeclass.__class__
+            cls = new_typeclass
             new_typeclass = "%s.%s" % (cls.__module__, cls.__name__)
         else:
             new_typeclass = "%s" % to_str(new_typeclass)
@@ -894,6 +874,7 @@ class TypedObject(SharedMemoryModel):
         # this will automatically use a default class if
         # there is an error with the given typeclass.
         new_typeclass = self.typeclass
+        print new_typeclass
         if self.typeclass_path != new_typeclass.path and no_default:
             # something went wrong; the default was loaded instead,
             # and we don't allow that; instead we return to previous.
@@ -937,8 +918,8 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         """
         if not get_attr_cache(self, attribute_name):
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(db_obj=self).filter(
-                            db_key__iexact=attribute_name)
+            attrib_obj = _GA(self, "_attribute_class").objects.filter(
+                    db_obj=self, db_key__iexact=attribute_name)
             if attrib_obj:
                 set_attr_cache(self, attribute_name, attrib_obj[0])
             else:
@@ -963,7 +944,7 @@ class TypedObject(SharedMemoryModel):
             attrclass = _GA(self, "_attribute_class")
             # check if attribute already exists.
             attrib_obj = attrclass.objects.filter(
-                                   db_obj=self).filter(db_key__iexact=attribute_name)
+                         db_obj=self, db_key__iexact=attribute_name)
             if attrib_obj:
                 # use old attribute
                 attrib_obj = attrib_obj[0]
@@ -990,7 +971,7 @@ class TypedObject(SharedMemoryModel):
         attrib_obj = get_attr_cache(self, attribute_name)
         if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                             db_obj=self).filter(db_key__iexact=attribute_name)
+                    db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
             set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
@@ -1009,7 +990,7 @@ class TypedObject(SharedMemoryModel):
         attrib_obj = get_attr_cache(self, attribute_name)
         if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                             db_obj=self).filter(db_key__iexact=attribute_name)
+                             db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
             set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
@@ -1026,7 +1007,7 @@ class TypedObject(SharedMemoryModel):
         attrib_obj = get_attr_cache(self, attribute_name)
         if not attrib_obj:
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self).filter(db_key__iexact=attribute_name)
+                    db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 raise AttributeError
             set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
@@ -1046,7 +1027,7 @@ class TypedObject(SharedMemoryModel):
         else:
             try:
                 _GA(self, "_attribute_class").objects.filter(
-                db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
+                db_obj=self, db_key__iexact=attribute_name)[0].delete()
             except IndexError:
                 pass
 
@@ -1064,7 +1045,7 @@ class TypedObject(SharedMemoryModel):
         else:
             try:
                 _GA(self, "_attribute_class").objects.filter(
-                db_obj=self).filter(db_key__iexact=attribute_name)[0].delete()
+                db_obj=self, db_key__iexact=attribute_name)[0].delete()
             except IndexError:
                 pass
         raise AttributeError
