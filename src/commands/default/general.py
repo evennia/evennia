@@ -271,7 +271,7 @@ class CmdDrop(MuxCommand):
 
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
-        results = caller.search(self.args, location=caller, ignore_errors=True)
+        results = caller.search(self.args, location=caller, quiet=True)
 
         # now we send it into the error handler (this will output consistent
         # error messages if there are problems).

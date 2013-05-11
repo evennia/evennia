@@ -143,58 +143,63 @@ class Object(TypeClass):
 
     def search(self, ostring,
                global_search=False,
-               global_dbref=False,
-               attribute_name=None,
                use_nicks=False,
+               typeclass=None,
                location=None,
-               ignore_errors=False,
-               player=False):
+               attribute_name=None,
+               quiet=False,
+               exact=False):
         """
+        Returns the typeclass of an Object matching a search string/condition
+
         Perform a standard object search in the database, handling
-        multiple results and lack thereof gracefully.
+        multiple results and lack thereof gracefully. By default, only
+        objects in self's current location or inventory is searched.
+        Note: to find Players, use eg. ev.player_search.
 
-        ostring: (str) The string to match object names against.
-                       Obs - To find a player, append * to the
-                       start of ostring.
-        global_search(bool): Search all objects, not just the current
-                       location/inventory
-        attribute_name (string) Which attribute to match
-                        (if None, uses default 'name')
-        use_nicks (bool) : Use nickname replace (off by default)
-        location (Object): If None, use caller's current location
-        ignore_errors (bool): Don't display any error messages even
-                        if there are none/multiple matches -
-                        just return the result as a list.
-        player (Objectt):  Don't search for an Object but a Player.
-                           This will also find players that don't
-                           currently have a character.
+        Inputs:
 
-        Returns - a unique Object/Player match or None. All error
-                  messages are handled by system-commands and the parser-handlers
-                  specified in settings.
+        ostring (str): Primary search criterion. Will be matched against object.key (with object.aliases second)
+                       unless the keyword attribute_name specifies otherwise. Special strings:
+                        #<num> - search by unique dbref. This is always a global search.
+                        me,self - self-reference to this object
+                        <num>-<string> - can be used to differentiate between multiple same-named matches
+        global_search (bool): Search all objects globally. This is overruled by "location" keyword.
+        use_nicks (bool): Use nickname-replace (nicktype "object") on the search string
+        typeclass (str or Typeclass): Limit search only to Objects with this typeclass. May be a list of typeclasses
+                    for a broader search.
+        location (Object): Specify a location to search, if different from the self's given location
+                   plus its contents. This can also be a list of locations.
+        attribute_name (str): Use this named Attribute to match ostring against, instead of object.key.
+        quiet (bool) - don't display default error messages - return multiple matches as a list and
+                no matches as None. If not set (default), will echo error messages and return None.
+        exact (bool) - if unset (default) - prefers to match to beginning of string rather than not matching
+                                     at all. If set, requires exact mathing of entire string.
 
-        Use *<string> to search for objects controlled by a specific
-        player. Note that the object controlled by the player will be
-        returned, not the player object itself. This also means that
-        this will not find Players without a character. Use the keyword
-        player=True to find player objects.
+        Returns:
 
-        Note - for multiple matches, the engine accepts a number
-        linked to the key in order to separate the matches from
-        each other without showing the dbref explicitly. Default
-        syntax for this is 'N-searchword'. So for example, if there
-        are three objects in the room all named 'ball', you could
-        address the individual ball as '1-ball', '2-ball', '3-ball'
-        etc.
+            quiet=False (default):
+                no match or multimatch:
+                    auto-echoes errors to self.msg, then returns None
+                    (results are handled by modules set by settings.SEARCH_AT_RESULT
+                     and settings.SEARCH_AT_MULTIMATCH_INPUT)
+                match:
+                    a unique object match
+            quiet=True:
+                no match or multimatch:
+                    returns None or list of multi-matches
+                match:
+                    a unique object match
+
         """
         return self.dbobj.search(ostring,
-                                 global_search=global_search,
-                                 global_dbref=global_dbref,
-                                 attribute_name=attribute_name,
-                                 use_nicks=use_nicks,
-                                 location=location,
-                                 ignore_errors=ignore_errors,
-                                 player=player)
+               global_search=global_search,
+               use_nicks=use_nicks,
+               typeclass=typeclass,
+               location=location,
+               attribute_name=attribute_name,
+               quiet=quiet,
+               exact=quiet)
 
     def execute_cmd(self, raw_string, sessid=None):
         """

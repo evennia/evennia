@@ -39,7 +39,12 @@ from src.commands import cmdhandler
 from src.utils import logger, utils
 from src.utils.utils import inherits_from, make_iter
 
+from django.utils.translation import ugettext as _
+
 __all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
+
+_ME = _("me")
+_SELF = _("self")
 
 _SESSIONS = None
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -556,6 +561,10 @@ class PlayerDB(TypedObject):
         Extra keywords are ignored, but are allowed in call in order to make API more consistent
                            with objects.models.TypedObject.search.
         """
+        # handle me, self
+        if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
+            return self
+
         matches = _GA(self, "__class__").objects.player_search(ostring)
         matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=True)
         if matches and return_character:

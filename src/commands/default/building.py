@@ -499,9 +499,9 @@ class CmdDestroy(MuxCommand):
         def delobj(objname, byref=False):
             # helper function for deleting a single object
             string = ""
-            obj = caller.search(objname, global_dbref=byref)
+            obj = caller.search(objname)
             if not obj:
-                self.caller.msg(" (Objects to destroy must either be local or specified with a unique dbref.)")
+                self.caller.msg(" (Objects to destroy must either be local or specified with a unique #dbref.)")
                 return ""
             if not "override" in self.switches and obj.dbid == int(settings.CHARACTER_DEFAULT_HOME.lstrip("#")):
                 return "\nYou are trying to delete CHARACTER_DEFAULT_HOME. If you want to do this, use the /override switch."
@@ -1018,7 +1018,7 @@ class CmdOpen(ObjManipCommand):
         # check if this exit object already exists at the location.
         # we need to ignore errors (so no automatic feedback)since we
         # have to know the result of the search to decide what to do.
-        exit_obj = caller.search(exit_name, location=location, ignore_errors=True)
+        exit_obj = caller.search(exit_name, location=location, quiet=True)
         if len(exit_obj) > 1:
             # give error message and return
             caller.search(exit_name, location=location)
@@ -1681,8 +1681,10 @@ class CmdExamine(ObjManipCommand):
 
 
             self.player_mode = "player" in self.switches or obj_name.startswith('*')
-
-            obj = caller.search(obj_name, player=self.player_mode, global_dbref=True)
+            if self.player_mode:
+                obj = self.search_player(obj_name)
+            else:
+                obj = caller.search(obj_name)
             if not obj:
                 continue
 

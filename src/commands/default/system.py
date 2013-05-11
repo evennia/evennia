@@ -7,7 +7,6 @@ System commands
 import traceback
 import os, datetime, time
 from time import time as timemeasure
-from sys import getsizeof
 import sys
 import django, twisted
 

@@ -25,6 +25,7 @@ from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
 from src.typeclasses.typeclass import TypeClass
 from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
+from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
@@ -569,8 +570,8 @@ class ObjectDB(TypedObject):
                         <num>-<string> - can be used to differentiate between multiple same-named matches
         global_search (bool): Search all objects globally. This is overruled by "location" keyword.
         use_nicks (bool): Use nickname-replace (nicktype "object") on the search string
-        typeclass (str or Typeclass): Limit search only to Objects with this typeclass. May be a list of typeclasses
-                    for a broader search.
+        typeclass (str or Typeclass, or list of either): Limit search only to Objects with this typeclass. May
+                    be a list of typeclasses for a broader search.
         location (Object): Specify a location to search, if different from the self's given location
                    plus its contents. This can also be a list of locations.
         attribute_name (str): Use this named Attribute to match ostring against, instead of object.key.
@@ -598,7 +599,7 @@ class ObjectDB(TypedObject):
         # handle some common self-references:
         if ostring == _HERE:
             return self.location
-        if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
+        if ostring in (_ME, _SELF):
             return self
 
         if use_nicks:
@@ -633,15 +634,25 @@ class ObjectDB(TypedObject):
             # db manager expects database objects
             candidates = [obj.dbobj for obj in candidates]
 
-        results = ObjectDB.objects.object_search(ostring=ostring,
-                                                 typeclass=typeclass,
+        results = ObjectDB.objects.object_search(ostring,
                                                  attribute_name=attribute_name,
+                                                 typeclass=typeclass,
                                                  candidates=candidates,
                                                  exact=exact)
         if quiet:
             return results
         return  _AT_SEARCH_RESULT(self, ostring, results, global_search)
 
+    def search_player(self, ostring, quiet=False):
+        """
+        Simple wrapper of the player search also handling me, self
+        """
+        if ostring in (_ME, _SELF) and _GA(self, "db_player"):
+            return _GA(self, "db_player")
+        results = PlayerDB.objects.player_search(ostring)
+        if quiet:
+            return results
+        return _AT_SEARCH_RESULT(self, ostring, results, True)
 
     #
     # Execution/action methods

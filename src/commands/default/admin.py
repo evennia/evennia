@@ -7,7 +7,6 @@ Admin commands
 import time, re
 from django.conf import settings
 from django.contrib.auth.models import User
-from src.players.models import PlayerDB
 from src.server.sessionhandler import SESSIONS
 from src.server.models import ServerConfig
 from src.utils import utils, prettytable, search
@@ -92,7 +91,6 @@ class CmdBoot(MuxCommand):
                 feedback += "\nReason given: %s" % reason
 
         for session in boot_list:
-            name = session.uname
             session.msg(feedback)
             pobj.disconnect_session_from_player(session.sessid)
 
@@ -287,12 +285,7 @@ class CmdDelPlayer(MuxCommand):
 
         # We use player_search since we want to be sure to find also players
         # that lack characters.
-        players = caller.search("*%s" % args)
-        if not players:
-            try:
-                players = PlayerDB.objects.filter(id=args)
-            except ValueError:
-                pass
+        players = caller.search_player(args, quiet=True)
 
         if not players:
             # try to find a user instead of a Player
@@ -337,7 +330,6 @@ class CmdDelPlayer(MuxCommand):
 
             player = players
             user = player.user
-            character = player.character
 
             if not player.access(caller, 'delete'):
                 string = "You don't have the permissions to delete that player."
@@ -346,17 +338,14 @@ class CmdDelPlayer(MuxCommand):
 
             uname = user.username
             # boot the player then delete
-            if character and character.has_player:
-                self.msg("Booting and informing player ...")
-                string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
-                if reason:
-                    string += " Reason given:\n  '%s'" % reason
-                character.msg(string)
-                # we have a bootable object with a connected player
-                sessions = SESSIONS.sessions_from_player(character.player)
-                for session in sessions:
-                   session.msg(string)
-                   session.disconnect()
+            self.msg("Informing and disconnecting player ...")
+            string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
+            if reason:
+                string += " Reason given:\n  '%s'" % reason
+            player.unpuppet_all()
+            for session in SESSIONS.sessions_from_player(player):
+                player.msg(string, sessid=session.sessid)
+                player.disconnect_session_from_player(session.sessid)
             user.delete()
             player.delete()
             self.msg("Player %s was successfully deleted." % uname)
@@ -466,7 +455,7 @@ class CmdNewPassword(MuxCommand):
             return
 
         # the player search also matches 'me' etc.
-        player = caller.search("*%s" % self.lhs, global_search=True, player=True)
+        player = caller.search_player(self.lhs)
         if not player:
             return
         player.user.set_password(self.rhs)
@@ -510,8 +499,10 @@ class CmdPerm(MuxCommand):
 
         playermode = 'player' in self.switches or lhs.startswith('*')
 
-        # locate the object
-        obj = caller.search(lhs, global_search=True, player=playermode)
+        if playermode:
+            obj = caller.search_player(lhs)
+        else:
+            obj =  caller.search(lhs, global_search=True)
         if not obj:
             return
 

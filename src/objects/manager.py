@@ -212,7 +212,7 @@ class ObjectManager(TypedObjectManager):
     # main search methods and helper functions
 
     @returns_typeclass_list
-    def object_search(self, ostring=None,
+    def object_search(self, ostring,
                       attribute_name=None,
                       typeclass=None,
                       candidates=None,
@@ -268,7 +268,7 @@ class ObjectManager(TypedObjectManager):
 
         if candidates:
             # Convenience check to make sure candidates are really dbobjs
-            candidates = [cand.dbobj for cand in make_iter(candidates) if _GA(cand, "_hasattr")(cand, "dbobj")]
+            candidates = [cand.dbobj for cand in make_iter(candidates) if cand]
             if typeclass:
                 candidates = [cand for cand in candidates if _GA(cand, "db_typeclass_path") in typeclass]
 

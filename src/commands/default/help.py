@@ -182,7 +182,6 @@ class CmdSetHelp(MuxCommand):
     def func(self):
         "Implement the function"
 
-        caller = self.caller
         switches = self.switches
         lhslist = self.lhslist
 

@@ -390,7 +390,7 @@ class CmdWho(MuxPlayerCommand):
                 plr_pobject = plr_pobject or session.get_player()
                 table.add_row([utils.crop(plr_pobject.name, width=25),
                                utils.time.format(delta_conn, 0),
-                               utils,time_format(delta_cmd, 1)])
+                               utils.time_format(delta_cmd, 1)])
 
         string = "{wPlayers:{n\n%s\n%s unique accounts logged in." % (table, nplayers==1 and "One player" or nplayers)
         self.msg(string)
@@ -560,8 +560,6 @@ class CmdColorTest(MuxPlayerCommand):
 
     def func(self):
         "Show color tables"
-
-        player = self.caller
 
         if self.args.startswith("a"):
             # show ansi 16-color table
