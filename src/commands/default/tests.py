@@ -25,6 +25,7 @@ main test suite started with
 
 from django.utils.unittest import TestCase
 from src.players.player import Player
+#from src.objects.Objects import Character
 from src.utils import create, utils, ansi
 
 #------------------------------------------------------------
@@ -32,7 +33,7 @@ from src.utils import create, utils, ansi
 # ------------------------------------------------------------
 
 class TestPlayer(Player):
-    def msg(self, message, from_obj=None, data=None):
+    def msg(self, message, **kwargs):
         "test message"
         #print "in testing msg():", message
         if not self.ndb.stored_msg:
@@ -51,15 +52,13 @@ class CommandTest(TestCase):
         self.room2 = create.create_object("src.objects.objects.Room", key="Room%ib"%self.CID)
         self.obj1 = create.create_object("src.objects.objects.Object", key="Obj%i"%self.CID, location=self.room1, home=self.room1)
         self.obj2 = create.create_object("src.objects.objects.Object", key="Obj%ib"%self.CID, location=self.room1, home=self.room1)
-        self.player = create.create_player("TestPlayer%i"%self.CID, "test@test.com", "testpassword", typeclass=TestPlayer, create_character=False)
-        self.caller = create.create_player("Caller%i"%self.CID, "test@test.com", "testpassword", player_dbobj=self.player.dbobj,
-                                           character_typeclass="src.objects.objects.Character",
-                                           permissions=["Immortals"], character_home=self.room1, character_location=self.room1)
-        self.caller.player = self.player
-        self.char = create.create_player("Char%i"%self.CID, "test2@test.com", "testpassword2", typeclass=TestPlayer,
-                                         character_typeclass="src.objects.objects.Character",
-                                         permissions=["Immortals"], character_home=self.room1, character_location=self.room1)
-        self.char = create.create_script("src.scripts.scripts.Script", key="Script%i"%self.CID)
+        self.char1 = create.create_object("src.objects.objects.Character", key="Char%i" % self.CID, location=self.room1, home=self.room1)
+        self.char2 = create.create_object("src.objects.objects.Character", key="Char%ib" % self.CID, location=self.room1, home=self.room1)
+        self.script = create.create_script("src.scripts.scripts.Script", key="Script%i"%self.CID)
+        self.player = create.create_player("TestPlayer%i"%self.CID, "test@test.com", "testpassword", typeclass=TestPlayer)
+
+        self.char1.player = self.player
+        self.char1.sessid = 1
 
     def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True):
         """
@@ -73,19 +72,23 @@ class CommandTest(TestCase):
         output sent to caller.msg in the game
         """
 
-        cmdobj.caller = self.caller
+        cmdobj.caller = self.char1
         cmdobj.cmdstring = cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
         cmdobj.raw_string = cmdobj.key + " " + args
-        cmdobj.obj = self.caller
+        cmdobj.obj = self.char1
+        cmdobj.sessid = 1
         # test
-        self.caller.player.ndb.stored_msg = []
+        self.char1.player.ndb.stored_msg = []
         cmdobj.at_pre_cmd()
         cmdobj.parse()
         cmdobj.func()
         cmdobj.at_post_cmd()
-        returned_msg = "|".join(self.caller.player.ndb.stored_msg)
+        for msg in self.char1.player.ndb.stored_msg:
+            # clean out prettytable sugar
+            pass
+        returned_msg = "|".join(self.char1.player.ndb.stored_msg)
         returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
         if msg != None and not returned_msg.startswith(msg.strip()):
             sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
