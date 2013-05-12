@@ -610,6 +610,7 @@ class Channel(SharedMemoryModel):
         "Connect the user to this channel"
         if not self.access(player, 'listen'):
             return False
+        player = player.dbobj
         conn = PlayerChannelConnection.objects.create_connection(player, self)
         if conn:
             return True

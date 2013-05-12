@@ -1643,9 +1643,9 @@ class CmdExamine(ObjManipCommand):
             if things:
                 string += "\n{wContents{n: %s" % ", ".join([cont.name for cont in obj.contents
                                                            if cont not in exits and cont not in pobjs])
-        separater = "="*78
+        separator = "-"*78
         #output info
-        return '%s\n%s\n%s' % ( separater, string.strip(), separater )
+        return '%s\n%s\n%s' % ( separator, string.strip(), separator )
 
     def func(self):
         "Process command"

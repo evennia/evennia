@@ -10,7 +10,7 @@ containing a list of in-game commands and executes them in sequence as
 if they had been entered in the game (including permission checks
 etc).
 
-Example batch-command file: game/gamesrc/commands/examples/example_batch_cmd.ev
+Example batch-command file: game/gamesrc/commands/examples/batch_cmds.ev
 
 Batch-code is a full-fledged python code interpreter that reads blocks
 of python code (*.py) and executes them in sequence. This allows for
@@ -18,7 +18,7 @@ much more power than Batch-command, but requires knowing Python and
 the Evennia API.  It is also a severe security risk and should
 therefore always be limited to superusers only.
 
-Example batch-code file: game/gamesrc/commands/examples/example_batch_code.py
+Example batch-code file: game/gamesrc/commands/examples/batch_code.py
 
 """
 from traceback import format_exc

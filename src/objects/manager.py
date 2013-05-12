@@ -308,7 +308,7 @@ class ObjectManager(TypedObjectManager):
     #
 
     def copy_object(self, original_object, new_key=None,
-                    new_location=None, new_player=None, new_home=None,
+                    new_location=None, new_home=None,
                     new_permissions=None, new_locks=None, new_aliases=None, new_destination=None):
         """
         Create and return a new object as a copy of the original object. All will
@@ -331,8 +331,6 @@ class ObjectManager(TypedObjectManager):
             new_location = original_object.location
         if not new_home:
             new_home = original_object.home
-        if not new_player:
-            new_player = original_object.player
         if not new_aliases:
             new_aliases = original_object.aliases
         if not new_locks:
@@ -346,7 +344,7 @@ class ObjectManager(TypedObjectManager):
         from src.utils import create
         from src.scripts.models import ScriptDB
         new_object = create.create_object(typeclass_path, key=new_key, location=new_location,
-                                          home=new_home, player=new_player, permissions=new_permissions,
+                                          home=new_home, permissions=new_permissions,
                                           locks=new_locks, aliases=new_aliases, destination=new_destination)
         if not new_object:
             return None

@@ -419,6 +419,7 @@ class Object(TypeClass):
                                  "delete:perm(Wizards)",     # delete object
                                  "get:all()",                # pick up object
                                  "call:true()",              # allow to call commands on this object
+                                 "tell:perm(Wizards)",        # allow emits to this object
                                  "puppet:id(%s) or perm(Immortals) or pperm(Immortals)" % dbref])) # restricts puppeting of this object
 
     def basetype_posthook_setup(self):

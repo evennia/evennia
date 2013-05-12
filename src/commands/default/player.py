@@ -24,8 +24,8 @@ from src.utils import utils, create, search, prettytable
 
 from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
 # limit symbol import for API
-__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
-           "CmdEncoding", "CmdSessions", "CmdWho", "CmdColorTest")
+__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit", "CmdCharCreate",
+           "CmdEncoding", "CmdSessions", "CmdWho", "CmdColorTest", "CmdQuell")
 
 # force max nr chars to 1 if mode is 0 or 1
 MAX_NR_CHARACTERS = MULTISESSION_MODE < 2 and 1 or MAX_NR_CHARACTERS

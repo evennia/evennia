@@ -166,7 +166,7 @@ class CmdDelCom(MuxCommand):
                 else:
                     self.msg("You had no such alias defined for this channel.")
 
-class CmdAllCom(MuxCommand):
+class CmdAllCom(MuxPlayerCommand):
     """
     allcom - operate on all channels
 
@@ -227,7 +227,7 @@ class CmdAllCom(MuxCommand):
             # wrong input
             self.msg("Usage: allcom on | off | who | clear")
 
-class CmdChannels(MuxCommand):
+class CmdChannels(MuxPlayerCommand):
     """
     @clist
 
@@ -280,7 +280,7 @@ class CmdChannels(MuxCommand):
                                   chan.desc])
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
-class CmdCdestroy(MuxCommand):
+class CmdCdestroy(MuxPlayerCommand):
     """
     @cdestroy
 
@@ -316,7 +316,7 @@ class CmdCdestroy(MuxCommand):
         CHANNELHANDLER.update()
         self.msg("%s was destroyed." % channel)
 
-class CmdCBoot(MuxCommand):
+class CmdCBoot(MuxPlayerCommand):
     """
     @cboot
 
@@ -375,7 +375,7 @@ class CmdCBoot(MuxCommand):
         channel.disconnect_from(player)
         CHANNELHANDLER.update()
 
-class CmdCemit(MuxCommand):
+class CmdCemit(MuxPlayerCommand):
     """
     @cemit - send a message to channel
 
@@ -422,7 +422,7 @@ class CmdCemit(MuxCommand):
             string = "Sent to channel %s: %s" % (channel.key, message)
             self.msg(string)
 
-class CmdCWho(MuxCommand):
+class CmdCWho(MuxPlayerCommand):
     """
     @cwho
 
@@ -458,7 +458,7 @@ class CmdCWho(MuxCommand):
             string += "  <None>"
         self.msg(string.strip())
 
-class CmdChannelCreate(MuxCommand):
+class CmdChannelCreate(MuxPlayerCommand):
     """
     @ccreate
     channelcreate
@@ -505,7 +505,7 @@ class CmdChannelCreate(MuxCommand):
         self.msg("Created channel %s and connected to it." % new_chan.key)
 
 
-class CmdCset(MuxCommand):
+class CmdCset(MuxPlayerCommand):
     """
     @cset - changes channel access restrictions
 
@@ -551,7 +551,7 @@ class CmdCset(MuxCommand):
         self.msg(string)
 
 
-class CmdCdesc(MuxCommand):
+class CmdCdesc(MuxPlayerCommand):
     """
     @cdesc - set channel description
 
@@ -579,8 +579,8 @@ class CmdCdesc(MuxCommand):
             self.msg("Channel '%s' not found." % self.lhs)
             return
         #check permissions
-        if not caller.access(caller, 'control'):
-            self.msg("You cant admin this channel.")
+        if not channel.access(caller, 'control'):
+            self.msg("You cannot admin this channel.")
             return
         # set the description
         channel.desc = self.rhs

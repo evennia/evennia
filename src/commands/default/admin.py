@@ -427,7 +427,7 @@ class CmdEmit(MuxCommand):
                 else:
                     caller.msg("Emitted to %s." % objname)
             else:
-                caller.msg("You are not allowed to send to %s." % objname)
+                caller.msg("You are not allowed to emit to %s." % objname)
 
 
 
@@ -547,10 +547,6 @@ class CmdPerm(MuxCommand):
             # add a new permission
             permissions = obj.permissions
 
-            caller.permissions
-
-
-
             for perm in self.rhslist:
 
                 # don't allow to set a permission higher in the hierarchy than the one the
@@ -589,4 +585,5 @@ class CmdWall(MuxCommand):
             self.caller.msg("Usage: @wall <message>")
             return
         message = "%s shouts \"%s\"" % (self.caller.name, self.args)
+        self.msg("Announcing to all connected players ...")
         SESSIONS.announce_all(message)
