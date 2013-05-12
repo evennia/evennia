@@ -128,24 +128,61 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
        perm(<permission>)
 
     where <permission> is the permission accessing_obj must
-    have in order to pass the lock. If the given permission
-    is part of _PERMISSION_HIERARCHY, permission is also granted
-    to all ranks higher up in the hierarchy.
+    have in order to pass the lock.
+
+    If the given permission is part of settings.PERMISSION_HIERARCHY,
+    permission is also granted to all ranks higher up in the hierarchy.
+
+    If accessing_object is an Object controlled by a Player, the
+    permissions of the Player is used unless the PlayerAttribute _quell
+    is set to True on the Object. In this case however, the
+    LOWEST hieararcy-permission of the Player/Object-pair will be used
+    (this is order to avoid Players potentially escalating their own permissions
+    by use of a higher-level Object)
+
     """
+    # this allows the perm_above lockfunc to make use of this function too
+    gtmode = kwargs.pop("_greater_than", False)
+
     try:
         perm = args[0].lower()
-        permissions = [p.lower() for p in accessing_obj.permissions]
+        perms_object = [p.lower() for p in accessing_obj.permissions]
     except (AttributeError, IndexError):
         return False
 
-    if perm in permissions:
-        # simplest case - we have a direct match
+    if utils.inherits_from(accessing_obj, "src.objects.objects.Object") and accessing_obj.player:
+        player = accessing_obj.player
+        perms_player = [p.lower() for p in player.permissions]
+        is_quell = player.get_attribute("_quell")
+
+        if perm in _PERMISSION_HIERARCHY:
+            # check hierarchy without allowing escalation obj->player
+            hpos_target = _PERMISSION_HIERARCHY.index(perm)
+            hpos_player = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_player]
+            hpos_player = hpos_player and hpos_player[-1] or -1
+            if is_quell:
+                hpos_object = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_object]
+                hpos_object = hpos_object and hpos_object[-1] or -1
+                if gtmode:
+                    return hpos_target < min(hpos_player, hpos_object)
+                else:
+                    return hpos_target <= min(hpos_player, hpos_object)
+            elif gtmode:
+                return gtmode and hpos_target < hpos_player
+            else:
+                return hpos_target <= hpos_player
+        elif not is_quell and perm in perms_player:
+            # if we get here, check player perms first, otherwise continue as normal
+            return True
+
+    if perm in perms_object:
+        # simplest case - we have direct match
         return True
     if perm in _PERMISSION_HIERARCHY:
         # check if we have a higher hierarchy position
-        ppos = _PERMISSION_HIERARCHY.index(perm)
+        hpos_target = _PERMISSION_HIERARCHY.index(perm)
         return any(1 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
-                   if hperm in permissions and hpos > ppos)
+                   if hperm in perms_object and hpos_target < hpos)
     return False
 
 def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
@@ -155,20 +192,12 @@ def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
     it's assumed we refer to superuser. If no hierarchy is defined,
     this function has no meaning and returns False.
     """
-    try:
-        perm = args[0].lower()
-    except (AttributeError, IndexError):
-        return False
-
-    if perm in _PERMISSION_HIERARCHY:
-        ppos = _PERMISSION_HIERARCHY.index(perm)
-        return any(1 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
-                   if hperm in [p.lower() for p in accessing_obj.permissions] and hpos > ppos)
-    return False
+    kwargs["_greater_than"] = True
+    return perm(accessing_obj,accessed_obj, *args, **kwargs)
 
 def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     """
-    The basic permission-checker for Player objects. Ignores case.
+    The basic permission-checker only for Player objects. Ignores case.
 
     Usage:
        pperm(<permission>)

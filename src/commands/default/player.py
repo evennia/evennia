@@ -31,6 +31,9 @@ __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
 MAX_NR_CHARACTERS = MULTISESSION_MODE < 2 and 1 or MAX_NR_CHARACTERS
 BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 
+PERMISSION_HIERARCHY = settings.PERMISSION_HIERARCHY
+PERMISSION_HIERARCHY_LOWER = [perm.lower() for perm in PERMISSION_HIERARCHY]
+
 class CmdOOCLook(MuxPlayerCommand):
     """
     ooc look
@@ -601,3 +604,51 @@ class CmdColorTest(MuxPlayerCommand):
             # malformed input
             self.msg("Usage: @color ansi|xterm256")
 
+class CmdQuell(MuxPlayerCommand):
+    """
+    Quelling permissions
+
+    Usage:
+      quell
+      unquell
+
+    Normally the permission level of the Player is used when puppeting a
+    Character/Object to determine access. This command will switch the lock
+    system to make use of the puppeted Object's permissions instead. This is
+    useful mainly for testing.
+    Hierarchical permission quelling only work downwards, thus a Player cannot
+    use a higher-permission Character to escalate their permission level.
+    Use the unquell command to revert back to normal operation.
+
+    Note that the superuser character cannot be quelled. Use a separate
+    admin account for testing.
+    """
+
+    key = "@quell"
+    aliases =["@unquell"]
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        "Perform the command"
+        player = self.caller
+        permstr = " (%s)" % (", ".join(player.permissions))
+        if player.is_superuser:
+            self.msg("Superusers cannot be quelled.")
+            return
+        if self.cmdstring == '@unquell':
+            if not player.get_attribute('_quell'):
+                self.msg("Already using normal Player permissions%s." % permstr)
+            else:
+                player.del_attribute('_quell')
+                self.msg("Player permissions restored%s." % permstr)
+            return
+        else:
+            if player.get_attribute('_quell'):
+                self.msg("Already quelling Player permissions")
+                return
+            player.set_attribute('_quell', True)
+            self.msg("Quelling Player permissions%s." % permstr)
+            return
+
+        return

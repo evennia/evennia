@@ -35,6 +35,7 @@ class PlayerCmdSet(CmdSet):
         self.add(player.CmdQuit())
         self.add(player.CmdPassword())
         self.add(player.CmdColorTest())
+        self.add(player.CmdQuell())
 
         # testing
         self.add(building.CmdExamine())

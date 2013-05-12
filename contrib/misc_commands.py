@@ -21,19 +21,32 @@ from src.commands.default.muxcommand import MuxCommand
 PERMISSION_HIERARCHY = settings.PERMISSION_HIERARCHY
 PERMISSION_HIERARCHY_LOWER = [perm.lower() for perm in PERMISSION_HIERARCHY]
 
-class CmdQuell(MuxCommand):
+class CmdQuell(MuxPlayerCommand):
     """
     Quelling permissions
 
     Usage:
-      quell <command> [=permission level]
+      quell
+      unquell
+      quell/permlevel <command>
 
-    This is an admin command that allows to execute another command as
-    another (lower) permission level than what you currently
-    have. This is useful for testing. Also superuser flag will be
-    deactivated by this command. If no permission level is given,
-    the command will be executed as the lowest level available in
-    settings.PERMISSION_HIERARCHY.
+    Normally the permission level of the Player is used when puppeting a
+    Character/Object to determine access. Giving this command without
+    arguments will instead switch the lock system to make use of the
+    puppeted Object's permissions instead. Note that this only works DOWNWARDS -
+    a Player cannot use a higher-permission Character to escalate their Player
+    permissions for example. Use the unquell command to revert this state.
+
+    Note that the superuser character is unaffected by full quelling. Use a separate
+    admin account for testing.
+
+    When given an argument, the argument is considered a command to execute with
+    a different (lower) permission level than they currently have. This is useful
+    for quick testing. If no permlevel switch is given, the command will be
+    executed using the lowest permission level available in settings.PERMISSION_HIERARCHY.
+
+    Quelling singular commands will work also for the superuser.
+
     """
 
     key = "quell"
@@ -43,12 +56,30 @@ class CmdQuell(MuxCommand):
     def func(self):
         "Perform the command"
 
+        player = self.caller
+
         if not self.args:
-            self.caller.msg("Usage: quell <command> [=permission level]")
-            return
+            # try to fully quell player permissions
+            if self.cmdstring == 'unquell':
+                if player.get_attribute('_quell'):
+                    self.msg("You are not currently quelling you Player permissions.")
+                else:
+                    player.del_attribute('_quell')
+                    self.msg("You are now using your Player permissions normally.")
+                return
+            else:
+                if player.is_superuser:
+                    self.msg("Superusers cannot be quelled.")
+                    return
+                if player.get_attribute('_quell'):
+                    self.msg("You are already quelling your Player permissions.")
+                    return
+                player.set_attribute('_quell', True)
+                self.msg("You quell your Player permissions.")
+                return
 
         cmd = self.lhs
-        perm = self.rhs
+        perm = self.switches and self.switches[0] or None
 
         if not PERMISSION_HIERARCHY:
             self.caller.msg("settings.PERMISSION_HIERARCHY is not defined. Add a hierarchy to use this command.")

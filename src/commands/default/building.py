@@ -1116,6 +1116,7 @@ class CmdSetAttribute(ObjManipCommand):
       @set <obj>/<attr> = <value>
       @set <obj>/<attr> =
       @set <obj>/<attr>
+      @set *<player>/attr = <value>
 
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
@@ -1214,7 +1215,10 @@ class CmdSetAttribute(ObjManipCommand):
         objname = self.lhs_objattr[0]['name']
         attrs = self.lhs_objattr[0]['attrs']
 
-        obj = caller.search(objname)
+        if objname.startswith('*'):
+            obj = caller.search_player(objname.lstrip('*'))
+        else:
+            obj = caller.search(objname)
         if not obj:
             return
 
@@ -1682,7 +1686,7 @@ class CmdExamine(ObjManipCommand):
 
             self.player_mode = "player" in self.switches or obj_name.startswith('*')
             if self.player_mode:
-                obj = self.search_player(obj_name)
+                obj = caller.search_player(obj_name.lstrip('*'))
             else:
                 obj = caller.search(obj_name)
             if not obj:
