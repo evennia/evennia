@@ -75,7 +75,7 @@ do with Evennia's in-database "Attribute" system!).
 
 import sys, os, time
 import __builtin__
-import inspect, compiler.ast
+import inspect, ast, _ast
 from twisted.internet import reactor, threads, task
 from twisted.internet.defer import inlineCallbacks
 
@@ -445,10 +445,10 @@ class Evlang(object):
 # Toggle module level debugging mode.
 DEBUG = False
 
-# List of all AST node classes in compiler/ast.py.
+# List of all AST node classes in _ast.py.
 ALL_AST_NODES = \
-    set([name for (name, obj) in inspect.getmembers(compiler.ast)
-     if inspect.isclass(obj) and issubclass(obj, compiler.ast.Node)])
+    set([name for (name, obj) in inspect.getmembers(_ast)
+     if inspect.isclass(obj) and issubclass(obj, _ast.AST)])
 
 # List of all builtin functions and types (ignoring exception classes).
 ALL_BUILTINS = \
@@ -666,7 +666,7 @@ class LimitedExecVisitor(object):
             else:
                 setattr(self, 'visit' + ast_name, self.ok)
 
-    def walk(self, ast):
+    def walk(self, astnode):
         "Validate each node in AST and return True if AST is 'safe'."
         self.visit(ast)
         return self.errors == []
@@ -803,11 +803,11 @@ def validate_context(context):
 def validate_code(codestring):
     "validate a code string"
     # prepare the code tree for checking
-    ast = compiler.parse(codestring)
+    astnode = ast.parse(codestring)
     checker = LimitedExecVisitor()
 
     # check code tree, then execute in a time-restricted environment
-    if not checker.walk(ast):
+    if not checker.walk(astnode):
         raise LimitedExecCodeException(codestring, checker.errors)
     return True
 
