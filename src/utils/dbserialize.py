@@ -86,7 +86,8 @@ class _SaverMutable(object):
             self._parent._save_tree()
         elif self._db_obj:
             self._db_obj.value = self
-        logger.log_errmsg("_SaverMutable %s has no root Attribute to save to." % self)
+        else:
+            logger.log_errmsg("_SaverMutable %s has no root Attribute to save to." % self)
     def _convert_mutables(self, data):
         "converts mutables to Saver* variants and assigns .parent property"
         def process_tree(item, parent):

@@ -493,11 +493,11 @@ class ObjectDB(TypedObject):
     has_player = property(__has_player_get)
     is_player = property(__has_player_get)
 
-    ##@property
-    #def __is_superuser_get(self):
-    #    "Check if user has a player, and if so, if it is a superuser."
-    #    return any(_GA(self, "sessions")) and _GA(_GA(self, "player"), "is_superuser")
-    #is_superuser = property(__is_superuser_get)
+    #@property
+    def __is_superuser_get(self):
+        "Check if user has a player, and if so, if it is a superuser."
+        return any(_GA(self, "sessions")) and _GA(_GA(self, "db_player"), "is_superuser")
+    is_superuser = property(__is_superuser_get)
 
     # contents
 

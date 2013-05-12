@@ -252,7 +252,7 @@ class PlayerDB(TypedObject):
 
     # name property (wraps self.user.username)
     #@property
-    def name_get(self):
+    def __name_get(self):
         "Getter. Allows for value = self.name"
         name = get_prop_cache(self, "_name")
         if not name:
@@ -260,41 +260,41 @@ class PlayerDB(TypedObject):
             set_prop_cache(self, "_name", name)
         return name
     #@name.setter
-    def name_set(self, value):
+    def __name_set(self, value):
         "Setter. Allows for player.name = newname"
         _GA(self, "user").username = value
         _GA(self, "user").save()
         set_prop_cache(self, "_name", value)
     #@name.deleter
-    def name_del(self):
+    def __name_del(self):
         "Deleter. Allows for del self.name"
         raise Exception("Player name cannot be deleted!")
-    name = property(name_get, name_set, name_del)
-    key = property(name_get, name_set, name_del)
+    name = property(__name_get, __name_set, __name_del)
+    key = property(__name_get, __name_set, __name_del)
 
     #@property
-    def uid_get(self):
+    def __uid_get(self):
         "Getter. Retrieves the user id"
         uid = get_prop_cache(self, "_uid")
         if not uid:
             uid = _GA(self, "user").id
             set_prop_cache(self, "_uid", uid)
         return uid
-    def uid_set(self, value):
+    def __uid_set(self, value):
         raise Exception("User id cannot be set!")
-    def uid_del(self):
+    def __uid_del(self):
         raise Exception("User id cannot be deleted!")
-    uid = property(uid_get, uid_set, uid_del)
+    uid = property(__uid_get, __uid_set, __uid_del)
 
     #@property
-    def is_superuser_get(self):
+    def __is_superuser_get(self):
         "Superusers have all permissions."
         is_suser = get_prop_cache(self, "_is_superuser")
         if is_suser == None:
             is_suser = _GA(self, "user").is_superuser
             set_prop_cache(self, "_is_superuser", is_suser)
         return is_suser
-    is_superuser = property(is_superuser_get)
+    is_superuser = property(__is_superuser_get)
 
     #
     # PlayerDB class access methods
