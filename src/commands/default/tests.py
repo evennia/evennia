@@ -218,6 +218,5 @@ class TestBatchProcess(CommandTest):
     CID = 8
     def test_cmds(self):
         # cannot test batchcode here, it must run inside the server process
-        self.player.ndb.is_superuser = True
         self.call(batchprocess.CmdBatchCommands(), "examples.batch_cmds", "Running Batchcommand processor  Automatic mode for examples.batch_cmds")
         #self.call(batchprocess.CmdBatchCode(), "examples.batch_code", "")

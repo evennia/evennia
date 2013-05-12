@@ -445,7 +445,7 @@ def server_services():
     if hasattr(SESSIONS, "server") and hasattr(SESSIONS.server, "services"):
         server = SESSIONS.server.services.namedServices
     else:
-        print "This function must be called from inside the evennia process."
+        # This function must be called from inside the evennia process.
         server = {}
     del SESSIONS
     return server
