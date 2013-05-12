@@ -366,12 +366,13 @@ class Migration(DataMigration):
                 mclass = CTYPEGET(model=data.db_model).model_class()
                 try:
                     return mclass.objects.get(id=data.id)
-
                 except AttributeError:
                     try:
                         return mclass.objects.get(id=data.id)
                     except mclass.DoesNotExist: # could happen if object was deleted in the interim.
                         return None
+                except TypeError, e:
+                    print e
 
             def iter_id2db(item):
                 """

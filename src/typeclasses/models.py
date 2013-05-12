@@ -681,6 +681,9 @@ class TypedObject(SharedMemoryModel):
                     _SA(self, "_cached_typeclass", typeclass)
                     try:
                         typeclass.at_init()
+                    except AttributeError:
+                        logger.log_trace("\n%s: Error initializing typeclass %s. Using default." % (self, tpath))
+                        break
                     except Exception:
                         logger.log_trace()
                     return typeclass
