@@ -141,17 +141,6 @@ class UserAdmin(BaseUserAdmin):
          {'fields': ('username', 'password1', 'password2', 'email'),
           'description':"<i>These account details are shared by the admin system and the game.</i>"},),)
 
-    def is_valid(self):
-        raise Exception
-        if not super(UserAdmin, self).is_valid():
-            return False
-        username = self.cleaned_data['username']
-        if self.instance and self.instance.username.upper() == username.upper():
-            return True
-        elif User.objects.filter(username__iexact=username):
-            raise ValidationError({'username' : 'A player with that name already exists.'})
-        return True
-
     def save_formset(self, request, form, formset, change):
         "Run all hooks on the player object"
         super(UserAdmin, self).save_formset(request, form, formset, change)
