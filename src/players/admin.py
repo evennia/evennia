@@ -25,6 +25,13 @@ class CustomUserChangeForm(UserChangeForm):
                                 widget=forms.TextInput(attrs={'size':'30'}),
                                 error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."},
                                 help_text = "30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if username.upper() == self.instance.username.upper():
+            return username
+        elif User.objects.filter(username__iexact=username):
+            raise forms.ValidationError('A player with that name already exists.')
+        return self.cleaned_data['username']
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.RegexField(label="Username",
@@ -33,6 +40,13 @@ class CustomUserCreationForm(UserCreationForm):
                                 widget=forms.TextInput(attrs={'size':'30'}),
                                 error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."},
                                 help_text = "30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username__iexact=username):
+            raise forms.ValidationError('A player with that name already exists.')
+        return username
+
 
 # # The Player editor
 # class PlayerAttributeForm(forms.ModelForm):
@@ -127,20 +141,30 @@ class UserAdmin(BaseUserAdmin):
          {'fields': ('username', 'password1', 'password2', 'email'),
           'description':"<i>These account details are shared by the admin system and the game.</i>"},),)
 
+    def is_valid(self):
+        raise Exception
+        if not super(UserAdmin, self).is_valid():
+            return False
+        username = self.cleaned_data['username']
+        if self.instance and self.instance.username.upper() == username.upper():
+            return True
+        elif User.objects.filter(username__iexact=username):
+            raise ValidationError({'username' : 'A player with that name already exists.'})
+        return True
+
     def save_formset(self, request, form, formset, change):
         "Run all hooks on the player object"
         super(UserAdmin, self).save_formset(request, form, formset, change)
         userobj = form.instance
         playerobj = userobj.get_profile()
+        playerobj.name = userobj.username
         if not change:
             #uname, passwd, email = str(request.POST.get(u"username")), \
             #        str(request.POST.get(u"password1")), str(request.POST.get(u"email"))
             typeclass = str(request.POST.get(u"playerdb_set-0-db_typeclass_path"))
-
             create.create_player("","","",
                                  user=userobj,
                                  typeclass=typeclass,
-                                 player_dbobj=playerobj,
-                                 create_character=False)
+                                 player_dbobj=playerobj)
 
 admin.site.register(User, UserAdmin)

@@ -432,9 +432,6 @@ def create_player(name, email, password,
      set any in this case.
 
     """
-    # The system should already have checked so the name/email
-    # isn't already registered, and that the password is ok before
-    # getting here.
     global _PlayerDB, _Player
     if not _PlayerDB:
         from src.players.models import PlayerDB as _PlayerDB
@@ -446,7 +443,17 @@ def create_player(name, email, password,
     if user:
         new_user = user
         email = user.email
+
+    if user:
+        conflict_check = User.objects.filter(username__iexact=user.username)
+        conflict_check = len(conflict_check) > 1 
     else:
+        conflict_check = User.objects.filter(username__iexact=name)
+
+    if conflict_check:
+        raise ValueError("A user with this name already exists.")
+
+    if not user:
         if is_superuser:
             new_user = User.objects.create_superuser(name, email, password)
         else:

@@ -148,7 +148,7 @@ class PlayerManager(TypedObjectManager):
     def get_player_from_name(self, uname):
         "Get player object based on name"
         try:
-            return self.get(user__username=uname)
+            return self.get(user__username__iexact=uname)
         except self.model.DoesNotExist:
             return None
 
