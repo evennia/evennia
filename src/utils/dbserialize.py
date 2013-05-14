@@ -28,8 +28,12 @@ except ImportError:
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from src.utils.utils import to_str
+from src.utils.utils import to_str, uses_database
 from src.utils import logger
+
+
+
+
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
@@ -44,6 +48,12 @@ _TO_MODEL_MAP = None
 _TO_TYPECLASS = lambda o: hasattr(o, 'typeclass') and o.typeclass or o
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
 _TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:%f")
+if uses_database("mysql"):
+    from src.server.models import ServerConfig
+    mysql_version = ServerConfig.objects.get_mysql_db_version()
+    if mysql_version < '5.6.4':
+        # mysql <5.6.4 don't support millisecond precision
+        _TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:000000")
 
 def _init_globals():
     "Lazy importing to avoid circular import issues"

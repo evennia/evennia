@@ -39,3 +39,13 @@ class ServerConfigManager(models.Manager):
             if not conf:
                 return default
             return conf[0].value
+
+    def get_mysql_db_version(self):
+        """
+        This is a helper method for getting the version string of a mysql database.
+        """
+        from django.db import connection
+        conn = connection.cursor()
+        conn.execute("SELECT VERSION()")
+        version = conn.fetchone()
+        return version and str(version[0]) or ""
