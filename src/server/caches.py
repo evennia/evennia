@@ -36,14 +36,18 @@ def hashid(obj):
     except AttributeError:
         try:
             date, idnum = _GA(obj, "db_date_created"), _GA(obj, "id")
-            if not idnum or not date:
-                # this will happen if setting properties on an object
-                # which is not yet saved
-                return None
         except AttributeError:
-            # this happens if hashing something like ndb. We have to
-            # rely on memory adressing in this case.
-            date, idnum = "Nondb", id(obj)
+            try:
+                # maybe a typeclass, try to go to dbobj
+                obj = _GA(obj, "dbobj")
+                date, idnum = _GA(obj, "db_date_created"), _GA(obj, "id")
+            except AttributeError:
+                # this happens if hashing something like ndb. We have to
+                # rely on memory adressing in this case.
+                date, idnum = "InMemory", id(obj)
+        if not idnum or not date:
+            # this will happen if setting properties on an object which is not yet saved
+            return None
         # build the hashid
         hid = "%s-%s-#%s" % (_GA(obj, "__class__"), date, idnum)
         _SA(obj, "_hashid", hid)
@@ -269,6 +273,7 @@ if _ENABLE_LOCAL_CACHES:
         """
         global _ATTR_CACHE
         try:
+            _ATTR_CACHE[hashid(obj)][attrname].no_cache=True
             del _ATTR_CACHE[hashid(obj)][attrname]
         except KeyError:
             pass
@@ -279,6 +284,8 @@ if _ENABLE_LOCAL_CACHES:
         """
         global _ATTR_CACHE
         if obj:
+            for attrname, attrobj in _ATTR_CACHE[hashid(obj)].items():
+                attrobj.no_cache = True
             del _ATTR_CACHE[hashid(obj)]
         else:
             # clean cache completely
