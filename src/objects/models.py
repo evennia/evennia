@@ -546,7 +546,7 @@ class ObjectDB(TypedObject):
     # Main Search method
     #
 
-    def search(self, ostring,
+    def search(self, searchdata,
                global_search=False,
                use_nicks=False,
                typeclass=None,
@@ -564,7 +564,7 @@ class ObjectDB(TypedObject):
 
         Inputs:
 
-        ostring (str): Primary search criterion. Will be matched against object.key (with object.aliases second)
+        searchdata (str or obj): Primary search criterion. Will be matched against object.key (with object.aliases second)
                        unless the keyword attribute_name specifies otherwise. Special strings:
                         #<num> - search by unique dbref. This is always a global search.
                         me,self - self-reference to this object
@@ -575,7 +575,7 @@ class ObjectDB(TypedObject):
                     be a list of typeclasses for a broader search.
         location (Object): Specify a location to search, if different from the self's given location
                    plus its contents. This can also be a list of locations.
-        attribute_name (str): Use this named Attribute to match ostring against, instead of object.key.
+        attribute_name (str): Use this named Attribute to match searchdata against, instead of object.key.
         quiet (bool) - don't display default error messages - return multiple matches as a list and
                 no matches as None. If not set (default), will echo error messages and return None.
         exact (bool) - if unset (default) - prefers to match to beginning of string rather than not matching
@@ -597,10 +597,12 @@ class ObjectDB(TypedObject):
                     a unique object match
 
         """
+        is_string = isinstance(searchdata, basestring)
+
         # handle some common self-references:
-        if ostring == _HERE:
+        if searchdata == _HERE:
             return self.location
-        if ostring in (_ME, _SELF):
+        if searchdata in (_ME, _SELF):
             return self
 
         if use_nicks:
@@ -611,12 +613,12 @@ class ObjectDB(TypedObject):
             if self.has_player:
                 nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type=nicktype))
             for nick in nicks:
-                if ostring == nick.db_nick:
-                    ostring = nick.db_real
+                if searchdata == nick.db_nick:
+                    searchdata = nick.db_real
                     break
 
         candidates=None
-        if global_search or (ostring.startswith("#") and len(ostring) > 1 and ostring[1:].isdigit()):
+        if global_search or (is_string and searchdata.startswith("#") and len(searchdata) > 1 and searchdata[1:].isdigit()):
             # only allow exact matching if searching the entire database or unique #dbrefs
             exact = True
         elif location:
@@ -635,25 +637,25 @@ class ObjectDB(TypedObject):
             # db manager expects database objects
             candidates = [obj.dbobj for obj in candidates]
 
-        results = ObjectDB.objects.object_search(ostring,
+        results = ObjectDB.objects.object_search(searchdata,
                                                  attribute_name=attribute_name,
                                                  typeclass=typeclass,
                                                  candidates=candidates,
                                                  exact=exact)
         if quiet:
             return results
-        return  _AT_SEARCH_RESULT(self, ostring, results, global_search)
+        return  _AT_SEARCH_RESULT(self, searchdata, results, global_search)
 
-    def search_player(self, ostring, quiet=False):
+    def search_player(self, searchdata, quiet=False):
         """
         Simple wrapper of the player search also handling me, self
         """
-        if ostring in (_ME, _SELF) and _GA(self, "db_player"):
+        if searchdata in (_ME, _SELF) and _GA(self, "db_player"):
             return _GA(self, "db_player")
-        results = PlayerDB.objects.player_search(ostring)
+        results = PlayerDB.objects.player_search(searchdata)
         if quiet:
             return results
-        return _AT_SEARCH_RESULT(self, ostring, results, True)
+        return _AT_SEARCH_RESULT(self, searchdata, results, True)
 
     #
     # Execution/action methods

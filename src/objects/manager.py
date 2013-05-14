@@ -12,6 +12,10 @@ from src.utils.utils import to_unicode, make_iter, string_partial_matching
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
 
+# delayed import
+_OBJATTR = None
+
+
 # Try to use a custom way to parse id-tagged multimatches.
 
 _AT_MULTIMATCH_INPUT = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
@@ -114,7 +118,7 @@ class ObjectManager(TypedObjectManager):
         should be a valid location object.
         """
         cand_restriction = candidates and Q(objattribute__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
-        return self.filter(cand_restriction & Q(objattribute__db_key=attribute_name))
+        return list(self.filter(cand_restriction & Q(objattribute__db_key=attribute_name)))
 
     @returns_typeclass_list
     def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None, typeclasses=None):
@@ -128,9 +132,17 @@ class ObjectManager(TypedObjectManager):
         the internal representation. This is reasonably effective but since Attribute values
         cannot be indexed, searching by Attribute key is to be preferred whenever possible.
         """
-        cand_restriction = candidates and Q(db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
-        return self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name, objattribute__db_value=attribute_value))
+        if isinstance(attribute_value, (basestring, int, float, bool, long)):
+            return self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name, objattribute__db_value=attribute_value))
+        else:
+            # We have to loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
+            global _OBJATTR
+            if not _OBJATTR:
+                from src.objects.models import ObjAttribute as _OBJATTR
+            cands = list(self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name)))
+            return [_GA(attr, "db_obj") for attr in _OBJATTR.objects.filter(db_obj__in=cands, db_value=attribute_value)]
 
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, candidates=None):
@@ -142,7 +154,7 @@ class ObjectManager(TypedObjectManager):
         property_name = "db_%s" % property_name.lstrip('db_')
         cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         try:
-            return self.filter(cand_restriction).exclude(Q(property_name=None))
+            return list(self.filter(cand_restriction).exclude(Q(property_name=None)))
         except exceptions.FieldError:
             return []
 
@@ -159,7 +171,7 @@ class ObjectManager(TypedObjectManager):
         cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         try:
-            return self.filter(cand_restriction & type_restriction & Q(property_name=property_value))
+            return list(self.filter(cand_restriction & type_restriction & Q(property_name=property_value)))
         except exceptions.FieldError:
             return []
 
@@ -182,6 +194,12 @@ class ObjectManager(TypedObjectManager):
         candidates - list of candidate objects to restrict on
         typeclasses - list of typeclass path strings to restrict on
         """
+        if not isinstance(ostring, basestring):
+            if hasattr(ostring, "key"):
+                ostring = ostring.key
+            else:
+                return []
+
         # build query objects
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
         cand_restriction = candidates and Q(pk__in=make_iter(candidates_id)) or Q()
@@ -212,7 +230,7 @@ class ObjectManager(TypedObjectManager):
     # main search methods and helper functions
 
     @returns_typeclass_list
-    def object_search(self, ostring,
+    def object_search(self, searchdata,
                       attribute_name=None,
                       typeclass=None,
                       candidates=None,
@@ -222,10 +240,10 @@ class ObjectManager(TypedObjectManager):
         Always returns a list.
 
         Arguments:
-        ostring: (str) The string to compare names against. By default (if not attribute_name
-                  is set), this will search object.key and object.aliases in order. Can also
+        searchdata: (str or obj) The entity to match for. This is usually a key string but may also be an object itself.
+                  By default (if not attribute_name is set), this will search object.key and object.aliases in order. Can also
                   be on the form #dbref, which will, if exact=True be matched against primary key.
-        attribute_name: (str): Use this named ObjectAttribute to match ostring against, instead
+        attribute_name: (str): Use this named ObjectAttribute to match searchdata against, instead
                   of the defaults.
         typeclass (str or TypeClass): restrict matches to objects having this typeclass. This will help
                    speed up global searches.
@@ -242,20 +260,19 @@ class ObjectManager(TypedObjectManager):
         A list of matching objects (or a list with one unique match)
 
         """
-        def _searcher(ostring, candidates, typeclass, exact=False):
+        def _searcher(searchdata, candidates, typeclass, exact=False):
             "Helper method for searching objects. typeclass is only used for global searching (no candidates)"
-            if attribute_name and isinstance(attribute_name, basestring):
+            if attribute_name:
                 # attribute/property search (always exact).
-                matches = self.get_objs_with_db_property_value(attribute_name, ostring, candidates=candidates, typeclasses=typeclass)
+                matches = self.get_objs_with_db_property_value(attribute_name, searchdata, candidates=candidates, typeclasses=typeclass)
                 if matches:
                     return matches
-                return self.get_objs_with_attr_value(attribute_name, ostring, candidates=candidates, typeclasses=typeclass)
+                return self.get_objs_with_attr_value(attribute_name, searchdata, candidates=candidates, typeclasses=typeclass)
             else:
                 # normal key/alias search
-                return self.get_objs_with_key_or_alias(ostring, exact=exact, candidates=candidates, typeclasses=typeclass)
+                return self.get_objs_with_key_or_alias(searchdata, exact=exact, candidates=candidates, typeclasses=typeclass)
 
-
-        if not ostring and ostring != 0:
+        if not searchdata and searchdata != 0:
             return []
 
         if typeclass:
@@ -272,7 +289,7 @@ class ObjectManager(TypedObjectManager):
             if typeclass:
                 candidates = [cand for cand in candidates if _GA(cand, "db_typeclass_path") in typeclass]
 
-        dbref = not attribute_name and exact and self.dbref(ostring)
+        dbref = not attribute_name and exact and self.dbref(searchdata)
         if dbref != None:
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
@@ -283,15 +300,14 @@ class ObjectManager(TypedObjectManager):
                     return []
 
         # Search through all possibilities.
-
         match_number = None
         # always run first check exact - we don't want partial matches if on the form of 1-keyword etc.
-        matches = _searcher(ostring, candidates, typeclass, exact=True)
+        matches = _searcher(searchdata, candidates, typeclass, exact=True)
         if not matches:
             # no matches found - check if we are dealing with N-keyword query - if so, strip it.
-            match_number, ostring = _AT_MULTIMATCH_INPUT(ostring)
+            match_number, searchdata = _AT_MULTIMATCH_INPUT(searchdata)
             # run search again, with the exactness set by call
-            matches = _searcher(ostring, candidates, typeclass, exact=exact)
+            matches = _searcher(searchdata, candidates, typeclass, exact=exact)
 
         # deal with result
         if len(matches) > 1 and match_number != None:
