@@ -89,21 +89,23 @@ if __name__ == "__main__":
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from django.conf import settings as settings_full
-from game import settings
 try:
     settings_full.configure()
 except RuntimeError:
     pass
 del sys, os
+from game import settings
 
 try:
-    import src.objects
-except (ImportError, AttributeError):
-    err = "\nInitializing ev.py: The correct environment variables were not set."
+    # test this first import to make sure environment is set up correctly
+    from src.help.models import HelpEntry
+except AttributeError, e:
+    err = e.message
+    err += "\nError initializing ev.py: Maybe the correct environment variables were not set."
     err += "\nUse \"python game/manage.py shell\" to start an interpreter"
-    err += " with everything set up correctly."
-    raise ImportError(err)
-del src.objects
+    err += " with everything configured correctly."
+    raise AttributeError(err)
+
 
 ######################################################################
 # Start Evennia API
