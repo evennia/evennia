@@ -273,7 +273,7 @@ if _ENABLE_LOCAL_CACHES:
         """
         global _ATTR_CACHE
         try:
-            _ATTR_CACHE[hashid(obj)][attrname].no_cache=True
+            _ATTR_CACHE[hashid(obj)][attrname].no_cache = True
             del _ATTR_CACHE[hashid(obj)][attrname]
         except KeyError:
             pass
@@ -284,11 +284,14 @@ if _ENABLE_LOCAL_CACHES:
         """
         global _ATTR_CACHE
         if obj:
-            for attrname, attrobj in _ATTR_CACHE[hashid(obj)].items():
+            for attrobj in _ATTR_CACHE[hashid(obj)].values():
                 attrobj.no_cache = True
             del _ATTR_CACHE[hashid(obj)]
         else:
             # clean cache completely
+            for objcache in _ATTR_CACHE.values():
+                for attrobj in objcache.values():
+                    attrobj.no_cache = True
             _ATTR_CACHE = defaultdict(dict)
 
 
