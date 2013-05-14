@@ -89,6 +89,7 @@ if __name__ == "__main__":
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from django.conf import settings as settings_full
+from game import settings
 try:
     settings_full.configure()
 except RuntimeError:
