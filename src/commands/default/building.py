@@ -1547,7 +1547,6 @@ class CmdExamine(ObjManipCommand):
         else:
             if self.player_mode:
                 db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
-                print "player mode:", db_attr
             else:
                 db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
             try:
@@ -1601,12 +1600,17 @@ class CmdExamine(ObjManipCommand):
             perms_string = (", ".join(perms))
         else:
             perms_string = "Default"
+        if obj.is_superuser:
+            perms_string += " [Superuser]"
+
         string += "\n{wPermissions{n: %s" % perms_string
         locks = str(obj.locks)
         if locks:
             locks_string = utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
         else:
             locks_string = " Default"
+
+
         string += "\n{wLocks{n:%s" % locks_string
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
