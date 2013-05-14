@@ -88,20 +88,25 @@ if __name__ == "__main__":
 ######################################################################
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from game import settings
+from django.conf import settings as settings_full
 try:
-    from django.conf import settings as settings2
-    settings2.configure()
+    settings_full.configure()
 except RuntimeError:
     pass
-finally:
-    del settings2
-from django.conf import settings as settings_full
 del sys, os
 
+try:
+    import src.objects
+except (ImportError, AttributeError):
+    err = "\nInitializing ev.py: The correct environment variables were not set."
+    err += "\nUse \"python game/manage.py shell\" to start an interpreter"
+    err += " with everything set up correctly."
+    raise ImportError(err)
+del src.objects
+
 ######################################################################
-# Start Evennia API (easiest is to import this module interactively to
-#  explore it)
+# Start Evennia API
+# (easiest is to import this module interactively to explore it)
 ######################################################################
 
 README = __doc__
