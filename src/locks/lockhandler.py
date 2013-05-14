@@ -259,7 +259,6 @@ class LockHandler(object):
         get_player method (this sits on serversessions, in some rare cases where a check is done
         before the login process has yet been fully finalized)
         """
-        #print "_superuser_character:", hasattr(obj, "get_attribute") and obj.get_attribute("_superuser_character")
         self.lock_bypass = hasattr(obj, "is_superuser") and obj.is_superuser
 
     def add(self, lockstring, log_obj=None):
@@ -363,9 +362,10 @@ class LockHandler(object):
 
         """
         if self.reset_flag:
-            # on-demand cache rebuild
+            # rebuild cache, either directly or next call
             self._cache_locks(self.obj.lock_storage)
             self.reset_flag = False
+            self.cache_lock_bypass(self.obj)
 
         try:
             # check if the lock should be bypassed (e.g. superuser status)

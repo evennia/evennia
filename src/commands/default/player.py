@@ -109,18 +109,13 @@ class CmdOOCLook(MuxPlayerCommand):
                     # character is already puppeted
                     sess = player.get_session(csessid)
                     sid = sess in sessions and sessions.index(sess) + 1
-                    if hasattr(char.locks, "lock_bypass") and char.locks.lock_bypass:
-                        string += "\n - {G%s{n [superuser character] (played by you in session %i)" % (char.key, sid)
-                    elif sess:
+                    if sess:
                         string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions), sid)
                     else:
                         string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions))
                 else:
                     # character is "free to puppet"
-                    if player.is_superuser and char.get_attribute("_superuser_character"):
-                        string += "\n - %s [superuser character]" % (char.key)
-                    else:
-                        string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions))
+                    string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions))
         string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
         self.msg(string)
 
@@ -629,26 +624,30 @@ class CmdQuell(MuxPlayerCommand):
     locks = "cmd:all()"
     help_category = "General"
 
+    def _recache_locks(self, player):
+        "Helper method to reset the lockhandler on an already puppeted object"
+        if self.sessid:
+            char = player.get_puppet(self.sessid)
+            if char:
+                # we are already puppeting an object. We need to reset the lock caches
+                # (otherwise the superuser status change won't be visible until repuppet)
+                char.locks.reset()
+
     def func(self):
         "Perform the command"
         player = self.caller
-        permstr = " (%s)" % (", ".join(player.permissions))
-        if player.is_superuser:
-            self.msg("Superusers cannot be quelled.")
-            return
+        permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions))
         if self.cmdstring == '@unquell':
             if not player.get_attribute('_quell'):
                 self.msg("Already using normal Player permissions%s." % permstr)
             else:
                 player.del_attribute('_quell')
-                self.msg("Player permissions restored%s." % permstr)
-            return
+                self.msg("Player permissions%s restored." % permstr)
         else:
             if player.get_attribute('_quell'):
-                self.msg("Already quelling Player permissions")
+                self.msg("Already quelling Player%s permissions." % permstr)
                 return
             player.set_attribute('_quell', True)
-            self.msg("Quelling Player permissions%s." % permstr)
-            return
+            self.msg("Quelling Player%s permissions. Use @unquell to get them back." % permstr)
+        self._recache_locks(player)
 
-        return

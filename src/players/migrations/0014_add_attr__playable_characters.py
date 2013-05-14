@@ -28,7 +28,7 @@ class Migration(DataMigration):
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
 
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
-        lockstring2 = "attrread:false();attredit:false();attrcreate:false()"
+        #lockstring2 = "attrread:false();attredit:false();attrcreate:false()"
         if not db.dry_run:
             for player in orm['players.PlayerDB'].objects.all():
                 char = player.db_obj
@@ -47,14 +47,15 @@ class Migration(DataMigration):
                                                                   db_value=val)
 
                 suser = char and char.id == 1
-                if suser:
-                    # move the superuser unmask attribute for the superuser (note that this
-                    # is not a security risk, it only works if player's superuser bit is set too)
-                    val = pickle.dumps(("simple", suser))
-                    orm['objects.ObjAttribute'].objects.create(db_key="_superuser_character",
-                                                                  db_obj=char,
-                                                                  db_lock_storage=lockstring2,
-                                                                  db_value=val)
+                #if suser:
+                #    # REMOVED - this is not needed - Griatch
+                #    # the superuser unmask attribute for the superuser (note that this
+                #    # is not a security risk, it only works if player's superuser bit is set too)
+                #    val = pickle.dumps(("simple", suser))
+                #    orm['objects.ObjAttribute'].objects.create(db_key="_superuser_character",
+                #                                                  db_obj=char,
+                #                                                  db_lock_storage=lockstring2,
+                #                                                  db_value=val)
 
 
     def backwards(self, orm):

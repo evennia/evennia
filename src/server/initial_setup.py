@@ -58,12 +58,9 @@ def create_objects():
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
+    god_character.permissions = "Immortals"
 
     god_character.save()
-    # note that there is no security issue with setting the _superuser_character flag - the system
-    # will only grant superuser access to a character with this flag if its Player also has the
-    # superuser bit set. It only marks that the character should not "mask" the superuser privileges.
-    god_character.set_attribute("_superuser_character", True)
     god_player.set_attribute("_first_login", True)
     god_player.set_attribute("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
