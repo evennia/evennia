@@ -164,7 +164,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdSessions(), "", "Your current session(s):")
         self.call(player.CmdColorTest(), "ansi", "ANSI colors:")
         self.call(player.CmdCharCreate(), "Test1=Test char","Created new character Test1. Use @ic Test1 to enter the game")
-        self.call(player.CmdQuell(), "", "Quelling Player permissions (Immortals).")
+        self.call(player.CmdQuell(), "", "Quelling Player permissions (Immortals). Use @unquell to get them back.")
 
 from src.commands.default import building
 class TestBuilding(CommandTest):

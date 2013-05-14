@@ -222,7 +222,7 @@ class CmdIC(MuxPlayerCommand):
                 return
         if not new_character:
             # search for a matching character
-            new_character = search.object_search(self.args, player)
+            new_character = search.object_search(self.args)
             if new_character:
                 new_character = new_character[0]
             else:
@@ -648,6 +648,6 @@ class CmdQuell(MuxPlayerCommand):
                 self.msg("Already quelling Player%s permissions." % permstr)
                 return
             player.set_attribute('_quell', True)
-            self.msg("Quelling Player%s permissions. Use @unquell to get them back." % permstr)
+            self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(player)
 
