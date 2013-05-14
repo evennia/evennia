@@ -1547,6 +1547,7 @@ class CmdExamine(ObjManipCommand):
         else:
             if self.player_mode:
                 db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
+                print "player mode:", db_attr
             else:
                 db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
             try:
@@ -1683,10 +1684,14 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-
-            self.player_mode = "player" in self.switches or obj_name.startswith('*')
+            self.player_mode = utils.inherits_from(caller, "src.players.player.Player") or \
+                                "player" in self.switches or obj_name.startswith('*')
             if self.player_mode:
-                obj = caller.search_player(obj_name.lstrip('*'))
+                try:
+                    obj = caller.search_player(obj_name.lstrip('*'))
+                except AttributeError:
+                    # this means we are calling examine from a player object
+                    obj = caller.search(obj_name.lstrip('*'))
             else:
                 obj = caller.search(obj_name)
             if not obj:
