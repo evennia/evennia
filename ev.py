@@ -88,13 +88,12 @@ if __name__ == "__main__":
 ######################################################################
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from django.conf import settings as settings_full
-try:
-    settings_full.configure()
-except RuntimeError:
-    pass
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + os.path.sep + "game")
+os.environ["DJANGO_SETTINGS_MODULE"] = "game.settings"
 del sys, os
+
 from game import settings
+from django.conf import settings as settings_full
 
 try:
     # test this first import to make sure environment is set up correctly
