@@ -24,28 +24,6 @@ if not os.path.exists('settings.py'):
 
     # this triggers the settings file creation.
     import game.manage
-
-    print """
-    ... A new settings file was created. Edit this file to configure
-    Evennia as desired by copy&pasting options from
-    src/settings_default.py.
-
-    You should then also create/configure the database using
-
-        python manage.py syncdb
-
-    Make sure to create a new admin user when prompted -- this will be
-    user #1 in-game.  If you use django-south, you'll see mentions of
-    migrating things in the above run. You then also have to run
-
-        python manage.py migrate
-
-    If you use default sqlite3 database, you will find a file
-    evennia.db appearing. This is the database file. Just delete this
-    and repeat the above manage.py steps to start with a fresh
-    database.
-
-    When you are set up, run evennia.py again to start the server."""
     sys.exit()
 
 # signal processing
@@ -110,7 +88,7 @@ MENU = \
 |                                                                           |
 |  5) Reload the Server                                                     |
 |  6) Reload the Portal (only works in non-daemon mode. If running          |
-|       in daemon mode, Portal needs to be restarted manually (option 1-4)) |
+|       in daemon mode, Portal needs to be stopped/started manually.        |
 |                                                                           |
 +--- Stopping (must first be started) --------------------------------------+
 |                                                                           |
@@ -163,13 +141,8 @@ except DatabaseError,e:
 
     Please run:
 
-         python manage.py syncdb
-
-    (make sure to create an admin user when prompted). If you use
-    pyhon-south you will get mentions of migrating in the above
-    run. You then need to also run
-
-         python manage.py migrate
+       python manage.py syncdb (create an admin user when prompted)
+       python manage.py migrate
 
     When you have a database set up, rerun evennia.py.
     """ % e
@@ -450,9 +423,9 @@ def main():
     """
 
     parser = OptionParser(usage="%prog [-i] [menu|start|reload|stop [server|portal|all]]",
-                          description="""This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Use --interactive together with start to launch services as 'interactive'. Note that when launching 'all' services with the --interactive flag, both services will be started, but only Server will actually be started in interactive mode. This is simply because this is the most commonly useful state. To activate interactive mode also for Portal, launch the two services explicitly as two separate calls to this program. You can also use the menu.""")
+                          description="""This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Interactive mode sets the service to log to stdout, in the foreground. Note that when launching 'all' services with the \"--interactive\" flag, both services will be started, but only Server will actually be started in interactive mode, simply because this is the most commonly useful setup. To activate interactive mode also for Portal, use the menu or launch the two services explicitly as two separate calls to this program.""")
 
-    parser.add_option('-i', '--interactive', action='store_true', dest='interactive', default=False, help="Start given processes in interactive mode (log to stdout, don't start as a daemon).")
+    parser.add_option('-i', '--interactive', action='store_true', dest='interactive', default=False, help="Start given processes in interactive mode.")
 
     options, args = parser.parse_args()
 

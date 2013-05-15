@@ -82,7 +82,10 @@ SECRET_KEY = '%s'
     You may edit the settings file now if you like, but if you just
     want to quickly get started you don't have to touch anything.
 
-    (re)run 'python manage.py syncdb' once you are ready to continue.
+    Once you are ready to continue, (re)run
+        python manage.py syncdb
+    followed by
+        python manage.py migrate
     """
 
 
@@ -98,16 +101,14 @@ except Exception:
     # note - if this fails, ugettext will also fail, so we cannot translate this string.
 
     string += """\n
-    Error: Couldn't import the file 'settings.py' in the directory
-    containing %(file)r. There are usually two reasons for this:
-    1) You moved your settings.py elsewhere. In that case move it back or
-       create a link to it from this folder.
-    2) The settings module is where it's supposed to be, but contains errors.
-       Review the traceback above to resolve the problem, then try again.
-    3) If you get errors on finding DJANGO_SETTINGS_MODULE you might have
-       set up django wrong in some way. If you run a virtual machine, it might be worth
-       to restart it to see if this resolves the issue. Evennia should not require you
-       to define any environment variables manually.
+    Error: Couldn't import the file 'settings.py' in the directory containing %(file)r.
+    There are usually two reasons for this:
+    1) The settings module contains errors. Review the traceback above to resolve the
+       problem, then try again.
+    2) If you get errors on finding DJANGO_SETTINGS_MODULE you might have set up django
+       wrong in some way. If you run a virtual machine, it might be worth to restart it
+       to see if this resolves the issue. Evennia should not require you to define any
+       environment variables manually.
     """ % {'file': __file__}
     print string
     sys.exit(1)
