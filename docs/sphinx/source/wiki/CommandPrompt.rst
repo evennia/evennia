@@ -9,9 +9,9 @@ in-game time, weather and so on.
 Prompt after the command
 ------------------------
 
-The easiest form of prompt is one that is sent after every command you
-send. So, say you enter the look command; you would then get the result
-of the look command, followed by the prompt. As an example:Â 
+One common form of prompt appears after every command you send. So, say
+you enter the look command; you would then get the result of the look
+command, followed by the prompt. As an example:Â 
 
 ::
 
@@ -26,10 +26,9 @@ To add this kind of "after-every-command-prompt", you can use the
 ``at_post_cmd()`` hook. This is to be defined on the Command class and
 Evennia will always call it right after ``func()`` has finished
 executing. For this to appear after every command you enter, it's best
-to put this in the parent for your commands (for the default commands
-this would be ``MuxCommand``), but you could also put it only in certain
-commands (might not be too useful to show it if you are doing game
-administration for example).
+to put this in the parent for your own commands. You can also put it
+only in certain commands (might not be too useful to show it if you are
+doing game administration for example).
 
 ::
 
@@ -47,6 +46,32 @@ administration for example).
             mp = self.caller.db.mp
 
             self.caller.msg("HP: %i, SP: %i, MP: %i" % (hp, sp, mp))
+
+Note that if you are using the default commands, they will *not* display
+a command prompt after this change - they are inheriting from
+``src.commands.default.muxcommand.MuxCommand``. If you want to modify
+default commands you need to copy&paste the default command definitions
+to ``game/gamesrc/commands`` and modify them so they inherit from your
+new parent (and re-point Evennia to use your custom versions as
+described `here <AddingCommandTutorial.html>`_). If you only want to add
+the hook and don't need to change anything else you can just create
+stubs in modules in ``game/gamesrc/commands`` on this form:
+
+::
+
+    from ev import default_cmds
+    from game.gamesrc.commands.basecommand import MyCommand
+
+    class CmdLook(MyCommand, default_cmds.CmdLook):
+        pass
+
+    class CmdGet(MyCommand, default_cmds.CmdGet):
+        pass
+
+This multiple inheritance should make use of your custom ``at_post_cmd``
+hook while otherwise using the default command's code. This type of
+overload is useful not only for adding prompts but for many different
+forms of overloading default functionality.
 
 Prompt on the same line
 -----------------------
@@ -70,14 +95,17 @@ before* the function return:
     HP:10, SP:20, MP: 5 
     You see nothing special.
 
-... which might be cool too, but not what we wanted. To have the prompt
-appear on the same line as the return this, we need to change how
+... which might be cool too, but is not what we wanted. To have the
+prompt appear on the same line as the return, we need to change how
 messages are returned to the player. This means a slight modification to
-our *Character class* (see [Objects#Characters here] on how to change
-the default Character class to your custom one). Now, all commands use
-the ``object.msg()`` method for communicating with the player. This is
-defined in ``src/objects/models.py``, on the ``ObjectDB`` base class.
-This is how the ``msg()`` method is defined:
+our *Character typeclass* (see [Objects#Characters here] on how to
+change the default Character class to your custom one).
+
+All in-game commands use the ``object.msg()`` method for communicating
+with the player (this is usually called as ``self.caller.msg()`` inside
+command classes). This method is defined in ``src/objects/models.py``,
+on the ``ObjectDB`` base class. This is the signature of ``msg()``
+method:
 
 ::
 
@@ -113,4 +141,4 @@ some attribute defined on your character for turning on/off the prompt
 (the msg() method could look for it to determine if it should add the
 prompt or not). You can of course also name the above method
 ``msg_prompt()`` and make sure that only commands that *should* return a
-prompt call this version.
+prompt call that method.

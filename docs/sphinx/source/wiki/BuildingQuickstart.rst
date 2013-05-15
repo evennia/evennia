@@ -25,30 +25,28 @@ assigning something to an object.
 Below are some examples of commands. Use ``help <command>`` for learning
 more about each command and their detailed options.
 
-Making a Builder
-----------------
+Stepping down from godhood
+--------------------------
 
 If you just installed Evennia, your very first player account is called
 user #1, also known as the *superuser* or *god user*. This user is very
 powerful, so powerful that it will override many game restrictions such
 as locks. This can be useful, but it also hides some functionality that
-you might want to test. Let's create a more "normal" Builder player
-account instead.
+you might want to test.
 
-Get to Evennia's login screen (log off with ``@quit`` if you are already
-connected) and choose ``create`` from the login screen. Create a new
-account (don't log in yet). You can use any e-mail address, it doesn't
-have to be an existing one. Let's say we call the new account "Anna".
-Next log in *on your superuser account* and give the recently created
-player build rights:
+To temporarily step down from your superuser position you can use the
+``@quell`` command:
 
 ::
 
-     @perm Anna = Builders
+     @quell
 
-You could give the permission "Immortals" instead, if you want to assign
-full admin privileges. Log out of your superuser account (``@quit``) and
-finally log back in again as your new builder account.
+This will make you start using the permission of your current
+`Character <Objects.html>`_ instead of your superuser level. If you
+didn't change any settings your game Character should have an *Immortal*
+level permission - high as can be without bypassing locks like the
+superuser does. This will work fine for the examples on this page. Use
+``@unquell`` to get back to superuser status again afterwards.
 
 Creating an object
 ------------------
@@ -335,5 +333,5 @@ This will take a while, but you will see a lot of messages as the world
 is built for you. You will end up with a new exit from Limbo named
 *tutorial*. See more info about the tutorial world
 `here <TutorialWorldIntroduction.html>`_. Read
-``contrib/tutorial/world/build.ev`` to see exactly how it's built, step
+``contrib/tutorial_world/build.ev`` to see exactly how it's built, step
 by step.

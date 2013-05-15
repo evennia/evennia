@@ -205,6 +205,25 @@ not be available to unprivileged users. Try
 version of Python for untrusted users. This will use ``run_async`` under
 the hood.
 
+delay
+-----
+
+The ``delay`` function is a much simpler sibling to ``run_async``. It is
+in fact just a way to delay the execution of a command until a future
+time. This is equivalent to something like ``time.sleep()`` except delay
+is asynchronous while ``sleep`` would lock the entire server for the
+duration of the sleep.
+
+::
+
+     def callback(obj):
+        obj.msg("Returning!")
+     delay(10, caller, callback=callback)
+
+This will delay the execution of the callback for 10 seconds. This
+function is explored much more in `Command Duration
+Tutorial <CommandDuration.html>`_.
+
 Assorted notes
 --------------
 

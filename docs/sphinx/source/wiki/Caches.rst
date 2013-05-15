@@ -23,6 +23,10 @@ place. Most users should not have to worry about them, but if you ever
 try to "bang the metal" with Evennia, you should know what you are
 seeing.
 
+All caching schemes except Idmapper is centralized in
+``src/server.caches/py``. You can turn off all caches handled by that
+module by use of the ``GAME_CACHE_TYPE`` setting.
+
 The default ``@server`` command will give a brief listing of the memory
 usage of most relevant caches.
 
@@ -68,16 +72,14 @@ All database fields on all objects in Evennia are cached by use of
 properties <http://docs.python.org/library/functions.html#property>`_.
 So when you do ``name = obj.key``, you are actually *not* directly
 accessing a database field "key" on the object. What you are doing is
-actually to access a handler. This handler looks for hidden variable
-named ``_cached_db_key``. If that can be found, it is what is returned.
-If not, the actual database field, named ``db_key`` are accessed. The
-result is returned and cached for next time.
+actually to access a handler. This handler reads the field ``db_key``
+and caches its value for next time it using a call to the the
+``server.caches`` module.
 
-The naming scheme is consistent, so a given property ``obj.foo`` is a
-handler with a cache named ``obj._cached_db_foo`` and a database field
-``obj.db_key.`` The handler methods for the property are always named
-``obj.foo_get()``, ``obj.foo_set()`` and ``obj.foo_del()`` (all are not
-always needed).
+The naming scheme is consistent, so a given field property ``obj.foo``
+is always a handler for a database field ``obj.db_key.`` The handler
+methods for the property are always named ``obj.foo_get()``,
+``obj.foo_set()`` and ``obj.foo_del()`` (all are not always needed).
 
 Apart from caching, property handlers also serves another function -
 they hide away Django administration. So doing ``obj.key = "Peter"``
@@ -154,16 +156,12 @@ reloading the typeclass also next try, until it is fixed.
 On-object Attribute cache
 -------------------------
 
-`Attribute <Attributes.html>`_ lookups are cached by use of hidden
-dictionaries on all `Typeclassed <Typeclasses.html>`_ objects - this
-removes the necessity for subsequent database look-ups in order to
-retrieve attributes. Both ``db`` and ``ndn`` work the same way in this
-regard.
+`Attribute <Attributes.html>`_ lookups on objects are also cached. This
+means that after the first access or assignment, ``obj.db.attrname`` is
+as fast as accessing any normal python property - this removes the
+necessity for subsequent database look-ups in order to retrieve
+attributes. Both ``db`` and ``ndn`` work the same way in this regard.
 
-Attribute value cache
----------------------
-
-Each Attribute object also caches the values stored in it. Whenever
-retrieving an attribute value, it is also cached for future accesses. In
-effect this means that (after the first time) accessing an attribute is
-equivalent to accessing any normal property.
+Apart from the lookup, each Attribute object itself caches the values
+stored in it. Again this means that (after the first time) accessing an
+attribute is equivalent to accessing any normal Python property.

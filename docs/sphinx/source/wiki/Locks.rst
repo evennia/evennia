@@ -126,8 +126,8 @@ Below are the access\_types checked by the default commandset.
    -  ``get``- who may pick up the object and carry it around.
    -  ``puppet`` - who may "become" this object and control it as their
       "character".
-   -  ``attrcreate`` - allows to create new objects on object (default
-      True)
+   -  ``attrcreate`` - who may create new attributes on the object
+      (default True)
 
 -  [Objects#Characters Characters]: ``<Same as Objects>``
 -  [Objects#Exits Exits]: ``<Same as Objects>`` + ``traverse`` - who may
@@ -200,10 +200,11 @@ Some useful default lockfuncs (see ``src/locks/lockfuncs.py`` for more):
 -  ``true()/all()`` - give access to everyone
 -  ``false()/none()/superuser()`` - give access to noone. Superusers
    bypass the check entirely.
--  ``perm(perm)`` - this tries to match a given ``permission`` property.
-   See [Locks#Permissions below].
--  ``perm_above(perm)`` - requres a "higher" permission level than the
-   one given.
+-  ``perm(perm)`` - this tries to match a given ``permission`` property,
+   on a Player firsthand, on a Character second. See [Locks#Permissions
+   below].
+-  ``perm_above(perm)`` - like ``perm`` but requires a "higher"
+   permission level than the one given.
 -  ``id(num)/dbref(num)`` - checks so the access\_object has a certain
    dbref/id.
 -  ``attr(attrname)`` - checks if a certain
@@ -225,7 +226,7 @@ Default locks
 
 Evennia sets up a few basic locks on all new objects and players (if we
 didn't, noone would have any access to anything from the start). This is
-all defined in the root `Typeclasses <Typeclass.html>`_ of the
+all defined in the root `Typeclasses <Typeclasses.html>`_ of the
 respective entity, in the hook method ``basetype_setup()`` (which you
 usually don't want to edit unless you want to change how basic stuff
 like rooms and exits store their internal variables). This is called
@@ -245,10 +246,16 @@ set by the ``@perm`` command.
 
 ::
 
-     @perm Tommy = Builders
+     @perm *Tommy = Builders
 
-All new players/character are given a default set of permissions defined
-by ``settings.PERMISSION_PLAYER_DEFAULT``.
+Note the use of the asterisk ``*`` above. For the ``@perm`` command it
+means assigning to the `Player <Players.html>`_ Tommy instead of any
+`Character <Objects.html>`_ that also happens to be named Tommy. Putting
+permissions on the Player guarantees that they are kept regardless of
+which Character they are currently puppeting.
+
+All new players are given a default set of permissions defined by
+``settings.PERMISSION_PLAYER_DEFAULT``.
 
 Selected permission strings can be organized in a *permission hierarchy*
 by editing the tuple ``settings.PERMISSION_HIERARCHY``. Evennia's
@@ -265,11 +272,19 @@ default permission hierarchy is as follows:
 The main use of this is that if you use the lock function ``perm()``
 mentioned above, a lock check for a particular permission in the
 hierarchy will *also* grant access to those with *higher* hierarchy
-acces. So if you have the permission "Wizards" you will also pass a lock
-defined as ``perm(Builders)`` or any of those levels below "Wizards".
-The lock function ``perm_above(Players)`` require you to have a
-permission level higher than ``Players`` and so on. If the permission
-looked for is not in the hierarchy, an exact match is required.
+access. So if you have the permission "Wizards" you will also pass a
+lock defined as ``perm(Builders)`` or any of those levels below
+"Wizards". When doing an access check from an `Object <Objects.html>`_
+or Character, the ``perm()`` lock function will always first use the
+permissions of any Player connected to that Object before checking for
+permissions on the Object. In the case of hierarchical permissions
+(Wizards, Builders etc), the Player permission will always be used (this
+stops a Player from escalating their permission by puppeting a
+high-level Character). If the permission looked for is not in the
+hierarchy, an exact match is required, first on the Player and if not
+found there (or if no Player is connected), then on the Object itself.
+
+Below is an example of an object without any connected player
 
 ::
 
@@ -277,6 +292,16 @@ looked for is not in the hierarchy, an exact match is required.
     obj2.locks.add("enter:perm_above(Players) and perm(cool_guy)")
 
     obj2.access(obj1, "enter") # this returns True!
+
+And one example of a puppet with a connected player:
+
+::
+
+    player.permissions = ["Players"]
+    puppet.permissions = ["Builders", "cool_guy"]
+    obj2.locks.add("enter:perm_above(Players) and perm(cool_guy)")
+
+    obj2.access(puppet, "enter") # this returns False!
 
 Superusers
 ----------
@@ -289,6 +314,18 @@ for the superuser to always have access to everything in an emergency.
 But it also hides any eventual errors you might have made in your lock
 definitions. So when trying out game systems you should use a secondary
 character rather than #1 so your locks get tested correctly.
+
+Quelling
+--------
+
+The ``@quell`` command can be used to enforce the ``perm()`` lockfunc to
+ignore permissions on the Player and instead use the permissions on the
+Character only. This can be used e.g. by staff to test out things with a
+lower permission level. Return to the normal operation with
+``@unquell``. Note that quelling will use the smallest of any
+hierarchical permission on the Player or Character, so one cannot
+escalate one's Player permission by quelling to a high-permission
+Character. Also, the superuser cannot be quelled.
 
 More Lock definition examples
 =============================

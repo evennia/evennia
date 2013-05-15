@@ -37,8 +37,8 @@ as well. By default Evennia creates the following hierarchy:
 #. *Players* is the default group that new players end up in. A new
    player have permission to use tells, to use and create new channels.
 
-A user having a higher-level permission also automatically have access
-to locks requiring only lower-level access.
+A user having a certain level of permission automatically have access to
+locks specifying access of a lower level.
 
 To assign a new permission from inside the game, you need to be able to
 use the ``@perm`` command. This is an *Immortal*-level command, but it
@@ -50,5 +50,32 @@ staff with the command
 
 ::
 
-    @perm/add Tommy = Immortals
+    @perm/add *Tommy = Immortals
 
+The ``*`` makes sure to put the permission on the *Player* and not on
+any eventual *Character* that may also be named Tommy. This is usually
+what you want since the Player will then remain an Immortal regardless
+of which Character they are currently controlling. To limit permission
+to a per-Character level you should instead use *quelling* (see below).
+
+Quelling your permissions
+-------------------------
+
+When developing it can be useful to check just how things would look had
+your permission-level been lower. For this you can use *quelling*.
+Normally, when you puppet a Character you are using your Player-level
+permission. So even if your Character only has *Players* level
+permissions, your *Immortals*-level Player will take precedence. With
+the ``@quell`` command you can change so that the Character's permission
+takes precedence instead:
+
+::
+
+     @quell
+
+This will allow you to test out the game using the current Character's
+permission level. A developer or builder can thus in principle maintain
+several test characters, all using different permission levels. Note
+that you cannot escalate your permissions this way; If the Character
+happens to have a *higher* permission level than the Player, the
+Player's permission will still be used.

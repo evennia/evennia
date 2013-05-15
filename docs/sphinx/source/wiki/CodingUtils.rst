@@ -104,24 +104,35 @@ inherits\_from()
 
 This useful function takes two arguments - an object to check and a
 parent. It returns ``True`` if object inherits from parent *at any
-distance* (as opposed to Python's ``is_instance()`` that will only catch
-immediate dependence. This function also accepts any combination of
-classes, instances or python paths to classes as inputs.
+distance* (as opposed to Python's in-built ``is_instance()`` that will
+only catch immediate dependence). This function also accepts as input
+any combination of classes, instances or python-paths-to-classes.
 
 Note that Python code should usually work with `duck
 typing <http://en.wikipedia.org/wiki/Duck_typing>`_. But in Evennia's
 case it can sometimes be useful to check if an object inherits from a
-given `Typeclass <Typelasses.html>`_ as a way of identification. Say for
-example that we have a typeclass *Animal*. This has a subclass *Felines*
-which in turns is a parent to *HouseCat*. Maybe there are a bunch of
-other animal types too, like horses and dogs. Using ``inherits_from``
-will allow you to check for all animals in one go:
+given `Typeclass <Typeclasses.html>`_ as a way of identification. Say
+for example that we have a typeclass *Animal*. This has a subclass
+*Felines* which in turns is a parent to *HouseCat*. Maybe there are a
+bunch of other animal types too, like horses and dogs. Using
+``inherits_from`` will allow you to check for all animals in one go:
 
 ::
 
      from ev import utils
      if (utils.inherits_from(obj, "game.gamesrc.objects.animals.Animal"):
         obj.msg("The bouncer stops you in the door. He says: 'No talking animals allowed.'")
+
+delay()
+-------
+
+This is a thin wrapper around a Twisted construct called a *deferred*.
+It simply won't return until a given number of seconds have passed, at
+which time it will trigger a given callback with whatever argument. This
+is a small and lightweight (non-persistent) alternative to a full
+`Script <Scripts.html>`_. Contrary to a Script it can also handle
+sub-second timing precision (although this is not something you should
+normally need to worry about).
 
 Some text utilities
 -------------------
@@ -168,7 +179,7 @@ string to the left edge.
 
 ::
 
-          #python code is at this indentation 
+    #python code is entered at a given indentation 
           intxt = """
           This is an example text that will end
           up with a lot of whitespace on the left.
@@ -178,8 +189,8 @@ string to the left edge.
           # outtxt will now retain all internal indentation
           # but be shifted all the way to the left. 
 
-Normally you do the dedent in the display code (this is the way the help
-system homogenizes help entries).
+Normally you do the dedent in the display code (this is for example how
+the help system homogenizes help entries).
 
 time\_format()
 ~~~~~~~~~~~~~~

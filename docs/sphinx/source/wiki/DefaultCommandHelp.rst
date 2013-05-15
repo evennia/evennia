@@ -27,7 +27,7 @@ defined on.
    DefaultCmdset and available in the game.
 
 The full set of available commands (all three sub-sets above) currently
-contains 86 commands in 6 categories. More information about how
+contains 85 commands in 6 categories. More information about how
 commands work can be found in the `Command <Commands.html>`_
 documentation.
 
@@ -137,7 +137,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/adm
 ~~~~~
 
 -  ``key`` = ``@emit``
--  ``aliases`` = ``@remit, @pemit``
+-  ``aliases`` = ``@pemit, @remit``
 -  `locks <Locks.html>`_ = ``cmd:perm(emit) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Admin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -319,7 +319,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~~~~~~~
 
 -  ``key`` = ``@batchcommands``
--  ``aliases`` = ``@batchcmd, @batchcommand``
+-  ``aliases`` = ``@batchcommand, @batchcmd``
 -  `locks <Locks.html>`_ = ``cmd:perm(batchcommands) or superuser()``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -510,7 +510,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~
 
 -  ``key`` = ``@destroy``
--  ``aliases`` = ``@del, @delete``
+-  ``aliases`` = ``@delete, @del``
 -  `locks <Locks.html>`_ = ``cmd:perm(destroy) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -570,7 +570,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~
 
 -  ``key`` = ``@examine``
--  ``aliases`` = ``examine, @ex, ex, exam``
+-  ``aliases`` = ``@ex, ex, exam, examine``
 -  `locks <Locks.html>`_ = ``cmd:perm(examine) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -600,7 +600,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@find``
--  ``aliases`` = ``locate, @locate, search, @search, find``
+-  ``aliases`` = ``find, @search, search, @locate, locate``
 -  `locks <Locks.html>`_ = ``cmd:perm(find) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -666,7 +666,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@home``
--  ``aliases`` = ``@sethome``
+-  ``aliases`` = ``<None>``
 -  `locks <Locks.html>`_ = ``cmd:perm(@home) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -721,7 +721,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@lock``
--  ``aliases`` = ``lock, @locks, locks``
+-  ``aliases`` = ``@locks, lock, locks``
 -  `locks <Locks.html>`_ = ``cmd: perm(@locks) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -910,29 +910,19 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 
 ::
 
-        teleport object to another location
+        teleport
 
         Usage:
-          @tel/switch [<object> =] <target location>
-
-        Examples:
-          @tel Limbo
-          @tel/quiet box Limbo
-          @tel/tonone box
+          @tel/switch [<object> =] <location>
 
         Switches:
           quiet  - don't echo leave/arrive messages to the source/target
                    locations for the move.
           intoexit - if target is an exit, teleport INTO
                      the exit object instead of to its destination
-          tonone - if set, teleport the object to a None-location. If this
-                   switch is set, <target location> is ignored.
-                   Note that the only way to retrieve
-                   an object from a None location is by direct #dbref
-                   reference.
 
-        Teleports an object somewhere. If no object is given, you yourself
-        is teleported to the target location.     
+        Teleports an object or yourself somewhere.
+        
 
 @tunnel
 ~~~~~~~
@@ -1183,7 +1173,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 
 -  ``key`` = ``@channels``
 -  ``aliases`` =
-   ``comlist, channellist, all channels, channels, @clist, chanlist``
+   ``@clist, channels, comlist, chanlist, channellist, all channels``
 -  `locks <Locks.html>`_ = ``cmd: not pperm(channel_banned)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1280,7 +1270,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 ~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@imcinfo``
--  ``aliases`` = ``@imcchanlist, @imcwhois, @imclist``
+-  ``aliases`` = ``@imcchanlist, @imclist, @imcwhois``
 -  `locks <Locks.html>`_ =
    ``cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
@@ -1446,7 +1436,7 @@ imctell (OOC command)
 ~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``imctell``
--  ``aliases`` = ``imc2tell, imc2page, imcpage``
+-  ``aliases`` = ``imcpage, imc2tell, imc2page``
 -  `locks <Locks.html>`_ = ``cmd: serversetting(IMC2_ENABLED)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1496,29 +1486,6 @@ General
 
 `Link to Python
 module <https://code.google.com/p/evennia/source/browse/src/commands/default/general.py>`_
-
-@color
-~~~~~~
-
--  ``key`` = ``@color``
--  ``aliases`` = ``<None>``
--  `locks <Locks.html>`_ = ``cmd:all()``
--  `help\_category <HelpSystem.html>`_ = ``General``
--  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
-   (``__doc__ string``) =
-
-::
-
-        testing colors
-
-        Usage:
-          @color ansi|xterm256
-
-        Print a color map along with in-mud color codes, while testing what is supported in your client.
-        Choices are 16-color ansi (supported in most muds) or the 256-color xterm256 standard.
-        No checking is done to determine your client supports color - if not you will
-        see rubbish appear.
-        
 
 @encoding (OOC command)
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1642,7 +1609,7 @@ access
 ~~~~~~
 
 -  ``key`` = ``access``
--  ``aliases`` = ``hierarchy, groups``
+-  ``aliases`` = ``groups, hierarchy``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1771,7 +1738,7 @@ inventory
 ~~~~~~~~~
 
 -  ``key`` = ``inventory``
--  ``aliases`` = ``i, inv``
+-  ``aliases`` = ``inv, i``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1838,7 +1805,7 @@ nick
 ~~~~
 
 -  ``key`` = ``nick``
--  ``aliases`` = ``@nick, nicks, nickname, alias``
+-  ``aliases`` = ``nickname, nicks, @nick, alias``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1975,7 +1942,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 ~~~~~~~~
 
 -  ``key`` = ``@objects``
--  ``aliases`` = ``@listobjects, @stats, @db, @listobjs``
+-  ``aliases`` = ``@listobjects, @listobjs, @stats, @db``
 -  `locks <Locks.html>`_ = ``cmd:perm(listobjects) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``System``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2074,7 +2041,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 ~~~~~~~~
 
 -  ``key`` = ``@scripts``
--  ``aliases`` = ``@listscripts, @globalscript``
+-  ``aliases`` = ``@globalscript, @listscripts``
 -  `locks <Locks.html>`_ = ``cmd:perm(listscripts) or perm(Wizards)``
 -  `help\_category <HelpSystem.html>`_ = ``System``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2236,7 +2203,7 @@ connect (Unloggedin command)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``connect``
--  ``aliases`` = ``co, conn, con``
+-  ``aliases`` = ``conn, con, co``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``Unloggedin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2247,19 +2214,16 @@ connect (Unloggedin command)
         Connect to the game.
 
         Usage (at login screen):
-          connect playername password
-          connect "player name" "pass word"
+          connect <email> <password>
 
         Use the create command to first create an account before logging in.
-
-        If you have spaces in your name, enclose it in quotes.
         
 
 create (Unloggedin command)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``create``
--  ``aliases`` = ``cr, cre``
+-  ``aliases`` = ``cre, cr``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``Unloggedin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2270,12 +2234,10 @@ create (Unloggedin command)
         Create a new account.
 
         Usage (at login screen):
-          create <playername> <password>
-          create "player name" "pass word"
+          create "playername" <email> <password>
 
         This creates a new player account.
 
-        If you have spaces in your name, enclose it in quotes.
         
 
 help (Unloggedin command)

@@ -1,8 +1,8 @@
-#! /usr/bin/python 
+# /usr/bin/python
 #
 # Auto-generate reST documentation for Sphinx from Evennia source
 # code.
-# 
+#
 # Uses etinenned's sphinx autopackage script. Install it to folder
 # "autogen" in this same directory:
 #
@@ -34,21 +34,21 @@ AUTOGEN_EXE = os.path.join(CONVERT_DIR, os.path.join("autogen", "generate_module
 
 def src2rest():
     """
-    Run import 
+    Run import
     """
     try:
         shutil.rmtree(SPHINX_CODE_DIR)
         print "Emptied old %s." % SPHINX_CODE_DIR
     except OSError:
-        pass 
+        pass
     os.mkdir(SPHINX_CODE_DIR)
-       
+
     inpath = EVENNIA_DIR
     outpath = SPHINX_CODE_DIR
-    excludes = [r".*/migrations/.*", r"evennia\.py$", r"manage\.py$", 
+    excludes = [r".*/migrations/.*", r"evennia\.py$", r"manage\.py$",
                 r"runner\.py$", r"server.py$", r"portal.py$"]
-        
-    subprocess.call(["python", AUTOGEN_EXE, 
+
+    subprocess.call(["python", AUTOGEN_EXE,
                      "-n", "Evennia",
                      "-d",  outpath,
                      "-s", "rst",

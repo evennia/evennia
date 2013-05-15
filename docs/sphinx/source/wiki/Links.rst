@@ -18,6 +18,7 @@ Evennia links
    what was changed in each update)
 -  `Evennia mailing list <http://groups.google.com/group/evennia>`_
    (better web interface can be found from the portal)
+-  `Evennia development blog <http://evennia.blogspot.se/>`_
 
 Third-party Evennia links
 -------------------------
@@ -45,13 +46,13 @@ General mud/game development ideas and discussions
 -  `MudLab <http://mudlab.org/>`_ mud design discussion forum
 -  `MudConnector <http://www.mudconnect.com/>`_ mud listing and forums
 -  `MudBytes <http://www.mudbytes.net/>`_ mud listing and forums
--  `Top Mud bytes <http://www.topmudsites.com/>`_ mud listing and forums
+-  `Top Mud Sites <http://www.topmudsites.com/>`_ mud listing and forums
 -  `MudStandards wiki <http://www.mudstandards.org/MudStandards_Wiki>`_
    is an attempt at gathering protocol standards for MUD servers.
 
 -  `Planet Mud-Dev <http://planet-muddev.disinterest.org/>`_ is a blog
-   aggregator following blogs of current MUD development around the
-   'net.
+   aggregator following blogs of current MUD development (including
+   Evennia) around the 'net.
 -  Mud Dev mailing list archive
    (`mirror1 <http://nilgiri.net/MUD-Dev-archive/>`_),(\ `mirror2 <http://www.disinterest.org/resource/MUD-Dev/>`_)
    - Influential mailing list active 1996-2004. Advanced game design

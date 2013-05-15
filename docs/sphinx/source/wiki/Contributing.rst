@@ -3,6 +3,16 @@ Contributing to Evennia
 
 Wanna help out? Great! Here's how.
 
+Contributing by spreading the word
+----------------------------------
+
+Even if you are not keen on working on the server code yourself, just
+spreading the word is a big help - it will help attract more people
+which leads to more feedback, motivation and interest. Rating and
+writing a review on places like
+`ohloh <http://www.ohloh.net/p/evennia>`_, talk about what you do in a
+blog post or in mud forums, that kind of thing.
+
 Contributing with Documentation
 -------------------------------
 

@@ -13,17 +13,19 @@ SQLite3
 -------
 
 This is the default database used, and for the vast majority of Evennia
-installs it will probably be more than adequate or even the best choice.
-No server process is needed, the administrative overhead is tiny (as is
-resource consumption). The database will appear as a simple file
-(``game/evennia.db3``) and since we run SQLite as an in-memory process
-without any socket overhead, it might well be faster than Postgres/MySQL
-unless your database is huge.
+installs it will probably be more than adequate. It's definitely
+recommended for most of your development. No server process is needed,
+the administrative overhead is tiny (as is resource consumption). The
+database will appear as a simple file (``game/evennia.db3``) and since
+we run SQLite as an in-memory process without any socket overhead, it
+might well be faster than Postgres/MySQL unless your database is huge.
 
-**Note:** If you for some reason need to use a third-party web server
-like Apache rather than Evennia's internal web server, SQLite is
-probably not the best choice. This is due to the possibility of clashes
-with file-locking when using SQLite from more than one process.
+The drawback with SQLite3 is that it does not work very well will
+multiple concurrent threads or processes. This has to do with
+file-locking clashes of the database file. So for a production server
+making heavy use of process- or threadpools (or when using a third-party
+webserver like Apache), a more full-featured database may be the better
+choice.
 
 Postgres
 --------
@@ -54,3 +56,24 @@ No testing has been performed with Oracle, but it is also supported.
 There are community maintained drivers for `MS
 SQL <http://code.google.com/p/django-mssql/>`_ and possibly a few others
 (found via our friend, Google).
+
+Inspecting database data
+========================
+
+If you know SQL you can easily get command line access to your database
+like this:
+
+::
+
+     python game/gamesrc.py dbshell
+
+This will drop you into the command line interface for your respective
+database.
+
+There are also a host of easier graphical interfaces for the various
+databases. For SQLite3 we recommend `SQLite
+manager <https://addons.mozilla.org/En-us/firefox/addon/sqlite-manager/>`_.
+This is a plugin for the
+`Firefox <http://www.mozilla.org/en-US/firefox/new/>`_ web browser
+making it usable across all operating systems. Just use it to open the
+game/evennia.db3 file.

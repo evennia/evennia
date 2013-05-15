@@ -22,17 +22,27 @@ Since it's not recommended to edit files in ``src/`` directly, we need
 to devise a way to allow website customization from ``game/gamesrc``.
 This is not really finalized at the current time (it will be easier to
 share media directories in Django 1.3) so for now, your easiest course
-of action is probably to copy the entire ``src/web`` directory into
-``game/gamesrc/`` and modify the copy. Make sure to retain permissions
-so the server can access the directory.
+of action is as follows:
 
-You also need to modify the settings file. Set ``ROOT_URLCONF`` to your
-new ``game.gamesrc.web.urls`` and add an entry
-`` os.path.join(GAME_DIR, "web", "templates", ACTIVE_TEMPLATE)`` to the
-``TEMPLATE_DIRS`` tuple. You should now have a separate website setup
-you can edit as you like. Be aware that updates we do to ``src/web``
-will not transfer automatically to your copy, so you'll need to apply
-updates manually.
+#. Copy the entire ``src/web`` directory into ``game/gamesrc/`` and do
+   your modifications to the copy. Make sure to retain permissions so
+   the server can access the directory (in linux you can do this with
+   something like ``cp -ra src/web game/gamesrc/``)
+#. Re-link all relevant path variables to the new location. In settings
+   add the following lines:
+
+::
+
+     ROOT_URLCONF = "game.gamesrc.web.urls"
+     TEMPLATE_DIRS = (os.path.join(GAME_DIR, "gamesrc", "web", "templates", ACTIVE_TEMPLATE),)
+     MEDIA_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "media"`). 
+
+#. Reload the server (you want to also restart the Portal at this point
+   to make sure it picks up the new web location).
+
+You should now have a separate website you can edit as you like. Be
+aware that updates we do to ``src/web`` will not transfer automatically
+to your copy, so you'll need to apply updates manually.
 
 Web client
 ----------

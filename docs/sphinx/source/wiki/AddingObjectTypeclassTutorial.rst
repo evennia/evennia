@@ -11,10 +11,10 @@ Evennia comes with a few very basic classes of in-game entities:
        Room
        Exit
 
-So the more specific object-types are just children of the basic
-``Object`` class (technically these are all
-`Typeclasses <Typeclassed.html>`_ entities, but for this tutorial, just
-treat them as normal Python classes).
+The more specific object-types are just children of the basic ``Object``
+class (technically these are all `Typeclassed <Typeclasses.html>`_
+entities, but for this tutorial, just treat them as normal Python
+classes).
 
 For your own game you will most likely want to expand on these very
 simple beginnings. It's normal to want your Characters to have various
@@ -54,14 +54,14 @@ that characters should not have the ability to pick up.
 #. Create a new module here, named ``heavy.py``. Alternatively you can
    copy ``examples/object.py`` up one level and rename that file to
    ``heavy.py`` instead - you will then have a template to start from.
-#. Code away in the ``heavy.py`` module, implementing the chair
+#. Code away in the ``heavy.py`` module, implementing the heavy
    functionality. See `Objects <Objects.html>`_ for more details and the
-   example class below. Let's call the typeclass simply ``Heavy``.
+   example class below. Let's call the typeclass simply "``Heavy``\ ".
 #. Once you are done, log into the game with a build-capable account and
    do ``@create/drop rock:heavy.Heavy`` to drop a new heavy "rock"
-   object in your location. Note that you have to log in as a
-   non-superuser (i.e. not as User #1) when trying to get the rock in
-   order to see its heavy effects.
+   object in your location. Next try to pick it up. *Note - the
+   superuser (User #1) will ignore all locks. Always test functionality
+   like this with a non-superuser character.*
 
 That's it. Below is a ``Heavy`` Typeclass that you could try. Note that
 the `lock <Locks.html>`_ and `Attribute <Attribute.html>`_ here set in
@@ -80,7 +80,7 @@ so this is a *very* simple example.
            # lock the object down by default
            self.locks.add("get:false()")
            # the default "get" command looks for this Attribute in order
-           # return a customized error message (we just happen to know
+           # to return a customized error message (we just happen to know
            # this, you'd have to look at the code of the 'get' command to
            # find out).
            self.db.get_err_msg = "This is too heavy for you to pick up."
@@ -114,8 +114,8 @@ Change the default Object Typeclass
 
 Changing the root ``Object`` class works identically to changing the
 ``Character``, ``Room`` or ``Exit`` typeclass. After having created your
-new typeclass, set ``settings.BASE_EXIT_TYPECLASS`` to point to your new
-class. Let's say you call your new default ``Object`` class
+new typeclass, set ``settings.BASE_OBJECT_TYPECLASS`` to point to your
+new class. Let's say you call your new default ``Object`` class
 ``MyObject``.
 
 There however one important further thing to remember: ``Characters``,
@@ -153,6 +153,42 @@ example of a new ``myroom.py``:
     class MyRoom(MyObject, Object):
         "My own expandable room class"
         pass
+
+Updating existing objects
+=========================
+
+Let's say you have already created a slew of objects (Characters, Rooms,
+what have you). Now you change the default typeclass for that type of
+object (as described above). Unfortunately those old objects will not
+know about this yet. If you want to update them you have to do this
+manually. Luckily you only have to do this once, but it's a good case
+for planning your game and its base typeclasses *before* starting to
+build stuff.
+
+Typeclassed objects have a useful method called ``swap_typeclass``. All
+you need to do is to flip through all existing objects, calling this.
+Here is an example of how to do it using some Django magic:
+
+::
+
+    from django.conf import settings
+    import ev
+
+    old_default = "src.objects.objects.Object"
+    new_default = "game.gamesrc.objects.myobj.MyObject"
+
+    # use Django to query the database for all objects with the
+    # old typeclass path (typeclass path is stored in a database 
+    # field 'db_typeclass_path)'
+
+    for obj in ev.managers.objects.filter(db_typeclass_path=old_default):
+        obj.swap_typeclass(new_default)
+
+Above we use one of the Django database managers to query the database.
+We are looking for the main thing typeclasses store in the database,
+namely the full python path to the typeclass. We find all objects still
+using the old typeclass and swap them to the new on. For more on Django
+database access, see the Django manual and/or peruse ``ev.managers``.
 
 Notes
 =====

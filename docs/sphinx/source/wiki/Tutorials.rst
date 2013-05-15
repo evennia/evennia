@@ -36,6 +36,8 @@ the `Developer Central <DeveloperCentral.html>`_.
 -  `Tutorial: Adding a Command prompt <CommandPrompt.html>`_
 -  `Tutorial: Creating a Zoning system <Zones.html>`_
 -  `Hints: Implementing cooldowns for commands <CommandCooldown.html>`_
+-  `Hints: Designing commands that take time to
+   finish <CommandDuration.html>`_
 -  `Hints: Ticker Scripts <TickerScripts.html>`_
 
 Examples

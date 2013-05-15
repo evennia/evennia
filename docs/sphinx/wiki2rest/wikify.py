@@ -290,9 +290,9 @@ def GoogleCode_PrettyLink(wikifier, lookaheadRegExp=None, **kwargs):
     lookMatch = lookaheadRegExp.search(wikifier.source, wikifier.matchStart)
     if lookMatch and lookMatch.start() == wikifier.matchStart:
         text = lookMatch.group(1)
+        link = text
         if lookMatch.group(2):
             # Pretty bracketted link
-            link = text
             text = lookMatch.group(2)
             if GoogleCode_IsExternalLink(wikifier, link):
                 # External link

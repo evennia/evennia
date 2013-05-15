@@ -106,6 +106,8 @@ properties:
    (*Advanced note: the merged cmdset need NOT be the same as
    BigGuy.cmdset. The merged set can be a combination of the cmdsets
    from other objects in the room, for example*).
+-  ``sessid`` - this is an integer identifier for the Session triggering
+   this command, if any. This is seldomly needed directly.
 -  ``raw_string`` - this is the raw input coming from the user, without
    stripping any surrounding whitespace. The only thing that is stripped
    is the ending newline marker.
@@ -149,8 +151,14 @@ Beyond the properties Evennia always assigns to the command at runtime
    for this would be ``r"\s.*?|$"``). In that case, only ``"look me"``
    will work whereas ``"lookme"`` will lead to an "command not found"
    error.
--  auto\_help (optional boolean). Defaults to ``True``. This allows for
-   turning off the
+-  ``func_parts`` (optional list of methods). Not defined by default,
+   used if it exists. This list of methods will be called in sequence,
+   each given a chance to yield execution. This allows for multi-part
+   long-running commands. See `Commands with a
+   Duration <CommandDuration.html>`_ for a practial presentation of how
+   to use this.
+-  ``auto_help`` (optional boolean). Defaults to ``True``. This allows
+   for turning off the
    [`HelpSystem <HelpSystem.html>`_\ #Command\_Auto-help\_system
    auto-help system] on a per-command basis. This could be useful if you
    either want to write your help entries manually or hide the existence
@@ -221,9 +229,9 @@ Below is how you define a simple alternative "``smile``\ " command:
                 caller.location.msg_contents(string, exclude=caller)
                 caller.msg("You smile.")
             else:
-                target = self.search(self.target)
+                target = caller.search(self.target)
                 if not target: 
-                    # self.search handles error messages
+                    # caller.search handles error messages
                     return
                 string = "%s smiles to you." % caller.name
                 target.msg(string)

@@ -15,12 +15,14 @@ The batch-command processor is a superuser-only function, invoked by
 
      > @batchcode path.to.batchcodefile
 
-Where ``path.to.batchcodefile`` is the path to a *batch-code file* with
-the "``.py``\ " file ending. This path is given like a python path
-relative to a folder you define to hold your batch files, set by
-``BATCH_IMPORT_PATH`` in your settings. Default folder is
-``game/gamesrc/world``. So if you want to run the example batch file in
-``game/gamesrc/world/examples/batch_code.py``, you could simply use
+Where ``path.to.batchcodefile`` is the path to a *batch-code file*. Such
+a file should have a name ending in "``.py``\ " (but you shouldn't
+include that when you batch-run the file from the game below). The path
+is given like a python path relative to a folder you define to hold your
+batch files, set by ``BATCH_IMPORT_PATH`` in your settings. Default
+folder is ``game/gamesrc/world``. So if you want to run the example
+batch file in ``game/gamesrc/world/examples/batch_code.py``, you could
+simply use
 
 ::
 
@@ -76,7 +78,7 @@ Here are the rules of syntax of the batch-command ``*.py`` file.
    pointing to the object executing the batchcommand.
 
 Below is a version of the example file found in
-``game/gamesrc/commands/examples/batch_code.py``.
+``game/gamesrc/world/examples/batch_code.py``.
 
 ::
 

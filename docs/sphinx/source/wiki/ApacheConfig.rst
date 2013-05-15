@@ -1,22 +1,22 @@
 Apache Configuration
 ====================
 
-*OBS: Evennia has a powerful in-built Twisted-based web server for
-handling all web features. This works out of the box without any special
-setup. This page is only of interest if you really want/need to run
-Apache instead Evennia's in-built server. Note that the ajax web client
-is not guaranteed to work (at least not without tweaking) on a
-third-party server.*
+This is an optional section only relevant for advanced users preferring
+to use a third-party web server to power Evennia's front-end. For most
+users the in-built Twisted web server should be enough. The in-built
+server works out of the box without any extra configuration. Note that
+the ajax web client will probably *not* work (at least not without
+tweaking) on a third-party web server.
 
-The suggested third-party stack for running Evennia's web front end is
+You can run Evennia's web front end with
 `apache2 <http://httpd.apache.org/>`_ and
-`mod\_wsgi <http://code.google.com/p/modwsgi/>`_. However, the codebase
-may run just fine on other servers and modules (apache2/nginx/lighttpd +
-gunicorn, Tornado, uwsgi, etc.) Below are instructions on how to set
-things up with various apache2 Python modules. If you get things working
-using a different setup, please feel free to provide details below.
+`mod\_wsgi <http://code.google.com/p/modwsgi/>`_. However, there seems
+to be no reason why the codebase should not also work with other modern
+web servers like nginx/lighttpd + gunicorn, Tornado, uwsgi, etc.
 
-----
+Note that the Apache instructions below might be slightly outdated. If
+something is not working right, or you use Evennia with a different
+server, please let us know.
 
 SQLite Note
 -----------
@@ -28,8 +28,6 @@ concurrently, there **may** be issues with simultaneous read/writes by
 the game and the web front-end. The best bet to any game wishing to
 power their web presence with Evennia is to use Postgres, MySQL, Oracle,
 or any other supported full-blown relational database.
-
-----
 
 mod\_wsgi Setup
 ---------------

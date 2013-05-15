@@ -2,38 +2,44 @@ Ticker Scripts ("Heartbeats")
 =============================
 
 A common way to implement a dynamic MUD is by using "tickers", also
-known as "heartbeats". Tickers are very common or even unavoidable in
-other mud code bases, where many systems are hard coded to rely on the
-concept of the global 'tick'. In Evennia this is very much up to your
-game and which requirements you have. `Scripts <Scripts.html>`_ are
-powerful enough to act as any type of counter you want.
+known as "heartbeats". A ticker is a timer that fires ("ticks" at a
+given interval. The tick triggers updates in various game systems.
+Tickers are very common or even unavoidable in other mud code bases,
+where many systems are hard coded to rely on the concept of the global
+'tick'. Evennia has no such notion - the use of tickers (or not) is very
+much up to your game and which requirements you have.
+`Scripts <Scripts.html>`_ are powerful enough to act as any type of
+counter you want and the "ticker recipe" is just one convenient (and
+occationally effective) way of cranking the wheels.
 
 When \_not\_ to use tickers
 ---------------------------
 
-Even if you are used to habitually relying on tickers in other code
-bases, stop and think about what you really need them for. Notably you
-should think very, *very* hard before implementing a ticker to *catch
-changes in something that rarely changes*. Think about it - you might
-have to run the ticker every second to react to changes fast enough.
-This means that most of the time *nothing* will have changed. You are
-doing pointless calls (since skipping the call gives the same result as
-doing it). Making sure nothing's changed might even be a tad expensive
-depending on the complexity of your system. Not to mention that you
-might need to run the check on every object in the database. Every
-second. Just to maintain status quo.
+First, let's consider when *not* to use tickers. Even if you are used to
+habitually relying on tickers for everything in other code bases, stop
+and think about what you really need them for. Notably you should
+*never* try implement a ticker to *catch changes*. Think about it - you
+might have to run the ticker every second to react to the change fast
+enough. Most likely nothing will have changed most of the time. So you
+are doing pointless calls (since skipping the call gives the same result
+as doing it). Making sure nothing's changed might even be
+computationally expensive depending on the complexity of your system.
+Not to mention that you might need to run the check on every object in
+the database. Every second. Just to maintain status quo.
 
 Rather than checking over and over on the off-chance that something
 changed, consider a more proactive approach. Can you maybe implement
 your rarely changing system to *itself* report its change *whenever* it
 happens? It's almost always much cheaper/efficient if you can do things
-"on demand". Evennia itself uses hook methods all over for this very
-reason. The only real "ticker"-like thing in the default set is the one
-that saves the uptime (which of course *always* changes every call).
+"on demand". Evennia itself uses hook methods for this very reason. The
+only real "ticker"-like thing in the default set is the one that saves
+the uptime (which of course *always* changes every call).
 
 So, in summary, if you consider a ticker script that will fire very
 often but which you expect to do nothing 99% of the time, ponder if you
-can handle things some other way.
+can handle things some other way. A self-reporting solution is usually
+cheaper also for fast-updating properties. The main reason you do need a
+ticker is rather when the timing itself is important.
 
 Ticker example - night/day system
 =================================
@@ -91,24 +97,26 @@ list and calls a given method on the subscribed object.
 This depends on your subscribing weather rooms defining the
 ``echo_daynight()`` method (presumably outputting some sort of message).
 
-It's worth noting that this simple recipe can be used for all sorts of
-tickers objects. Rooms are maybe not likely to unsubscribe very often,
-but consider a mob that "deactivates" when Characters are not around for
+It's worth noting that the simple recipe above can be used for all sorts
+of tickers. Rooms are maybe not likely to unsubscribe very often, but
+consider a mob that "deactivates" when Characters are not around for
 example.
 
-The above TimeTicker-example could be further optimized. All subscribed
-rooms are after all likely to echo the same time related text. So this
-text can be pre-set already at the Script level and echoed to each room
-directly. This way the subscribed objects won't need a custom
-``echo_daynight()`` method at all.
+This particular TimeTicker-example could be further optimized. All
+subscribed rooms are after all likely to echo the same time related
+text. So this text can be pre-set already at the Script level and echoed
+to each room directly. This way the subscribed objects won't need a
+custom ``echo_daynight()`` method at all.
 
 Here's the more efficient example (only showing the new stuff).
 
 ::
 
     ...
-    ECHOES = ["The sun rises in the east.", "It's mid-morning", 
-             "It's mid-day",  ...]
+    ECHOES = ["The sun rises in the east.", 
+              "It's mid-morning", 
+              "It's mid-day", ...]  
+
     class TimerTicker(Script):
         ...
         def at_script_creation(self):

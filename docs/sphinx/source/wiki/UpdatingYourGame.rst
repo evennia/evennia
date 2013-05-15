@@ -52,6 +52,8 @@ clear your database. Once you are done, you just rebuild it from scratch
 as described in step 2 of the `Getting Started
 guide <GettingStarted.html>`_.
 
+First stop a running server with ``game/python evennia.py stop``.
+
 If you run the default ``SQlite3`` database (to change this you need to
 edit your ``settings.py`` file), the database is actually just a normal
 file in ``game/`` called ``evennia.db3``. Simply delete that file -

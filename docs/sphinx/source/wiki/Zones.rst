@@ -49,9 +49,14 @@ suggestion:
 
      #zonename|key
 
-So say we (arbitrarily) divide our forest example into the zones
-``magicforest`` and ``normalforest``. These are the added aliases we use
-for the respective *Meadow* 's:
+There is nothing special about this format; it's just a string we store
+- a way to clump the zone-name and the room-key together in a "tag" we
+can easily find and match against later. We could have used a format
+like ``"zonename.key"`` or ``"ZONE:zonename,ROOMNAME:key"`` or some
+other combination if we liked that better. So, using our suggested
+format we assume we (arbitrarily) divide our forest example into the
+zones ``magicforest`` and ``normalforest``. These are the added aliases
+we use for the respective *Meadow* 's:
 
 ::
 
@@ -67,8 +72,8 @@ with ``#zonename|``.
 Enforcing zones
 ---------------
 
-Maybe you feel that this usage of aliases for zones is somehow loose and
-ad-hoc. It is, and there is no guarantee that a builder would follow the
+Maybe you feel that this usage of aliases for zones is loose and ad-hoc.
+It is indeed, and there is no guarantee that a builder would follow the
 naming convention - unless you force them. And you can do that easily by
 changing for example the ``@dig`` `Command <Commands.html>`_ to require
 the zone to be given:
@@ -112,13 +117,13 @@ group and organize only rooms with this scheme.
 Using typeclasses and inheritance for zoning
 --------------------------------------------
 
-The above alias scheme is basically a way to easily find and group
-objects together at run-time - a way to label, if you will. It doesn't
-instill any sort of functional difference between a magical forest room
-and a normal one. For this you will need to use Typeclasses. If you know
-that a certain typeclass of room will always be in a certain zone you
-could even hard-code the zone in the typeclass rather than enforce the
-``@dig`` command to do it:
+The aliasing system above doesn't instill any sort of functional
+difference between a magical forest room and a normal one - it's just an
+abitrary way to attach tags to objects for quick retrieval later. To
+enforce differences you will need to use
+`Typeclasses <Typeclasses.html>`_. If you know that a certain typeclass
+of room will always be in a certain zone you could even hard-code the
+zone in the typeclass rather than enforce the ``@dig`` command to do it:
 
 ::
 

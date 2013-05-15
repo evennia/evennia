@@ -32,7 +32,7 @@ Learn the `ev interface <evAPI.html>`_. This is a great way to explore
 what Evennia has to offer. For example, start an interactive python
 shell, import ``ev`` and just look around.
 
-You can compliment your exploration by peeking at the sections of the
+You can complement your exploration by peeking at the sections of the
 much more detailed `Developer Central <DeveloperCentral.html>`_. The
 `Tutorials <Tutorials.html>`_ section also contains a growing collection
 of system- or implementation-specific help.

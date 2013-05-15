@@ -75,58 +75,6 @@ If you use ``all`` as the name of an attribute, this will be used
 instead. Later deleting your custom ``all`` will return the default
 behaviour.
 
-Fast assignment
----------------
-
-*Depracation Warning: Fast assigment is deprecated and should not be
-used - it will be removed in the future. Use the ``db`` operator
-explicitly when saving to the database.*
-
-For quick testing you can in principle skip the ``db`` operator and
-assign Attributes like you would any normal Python property:
-
-::
-
-    # saving
-    rose.has_thorns = True
-    # getting it back 
-    is_ouch = rose.has_thorns
-
-This looks like any normal Python assignment, but calls ``db`` behind
-the scenes for you.
-
-Note however that this form stands the chance of overloading already
-existing properties on typeclasses and their database objects. Unless
-you know what you are doing, this can cause lots of trouble.
-
-::
-
-     rose.msg("hello") # this uses the in-built msg() method
-     rose.msg = "Ouch!" # this OVERLOADS the msg() method with a string
-     rose.msg("hello") # this now a gives traceback!
-
-Overloading ``msg()`` with a string is a very bad idea since Evennia
-uses this method all the time to send text to you. There are of course
-situations when you *want* to overload default methods with your own
-implementations - but then you'll hopefully do so intentionally and with
-something that works.
-
-::
-
-     rose.db.msg = "Ouch" # this stands no risk of overloading msg()
-     rose.msg("hello") # this works as it should
-
-So using ``db``/``ndb`` will always do what you expect and is usually
-the safer bet. It also makes it visually clear at all times when you are
-saving to the database and not.
-
-Another drawback of this shorter form is that it will handle a non-found
-Attribute as it would any non-found property on the object. The ``db``
-operator will instead return ``None`` if no matching Attribute is found.
-So if an object has no attribute (or property) named ``test``, doing
-``obj.test`` will raise an ``AttributeException`` error, whereas
-``obj.db.test`` will return ``None``.
-
 Persistent vs non-persistent
 ----------------------------
 
@@ -325,13 +273,12 @@ commands/code wherever it fits (such as before setting an Attribute).
     # edit the Attribute here
 
 Note that in this example this lock check will default to ``True`` if no
-lock was defined on the Attribute (which is the case by default). You
-can set this to False if you know all your Attributes always check
-access in all situations. If you want some special control over what the
-default Attribute access is (such as allowing everyone to view, but
-never allowing anyone to edit unless explicitly allowing it with a
-lock), you can use the ``secure_attr`` method on Typeclassed objects
-like this:
+lock was defined on the Attribute (which is the normal case). You can
+set this to False if you know all your Attributes always check access in
+all situations. If you want some special control over what the default
+Attribute access is (such as allowing everyone to view, but never
+allowing anyone to edit unless explicitly allowing it with a lock), you
+can use the ``secure_attr`` method on Typeclassed objects like this:
 
 ::
 
