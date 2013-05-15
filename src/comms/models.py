@@ -76,7 +76,7 @@ class Msg(SharedMemoryModel):
 
     # header could be used for meta-info about the message if your system needs it, or as a separate
     # store for the mail subject line maybe.
-    db_header = models.CharField('header', max_length=128, null=True, blank=True, db_index=True)
+    db_header = models.TextField('header', null=True, blank=True)
     # the message body itself
     db_message = models.TextField('messsage')
     # send date

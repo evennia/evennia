@@ -28,7 +28,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'Msg.db_title'
         db.add_column('comms_msg', 'db_title',
-                      self.gf('django.db.models.fields.CharField')(db_index=True, max_length=512, null=True, blank=True),
+                      self.gf('django.db.models.fields.CharField')(max_length=512, null=True, blank=True),
                       keep_default=False)
 
         # Adding M2M table for field db_sender_players on 'Msg'
@@ -236,7 +236,7 @@ class Migration(SchemaMigration):
             'db_sender_external': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'db_index': 'True'}),
             'db_sender_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'sender_object_set'", 'null': 'True', 'db_index': 'True', 'to': "orm['objects.ObjectDB']"}),
             'db_sender_players': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'sender_player_set'", 'null': 'True', 'db_index': 'True', 'to': "orm['players.PlayerDB']"}),
-            'db_title': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '512', 'null': 'True', 'blank': 'True'}),
+            'db_title': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'comms.playerchannelconnection': {

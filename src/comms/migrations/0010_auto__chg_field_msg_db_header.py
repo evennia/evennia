@@ -8,12 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Renaming field 'Msg.db_title' to 'Msg.db_header'
-        db.rename_column('comms_msg', 'db_title', 'db_header')
+
+        # Changing field 'Msg.db_header'
+        db.alter_column('comms_msg', 'db_header', self.gf('django.db.models.fields.TextField')(null=True))
+
 
     def backwards(self, orm):
-        # Adding field 'Msg.db_title'
-        raise RuntimeError
+
+        # Changing field 'Msg.db_header'
+        db.alter_column('comms_msg', 'db_header', self.gf('django.db.models.fields.CharField')(max_length=128, null=True))
 
     models = {
         'auth.group': {
@@ -51,7 +54,7 @@ class Migration(SchemaMigration):
             'db_desc': ('django.db.models.fields.CharField', [], {'max_length': '80', 'null': 'True', 'blank': 'True'}),
             'db_keep_log': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'db_key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'db_index': 'True'}),
-            'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
+            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'comms.externalchannelconnection': {
@@ -66,11 +69,11 @@ class Migration(SchemaMigration):
         'comms.msg': {
             'Meta': {'object_name': 'Msg'},
             'db_date_sent': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'db_header': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
+            'db_header': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'db_hide_from_channles': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_channels_set'", 'null': 'True', 'to': "orm['comms.Channel']"}),
             'db_hide_from_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_objects_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
             'db_hide_from_players': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_players_set'", 'null': 'True', 'to': "orm['players.PlayerDB']"}),
-            'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
+            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'db_message': ('django.db.models.fields.TextField', [], {}),
             'db_receivers_channels': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'channel_set'", 'null': 'True', 'to': "orm['comms.Channel']"}),
             'db_receivers_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'receiver_object_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
@@ -101,9 +104,10 @@ class Migration(SchemaMigration):
             'db_home': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'homes_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'db_location': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'locations_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
-            'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
+            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'db_permissions': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'db_player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['players.PlayerDB']", 'null': 'True', 'blank': 'True'}),
+            'db_sessid': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'db_typeclass_path': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
@@ -113,8 +117,7 @@ class Migration(SchemaMigration):
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'db_is_connected': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'db_lock_storage': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
-            'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['objects.ObjectDB']", 'null': 'True', 'blank': 'True'}),
+            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'db_permissions': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'db_typeclass_path': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
