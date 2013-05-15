@@ -74,7 +74,7 @@ class Migration(SchemaMigration):
         'comms.msg': {
             'Meta': {'object_name': 'Msg'},
             'db_date_sent': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'db_header': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
+            'db_header': ('django.db.models.fields.CharField', [], {'max_length': 128, 'null': 'True', 'blank': 'True'}),
             'db_hide_from_channles': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_channels_set'", 'null': 'True', 'to': "orm['comms.Channel']"}),
             'db_hide_from_objects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_objects_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
             'db_hide_from_players': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'hide_from_players_set'", 'null': 'True', 'to': "orm['players.PlayerDB']"}),
