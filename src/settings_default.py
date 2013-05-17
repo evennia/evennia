@@ -514,8 +514,8 @@ except ImportError:
 #######################################################################
 # SECRET_KEY
 #######################################################################
-# This is the salt for account passwords. It is a fallback for the
-# SECRET_KEY setting in settings.py, which is randomly seeded when
-# settings.py is first created. If copying from here, make sure to
-# change it!
+# This is the salt for cryptographic hashing used by Django.
+# It is a fallback for the SECRET_KEY setting in settings.py, which
+# is randomly seeded when settings.py is first created. If copying
+# from here, make sure to change it!
 SECRET_KEY = 'changeme!(*#&*($&*(#*(&SDFKJJKLS*(@#KJAS'

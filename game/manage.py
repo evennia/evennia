@@ -62,9 +62,8 @@ from src.settings_default import *
 
 ######################################################################
 # SECRET_KEY was randomly seeded when settings.py was first created.
-# Don't share this with anybody. Warning: if you edit SECRET_KEY
-# *after* creating any accounts, your users won't be able to login,
-# since SECRET_KEY is used to salt passwords.
+# Don't share this with anybody. It is used by Evennia to handle
+# cryptographic hashing for things like cookies on the web side.
 ######################################################################
 SECRET_KEY = '%s'
 
