@@ -278,11 +278,13 @@ class ObjectManager(TypedObjectManager):
 
         if typeclass:
             # typeclass may also be a list
-            for i, typeclass in enumerate(make_iter(typeclass)):
+            typeclasses = make_iter(typeclass)
+            for i, typeclass in enumerate(make_iter(typeclasses)):
                 if callable(typeclass):
-                    typeclass[i] = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
+                    typeclasses[i] = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
                 else:
-                    typeclass[i] = u"%s" % typeclass
+                    typeclasses[i] = u"%s" % typeclass
+            typeclass = typeclasses
 
         if candidates:
             # Convenience check to make sure candidates are really dbobjs
