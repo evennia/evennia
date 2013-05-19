@@ -171,6 +171,13 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
             self.client_disconnect(suid)
+        else:
+            try:
+                sess = self.sessionhandler.session_from_suid(suid)[0]
+                sess.sessionhandler.disconnect(sess)
+            except IndexError:
+                self.client_disconnect(suid)
+                pass
         return ''
 
     def render_POST(self, request):

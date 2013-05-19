@@ -292,11 +292,7 @@ $(document).ready(function(){
 });
 
 // Callback function - called when the browser window resizes
-$(window).resize(function() {
-    webclient_set_sizes();
-});
+$(window).resize(webclient_set_sizes);
 
 // Callback function - called when page is closed or moved away from.
-$(window).unload(function() {
-    webclient_close();
-});
+$(window).bind("beforeunload", webclient_close);
