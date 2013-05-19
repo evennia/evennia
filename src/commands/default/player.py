@@ -248,13 +248,6 @@ class CmdIC(MuxPlayerCommand):
             return
         if player.puppet_object(sessid, new_character):
             player.db._last_puppet = new_character
-            if not new_character.location:
-                # this might be due to being hidden away at logout; check
-                loc = new_character.db.prelogout_location
-                if not loc: # still no location; use home
-                    loc = new_character.home
-                new_character.location = loc
-                new_character.location.at_object_receive(new_character, new_character.location)
         else:
             self.msg("{rYou cannot become {C%s{n." % new_character.name)
 
@@ -291,8 +284,6 @@ class CmdOOC(MuxPlayerCommand):
         # save location as if we were disconnecting from the game entirely.
         if old_char.location:
             old_char.location.msg_contents("%s has left the game." % old_char.key, exclude=[old_char])
-            old_char.db.prelogout_location = old_char.location
-            old_char.location = None
 
         # disconnect
         if player.unpuppet_object(sessid):
