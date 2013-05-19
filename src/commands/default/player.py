@@ -297,7 +297,7 @@ class CmdOOC(MuxPlayerCommand):
         # disconnect
         if player.unpuppet_object(sessid):
             self.msg("\n{GYou go OOC.{n\n")
-            player.execute_cmd("look")
+            player.execute_cmd("look", sessid=sessid)
         else:
             raise RuntimeError("Could not unpuppet!")
 
