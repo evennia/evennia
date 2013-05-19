@@ -325,6 +325,7 @@ class LockHandler(object):
         "Remove all locks"
         self.locks = {}
         self.lock_storage = ""
+        self._save_locks()
 
     def reset(self):
         """
