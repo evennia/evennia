@@ -109,7 +109,7 @@ class CmdOOCLook(MuxPlayerCommand):
                     # character is already puppeted
                     sess = player.get_session(csessid)
                     sid = sess in sessions and sessions.index(sess) + 1
-                    if sess:
+                    if sess and sid:
                         string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions), sid)
                     else:
                         string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions))

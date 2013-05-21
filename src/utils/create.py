@@ -446,7 +446,7 @@ def create_player(name, email, password,
 
     if user:
         conflict_check = User.objects.filter(username__iexact=user.username)
-        conflict_check = len(conflict_check) > 1 
+        conflict_check = len(conflict_check) > 1
     else:
         conflict_check = User.objects.filter(username__iexact=name)
 
@@ -525,7 +525,7 @@ def create_player(name, email, password,
             except Exception:
                 pass
             try:
-                del new_character
+                del new_player
             except Exception:
                 pass
         raise

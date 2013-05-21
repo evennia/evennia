@@ -153,8 +153,9 @@ class ObjectManager(TypedObjectManager):
         """
         property_name = "db_%s" % property_name.lstrip('db_')
         cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        querykwargs = {property_name:None}
         try:
-            return list(self.filter(cand_restriction).exclude(Q(property_name=None)))
+            return list(self.filter(cand_restriction).exclude(Q(**querykwargs)))
         except exceptions.FieldError:
             return []
 
@@ -169,10 +170,11 @@ class ObjectManager(TypedObjectManager):
             property_value = to_unicode(property_value)
         if isinstance(property_name, basestring):
             property_name = "db_%s" % property_name.lstrip('db_')
+        querykwargs = {property_name:property_value}
         cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         try:
-            return list(self.filter(cand_restriction & type_restriction & Q(property_name=property_value)))
+            return list(self.filter(cand_restriction & type_restriction & Q(**querykwargs)))
         except exceptions.FieldError:
             return []
 
@@ -310,7 +312,8 @@ class ObjectManager(TypedObjectManager):
             # no matches found - check if we are dealing with N-keyword query - if so, strip it.
             match_number, searchdata = _AT_MULTIMATCH_INPUT(searchdata)
             # run search again, with the exactness set by call
-            matches = _searcher(searchdata, candidates, typeclass, exact=exact)
+            if match_number != None or not exact:
+                matches = _searcher(searchdata, candidates, typeclass, exact=exact)
 
         # deal with result
         if len(matches) > 1 and match_number != None:

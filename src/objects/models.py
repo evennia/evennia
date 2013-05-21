@@ -575,7 +575,10 @@ class ObjectDB(TypedObject):
                     be a list of typeclasses for a broader search.
         location (Object): Specify a location to search, if different from the self's given location
                    plus its contents. This can also be a list of locations.
-        attribute_name (str): Use this named Attribute to match searchdata against, instead of object.key.
+        attribute_name (str): Define which property to search. If set, no key+alias search will be performed. This can be used to
+                      search database fields (db_ will be automatically appended), and if that fails, it will try to
+                      return objects having Attributes with this name and value equal to searchdata. A special
+                      use is to search for "key" here if you want to do a key-search without including aliases.
         quiet (bool) - don't display default error messages - return multiple matches as a list and
                 no matches as None. If not set (default), will echo error messages and return None.
         exact (bool) - if unset (default) - prefers to match to beginning of string rather than not matching
