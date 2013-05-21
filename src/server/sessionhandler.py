@@ -434,6 +434,10 @@ class PortalSessionHandler(SessionHandler):
         Called from portal side when the connection is closed from the portal side.
         """
         sessid = session.sessid
+        if sessid in self.sessions:
+            del self.sessions[sessid]
+        del session
+        # tell server to also delete this session
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PDISCONN)
 
@@ -473,7 +477,7 @@ class PortalSessionHandler(SessionHandler):
                          to sync on all sessions
         """
         to_save = [sessid for sessid in serversessions if sessid in self.sessions]
-        to_delete = [sessid for sessid in serversessions if sessid not in to_save]
+        to_delete = [sessid for sessid in self.sessions if sessid not in to_save]
         # save protocols
         for sessid in to_save:
             self.sessions[sessid].load_sync_data(serversessions[sessid])
