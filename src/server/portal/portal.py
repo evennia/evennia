@@ -16,7 +16,7 @@ if os.name == 'nt':
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
-from twisted.web import server, static
+from twisted.web import server
 from django.conf import settings
 from src.utils.utils import get_evennia_version, mod_import, make_iter
 from src.server.portal.portalsessionhandler import PORTAL_SESSIONS
@@ -240,29 +240,9 @@ if SSH_ENABLED:
 
 if WEBSERVER_ENABLED:
 
-    # Start a django-compatible webserver.
+    # Start a reverse proxy to relay data to the Server-side webserver
 
-    from twisted.python import threadpool
-    from src.server.webserver import DjangoWebRoot, WSGIWebServer
-
-    # start a thread pool and define the root url (/) as a wsgi resource
-    # recognized by Django
-    threads = threadpool.ThreadPool()
-    web_root = DjangoWebRoot(threads)
-    # point our media resources to url /media
-    web_root.putChild("media", static.File(settings.MEDIA_ROOT))
-
-    webclientstr = ""
-    if WEBCLIENT_ENABLED:
-        # create ajax client processes at /webclientdata
-        from src.server.portal.webclient import WebClient
-        webclient = WebClient()
-        webclient.sessionhandler = PORTAL_SESSIONS
-        web_root.putChild("webclientdata", webclient)
-
-        webclientstr = "/client"
-
-    web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
+    from twisted.web import proxy
 
     for interface in WEBSERVER_INTERFACES:
         if ":" in interface:
@@ -273,19 +253,28 @@ if WEBSERVER_ENABLED:
             ifacestr = "-%s" % interface
         for port in WEBSERVER_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            # create the webserver
-            webserver = WSGIWebServer(threads, port, web_site, interface=interface)
-            webserver.setName('EvenniaWebServer%s' % pstring)
-            PORTAL.services.addService(webserver)
+            web_root = proxy.ReverseProxyResource("localhost", port, '')
 
-            print "  webserver%s%s: %s" % (webclientstr, ifacestr, port)
+            webclientstr = ""
+            if WEBCLIENT_ENABLED:
+                # create ajax client processes at /webclientdata
+                from src.server.portal.webclient import WebClient
+                webclient = WebClient()
+                webclient.sessionhandler = PORTAL_SESSIONS
+                web_root.putChild("webclientdata", webclient)
+                webclientstr = "/client"
+
+            web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
+            proxy_service = internet.TCPServer(port+1, web_root)
+            proxy_service.setName('EvenniaWebProxy%s' % pstring)
+            PORTAL.services.addService(proxy_service)
+            print "  webproxy%s%s: %s" % (webclientstr, ifacestr, port+1)
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     plugin_module.start_plugin_services(PORTAL)
 
 print '-' * 50 # end of terminal output
-
 
 if os.name == 'nt':
     # Windows only: Set PID file manually
