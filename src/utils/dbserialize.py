@@ -31,10 +31,6 @@ from django.contrib.contenttypes.models import ContentType
 from src.utils.utils import to_str, uses_database
 from src.utils import logger
 
-
-
-
-
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
 PICKLE_PROTOCOL = 2
@@ -47,13 +43,21 @@ _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
 _TO_TYPECLASS = lambda o: hasattr(o, 'typeclass') and o.typeclass or o
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
-_TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:%f")
-if uses_database("mysql"):
-    from src.server.models import ServerConfig
-    mysql_version = ServerConfig.objects.get_mysql_db_version()
-    if mysql_version < '5.6.4':
-        # mysql <5.6.4 don't support millisecond precision
-        _TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:000000")
+if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
+    # mysql <5.6.4 don't support millisecond precision
+    _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
+else:
+    _DATESTRING = "%Y:%m:%d-%H:%M:%S:%f"
+
+def _TO_DATESTRING(obj):
+    "this will only be called with valid database objects. Returns datestring on correct form."
+    try:
+        return _GA(obj, "db_date_created").strftime(_DATESTRING)
+    except AttributeError:
+        # this can happen if object is not yet saved - no datestring is then set
+        obj.save()
+        return _GA(obj, "db_date_created").strftime(_DATESTRING)
+
 
 def _init_globals():
     "Lazy importing to avoid circular import issues"

@@ -7,10 +7,12 @@ leave caching unexpectedly (no use if WeakRefs).
 Also adds cache_size() for monitoring the size of the cache.
 """
 
-import os
+import os, threading
+from twisted.internet import reactor
+from twisted.internet.reactor import callFromThread
+from twisted.internet.threads import blockingCallFromThread
 from django.db.models.base import Model, ModelBase
-from django.db.models.signals import post_save, pre_delete, \
-  post_syncdb
+from django.db.models.signals import post_save, pre_delete, post_syncdb
 
 from manager import SharedMemoryManager
 
@@ -37,11 +39,19 @@ def _get_pids():
     if server_pid and portal_pid:
         return int(server_pid), int(portal_pid)
     return None, None
-_SELF_PID = os.getpid()
-_SERVER_PID = None
-_PORTAL_PID = None
-_IS_SUBPROCESS = False
 
+# get info about the current process and thread
+
+_SELF_PID = os.getpid()
+_SERVER_PID, _PORTAL_PID = _get_pids()
+_IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
+_IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+
+#_SERVER_PID = None
+#_PORTAL_PID = None
+#        #global _SERVER_PID, _PORTAL_PID, _IS_SUBPROCESS, _SELF_PID
+#        if not _SERVER_PID and not _PORTAL_PID:
+#            _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 
 class SharedMemoryModelBase(ModelBase):
     # CL: upstream had a __new__ method that skipped ModelBase's __new__ if
@@ -158,15 +168,22 @@ class SharedMemoryModel(Model):
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
-        "overload spot for saving"
-        global _SERVER_PID, _PORTAL_PID, _IS_SUBPROCESS, _SELF_PID
-        if not _SERVER_PID and not _PORTAL_PID:
-            _SERVER_PID, _PORTAL_PID = _get_pids()
-            _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and (_SERVER_PID != _SELF_PID) and (_PORTAL_PID != _SELF_PID)
+        "save tracking process/thread issues"
+
         if _IS_SUBPROCESS:
-            #print "storing in PROC_MODIFIED_OBJS:", cls.db_key, cls.id
+            # we keep a store of objects modified in subprocesses so
+            # we know to update their caches in the central process
             PROC_MODIFIED_OBJS.append(cls)
-        super(SharedMemoryModel, cls).save(*args, **kwargs)
+
+        if _IS_MAIN_THREAD:
+            # in main thread - normal operation
+            super(SharedMemoryModel, cls).save(*args, **kwargs)
+        else:
+            # in another thread; make sure to save in reactor thread
+            def _save_callback(cls, *args, **kwargs):
+                super(SharedMemoryModel, cls).save(*args, **kwargs)
+            blockingCallFromThread(reactor, _save_callback, cls, *args, **kwargs)
+            #callFromThread(_save_callback, cls, *args, **kwargs)
 
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):
