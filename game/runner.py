@@ -50,7 +50,7 @@ from django.conf import settings
 
 # Setup access of the evennia server itself
 SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server/server.py')
-PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal.py')
+PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal/portal.py')
 
 # Get logfile names
 SERVER_LOGFILE = settings.SERVER_LOG_FILE

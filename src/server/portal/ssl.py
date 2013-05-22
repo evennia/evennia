@@ -11,7 +11,7 @@ except ImportError:
     print "  SSL_ENABLED requires PyOpenSSL."
     sys.exit(5)
 
-from src.server.telnet import TelnetProtocol
+from src.server.portal.telnet import TelnetProtocol
 
 class SSLProtocol(TelnetProtocol):
     """

@@ -11,15 +11,15 @@ import sys
 import os
 if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
-    sys.path.insert(0, os.path.dirname(os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__)))))
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__))))))
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server, static
 from django.conf import settings
 from src.utils.utils import get_evennia_version, mod_import, make_iter
-from src.server.sessionhandler import PORTAL_SESSIONS
+from src.server.portal.portalsessionhandler import PORTAL_SESSIONS
 
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 
@@ -168,7 +168,7 @@ if TELNET_ENABLED:
 
     # Start telnet game connections
 
-    from src.server import telnet
+    from src.server.portal import telnet
 
     for interface in TELNET_INTERFACES:
         if ":" in interface:
@@ -192,7 +192,7 @@ if SSL_ENABLED:
 
     # Start SSL game connection (requires PyOpenSSL).
 
-    from src.server import ssl
+    from src.server.portal import ssl
 
     for interface in SSL_INTERFACES:
         if ":" in interface:
@@ -218,7 +218,7 @@ if SSH_ENABLED:
 
     # Start SSH game connections. Will create a keypair in evennia/game if necessary.
 
-    from src.server import ssh
+    from src.server.portal import ssh
 
     for interface in SSH_INTERFACES:
         if ":" in interface:
@@ -255,7 +255,7 @@ if WEBSERVER_ENABLED:
     webclientstr = ""
     if WEBCLIENT_ENABLED:
         # create ajax client processes at /webclientdata
-        from src.server.webclient import WebClient
+        from src.server.portal.webclient import WebClient
         webclient = WebClient()
         webclient.sessionhandler = PORTAL_SESSIONS
         web_root.putChild("webclientdata", webclient)
