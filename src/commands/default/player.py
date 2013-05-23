@@ -378,10 +378,11 @@ class CmdWho(MuxPlayerCommand):
                 plr_pobject = session.get_puppet()
                 plr_pobject = plr_pobject or session.get_player()
                 table.add_row([utils.crop(plr_pobject.name, width=25),
-                               utils.time.format(delta_conn, 0),
+                               utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1)])
 
-        string = "{wPlayers:{n\n%s\n%s unique accounts logged in." % (table, nplayers==1 and "One player" or nplayers)
+        isone = nplayers == 1
+        string = "{wPlayers:{n\n%s\n%s unique account%s logged in." % (table, "One" if isone else nplayers, "" if isone else "s")
         self.msg(string)
 
 

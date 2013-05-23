@@ -134,6 +134,11 @@ class ObjectManager(TypedObjectManager):
         """
         cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
+
+        ## This doesn't work if attribute_value is an object. Workaround below
+        #q = self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name) & Q(objattribute__db_value=attribute_value))
+        #return list(q)
+
         if isinstance(attribute_value, (basestring, int, float, bool, long)):
             return self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name, objattribute__db_value=attribute_value))
         else:
