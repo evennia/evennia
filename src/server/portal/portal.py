@@ -55,7 +55,8 @@ WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
 
 AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
-AMP_ENABLED = AMP_HOST and AMP_PORT
+AMP_INTERFACE = settings.AMP_INTERFACE
+AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
 
 
 #------------------------------------------------------------
@@ -156,6 +157,11 @@ if AMP_ENABLED:
 
     from src.server import amp
 
+    ifacestr = ""
+    if AMP_HOST != '127.0.0.1':
+        ifacestr = "-%s" % AMP_HOST
+    print '  amp (to Server)%s: %s' % (ifacestr, AMP_PORT)
+
     factory = amp.AmpClientFactory(PORTAL)
     amp_client = internet.TCPClient(AMP_HOST, AMP_PORT, factory)
     amp_client.setName('evennia_amp')
@@ -251,10 +257,9 @@ if WEBSERVER_ENABLED:
         ifacestr = ""
         if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
             ifacestr = "-%s" % interface
-        for port in WEBSERVER_PORTS:
-            pstring = "%s:%s" % (ifacestr, port)
-            web_root = proxy.ReverseProxyResource("localhost", port, '')
-
+        for proxyport, serverport in WEBSERVER_PORTS:
+            pstring = "%s:%s<->%s" % (ifacestr, proxyport, serverport)
+            web_root = proxy.ReverseProxyResource('127.0.0.1', serverport, '')
             webclientstr = ""
             if WEBCLIENT_ENABLED:
                 # create ajax client processes at /webclientdata
@@ -265,10 +270,10 @@ if WEBSERVER_ENABLED:
                 webclientstr = "/client"
 
             web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
-            proxy_service = internet.TCPServer(port+1, web_root)
+            proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
-            print "  webproxy%s%s: %s" % (webclientstr, ifacestr, port+1)
+            print "  webproxy%s%s:%s (<-> %s)" % (webclientstr, ifacestr, proxyport, serverport)
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start

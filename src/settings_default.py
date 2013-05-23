@@ -44,8 +44,12 @@ WEBSERVER_ENABLED = True
 # attacks.  It defaults to allowing all. In production, make
 # sure to change this to your actual host addresses/IPs.
 ALLOWED_HOSTS = ["*"]
-# A list of ports the Evennia webserver listens on
-WEBSERVER_PORTS = [8000]
+# The webserver sits behind a Portal proxy. This is a list
+# of tuples (proxyport,serverport) used. The proxyports are what
+# the Portal proxy presents to the world. The serverports are
+# the internal ports the proxy uses to forward data to the Server-side
+# webserver (these should not be publicly open)
+WEBSERVER_PORTS = [(8000, 5001)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
@@ -111,7 +115,7 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # communicate with it. This is an internal functionality of Evennia, usually
 # operating between two processes on the same machine. You usually don't need to
 # change this unless you cannot use the default AMP port/host for whatever reason.
-AMP_HOST = 'localhost'
+AMP_HOST = '127.0.0.1'
 AMP_PORT = 5000
 AMP_INTERFACE = '127.0.0.1'
 # Caching speeds up all forms of database access, often considerably. There

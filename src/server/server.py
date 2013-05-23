@@ -330,7 +330,7 @@ if AMP_ENABLED:
     ifacestr = ""
     if AMP_INTERFACE != '127.0.0.1':
         ifacestr = "-%s" % AMP_INTERFACE
-    print '  amp (to Portal)%s:%s' % (ifacestr, AMP_PORT)
+    print '  amp (to Portal)%s: %s' % (ifacestr, AMP_PORT)
 
     from src.server import amp
 
@@ -361,9 +361,9 @@ if WEBSERVER_ENABLED:
         ifacestr = ""
         if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
             ifacestr = "-%s" % interface
-        for port in WEBSERVER_PORTS:
+        for proxyport, port in WEBSERVER_PORTS:
+            # create the webserver (we only need the port for this)
             pstring = "%s:%s" % (ifacestr, port)
-            # create the webserver
             webserver = WSGIWebServer(threads, port, web_site, interface=interface)
             webserver.setName('EvenniaWebServer%s' % pstring)
             EVENNIA.services.addService(webserver)
