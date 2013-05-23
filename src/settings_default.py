@@ -55,6 +55,10 @@ WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
 # like NginX.
 UPSTREAM_IPS = ['127.0.0.1']
+# The webserver uses threadpool for handling requests. This will scale
+# with server load. Set the minimum and maximum number of threads it
+# may use as (min, max) (must be > 0)
+WEBSERVER_THREADPOOL_LIMITS = (1, 20)
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True

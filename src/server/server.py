@@ -348,27 +348,20 @@ if WEBSERVER_ENABLED:
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
-    threads = threadpool.ThreadPool()
+    threads = threadpool.ThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
+                                    maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
     web_root.putChild("media", static.File(settings.MEDIA_ROOT))
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
 
-    for interface in WEBSERVER_INTERFACES:
-        if ":" in interface:
-            print "  iPv6 interfaces not yet supported"
-            continue
-        ifacestr = ""
-        if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
-            ifacestr = "-%s" % interface
-        for proxyport, port in WEBSERVER_PORTS:
-            # create the webserver (we only need the port for this)
-            pstring = "%s:%s" % (ifacestr, port)
-            webserver = WSGIWebServer(threads, port, web_site, interface=interface)
-            webserver.setName('EvenniaWebServer%s' % pstring)
-            EVENNIA.services.addService(webserver)
+    for proxyport, serverport in WEBSERVER_PORTS:
+        # create the webserver (we only need the port for this)
+        webserver = WSGIWebServer(threads, serverport, web_site, interface='127.0.0.1')
+        webserver.setName('EvenniaWebServer%s' % serverport)
+        EVENNIA.services.addService(webserver)
 
-            print "  webserver%s: %s" % (ifacestr, port)
+        print "  webserver: %s" % serverport
 
 if IRC_ENABLED:
 
