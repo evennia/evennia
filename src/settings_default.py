@@ -115,7 +115,7 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # communicate with it. This is an internal functionality of Evennia, usually
 # operating between two processes on the same machine. You usually don't need to
 # change this unless you cannot use the default AMP port/host for whatever reason.
-AMP_HOST = '127.0.0.1'
+AMP_HOST = 'localhost'
 AMP_PORT = 5000
 AMP_INTERFACE = '127.0.0.1'
 # Caching speeds up all forms of database access, often considerably. There

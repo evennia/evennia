@@ -157,10 +157,7 @@ if AMP_ENABLED:
 
     from src.server import amp
 
-    ifacestr = ""
-    if AMP_HOST != '127.0.0.1':
-        ifacestr = "-%s" % AMP_HOST
-    print '  amp (to Server)%s: %s' % (ifacestr, AMP_PORT)
+    print '  amp (to Server): %s' % AMP_PORT
 
     factory = amp.AmpClientFactory(PORTAL)
     amp_client = internet.TCPClient(AMP_HOST, AMP_PORT, factory)

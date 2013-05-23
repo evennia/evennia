@@ -180,10 +180,11 @@ class SharedMemoryModel(Model):
             super(SharedMemoryModel, cls).save(*args, **kwargs)
         else:
             # in another thread; make sure to save in reactor thread
+            print "saving in another thread!"
             def _save_callback(cls, *args, **kwargs):
                 super(SharedMemoryModel, cls).save(*args, **kwargs)
-            blockingCallFromThread(reactor, _save_callback, cls, *args, **kwargs)
-            #callFromThread(_save_callback, cls, *args, **kwargs)
+            #blockingCallFromThread(reactor, _save_callback, cls, *args, **kwargs)
+            callFromThread(_save_callback, cls, *args, **kwargs)
 
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):
