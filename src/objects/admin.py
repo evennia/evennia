@@ -80,7 +80,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    inlines = [AliasInline]#, ObjAttributeInline]
+    #inlines = [AliasInline, ObjAttributeInline]
 
 
     # Custom modification to give two different forms wether adding or not.
@@ -111,6 +111,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         return super(ObjectDBAdmin, self).get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
+        obj.save()
         if not change:
             # adding a new object
             obj = obj.typeclass
