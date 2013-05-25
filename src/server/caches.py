@@ -6,12 +6,20 @@ Central caching module.
 from sys import getsizeof
 from collections import defaultdict
 from django.conf import settings
+from src.server.models import ServerConfig
+from src.utils.utils import to_str, uses_database
 
 _ENABLE_LOCAL_CACHES = settings.GAME_CACHE_TYPE
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
+if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
+    # mysql <5.6.4 don't support millisecond precision
+    _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
+else:
+    _DATESTRING = "%Y:%m:%d-%H:%M:%S:%f"
 
 # OOB hooks (OOB not yet functional, don't use yet)
 _OOB_FIELD_UPDATE_HOOKS = defaultdict(dict)
@@ -35,12 +43,12 @@ def hashid(obj):
         hid = _GA(obj, "_hashid")
     except AttributeError:
         try:
-            date, idnum = _GA(obj, "db_date_created"), _GA(obj, "id")
+            date, idnum = _GA(obj, "db_date_created").strftime(_DATESTRING), _GA(obj, "id")
         except AttributeError:
             try:
                 # maybe a typeclass, try to go to dbobj
                 obj = _GA(obj, "dbobj")
-                date, idnum = _GA(obj, "db_date_created"), _GA(obj, "id")
+                date, idnum = _GA(obj, "db_date_created").strftime(_DATESTRING), _GA(obj, "id")
             except AttributeError:
                 # this happens if hashing something like ndb. We have to
                 # rely on memory adressing in this case.
@@ -194,7 +202,10 @@ if _ENABLE_LOCAL_CACHES:
         hid = hashid(obj)
         global _FIELD_CACHE
         if hid:
-            del _FIELD_CACHE[hashid(obj)]
+            try:
+                del _FIELD_CACHE[hashid(obj)]
+            except KeyError, e:
+                pass
         else:
             # clean cache completely
             _FIELD_CACHE = defaultdict(dict)
@@ -241,7 +252,10 @@ if _ENABLE_LOCAL_CACHES:
         hid = hashid(obj)
         global _PROP_CACHE
         if hid:
-            del _PROP_CACHE[hashid(obj)]
+            try:
+                del _PROP_CACHE[hid]
+            except KeyError,e:
+                pass
         else:
             # clean cache completely
             _PROP_CACHE = defaultdict(dict)
@@ -293,6 +307,13 @@ if _ENABLE_LOCAL_CACHES:
                 for attrobj in objcache.values():
                     attrobj.no_cache = True
             _ATTR_CACHE = defaultdict(dict)
+
+
+    def flush_obj_caches(obj=None):
+        "Clean all caches on this object"
+        flush_field_cache(obj)
+        flush_prop_cache(obj)
+        flush_attr_cache(obj)
 
 
 else:

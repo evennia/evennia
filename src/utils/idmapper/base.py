@@ -210,6 +210,8 @@ def update_cached_instance(sender, instance, **kwargs):
     if not hasattr(instance, 'cache_instance'):
         return
     sender.cache_instance(instance)
+    from src.server.caches import flush_obj_caches
+    flush_obj_caches(instance)
 post_save.connect(update_cached_instance)
 
 def cache_size(mb=True):
