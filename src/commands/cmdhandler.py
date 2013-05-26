@@ -301,6 +301,7 @@ def cmdhandler(caller, raw_string, testing=False, sessid=None):
                 syscmd.cmdstring = syscmd.key
                 syscmd.args = sysarg
                 syscmd.cmdset = cmdset
+                syscmd.sessid = sessid
                 syscmd.raw_string = unformatted_raw_string
 
                 if hasattr(syscmd, 'obj') and hasattr(syscmd.obj, 'scripts'):
