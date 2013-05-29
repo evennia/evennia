@@ -38,11 +38,12 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields import AutoField, FieldDoesNotExist
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_attr_cache, set_attr_cache, del_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
-from src.server.caches import call_ndb_hooks
+#from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
@@ -111,7 +112,7 @@ class Attribute(SharedMemoryModel):
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
     # references the object the attribute is linked to (this is set
-    # by each child class to this abstact class)
+    # by each child class to this abstract class)
     db_obj =  None # models.ForeignKey("RefencedObject")
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
@@ -455,20 +456,21 @@ class TypedObject(SharedMemoryModel):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
+
     # key property (wraps db_key)
     #@property
-    def __key_get(self):
-        "Getter. Allows for value = self.key"
-        return get_field_cache(self, "key")
-    #@key.setter
-    def __key_set(self, value):
-        "Setter. Allows for self.key = value"
-        set_field_cache(self, "key", value)
-    #@key.deleter
-    def __key_del(self):
-        "Deleter. Allows for del self.key"
-        raise Exception("Cannot delete objectdb key!")
-    key = property(__key_get, __key_set, __key_del)
+    #def __key_get(self):
+    #    "Getter. Allows for value = self.key"
+    #    return get_field_cache(self, "key")
+    ##@key.setter
+    #def __key_set(self, value):
+    #    "Setter. Allows for self.key = value"
+    #    set_field_cache(self, "key", value)
+    ##@key.deleter
+    #def __key_del(self):
+    #    "Deleter. Allows for del self.key"
+    #    raise Exception("Cannot delete objectdb key!")
+    #key = property(__key_get, __key_set, __key_del)
 
     # name property (wraps db_key too - alias to self.key)
     #@property
@@ -1244,7 +1246,7 @@ class TypedObject(SharedMemoryModel):
                         return None
                 def __setattr__(self, key, value):
                     # hook the oob handler here
-                    call_ndb_hooks(self, key, value)
+                    #call_ndb_hooks(self, key, value)
                     _SA(self, key, value)
             self._ndb_holder = NdbHolder()
             return self._ndb_holder

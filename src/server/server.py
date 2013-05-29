@@ -30,6 +30,12 @@ from src.utils.utils import get_evennia_version, mod_import, make_iter
 from src.comms import channelhandler
 from src.server.sessionhandler import SESSIONS
 
+# setting up server-side field cache
+
+from django.db.models.signals import pre_save
+from src.server.caches import field_pre_save
+pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
+
 _SA = object.__setattr__
 
 if os.name == 'nt':

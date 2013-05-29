@@ -8,13 +8,18 @@ Also adds cache_size() for monitoring the size of the cache.
 """
 
 import os, threading
-from twisted.internet import reactor
+#from twisted.internet import reactor
+#from twisted.internet.threads import blockingCallFromThread
 from twisted.internet.reactor import callFromThread
-from twisted.internet.threads import blockingCallFromThread
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
 
 from manager import SharedMemoryManager
+
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
+
 
 # determine if our current pid is different from the server PID (i.e.
 # if we are in a subprocess or not)
@@ -78,13 +83,39 @@ class SharedMemoryModelBase(ModelBase):
         if cached_instance is None:
             cached_instance = new_instance()
             cls.cache_instance(cached_instance)
-
         return cached_instance
+
 
     def _prepare(cls):
         cls.__instance_cache__ = {}  #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
 
+    def __init__(cls, *args, **kwargs):
+        "Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key"
+        super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
+        def create_wrapper(cls, fieldname, wrappername):
+            "Helper method to create property wrappers with unique names (must be in separate call)"
+            def _get(cls, fname):
+                return _GA(cls, fname)
+            def _set(cls, fname, value):
+                _SA(cls, fname, value)
+                _GA(cls, "save")(update_fields=[fname]) # important!
+            def _del(cls, fname):
+                raise RuntimeError("You cannot delete field %s on %s; set it to None instead." % (fname, cls))
+            type(cls).__setattr__(cls, wrappername, property(lambda cls: _get(cls, fieldname),
+                                                             lambda cls,val: _set(cls, fieldname, val),
+                                                             lambda cls: _del(cls, fieldname)))
+        # eclude some models that should not auto-create wrapper fields
+        if cls.__name__ in ("ServerConfig", "TypeNick"):
+            return
+        # dynamically create the properties
+        for field in cls._meta.fields:
+            fieldname = field.name
+            wrappername = fieldname == "id" and "dbref" or fieldname.replace("db_", "")
+            if not hasattr(cls, wrappername):
+                # make sure not to overload manually created wrappers on the model
+                print "wrapping %s -> %s" % (fieldname, wrappername)
+                create_wrapper(cls, fieldname, wrappername)
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default
@@ -126,6 +157,13 @@ class SharedMemoryModel(Model):
         return result
     _get_cache_key = classmethod(_get_cache_key)
 
+    def _flush_cached_by_key(cls, key):
+        try:
+            del cls.__instance_cache__[key]
+        except KeyError:
+            pass
+    _flush_cached_by_key = classmethod(_flush_cached_by_key)
+
     def get_cached_instance(cls, id):
         """
         Method to retrieve a cached instance by pk value. Returns None when not found
@@ -148,13 +186,6 @@ class SharedMemoryModel(Model):
         return cls.__instance_cache__.values()
     get_all_cached_instances = classmethod(get_all_cached_instances)
 
-    def _flush_cached_by_key(cls, key):
-        try:
-            del cls.__instance_cache__[key]
-        except KeyError:
-            pass
-    _flush_cached_by_key = classmethod(_flush_cached_by_key)
-
     def flush_cached_instance(cls, instance):
         """
         Method to flush an instance from the cache. The instance will always be flushed from the cache,
@@ -168,7 +199,7 @@ class SharedMemoryModel(Model):
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
-        "save tracking process/thread issues"
+        "save method tracking process/thread issues"
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
@@ -210,8 +241,6 @@ def update_cached_instance(sender, instance, **kwargs):
     if not hasattr(instance, 'cache_instance'):
         return
     sender.cache_instance(instance)
-    from src.server.caches import flush_obj_caches
-    flush_obj_caches(instance)
 post_save.connect(update_cached_instance)
 
 def cache_size(mb=True):
