@@ -2,6 +2,8 @@
 Central caching module.
 
 """
+from django.core.cache import get_cache
+#from django.db.models.signals import pre_save, pre_delete, post_init
 from src.server.models import ServerConfig
 from src.utils.utils import uses_database, to_str
 
@@ -9,12 +11,26 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+#
+# Open handles to the caches
+#
+
+_FIELD_CACHE = get_cache("field_cache")
+_ATTR_CACHE = get_cache("attr_cache")
+
+# make sure caches are empty at startup
+_FIELD_CACHE.clear()
+_ATTR_CACHE.clear()
+
+#
+# Cache key hash generation
+#
+
 if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
 else:
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:%f"
-
 
 def hashid(obj, suffix=""):
     """
@@ -49,36 +65,28 @@ def hashid(obj, suffix=""):
     return to_str(hid)
 
 
-# signal handlers
+#
+# Cache callback handlers
+#
 
-from django.core.cache import get_cache
-#from django.db.models.signals import pre_save, pre_delete, post_init
+# Field cache - makes sure to cache all database fields when
+# they are saved, no matter from where.
 
-# field cache
-
-_FIELD_CACHE = get_cache("field_cache")
-if not _FIELD_CACHE:
-    raise RuntimeError("settings.CACHE does not contain a 'field_cache' entry!")
-
-# callback before saving an object
-
-def field_pre_save(sender, **kwargs):
+# callback to pre_save signal (connected in src.server.server)
+def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
     """
     Called at the beginning of the save operation. The save method
     must be called with the update_fields keyword in order to
     """
-    global _FIELD_CACHE
-
-    if kwargs.pop("raw", False): return
-    instance = kwargs.pop("instance")
-    fields = kwargs.pop("update_fields", None)
-    if fields:
+    if raw:
+        return
+    if update_fields:
         # this is a list of strings at this point. We want field objects
-        fields = (instance._meta.get_field_by_name(field)[0] for field in fields)
+        update_fields = (instance._meta.get_field_by_name(field)[0] for field in update_fields)
     else:
         # meta.fields are already field objects
-        fields = instance._meta.fields
-    for field in fields:
+        update_fields = instance._meta.fields
+    for field in update_fields:
         fieldname = field.name
         new_value = field.value_from_object(instance)
         handlername = "_%s_handler" % fieldname
@@ -98,39 +106,34 @@ def field_pre_save(sender, **kwargs):
             # update cache
             _FIELD_CACHE.set(hid, new_value)
 
-# goes into server:
-#pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
+# Attr cache - caching the attribute objects related to a given object to
+# avoid lookups more than necessary (this makes Attributes en par in speed
+# to any property).
 
-## attr cache - caching the attribute objects related to a given object to
-## avoid lookups more than necessary (this makes attributes en par in speed
-## to any property). The signal is triggered by the Attribute itself when it
-## is created or deleted (it holds a reference to the object)
-#
-#_ATTR_CACHE = get_cache("attr_cache")
-#if not _ATTR_CACHE:
-#    raise RuntimeError("settings.CACHE does not contain an 'attr_cache' entry!")
-#
-#def attr_post_init(sender, **kwargs):
-#    "Called when attribute is created or retrieved in connection with obj."
-#    hid = hashid(sender.db_obj, "-%s" % sender.db_key)
-#    _ATTR_CACHE.set(hid, sender)
-#def attr_pre_delete(sender, **kwargs):
-#    "Called when attribute is deleted (del_attribute)"
-#    hid = hashid(sender.db_obj, "-%s" % sender.db_key)
-#    _ATTR_CACHE.delete(hid)
-#
-### goes into server:
-#from src.objects.models import ObjAttribute
-#from src.scripts.models import ScriptAttribute
-#from src.players.models import PlayerAttribute
-#post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
-#post_init.connect(attr_post_init, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
-#post_init.connect(attr_post_init, sender=PlayerAttribute, dispatch_uid="playerattrcache")
-#pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
-#pre_delete.connect(attr_pre_delete, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
-#pre_delete.connect(attr_pre_delete, sender=PlayerAttribute, dispatch_uid="playerattrcache")
-#
-#
+# connected to post_init signal (connected in respective Attribute model)
+def attr_post_init(sender, instance=None, **kwargs):
+    "Called when attribute is created or retrieved in connection with obj."
+    #print "attr_post_init:", instance, instance.db_obj, instance.db_key
+    hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
+    if hid:
+        _ATTR_CACHE.set(hid, sender)
+# connected to pre_delete signal (connected in respective Attribute model)
+def attr_pre_delete(sender, instance=None, **kwargs):
+    "Called when attribute is deleted (del_attribute)"
+    #print "attr_pre_delete:", instance, instance.db_obj, instance.db_key
+    hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
+    if hid:
+        #print "attr_pre_delete:", _GA(instance, "db_key")
+        _ATTR_CACHE.delete(hid)
+# access method
+def get_attr_cache(obj, attrname):
+    "Called by get_attribute"
+    hid = hashid(obj, "-%s" % attrname)
+    _ATTR_CACHE.delete(hid)
+    return hid and _ATTR_CACHE.get(hid, None) or None
+
+
+
 ## property cache - this doubles as a central cache and as a way
 ## to trigger oob on such changes.
 #
@@ -456,8 +459,8 @@ def del_prop_cache(obj, name):
     pass
 def flush_prop_cache(obj=None):
     pass
-def get_attr_cache(obj, attrname):
-    return None
+#def get_attr_cache(obj, attrname):
+#    return None
 def set_attr_cache(obj, attrname, attrobj):
     pass
 def del_attr_cache(obj, attrname):

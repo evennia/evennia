@@ -91,7 +91,12 @@ class SharedMemoryModelBase(ModelBase):
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __init__(cls, *args, **kwargs):
-        "Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key"
+        """
+        Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key
+        This wrapper happens on the class level, so there is no overhead when creating objects. If a class
+        already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
+        document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
+        """
         super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
         def create_wrapper(cls, fieldname, wrappername):
             "Helper method to create property wrappers with unique names (must be in separate call)"
@@ -114,7 +119,7 @@ class SharedMemoryModelBase(ModelBase):
             wrappername = fieldname == "id" and "dbref" or fieldname.replace("db_", "")
             if not hasattr(cls, wrappername):
                 # make sure not to overload manually created wrappers on the model
-                print "wrapping %s -> %s" % (fieldname, wrappername)
+                #print "wrapping %s -> %s" % (fieldname, wrappername)
                 create_wrapper(cls, fieldname, wrappername)
 
 class SharedMemoryModel(Model):

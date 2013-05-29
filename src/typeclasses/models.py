@@ -103,7 +103,7 @@ class Attribute(SharedMemoryModel):
     # Attribute Database Model setup
     #
     #
-    # These databse fields are all set using their corresponding properties,
+    # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
     db_key = models.CharField('key', max_length=255, db_index=True)
@@ -933,10 +933,11 @@ class TypedObject(SharedMemoryModel):
         if not get_attr_cache(self, attribute_name):
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
                     db_obj=self, db_key__iexact=attribute_name)
-            if attrib_obj:
-                set_attr_cache(self, attribute_name, attrib_obj[0])
-            else:
+            if not attrib_obj:
                 return False
+                #set_attr_cache(self, attribute_name, attrib_obj[0])
+            #else:
+            #    return False
         return True
 
     def set_attribute(self, attribute_name, new_value=None, lockstring=""):
@@ -953,6 +954,7 @@ class TypedObject(SharedMemoryModel):
                      types checked by secureattr are 'attrread','attredit','attrcreate'.
         """
         attrib_obj = get_attr_cache(self, attribute_name)
+        print "set_attribute:", attribute_name, attrib_obj
         if not attrib_obj:
             attrclass = _GA(self, "_attribute_class")
             # check if attribute already exists.
@@ -975,7 +977,7 @@ class TypedObject(SharedMemoryModel):
             flush_attr_cache(self)
             self.delete()
             raise IntegrityError("Attribute could not be saved - object %s was deleted from database." % self.key)
-        set_attr_cache(self, attribute_name, attrib_obj)
+        #set_attr_cache(self, attribute_name, attrib_obj)
 
     def get_attribute_obj(self, attribute_name, default=None):
         """
@@ -987,7 +989,7 @@ class TypedObject(SharedMemoryModel):
                     db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            #set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
             return attrib_obj[0]
         return attrib_obj
 
@@ -1006,7 +1008,7 @@ class TypedObject(SharedMemoryModel):
                              db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            #set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
             return attrib_obj[0].value
         return attrib_obj.value
 
@@ -1023,7 +1025,7 @@ class TypedObject(SharedMemoryModel):
                     db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 raise AttributeError
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            #set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
             return  attrib_obj[0].value
         return attrib_obj.value
 

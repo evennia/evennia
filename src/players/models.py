@@ -27,9 +27,12 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
+from django.db.models.signals import post_init, pre_delete
 
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import attr_post_init, attr_pre_delete
+
 from src.players import manager
 from src.scripts.models import ScriptDB
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
@@ -73,6 +76,9 @@ class PlayerAttribute(Attribute):
     class Meta:
         "Define Django meta options"
         verbose_name = "Player Attribute"
+
+post_init.connect(attr_post_init, sender=PlayerAttribute, dispatch_uid="playerattrcache")
+pre_delete.connect(attr_pre_delete, sender=PlayerAttribute, dispatch_uid="playerattrcache")
 
 #------------------------------------------------------------
 #

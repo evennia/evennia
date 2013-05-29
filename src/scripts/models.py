@@ -26,6 +26,9 @@ Common examples of uses of Scripts:
 """
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_init, pre_delete
+
+from src.server.caches import attr_post_init, attr_pre_delete
 from src.typeclasses.models import Attribute, TypedObject
 from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
@@ -47,6 +50,9 @@ class ScriptAttribute(Attribute):
         verbose_name = "Script Attribute"
         verbose_name_plural = "Script Attributes"
 
+# attach cache handlers for attribute lookup
+post_init.connect(attr_post_init, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
+pre_delete.connect(attr_pre_delete, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
 
 #------------------------------------------------------------
 #

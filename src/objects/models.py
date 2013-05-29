@@ -17,11 +17,13 @@ transparently through the decorating TypeClass.
 import traceback
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_init, pre_delete
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import attr_post_init, attr_pre_delete
 from src.typeclasses.typeclass import TypeClass
 from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
@@ -53,6 +55,7 @@ _HERE = _("here")
 #
 #------------------------------------------------------------
 
+
 class ObjAttribute(Attribute):
     "Attributes for ObjectDB objects."
     db_obj = models.ForeignKey("ObjectDB")
@@ -61,6 +64,10 @@ class ObjAttribute(Attribute):
         "Define Django meta options"
         verbose_name = "Object Attribute"
         verbose_name_plural = "Object Attributes"
+
+# attach the cache handlers for attribute lookup
+post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
+pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
 
 #------------------------------------------------------------
 #
