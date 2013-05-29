@@ -474,34 +474,32 @@ class TypedObject(SharedMemoryModel):
     #@property
     def __name_get(self):
         "Getter. Allows for value = self.name"
-        return get_field_cache(self, "key")
-    #@name.setter
+        return self.key
+    #@name.sette
     def __name_set(self, value):
         "Setter. Allows for self.name = value"
-        set_field_cache(self, "key", value)
+        self.key = value
     #@name.deleter
     def __name_del(self):
         "Deleter. Allows for del self.name"
         raise Exception("Cannot delete name!")
     name = property(__name_get, __name_set, __name_del)
 
-    # typeclass_path property
+    # typeclass_path property - we don't cache this.
     #@property
     def __typeclass_path_get(self):
         "Getter. Allows for value = self.typeclass_path"
-        return get_field_cache(self, "typeclass_path")
+        return _GA(self, "db_typeclass_path")#get_field_cache(self, "typeclass_path")
     #@typeclass_path.setter
     def __typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
-        set_field_cache(self, "typeclass_path", value)
-        _SA(self, "_cached_typeclass", None)
+        _SA(self, "db_typeclass_path", value)
+        _GA(self, "save")(update_fields=["db_typeclass_path"])
     #@typeclass_path.deleter
     def __typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
         self.db_typeclass_path = ""
-        self.save()
-        del_field_cache(self, "typeclass_path")
-        _SA(self, "_cached_typeclass", None)
+        _GA(self, "save")(update_fields=["db_typeclass_path"])
     typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
 
     # date_created property

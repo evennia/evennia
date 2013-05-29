@@ -2,6 +2,8 @@
 Central caching module.
 
 """
+
+from collections import defaultdict
 from django.dispatch import Signal
 from django.core.cache import get_cache
 #from django.db.models.signals import pre_save, pre_delete, post_init
@@ -18,12 +20,13 @@ _DA = object.__delattr__
 
 _FIELD_CACHE = get_cache("field_cache")
 _ATTR_CACHE = get_cache("attr_cache")
-_PROP_CACHE = get_cache("prop_cache")
+#_PROP_CACHE = get_cache("prop_cache")
+_PROP_CACHE = defaultdict(dict)
 
 # make sure caches are empty at startup
 _FIELD_CACHE.clear()
 _ATTR_CACHE.clear()
-_PROP_CACHE.clear()
+#_PROP_CACHE.clear()
 
 #------------------------------------------------------------
 # Cache key hash generation
@@ -106,7 +109,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             old_value = _FIELD_CACHE.get(hid) if hid else None
             # the handler may modify the stored value in various ways
             # don't catch exceptions, the handler must work!
-            new_value = handler(instance, new_value, oldval=old_value)
+            new_value = handler(new_value, old_value=old_value)
             # we re-assign this to the field, save() will pick it up from there
             _SA(instance, fieldname, new_value)
         if hid:
@@ -170,24 +173,28 @@ def get_prop_cache(obj, propname):
     hid = hashid(obj, "-%s" % propname)
     if hid:
         #print "get_prop_cache", hid, propname, _PROP_CACHE.get(hid, None)
-        return _PROP_CACHE.get(hid, None)
+        return _PROP_CACHE[hid].get(propname, None)
 
 def set_prop_cache(obj, propname, propvalue):
     "Set property cache"
     hid = hashid(obj, "-%s" % propname)
     if hid:
         #print "set_prop_cache", propname, propvalue
-        _PROP_CACHE.set(hid, propvalue)
+        _PROP_CACHE[hid][propname] = propvalue
+        #_PROP_CACHE.set(hid, propvalue)
 
 def del_prop_cache(obj, propname):
     "Delete element from property cache"
     hid = hashid(obj, "-%s" % propname)
-    if hid:
-        _PROP_CACHE.delete(hid)
+    if hid and propname in _PROP_CACHE[hid]:
+        del _PROP_CACHE[hid][propname]
+        #_PROP_CACHE.delete(hid)
 
 def flush_prop_cache():
     "Clear property cache"
-    _PROP_CACHE.clear()
+    global _PROP_CACHE
+    _PROP_CACHE = defaultdict(dict)
+    #_PROP_CACHE.clear()
 
 
 #_ENABLE_LOCAL_CACHES = settings.GAME_CACHE_TYPE
@@ -491,7 +498,7 @@ def del_field_cache(obj, name):
 #def set_attr_cache(obj, attrname, attrobj):
 #    pass
 #def del_attr_cache(obj, attrname):
-#    pass
+#    passk
 #def flush_attr_cache(obj=None):
 #    pass
 
