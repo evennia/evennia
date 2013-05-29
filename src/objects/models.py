@@ -65,7 +65,7 @@ class ObjAttribute(Attribute):
         verbose_name = "Object Attribute"
         verbose_name_plural = "Object Attributes"
 
-# attach the cache handlers for attribute lookup
+# attach the cache handlers
 post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
 pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
 
@@ -248,7 +248,7 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.aliases"
         for alias in Alias.objects.filter(db_obj=self):
             alias.delete()
-        del_prop_cache(self, "_aliases")
+        #del_prop_cache(self, "_aliases")
     aliases = property(__aliases_get, __aliases_set, __aliases_del)
 
     # player property (wraps db_player)

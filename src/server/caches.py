@@ -2,6 +2,7 @@
 Central caching module.
 
 """
+from django.dispatch import Signal
 from django.core.cache import get_cache
 #from django.db.models.signals import pre_save, pre_delete, post_init
 from src.server.models import ServerConfig
@@ -17,14 +18,16 @@ _DA = object.__delattr__
 
 _FIELD_CACHE = get_cache("field_cache")
 _ATTR_CACHE = get_cache("attr_cache")
+_PROP_CACHE = get_cache("prop_cache")
 
 # make sure caches are empty at startup
 _FIELD_CACHE.clear()
 _ATTR_CACHE.clear()
+_PROP_CACHE.clear()
 
-#
+#------------------------------------------------------------
 # Cache key hash generation
-#
+#------------------------------------------------------------
 
 if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
@@ -58,19 +61,23 @@ def hashid(obj, suffix=""):
         if not idnum or not date:
             # this will happen if setting properties on an object which is not yet saved
             return None
-        # build the hashid
-        hid = "%s-%s-#%s%s" % (_GA(obj, "__class__"), date, idnum, suffix)
-        hid = hid.replace(" ", "")
+        hid = "%s-%s-#%s" % (_GA(obj, "__class__"), date, idnum)
+        hid = hid.replace(" ", "") # we have to remove the class-name's space, for memcached's sake
+        # we cache the object part of the hashid to avoid too many object lookups
         _SA(obj, "_hashid", hid)
+    # build the complete hashid
+    hid = "%s%s" % (hid, suffix)
     return to_str(hid)
 
 
-#
+#------------------------------------------------------------
 # Cache callback handlers
-#
+#------------------------------------------------------------
 
+#------------------------------------------------------------
 # Field cache - makes sure to cache all database fields when
 # they are saved, no matter from where.
+#------------------------------------------------------------
 
 # callback to pre_save signal (connected in src.server.server)
 def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
@@ -106,9 +113,18 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             # update cache
             _FIELD_CACHE.set(hid, new_value)
 
+# access method
+
+def flush_field_cache():
+    "Clear the field cache"
+    _FIELD_CACHE.clear()
+
+
+#------------------------------------------------------------
 # Attr cache - caching the attribute objects related to a given object to
 # avoid lookups more than necessary (this makes Attributes en par in speed
 # to any property).
+#------------------------------------------------------------
 
 # connected to post_init signal (connected in respective Attribute model)
 def attr_post_init(sender, instance=None, **kwargs):
@@ -117,6 +133,7 @@ def attr_post_init(sender, instance=None, **kwargs):
     hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
     if hid:
         _ATTR_CACHE.set(hid, sender)
+
 # connected to pre_delete signal (connected in respective Attribute model)
 def attr_pre_delete(sender, instance=None, **kwargs):
     "Called when attribute is deleted (del_attribute)"
@@ -125,42 +142,52 @@ def attr_pre_delete(sender, instance=None, **kwargs):
     if hid:
         #print "attr_pre_delete:", _GA(instance, "db_key")
         _ATTR_CACHE.delete(hid)
-# access method
+
+# access methods
+
 def get_attr_cache(obj, attrname):
     "Called by get_attribute"
     hid = hashid(obj, "-%s" % attrname)
     _ATTR_CACHE.delete(hid)
     return hid and _ATTR_CACHE.get(hid, None) or None
 
+def set_attr_cache(attrobj):
+    "Set the attr cache manually; this can be used to update"
+    attr_post_init(None, instance=attrobj)
 
+def flush_attr_cache():
+    "Clear attribute cache"
+    _ATTR_CACHE.clear()
 
-## property cache - this doubles as a central cache and as a way
-## to trigger oob on such changes.
-#
-#from django.dispatch import Signal
-#_PROP_CACHE = get_cache("prop_cache")
-#if not _PROP_CACHE:
-#    raise RuntimeError("settings.CACHE does not contain a 'prop_cache' entry!")
-#
-#PROP_POST_UPDATE = Signal(providing_args=["propname", "propvalue"])
-#
-#def prop_update(sender, **kwargs):
-#    "Called when a propery is updated. kwargs are propname and propvalue."
-#    propname, propvalue = kwargs.pop("propname", None), kwargs.pop("propvalue", None)
-#    if propname == None: return
-#    hid = hashid(sender, "-%s" % propname)
-#    _PROP_CACHE.set(hid, propvalue)
-#
-#PROP_POST_UPDATE.connect(prop_update, dispatch_uid="propcache")
-#
-#
+#------------------------------------------------------------
+# Property cache - this is a generic cache for properties stored on models.
+#------------------------------------------------------------
 
+# access methods
 
+def get_prop_cache(obj, propname):
+    "retrieve data from cache"
+    hid = hashid(obj, "-%s" % propname)
+    if hid:
+        #print "get_prop_cache", hid, propname, _PROP_CACHE.get(hid, None)
+        return _PROP_CACHE.get(hid, None)
 
+def set_prop_cache(obj, propname, propvalue):
+    "Set property cache"
+    hid = hashid(obj, "-%s" % propname)
+    if hid:
+        #print "set_prop_cache", propname, propvalue
+        _PROP_CACHE.set(hid, propvalue)
 
+def del_prop_cache(obj, propname):
+    "Delete element from property cache"
+    hid = hashid(obj, "-%s" % propname)
+    if hid:
+        _PROP_CACHE.delete(hid)
 
-
-
+def flush_prop_cache():
+    "Clear property cache"
+    _PROP_CACHE.clear()
 
 
 #_ENABLE_LOCAL_CACHES = settings.GAME_CACHE_TYPE
@@ -448,23 +475,23 @@ def del_field_cache(obj, name):
     #hid = hashid(obj)
     #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
     #    _OOB_HANDLER.update(hid, name, None)
-def flush_field_cache(obj=None):
-    pass
+#def flush_field_cache(obj=None):
+#    pass
 # these should get oob handlers when oob is implemented.
-def get_prop_cache(obj, name, default=None):
-    return None
-def set_prop_cache(obj, name, val):
-    pass
-def del_prop_cache(obj, name):
-    pass
-def flush_prop_cache(obj=None):
-    pass
+#def get_prop_cache(obj, name, default=None):
+#    return None
+#def set_prop_cache(obj, name, val):
+#    pass
+#def del_prop_cache(obj, name):
+#    pass
+#def flush_prop_cache(obj=None):
+#    pass
 #def get_attr_cache(obj, attrname):
 #    return None
-def set_attr_cache(obj, attrname, attrobj):
-    pass
-def del_attr_cache(obj, attrname):
-    pass
-def flush_attr_cache(obj=None):
-    pass
+#def set_attr_cache(obj, attrname, attrobj):
+#    pass
+#def del_attr_cache(obj, attrname):
+#    pass
+#def flush_attr_cache(obj=None):
+#    pass
 

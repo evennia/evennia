@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields import AutoField, FieldDoesNotExist
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_attr_cache, set_attr_cache, del_attr_cache
+from src.server.caches import get_attr_cache, set_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
@@ -60,8 +60,6 @@ _CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-#_PLOADS = pickle.loads
-#_PDUMPS = pickle.dumps
 
 #------------------------------------------------------------
 #
@@ -933,11 +931,10 @@ class TypedObject(SharedMemoryModel):
         if not get_attr_cache(self, attribute_name):
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
                     db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
+            if attrib_obj:
+                set_attr_cache(attrib_obj[0])
+            else:
                 return False
-                #set_attr_cache(self, attribute_name, attrib_obj[0])
-            #else:
-            #    return False
         return True
 
     def set_attribute(self, attribute_name, new_value=None, lockstring=""):
@@ -954,7 +951,6 @@ class TypedObject(SharedMemoryModel):
                      types checked by secureattr are 'attrread','attredit','attrcreate'.
         """
         attrib_obj = get_attr_cache(self, attribute_name)
-        print "set_attribute:", attribute_name, attrib_obj
         if not attrib_obj:
             attrclass = _GA(self, "_attribute_class")
             # check if attribute already exists.
@@ -963,8 +959,9 @@ class TypedObject(SharedMemoryModel):
             if attrib_obj:
                 # use old attribute
                 attrib_obj = attrib_obj[0]
+                set_attr_cache(attrib_obj) # renew cache
             else:
-                # no match; create new attribute
+                # no match; create new attribute (this will cache automatically)
                 attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
         if lockstring:
             attrib_obj.locks.add(lockstring)
@@ -977,7 +974,6 @@ class TypedObject(SharedMemoryModel):
             flush_attr_cache(self)
             self.delete()
             raise IntegrityError("Attribute could not be saved - object %s was deleted from database." % self.key)
-        #set_attr_cache(self, attribute_name, attrib_obj)
 
     def get_attribute_obj(self, attribute_name, default=None):
         """
@@ -989,7 +985,7 @@ class TypedObject(SharedMemoryModel):
                     db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            #set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            set_attr_cache(attrib_obj[0]) #query is first evaluated here
             return attrib_obj[0]
         return attrib_obj
 
@@ -1008,7 +1004,7 @@ class TypedObject(SharedMemoryModel):
                              db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            #set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            set_attr_cache(attrib_obj[0]) #query is first evaluated here
             return attrib_obj[0].value
         return attrib_obj.value
 
@@ -1025,7 +1021,7 @@ class TypedObject(SharedMemoryModel):
                     db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 raise AttributeError
-            #set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            set_attr_cache(attrib_obj[0]) #query is first evaluated here
             return  attrib_obj[0].value
         return attrib_obj.value
 
@@ -1037,8 +1033,7 @@ class TypedObject(SharedMemoryModel):
         """
         attr_obj = get_attr_cache(self, attribute_name)
         if attr_obj:
-            del_attr_cache(self, attribute_name)
-            attr_obj.delete()
+            attr_obj.delete() # this will clear attr cache automatically
         else:
             try:
                 _GA(self, "_attribute_class").objects.filter(
@@ -1055,8 +1050,7 @@ class TypedObject(SharedMemoryModel):
         """
         attr_obj = get_attr_cache(self, attribute_name)
         if attr_obj:
-            del_attr_cache(self, attribute_name)
-            attr_obj.delete()
+            attr_obj.delete() # this will clear attr cache automatically
         else:
             try:
                 _GA(self, "_attribute_class").objects.filter(
