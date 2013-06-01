@@ -42,7 +42,7 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
         return None
     return channels[0]
 
-class CmdAddCom(MuxCommand):
+class CmdAddCom(MuxPlayerCommand):
     """
     addcom - subscribe to a channel with optional alias
 
@@ -111,7 +111,7 @@ class CmdAddCom(MuxCommand):
             self.msg(string)
 
 
-class CmdDelCom(MuxCommand):
+class CmdDelCom(MuxPlayerCommand):
     """
     delcom - unsubscribe from channel or remove channel alias
 
