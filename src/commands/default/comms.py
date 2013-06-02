@@ -449,6 +449,7 @@ class CmdCWho(MuxPlayerCommand):
         if not channel.access(self.caller, "listen"):
             string = "You can't access this channel."
             self.msg(string)
+            return
         string = "\n{CChannel subscriptions{n"
         string += "\n{w%s:{n\n" % channel.key
         conns = PlayerChannelConnection.objects.get_all_connections(channel)
