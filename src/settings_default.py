@@ -44,13 +44,21 @@ WEBSERVER_ENABLED = True
 # attacks.  It defaults to allowing all. In production, make
 # sure to change this to your actual host addresses/IPs.
 ALLOWED_HOSTS = ["*"]
-# A list of ports the Evennia webserver listens on
-WEBSERVER_PORTS = [8000]
+# The webserver sits behind a Portal proxy. This is a list
+# of tuples (proxyport,serverport) used. The proxyports are what
+# the Portal proxy presents to the world. The serverports are
+# the internal ports the proxy uses to forward data to the Server-side
+# webserver (these should not be publicly open)
+WEBSERVER_PORTS = [(8000, 5001)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
 # like NginX.
 UPSTREAM_IPS = ['127.0.0.1']
+# The webserver uses threadpool for handling requests. This will scale
+# with server load. Set the minimum and maximum number of threads it
+# may use as (min, max) (must be > 0)
+WEBSERVER_THREADPOOL_LIMITS = (1, 20)
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True
@@ -152,14 +160,23 @@ DATABASES = {
         'HOST':'',
         'PORT':''
         }}
-# Engine Config style for Django versions < 1.2 only. See above.
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(GAME_DIR, 'evennia.db3')
-DATABASE_USER = ''
-DATABASE_PASSWORD = ''
-DATABASE_HOST = ''
-DATABASE_PORT = ''
-
+# This manages the object-level caches. Evennia will agressively cache
+# fields, properties and attribute lookup. Evennia uses a fast and
+# local in-memory cache by default. If a Memcached server is available
+# it can be used instead (see django docs). Cache performance can be
+# tweaked by adding options to each cache. Finally, any cache can
+# be completely turned off by pointing its backend
+# to 'django.core.cache.backends.dummy.DummyCache'.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    'field_cache': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    'prop_cache': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    'attr_cache': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    }
 ######################################################################
 # Evennia pluggable modules
 ######################################################################

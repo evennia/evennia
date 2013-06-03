@@ -1,9 +1,9 @@
 """
-This structures the url tree for the news application. 
+This structures the url tree for the news application.
 It is imported from the root handler, game.web.urls.py.
 """
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('src.web.news.views',
      (r'^show/(?P<entry_id>\d+)/$', 'show_news'),

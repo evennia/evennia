@@ -7,12 +7,19 @@ leave caching unexpectedly (no use if WeakRefs).
 Also adds cache_size() for monitoring the size of the cache.
 """
 
-import os
+import os, threading
+#from twisted.internet import reactor
+#from twisted.internet.threads import blockingCallFromThread
+from twisted.internet.reactor import callFromThread
 from django.db.models.base import Model, ModelBase
-from django.db.models.signals import post_save, pre_delete, \
-  post_syncdb
+from django.db.models.signals import post_save, pre_delete, post_syncdb
 
 from manager import SharedMemoryManager
+
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
+
 
 # determine if our current pid is different from the server PID (i.e.
 # if we are in a subprocess or not)
@@ -37,11 +44,19 @@ def _get_pids():
     if server_pid and portal_pid:
         return int(server_pid), int(portal_pid)
     return None, None
-_SELF_PID = os.getpid()
-_SERVER_PID = None
-_PORTAL_PID = None
-_IS_SUBPROCESS = False
 
+# get info about the current process and thread
+
+_SELF_PID = os.getpid()
+_SERVER_PID, _PORTAL_PID = _get_pids()
+_IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
+_IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+
+#_SERVER_PID = None
+#_PORTAL_PID = None
+#        #global _SERVER_PID, _PORTAL_PID, _IS_SUBPROCESS, _SELF_PID
+#        if not _SERVER_PID and not _PORTAL_PID:
+#            _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 
 class SharedMemoryModelBase(ModelBase):
     # CL: upstream had a __new__ method that skipped ModelBase's __new__ if
@@ -68,13 +83,44 @@ class SharedMemoryModelBase(ModelBase):
         if cached_instance is None:
             cached_instance = new_instance()
             cls.cache_instance(cached_instance)
-
         return cached_instance
+
 
     def _prepare(cls):
         cls.__instance_cache__ = {}  #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
 
+    def __init__(cls, *args, **kwargs):
+        """
+        Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key
+        This wrapper happens on the class level, so there is no overhead when creating objects. If a class
+        already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
+        document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
+        """
+        super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
+        def create_wrapper(cls, fieldname, wrappername):
+            "Helper method to create property wrappers with unique names (must be in separate call)"
+            def _get(cls, fname):
+                return _GA(cls, fname)
+            def _set(cls, fname, value):
+                _SA(cls, fname, value)
+                _GA(cls, "save")(update_fields=[fname]) # important!
+            def _del(cls, fname):
+                raise RuntimeError("You cannot delete field %s on %s; set it to None instead." % (fname, cls))
+            type(cls).__setattr__(cls, wrappername, property(lambda cls: _get(cls, fieldname),
+                                                             lambda cls,val: _set(cls, fieldname, val),
+                                                             lambda cls: _del(cls, fieldname)))
+        # eclude some models that should not auto-create wrapper fields
+        if cls.__name__ in ("ServerConfig", "TypeNick"):
+            return
+        # dynamically create the properties
+        for field in cls._meta.fields:
+            fieldname = field.name
+            wrappername = fieldname == "id" and "dbid" or fieldname.replace("db_", "")
+            if not hasattr(cls, wrappername):
+                # make sure not to overload manually created wrappers on the model
+                #print "wrapping %s -> %s" % (fieldname, wrappername)
+                create_wrapper(cls, fieldname, wrappername)
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default
@@ -116,6 +162,13 @@ class SharedMemoryModel(Model):
         return result
     _get_cache_key = classmethod(_get_cache_key)
 
+    def _flush_cached_by_key(cls, key):
+        try:
+            del cls.__instance_cache__[key]
+        except KeyError:
+            pass
+    _flush_cached_by_key = classmethod(_flush_cached_by_key)
+
     def get_cached_instance(cls, id):
         """
         Method to retrieve a cached instance by pk value. Returns None when not found
@@ -138,13 +191,6 @@ class SharedMemoryModel(Model):
         return cls.__instance_cache__.values()
     get_all_cached_instances = classmethod(get_all_cached_instances)
 
-    def _flush_cached_by_key(cls, key):
-        try:
-            del cls.__instance_cache__[key]
-        except KeyError:
-            pass
-    _flush_cached_by_key = classmethod(_flush_cached_by_key)
-
     def flush_cached_instance(cls, instance):
         """
         Method to flush an instance from the cache. The instance will always be flushed from the cache,
@@ -158,15 +204,22 @@ class SharedMemoryModel(Model):
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
-        "overload spot for saving"
-        global _SERVER_PID, _PORTAL_PID, _IS_SUBPROCESS, _SELF_PID
-        if not _SERVER_PID and not _PORTAL_PID:
-            _SERVER_PID, _PORTAL_PID = _get_pids()
-            _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and (_SERVER_PID != _SELF_PID) and (_PORTAL_PID != _SELF_PID)
+        "save method tracking process/thread issues"
+
         if _IS_SUBPROCESS:
-            #print "storing in PROC_MODIFIED_OBJS:", cls.db_key, cls.id
+            # we keep a store of objects modified in subprocesses so
+            # we know to update their caches in the central process
             PROC_MODIFIED_OBJS.append(cls)
-        super(SharedMemoryModel, cls).save(*args, **kwargs)
+
+        if _IS_MAIN_THREAD:
+            # in main thread - normal operation
+            super(SharedMemoryModel, cls).save(*args, **kwargs)
+        else:
+            # in another thread; make sure to save in reactor thread
+            def _save_callback(cls, *args, **kwargs):
+                super(SharedMemoryModel, cls).save(*args, **kwargs)
+            #blockingCallFromThread(reactor, _save_callback, cls, *args, **kwargs)
+            callFromThread(_save_callback, cls, *args, **kwargs)
 
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):

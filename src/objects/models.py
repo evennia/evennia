@@ -17,11 +17,13 @@ transparently through the decorating TypeClass.
 import traceback
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_init, pre_delete
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import attr_post_init, attr_pre_delete
 from src.typeclasses.typeclass import TypeClass
 from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
@@ -53,6 +55,7 @@ _HERE = _("here")
 #
 #------------------------------------------------------------
 
+
 class ObjAttribute(Attribute):
     "Attributes for ObjectDB objects."
     db_obj = models.ForeignKey("ObjectDB")
@@ -61,6 +64,10 @@ class ObjAttribute(Attribute):
         "Define Django meta options"
         verbose_name = "Object Attribute"
         verbose_name_plural = "Object Attributes"
+
+# attach the cache handlers
+post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
+pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
 
 #------------------------------------------------------------
 #
@@ -241,7 +248,7 @@ class ObjectDB(TypedObject):
         "Deleter. Allows for del self.aliases"
         for alias in Alias.objects.filter(db_obj=self):
             alias.delete()
-        del_prop_cache(self, "_aliases")
+        #del_prop_cache(self, "_aliases")
     aliases = property(__aliases_get, __aliases_set, __aliases_del)
 
     # player property (wraps db_player)
@@ -299,27 +306,16 @@ class ObjectDB(TypedObject):
         del_field_cache(self, "sessid")
     sessid = property(__sessid_get, __sessid_set, __sessid_del)
 
-    # location property (wraps db_location)
-    #@property
-    def __location_get(self):
-        "Getter. Allows for value = self.location."
-        loc = get_field_cache(self, "location")
-        if loc:
-            return _GA(loc, "typeclass")
-        return None
-    #@location.setter
-    def __location_set(self, location):
-        "Setter. Allows for self.location = location"
+    def _db_location_handler(self, new_value, old_value=None):
+        "This handles changes to the db_location field."
+        print "db_location_handler:", new_value, old_value
         try:
-            old_loc = _GA(self, "location")
-            if ObjectDB.objects.dbref(location):
-                # dbref search
-                loc = ObjectDB.objects.dbref_search(location)
-                loc = loc and _GA(loc, "dbobj")
-            elif location and type(location) != ObjectDB:
-                loc = _GA(location, "dbobj")
-            else:
-                loc = location
+            old_loc = old_value
+            # new_value can be dbref, typeclass or dbmodel
+            if ObjectDB.objects.dbref(new_value, reqhash=False):
+                loc = ObjectDB.objects.dbref_search(new_value)
+            # this should not fail if new_value is valid.
+            loc = _GA(loc, "dbobj")
 
             # recursive location check
             def is_loc_loop(loc, depth=0):
@@ -333,32 +329,85 @@ class ObjectDB(TypedObject):
             except RuntimeWarning: pass
 
             # set the location
-            set_field_cache(self, "location", loc)
+            _SA(self, "db_location", loc)
             # update the contents of each location
             if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_update")()
+                _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
             if loc:
-                _GA(loc, "contents_update")()
+                _GA(loc, "contents_update")(self)
         except RuntimeError:
             string = "Cannot set location, "
-            string += "%s.location = %s would create a location-loop." % (self.key, loc)
+            string += "%s.location = %s would create a location-loop." % (self.key, new_value)
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise RuntimeError(string)
         except Exception, e:
             string = "Cannot set location (%s): " % str(e)
-            string += "%s is not a valid location." % location
+            string += "%s is not a valid location." % new_value
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise Exception(string)
-    #@location.deleter
-    def __location_del(self):
-        "Deleter. Allows for del self.location"
-        _GA(self, "location").contents_update()
-        _SA(self, "db_location", None)
-        _GA(self, "save")()
-        del_field_cache(self, "location")
-    location = property(__location_get, __location_set, __location_del)
+
+    ## location property (wraps db_location)
+    ##@property
+    #def __location_get(self):
+    #    "Getter. Allows for value = self.location."
+    #    loc = get_field_cache(self, "location")
+    #    if loc:
+    #        return _GA(loc, "typeclass")
+    #    return None
+    ##@location.setter
+    #def __location_set(self, location):
+    #    "Setter. Allows for self.location = location"
+    #    try:
+    #        old_loc = _GA(self, "location")
+    #        if ObjectDB.objects.dbref(location):
+    #            # dbref search
+    #            loc = ObjectDB.objects.dbref_search(location)
+    #            loc = loc and _GA(loc, "dbobj")
+    #        elif location and type(location) != ObjectDB:
+    #            loc = _GA(location, "dbobj")
+    #        else:
+    #            loc = location
+
+    #        # recursive location check
+    #        def is_loc_loop(loc, depth=0):
+    #            "Recursively traverse the target location to make sure we are not in it."
+    #            if depth > 10: return
+    #            elif loc == self: raise RuntimeError
+    #            elif loc == None: raise RuntimeWarning # just to quickly get out
+    #            return is_loc_loop(_GA(loc, "db_location"), depth+1)
+    #        # check so we don't create a location loop - if so, RuntimeError will be raised.
+    #        try: is_loc_loop(loc)
+    #        except RuntimeWarning: pass
+
+    #        # set the location
+    #        set_field_cache(self, "location", loc)
+    #        # update the contents of each location
+    #        if old_loc:
+    #            _GA(_GA(old_loc, "dbobj"), "contents_update")()
+    #        if loc:
+    #            _GA(loc, "contents_update")()
+    #    except RuntimeError:
+    #        string = "Cannot set location, "
+    #        string += "%s.location = %s would create a location-loop." % (self.key, loc)
+    #        _GA(self, "msg")(_(string))
+    #        logger.log_trace(string)
+    #        raise RuntimeError(string)
+    #    except Exception, e:
+    #        string = "Cannot set location (%s): " % str(e)
+    #        string += "%s is not a valid location." % location
+    #        _GA(self, "msg")(_(string))
+    #        logger.log_trace(string)
+    #        raise Exception(string)
+    ##@location.deleter
+    #def __location_del(self):
+    #    "Deleter. Allows for del self.location"
+    #    _GA(self, "location").contents_update()
+    #    _SA(self, "db_location", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "location")
+    #location = property(__location_get, __location_set, __location_del)
 
     # home property (wraps db_home)
     #@property
@@ -515,19 +564,26 @@ class ObjectDB(TypedObject):
         exclude = make_iter(exclude)
         if cont == None:
             cont = _GA(self, "contents_update")()
-        return [obj for obj in cont if obj not in exclude]
+        return [obj for obj in cont.values() if obj not in exclude]
     contents = property(contents_get)
 
-    def contents_update(self):
+    def contents_update(self, obj=None, remove=False):
         """
-        Updates the contents property of the object with a new
-        object Called by
-        self.location_set.
+        Updates the contents property of the object
 
-        obj -
-        remove (true/false) - remove obj from content list
+        add - object to add to content list
+        remove object to remove from content list
         """
-        cont = ObjectDB.objects.get_contents(self)
+        cont = get_prop_cache(self, "_contents")
+        if not cont:
+            cont = {}
+        if obj:
+            if remove:
+                cont.pop(self.dbid, None)
+            else:
+                cont[self.dbid] = obj
+        else:
+            cont = dict((o.dbid, o) for o in ObjectDB.objects.get_contents(self))
         set_prop_cache(self, "_contents", cont)
         return cont
 

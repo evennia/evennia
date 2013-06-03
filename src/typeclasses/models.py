@@ -38,11 +38,12 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields import AutoField, FieldDoesNotExist
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_attr_cache, set_attr_cache, del_attr_cache
+from src.server.caches import get_attr_cache, set_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
-from src.server.caches import call_ndb_hooks
+#from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
@@ -59,8 +60,6 @@ _CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-#_PLOADS = pickle.loads
-#_PDUMPS = pickle.dumps
 
 #------------------------------------------------------------
 #
@@ -102,7 +101,7 @@ class Attribute(SharedMemoryModel):
     # Attribute Database Model setup
     #
     #
-    # These databse fields are all set using their corresponding properties,
+    # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
     db_key = models.CharField('key', max_length=255, db_index=True)
@@ -111,7 +110,7 @@ class Attribute(SharedMemoryModel):
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
     # references the object the attribute is linked to (this is set
-    # by each child class to this abstact class)
+    # by each child class to this abstract class)
     db_obj =  None # models.ForeignKey("RefencedObject")
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
@@ -455,53 +454,52 @@ class TypedObject(SharedMemoryModel):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
+
     # key property (wraps db_key)
     #@property
-    def __key_get(self):
-        "Getter. Allows for value = self.key"
-        return get_field_cache(self, "key")
-    #@key.setter
-    def __key_set(self, value):
-        "Setter. Allows for self.key = value"
-        set_field_cache(self, "key", value)
-    #@key.deleter
-    def __key_del(self):
-        "Deleter. Allows for del self.key"
-        raise Exception("Cannot delete objectdb key!")
-    key = property(__key_get, __key_set, __key_del)
+    #def __key_get(self):
+    #    "Getter. Allows for value = self.key"
+    #    return get_field_cache(self, "key")
+    ##@key.setter
+    #def __key_set(self, value):
+    #    "Setter. Allows for self.key = value"
+    #    set_field_cache(self, "key", value)
+    ##@key.deleter
+    #def __key_del(self):
+    #    "Deleter. Allows for del self.key"
+    #    raise Exception("Cannot delete objectdb key!")
+    #key = property(__key_get, __key_set, __key_del)
 
     # name property (wraps db_key too - alias to self.key)
     #@property
     def __name_get(self):
         "Getter. Allows for value = self.name"
-        return get_field_cache(self, "key")
-    #@name.setter
+        return self.key
+    #@name.sette
     def __name_set(self, value):
         "Setter. Allows for self.name = value"
-        set_field_cache(self, "key", value)
+        self.key = value
     #@name.deleter
     def __name_del(self):
         "Deleter. Allows for del self.name"
         raise Exception("Cannot delete name!")
     name = property(__name_get, __name_set, __name_del)
 
-    # typeclass_path property
+    # typeclass_path property - we don't cache this.
     #@property
     def __typeclass_path_get(self):
         "Getter. Allows for value = self.typeclass_path"
-        return get_field_cache(self, "typeclass_path")
+        return _GA(self, "db_typeclass_path")#get_field_cache(self, "typeclass_path")
     #@typeclass_path.setter
     def __typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
-        set_field_cache(self, "typeclass_path", value)
-        _SA(self, "_cached_typeclass", None)
+        _SA(self, "db_typeclass_path", value)
+        _GA(self, "save")(update_fields=["db_typeclass_path"])
     #@typeclass_path.deleter
     def __typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
         self.db_typeclass_path = ""
-        self.save()
-        del_field_cache(self, "typeclass_path")
-        _SA(self, "_cached_typeclass", None)
+        _GA(self, "save")(update_fields=["db_typeclass_path"])
     typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
 
     # date_created property
@@ -932,7 +930,7 @@ class TypedObject(SharedMemoryModel):
             attrib_obj = _GA(self, "_attribute_class").objects.filter(
                     db_obj=self, db_key__iexact=attribute_name)
             if attrib_obj:
-                set_attr_cache(self, attribute_name, attrib_obj[0])
+                set_attr_cache(attrib_obj[0])
             else:
                 return False
         return True
@@ -959,8 +957,9 @@ class TypedObject(SharedMemoryModel):
             if attrib_obj:
                 # use old attribute
                 attrib_obj = attrib_obj[0]
+                set_attr_cache(attrib_obj) # renew cache
             else:
-                # no match; create new attribute
+                # no match; create new attribute (this will cache automatically)
                 attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
         if lockstring:
             attrib_obj.locks.add(lockstring)
@@ -973,7 +972,6 @@ class TypedObject(SharedMemoryModel):
             flush_attr_cache(self)
             self.delete()
             raise IntegrityError("Attribute could not be saved - object %s was deleted from database." % self.key)
-        set_attr_cache(self, attribute_name, attrib_obj)
 
     def get_attribute_obj(self, attribute_name, default=None):
         """
@@ -985,7 +983,7 @@ class TypedObject(SharedMemoryModel):
                     db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            set_attr_cache(attrib_obj[0]) #query is first evaluated here
             return attrib_obj[0]
         return attrib_obj
 
@@ -1004,7 +1002,7 @@ class TypedObject(SharedMemoryModel):
                              db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 return default
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            set_attr_cache(attrib_obj[0]) #query is first evaluated here
             return attrib_obj[0].value
         return attrib_obj.value
 
@@ -1021,7 +1019,7 @@ class TypedObject(SharedMemoryModel):
                     db_obj=self, db_key__iexact=attribute_name)
             if not attrib_obj:
                 raise AttributeError
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
+            set_attr_cache(attrib_obj[0]) #query is first evaluated here
             return  attrib_obj[0].value
         return attrib_obj.value
 
@@ -1033,8 +1031,7 @@ class TypedObject(SharedMemoryModel):
         """
         attr_obj = get_attr_cache(self, attribute_name)
         if attr_obj:
-            del_attr_cache(self, attribute_name)
-            attr_obj.delete()
+            attr_obj.delete() # this will clear attr cache automatically
         else:
             try:
                 _GA(self, "_attribute_class").objects.filter(
@@ -1051,8 +1048,7 @@ class TypedObject(SharedMemoryModel):
         """
         attr_obj = get_attr_cache(self, attribute_name)
         if attr_obj:
-            del_attr_cache(self, attribute_name)
-            attr_obj.delete()
+            attr_obj.delete() # this will clear attr cache automatically
         else:
             try:
                 _GA(self, "_attribute_class").objects.filter(
@@ -1244,7 +1240,7 @@ class TypedObject(SharedMemoryModel):
                         return None
                 def __setattr__(self, key, value):
                     # hook the oob handler here
-                    call_ndb_hooks(self, key, value)
+                    #call_ndb_hooks(self, key, value)
                     _SA(self, key, value)
             self._ndb_holder = NdbHolder()
             return self._ndb_holder

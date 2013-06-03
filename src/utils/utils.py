@@ -467,9 +467,9 @@ def delay(delay=2, retval=None, callback=None):
     """
     Delay the return of a value.
     Inputs:
-      to_return (any) - this will be returned by this function after a delay
       delay (int) - the delay in seconds
-      callback (func(r)) - if given, this will be called with the to_return after delay seconds
+      retval (any) - this will be returned by this function after a delay
+      callback (func(retval)) - if given, this will be called with retval after delay seconds
     Returns:
       deferred that will fire with to_return after delay seconds
     """

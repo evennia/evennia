@@ -10,8 +10,8 @@ sessions etc.
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
 from src.server.session import Session
-from src.server import ttype, mssp
-from src.server.mccp import Mccp, mccp_compress, MCCP
+from src.server.portal import ttype, mssp
+from src.server.portal.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
 
 _RE_N = re.compile(r"\{n$")
