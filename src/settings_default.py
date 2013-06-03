@@ -76,9 +76,10 @@ GAME_DIR = os.path.join(BASE_PATH, 'game')
 LOG_DIR = os.path.join(GAME_DIR, 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
-# Where to log server requests to the web server. This is VERY spammy, so this
-# file should be removed at regular intervals.
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
+# Rotate log files when server and/or portal stops. This will keep log file sizes down.
+# Turn off to get ever growing log files and never loose log info.
+CYCLE_LOGFILES = True
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'

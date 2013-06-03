@@ -55,6 +55,9 @@ PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal.py')
 # Get logfile names
 SERVER_LOGFILE = settings.SERVER_LOG_FILE
 PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
+HTTP_LOGFILE = settings.HTTP_LOG_FILE.strip()
+
+CYCLE_LOGFILES = settings.CYCLE_LOGFILES
 
 # Add this to the environmental variable for the 'twistd' command.
 currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -105,6 +108,18 @@ def get_pid(pidfile):
         with open(pidfile, 'r') as f:
             pid = f.read()
     return pid
+
+def cycle_logfile(logfile):
+    """
+    Rotate the old log files to <filename>.old
+    """
+    logfile_old = logfile + '.old'
+    if os.path.exists(logfile):
+        # Cycle the old logfiles to *.old
+        if os.path.exists(logfile_old):
+            # E.g. Windows don't support rename-replace
+            os.remove(logfile_old)
+        os.rename(logfile, logfile_old)
 
 # Start program management
 
@@ -245,6 +260,8 @@ def main():
             del server_argv[2]
             print "\nStarting Evennia Server (output to stdout)."
         else:
+            if CYCLE_LOGFILES:
+                cycle_logfile(SERVER_LOGFILE)
             print "\nStarting Evennia Server (output to server logfile)."
         if options.sprof:
             server_argv.extend(sprof_argv)
@@ -266,7 +283,9 @@ def main():
             set_restart_mode(PORTAL_RESTART, True)
             print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
         else:
-            PORTAL_LOGFILE
+            if CYCLE_LOGFILES:
+                cycle_logfile(PORTAL_LOGFILE)
+                cycle_logfile(HTTP_LOGFILE)
             set_restart_mode(PORTAL_RESTART, False)
             print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
         if options.pprof:
