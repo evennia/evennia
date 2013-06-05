@@ -90,6 +90,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
     """
     if raw:
         return
+    print "field_pre_save:", _GA(instance, "db_key") if hasattr(instance, "db_key") else instance, update_fields
     if update_fields:
         # this is a list of strings at this point. We want field objects
         update_fields = (instance._meta.get_field_by_name(field)[0] for field in update_fields)

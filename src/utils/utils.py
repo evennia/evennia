@@ -287,22 +287,20 @@ def pypath_to_realpath(python_path, file_ending='.py'):
 
 def dbref(dbref, reqhash=True):
     """
-    Converts/checks if input is a valid dbref Valid forms of dbref
-    (database reference number) are either a string '#N' or
-    an integer N.  Output is the integer part.
+    Converts/checks if input is a valid dbref.
+    If reqhash is set, only input strings on the form '#N', where N is an integer
+    is accepted. Otherwise strings '#N', 'N' and integers N are all accepted.
+     Output is the integer part.
     """
-    if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
-        return None
-    if isinstance(dbref, basestring):
+    if reqhash:
+        return (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
+                                           dbref.startswith("#") and
+                                           dbref.lstrip('#').isdigit())
+                                       else None)
+    elif isinstance(dbref, basestring):
         dbref = dbref.lstrip('#')
-        try:
-            dbref = int(dbref)
-            if dbref < 1:
-                return None
-        except Exception:
-            return None
-        return dbref
-    return None
+        return int(dbref) if dbref.isdigit() else None
+    return dbref if isinstance(dbref, int) else None
 
 def to_unicode(obj, encoding='utf-8', force_string=False):
     """

@@ -436,7 +436,8 @@ class TypedObject(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
         SharedMemoryModel.__init__(self, *args, **kwargs)
-        self.locks = LockHandler(self)
+        _SA(self, "dbobj", self)   # this allows for self-reference
+        _SA(self, "locks", LockHandler(self))
 
     class Meta:
         """

@@ -11,8 +11,10 @@ import os, threading
 #from twisted.internet import reactor
 #from twisted.internet.threads import blockingCallFromThread
 from twisted.internet.reactor import callFromThread
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
+from src.utils.utils import dbref
 
 from manager import SharedMemoryManager
 
@@ -92,6 +94,7 @@ class SharedMemoryModelBase(ModelBase):
 
     def __init__(cls, *args, **kwargs):
         """
+        Field shortcut creation:
         Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key
         This wrapper happens on the class level, so there is no overhead when creating objects. If a class
         already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
@@ -101,24 +104,47 @@ class SharedMemoryModelBase(ModelBase):
         def create_wrapper(cls, fieldname, wrappername):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
-                return _GA(cls, fname)
+                "Wrapper for getting database field"
+                value = _GA(cls, fname)
+                if hasattr(value, "typeclass"):
+                    return _GA(value, "typeclass")
+                #print "_get wrapper:", fname, value, type(value)
+                return value
             def _set(cls, fname, value):
+                "Wrapper for setting database field"
+                if hasattr(value, "dbobj"):
+                    value = _GA(value, "dbobj")
+                else:
+                    # we also allow setting using dbrefs, if so we try to load the matching object.
+                    # (we assume the object is of the same type as the class holding the field, if
+                    # not a custom handler must be used for that field)
+                    dbid = dbref(value, reqhash=False)
+                    if dbid:
+                        try:
+                            value = cls._default_manager.get(id=dbid)
+                        except ObjectDoesNotExist:
+                            err = "Could not set %s. Tried to treat value '%s' as a dbref, but no matching object with that id was found."
+                            err = err % (fname, value)
+                            raise ObjectDoesNotExist(err)
+                print "_set wrapper:", fname, value, type(value)
                 _SA(cls, fname, value)
-                _GA(cls, "save")(update_fields=[fname]) # important!
+                _GA(cls, "save")(update_fields=[fname]) # important - this saves one field only
             def _del(cls, fname):
+                "Wrapper for clearing database field"
                 raise RuntimeError("You cannot delete field %s on %s; set it to None instead." % (fname, cls))
-            type(cls).__setattr__(cls, wrappername, property(lambda cls: _get(cls, fieldname),
-                                                             lambda cls,val: _set(cls, fieldname, val),
-                                                             lambda cls: _del(cls, fieldname)))
-        # eclude some models that should not auto-create wrapper fields
+            type(cls).__setattr__(cls, wrappername, property(fget=lambda cls: _get(cls, fieldname),
+                                                             fset=lambda cls,val: _set(cls, fieldname, val),
+                                                             fdel=lambda cls: _del(cls, fieldname),
+                                                             doc="Wraps setting, saving and caching the %s field." % fieldname))
+        # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):
             return
-        # dynamically create the properties
+        # dynamically create the wrapper properties for all fields not already handled
         for field in cls._meta.fields:
             fieldname = field.name
             wrappername = fieldname == "id" and "dbid" or fieldname.replace("db_", "")
             if not hasattr(cls, wrappername):
-                # make sure not to overload manually created wrappers on the model
+                # makes sure not to overload manually created wrappers on the model
                 #print "wrapping %s -> %s" % (fieldname, wrappername)
                 create_wrapper(cls, fieldname, wrappername)
 

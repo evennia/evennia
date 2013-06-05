@@ -178,9 +178,10 @@ class ObjectDB(TypedObject):
     # db_key (also 'name' works), db_typeclass_path, db_date_created,
     # db_permissions
     #
-    # These databse fields (including the inherited ones) are all set
-    # using their corresponding properties, named same as the field,
-    # but withtout the db_* prefix.
+    # These databse fields (including the inherited ones) should normally be set
+    # using their corresponding wrapper properties, named same as the field, but without
+    # the db_* prefix (e.g. the db_key field is set with self.key instead). The wrappers
+    # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
     db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player',
@@ -217,7 +218,6 @@ class ObjectDB(TypedObject):
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
         _SA(self, "nicks", ObjectNickHandler(self))
-        # store the attribute class
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -306,16 +306,17 @@ class ObjectDB(TypedObject):
         del_field_cache(self, "sessid")
     sessid = property(__sessid_get, __sessid_set, __sessid_del)
 
-    def _db_location_handler(self, new_value, old_value=None):
+    def _db_location_handler(self, loc, old_value=None):
         "This handles changes to the db_location field."
-        print "db_location_handler:", new_value, old_value
+        #print "db_location_handler:", loc, old_value
         try:
             old_loc = old_value
             # new_value can be dbref, typeclass or dbmodel
-            if ObjectDB.objects.dbref(new_value, reqhash=False):
-                loc = ObjectDB.objects.dbref_search(new_value)
-            # this should not fail if new_value is valid.
-            loc = _GA(loc, "dbobj")
+            if ObjectDB.objects.dbref(loc, reqhash=False):
+                loc = ObjectDB.objects.dbref_search(loc)
+            if loc and type(loc) != ObjectDB:
+                # this should not fail if new_value is valid.
+                loc = _GA(loc, "dbobj")
 
             # recursive location check
             def is_loc_loop(loc, depth=0):
@@ -328,22 +329,22 @@ class ObjectDB(TypedObject):
             try: is_loc_loop(loc)
             except RuntimeWarning: pass
 
-            # set the location
-            _SA(self, "db_location", loc)
+            #print "db_location_handler2:", _GA(loc, "db_key") if loc else loc, type(loc)
             # update the contents of each location
             if old_loc:
                 _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
             if loc:
                 _GA(loc, "contents_update")(self)
+            return loc
         except RuntimeError:
             string = "Cannot set location, "
-            string += "%s.location = %s would create a location-loop." % (self.key, new_value)
+            string += "%s.location = %s would create a location-loop." % (self.key, loc)
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise RuntimeError(string)
         except Exception, e:
             string = "Cannot set location (%s): " % str(e)
-            string += "%s is not a valid location." % new_value
+            string += "%s is not a valid location." % loc
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise Exception(string)
