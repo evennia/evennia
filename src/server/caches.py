@@ -18,13 +18,14 @@ _DA = object.__delattr__
 # Open handles to the caches
 #
 
-_FIELD_CACHE = get_cache("field_cache")
-_ATTR_CACHE = get_cache("attr_cache")
+#_FIELD_CACHE = get_cache("field_cache")
+_ATTR_CACHE = {}
+#_ATTR_CACHE = get_cache("attr_cache")
 #_PROP_CACHE = get_cache("prop_cache")
 _PROP_CACHE = defaultdict(dict)
 
 # make sure caches are empty at startup
-_FIELD_CACHE.clear()
+#_FIELD_CACHE.clear()
 _ATTR_CACHE.clear()
 #_PROP_CACHE.clear()
 
@@ -93,10 +94,10 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
     print "field_pre_save:", _GA(instance, "db_key") if hasattr(instance, "db_key") else instance, update_fields
     if update_fields:
         # this is a list of strings at this point. We want field objects
-        update_fields = (instance._meta.get_field_by_name(field)[0] for field in update_fields)
+        update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
     else:
         # meta.fields are already field objects
-        update_fields = instance._meta.fields
+        update_fields = _GA(_GA(instance, "_meta"), "fields")
     for field in update_fields:
         fieldname = field.name
         new_value = field.value_from_object(instance)
@@ -105,23 +106,33 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             handler = _GA(instance, handlername)
         except AttributeError:
             handler = None
-        hid = hashid(instance, "-%s" % fieldname)
+        #hid = hashid(instance, "-%s" % fieldname)
         if callable(handler):
-            old_value = _FIELD_CACHE.get(hid) if hid else None
+            old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
             # the handler may modify the stored value in various ways
             # don't catch exceptions, the handler must work!
             new_value = handler(new_value, old_value=old_value)
             # we re-assign this to the field, save() will pick it up from there
             _SA(instance, fieldname, new_value)
-        if hid:
-            # update cache
-            _FIELD_CACHE.set(hid, new_value)
+        #if hid:
+        #    # update cache
+        #    _FIELD_CACHE.set(hid, new_value)
 
 # access method
-
-def flush_field_cache():
-    "Clear the field cache"
-    _FIELD_CACHE.clear()
+#
+#def get_field_cache(obj, fieldname):
+#    "Called by _get wrapper"
+#    hid = hashid(obj, "-%s" % fieldname)
+#    return hid and _FIELD_CACHE.get(hid, None) or None
+#
+#def set_field_cache(obj, fieldname, value):
+#    hid = hashi(obj, "-%s" % fieldname)
+#    if hid:
+#        _FIELD_CACHE.set(hid, value)
+#
+#def flush_field_cache():
+#    "Clear the field cache"
+#    _FIELD_CACHE.clear()
 
 
 #------------------------------------------------------------
@@ -136,7 +147,9 @@ def attr_post_init(sender, instance=None, **kwargs):
     #print "attr_post_init:", instance, instance.db_obj, instance.db_key
     hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
     if hid:
-        _ATTR_CACHE.set(hid, sender)
+        global _ATTR_CACHE
+        _ATTR_CACHE[hid] = sender
+        #_ATTR_CACHE.set(hid, sender)
 
 # connected to pre_delete signal (connected in respective Attribute model)
 def attr_pre_delete(sender, instance=None, **kwargs):
@@ -145,14 +158,15 @@ def attr_pre_delete(sender, instance=None, **kwargs):
     hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
     if hid:
         #print "attr_pre_delete:", _GA(instance, "db_key")
-        _ATTR_CACHE.delete(hid)
+        global _ATTR_CACHE
+        del _ATTR_CACHE[hid]
+        #_ATTR_CACHE.delete(hid)
 
 # access methods
 
 def get_attr_cache(obj, attrname):
     "Called by get_attribute"
     hid = hashid(obj, "-%s" % attrname)
-    _ATTR_CACHE.delete(hid)
     return hid and _ATTR_CACHE.get(hid, None) or None
 
 def set_attr_cache(attrobj):
@@ -161,7 +175,9 @@ def set_attr_cache(attrobj):
 
 def flush_attr_cache():
     "Clear attribute cache"
-    _ATTR_CACHE.clear()
+    global _ATTR_CACHE
+    _ATTR_CACHE = {}
+    #_ATTR_CACHE.clear()
 
 #------------------------------------------------------------
 # Property cache - this is a generic cache for properties stored on models.

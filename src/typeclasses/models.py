@@ -426,6 +426,8 @@ class TypedObject(SharedMemoryModel):
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True, help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
 
+    #db_attributes = models.ManyToManyField(Attribute, related_name="%(app_label)s_%(class)s_related")
+
     # Database manager
     objects = managers.TypedObjectManager()
 
@@ -460,7 +462,8 @@ class TypedObject(SharedMemoryModel):
     #@property
     #def __key_get(self):
     #    "Getter. Allows for value = self.key"
-    #    return get_field_cache(self, "key")
+    #    return _GA(self, "db_key")
+    #    #return get_field_cache(self, "key")
     ##@key.setter
     #def __key_set(self, value):
     #    "Setter. Allows for self.key = value"
@@ -495,7 +498,8 @@ class TypedObject(SharedMemoryModel):
     def __typeclass_path_set(self, value):
         "Setter. Allows for self.typeclass_path = value"
         _SA(self, "db_typeclass_path", value)
-        _GA(self, "save")(update_fields=["db_typeclass_path"])
+        update_fields = ["db_typeclass_path"] if _GA(self, "_get_pk_val")(_GA(self, "_meta")) is not None else None
+        _GA(self, "save")(update_fields=update_fields)
     #@typeclass_path.deleter
     def __typeclass_path_del(self):
         "Deleter. Allows for del self.typeclass_path"
@@ -587,6 +591,9 @@ class TypedObject(SharedMemoryModel):
         try:
             return _GA(self, propname)
         except AttributeError:
+            if propname.startswith('_'):
+                # don't relay private/special varname lookups to the typeclass
+                raise AttributeError("private property %s not found on db model (typeclass not searched)." % propname)
             # check if the attribute exists on the typeclass instead
             # (we make sure to not incur a loop by not triggering the
             # typeclass' __getattribute__, since that one would
