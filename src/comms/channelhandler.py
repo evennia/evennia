@@ -90,7 +90,7 @@ class ChannelCommand(command.Command):
         msgobj.senders = sender
         msgobj.channels = channel
         # send new message object to channel
-        channel.msg(msgobj, senders=sender)
+        channel.msg(msgobj, senders=sender, online=True)
 
 class ChannelHandler(object):
     """

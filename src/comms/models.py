@@ -555,7 +555,7 @@ class Channel(SharedMemoryModel):
         # do the check
         return PlayerChannelConnection.objects.has_player_connection(player, self)
 
-    def msg(self, msgobj, header=None, senders=None, persistent=True):
+    def msg(self, msgobj, header=None, senders=None, persistent=True, online=False):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
@@ -568,7 +568,8 @@ class Channel(SharedMemoryModel):
                  persistent=False.
         persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, using
                 header and senders keywords. If False, other keywords will be ignored.
-
+        online (bool) - If this is set true, only messages people who are online. Otherwise, messages all players
+                connected. This can make things faster, but may not trigger listeners on players that are offline.
         """
 
         if isinstance(msgobj, basestring):
@@ -590,7 +591,7 @@ class Channel(SharedMemoryModel):
             msg = msgobj.message
 
         # get all players connected to this channel and send to them
-        for conn in Channel.objects.get_all_connections(self):
+        for conn in Channel.objects.get_all_connections(self, online=online):
             try:
                 conn.player.msg(msg, senders)
             except AttributeError:
