@@ -606,7 +606,7 @@ class ObjectDB(TypedObject):
         if searchdata == _HERE:
             return self.location
         if searchdata in (_ME, _SELF):
-            return self
+            return self.typeclass
 
         if use_nicks:
             nick = None
