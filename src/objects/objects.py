@@ -37,14 +37,14 @@ class Object(TypeClass):
     # __init__ is only defined here in order to present docstring to API.
     def __init__(self, dbobj):
         """
-        This is the root typeclass object representing all entities
-        that has and actual presence in-game. Objects generally has a
-        location, can be manipulated and looked at. Most game entities
-        you define should inherit from Object at some distance.
-        Important subclasses of Object are that Evennia defines by
-        default for you are Characters, Exits and Rooms.
+        This is the root typeclass object, representing all entities
+        that have an actual presence in-game. Objects generally have a
+        location. They can also be manipulated and looked at. Most
+        game entities you define should inherit from Object at some distance.
+        Evennia defines some important subclasses of Object by default, namely
+        Characters, Exits and Rooms (see the bottom of this module).
 
-        Note that all Objects and its subclasses *must* always be
+        Note that all new Objects and their subclasses *must* always be
         created using the ev.create_object() function. This is so the
         typeclass system can be correctly initiated behind the scenes.
 
@@ -54,7 +54,7 @@ class Object(TypeClass):
         * Available properties (only available on *initiated* typeclass objects)
 
          key (string) - name of object
-         name (string)- same as key
+         name (string) - same as key
          aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
          dbref (int, read-only) - unique #id-number. Also "id" can be used.
          dbobj (Object, read-only) - link to database model. dbobj.typeclass points back to this class
@@ -755,7 +755,7 @@ class Object(TypeClass):
         return message
 
 #
-# Base Player object
+# Base Character object
 #
 
 class Character(Object):
@@ -836,14 +836,13 @@ class Character(Object):
 
 class Room(Object):
     """
-    This is the base room object. It's basically
-    like any Object except its location is None.
+    This is the base room object. It's just like any Object except its
+    location is None.
     """
     def basetype_setup(self):
         """
         Simple setup, shown as an example
         (since default is None anyway)
-
         """
 
         super(Room, self).basetype_setup()
@@ -852,19 +851,18 @@ class Room(Object):
         self.location = None
 
 #
-# Exits
+# Base Exit object
 #
 
 class Exit(Object):
     """
-    This is the base exit object - it connects a location to
-    another. This is done by the exit assigning a "command" on itself
-    with the same name as the exit object (to do this we need to
-    remember to re-create the command when the object is cached since it must be
+    This is the base exit object - it connects a location to another.
+    This is done by the exit assigning a "command" on itself with the
+    same name as the exit object (to do this we need to remember to
+    re-create the command when the object is cached since it must be
     created dynamically depending on what the exit is called). This
-    command (which has a high priority) will thus allow us to traverse exits
-    simply by giving the exit-object's name on its own.
-
+    command (which has a high priority) will thus allow us to traverse
+    exits simply by giving the exit-object's name on its own.
     """
 
     # Helper classes and methods to implement the Exit. These need not
