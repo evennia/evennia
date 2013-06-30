@@ -11,6 +11,7 @@ _GA = object.__getattribute__
 _PlayerDB = None
 _ObjectDB = None
 _Channel = None
+_SESSIONS = None
 _ExternalConnection = None
 _User = None
 
@@ -305,24 +306,21 @@ class ChannelManager(models.Manager):
         to this channel. If Online is true, it only returns
         connected players.
         """
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
 
         PlayerChannelConnection = ContentType.objects.get(app_label="comms",
                                                           model="playerchannelconnection").model_class()
         ExternalChannelConnection = ContentType.objects.get(app_label="comms",
                                                             model="externalchannelconnection").model_class()
-        # Importing here to avoid circular imports.
-        from src.server.sessionhandler import SESSIONS
         players = []
         if online:
-            session_list = SESSIONS.get_sessions()
-            for session in session_list:
-                if not session.logged_in:
-                    continue
-                try:
-                    players.append(PlayerChannelConnection.objects.get(db_player=session.get_player(),
-                                                                       db_channel=channel))
-                except PlayerChannelConnection.DoesNotExist:
-                    pass
+            session_list = _SESSIONS.get_sessions()
+            unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
+            online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
+            for player in online_players:
+                players.extend(PlayerChannelConnection.objects.filter(db_player=player, db_channel=channel))
         else:
             players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
 

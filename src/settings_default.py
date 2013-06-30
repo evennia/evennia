@@ -126,7 +126,6 @@ GAME_CACHE_TYPE = "local"
 # memory. So every now and then Evennia checks the size of this cache and resets
 # it if it's too big. This variable sets the maximum size (in MB).
 ATTRIBUTE_CACHE_MAXSIZE = 100
-# OOB (Out-of-band
 
 ######################################################################
 # Evennia Database config

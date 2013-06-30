@@ -183,6 +183,10 @@ class ObjectManager(TypedObjectManager):
             return list(self.filter(cand_restriction & type_restriction & Q(**querykwargs)))
         except exceptions.FieldError:
             return []
+        except ValueError:
+            from src.utils import logger
+            logger.log_errmsg("The property '%s' does not support search criteria of the type %s." % (property_name, type(property_value)))
+            return []
 
     @returns_typeclass_list
     def get_contents(self, location, excludeobj=None):
@@ -253,7 +257,8 @@ class ObjectManager(TypedObjectManager):
                   By default (if not attribute_name is set), this will search object.key and object.aliases in order. Can also
                   be on the form #dbref, which will, if exact=True be matched against primary key.
         attribute_name: (str): Use this named ObjectAttribute to match searchdata against, instead
-                  of the defaults.
+                  of the defaults. If this is the name of a database field (with or without the db_ prefix), that
+                  will be matched too.
         typeclass (str or TypeClass): restrict matches to objects having this typeclass. This will help
                    speed up global searches.
         candidates (list obj ObjectDBs): If supplied, search will only be performed among the candidates
