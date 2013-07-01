@@ -465,12 +465,13 @@ class Object(TypeClass):
         """
         pass
 
-    def at_pre_puppet(self, player):
+    def at_pre_puppet(self, player, sessid=None):
         """
         Called just before a Player connects to this object
         to puppet it.
 
         player - connecting player object
+        sessid - session id controlling the connection
         """
         pass
 
@@ -488,13 +489,14 @@ class Object(TypeClass):
         """
         pass
 
-    def at_post_unpuppet(self, player):
+    def at_post_unpuppet(self, player, sessid=None):
         """
         Called just after the Player successfully disconnected
         from this object, severing all connections.
 
         player - the player object that just disconnected from
                  this object.
+        sessid - session id controlling the connection
         """
         pass
 
@@ -793,7 +795,7 @@ class Character(Object):
         "Default is to look around after a move."
         self.execute_cmd('look')
 
-    def at_pre_puppet(self, player):
+    def at_pre_puppet(self, player, sessid=None):
         """
         This recovers the character again after having been "stoved away" at the unpuppet
         """
@@ -809,7 +811,7 @@ class Character(Object):
             self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
             self.location.at_object_receive(self, self.location)
         else:
-            player.msg("{r%s has no location and no home is set.{n" % self)
+            player.msg("{r%s has no location and no home is set.{n" % self, sessid=sessid)
 
     def at_post_puppet(self):
         """
@@ -820,7 +822,7 @@ class Character(Object):
         if self.location:
             self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
 
-    def at_post_unpuppet(self, player):
+    def at_post_unpuppet(self, player, sessid=None):
         """
         We stove away the character when the player goes ooc/logs off, otherwise the character object will
         remain in the room also after the player logged off ("headless", so to say).

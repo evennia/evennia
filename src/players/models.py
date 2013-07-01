@@ -421,7 +421,7 @@ class PlayerDB(TypedObject):
         # with a lingering player/sessid reference from an unclean server kill or similar
 
         if normal_mode:
-            _GA(obj.typeclass, "at_pre_puppet")(self.typeclass)
+            _GA(obj.typeclass, "at_pre_puppet")(self.typeclass, sessid=sessid)
         # do the connection
         obj.sessid = sessid
         obj.player = self
@@ -453,7 +453,7 @@ class PlayerDB(TypedObject):
         del obj.dbobj.player
         session.puppet = None
         session.puid = None
-        _GA(obj.typeclass, "at_post_unpuppet")(self)
+        _GA(obj.typeclass, "at_post_unpuppet")(self.typeclass, sessid=sessid)
         return True
 
     def unpuppet_all(self):
