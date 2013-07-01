@@ -907,13 +907,12 @@ class Exit(Object):
                         self.obj.at_failed_traverse(self.caller)
 
         # create an exit command.
-        cmd = ExitCommand()
-        cmd.key = exidbobj.db_key.strip().lower()
-        cmd.obj = exidbobj
-        cmd.aliases = exidbobj.aliases
-        cmd.locks = str(exidbobj.locks)
-        cmd.destination = exidbobj.db_destination
-        cmd.auto_help = False
+        cmd = ExitCommand(key=exidbobj.db_key.strip().lower(),
+                          aliases=exidbobj.aliases,
+                          locks=str(exidbobj.locks),
+                          auto_help=False,
+                          destination=exidbobj.db_destination,
+                          obj=exidbobj)
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
         exit_cmdset.key = '_exitset'

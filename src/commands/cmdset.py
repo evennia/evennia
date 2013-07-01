@@ -152,21 +152,21 @@ class CmdSet(object):
 
     # Priority-sensitive merge operations for cmdsets
 
-    def _union(self, cmdset_a, cmdset_b, duplicates=False):
+    def _union(self, cmdset_a, cmdset_b):
         "C = A U B. CmdSet A is assumed to have higher priority"
         cmdset_c = cmdset_a._duplicate()
         # we make copies, not refs by use of [:]
         cmdset_c.commands = cmdset_a.commands[:]
-        if duplicates and cmdset_a.priority == cmdset_b.priority:
+        if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
             cmdset_c.commands.extend([cmd for cmd in cmdset_b if not cmd in cmdset_a])
         return cmdset_c
 
-    def _intersect(self, cmdset_a, cmdset_b, duplicates=False):
+    def _intersect(self, cmdset_a, cmdset_b):
         "C = A (intersect) B. A is assumed higher priority"
         cmdset_c = cmdset_a._duplicate()
-        if duplicates and cmdset_a.priority == cmdset_b.priority:
+        if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             for cmd in [cmd for cmd in cmdset_a if cmd in cmdset_b]:
                 cmdset_c.add(cmd)
                 cmdset_c.add(cmdset_b.get(cmd))
@@ -174,13 +174,13 @@ class CmdSet(object):
             cmdset_c.commands = [cmd for cmd in cmdset_a if cmd in cmdset_b]
         return cmdset_c
 
-    def _replace(self, cmdset_a, cmdset_b, cmdset_c):
+    def _replace(self, cmdset_a, cmdset_b):
         "C = A + B where the result is A."
         cmdset_c = cmdset_a._duplicate()
         cmdset_c.commands = cmdset_a.commands[:]
         return cmdset_c
 
-    def _remove(self, cmdset_a, cmdset_b, cmdset_c):
+    def _remove(self, cmdset_a, cmdset_b):
         "C = A + B, where B is filtered by A"
         cmdset_c = cmdset_a._duplicate()
         cmdset_c.commands = [cmd for cmd in cmdset_b if not cmd in cmdset_a]
@@ -267,13 +267,13 @@ class CmdSet(object):
 
             mergetype = self.key_mergetypes.get(cmdset_b.key, self.mergetype)
             if mergetype == "Intersect":
-                cmdset_c = self._intersect(self, cmdset_b, cmdset_b.duplicates)
+                cmdset_c = self._intersect(self, cmdset_b)
             elif mergetype == "Replace":
-                cmdset_c = self._replace(self, cmdset_b, cmdset_b.duplicates)
+                cmdset_c = self._replace(self, cmdset_b)
             elif mergetype == "Remove":
-                cmdset_c = self._remove(self, cmdset_b, cmdset_b.duplicates)
+                cmdset_c = self._remove(self, cmdset_b)
             else: # Union
-                cmdset_c = self._union(self, cmdset_b, cmdset_b.duplicates)
+                cmdset_c = self._union(self, cmdset_b)
             cmdset_c.no_channels = self.no_channels
             cmdset_c.no_exits = self.no_exits
             cmdset_c.no_objs = self.no_objs
@@ -286,13 +286,13 @@ class CmdSet(object):
 
             mergetype = cmdset_b.key_mergetypes.get(self.key, cmdset_b.mergetype)
             if mergetype == "Intersect":
-                cmdset_c = self._intersect(cmdset_b, self, self.duplicates)
+                cmdset_c = self._intersect(cmdset_b, self)
             elif mergetype == "Replace":
-                cmdset_c = self._replace(cmdset_b, self, self.duplicates)
+                cmdset_c = self._replace(cmdset_b, self)
             elif mergetype == "Remove":
-                cmdset_c = self._remove(self, cmdset_b, self.duplicates)
+                cmdset_c = self._remove(self, cmdset_b)
             else: # Union
-                cmdset_c = self._union(cmdset_b, self, self.duplicates)
+                cmdset_c = self._union(cmdset_b, self)
             cmdset_c.no_channels = cmdset_b.no_channels
             cmdset_c.no_exits = cmdset_b.no_exits
             cmdset_c.no_objs = cmdset_b.no_objs

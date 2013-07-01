@@ -136,14 +136,11 @@ class ChannelHandler(object):
         and run self.update on the handler.
         """
         # map the channel to a searchable command
-        cmd = ChannelCommand()
-        cmd.key = channel.key.strip().lower()
-        cmd.obj = channel
+        cmd = ChannelCommand(key=channel.key.strip().lower(),
+                             aliases=channel.aliases if channel.aliases else [],
+                             locks="cmd:all();%s" % channel.locks,
+                             obj=channel)
         cmd.__doc__= self._format_help(channel)
-        if channel.aliases:
-            cmd.aliases = channel.aliases
-        cmd.lock_storage = "cmd:all();%s" % channel.locks
-        cmd.lockhandler.reset()
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
 
