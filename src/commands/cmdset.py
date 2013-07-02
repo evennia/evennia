@@ -128,9 +128,10 @@ class CmdSet(object):
     no_objs = False
     no_channels = False
     permanent = False
+    errmessage = ""
     # pre-store properties to duplicate straight off
     to_duplicate = ("key", "cmdsetobj", "no_exits", "no_objs", "no_channels", "permanent",
-                    "mergetype", "priority", "duplicates")
+                    "mergetype", "priority", "duplicates", "errmessage")
 
     def __init__(self, cmdsetobj=None, key=None):
         """

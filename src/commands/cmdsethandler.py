@@ -76,7 +76,7 @@ _CACHED_CMDSETS = {}
 class _ErrorCmdSet(CmdSet):
     "This is a special cmdset used to report errors"
     key = "_CMDSET_ERROR"
-    message = "Error when loading cmdset."
+    errmessage = "Error when loading cmdset."
 
 def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
@@ -130,7 +130,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 object.__getattribute__(emit_to_obj, "msg")(errstring)
         err_cmdset = _ErrorCmdSet()
-        err_cmdset.message = errstring
+        err_cmdset.errmessage = errstring
         return err_cmdset
 
 # classes
@@ -283,7 +283,7 @@ class CmdSetHandler(object):
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
-        if cmdset:
+        if cmdset and cmdset.key != '_CMDSET_ERROR':
             if permanent and cmdset.key != '_CMDSET_ERROR':
                 # store the path permanently
                 cmdset.permanent = True
@@ -315,7 +315,7 @@ class CmdSetHandler(object):
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
-        if cmdset:
+        if cmdset and cmdset.key != '_CMDSET_ERROR':
             if self.cmdset_stack:
                 self.cmdset_stack[0] = cmdset
                 self.mergetype_stack[0] = cmdset.mergetype

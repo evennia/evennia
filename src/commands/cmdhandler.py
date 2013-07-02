@@ -141,7 +141,7 @@ def get_and_merge_cmdsets(caller):
     # weed out all non-found sets
     cmdsets = yield [cmdset for cmdset in cmdsets if cmdset and cmdset.key!="Empty"]
     # report cmdset errors to user (these should already have been logged)
-    yield [caller.msg(cmdset.message) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
+    yield [caller.msg(cmdset.errmessage) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
 
     if cmdsets:
         # we group and merge all same-prio cmdsets separately (this avoids order-dependent
