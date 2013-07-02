@@ -2,6 +2,7 @@
 The custom manager for Scripts.
 """
 
+from django.db.models import Q
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass_list
 from src.utils.utils import make_iter
@@ -194,25 +195,14 @@ class ScriptManager(TypedObjectManager):
         if dbref or dbref == 0:
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
-            if dbref_match:
-                ok = True
-                if obj and obj != dbref_match.obj:
-                    ok = False
-                if only_timed and dbref_match.interval:
-                    ok = False
-                if ok:
-                    return [dbref_match]
-        if obj:
-            # convenience check to make sure obj is really a dbobj
-            obj = hasattr(obj, "dbobj") and obj.dbobj or obj
+            if dbref_match and not ((obj and obj != dbref_match.obj)
+                                     or (only_timed and dbref_match.interval)):
+                return [dbref_match]
 
         # not a dbref; normal search
-        scripts = self.filter(db_key__iexact=ostring)
-
-        if obj:
-            scripts = scripts.exclude(db_obj=None).filter(db_obj__db_key__iexact=ostring)
-        if only_timed:
-            scripts = scripts.exclude(interval=0)
+        obj_restriction = obj and Q(db_obj=obj.dbobj) or Q()
+        timed_restriction = only_timed and Q(interval__gt=0) or Q()
+        scripts = self.filter(timed_restriction & obj_restriction & Q(db_key__iexact=ostring))
         return scripts
 
     def copy_script(self, original_script, new_key=None, new_obj=None, new_locks=None):
