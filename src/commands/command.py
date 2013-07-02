@@ -48,6 +48,8 @@ def _init_command(mcs, **kwargs):
     if not hasattr(mcs, 'locks'):
         # default if one forgets to define completely
         mcs.locks = "cmd:all()"
+    elif not "cmd:" in mcs.locks:
+        mcs.locks = "cmd:all();" + mcs.locks
     for lockstring in mcs.locks.split(';'):
         if lockstring and not ':' in lockstring:
             lockstring = "cmd:%s" % lockstring
