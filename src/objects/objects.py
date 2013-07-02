@@ -911,6 +911,7 @@ class Exit(Object):
         # create an exit command.
         cmd = ExitCommand(key=exidbobj.db_key.strip().lower(),
                           aliases=exidbobj.aliases,
+                          locks=str(exidbobj.locks),
                           auto_help=False,
                           destination=exidbobj.db_destination,
                           obj=exidbobj)
