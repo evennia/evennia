@@ -209,14 +209,10 @@ class ScriptManager(TypedObjectManager):
         """
         Make an identical copy of the original_script
         """
-
         typeclass = original_script.typeclass_path
-        if not new_key:
-            new_key = original_script.key
-        if not new_obj:
-            new_obj = original_script.obj
-        if not new_locks:
-            new_locks = original_script.db_lock_storage
+        new_key = new_key if new_key!=None else original_script.key
+        new_obj = new_obj if new_obj!=None else original_script.obj
+        new_locks = new_locks if new_locks!=None else original_script.db_lock_storage
 
         from src.utils import create
         new_script = create.create_script(typeclass, key=new_key, obj=new_obj, locks=new_locks, autostart=True)
