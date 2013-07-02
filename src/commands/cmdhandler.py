@@ -139,14 +139,25 @@ def get_and_merge_cmdsets(caller):
 
     cmdsets = yield [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_objects_cmdsets
     # weed out all non-found sets
-    cmdsets = yield [cmdset for cmdset in cmdsets if cmdset]
+    cmdsets = yield [cmdset for cmdset in cmdsets if cmdset and cmdset.key!="Empty"]
     # report cmdset errors to user (these should already have been logged)
     yield [caller.msg(cmdset.message) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
-    # sort cmdsets after reverse priority (highest prio are merged in last)
-    yield cmdsets.sort(key=lambda x: x.priority)
-    #cmdsets = yield sorted(cmdsets, key=lambda x: x.priority)
 
     if cmdsets:
+        # we group and merge all same-prio cmdsets separately (this avoids order-dependent
+        # clashes in certain cases, such as when duplicates=True)
+        tempmergers = {}
+        for cmdset in cmdsets:
+            prio = cmdset.priority
+            if prio in tempmergers:
+                # merge same-prio cmdset together separately
+                tempmergers[prio] = yield cmdset + tempmergers[prio]
+            else:
+                tempmergers[prio] = cmdset
+
+        # sort cmdsets after reverse priority (highest prio are merged in last)
+        cmdsets = yield sorted(tempmergers.values(), key=lambda x: x.priority)
+
         # Merge all command sets into one, beginning with the lowest-prio one
         cmdset = cmdsets.pop(0)
         for merging_cmdset in cmdsets:
