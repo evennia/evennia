@@ -6,6 +6,7 @@ from django.db import models
 
 class Migration(DataMigration):
 
+    depends_on = (('players', '0014_add_attr__playable_characters'),)
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."

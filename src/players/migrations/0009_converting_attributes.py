@@ -10,7 +10,6 @@ except ImportError:
     import pickle
 from src.utils.utils import to_str, to_unicode
 #from src.typeclasses.models import PackedDBobject
-from src.players.models import PlayerAttribute
 
 from django.contrib.contenttypes.models import ContentType
 CTYPEGET = ContentType.objects.get
@@ -259,7 +258,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        for attr in orm.PlayerAttribute.objects.all():
+        for attr in orm['players.PlayerAttribute'].objects.all():
             try:
                 # repack attr into new format, and reimport
                 val = pickle.loads(to_str(attr.db_value))

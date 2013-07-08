@@ -91,7 +91,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
     """
     if raw:
         return
-    print "field_pre_save:", _GA(instance, "db_key") if hasattr(instance, "db_key") else instance, update_fields
+    print "field_pre_save:", _GA(instance, "db_key"), update_fields# if hasattr(instance, "db_key") else instance, update_fields
     if update_fields:
         # this is a list of strings at this point. We want field objects
         update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
@@ -108,7 +108,10 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             handler = None
         #hid = hashid(instance, "-%s" % fieldname)
         if callable(handler):
-            old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
+            try:
+                old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
+            except AttributeError:
+                old_value=None
             # the handler may modify the stored value in various ways
             # don't catch exceptions, the handler must work!
             new_value = handler(new_value, old_value=old_value)

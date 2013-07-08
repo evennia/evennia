@@ -497,6 +497,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'src.server',
+    'src.typeclasses',
     'src.players',
     'src.objects',
     'src.comms',

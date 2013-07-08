@@ -71,7 +71,6 @@ _DA = object.__delattr__
 #
 #------------------------------------------------------------
 
-
 class Attribute(SharedMemoryModel):
     """
     Abstract django model.
@@ -88,34 +87,22 @@ class Attribute(SharedMemoryModel):
       mode - which type of data is stored in attribute
       lock_storage - perm strings
       obj - which object the attribute is defined on
-      date_created - when the attribute was created
-      value - the data stored in the attribute
-         what is actually stored in the field is a dict
+      date_created - when the attribute was created.
+      value - the data stored in the attribute, in pickled form
+              using wrappers to be able to store/retrieve models.
 
-           {type : nodb|dbobj|dbiter,
-            data : <data>}
-
-         where type is info for the loader, telling it if holds a single
-         dbobject (dbobj), have to do a full scan for dbrefs (dbiter) or
-         if it is a normal Python structure without any dbobjs inside it
-         and can thus return it without further action (nodb).
     """
 
     #
     # Attribute Database Model setup
     #
-    #
     # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
-
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
     db_value = PickledObjectField('value', null=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
-    # references the object the attribute is linked to (this is set
-    # by each child class to this abstract class)
-    db_obj =  None # models.ForeignKey("RefencedObject")  #TODO-remove
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
 
@@ -132,8 +119,8 @@ class Attribute(SharedMemoryModel):
 
     class Meta:
         "Define Django meta options"
-        #abstract = True
         verbose_name = "Evennia Attribute"
+
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -1003,7 +990,7 @@ class TypedObject(SharedMemoryModel):
         """
         attr_obj = get_attr_cache(self, attribute_name)
         if not attr_obj:
-            attr_obj = _GA(self, "db_atttributes").filter(db_key__iexact=attribute_name)
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
             if not attr_obj:
                 if raise_exception:
                     raise AttributeError
@@ -1315,4 +1302,4 @@ class TypedObject(SharedMemoryModel):
 
 
 # connect to signal
-m2m_changed.connect(update_attr_cache, sender=TypedObject.db_attributes.through)
+#m2m_changed.connect(update_attr_cache, sender=TypedObject.db_attributes.through)

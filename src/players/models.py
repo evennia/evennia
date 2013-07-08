@@ -64,18 +64,18 @@ _TYPECLASS = None
 #
 #------------------------------------------------------------
 
-class PlayerAttribute(Attribute):
-    """
-    PlayerAttributes work the same way as Attributes on game objects,
-    but are intended to store OOC information specific to each user
-    and game (example would be configurations etc).
-    """
-    db_obj = models.ForeignKey("PlayerDB")
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Player Attribute"
-
+#class PlayerAttribute(Attribute):
+#    """
+#    PlayerAttributes work the same way as Attributes on game objects,
+#    but are intended to store OOC information specific to each user
+#    and game (example would be configurations etc).
+#    """
+#    db_obj = models.ForeignKey("PlayerDB")
+#
+#    class Meta:
+#        "Define Django meta options"
+#        verbose_name = "Player Attribute"
+#
 #post_init.connect(attr_post_init, sender=PlayerAttribute, dispatch_uid="playerattrcache")
 #pre_delete.connect(attr_pre_delete, sender=PlayerAttribute, dispatch_uid="playerattrcache")
 

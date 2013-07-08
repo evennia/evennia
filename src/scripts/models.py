@@ -40,15 +40,15 @@ __all__ = ("ScriptDB",)
 #
 #------------------------------------------------------------
 
-class ScriptAttribute(Attribute):
-    "Attributes for ScriptDB objects."
-    db_obj = models.ForeignKey("ScriptDB", verbose_name='script')
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Script Attribute"
-        verbose_name_plural = "Script Attributes"
-
+#class ScriptAttribute(Attribute):
+#    "Attributes for ScriptDB objects."
+#    db_obj = models.ForeignKey("ScriptDB", verbose_name='script')
+#
+#    class Meta:
+#        "Define Django meta options"
+#        verbose_name = "Script Attribute"
+#        verbose_name_plural = "Script Attributes"
+#
 ## attach cache handlers for attribute lookup
 #post_init.connect(attr_post_init, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
 #pre_delete.connect(attr_pre_delete, sender=ScriptAttribute, dispatch_uid="scriptattrcache")

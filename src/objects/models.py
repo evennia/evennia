@@ -56,15 +56,15 @@ _HERE = _("here")
 #------------------------------------------------------------
 
 
-class ObjAttribute(Attribute):
-    "Attributes for ObjectDB objects."
-    db_obj = models.ForeignKey("ObjectDB")
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Object Attribute"
-        verbose_name_plural = "Object Attributes"
-
+#class ObjAttribute(Attribute):
+#    "Attributes for ObjectDB objects."
+#    db_obj = models.ForeignKey("ObjectDB")
+#
+#    class Meta:
+#        "Define Django meta options"
+#        verbose_name = "Object Attribute"
+#        verbose_name_plural = "Object Attributes"
+#
 # attach the cache handlers
 #post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
 #pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
