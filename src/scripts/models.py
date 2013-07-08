@@ -28,12 +28,11 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_init, pre_delete
 
-from src.server.caches import attr_post_init, attr_pre_delete
 from src.typeclasses.models import Attribute, TypedObject
 from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
 
-__all__ = ("ScriptAttribute", "ScriptDB")
+__all__ = ("ScriptDB",)
 
 #------------------------------------------------------------
 #
@@ -50,9 +49,9 @@ class ScriptAttribute(Attribute):
         verbose_name = "Script Attribute"
         verbose_name_plural = "Script Attributes"
 
-# attach cache handlers for attribute lookup
-post_init.connect(attr_post_init, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
-pre_delete.connect(attr_pre_delete, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
+## attach cache handlers for attribute lookup
+#post_init.connect(attr_post_init, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
+#pre_delete.connect(attr_pre_delete, sender=ScriptAttribute, dispatch_uid="scriptattrcache")
 
 #------------------------------------------------------------
 #
@@ -254,7 +253,7 @@ class ScriptDB(TypedObject):
 
     # this is required to properly handle attributes and typeclass loading
     _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS
-    _attribute_class = ScriptAttribute
+    #_attribute_class = ScriptAttribute
     _db_model_name = "scriptdb" # used by attributes to safely store objects
     _default_typeclass_path = settings.BASE_SCRIPT_TYPECLASS or "src.scripts.scripts.DoNothing"
 

@@ -5,11 +5,13 @@ all Attributes and TypedObjects).
 """
 from functools import update_wrapper
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
 from src.utils import idmapper
 from src.utils.utils import make_iter
 from src.utils.dbserialize import to_pickle
 
 __all__ = ("AttributeManager", "TypedObjectManager")
+_GA = object.__getattribute__
 
 # Managers
 
@@ -50,25 +52,32 @@ class AttributeManager(models.Manager):
 
     def attr_namesearch(self, searchstr, obj, exact_match=True):
         """
-        Searches the object's attributes for name matches.
+        Searches the object's attributes for attribute key matches.
 
         searchstr: (str) A string to search for.
         """
         # Retrieve the list of attributes for this object.
+
         if exact_match:
-            return self.filter(db_obj=obj).filter(
-                db_key__iexact=searchstr)
+            return _GA("obj", "db_attributes").filter(db_key__iexact=searchstr)
         else:
-            return self.filter(db_obj=obj).filter(
-                db_key__icontains=searchstr)
+            return _GA("obj", "db_attributes").filter(db_key__icontains=searchstr)
 
     def attr_valuesearch(self, searchstr, obj=None):
         """
-        Searches for Attributes with a given value on obj
+        Searches obj for Attributes with a given value.
+        searchstr - value to search for. This may be any suitable object.
+        obj - limit to a given object instance
+
+        If no restraint is given, all Attributes on all types of objects
+                will be searched. It's highly recommended to at least
+                supply the objclass argument (DBObject, DBScript or DBPlayer)
+                to restrict this lookup.
         """
         if obj:
-            return self.filter(db_obj=obj, db_value=searchstr)
+            return _GA(obj, "db_attributes").filter(db_value=searchstr)
         return self.filter(db_value=searchstr)
+
 
 #
 # helper functions for the TypedObjectManager.

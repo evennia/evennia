@@ -31,7 +31,6 @@ from django.db.models.signals import post_init, pre_delete
 
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
-from src.server.caches import attr_post_init, attr_pre_delete
 
 from src.players import manager
 from src.scripts.models import ScriptDB
@@ -44,7 +43,7 @@ from src.utils.utils import inherits_from, make_iter
 
 from django.utils.translation import ugettext as _
 
-__all__  = ("PlayerAttribute", "PlayerNick", "PlayerDB")
+__all__  = ("PlayerNick", "PlayerDB")
 
 _ME = _("me")
 _SELF = _("self")
@@ -77,8 +76,8 @@ class PlayerAttribute(Attribute):
         "Define Django meta options"
         verbose_name = "Player Attribute"
 
-post_init.connect(attr_post_init, sender=PlayerAttribute, dispatch_uid="playerattrcache")
-pre_delete.connect(attr_pre_delete, sender=PlayerAttribute, dispatch_uid="playerattrcache")
+#post_init.connect(attr_post_init, sender=PlayerAttribute, dispatch_uid="playerattrcache")
+#pre_delete.connect(attr_pre_delete, sender=PlayerAttribute, dispatch_uid="playerattrcache")
 
 #------------------------------------------------------------
 #
@@ -252,7 +251,7 @@ class PlayerDB(TypedObject):
 
     # this is required to properly handle attributes and typeclass loading
     _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS
-    _attribute_class = PlayerAttribute
+    #_attribute_class = PlayerAttribute
     _db_model_name = "playerdb" # used by attributes to safely store objects
     _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
 

@@ -34,15 +34,18 @@ import sys
 import traceback
 #from collections import defaultdict
 
-from django.db import models, IntegrityError
+from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.fields import AutoField, FieldDoesNotExist
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_attr_cache, set_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
+
+from django.db.models.signals import m2m_changed
+from src.server.caches import update_attr_cache
+
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
@@ -60,6 +63,7 @@ _CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
 
 #------------------------------------------------------------
 #
@@ -106,12 +110,12 @@ class Attribute(SharedMemoryModel):
 
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
-    db_value = PickledObjectField('value2', null=True)
+    db_value = PickledObjectField('value', null=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
     # references the object the attribute is linked to (this is set
     # by each child class to this abstract class)
-    db_obj =  None # models.ForeignKey("RefencedObject")
+    db_obj =  None # models.ForeignKey("RefencedObject")  #TODO-remove
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
 
@@ -128,7 +132,7 @@ class Attribute(SharedMemoryModel):
 
     class Meta:
         "Define Django meta options"
-        abstract = True
+        #abstract = True
         verbose_name = "Evennia Attribute"
 
     # Wrapper properties to easily set database fields. These are
@@ -426,7 +430,8 @@ class TypedObject(SharedMemoryModel):
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True, help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
 
-    #db_attributes = models.ManyToManyField(Attribute, related_name="%(app_label)s_%(class)s_related")
+    # attribute store
+    db_attributes = models.ManyToManyField(Attribute, null=True, help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
 
     # Database manager
     objects = managers.TypedObjectManager()
@@ -923,10 +928,10 @@ class TypedObject(SharedMemoryModel):
     #
 
     #
-    # Fully persistent attributes. You usually access these
+    # Fully attr_obj attributes. You usually access these
     # through the obj.db.attrname method.
 
-    # Helper methods for persistent attributes
+    # Helper methods for attr_obj attributes
 
     def has_attribute(self, attribute_name):
         """
@@ -935,10 +940,9 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         """
         if not get_attr_cache(self, attribute_name):
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self, db_key__iexact=attribute_name)
-            if attrib_obj:
-                set_attr_cache(attrib_obj[0])
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if attr_obj:
+                set_attr_cache(self, attribute_name, attr_obj[0])
             else:
                 return False
         return True
@@ -956,46 +960,38 @@ class TypedObject(SharedMemoryModel):
                      below to perform access-checked modification of attributes. Lock
                      types checked by secureattr are 'attrread','attredit','attrcreate'.
         """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrclass = _GA(self, "_attribute_class")
-            # check if attribute already exists.
-            attrib_obj = attrclass.objects.filter(
-                         db_obj=self, db_key__iexact=attribute_name)
-            if attrib_obj:
-                # use old attribute
-                attrib_obj = attrib_obj[0]
-                set_attr_cache(attrib_obj) # renew cache
+        attr_obj = get_attr_cache(self, attribute_name)
+        if not attr_obj:
+            # check if attribute already exists
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if attr_obj:
+                # re-use old attribute object
+                attr_obj = attr_obj[0]
+                set_attr_cache(self, attribute_name, attr_obj) # renew cache
             else:
-                # no match; create new attribute (this will cache automatically)
-                attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
+                # no old attr available; create new (caches automatically)
+                attr_obj = Attribute(db_key=attribute_name)
+                attr_obj.save() # important
+                _GA(self, "db_attributes").add(attr_obj)
         if lockstring:
-            attrib_obj.locks.add(lockstring)
-        # re-set an old attribute value
-        try:
-            attrib_obj.value = new_value
-        except IntegrityError:
-            # this can happen if the cache was stale and the database object is
-            # missing. If so we need to clean self.hashid from the cache
-            flush_attr_cache(self)
-            self.delete()
-            raise IntegrityError("Attribute could not be saved - object %s was deleted from database." % self.key)
+            attr_obj.locks.add(lockstring)
+        # we shouldn't need to fear stale objects, the signalling should catch all cases
+        attr_obj.value = new_value
 
     def get_attribute_obj(self, attribute_name, default=None):
         """
         Get the actual attribute object named attribute_name
         """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
+        attr_obj = get_attr_cache(self, attribute_name)
+        if not attr_obj:
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if not attr_obj:
                 return default
-            set_attr_cache(attrib_obj[0]) #query is first evaluated here
-            return attrib_obj[0]
-        return attrib_obj
+            attr_obj = attr_obj[0] # query evaluated here
+            set_attr_cache(self, attribute_name, attr_obj)
+        return attr_obj
 
-    def get_attribute(self, attribute_name, default=None):
+    def get_attribute(self, attribute_name, default=None, raise_exception=False):
         """
         Returns the value of an attribute on an object. You may need to
         type cast the returned value from this function since the attribute
@@ -1003,73 +999,76 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         default: What to return if no attribute is found
+        raise_exception (bool) - raise an eception if no object exists instead of returning default.
         """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                             db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
+        attr_obj = get_attr_cache(self, attribute_name)
+        if not attr_obj:
+            attr_obj = _GA(self, "db_atttributes").filter(db_key__iexact=attribute_name)
+            if not attr_obj:
+                if raise_exception:
+                    raise AttributeError
                 return default
-            set_attr_cache(attrib_obj[0]) #query is first evaluated here
-            return attrib_obj[0].value
-        return attrib_obj.value
+            attr_obj = attr_obj[0] # query is evaluated here
+            set_attr_cache(self, attribute_name, attr_obj)
+        return attr_obj.value
 
-    def get_attribute_raise(self, attribute_name):
-        """
-        Returns value of an attribute. Raises AttributeError
-        if no match is found.
+#    def get_attribute_raise(self, attribute_name):
+#        """
+#        Returns value of an attribute. Raises AttributeError
+#        if no match is found.
+#
+#        attribute_name: (str) The attribute's name.
+#        """
+#        attr_obj = get_attr_cache(self, attribute_name)
+#        if not attr_obj:
+#            attr_obj = _GA(self, "attributes").filter(db_key__iexact=attribute_name)
+#            if not attr_obj:
+#                raise AttributeError
+#            attr_obj = attrib_obj[0] # query is evaluated here
+#            set_attr_cache(self, attribute_name, attr_obj[0])
+#        return attr_obj.value
 
-        attribute_name: (str) The attribute's name.
-        """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
-                raise AttributeError
-            set_attr_cache(attrib_obj[0]) #query is first evaluated here
-            return  attrib_obj[0].value
-        return attrib_obj.value
-
-    def del_attribute(self, attribute_name):
+    def del_attribute(self, attribute_name, raise_exception=False):
         """
         Removes an attribute entirely.
 
         attribute_name: (str) The attribute's name.
+        raise_exception (bool) - raise exception if attribute to delete
+                                 could not be found
         """
         attr_obj = get_attr_cache(self, attribute_name)
         if attr_obj:
             attr_obj.delete() # this will clear attr cache automatically
         else:
-            try:
-                _GA(self, "_attribute_class").objects.filter(
-                db_obj=self, db_key__iexact=attribute_name)[0].delete()
-            except IndexError:
-                pass
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if attr_obj:
+                attr_obj[0].delete()
+            elif raise_exception:
+                raise AttributeError
 
-    def del_attribute_raise(self, attribute_name):
-        """
-        Removes and attribute. Raises AttributeError if
-        attribute is not found.
-
-        attribute_name: (str) The attribute's name.
-        """
-        attr_obj = get_attr_cache(self, attribute_name)
-        if attr_obj:
-            attr_obj.delete() # this will clear attr cache automatically
-        else:
-            try:
-                _GA(self, "_attribute_class").objects.filter(
-                db_obj=self, db_key__iexact=attribute_name)[0].delete()
-            except IndexError:
-                pass
-        raise AttributeError
+#    def del_attribute_raise(self, attribute_name):
+#        """
+#        Removes and attribute. Raises AttributeError if
+#        attribute is not found.
+#
+#        attribute_name: (str) The attribute's name.
+#        """
+#        attr_obj = get_attr_cache(self, attribute_name)
+#        if attr_obj:
+#            attr_obj.delete() # this will clear attr cache automatically
+#        else:
+#            try:
+#                _GA(self, "_attribute_class").objects.filter(
+#                db_obj=self, db_key__iexact=attribute_name)[0].delete()
+#            except IndexError:
+#                pass
+#        raise AttributeError
 
     def get_all_attributes(self):
         """
         Returns all attributes defined on the object.
         """
-        return list(_GA(self,"_attribute_class").objects.filter(db_obj=self))
+        return list(_GA(self, "db_attributes").all())
 
     def attr(self, attribute_name=None, value=None, delete=False):
         """
@@ -1195,12 +1194,12 @@ class TypedObject(SharedMemoryModel):
     db = property(__db_get, __db_set, __db_del)
 
     #
-    # NON-PERSISTENT storage methods
+    # NON-attr_obj storage methods
     #
 
     def nattr(self, attribute_name=None, value=None, delete=False):
         """
-        This is the equivalence of self.attr but for non-persistent
+        This is the equivalence of self.attr but for non-attr_obj
         stores. Will not raise error but return None.
         """
         if attribute_name == None:
@@ -1226,7 +1225,7 @@ class TypedObject(SharedMemoryModel):
     #@property
     def __ndb_get(self):
         """
-        A non-persistent store (ndb: NonDataBase). Everything stored
+        A non-attr_obj store (ndb: NonDataBase). Everything stored
         to this is guaranteed to be cleared when a server is shutdown.
         Syntax is same as for the _get_db_holder() method and
         property, e.g. obj.ndb.attr = value etc.
@@ -1235,7 +1234,7 @@ class TypedObject(SharedMemoryModel):
             return self._ndb_holder
         except AttributeError:
             class NdbHolder(object):
-                "Holder for storing non-persistent attributes."
+                "Holder for storing non-attr_obj attributes."
                 def get_all(self):
                     return [val for val in self.__dict__.keys()
                             if not val.startswith('_')]
@@ -1313,3 +1312,7 @@ class TypedObject(SharedMemoryModel):
         as a new Typeclass instance.
         """
         self.__class__.flush_cached_instance(self)
+
+
+# connect to signal
+m2m_changed.connect(update_attr_cache, sender=TypedObject.db_attributes.through)

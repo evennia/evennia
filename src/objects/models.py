@@ -17,13 +17,13 @@ transparently through the decorating TypeClass.
 import traceback
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_init, pre_delete
+from django.db.models.signals import m2m_changed
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
-from src.server.caches import attr_post_init, attr_pre_delete
+
 from src.typeclasses.typeclass import TypeClass
 from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
@@ -36,7 +36,7 @@ from src.utils.utils import make_iter, to_unicode, variable_from_module, inherit
 
 from django.utils.translation import ugettext as _
 
-#__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
+#__all__ = ("Alias", "ObjectNick", "ObjectDB")
 
 _ScriptDB = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -66,8 +66,8 @@ class ObjAttribute(Attribute):
         verbose_name_plural = "Object Attributes"
 
 # attach the cache handlers
-post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
-pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
+#post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
+#pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
 
 #------------------------------------------------------------
 #
@@ -518,7 +518,7 @@ class ObjectDB(TypedObject):
 
     # this is required to properly handle attributes and typeclass loading.
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    _attribute_class = ObjAttribute
+    #_attribute_class = ObjAttribute
     _db_model_name = "objectdb" # used by attributes to safely store objects
     _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 

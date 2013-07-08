@@ -141,26 +141,34 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
 # to any property).
 #------------------------------------------------------------
 
-# connected to post_init signal (connected in respective Attribute model)
-def attr_post_init(sender, instance=None, **kwargs):
-    "Called when attribute is created or retrieved in connection with obj."
-    #print "attr_post_init:", instance, instance.db_obj, instance.db_key
-    hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
-    if hid:
-        global _ATTR_CACHE
-        _ATTR_CACHE[hid] = sender
-        #_ATTR_CACHE.set(hid, sender)
-
-# connected to pre_delete signal (connected in respective Attribute model)
-def attr_pre_delete(sender, instance=None, **kwargs):
-    "Called when attribute is deleted (del_attribute)"
-    #print "attr_pre_delete:", instance, instance.db_obj, instance.db_key
-    hid = hashid(_GA(instance, "db_obj"), "-%s" % _GA(instance, "db_key"))
-    if hid:
-        #print "attr_pre_delete:", _GA(instance, "db_key")
-        global _ATTR_CACHE
-        del _ATTR_CACHE[hid]
-        #_ATTR_CACHE.delete(hid)
+# connected to m2m_changed signal in respective model class
+def update_attr_cache(sender, **kwargs):
+    "Called when the many2many relation changes some way"
+    obj = kwargs['instance']
+    model = kwargs['model']
+    action = kwargs['action']
+    if kwargs['reverse']:
+        # the reverse relation changed (the Attribute itself was acted on)
+        pass
+    else:
+        # forward relation changed (the Object holding the Attribute m2m field)
+        if action == "post_add":
+            # cache all added objects
+            for attr_id in kwargs["pk_set"]:
+                attr_obj = model.objects.get(pk=attr_id)
+                set_attr_cache(obj, _GA(attr_obj, "db_key"), attr_obj)
+        elif action == "post_remove":
+            # obj.db_attributes.remove(attr) was called
+            for attr_id in kwargs["pk_set"]:
+                attr_obj = model.objects.get(pk=attr_id)
+                del_attr_cache(obj, _GA(attr_obj, "db_key"))
+                attr_obj.delete()
+        elif action == "post_clear":
+            # obj.db_attributes.clear() was called
+            for attr_id in kwargs["pk_set"]:
+                attr_obj = model.objects.get(pk=attr_id)
+                del_attr_cache(obj, _GA(attr_obj, "db_key"))
+                attr_obj.delete()
 
 # access methods
 
@@ -169,15 +177,23 @@ def get_attr_cache(obj, attrname):
     hid = hashid(obj, "-%s" % attrname)
     return hid and _ATTR_CACHE.get(hid, None) or None
 
-def set_attr_cache(attrobj):
+def set_attr_cache(obj, attrname, attrobj):
     "Set the attr cache manually; this can be used to update"
-    attr_post_init(None, instance=attrobj)
+    global _ATTR_CACHE
+    hid = hashid(obj, "-%s" % attrname)
+    _ATTR_CACHE[hid] = attrobj
+
+def del_attr_cache(obj, attrname):
+    "Del attribute cache"
+    global _ATTR_CACHE
+    hid = hashid(obj, "-%s" % attrname)
+    if hid in _ATTR_CACHE:
+        del _ATTR_CACHE[hid]
 
 def flush_attr_cache():
     "Clear attribute cache"
     global _ATTR_CACHE
     _ATTR_CACHE = {}
-    #_ATTR_CACHE.clear()
 
 #------------------------------------------------------------
 # Property cache - this is a generic cache for properties stored on models.
