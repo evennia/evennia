@@ -167,6 +167,7 @@ class CmdUnconnectedCreate(MuxCommand):
 
             except Exception, e:
                 session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
+                logger.log_trace()
                 return
 
             # This needs to be called so the engine knows this player is logging in for the first time.

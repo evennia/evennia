@@ -899,3 +899,28 @@ def format_table(table, extra_space=1):
                        for icol, col in enumerate(table)])
     return ftable
 
+def get_evennia_pids():
+    """
+    Get the currently valids PIDs (Process IDs) of the Portal and Server
+    by trying to access an PID file. This can be used to determine if we
+    are in a subprocess by something like
+
+     self_pid = os.getpid()
+     server_pid, portal_pid = get_evennia_pids()
+     is_subprocess = self_pid not in (server_pid, portal_pid)
+
+    """
+    server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
+    portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
+    server_pid, portal_pid = None, None
+    if os.path.exists(server_pidfile):
+        f = open(server_pidfile, 'r')
+        server_pid = f.read()
+        f.close()
+    if os.path.exists(portal_pidfile):
+        f = open(portal_pidfile, 'r')
+        portal_pid = f.read()
+        f.close()
+    if server_pid and portal_pid:
+        return int(server_pid), int(portal_pid)
+    return None, None

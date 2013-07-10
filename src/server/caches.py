@@ -3,31 +3,28 @@ Central caching module.
 
 """
 
+import os, threading
 from collections import defaultdict
 from django.dispatch import Signal
 from django.core.cache import get_cache
-#from django.db.models.signals import pre_save, pre_delete, post_init
 from src.server.models import ServerConfig
-from src.utils.utils import uses_database, to_str
+from src.utils.utils import uses_database, to_str, get_evennia_pids
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+_IS_SUBPROCESS = os.getpid() in get_evennia_pids()
+_IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+
 #
-# Open handles to the caches
+# Set up the cache stores
 #
 
-#_FIELD_CACHE = get_cache("field_cache")
+_FIELD_CACHE = {}
 _ATTR_CACHE = {}
-#_ATTR_CACHE = get_cache("attr_cache")
-#_PROP_CACHE = get_cache("prop_cache")
 _PROP_CACHE = defaultdict(dict)
 
-# make sure caches are empty at startup
-#_FIELD_CACHE.clear()
-_ATTR_CACHE.clear()
-#_PROP_CACHE.clear()
 
 #------------------------------------------------------------
 # Cache key hash generation

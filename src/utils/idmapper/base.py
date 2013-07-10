@@ -14,7 +14,7 @@ from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
-from src.utils.utils import dbref
+from src.utils.utils import dbref, get_evennia_pids
 
 from manager import SharedMemoryManager
 
@@ -28,31 +28,11 @@ _DA = object.__delattr__
 # determine if our current pid is different from the server PID (i.e.
 # if we are in a subprocess or not)
 from src import PROC_MODIFIED_OBJS
-def _get_pids():
-    """
-    Get the PID (Process ID) by trying to access
-    an PID file.
-    """
-    from django.conf import settings
-    server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
-    portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
-    server_pid, portal_pid = None, None
-    if os.path.exists(server_pidfile):
-        f = open(server_pidfile, 'r')
-        server_pid = f.read()
-        f.close()
-    if os.path.exists(portal_pidfile):
-        f = open(portal_pidfile, 'r')
-        portal_pid = f.read()
-        f.close()
-    if server_pid and portal_pid:
-        return int(server_pid), int(portal_pid)
-    return None, None
 
 # get info about the current process and thread
 
 _SELF_PID = os.getpid()
-_SERVER_PID, _PORTAL_PID = _get_pids()
+_SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
 

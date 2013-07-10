@@ -160,23 +160,7 @@ DATABASES = {
         'HOST':'',
         'PORT':''
         }}
-# This manages the object-level caches. Evennia will agressively cache
-# fields, properties and attribute lookup. Evennia uses a fast and
-# local in-memory cache by default. If a Memcached server is available
-# it can be used instead (see django docs). Cache performance can be
-# tweaked by adding options to each cache. Finally, any cache can
-# be completely turned off by pointing its backend
-# to 'django.core.cache.backends.dummy.DummyCache'.
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
-    'field_cache': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
-    'prop_cache': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
-    'attr_cache': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
-    }
+
 ######################################################################
 # Evennia pluggable modules
 ######################################################################
