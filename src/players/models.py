@@ -25,7 +25,7 @@ account info and OOC account configuration variables etc.
 
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, User
 from django.utils.encoding import smart_str
 
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
@@ -110,7 +110,8 @@ class PlayerNickHandler(TypeNickHandler):
 #
 #------------------------------------------------------------
 
-class PlayerDB(TypedObject):
+
+class PlayerDB(TypedObject, AbstractUser):
     """
     This is a special model using Django's 'profile' functionality
     and extends the default Django User model. It is defined as such
@@ -145,8 +146,8 @@ class PlayerDB(TypedObject):
 
     # this is the one-to-one link between the customized Player object and
     # this profile model. It is required by django.
-    user = models.ForeignKey(User, unique=True, db_index=True,
-      help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
+    #user = models.ForeignKey(User, unique=True, db_index=True,
+    #  help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
     # store a connected flag here too, not just in sessionhandler.
     # This makes it easier to track from various out-of-process locations
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
@@ -254,17 +255,19 @@ class PlayerDB(TypedObject):
     #@property
     def __name_get(self):
         "Getter. Allows for value = self.name"
-        name = get_prop_cache(self, "_name")
-        if not name:
-            name = _GA(self,"user").username
-            set_prop_cache(self, "_name", name)
-        return name
+        return self.username
+        #name = get_prop_cache(self, "_name")
+        #if not name:
+        #    name = _GA(self,"user").username
+        #    set_prop_cache(self, "_name", name)
+        #return name
     #@name.setter
     def __name_set(self, value):
         "Setter. Allows for player.name = newname"
-        _GA(self, "user").username = value
-        _GA(self, "user").save()
-        set_prop_cache(self, "_name", value)
+        self.username = value
+        #_GA(self, "user").username = value
+        #_GA(self, "user").save()
+        #set_prop_cache(self, "_name", value)
     #@name.deleter
     def __name_del(self):
         "Deleter. Allows for del self.name"
@@ -275,11 +278,12 @@ class PlayerDB(TypedObject):
     #@property
     def __uid_get(self):
         "Getter. Retrieves the user id"
-        uid = get_prop_cache(self, "_uid")
-        if not uid:
-            uid = _GA(self, "user").id
-            set_prop_cache(self, "_uid", uid)
-        return uid
+        return self.id
+        #uid = get_prop_cache(self, "_uid")
+        #if not uid:
+        #    uid = _GA(self, "user").id
+        #    set_prop_cache(self, "_uid", uid)
+        #return uid
     def __uid_set(self, value):
         raise Exception("User id cannot be set!")
     def __uid_del(self):
@@ -287,14 +291,15 @@ class PlayerDB(TypedObject):
     uid = property(__uid_get, __uid_set, __uid_del)
 
     #@property
-    def __is_superuser_get(self):
-        "Superusers have all permissions."
-        is_suser = get_prop_cache(self, "_is_superuser")
-        if is_suser == None:
-            is_suser = _GA(self, "user").is_superuser
-            set_prop_cache(self, "_is_superuser", is_suser)
-        return is_suser
-    is_superuser = property(__is_superuser_get)
+    #def __is_superuser_get(self):
+    #    "Superusers have all permissions."
+    #    return self.db_is_superuser
+    #    #is_suser = get_prop_cache(self, "_is_superuser")
+    #    #if is_suser == None:
+    #    #    is_suser = _GA(self, "user").is_superuser
+    #    #    set_prop_cache(self, "_is_superuser", is_suser)
+    #    #return is_suser
+    #is_superuser = property(__is_superuser_get)
 
     #
     # PlayerDB class access methods
@@ -516,16 +521,12 @@ class PlayerDB(TypedObject):
             self.unpuppet_object(session.sessid)
             session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
 
-        try:
-            if _GA(self, "user"):
-                _GA(_GA(self, "user"), "delete")()
-        except AssertionError:
-            pass
-        try:
-            super(PlayerDB, self).delete(*args, **kwargs)
-        except AssertionError:
-            # this means deleting the user already cleared out the Player object.
-            pass
+        #try:
+        #    if _GA(self, "user"):
+        #        _GA(_GA(self, "user"), "delete")()
+        #except AssertionError:
+        #    pass
+        super(PlayerDB, self).delete(*args, **kwargs)
 
     def execute_cmd(self, raw_string, sessid=None):
         """
@@ -573,3 +574,6 @@ class PlayerDB(TypedObject):
             except:
                 pass
         return matches
+
+class PlayerDBtmp(AbstractUser):
+    pass

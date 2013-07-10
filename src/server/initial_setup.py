@@ -7,12 +7,14 @@ Everything starts at handle_setup()
 """
 
 import django
-from django.contrib.auth.models import User
 from django.core import management
 from django.conf import settings
+from django.core.management import call_command
+from django.contrib.auth import get_user_model
 from src.server.models import ServerConfig
 from src.help.models import HelpEntry
 from src.utils import create
+
 
 from django.utils.translation import ugettext as _
 
@@ -25,9 +27,18 @@ def create_config_values():
 
 def get_god_user():
     """
-    Returns the initially created 'god' User object.
+    Creates the god user.
     """
-    return User.objects.get(id=1)
+    PlayerDB = get_user_model()
+    try:
+        god_user = PlayerDB.objects.get(id=1)
+    except PlayerDB.DoesNotExist:
+        txt = "\n\nNo superuser exists yet. The superuser is the 'owner' account on the"
+        txt += "\nEvennia server; a good safety fallback. Create a new superuser using the command"
+        txt += "\n\n  python manage.py createsuperuser"
+        txt += "\n\nFollow the prompts, then restart the server."
+        raise Exception(txt)
+    return god_user
 
 def create_objects():
     """

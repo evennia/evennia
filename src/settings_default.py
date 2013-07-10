@@ -484,11 +484,12 @@ INSTALLED_APPS = (
     'src.comms',
     'src.help',
     'src.scripts',
-    'src.web.news',
+    #'src.web.news',
     'src.web.website',)
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
-AUTH_PROFILE_MODULE = "players.PlayerDB"
+AUTH_USER_MODEL = "players.PlayerDB"
+#AUTH_PROFILE_MODULE = "players.PlayerDB"
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
 
