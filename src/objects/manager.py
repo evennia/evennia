@@ -34,7 +34,6 @@ class ObjectManager(TypedObjectManager):
     get_dbref_range
     object_totals
     typeclass_search
-    get_object_with_user
     get_object_with_player
     get_objs_with_key_and_typeclass
     get_objs_with_attr
@@ -52,29 +51,8 @@ class ObjectManager(TypedObjectManager):
     # ObjectManager Get methods
     #
 
-    # user/player related
+    # player related
 
-    @returns_typeclass
-    def get_object_with_user(self, user):
-        """
-        Matches objects with obj.player.user matching the argument.
-        A player<->user is a one-to-relationship, so this always
-        returns just one result or None.
-
-        user - may be a user object or user id.
-        """
-        dbref = self.dbref(user)
-        if dbref:
-            try:
-                return self.get(db_player__user__id=dbref)
-            except self.model.DoesNotExist:
-                pass
-        try:
-            return self.get(db_player__user=user)
-        except self.model.DoesNotExist:
-            return None
-
-    # This returns typeclass since get_object_with_user and get_dbref does.
     @returns_typeclass
     def get_object_with_player(self, ostring, exact=True, candidates=None):
         """
@@ -92,9 +70,9 @@ class ObjectManager(TypedObjectManager):
         # not a dbref. Search by name.
         cand_restriction = candidates and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if exact:
-            return self.filter(cand_restriction & Q(db_player__user__username__iexact=ostring))
+            return self.filter(cand_restriction & Q(db_player__username__iexact=ostring))
         else: # fuzzy matching
-            ply_cands = self.filter(cand_restriction & Q(playerdb__user__username__istartswith=ostring)).values_list("db_key", flat=True)
+            ply_cands = self.filter(cand_restriction & Q(playerdb__username__istartswith=ostring)).values_list("db_key", flat=True)
             if candidates:
                 index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
                 return [obj for ind, obj in enumerate(make_iter(candidates)) if ind in index_matches]

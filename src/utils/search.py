@@ -16,11 +16,11 @@ the database model and call its 'objects' property.
 Also remember that all commands in this file return lists (also if
 there is only one match) unless noted otherwise.
 
-Example: To reach the search method 'get_object_with_user'
+Example: To reach the search method 'get_object_with_player'
          in src/objects/managers.py:
 
 > from src.objects.models import ObjectDB
-> match = Object.objects.get_object_with_user(...)
+> match = Object.objects.get_object_with_player(...)
 
 
 """
