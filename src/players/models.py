@@ -129,10 +129,6 @@ class PlayerDB(TypedObject, AbstractUser):
     # inherited fields (from TypedObject):
     # db_key, db_typeclass_path, db_date_created, db_permissions
 
-    # this is the one-to-one link between the customized Player object and
-    # this profile model. It is required by django.
-    #user = models.ForeignKey(User, unique=True, db_index=True,
-    #  help_text="The <I>User</I> object holds django-specific authentication for each Player. A unique User should be created and tied to each Player, the two should never be switched or changed around. The User will be deleted automatically when the Player is.")
     # store a connected flag here too, not just in sessionhandler.
     # This makes it easier to track from various out-of-process locations
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
@@ -559,5 +555,3 @@ class PlayerDB(TypedObject, AbstractUser):
                 pass
         return matches
 
-class PlayerDBtmp(AbstractUser):
-    pass

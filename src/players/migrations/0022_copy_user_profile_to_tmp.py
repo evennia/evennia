@@ -11,6 +11,7 @@ class Migration(DataMigration):
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         if not db.dry_run:
             for profile in orm['players.PlayerDB'].objects.all():
+                print "player orig:", profile.db_key, profile.db_cmdset_storage
                 plyr = orm['players.PlayerDBtmp'].objects.get(id=profile.user_id)
                 plyr.db_cmdset_storage = profile.db_cmdset_storage
                 plyr.db_date_created = profile.db_date_created
@@ -62,17 +63,9 @@ class Migration(DataMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'players.playerattribute': {
-            'Meta': {'object_name': 'PlayerAttribute'},
-            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['players.PlayerDB']"}),
-            'db_value': ('src.utils.picklefield.PickledObjectField', [], {'null': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
         u'players.playerdb': {
             'Meta': {'object_name': 'PlayerDB'},
+            'db_attributes': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['typeclasses.Attribute']", 'null': 'True', 'symmetrical': 'False'}),
             'db_cmdset_storage': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'db_is_connected': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -86,6 +79,8 @@ class Migration(DataMigration):
         u'players.playerdbtmp': {
             'Meta': {'ordering': "['-db_date_created', 'id', 'db_typeclass_path', 'db_key']", 'object_name': 'PlayerDBtmp'},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'db_attributes': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['typeclasses.Attribute']", 'null': 'True', 'symmetrical': 'False'}),
+            'db_cmdset_storage': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
@@ -103,6 +98,14 @@ class Migration(DataMigration):
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
+        },
+        u'typeclasses.attribute': {
+            'Meta': {'object_name': 'Attribute'},
+            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
+            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'db_value': ('src.utils.picklefield.PickledObjectField', [], {'null': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'players.playernick': {
             'Meta': {'unique_together': "(('db_nick', 'db_type', 'db_obj'),)", 'object_name': 'PlayerNick'},

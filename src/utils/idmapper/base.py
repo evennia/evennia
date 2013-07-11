@@ -136,6 +136,8 @@ class SharedMemoryModelBase(ModelBase):
         # dynamically create the wrapper properties for all fields not already handled
         for field in cls._meta.fields:
             fieldname = field.name
+            if not fieldname.startswith("db_"):
+                continue
             wrappername = fieldname == "id" and "dbid" or fieldname.replace("db_", "")
             if not hasattr(cls, wrappername):
                 # makes sure not to overload manually created wrappers on the model
