@@ -148,7 +148,7 @@ except DatabaseError,e:
 except PlayerDB.DoesNotExist:
     # no superuser yet. We need to create it.
     from django.core.management import call_command
-    print "Create a superuser below. The superuser is Player #1, the 'owner' account of the server."
+    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
     call_command("createsuperuser", interactive=True)
 
 # Add this to the environmental variable for the 'twistd' command.
