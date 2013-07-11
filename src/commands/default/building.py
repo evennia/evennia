@@ -4,8 +4,7 @@ Building and world design commands
 
 """
 from django.conf import settings
-from src.objects.models import ObjectDB, ObjAttribute
-from src.players.models import PlayerAttribute
+from src.objects.models import ObjectDB
 from src.utils import create, utils
 from src.utils.ansi import raw
 from src.commands.default.muxcommand import MuxCommand
@@ -1545,10 +1544,7 @@ class CmdExamine(ObjManipCommand):
             except Exception:
                 ndb_attr = None
         else:
-            if self.player_mode:
-                db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
-            else:
-                db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
+            db_attr = [(attr.key, attr.value) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items() if not aname.startswith("_")]
             except Exception:

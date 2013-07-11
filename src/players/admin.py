@@ -11,7 +11,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.admin import widgets
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import User
-from src.players.models import PlayerDB, PlayerAttribute
+from src.players.models import PlayerDB
+from src.typeclasses.models import Attribute
 from src.utils import logger, create
 
 # remove User itself from admin site
@@ -49,20 +50,20 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 # # The Player editor
-# class PlayerAttributeForm(forms.ModelForm):
+# class AttributeForm(forms.ModelForm):
 #     "Defines how to display the atttributes"
 #     class Meta:
-#         model = PlayerAttribute
+#         model = Attribute
 #     db_key = forms.CharField(label="Key",
 #                              widget=forms.TextInput(attrs={'size':'15'}))
 #     db_value = forms.CharField(label="Value",
 #                                widget=forms.Textarea(attrs={'rows':'2'}))
 
-# class PlayerAttributeInline(admin.TabularInline):
+# class AttributeInline(admin.TabularInline):
 #     "Inline creation of player attributes"
-#     model = PlayerAttribute
+#     model = Attribute
 #     extra = 0
-#     form = PlayerAttributeForm
+#     form = AttributeForm
 #     fieldsets = (
 #         (None, {'fields'  : (('db_key', 'db_value'))}),)
 

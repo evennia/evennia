@@ -44,7 +44,7 @@ from src.server.caches import get_attr_cache, set_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
 
 from django.db.models.signals import m2m_changed
-from src.server.caches import update_attr_cache
+from src.server.caches import post_attr_update
 
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
@@ -999,22 +999,6 @@ class TypedObject(SharedMemoryModel):
             set_attr_cache(self, attribute_name, attr_obj)
         return attr_obj.value
 
-#    def get_attribute_raise(self, attribute_name):
-#        """
-#        Returns value of an attribute. Raises AttributeError
-#        if no match is found.
-#
-#        attribute_name: (str) The attribute's name.
-#        """
-#        attr_obj = get_attr_cache(self, attribute_name)
-#        if not attr_obj:
-#            attr_obj = _GA(self, "attributes").filter(db_key__iexact=attribute_name)
-#            if not attr_obj:
-#                raise AttributeError
-#            attr_obj = attrib_obj[0] # query is evaluated here
-#            set_attr_cache(self, attribute_name, attr_obj[0])
-#        return attr_obj.value
-
     def del_attribute(self, attribute_name, raise_exception=False):
         """
         Removes an attribute entirely.
@@ -1024,32 +1008,16 @@ class TypedObject(SharedMemoryModel):
                                  could not be found
         """
         attr_obj = get_attr_cache(self, attribute_name)
-        if attr_obj:
-            attr_obj.delete() # this will clear attr cache automatically
-        else:
+        if not attr_obj:
             attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
-            if attr_obj:
-                attr_obj[0].delete()
-            elif raise_exception:
+            attr_obj = attr_obj[0] if attr_obj else None
+        if not attr_obj:
+            if raise_exception:
                 raise AttributeError
-
-#    def del_attribute_raise(self, attribute_name):
-#        """
-#        Removes and attribute. Raises AttributeError if
-#        attribute is not found.
-#
-#        attribute_name: (str) The attribute's name.
-#        """
-#        attr_obj = get_attr_cache(self, attribute_name)
-#        if attr_obj:
-#            attr_obj.delete() # this will clear attr cache automatically
-#        else:
-#            try:
-#                _GA(self, "_attribute_class").objects.filter(
-#                db_obj=self, db_key__iexact=attribute_name)[0].delete()
-#            except IndexError:
-#                pass
-#        raise AttributeError
+            return
+        # the post-remove cache signal will auto-delete the attribute as well,
+        # don't call attr_obj.delete() after this.
+        self.db_attributes.remove(attr_obj)
 
     def get_all_attributes(self):
         """
@@ -1301,5 +1269,5 @@ class TypedObject(SharedMemoryModel):
         self.__class__.flush_cached_instance(self)
 
 
-# connect to signal
-#m2m_changed.connect(update_attr_cache, sender=TypedObject.db_attributes.through)
+# connect to attribut cache signal
+m2m_changed.connect(post_attr_update, sender=TypedObject.db_attributes.through)

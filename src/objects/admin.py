@@ -6,12 +6,13 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.objects.models import ObjAttribute, ObjectDB, ObjectNick, Alias
+from src.typeclases.models import Attribute
+from src.objects.models import ObjectDB, ObjectNick, Alias
 from src.utils.utils import mod_import
 
 
-class ObjAttributeInline(admin.TabularInline):
-    model = ObjAttribute
+class AttributeInline(admin.TabularInline):
+    model = Attribute
     fields = ('db_key', 'db_value')
     extra = 0
 
@@ -80,7 +81,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    #inlines = [AliasInline, ObjAttributeInline]
+    #inlines = [AliasInline, AttributeInline]
 
 
     # Custom modification to give two different forms wether adding or not.

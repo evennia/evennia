@@ -5,7 +5,7 @@ Central caching module.
 
 import os, threading
 from collections import defaultdict
-from django.dispatch import Signal
+
 from django.core.cache import get_cache
 from src.server.models import ServerConfig
 from src.utils.utils import uses_database, to_str, get_evennia_pids
@@ -84,16 +84,18 @@ def hashid(obj, suffix=""):
 def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
     """
     Called at the beginning of the save operation. The save method
-    must be called with the update_fields keyword in order to
+    must be called with the update_fields keyword in order to be most efficient.
+    This method should NOT save; rather it is the save() that triggers this function.
+    Its main purpose is to allow to plug-in a save handler.
     """
     if raw:
         return
-    print "field_pre_save:", _GA(instance, "db_key"), update_fields# if hasattr(instance, "db_key") else instance, update_fields
+    print "field_pre_save:", instance, update_fields# if hasattr(instance, "db_key") else instance, update_fields
     if update_fields:
         # this is a list of strings at this point. We want field objects
         update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
     else:
-        # meta.fields are already field objects
+        # meta.fields are already field objects; get them all
         update_fields = _GA(_GA(instance, "_meta"), "fields")
     for field in update_fields:
         fieldname = field.name
@@ -116,7 +118,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             _SA(instance, fieldname, new_value)
         #if hid:
         #    # update cache
-        #    _FIELD_CACHE.set(hid, new_value)
+        #    _FIELD_CACHE[hid] = new_value
 
 # access method
 #
@@ -134,6 +136,23 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
 #    "Clear the field cache"
 #    _FIELD_CACHE.clear()
 
+def get_cache_sizes():
+    return (0, 0), (0, 0), (0, 0)
+def get_field_cache(obj, name):
+    return _GA(obj, "db_%s" % name)
+def set_field_cache(obj, name, val):
+    _SA(obj, "db_%s" % name, val)
+    _GA(obj, "save")()
+    #hid = hashid(obj)
+    #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
+    #    _OOB_HANDLER.update(hid, name, val)
+def del_field_cache(obj, name):
+    _SA(obj, "db_%s" % name, None)
+    _GA(obj, "save")()
+    #hid = hashid(obj)
+    #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
+    #    _OOB_HANDLER.update(hid, name, None)
+
 
 #------------------------------------------------------------
 # Attr cache - caching the attribute objects related to a given object to
@@ -142,11 +161,12 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
 #------------------------------------------------------------
 
 # connected to m2m_changed signal in respective model class
-def update_attr_cache(sender, **kwargs):
+def post_attr_update(sender, **kwargs):
     "Called when the many2many relation changes some way"
     obj = kwargs['instance']
     model = kwargs['model']
     action = kwargs['action']
+    print "update_attr_cache:", obj, model, action
     if kwargs['reverse']:
         # the reverse relation changed (the Attribute itself was acted on)
         pass
@@ -499,22 +519,6 @@ def flush_prop_cache():
 #else:
     # local caches disabled. Use simple pass-through replacements
 
-def get_cache_sizes():
-    return (0, 0), (0, 0), (0, 0)
-def get_field_cache(obj, name):
-    return _GA(obj, "db_%s" % name)
-def set_field_cache(obj, name, val):
-    _SA(obj, "db_%s" % name, val)
-    _GA(obj, "save")()
-    #hid = hashid(obj)
-    #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
-    #    _OOB_HANDLER.update(hid, name, val)
-def del_field_cache(obj, name):
-    _SA(obj, "db_%s" % name, None)
-    _GA(obj, "save")()
-    #hid = hashid(obj)
-    #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
-    #    _OOB_HANDLER.update(hid, name, None)
 #def flush_field_cache(obj=None):
 #    pass
 # these should get oob handlers when oob is implemented.
@@ -531,7 +535,7 @@ def del_field_cache(obj, name):
 #def set_attr_cache(obj, attrname, attrobj):
 #    pass
 #def del_attr_cache(obj, attrname):
-#    passk
+#    pass
 #def flush_attr_cache(obj=None):
 #    pass
 

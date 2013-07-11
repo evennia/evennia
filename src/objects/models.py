@@ -17,7 +17,6 @@ transparently through the decorating TypeClass.
 import traceback
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import m2m_changed
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
@@ -48,26 +47,6 @@ _DA = object.__delattr__
 _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
-
-#------------------------------------------------------------
-#
-# ObjAttribute
-#
-#------------------------------------------------------------
-
-
-#class ObjAttribute(Attribute):
-#    "Attributes for ObjectDB objects."
-#    db_obj = models.ForeignKey("ObjectDB")
-#
-#    class Meta:
-#        "Define Django meta options"
-#        verbose_name = "Object Attribute"
-#        verbose_name_plural = "Object Attributes"
-#
-# attach the cache handlers
-#post_init.connect(attr_post_init, sender=ObjAttribute, dispatch_uid="objattrcache")
-#pre_delete.connect(attr_pre_delete, sender=ObjAttribute, dispatch_uid="objattrcache")
 
 #------------------------------------------------------------
 #

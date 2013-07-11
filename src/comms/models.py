@@ -88,7 +88,7 @@ class Msg(SharedMemoryModel):
     # these can be used to filter/hide a given message from supplied objects/players/channels
     db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True)
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
-    db_hide_from_channles = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
+    db_hide_from_channels = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
 
     # Database manager
     objects = managers.MsgManager()
