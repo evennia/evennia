@@ -142,6 +142,7 @@ class UserAdmin(BaseUserAdmin):
          {'fields': ('username', 'password1', 'password2', 'email'),
           'description':"<i>These account details are shared by the admin system and the game.</i>"},),)
 
+    # TODO! Remove User reference!
     def save_formset(self, request, form, formset, change):
         "Run all hooks on the player object"
         super(UserAdmin, self).save_formset(request, form, formset, change)

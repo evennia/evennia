@@ -77,17 +77,16 @@ class ServerSession(Session):
         player - the player associated with the session
         """
         self.player = player
-        self.user = player.user
-        self.uid = self.user.id
-        self.uname = self.user.username
+        self.uid = self.player.id
+        self.uname = self.player.username
         self.logged_in = True
         self.conn_time = time.time()
         self.puid = None
         self.puppet = None
 
         # Update account's last login time.
-        self.user.last_login = datetime.now()
-        self.user.save()
+        self.player.last_login = datetime.now()
+        self.player.save()
 
     def at_disconnect(self):
         """
@@ -97,7 +96,7 @@ class ServerSession(Session):
             sessid = self.sessid
             player = self.player
             _GA(player.dbobj, "unpuppet_object")(sessid)
-            uaccount = _GA(player.dbobj, "user")
+            uaccount = player.dbobj
             uaccount.last_login = datetime.now()
             uaccount.save()
             # calling player hook

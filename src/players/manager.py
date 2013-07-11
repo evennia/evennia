@@ -3,8 +3,8 @@ The managers for the custom Player object and permissions.
 """
 
 import datetime
+from django.contrib.auth.models import UserManager
 from functools import update_wrapper
-from django.contrib.auth.models import User
 from src.typeclasses.managers import returns_typeclass_list, returns_typeclass, TypedObjectManager
 from src.utils import logger
 __all__ = ("PlayerManager",)
@@ -13,54 +13,7 @@ __all__ = ("PlayerManager",)
 # Player Manager
 #
 
-def returns_player_list(method):
-    """
-    decorator that makes sure that a method
-    returns a Player object instead of a User
-    one (if you really want the User object, not
-    the player, use the player's 'user' property)
-    """
-    def func(self, *args, **kwargs):
-        "This *always* returns a list."
-        match = method(self, *args, **kwargs)
-        if not match:
-            return []
-        try:
-            match = list(match)
-        except TypeError:
-            match = [match]
-        players = []
-        for user in match:
-            try:
-                players.append(user.get_profile())
-            except Exception:
-                # there is something wrong with get_profile. But
-                # there is a 1-1 relation between Users-Players, so we
-                # try to go the other way instead.
-                from src.players.models import PlayerDB
-                match = PlayerDB.objects.filter(user__id=user.id)
-                if match:
-                    players.append(match[0])
-                else:
-                    logger.log_trace("No connection User<->Player, maybe database was partially reset?")
-        return players
-    return update_wrapper(func, method)
-
-def returns_player(method):
-    """
-    Decorator: Always returns a single result or None.
-    """
-    def func(self, *args, **kwargs):
-        "decorator"
-        rfunc = returns_player_list(method)
-        match = rfunc(self, *args, **kwargs)
-        if match:
-            return match[0]
-        else:
-            return None
-    return update_wrapper(func, method)
-
-class PlayerManager(TypedObjectManager):
+class PlayerManager(TypedObjectManager, UserManager):
     """
     This PlayerManager implements methods for searching
     and manipulating Players directly from the database.
@@ -87,7 +40,7 @@ class PlayerManager(TypedObjectManager):
     """
     def num_total_players(self):
         """
-        Returns the total number of registered users/players.
+        Returns the total number of registered players.
         """
         return self.count()
 
@@ -99,7 +52,6 @@ class PlayerManager(TypedObjectManager):
         return self.filter(db_is_connected=True)
 
     @returns_typeclass_list
-    @returns_player_list
     def get_recently_created_players(self, days=7):
         """
         Returns a QuerySet containing the player User accounts that have been
@@ -108,13 +60,12 @@ class PlayerManager(TypedObjectManager):
         end_date = datetime.datetime.now()
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
-        return User.objects.filter(date_joined__range=(start_date, end_date))
+        return self.filter(date_joined__range=(start_date, end_date))
 
     @returns_typeclass_list
-    @returns_player_list
     def get_recently_connected_players(self, days=7):
         """
-        Returns a QuerySet containing the player User accounts that have been
+        Returns a QuerySet containing the player accounts that have been
         connected within the last <days> days.
 
         days - number of days backwards to check
@@ -122,33 +73,31 @@ class PlayerManager(TypedObjectManager):
         end_date = datetime.datetime.now()
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
-        return User.objects.filter(last_login__range=(
+        return self.filter(last_login__range=(
                 start_date, end_date)).order_by('-last_login')
 
     @returns_typeclass
-    @returns_player
     def get_player_from_email(self, uemail):
         """
         Returns a player object when given an email address.
         """
-        return User.objects.filter(email__iexact=uemail)
+        return self.filter(email__iexact=uemail)
 
     @returns_typeclass
-    @returns_player
     def get_player_from_uid(self, uid):
         """
         Returns a player object based on User id.
         """
         try:
-            return User.objects.get(id=uid)
-        except User.model.DoesNotExist:
+            return self.get(id=uid)
+        except self.model.DoesNotExist:
             return None
 
     @returns_typeclass
     def get_player_from_name(self, uname):
         "Get player object based on name"
         try:
-            return self.get(user__username__iexact=uname)
+            return self.get(username__iexact=uname)
         except self.model.DoesNotExist:
             return None
 
@@ -165,7 +114,7 @@ class PlayerManager(TypedObjectManager):
             matches = self.filter(id=dbref)
             if matches:
                 return matches
-        return self.filter(user__username__iexact=ostring)
+        return self.filter(username__iexact=ostring)
 
     def swap_character(self, player, new_character, delete_old_character=False):
         """

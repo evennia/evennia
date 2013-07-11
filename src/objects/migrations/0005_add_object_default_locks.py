@@ -10,7 +10,7 @@ class Migration(DataMigration):
         "Write your forwards methods here."
 
         # we need to add a default lock string to all objects, then a separate set to Characters.
-        
+
         lockstring1 = 'control:id(1);get:all();edit:perm(Wizards);examine:perm(Builders);call:true();puppet:id(#4) or perm(Immortals) or pperm(Immortals);delete:id(1) or perm(Wizards)'
         lockstring2 = 'control:id(#3) or perm(Immortals);get:perm(Wizards);edit:perm(Wizards);examine:perm(Builders);call:false();puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals);delete:perm(Wizards)'
 
@@ -21,10 +21,10 @@ class Migration(DataMigration):
             for obj in orm.ObjectDB.objects.filter(db_player__isnull=False):
                 obj.db_lock_storage = lockstring2 % (obj.id, obj.db_player.id)
                 obj.save()
-        
+
         except utils.DatabaseError:
             # running from scatch. In this case we just ignore this.
-            pass 
+            pass
 
     def backwards(self, orm):
         "Write your backwards methods here."

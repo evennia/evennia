@@ -7,13 +7,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'PlayerDB.db_cmdset_storage'
         db.add_column('players_playerdb', 'db_cmdset_storage', self.gf('django.db.models.fields.TextField')(null=True), keep_default=False)
 
 
     def backwards(self, orm):
-        
+
         # Deleting field 'PlayerDB.db_cmdset_storage'
         db.delete_column('players_playerdb', 'db_cmdset_storage')
 

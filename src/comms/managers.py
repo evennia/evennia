@@ -11,6 +11,7 @@ _GA = object.__getattribute__
 _PlayerDB = None
 _ObjectDB = None
 _Channel = None
+_SESSIONS = None
 _ExternalConnection = None
 _User = None
 
@@ -198,7 +199,7 @@ class MsgManager(models.Manager):
                    NOTE: This can potentially be slow, so make sure to supply
                    one of the other arguments to limit the search.
         dbref - (int) the exact database id of the message. This will override
-                all other search crieteria since it's unique and
+                all other search criteria since it's unique and
                 always gives a list with only one match.
         """
         # unique msg id
@@ -299,19 +300,33 @@ class ChannelManager(models.Manager):
         CHANNELHANDLER.update()
         return None
 
-    def get_all_connections(self, channel):
+    def get_all_connections(self, channel, online=False):
         """
         Return the connections of all players listening
-        to this channel
+        to this channel. If Online is true, it only returns
+        connected players.
         """
-        # import here to avoid circular imports
-        #from src.comms.models import PlayerChannelConnection
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+
         PlayerChannelConnection = ContentType.objects.get(app_label="comms",
                                                           model="playerchannelconnection").model_class()
         ExternalChannelConnection = ContentType.objects.get(app_label="comms",
                                                             model="externalchannelconnection").model_class()
-        return itertools.chain(PlayerChannelConnection.objects.get_all_connections(channel),
-                               ExternalChannelConnection.objects.get_all_connections(channel))
+        players = []
+        if online:
+            session_list = _SESSIONS.get_sessions()
+            unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
+            online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
+            for player in online_players:
+                players.extend(PlayerChannelConnection.objects.filter(db_player=player, db_channel=channel))
+        else:
+            players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
+
+        external_connections = ExternalChannelConnection.objects.get_all_connections(channel)
+
+        return itertools.chain(players, external_connections)
 
     def channel_search(self, ostring):
         """

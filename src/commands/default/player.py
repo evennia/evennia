@@ -606,9 +606,6 @@ class CmdQuell(MuxPlayerCommand):
     Hierarchical permission quelling only work downwards, thus a Player cannot
     use a higher-permission Character to escalate their permission level.
     Use the unquell command to revert back to normal operation.
-
-    Note that the superuser character cannot be quelled. Use a separate
-    admin account for testing.
     """
 
     key = "@quell"

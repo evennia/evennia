@@ -9,58 +9,72 @@ import re
 from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter, fill
 
+def _init_command(mcs, **kwargs):
+    """
+    Helper command.
+    Makes sure all data are stored as lowercase and
+    do checking on all properties that should be in list form.
+    Sets up locks to be more forgiving. This is used both by the metaclass
+    and (optionally) at instantiation time.
+
+    If kwargs are given, these are set as instance-specific properties on the command.
+    """
+    for i in range(len(kwargs)):
+       # used for dynamic creation of commands
+       key, value = kwargs.popitem()
+       setattr(mcs, key, value)
+
+    mcs.key = mcs.key.lower()
+    if mcs.aliases and not is_iter(mcs.aliases):
+        try:
+            mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases.split(',')]
+        except Exception:
+            mcs.aliases = []
+    mcs.aliases = list(set(alias for alias in mcs.aliases if alias != mcs.key))
+
+    # optimization - a set is much faster to match against than a list
+    mcs._matchset = set([mcs.key] + mcs.aliases)
+    # optimization for looping over keys+aliases
+    mcs._keyaliases = tuple(mcs._matchset)
+
+    # by default we don't save the command between runs
+    if not hasattr(mcs, "save_for_next"):
+        mcs.save_for_next = False
+
+    # pre-process locks as defined in class definition
+    temp = []
+    if hasattr(mcs, 'permissions'):
+        mcs.locks = mcs.permissions
+    if not hasattr(mcs, 'locks'):
+        # default if one forgets to define completely
+        mcs.locks = "cmd:all()"
+    if not "cmd:" in mcs.locks:
+        mcs.locks = "cmd:all();" + mcs.locks
+    for lockstring in mcs.locks.split(';'):
+        if lockstring and not ':' in lockstring:
+            lockstring = "cmd:%s" % lockstring
+        temp.append(lockstring)
+    mcs.lock_storage = ";".join(temp)
+
+    if hasattr(mcs, 'arg_regex') and isinstance(mcs.arg_regex, basestring):
+        mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I)
+    else:
+        mcs.arg_regex = None
+    if not hasattr(mcs, "auto_help"):
+        mcs.auto_help = True
+    if not hasattr(mcs, 'is_exit'):
+        mcs.is_exit = False
+    if not hasattr(mcs, "help_category"):
+        mcs.help_category = "general"
+    mcs.help_category = mcs.help_category.lower()
+
+
 class CommandMeta(type):
     """
-    This metaclass makes some minor on-the-fly convenience fixes to the command
-    class in case the admin forgets to put things in lowercase etc.
+    The metaclass cleans up all properties on the class
     """
     def __init__(mcs, *args, **kwargs):
-        """
-        Simply make sure all data are stored as lowercase and
-        do checking on all properties that should be in list form.
-        Sets up locks to be more forgiving.
-        """
-        mcs.key = mcs.key.lower()
-        if mcs.aliases and not is_iter(mcs.aliases):
-            try:
-                mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases.split(',')]
-            except Exception:
-                mcs.aliases = []
-        mcs.aliases = list(set(alias for alias in mcs.aliases if alias != mcs.key))
-
-        # optimization - a set is much faster to match against than a list
-        mcs._matchset = set([mcs.key] + mcs.aliases)
-        # optimization for looping over keys+aliases
-        mcs._keyaliases = tuple(mcs._matchset)
-
-        # by default we don't save the command between runs
-        if not hasattr(mcs, "save_for_next"):
-            mcs.save_for_next = False
-
-        # pre-process locks as defined in class definition
-        temp = []
-        if hasattr(mcs, 'permissions'):
-            mcs.locks = mcs.permissions
-        if not hasattr(mcs, 'locks'):
-            # default if one forgets to define completely
-            mcs.locks = "cmd:all()"
-        for lockstring in mcs.locks.split(';'):
-            if lockstring and not ':' in lockstring:
-                lockstring = "cmd:%s" % lockstring
-            temp.append(lockstring)
-        mcs.lock_storage = ";".join(temp)
-
-        if hasattr(mcs, 'arg_regex') and isinstance(mcs.arg_regex, basestring):
-            mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I)
-        else:
-            mcs.arg_regex = None
-        if not hasattr(mcs, "auto_help"):
-            mcs.auto_help = True
-        if not hasattr(mcs, 'is_exit'):
-            mcs.is_exit = False
-        if not hasattr(mcs, "help_category"):
-            mcs.help_category = "general"
-        mcs.help_category = mcs.help_category.lower()
+        _init_command(mcs, **kwargs)
         super(CommandMeta, mcs).__init__(*args, **kwargs)
 
 #    The Command class is the basic unit of an Evennia command; when
@@ -125,8 +139,12 @@ class Command(object):
     #   sessid - which session-id (if any) is responsible for triggering this command
     #
 
-    def __init__(self):
-        "the lockhandler works the same as for objects."
+    def __init__(self, **kwargs):
+        """the lockhandler works the same as for objects.
+        optional kwargs will be set as properties on the Command at runtime,
+        overloading evential same-named class properties."""
+        if kwargs:
+            _init_command(self, **kwargs)
         self.lockhandler = LockHandler(self)
 
     def __str__(self):
