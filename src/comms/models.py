@@ -303,8 +303,6 @@ class Msg(SharedMemoryModel):
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
     lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
-    _db_model_name = "msg" # used by attributes to safely store objects
-
     #
     # Msg class methods
     #

@@ -87,18 +87,18 @@ class SharedMemoryModelBase(ModelBase):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
                 "Wrapper for getting database field"
-                #print "_get wrapper:", fname, value, type(value)
                 value = _GA(cls, fieldname)
-                if isinstance(value, (basestring, int, float, bool)):
+                if type(value) in (basestring, int, float, bool):
                     return value
                 elif hasattr(value, "typeclass"):
                     return _GA(value, "typeclass")
                 return value
+
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
                 if hasattr(value, "dbobj"):
                     value = _GA(value, "dbobj")
-                else:
+                elif fname.isdigit() or fname.startswith("#"):
                     # we also allow setting using dbrefs, if so we try to load the matching object.
                     # (we assume the object is of the same type as the class holding the field, if
                     # not a custom handler must be used for that field)
@@ -107,25 +107,27 @@ class SharedMemoryModelBase(ModelBase):
                         try:
                             value = cls._default_manager.get(id=dbid)
                         except ObjectDoesNotExist:
-                            err = "Could not set %s. Tried to treat value '%s' as a dbref, but no matching object with that id was found."
-                            err = err % (fname, value)
-                            raise ObjectDoesNotExist(err)
+                            # maybe it is just a name
+                            pass
                 #print "_set wrapper:", fname, value, type(value), cls._get_pk_val(cls._meta)
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be when first creating object)
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
+
             def _del(cls, fname):
                 "Wrapper for clearing database field - sets it to None"
                 _SA(cls, fname, None)
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
+
             # create class wrappers
             fget = lambda cls: _get(cls, fieldname)
             fset = lambda cls, val: _set(cls, fieldname, val)
             fdel = lambda cls: _del(cls, fieldname)
             doc = "Wraps setting, saving and deleting the %s field." % fieldname
+
             type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel, doc))
 
         # exclude some models that should not auto-create wrapper fields

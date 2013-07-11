@@ -6,7 +6,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.typeclases.models import Attribute
+from src.typeclasses.models import Attribute
 from src.objects.models import ObjectDB, ObjectNick, Alias
 from src.utils.utils import mod_import
 

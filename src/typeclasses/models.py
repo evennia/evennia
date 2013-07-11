@@ -401,29 +401,29 @@ class TypedObject(SharedMemoryModel):
     # TypedObject Database Model setup
     #
     #
-    # These databse fields are all set using their corresponding properties,
-    # named same as the field, but withtou the db_* prefix.
+    # These databse fields are all accessed and set using their corresponding properties,
+    # named same as the field, but without the db_* prefix (no separate save() call is needed)
 
-    # Main identifier of the object, for searching. Can also
-    # be referenced as 'name'.
+    # Main identifier of the object, for searching. Is accessed with self.key or self.name
     db_key = models.CharField('key', max_length=255, db_index=True)
-    # This is the python path to the type class this object is tied to
-    # (the type class is what defines what kind of Object this is)
-    db_typeclass_path = models.CharField('typeclass', max_length=255, null=True, help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
-    # Creation date
+    # This is the python path to the type class this object is tied to the type class is what defines what kind of Object this is)
+    db_typeclass_path = models.CharField('typeclass', max_length=255, null=True,
+            help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+    # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
-    db_permissions = models.CharField('permissions', max_length=255, blank=True, help_text="a comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
+    db_permissions = models.CharField('permissions', max_length=255, blank=True,
+         help_text="a comma-separated list of text strings checked by in-game locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
     # Lock storage
-    db_lock_storage = models.TextField('locks', blank=True, help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
-
-    # attribute store
-    db_attributes = models.ManyToManyField(Attribute, null=True, help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
-
+    db_lock_storage = models.TextField('locks', blank=True,
+            help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
+    # attribute store. This is accessed through the self.db handler.
+    db_attributes = models.ManyToManyField(Attribute, null=True,
+            help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
     # Database manager
     objects = managers.TypedObjectManager()
 
-    # object cache and flags
+    # quick on-object typeclass cache for speed
     _cached_typeclass = None
 
     # lock handler self.locks
@@ -441,6 +441,7 @@ class TypedObject(SharedMemoryModel):
         verbose_name = "Evennia Database Object"
         ordering = ['-db_date_created', 'id', 'db_typeclass_path', 'db_key']
 
+    # wrapper
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
@@ -448,7 +449,6 @@ class TypedObject(SharedMemoryModel):
     # defined that allows the user to do self.attr = value,
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
-
 
     # key property (wraps db_key)
     #@property
@@ -466,53 +466,44 @@ class TypedObject(SharedMemoryModel):
     #    raise Exception("Cannot delete objectdb key!")
     #key = property(__key_get, __key_set, __key_del)
 
-    # name property (wraps db_key too - alias to self.key)
-    #@property
-    def __name_get(self):
-        "Getter. Allows for value = self.name"
-        return self.key
-    #@name.sette
-    def __name_set(self, value):
-        "Setter. Allows for self.name = value"
-        self.key = value
-    #@name.deleter
-    def __name_del(self):
-        "Deleter. Allows for del self.name"
-        raise Exception("Cannot delete name!")
+    # name property (alias to self.key)
+    def __name_get(self): return self.key
+    def __name_set(self, value): self.key = value
+    def __name_del(self): raise Exception("Cannot delete name")
     name = property(__name_get, __name_set, __name_del)
 
-    # typeclass_path property - we don't cache this.
+    # typeclass_path property - we manage this separately.
     #@property
-    def __typeclass_path_get(self):
-        "Getter. Allows for value = self.typeclass_path"
-        return _GA(self, "db_typeclass_path")#get_field_cache(self, "typeclass_path")
-    #@typeclass_path.setter
-    def __typeclass_path_set(self, value):
-        "Setter. Allows for self.typeclass_path = value"
-        _SA(self, "db_typeclass_path", value)
-        update_fields = ["db_typeclass_path"] if _GA(self, "_get_pk_val")(_GA(self, "_meta")) is not None else None
-        _GA(self, "save")(update_fields=update_fields)
-    #@typeclass_path.deleter
-    def __typeclass_path_del(self):
-        "Deleter. Allows for del self.typeclass_path"
-        self.db_typeclass_path = ""
-        _GA(self, "save")(update_fields=["db_typeclass_path"])
-    typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
+    #def __typeclass_path_get(self):
+    #    "Getter. Allows for value = self.typeclass_path"
+    #    return _GA(self, "db_typeclass_path")
+    ##@typeclass_path.setter
+    #def __typeclass_path_set(self, value):
+    #    "Setter. Allows for self.typeclass_path = value"
+    #    _SA(self, "db_typeclass_path", value)
+    #    update_fields = ["db_typeclass_path"] if _GA(self, "_get_pk_val")(_GA(self, "_meta")) is not None else None
+    #    _GA(self, "save")(update_fields=update_fields)
+    ##@typeclass_path.deleter
+    #def __typeclass_path_del(self):
+    #    "Deleter. Allows for del self.typeclass_path"
+    #    self.db_typeclass_path = ""
+    #    _GA(self, "save")(update_fields=["db_typeclass_path"])
+    #typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
 
     # date_created property
     #@property
-    def __date_created_get(self):
-        "Getter. Allows for value = self.date_created"
-        return get_field_cache(self, "date_created")
-    #@date_created.setter
-    def __date_created_set(self, value):
-        "Setter. Allows for self.date_created = value"
-        raise Exception("Cannot change date_created!")
-    #@date_created.deleter
-    def __date_created_del(self):
-        "Deleter. Allows for del self.date_created"
-        raise Exception("Cannot delete date_created!")
-    date_created = property(__date_created_get, __date_created_set, __date_created_del)
+    #def __date_created_get(self):
+    #    "Getter. Allows for value = self.date_created"
+    #    return get_field_cache(self, "date_created")
+    ##@date_created.setter
+    #def __date_created_set(self, value):
+    #    "Setter. Allows for self.date_created = value"
+    #    raise Exception("Cannot change date_created!")
+    ##@date_created.deleter
+    #def __date_created_del(self):
+    #    "Deleter. Allows for del self.date_created"
+    #    raise Exception("Cannot delete date_created!")
+    #date_created = property(__date_created_get, __date_created_set, __date_created_del)
 
     # permissions property
     #@property
@@ -537,18 +528,18 @@ class TypedObject(SharedMemoryModel):
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def __lock_storage_get(self):
-        "Getter. Allows for value = self.lock_storage"
-        return get_field_cache(self, "lock_storage")
-    #@lock_storage.setter
-    def __lock_storage_set(self, value):
-        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        set_field_cache(self, "lock_storage", value)
-    #@lock_storage.deleter
-    def __lock_storage_del(self):
-        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
+    #def __lock_storage_get(self):
+    #    "Getter. Allows for value = self.lock_storage"
+    #    return get_field_cache(self, "lock_storage")
+    ##@lock_storage.setter
+    #def __lock_storage_set(self, value):
+    #    """Saves the lock_storage. This is usually not called directly, but through self.lock()"""
+    #    set_field_cache(self, "lock_storage", value)
+    ##@lock_storage.deleter
+    #def __lock_storage_del(self):
+    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    #lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
 
 
@@ -560,8 +551,6 @@ class TypedObject(SharedMemoryModel):
 
     # these are identifiers for fast Attribute access and caching
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    _attribute_class = Attribute # replaced by relevant attribute class for child
-    _db_model_name = "typeclass" # used by attributes to safely store objects
 
     def __eq__(self, other):
         return other and hasattr(other, 'dbid') and self.dbid == other.dbid

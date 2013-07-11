@@ -90,7 +90,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
     """
     if raw:
         return
-    print "field_pre_save:", instance, update_fields# if hasattr(instance, "db_key") else instance, update_fields
+    #print "field_pre_save:", instance, update_fields# if hasattr(instance, "db_key") else instance, update_fields
     if update_fields:
         # this is a list of strings at this point. We want field objects
         update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
@@ -166,7 +166,7 @@ def post_attr_update(sender, **kwargs):
     obj = kwargs['instance']
     model = kwargs['model']
     action = kwargs['action']
-    print "update_attr_cache:", obj, model, action
+    #print "update_attr_cache:", obj, model, action
     if kwargs['reverse']:
         # the reverse relation changed (the Attribute itself was acted on)
         pass

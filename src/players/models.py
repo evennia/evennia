@@ -137,10 +137,14 @@ class PlayerDB(TypedObject):
     db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
-                                         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
+        help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
 
     # Database manager
     objects = manager.PlayerManager()
+
+    # caches for quick lookups
+    _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
 
     class Meta:
         app_label = 'players'
@@ -229,11 +233,6 @@ class PlayerDB(TypedObject):
     def __unicode__(self):
         return u"%s(player#%s)" % (_GA(self, "name"), _GA(self, "dbid"))
 
-    # this is required to properly handle attributes and typeclass loading
-    _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS
-    #_attribute_class = PlayerAttribute
-    _db_model_name = "playerdb" # used by attributes to safely store objects
-    _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
 
     # name property (wraps self.user.username)
     #@property

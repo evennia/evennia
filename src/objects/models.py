@@ -187,8 +187,11 @@ class ObjectDB(TypedObject):
     # Database manager
     objects = ObjectManager()
 
-    # Add the object-specific handlers
+    # caches for quick lookups of typeclass loading.
+    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
+    # Add the object-specific handlers
     def __init__(self, *args, **kwargs):
         "Parent must be initialized first."
         TypedObject.__init__(self, *args, **kwargs)
@@ -495,11 +498,6 @@ class ObjectDB(TypedObject):
     # ObjectDB class access methods/properties
     #
 
-    # this is required to properly handle attributes and typeclass loading.
-    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    #_attribute_class = ObjAttribute
-    _db_model_name = "objectdb" # used by attributes to safely store objects
-    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
     #@property
     def __sessions_get(self):

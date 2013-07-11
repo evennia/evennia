@@ -96,6 +96,10 @@ class ScriptDB(TypedObject):
     # Database manager
     objects = ScriptManager()
 
+    # caches for quick lookups
+    _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_SCRIPT_TYPECLASS or "src.scripts.scripts.DoNothing"
+
     class Meta:
         "Define Django meta options"
         verbose_name = "Script"
@@ -233,11 +237,6 @@ class ScriptDB(TypedObject):
     #
     #
 
-    # this is required to properly handle attributes and typeclass loading
-    _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS
-    #_attribute_class = ScriptAttribute
-    _db_model_name = "scriptdb" # used by attributes to safely store objects
-    _default_typeclass_path = settings.BASE_SCRIPT_TYPECLASS or "src.scripts.scripts.DoNothing"
 
     def at_typeclass_error(self):
         """
