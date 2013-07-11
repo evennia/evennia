@@ -129,11 +129,9 @@ PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
 
 # Check so a database exists and is accessible
 from django.db import DatabaseError
-from src.objects.models import ObjectDB
+from src.players.models import PlayerDB
 try:
-    test = ObjectDB.objects.get(id=1)
-except ObjectDB.DoesNotExist:
-    pass # this is fine at this point
+    superuser = PlayerDB.objects.get(id=1)
 except DatabaseError,e:
     print """
     Your database does not seem to be set up correctly.
@@ -147,6 +145,11 @@ except DatabaseError,e:
     When you have a database set up, rerun evennia.py.
     """ % e
     sys.exit()
+except PlayerDB.DoesNotExist:
+    # no superuser yet. We need to create it.
+    from django.core.management import call_command
+    print "Create a superuser below. The superuser is Player #1, the 'owner' account of the server."
+    call_command("createsuperuser", interactive=True)
 
 # Add this to the environmental variable for the 'twistd' command.
 currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

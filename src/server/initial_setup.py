@@ -9,7 +9,6 @@ Everything starts at handle_setup()
 import django
 from django.core import management
 from django.conf import settings
-from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from src.server.models import ServerConfig
 from src.help.models import HelpEntry
