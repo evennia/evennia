@@ -153,7 +153,7 @@ class CmdSetObjAlias(MuxCommand):
         # save back to object.
         obj.aliases.add(aliases)
         # we treat this as a re-caching (relevant for exits to re-build their exit commands with the correct aliases)
-        caller.msg("Aliases for '%s' are now set to %s." % (obj.key, ", ".join(obj.aliases)))
+        caller.msg("Aliases for '%s' are now %s." % (obj.key, str(obj.aliases)))
 
 class CmdCopy(ObjManipCommand):
     """
@@ -1569,7 +1569,7 @@ class CmdExamine(ObjManipCommand):
 
         string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
-            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(obj.aliases.all())))
+            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
         if hasattr(obj, "sessid") and obj.sessid:
             string += "\n{wsession{n: %s" % obj.sessid
         elif hasattr(obj, "sessions") and obj.sessions:

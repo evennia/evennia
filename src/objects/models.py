@@ -140,9 +140,9 @@ class ObjectDB(TypedObject):
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
-        _SA(self, "tags", TagHandler(self, "object"))
-        _SA(self, "aliases", AliasHandler(self, "object"))
-        _SA(self, "nicks", NickHandler(self, "object"))
+        _SA(self, "tags", TagHandler(self, category_prefix="object_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="object_"))
+        _SA(self, "nicks", NickHandler(self, category_prefix="object_"))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -569,8 +569,8 @@ class ObjectDB(TypedObject):
                 pnicks = self.nicks.get(category="player_nick_%s" % nicktype)
                 nicks = nicks + pnicks
             for nick in nicks:
-                if searchdata == nick.db_nick:
-                    searchdata = nick.db_real
+                if searchdata == nick.db_key:
+                    searchdata = nick.db_data
                     break
 
         candidates=None

@@ -150,18 +150,18 @@ class TagManager(models.Manager):
     """
     Extra manager methods for Tags
     """
-    def get_tags_on_obj(self, obj, search_key=None, category=None):
+    def get_tags_on_obj(self, obj, key=None, category=None):
         """
         Get all tags on obj, optionally limited by key and/or category
         """
-        if search_key or category:
-            key_cands = Q(db_key__iexact=search_key.lower().strip()) if search_key!=None else Q()
-            cat_cands = Q(db_category__iexact=category.lower.strip()) if search_key!=None else Q()
+        if key or category:
+            key_cands = Q(db_key__iexact=key.lower().strip()) if key!=None else Q()
+            cat_cands = Q(db_category__iexact=category.lower.strip()) if key!=None else Q()
             return _GA(obj, "db_tags").filter(cat_cands & key_cands)
         else:
             return list(_GA(obj, "db_tags").all())
 
-    def get_tag(self, search_key=None, category=None):
+    def get_tag(self, key=None, category=None):
         """
         Search and return all tags matching any combination of
         the search criteria.
@@ -171,23 +171,23 @@ class TagManager(models.Manager):
         Returns a single Tag (or None) if both key and category is given, otherwise
         it will return a list.
         """
-        key_cands = Q(db_key__iexact=search_key.lower().strip()) if search_key!=None else Q()
-        cat_cands = Q(db_category__iexact=category.lower.strip()) if search_key!=None else Q()
+        key_cands = Q(db_key__iexact=key.lower().strip()) if key!=None else Q()
+        cat_cands = Q(db_category__iexact=category.lower().strip()) if category!=None else Q()
         tags = self.filter(key_cands & cat_cands)
-        if search_key and category:
+        if key and category:
             return tags[0] if tags else None
         else:
             return list(tags)
 
-    def get_objs_with_tag(self, objclass, search_key=None, category=None):
+    def get_objs_with_tag(self, objclass, key=None, category=None):
         """
         Search and return all objects of objclass that has tags matching
         the given search criteria.
          objclass (dbmodel) - the object class to search
-         search_key (string) - the tag identifier
+         key (string) - the tag identifier
          category (string) - the tag category
         """
-        key_cands = Q(db_tags__db_key__iexact=search_key.lower().strip()) if search_key!=None else Q()
+        key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if search_key!=None else Q()
         cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category!=None else Q()
         return objclass.objects.filter(key_cands & cat_cands)
 
@@ -201,14 +201,14 @@ class TagManager(models.Manager):
         """
         data = str(data) if data!=None else None
 
-        tag = self.get_tag(search_key=key, search_category=category)
+        tag = self.get_tag(key=key, category=category)
         if tag and data != None:
             tag.db_data = data
             tag.save()
         elif not tag:
-            tag = self.objects.create(db_key=key.lower().strip() if key!=None else None,
-                                      db_category=category.lower().strip() if key!=None else None,
-                                      db_data=str(data) if data!=None else None)
+            tag = self.create(db_key=key.lower().strip() if key!=None else None,
+                              db_category=category.lower().strip() if key!=None else None,
+                              db_data=str(data) if data!=None else None)
             tag.save()
         return tag
 

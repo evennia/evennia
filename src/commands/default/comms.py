@@ -103,7 +103,7 @@ class CmdAddCom(MuxPlayerCommand):
 
         if alias:
             # create a nick and add it to the caller.
-            caller.nicks.add(alias, channel.key, nick_type="channel")
+            caller.nicks.add(alias, channel.key, category="channel")
             string += " You can now refer to the channel %s with the alias '%s'."
             self.msg(string % (channel.key, alias))
         else:
@@ -147,21 +147,21 @@ class CmdDelCom(MuxPlayerCommand):
                 return
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
-            for nick in [nick for nick in caller.nicks.get(nick_type="channel")
-                         if nick.db_real.lower() == chkey]:
+            for nick in [nick for nick in caller.nicks.get(category="channel")
+                         if nick.db_data.lower() == chkey]:
                 nick.delete()
             channel.disconnect_from(player)
             self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
             return
         else:
             # we are removing a channel nick
-            channame = caller.nicks.get(ostring, nick_type="channel")
+            channame = caller.nicks.get_replace(key=ostring, category="channel")
             channel = find_channel(caller, channame, silent=True)
             if not channel:
                 self.msg("No channel with alias '%s' was found." % ostring)
             else:
-                if caller.nicks.get(ostring, nick_type="channel", default=False):
-                    caller.nicks.delete(ostring, nick_type="channel")
+                if caller.nicks.get(ostring, category="channel"):
+                    caller.nicks.remove(ostring, category="channel")
                     self.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
                 else:
                     self.msg("You had no such alias defined for this channel.")
@@ -263,7 +263,7 @@ class CmdChannels(MuxPlayerCommand):
             comtable = prettytable.PrettyTable(["{wchannel","{wmy aliases", "{wdescription"])
             for chan in subs:
                 clower = chan.key.lower()
-                nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
+                nicks = [nick for nick in caller.nicks.get(category="channel")]
                 comtable.add_row(["%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
                                   "%s".join(nick.db_nick for nick in nicks if nick.db_real.lower()==clower()),
                                   chan.desc])
@@ -272,7 +272,7 @@ class CmdChannels(MuxPlayerCommand):
             # full listing (of channels caller is able to listen to)
             comtable = prettytable.PrettyTable(["{wsub","{wchannel","{wmy aliases","{wlocks","{wdescription"])
             for chan in channels:
-                nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
+                nicks = [nick for nick in caller.nicks.get(category="channel")]
                 comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
                                   "%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
                                   "%s".join(nick.db_nick for nick in nicks if nick.db_real.lower()==clower()),
@@ -368,7 +368,7 @@ class CmdCBoot(MuxPlayerCommand):
             string = "%s boots %s from channel.%s" % (self.caller, player.key, reason)
             channel.msg(string)
         # find all player's nicks linked to this channel and delete them
-        for nick in [nick for nick in player.character.nicks.get(nick_type="channel")
+        for nick in [nick for nick in player.character.nicks.get(category="channel")
                      if nick.db_real.lower() == channel.key]:
             nick.delete()
         # disconnect player

@@ -151,13 +151,14 @@ class CmdNick(MuxCommand):
             switches = ["inputline"]
         string = ""
         for switch in switches:
-            oldnick = Nick.objects.filter(db_obj=caller.dbobj, db_nick__iexact=nick, db_type__iexact=switch)
+            oldnick = caller.nicks.get(key=nick, category=switch)
+            #oldnick = Nick.objects.filter(db_obj=caller.dbobj, db_nick__iexact=nick, db_type__iexact=switch)
             if not real:
                 # removal of nick
                 if oldnick:
                     # clear the alias
                     string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick[0].db_real)
-                    caller.nicks.delete(nick, nick_type=switch)
+                    caller.nicks.delete(nick, category=switch)
                 else:
                     string += "\nNo nick '%s' found, so it could not be removed." % nick
             else:
@@ -166,7 +167,7 @@ class CmdNick(MuxCommand):
                     string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick[0].db_real, real)
                 else:
                     string += "\nNick set: '%s' = '%s'." % (nick, real)
-                caller.nicks.add(nick, real, nick_type=switch)
+                caller.nicks.add(nick, real, category=switch)
         caller.msg(string)
 
 class CmdInventory(MuxCommand):

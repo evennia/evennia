@@ -33,6 +33,7 @@ from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
 
 __all__ = ("ScriptDB",)
+_SA = object.__setattr__
 
 
 #------------------------------------------------------------
@@ -106,8 +107,8 @@ class ScriptDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         super(ScriptDB, self).__init__(*args, **kwargs)
-        _SA(self, "tags", TagHandler(self, "script"))
-        _SA(self, "aliases", AliasHandler(self, "script"))
+        _SA(self, "tags", TagHandler(self, category_prefix="script_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="script_"))
 
 
     # Wrapper properties to easily set database fields. These are

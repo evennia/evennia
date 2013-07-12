@@ -120,9 +120,9 @@ class PlayerDB(TypedObject, AbstractUser):
         # handlers
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
-        _SA(self, "tags", TagHandler(self, "player"))
-        _SA(self, "aliases", AliasHandler(self, "player"))
-        _SA(self, "nicks", NickHandler(self, "player"))
+        _SA(self, "tags", TagHandler(self, category_prefix="player_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="player_"))
+        _SA(self, "nicks", NickHandler(self, category_prefix="player_"))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using

@@ -465,18 +465,13 @@ class CmdPassword(MuxPlayerCommand):
             return
         oldpass = self.lhslist[0] # this is already stripped by parse()
         newpass = self.rhslist[0] #               ''
-        try:
-            uaccount = player.user
-        except AttributeError:
-            self.msg("This is only applicable for players.")
-            return
-        if not uaccount.check_password(oldpass):
+        if not player.check_password(oldpass):
             self.msg("The specified old password isn't correct.")
         elif len(newpass) < 3:
             self.msg("Passwords must be at least three characters long.")
         else:
-            uaccount.set_password(newpass)
-            uaccount.save()
+            player.set_password(newpass)
+            player.save()
             self.msg("Password changed.")
 
 class CmdQuit(MuxPlayerCommand):

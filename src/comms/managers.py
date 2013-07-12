@@ -346,7 +346,7 @@ class ChannelManager(models.Manager):
             channels = self.filter(db_key__iexact=ostring)
         if not channels:
             # still no match. Search by alias.
-            channels = [channel for channel in self.all() if ostring.lower in [a.lower for a in channel.aliases]]
+            channels = [channel for channel in self.all() if ostring.lower() in [a.lower for a in channel.aliases]]
         return channels
 
 #
