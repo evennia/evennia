@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_attr_cache, set_attr_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
+from src.server.caches import get_prop_cache, set_prop_cache, flush_attr_cache
 
 from django.db.models.signals import m2m_changed
 from src.server.caches import post_attr_update
@@ -51,7 +51,7 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger, utils
-from src.utils.utils import make_iter, is_iter, to_unicode, to_str
+from src.utils.utils import make_iter, is_iter, to_str
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -252,6 +252,101 @@ class Attribute(SharedMemoryModel):
         """
         pass
 
+#------------------------------------------------------------
+#
+# LiteAttributes
+#
+#------------------------------------------------------------
+
+class LiteAttribute(models.Model):
+
+    """
+    This specialized model is a middle-road between a Tag
+    and an Attribute. A LiteAttribute is smaller, less complex
+    to search than an Attribute (its key is indexed together with its
+    category) but can only hold strings in its db_value property whereas
+    an Attribute can hold arbitrary data. A LiteAttribute is also not
+    kept in memory in the same way as Attributes and has no inherent
+    concept of access restrictions which makes it unsuitable for modification
+    by untrusted users.
+
+    The difference between Liteattrs and Tags are that liteattrs are
+    not shared/unique but are created separately for each object holding them.
+
+    LiteAttributes are accessed through the db_liteattributes many2many field on
+    Typed Objects.
+
+
+    The main default use of the LiteAttribute is to implement Nick replacement.
+    In this case the category determines when the replacement is to be checked.
+    The key value is the input to replace and the data value holds the replacement
+    text.
+
+    The default nick category types used by Evennia are:
+    nick_inputline (default) - match against all input
+    nick_player - match against player searches
+    nick_obj - match against object searches
+    nick_channel - used to store own names for channels
+
+    """
+    db_key = models.CharField('key', max_length=255, help_text='name if liteattribute')
+    db_category = models.CharField('category', max_length=32, null=True, blank=True, help_text="liteattribute category")
+    db_data = models.TextField('data', help_text='holds string data')
+
+    objects = managers.LiteAttributeManager()
+
+    class Meta:
+        "Define Django meta options"
+        abstract = True
+        verbose_name = "Lite Attribute"
+        index_together = ("db_key", "db_category")
+    def __unicode__(self):
+        return u"%s" % self.db_key
+    def __str__(self):
+        return str(self.db_key)
+
+#------------------------------------------------------------
+#
+# Tags
+#
+#------------------------------------------------------------
+
+class Tag(models.Model):
+    """
+    Tags are quick markers for objects in-game. An typeobject
+    can have any number of tags, stored via its db_tags property.
+    Tagging similar objects will make it easier to quickly locate the
+    group later (such as when implementing zones). The main advantage
+    of tagging as opposed to using Attributes is speed; a tag is very
+    limited in what data it can hold, and the tag key+category is
+    indexed for efficient lookup in the database. Tags are shared between
+    objects - a new tag is only created if the key+category combination
+    did not previously exist, making them unsuitable for storing
+    object-related data (for this a LiteAttribute or a full Attribute
+    should be used).
+    The 'db_data' field is intended as a documentation
+    field for the tag itself, such as to document what this tag+category
+    stands for and display that in a web interface or similar.
+
+    The main default use for Tags is to implement Aliases for objects.
+    this uses the 'aliases' tag category, which is also checked by the
+    default search functions of Evennia to allow quick searches by alias.
+    """
+    db_key = models.CharField('key', max_length=64, null=True, help_text="tag identifier")
+    db_category = models.CharField('category', max_length=32, null=True, help_text="tag category")
+    db_data = models.TextField('data', null=True, blank=True, help_text="optional data field with extra information. This is not searched for.")
+
+    objects = managers.TagManager()
+
+    class Meta:
+        "Define Django meta options"
+        verbose_name = "Tag"
+        unique_together = ('db_key', 'db_category')
+        index_together = ('db_key', 'db_category')
+    def __unicode__(self):
+        return u"%s" % self.db_key
+    def __str__(self):
+        return str(self.db_key)
 
 #------------------------------------------------------------
 #
@@ -417,9 +512,14 @@ class TypedObject(SharedMemoryModel):
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True,
             help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
-    # attribute store. This is accessed through the self.db handler.
+    # many2many relationships
     db_attributes = models.ManyToManyField(Attribute, null=True,
             help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
+    db_liteattributes = models.ManyToManyField(LiteAttribute, null=True,
+            help_text='liteattributes on this object. A LiteAttribute holds a key, a category and a string field for simple lookups.')
+    db_tags = models.ManyToManyField(Tag, null=True,
+            help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
+
     # Database manager
     objects = managers.TypedObjectManager()
 
@@ -1258,5 +1358,5 @@ class TypedObject(SharedMemoryModel):
         self.__class__.flush_cached_instance(self)
 
 
-# connect to attribut cache signal
+# connect to attribute cache signal
 m2m_changed.connect(post_attr_update, sender=TypedObject.db_attributes.through)
