@@ -365,27 +365,29 @@ class TagHandler(object):
 
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler"
-        tag = tag.strip().lower() if tag!=None else None
-        category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
-        data = str(data) if data!=None else None
-        # this will only create tag if no matches existed beforehand (it will overload
-        # data on an existing tag since that is not considered part of making the tag unique)
-        tagobj = Tag.objects.create_tag(key=tag, category=category, data=data)
-        self.obj.db_tags.add(tagobj)
+        for tag in make_iter(tag):
+            tag = tag.strip().lower() if tag!=None else None
+            category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
+            data = str(data) if data!=None else None
+            # this will only create tag if no matches existed beforehand (it will overload
+            # data on an existing tag since that is not considered part of making the tag unique)
+            tagobj = Tag.objects.create_tag(key=tag, category=category, data=data)
+            self.obj.db_tags.add(tagobj)
 
     def remove(self, tag, category=None):
         "Remove a tag from the handler"
-        tag = tag.strip().lower() if tag!=None else None
-        category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
-        #TODO This does not delete the tag object itself. Maybe it should do that when no
-        # objects reference the tag anymore?
-        tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
-        if tagobj:
-            self.obj.remove(tagobj[0])
+        for tag in make_iter(tag):
+            tag = tag.strip().lower() if tag!=None else None
+            category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
+            #TODO This does not delete the tag object itself. Maybe it should do that when no
+            # objects reference the tag anymore?
+            tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
+            if tagobj:
+                self.obj.remove(tagobj[0])
 
     def all(self):
         "Get all tags in this handler"
-        return self.obj.db_tags.all().get_values("db_key")
+        return self.obj.db_tags.all().values_list("db_key")
 
     def __str__(self):
         return ",".join(self.all())
@@ -412,21 +414,23 @@ class AliasHandler(object):
         "Add a new nick to the handler"
         if not alias or not alias.strip():
             return
-        alias = alias.strip()
-        # create a unique tag only if it didn't already exist
-        aliasobj = Tag.objects.create_tag(key=alias, category=self.category)
-        self.obj.db_tags.add(aliasobj)
+        for al in make_iter(alias):
+            al = al.strip()
+            # create a unique tag only if it didn't already exist
+            aliasobj = Tag.objects.create_tag(key=al, category=self.category)
+            self.obj.db_tags.add(aliasobj)
 
     def remove(self, alias):
         "Remove alias from handler."
-        aliasobj = Tag.objects.filter(db_key__iexact=alias.strip(), category=self.category).count()
-        #TODO note that this doesn't delete the tag itself. We might want to do this when no object
-        # uses it anymore ...
-        self.obj.db_tags.remove(aliasobj)
+        for alias in make_iter(alias):
+            aliasobj = Tag.objects.filter(db_key__iexact=alias.strip(), category=self.category).count()
+            #TODO note that this doesn't delete the tag itself. We might want to do this when no object
+            # uses it anymore ...
+            self.obj.db_tags.remove(aliasobj)
 
     def all(self):
         "Get all aliases in this handler"
-        return self.obj.db_tags.filter(db_category=self.category).get_values("db_key")
+        return list(self.obj.db_tags.filter(db_category=self.category).values_list("db_key"))
 
     def __str__(self):
         return ",".join(self.all())
@@ -466,27 +470,29 @@ class NickHandler(object):
         """
         if not nick or not nick.strip():
             return
-        nick = nick.strip()
-        real = realname
-        nick_type = "%s%s" % (self.prefix, nick_type.strip().lower())
-        query = self.obj.db_liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
-        if query.count():
-            old_nick = query[0]
-            old_nick.db_data = real
-            old_nick.save()
-        else:
-            new_nick = LiteAttribute(db_key=nick, db_category=nick_type, db_data=real)
-            new_nick.save()
-            self.obj.db_liteattributes.add(new_nick)
+        for nick in make_iter(nick):
+            nick = nick.strip()
+            real = realname
+            nick_type = "%s%s" % (self.prefix, nick_type.strip().lower())
+            query = self.obj.db_liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
+            if query.count():
+                old_nick = query[0]
+                old_nick.db_data = real
+                old_nick.save()
+            else:
+                new_nick = LiteAttribute(db_key=nick, db_category=nick_type, db_data=real)
+                new_nick.save()
+                self.obj.db_liteattributes.add(new_nick)
 
     def remove(self, nick, nick_type="inputline"):
         "Removes a previously stored nick"
-        nick = nick.strip()
-        nick_type = "%s%s" % (self.prefix, nick_type.strip().lower())
-        query = self.obj.liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
-        if query.count():
-            # remove the found nick(s)
-            query.delete()
+        for nick in make_iter(nick):
+            nick = nick.strip()
+            nick_type = "%s%s" % (self.prefix, nick_type.strip().lower())
+            query = self.obj.liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
+            if query.count():
+                # remove the found nick(s)
+                query.delete()
 
     def delete(self, *args, **kwargs):
         "alias wrapper"
@@ -500,14 +506,23 @@ class NickHandler(object):
         If no nick is given, returns a list of all matching nick
         objects (LiteAttributes) on the object, or the empty list.
         """
-        nick = nick.strip().lower() if nick!=None else None
-        nick_type = "%s%s" % (self.prefix, nick_type.strip().lower())
-        if nick:
-            nicks = _GA(self.obj, "db_liteattributes").objects.filter(db_key=nick, db_category=nick_type).prefetch_related("db_data")
-            default = default if default!=None else nick
-            return nicks[0].db_data if nicks else default
-        else:
-            return list(self.obj.db_liteattributes.all())
+        returns = []
+        for nick in make_iter(nick):
+            nick = nick.strip().lower() if nick!=None else None
+            nick_type = "%s%s" % (self.prefix, nick_type.strip().lower())
+            if nick:
+                nicks = _GA(self.obj, "db_liteattributes").objects.filter(db_key=nick, db_category=nick_type).prefetch_related("db_data")
+                default = default if default!=None else nick
+                return nicks[0].db_data if nicks else default
+            else:
+                returns.extend(list(self.obj.db_liteattributes.all()))
+        return returns
+
+    def all(self):
+        "Get all nicks in this handler"
+        return list(self.obj.db_nicks.filter(db_category=self.category).values_list("db_key"))
+
+
 
 
 #------------------------------------------------------------

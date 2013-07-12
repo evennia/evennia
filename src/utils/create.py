@@ -129,7 +129,7 @@ def create_object(typeclass, key=None, location=None,
     if locks:
          new_object.locks.add(locks)
     if aliases:
-        new_object.aliases = aliases
+        new_object.aliases.add(aliases)
 
     # perform a move_to in order to display eventual messages.
     if home:
