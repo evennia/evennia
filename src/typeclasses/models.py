@@ -290,16 +290,15 @@ class LiteAttribute(models.Model):
 
     """
     db_key = models.CharField('key', max_length=255, help_text='name if liteattribute')
-    db_category = models.CharField('category', max_length=32, null=True, blank=True, help_text="liteattribute category")
+    db_category = models.CharField('category', max_length=64, null=True, blank=True, help_text="liteattribute category")
     db_data = models.TextField('data', help_text='holds string data')
 
     objects = managers.LiteAttributeManager()
 
     class Meta:
         "Define Django meta options"
-        abstract = True
         verbose_name = "Lite Attribute"
-        index_together = ("db_key", "db_category")
+        index_together = (("db_key", "db_category"),)
     def __unicode__(self):
         return u"%s" % self.db_key
     def __str__(self):
@@ -332,17 +331,16 @@ class Tag(models.Model):
     this uses the 'aliases' tag category, which is also checked by the
     default search functions of Evennia to allow quick searches by alias.
     """
-    db_key = models.CharField('key', max_length=64, null=True, help_text="tag identifier")
-    db_category = models.CharField('category', max_length=32, null=True, help_text="tag category")
+    db_key = models.CharField('key', max_length=255, null=True, help_text="tag identifier")
+    db_category = models.CharField('category', max_length=64, null=True, help_text="tag category")
     db_data = models.TextField('data', null=True, blank=True, help_text="optional data field with extra information. This is not searched for.")
 
     objects = managers.TagManager()
-
     class Meta:
         "Define Django meta options"
         verbose_name = "Tag"
-        unique_together = ('db_key', 'db_category')
-        index_together = ('db_key', 'db_category')
+        unique_together =(('db_key', 'db_category'),)
+        index_together = (('db_key', 'db_category'),)
     def __unicode__(self):
         return u"%s" % self.db_key
     def __str__(self):

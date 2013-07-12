@@ -59,34 +59,34 @@ _DA = object.__delattr__
 _TYPECLASS = None
 
 
-#------------------------------------------------------------
+##------------------------------------------------------------
+##
+## Player Nicks
+##
+##------------------------------------------------------------
 #
-# Player Nicks
+#class PlayerNick(TypeNick):
+#    """
 #
-#------------------------------------------------------------
-
-class PlayerNick(TypeNick):
-    """
-
-    The default nick types used by Evennia are:
-    inputline (default) - match against all input
-    player - match against player searches
-    obj - match against object searches
-    channel - used to store own names for channels
-    """
-    db_obj = models.ForeignKey("PlayerDB", verbose_name="player")
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Nickname for Players"
-        verbose_name_plural = "Nicknames Players"
-        unique_together = ("db_nick", "db_type", "db_obj")
-
-class PlayerNickHandler(TypeNickHandler):
-    """
-    Handles nick access and setting. Accessed through ObjectDB.nicks
-    """
-    NickClass = PlayerNick
+#    The default nick types used by Evennia are:
+#    inputline (default) - match against all input
+#    player - match against player searches
+#    obj - match against object searches
+#    channel - used to store own names for channels
+#    """
+#    db_obj = models.ForeignKey("PlayerDB", verbose_name="player")
+#
+#    class Meta:
+#        "Define Django meta options"
+#        verbose_name = "Nickname for Players"
+#        verbose_name_plural = "Nicknames Players"
+#        unique_together = ("db_nick", "db_type", "db_obj")
+#
+#class PlayerNickHandler(TypeNickHandler):
+#    """
+#    Handles nick access and setting. Accessed through ObjectDB.nicks
+#    """
+#    NickClass = PlayerNick
 
 
 #------------------------------------------------------------
@@ -153,7 +153,7 @@ class PlayerDB(TypedObject, AbstractUser):
         # handlers
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
-        _SA(self, "nicks", PlayerNickHandler(self))
+        #_SA(self, "nicks", PlayerNickHandler(self))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
