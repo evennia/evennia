@@ -643,11 +643,11 @@ class ObjectDB(TypedObject):
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
         # fetch the nick data efficiently
-        nicks = self.db_lnattributes.filter(db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
+        nicks = self.db_liteattributes.filter(db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
         if self.has_player:
-            pnicks = self.player.db_lnattributes.filter(
+            pnicks = self.player.db_liteattributes.filter(
                     db_category__in=("player_nick_inputline", "player_nick_channel")).prefetch_related("db_key","db_data")
-            nicks = nicks + pnicks
+            nicks = list(nicks) + list(pnicks)
         for nick in nicks:
             if nick.db_key in raw_list:
                 raw_string = raw_string.replace(nick.db_key, nick.db_data, 1)

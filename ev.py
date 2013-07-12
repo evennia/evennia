@@ -119,7 +119,7 @@ from src.help.models import HelpEntry
 from src.typeclasses.models import Attribute
 # players
 from src.players.player import Player
-from src.players.models import PlayerDB, PlayerNick
+from src.players.models import PlayerDB
 
 # commands
 from src.commands.command import Command

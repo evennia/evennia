@@ -384,6 +384,9 @@ class TagHandler(object):
             tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
             if tagobj:
                 self.obj.remove(tagobj[0])
+    def clear(self):
+        "Remove all tags from the handler"
+        self.obj.db_tags.clear()
 
     def all(self):
         "Get all tags in this handler"
@@ -423,10 +426,13 @@ class AliasHandler(object):
     def remove(self, alias):
         "Remove alias from handler."
         for alias in make_iter(alias):
-            aliasobj = Tag.objects.filter(db_key__iexact=alias.strip(), category=self.category).count()
+            aliasobj = self.obj.filter(db_key__iexact=alias.strip(), category=self.category)
             #TODO note that this doesn't delete the tag itself. We might want to do this when no object
             # uses it anymore ...
             self.obj.db_tags.remove(aliasobj)
+    def clear(self):
+        "Clear all aliases from handler"
+        self.obj.db_tags.remove(self.obj.filter(categery=self.category))
 
     def all(self):
         "Get all aliases in this handler"
@@ -589,7 +595,8 @@ class TypedObject(SharedMemoryModel):
     # lock handler self.locks
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
-        SharedMemoryModel.__init__(self, *args, **kwargs)
+        super(SharedMemoryModel, self).__init__(*args, **kwargs)
+        #SharedMemoryModel.__init__(self, *args, **kwargs)
         _SA(self, "dbobj", self)   # this allows for self-reference
         _SA(self, "locks", LockHandler(self))
 

@@ -105,7 +105,7 @@ class ScriptDB(TypedObject):
         verbose_name = "Script"
 
     def __init__(self, *args, **kwargs):
-        super(ScriptDB, self).__init__(self, *args, **kwargs)
+        super(ScriptDB, self).__init__(*args, **kwargs)
         _SA(self, "tags", TagHandler(self, "script"))
         _SA(self, "aliases", AliasHandler(self, "script"))
 

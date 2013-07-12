@@ -3,7 +3,6 @@ General Character commands usually availabe to all characters
 """
 from django.conf import settings
 from src.utils import utils, prettytable
-from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand
 
 
@@ -124,17 +123,17 @@ class CmdNick(MuxCommand):
 
         caller = self.caller
         switches = self.switches
-        nicks = Nick.objects.filter(db_obj=caller.dbobj).exclude(db_type="channel")
+        nicks = caller.nicks.get(category="channel")
 
         if 'list' in switches:
             table = prettytable.PrettyTable(["{wNickType", "{wNickname", "{wTranslates-to"])
             for nick in nicks:
-                table.add_row([nick.db_type, nick.db_nick, nick.db_real])
+                table.add_row([nick.db_category, nick.db_key, nick.db_data])
             string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
         if 'clearall' in switches:
-            nicks.delete()
+            caller.nicks.clear()
             caller.msg("Cleared all aliases.")
             return
         if not self.args or not self.lhs:
