@@ -110,7 +110,6 @@ class ScriptDB(TypedObject):
         _SA(self, "tags", TagHandler(self, category_prefix="script_"))
         _SA(self, "aliases", AliasHandler(self, category_prefix="script_"))
 
-
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()

@@ -213,6 +213,15 @@ def format_script_list(scripts):
     table.align = 'r'
     for script in scripts:
         nextrep = script.time_until_next_repeat()
+        print ([script.id,
+                       (not hasattr(script, 'obj') or not script.obj) and "<Global>" or script.obj.key,
+                       script.key,
+                       (not hasattr(script, 'interval') or script.interval < 0) and "--" or "%ss" % script.interval,
+                       not nextrep and "--" or "%ss" % nextrep,
+                       (not hasattr(script, 'repeats') or not script.repeats) and "--" or "%i" % script.repeats,
+                       script.persistent and "*" or "-",
+                       script.typeclass_path.rsplit('.', 1)[-1],
+                       script.desc])
         table.add_row([script.id,
                        (not hasattr(script, 'obj') or not script.obj) and "<Global>" or script.obj.key,
                        script.key,

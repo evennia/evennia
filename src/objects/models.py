@@ -143,6 +143,8 @@ class ObjectDB(TypedObject):
         _SA(self, "tags", TagHandler(self, category_prefix="object_"))
         _SA(self, "aliases", AliasHandler(self, category_prefix="object_"))
         _SA(self, "nicks", NickHandler(self, category_prefix="object_"))
+        # make sure to sync the contents cache when initializing
+        self.contents_update()
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -152,6 +154,7 @@ class ObjectDB(TypedObject):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
+    #TODO - make player-handler
     # player property (wraps db_player)
     #@property
     def __player_get(self):
@@ -187,25 +190,25 @@ class ObjectDB(TypedObject):
 
     # sessid property (wraps db_sessid)
     #@property
-    def __sessid_get(self):
-        """
-        Getter. Allows for value = self.sessid. Since sessid
-        is directly related to self.player, we cannot have
-        a sessid without a player being connected (but the
-        opposite could be true).
-        """
-        if not get_field_cache(self, "sessid"):
-            del_field_cache(self, "sessid")
-        return get_field_cache(self, "sessid")
-    #@sessid.setter
-    def __sessid_set(self, sessid):
-        "Setter. Allows for self.player = value"
-        set_field_cache(self, "sessid", sessid)
-    #@sessid.deleter
-    def __sessid_del(self):
-        "Deleter. Allows for del self.player"
-        del_field_cache(self, "sessid")
-    sessid = property(__sessid_get, __sessid_set, __sessid_del)
+    #def __sessid_get(self):
+    #    """
+    #    Getter. Allows for value = self.sessid. Since sessid
+    #    is directly related to self.player, we cannot have
+    #    a sessid without a player being connected (but the
+    #    opposite could be true).
+    #    """
+    #    if not get_field_cache(self, "sessid"):
+    #        del_field_cache(self, "sessid")
+    #    return get_field_cache(self, "sessid")
+    ##@sessid.setter
+    #def __sessid_set(self, sessid):
+    #    "Setter. Allows for self.player = value"
+    #    set_field_cache(self, "sessid", sessid)
+    ##@sessid.deleter
+    #def __sessid_del(self):
+    #    "Deleter. Allows for del self.player"
+    #    del_field_cache(self, "sessid")
+    #sessid = property(__sessid_get, __sessid_set, __sessid_del)
 
     def _db_location_handler(self, loc, old_value=None):
         "This handles changes to the db_location field."

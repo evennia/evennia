@@ -98,7 +98,7 @@ class SharedMemoryModelBase(ModelBase):
                 "Wrapper for setting database field"
                 if hasattr(value, "dbobj"):
                     value = _GA(value, "dbobj")
-                elif fname.isdigit() or fname.startswith("#"):
+                elif isinstance(value, basestring) and (value.isdigit() or value.startswith("#")):
                     # we also allow setting using dbrefs, if so we try to load the matching object.
                     # (we assume the object is of the same type as the class holding the field, if
                     # not a custom handler must be used for that field)

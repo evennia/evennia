@@ -232,10 +232,10 @@ class Attribute(SharedMemoryModel):
     #
 
     def __str__(self):
-        return smart_str("%s(%s)" % (self.key, self.id))
+        return smart_str("%s(%s)" % (_GA(self, "db_key", _GA(self, "id"))))
 
     def __unicode__(self):
-        return u"%s(%s)" % (self.key, self.id)
+        return u"%s(%s)" % (_GA(self, "db_key", _GA(self, "id")))
 
     def access(self, accessing_obj, access_type='read', default=False):
         """
@@ -739,10 +739,10 @@ class TypedObject(SharedMemoryModel):
         return other and hasattr(other, 'dbid') and self.dbid == other.dbid
 
     def __str__(self):
-        return smart_str("%s" % self.key)
+        return smart_str("%s" % _GA(self, "db_key"))
 
     def __unicode__(self):
-        return u"%s" % self.key
+        return u"%s" % _GA(self, "db_key")
 
     def __getattribute__(self, propname):
         """
