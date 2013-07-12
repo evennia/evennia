@@ -160,7 +160,7 @@ class CmdDelCom(MuxPlayerCommand):
             if not channel:
                 self.msg("No channel with alias '%s' was found." % ostring)
             else:
-                if caller.nicks.has(ostring, nick_type="channel"):
+                if caller.nicks.get(ostring, nick_type="channel", default=False):
                     caller.nicks.delete(ostring, nick_type="channel")
                     self.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
                 else:

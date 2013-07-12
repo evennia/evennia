@@ -15,18 +15,18 @@ class Migration(DataMigration):
         # and orm['appname.ModelName'] for models in other applications.
         for alias in orm['objects.Alias'].objects.all():
             # convert all Aliases to tags
-            tag = orm.Tag(db_key=alias.db_key, db_category="aliases", db_data=None)
+            tag = orm.Tag(db_key=alias.db_key, db_category="object_alias", db_data=None)
             tag.save()
             obj = alias.db_obj
             obj.db_tags.add(tag)
         # convert all nicks to LiteAttrs
         for nick in orm['objects.ObjectNick'].objects.all():
-            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="nick_%s" % nick.db_type, db_data=nick.db_real)
+            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="object_nick_%s" % nick.db_type, db_data=nick.db_real)
             lattr.save()
             obj = nick.db_obj
             obj.db_liteattributes.add(lattr)
         for nick in orm['players.PlayerNick'].objects.all():
-            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="nick_%s" % nick.db_type, db_data=nick.db_real)
+            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="player_nick_%s" % nick.db_type, db_data=nick.db_real)
             lattr.save()
             obj = nick.db_obj
             obj.db_liteattributes.add(lattr)

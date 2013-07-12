@@ -18,13 +18,11 @@ import traceback
 from django.db import models
 from django.conf import settings
 
-from src.utils.idmapper.models import SharedMemoryModel
-from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
+from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import get_prop_cache, set_prop_cache
 
 from src.typeclasses.typeclass import TypeClass
-#from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
@@ -35,7 +33,7 @@ from src.utils.utils import make_iter, to_unicode, variable_from_module, inherit
 
 from django.utils.translation import ugettext as _
 
-#__all__ = ("Alias", "ObjectNick", "ObjectDB")
+#__all__ = ("ObjectDB", )
 
 _ScriptDB = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -47,63 +45,6 @@ _DA = object.__delattr__
 _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
-
-#------------------------------------------------------------
-#
-# Alias
-#
-#------------------------------------------------------------
-
-#class Alias(SharedMemoryModel):
-#    """
-#    This model holds a range of alternate names for an object.
-#    These are intrinsic properties of the object. The split
-#    is so as to allow for effective global searches also by
-#    alias.
-#    """
-#    db_key = models.CharField('alias', max_length=255, db_index=True)
-#    db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
-#
-#    class Meta:
-#        "Define Django meta options"
-#        verbose_name = "Object alias"
-#        verbose_name_plural = "Object aliases"
-#    def __unicode__(self):
-#        return u"%s" % self.db_key
-#    def __str__(self):
-#        return str(self.db_key)
-#
-#
-#
-##------------------------------------------------------------
-##
-## Object Nicks
-##
-##------------------------------------------------------------
-#
-#class ObjectNick(TypeNick):
-#    """
-#
-#    The default nick types used by Evennia are:
-#    inputline (default) - match against all input
-#    player - match against player searches
-#    obj - match against object searches
-#    channel - used to store own names for channels
-#    """
-#    db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
-#
-#    class Meta:
-#        "Define Django meta options"
-#        verbose_name = "Nickname for Objects"
-#        verbose_name_plural = "Nicknames for Objects"
-#        unique_together = ("db_nick", "db_type", "db_obj")
-#
-#class ObjectNickHandler(TypeNickHandler):
-#    """
-#    Handles nick access and setting. Accessed through ObjectDB.nicks
-#    """
-#    NickClass = ObjectNick
-
 
 #------------------------------------------------------------
 #
@@ -199,7 +140,9 @@ class ObjectDB(TypedObject):
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
-        #_SA(self, "nicks", ObjectNickHandler(self))
+        _SA(self, "tags", TagHandler(self, "object"))
+        _SA(self, "aliases", AliasHandler(self, "object"))
+        _SA(self, "nicks", NickHandler(self, "object"))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -208,30 +151,6 @@ class ObjectDB(TypedObject):
     # defined that allows the user to do self.attr = value,
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
-
-    # aliases property (wraps (db_aliases)
-    #@property
-    def __aliases_get(self):
-        "Getter. Allows for value = self.aliases"
-        aliases = get_prop_cache(self, "_aliases")
-        if aliases == None:
-            aliases = list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
-            set_prop_cache(self, "_aliases", aliases)
-        return aliases
-    #@aliases.setter
-    def __aliases_set(self, aliases):
-        "Setter. Allows for self.aliases = value"
-        for alias in make_iter(aliases):
-            new_alias = Alias(db_key=alias, db_obj=self)
-            new_alias.save()
-        set_prop_cache(self, "_aliases", make_iter(aliases))
-    #@aliases.deleter
-    def __aliases_del(self):
-        "Deleter. Allows for del self.aliases"
-        for alias in Alias.objects.filter(db_obj=self):
-            alias.delete()
-        #del_prop_cache(self, "_aliases")
-    aliases = property(__aliases_get, __aliases_set, __aliases_del)
 
     # player property (wraps db_player)
     #@property
@@ -643,12 +562,12 @@ class ObjectDB(TypedObject):
             return self.typeclass
 
         if use_nicks:
-            nick = None
             nicktype = "object"
-            # look up nicks
-            nicks = ObjectNick.objects.filter(db_obj=self, db_type=nicktype)
+            # get all valid nicks to search
+            nicks = self.nicks.get(category="object_nick_%s" % nicktype)
             if self.has_player:
-                nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type=nicktype))
+                pnicks = self.nicks.get(category="player_nick_%s" % nicktype)
+                nicks = nicks + pnicks
             for nick in nicks:
                 if searchdata == nick.db_nick:
                     searchdata = nick.db_real
@@ -723,12 +642,15 @@ class ObjectDB(TypedObject):
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        nicks = ObjectNick.objects.filter(db_obj=self, db_type__in=("inputline", "channel"))
+        # fetch the nick data efficiently
+        nicks = self.db_lnattributes.filter(db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
         if self.has_player:
-            nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type__in=("inputline","channel")))
+            pnicks = self.player.db_lnattributes.filter(
+                    db_category__in=("player_nick_inputline", "player_nick_channel")).prefetch_related("db_key","db_data")
+            nicks = nicks + pnicks
         for nick in nicks:
-            if nick.db_nick in raw_list:
-                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
+            if nick.db_key in raw_list:
+                raw_string = raw_string.replace(nick.db_key, nick.db_data, 1)
                 break
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, sessid=sessid)
 

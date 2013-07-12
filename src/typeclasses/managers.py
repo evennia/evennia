@@ -101,9 +101,9 @@ class LiteAttributeManager(models.Manager):
         if search_key or category:
             key_cands = Q(db_key__iexact=search_key.lower().strip()) if search_key!=None else Q()
             cat_cands = Q(db_category__iexact=category.lower.strip()) if search_key!=None else Q()
-            return _GA(obj, "db_tags").filter(cat_cands & key_cands)
+            return _GA(obj, "db_liteattributes").filter(cat_cands & key_cands)
         else:
-            return list(_GA(obj, "db_tags").all())
+            return list(_GA(obj, "db_liteattributes").all())
 
     def get_lattr(self, search_key=None, category=None):
         """
@@ -167,10 +167,17 @@ class TagManager(models.Manager):
         the search criteria.
          search_key (string) - the tag identifier
          category (string) - the tag category
+
+        Returns a single Tag (or None) if both key and category is given, otherwise
+        it will return a list.
         """
         key_cands = Q(db_key__iexact=search_key.lower().strip()) if search_key!=None else Q()
         cat_cands = Q(db_category__iexact=category.lower.strip()) if search_key!=None else Q()
-        return list(self.filter(key_cands & cat_cands))
+        tags = self.filter(key_cands & cat_cands)
+        if search_key and category:
+            return tags[0] if tags else None
+        else:
+            return list(tags)
 
     def get_objs_with_tag(self, objclass, search_key=None, category=None):
         """

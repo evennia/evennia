@@ -25,25 +25,21 @@ account info and OOC account configuration variables etc.
 
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
-from django.db.models.signals import post_init, pre_delete
 
-from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import get_field_cache, set_field_cache
 
 from src.players import manager
 from src.scripts.models import ScriptDB
-from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
-from src.typeclasses.typeclass import TypeClass
+from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
-from src.utils import logger, utils
-from src.utils.utils import inherits_from, make_iter
+from src.utils import utils
 
 from django.utils.translation import ugettext as _
 
-__all__  = ("PlayerNick", "PlayerDB")
+__all__  = ("PlayerDB",)
 
 _ME = _("me")
 _SELF = _("self")
@@ -58,35 +54,6 @@ _DA = object.__delattr__
 
 _TYPECLASS = None
 
-
-##------------------------------------------------------------
-##
-## Player Nicks
-##
-##------------------------------------------------------------
-#
-#class PlayerNick(TypeNick):
-#    """
-#
-#    The default nick types used by Evennia are:
-#    inputline (default) - match against all input
-#    player - match against player searches
-#    obj - match against object searches
-#    channel - used to store own names for channels
-#    """
-#    db_obj = models.ForeignKey("PlayerDB", verbose_name="player")
-#
-#    class Meta:
-#        "Define Django meta options"
-#        verbose_name = "Nickname for Players"
-#        verbose_name_plural = "Nicknames Players"
-#        unique_together = ("db_nick", "db_type", "db_obj")
-#
-#class PlayerNickHandler(TypeNickHandler):
-#    """
-#    Handles nick access and setting. Accessed through ObjectDB.nicks
-#    """
-#    NickClass = PlayerNick
 
 
 #------------------------------------------------------------
@@ -153,7 +120,9 @@ class PlayerDB(TypedObject, AbstractUser):
         # handlers
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
-        #_SA(self, "nicks", PlayerNickHandler(self))
+        _SA(self, "tags", TagHandler(self, "player"))
+        _SA(self, "aliases", AliasHandler(self, "player"))
+        _SA(self, "nicks", NickHandler(self, "player"))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -520,9 +489,12 @@ class PlayerDB(TypedObject, AbstractUser):
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        for nick in PlayerNick.objects.filter(db_obj=self, db_type__in=("inputline","channel")):
-            if nick.db_nick in raw_list:
-                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
+        # get the nick replacement data directly from the database to be able to use db_category__in
+        nicks = self.db_liteattributes.filter(
+                db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
+        for nick in nicks:
+            if nick.db_key in raw_list:
+                raw_string = raw_string.replace(nick.db_key, nick.db_data, 1)
                 break
         if not sessid and _MULTISESSION_MODE in (0, 1):
             # in this case, we should either have only one sessid, or the sessid
