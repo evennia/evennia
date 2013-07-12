@@ -635,19 +635,19 @@ class TypedObject(SharedMemoryModel):
 
     # key property (wraps db_key)
     #@property
-    #def __key_get(self):
-    #    "Getter. Allows for value = self.key"
-    #    return _GA(self, "db_key")
-    #    #return get_field_cache(self, "key")
-    ##@key.setter
-    #def __key_set(self, value):
-    #    "Setter. Allows for self.key = value"
-    #    set_field_cache(self, "key", value)
-    ##@key.deleter
-    #def __key_del(self):
-    #    "Deleter. Allows for del self.key"
-    #    raise Exception("Cannot delete objectdb key!")
-    #key = property(__key_get, __key_set, __key_del)
+    def __key_get(self):
+        "Getter. Allows for value = self.key"
+        return _GA(self, "db_key")
+        #return get_field_cache(self, "key")
+    #@key.setter
+    def __key_set(self, value):
+        "Setter. Allows for self.key = value"
+        set_field_cache(self, "key", value)
+    #@key.deleter
+    def __key_del(self):
+        "Deleter. Allows for del self.key"
+        raise Exception("Cannot delete objectdb key!")
+    key = property(__key_get, __key_set, __key_del)
 
     # name property (alias to self.key)
     def __name_get(self): return self.key

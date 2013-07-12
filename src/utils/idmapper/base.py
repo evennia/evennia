@@ -127,7 +127,6 @@ class SharedMemoryModelBase(ModelBase):
             fset = lambda cls, val: _set(cls, fieldname, val)
             fdel = lambda cls: _del(cls, fieldname)
             doc = "Wraps setting, saving and deleting the %s field." % fieldname
-
             type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel, doc))
 
         # exclude some models that should not auto-create wrapper fields
