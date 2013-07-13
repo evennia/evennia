@@ -130,20 +130,20 @@ class Attribute(SharedMemoryModel):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
-    # key property (wraps db_key)
-    #@property
-    def __key_get(self):
-        "Getter. Allows for value = self.key"
-        return get_field_cache(self, "key")
-    #@key.setter
-    def __key_set(self, value):
-        "Setter. Allows for self.key = value"
-        set_field_cache(self, "key", value)
-    #@key.deleter
-    def __key_del(self):
-        "Deleter. Allows for del self.key"
-        raise Exception("Cannot delete attribute key!")
-    key = property(__key_get, __key_set, __key_del)
+    ## key property (wraps db_key)
+    ##@property
+    #def __key_get(self):
+    #    "Getter. Allows for value = self.key"
+    #    return get_field_cache(self, "key")
+    ##@key.setter
+    #def __key_set(self, value):
+    #    "Setter. Allows for self.key = value"
+    #    set_field_cache(self, "key", value)
+    ##@key.deleter
+    #def __key_del(self):
+    #    "Deleter. Allows for del self.key"
+    #    raise Exception("Cannot delete attribute key!")
+    #key = property(__key_get, __key_set, __key_del)
 
     # obj property (wraps db_obj)
     #@property
@@ -232,7 +232,7 @@ class Attribute(SharedMemoryModel):
     #
 
     def __str__(self):
-        return smart_str("%s(%s)" % (_GA(self, "db_key", _GA(self, "id"))))
+        return smart_str("%s(%s)" % (_GA(self, "db_key"), _GA(self, "id")))
 
     def __unicode__(self):
         return u"%s(%s)" % (_GA(self, "db_key", _GA(self, "id")))

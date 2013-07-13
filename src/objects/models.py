@@ -792,6 +792,7 @@ class ObjectDB(TypedObject):
 
         # Perform move
         try:
+            #print "move_to location:", destination
             _SA(self, "location", destination)
         except Exception:
             emit_to_obj.msg(errtxt % "location change")

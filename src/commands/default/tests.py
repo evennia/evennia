@@ -18,6 +18,12 @@ from django.utils.unittest import TestCase
 from src.players.player import Player
 from src.utils import create, utils, ansi
 
+from django.db.models.signals import pre_save
+from src.server.caches import field_pre_save
+pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
+
+# set up signal here since we are not starting the server
+
 _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)
 
 #------------------------------------------------------------
@@ -171,7 +177,7 @@ class TestBuilding(CommandTest):
     CID = 6
     def test_cmds(self):
         self.call(building.CmdCreate(), "/drop TestObj1", "You create a new Object: TestObj1.")
-        self.call(building.CmdSetObjAlias(), "TestObj1 = TestObj1b","Aliases for 'TestObj1' are now set to testobj1b.")
+        self.call(building.CmdSetObjAlias(), "TestObj1 = TestObj1b","Alias(es) for 'TestObj1' set to testobj1b.")
         self.call(building.CmdCopy(), "TestObj1 = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied TestObj1 to 'TestObj3' (aliases: ['TestObj3b']")
         self.call(building.CmdSetAttribute(), "Obj6/test1=\"value1\"", "Created attribute Obj6/test1 = \"value1\"")
         self.call(building.CmdSetAttribute(), "Obj6b/test2=\"value2\"", "Created attribute Obj6b/test2 = \"value2\"")
