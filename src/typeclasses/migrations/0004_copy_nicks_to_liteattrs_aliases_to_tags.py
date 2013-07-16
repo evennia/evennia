@@ -2,7 +2,7 @@
 import datetime
 from south.db import db
 from south.v2 import DataMigration
-from django.db import models
+from django.db import models, IntegrityError
 
 class Migration(DataMigration):
 
@@ -15,21 +15,30 @@ class Migration(DataMigration):
         # and orm['appname.ModelName'] for models in other applications.
         for alias in orm['objects.Alias'].objects.all():
             # convert all Aliases to tags
-            tag = orm.Tag(db_key=alias.db_key, db_category="object_alias", db_data=None)
-            tag.save()
-            obj = alias.db_obj
-            obj.db_tags.add(tag)
+            try:
+                tag = orm.Tag(db_key=alias.db_key, db_category="object_alias", db_data=None)
+                tag.save()
+                obj = alias.db_obj
+                obj.db_tags.add(tag)
+            except IntegrityError:
+                print "Tag already exists: %s for %s" % (alias.db_key, alias.db_obj.db_key)
         # convert all nicks to LiteAttrs
         for nick in orm['objects.ObjectNick'].objects.all():
-            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="object_nick_%s" % nick.db_type, db_data=nick.db_real)
-            lattr.save()
-            obj = nick.db_obj
-            obj.db_liteattributes.add(lattr)
+            try:
+                lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="object_nick_%s" % nick.db_type, db_data=nick.db_real)
+                lattr.save()
+                obj = nick.db_obj
+                obj.db_liteattributes.add(lattr)
+            except IntegrityError:
+                print "Nick already exists: %s for %s" % (nick.db_nick, nick.db_obj.db_key)
         for nick in orm['players.PlayerNick'].objects.all():
-            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="player_nick_%s" % nick.db_type, db_data=nick.db_real)
-            lattr.save()
-            obj = nick.db_obj
-            obj.db_liteattributes.add(lattr)
+            try:
+                lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="player_nick_%s" % nick.db_type, db_data=nick.db_real)
+                lattr.save()
+                obj = nick.db_obj
+                obj.db_liteattributes.add(lattr)
+            except IntegrityError:
+                print "Nick already exists: %s for %s" % (nick.db_nick, nick.db_obj.db_key)
 
 
     def backwards(self, orm):
