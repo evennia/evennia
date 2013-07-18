@@ -7,8 +7,8 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from src.typeclasses.models import Attribute
-from src.objects.models import ObjectDB, ObjectNick, Alias
-from src.utils.utils import mod_import
+from src.objects.models import ObjectDB
+from src.typeclasses.models import Tag, LiteAttribute
 
 
 class AttributeInline(admin.TabularInline):
@@ -16,14 +16,14 @@ class AttributeInline(admin.TabularInline):
     fields = ('db_key', 'db_value')
     extra = 0
 
-class NickInline(admin.TabularInline):
-    model = ObjectNick
-    fields = ('db_nick', 'db_real', 'db_type')
+class TagInline(admin.TabularInline):
+    model = Tag
+    fields = ('db_key', 'db_category', 'db_data')
     extra = 0
 
-class AliasInline(admin.TabularInline):
-    model = Alias
-    fields = ("db_key",)
+class LiteAttributeInline(admin.TabularInline):
+    model = LiteAttribute
+    fields = ('db_key', 'db_category', 'db_data')
     extra = 0
 
 class ObjectCreateForm(forms.ModelForm):

@@ -15,17 +15,20 @@ from src.players.models import PlayerDB
 from src.typeclasses.models import Attribute
 from src.utils import logger, create
 
-# remove User itself from admin site
-admin.site.unregister(User)
 
 # handle the custom User editor
-class CustomUserChangeForm(UserChangeForm):
+class PlayerDBChangeForm(UserChangeForm):
+
+    class Meta:
+        model = PlayerDB
+
     username = forms.RegexField(label="Username",
                                 max_length=30,
                                 regex=r'^[\w. @+-]+$',
                                 widget=forms.TextInput(attrs={'size':'30'}),
                                 error_messages = {'invalid': "This value may contain only letters, spaces, numbers and @/./+/-/_ characters."},
                                 help_text = "30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.")
+
     def clean_username(self):
         username = self.cleaned_data['username']
         if username.upper() == self.instance.username.upper():
@@ -34,7 +37,12 @@ class CustomUserChangeForm(UserChangeForm):
             raise forms.ValidationError('A player with that name already exists.')
         return self.cleaned_data['username']
 
-class CustomUserCreationForm(UserCreationForm):
+
+class PlayerDBCreationForm(UserCreationForm):
+
+    class Meta:
+        model = PlayerDB
+
     username = forms.RegexField(label="Username",
                                 max_length=30,
                                 regex=r'^[\w. @+-]+$',
@@ -72,6 +80,7 @@ class PlayerForm(forms.ModelForm):
 
     class Meta:
         model = PlayerDB
+
     db_key = forms.RegexField(label="Username",
                               initial="PlayerDummy",
                               max_length=30,
@@ -117,12 +126,12 @@ class PlayerInline(admin.StackedInline):
     extra = 1
     max_num = 1
 
-class UserAdmin(BaseUserAdmin):
+class PlayerDBAdmin(BaseUserAdmin):
     "This is the main creation screen for Users/players"
 
     list_display = ('username','email', 'is_staff', 'is_superuser')
-    form = CustomUserChangeForm
-    add_form = CustomUserCreationForm
+    form = PlayerDBChangeForm
+    add_form = PlayerDBCreationForm
     inlines = [PlayerInline]
     add_form_template = "admin/players/add_form.html"
     change_form_template = "admin/players/change_form.html"
@@ -145,7 +154,7 @@ class UserAdmin(BaseUserAdmin):
     # TODO! Remove User reference!
     def save_formset(self, request, form, formset, change):
         "Run all hooks on the player object"
-        super(UserAdmin, self).save_formset(request, form, formset, change)
+        super(PlayerDBAdmin, self).save_formset(request, form, formset, change)
         userobj = form.instance
         playerobj = userobj.get_profile()
         playerobj.name = userobj.username
@@ -158,4 +167,4 @@ class UserAdmin(BaseUserAdmin):
                                  typeclass=typeclass,
                                  player_dbobj=playerobj)
 
-admin.site.register(User, UserAdmin)
+admin.site.register(PlayerDB, PlayerDBAdmin)
