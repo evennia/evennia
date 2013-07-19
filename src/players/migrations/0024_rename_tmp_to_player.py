@@ -8,7 +8,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        db.rename_table('players_PlayerDBtmp', 'players_PlayerDB')
+        db.rename_table('players_playerdbtmp', 'players_playerdb')
 
     def backwards(self, orm):
         raise RuntimeError("Cannot revert this migration.")
