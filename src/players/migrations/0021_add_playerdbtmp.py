@@ -23,6 +23,10 @@ class Migration(SchemaMigration):
         if "auth_user" in connection.introspection.table_names():
             # auth_user exists ffrom before. Use that as a base.
             db.rename_table('auth_user', 'players_playerdbtmp')
+            db.rename_table('auth_user_groups', 'players_playerdbtmp_groups')
+            db.rename_table('auth_user_user_permissions', 'player_playerdbtmp_user_permissions')
+            db.rename_column('players_playerdbtmp_groups', 'user_id', 'playerdbtmp_id')
+            db.rename_column('players_playerdbtmp_user_permissions', 'user_id', 'playerdbtmp_id')
 
         else:
             # from-scratch creation; no auth_user table available. Create vanilla User table

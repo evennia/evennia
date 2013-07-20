@@ -9,9 +9,16 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
 
         db.rename_table('players_playerdbtmp', 'players_playerdb')
+        db.rename_table('players_playerdbtmp_groups', 'players_playerdb_groups')
+        db.rename_column('players_playerdb_groups', 'playerdbtmp_id', 'playerdb_id')
+        db.rename_table('players_playerdbtmp_user_permissions', 'players_playerdb_user_permissions')
+        db.rename_column('players_playerdb_user_permissions', 'playerdbtmp_id', 'playerdb_id')
 
     def backwards(self, orm):
-        raise RuntimeError("Cannot revert this migration.")
+        db.rename_table('players_playerdb_groups', 'players_playerdbtmp_groups')
+        db.rename_column('players_playerdbtmp_groups', 'playerdb_id', 'playerdbtmp_id')
+        db.rename_table('players_playerdb_user_permissions', 'players_playerdbtmp_user_permissions')
+        db.rename_column('players_playerdbtmp_user_permissions', 'playerdb_id', 'playerdbtmp_id') 
 
     models = {
         u'auth.group': {
