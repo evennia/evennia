@@ -24,7 +24,7 @@ class Migration(SchemaMigration):
             # auth_user exists ffrom before. Use that as a base.
             db.rename_table('auth_user', 'players_playerdbtmp')
             db.rename_table('auth_user_groups', 'players_playerdbtmp_groups')
-            db.rename_table('auth_user_user_permissions', 'player_playerdbtmp_user_permissions')
+            db.rename_table('auth_user_user_permissions', 'players_playerdbtmp_user_permissions')
             db.rename_column('players_playerdbtmp_groups', 'user_id', 'playerdbtmp_id')
             db.rename_column('players_playerdbtmp_user_permissions', 'user_id', 'playerdbtmp_id')
 
