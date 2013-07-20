@@ -64,6 +64,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'db_key')
     ordering = ['db_player', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
+    raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
     save_as = True
     save_on_top = True

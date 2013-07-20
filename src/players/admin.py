@@ -135,7 +135,6 @@ class PlayerDBAdmin(BaseUserAdmin):
     inlines = [PlayerInline]
     add_form_template = "admin/players/add_form.html"
     change_form_template = "admin/players/change_form.html"
-    change_list_template = "admin/players/change_list.html"
     fieldsets = (
         (None, {'fields': ('username', 'password', 'email')}),
         ('Website profile', {'fields': ('first_name', 'last_name'),
