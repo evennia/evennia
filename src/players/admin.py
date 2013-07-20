@@ -129,12 +129,9 @@ class PlayerInline(admin.StackedInline):
 class PlayerDBAdmin(BaseUserAdmin):
     "This is the main creation screen for Users/players"
 
-    list_display = ('username','email', 'is_staff', 'is_superuser')
+    list_display = ('username', 'email', 'is_staff', 'is_superuser')
     form = PlayerDBChangeForm
     add_form = PlayerDBCreationForm
-    inlines = [PlayerInline]
-    add_form_template = "admin/players/add_form.html"
-    change_form_template = "admin/players/change_form.html"
     fieldsets = (
         (None, {'fields': ('username', 'password', 'email')}),
         ('Website profile', {'fields': ('first_name', 'last_name'),

@@ -55,7 +55,7 @@ class Migration(DataMigration):
                 print "Nick already exists: %s for %s" % (nick.db_nick, nick.db_obj.db_key)
         # South expects the migration to be transaction managed. So start up a
         # new transaction for it to close immediately when it exits this function.
-        db.commit_transaction()
+        db.start_transaction()
 
 
     def backwards(self, orm):

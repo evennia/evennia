@@ -46,6 +46,7 @@ class ObjectCreateForm(forms.ModelForm):
                                         required=False,
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="Most non-character objects don't need a cmdset and can leave this field blank.")
+    raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
 
 
@@ -60,7 +61,7 @@ class ObjectEditForm(ObjectCreateForm):
 
 class ObjectDBAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'db_key', 'db_location', 'db_player', 'db_typeclass_path')
+    list_display = ('id', 'db_key', 'db_player', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_player', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
@@ -69,7 +70,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     list_select_related = True
-    list_filter = ('db_permissions', 'db_location', 'db_typeclass_path')
+    list_filter = ('db_permissions', 'db_typeclass_path')
 
     # editing fields setup
 
@@ -91,7 +92,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
     add_fieldsets = (
         (None, {
                 'fields': (('db_key','db_typeclass_path'), 'db_permissions',
-                           ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
+                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )
     def get_fieldsets(self, request, obj=None):
