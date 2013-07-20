@@ -1403,11 +1403,6 @@ class TypedObject(SharedMemoryModel):
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
-    def has_perm(self, accessing_obj, access_type):
-        "Alias to access"
-        logger.log_depmsg("has_perm() is deprecated. Use access() instead.")
-        return self.access(accessing_obj, access_type)
-
     def check_permstring(self, permstring):
         """
         This explicitly checks if we hold particular permission without involving
