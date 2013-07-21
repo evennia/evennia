@@ -4,10 +4,12 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models, IntegrityError
 
+
 class Migration(DataMigration):
 
     depends_on = (("objects", "0022_add_db_liteattributes_db_tags"),
                   ("players", "0025_auto__add_db_liteattributes_db_tags"))
+
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Don't use "from appname.models import ModelName".
@@ -16,47 +18,27 @@ class Migration(DataMigration):
 
         # Each alias and nick is its own case. By default, this function starts
         # in a transaction, so we'll close that and make our own transactions.
-        db.commit_transaction()
 
         for alias in orm['objects.Alias'].objects.all():
             # convert all Aliases to tags
             try:
-                db.start_transaction()
+                tag = orm.Tag.objects.get(db_key=alias.db_key, db_category="object_alias")
+            except orm.Tag.DoesNotExist:
                 tag = orm.Tag(db_key=alias.db_key, db_category="object_alias", db_data=None)
                 tag.save()
-                obj = alias.db_obj
-                obj.db_tags.add(tag)
-                db.commit_transaction()
-            except IntegrityError:
-                db.commit_transaction()
-                print "Tag already exists: %s for %s" % (alias.db_key, alias.db_obj.db_key)
+            obj = alias.db_obj
+            obj.db_tags.add(tag)
         # convert all nicks to LiteAttrs
         for nick in orm['objects.ObjectNick'].objects.all():
-            try:
-                db.start_transaction()
-                lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="object_nick_%s" % nick.db_type, db_data=nick.db_real)
-                lattr.save()
-                obj = nick.db_obj
-                obj.db_liteattributes.add(lattr)
-                db.commit_transaction()
-            except IntegrityError:
-                db.commit_transaction()
-                print "Nick already exists: %s for %s" % (nick.db_nick, nick.db_obj.db_key)
+            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="object_nick_%s" % nick.db_type, db_data=nick.db_real)
+            lattr.save()
+            obj = nick.db_obj
+            obj.db_liteattributes.add(lattr)
         for nick in orm['players.PlayerNick'].objects.all():
-            try:
-                db.start_transaction()
-                lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="player_nick_%s" % nick.db_type, db_data=nick.db_real)
-                lattr.save()
-                obj = nick.db_obj
-                obj.db_liteattributes.add(lattr)
-                db.commit_transaction()
-            except IntegrityError:
-                db.commit_transaction()
-                print "Nick already exists: %s for %s" % (nick.db_nick, nick.db_obj.db_key)
-        # South expects the migration to be transaction managed. So start up a
-        # new transaction for it to close immediately when it exits this function.
-        db.start_transaction()
-
+            lattr = orm.LiteAttribute(db_key=nick.db_nick, db_category="player_nick_%s" % nick.db_type, db_data=nick.db_real)
+            lattr.save()
+            obj = nick.db_obj
+            obj.db_liteattributes.add(lattr)
 
     def backwards(self, orm):
         "Write your backwards methods here."
