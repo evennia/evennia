@@ -217,14 +217,8 @@ class PickledObjectField(_get_subfield_superclass()):
             raise TypeError('Lookup type %s is not supported.' % lookup_type)
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
-        try:
-            return super(PickledObjectField, self).get_db_prep_lookup(
-                lookup_type, value, connection=connection, prepared=prepared)
-        except TypeError:
-            # Try not to break on older versions of Django, where the
-            # `connection` and `prepared` parameters are not available.
-            return super(PickledObjectField, self).get_db_prep_lookup(
-                lookup_type, value)
+        return super(PickledObjectField, self).get_db_prep_lookup(
+            lookup_type, value, connection=connection, prepared=prepared)
 
 
 # South support; see http://south.aeracode.org/docs/tutorial/part4.html#simple-inheritance

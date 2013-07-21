@@ -21,6 +21,7 @@ class ScriptDBAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     list_select_related = True
+    raw_id_fields = ('db_obj',)
 
     fieldsets = (
         (None, {

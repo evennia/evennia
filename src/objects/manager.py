@@ -1,6 +1,7 @@
 """
 Custom manager for Objects.
 """
+from itertools import chain
 from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
@@ -117,16 +118,16 @@ class ObjectManager(TypedObjectManager):
         #q = self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name) & Q(objattribute__db_value=attribute_value))
         #return list(q)
 
-        #if isinstance(attribute_value, (basestring, int, float, bool, long)):
-        return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value))
-        #else:
-        #    # We have to loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
-        #    global _ATTR
-        #    if not _ATTR:
-        #        from src.typeclasses.models import Attribute as _ATTR
-        #    cands = list(self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name)))
-        #    return [_ATTR.
-        #    return [_GA(attr, "db_obj") for attr in _OBJATTR.objects.filter(db_obj__in=cands, db_value=attribute_value)]
+        if isinstance(attribute_value, (basestring, int, float, bool, long)):
+            return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value))
+        else:
+            # We have to loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
+            global _ATTR
+            if not _ATTR:
+                from src.typeclasses.models import Attribute as _ATTR
+            cands = list(self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)))
+            results = [attr.db_objects.all() for attr in _ATTR.objects.filter(db_objects__in=cands, db_value=attribute_value)]
+            return chain(*results)
 
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, candidates=None):
