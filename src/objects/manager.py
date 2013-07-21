@@ -115,8 +115,6 @@ class ObjectManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
 
         ## This doesn't work if attribute_value is an object. Workaround below
-        #q = self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name) & Q(objattribute__db_value=attribute_value))
-        #return list(q)
 
         if isinstance(attribute_value, (basestring, int, float, bool, long)):
             return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value))
@@ -126,7 +124,7 @@ class ObjectManager(TypedObjectManager):
             if not _ATTR:
                 from src.typeclasses.models import Attribute as _ATTR
             cands = list(self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)))
-            results = [attr.db_objects.all() for attr in _ATTR.objects.filter(db_objects__in=cands, db_value=attribute_value)]
+            results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(objectdb__in=cands, db_value=attribute_value)]
             return chain(*results)
 
     @returns_typeclass_list

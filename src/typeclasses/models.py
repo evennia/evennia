@@ -596,8 +596,7 @@ class TypedObject(SharedMemoryModel):
             help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
     # many2many relationships
     db_attributes = models.ManyToManyField(Attribute, null=True,
-            help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).',
-            related_name='db_objects')
+            help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
     db_liteattributes = models.ManyToManyField(LiteAttribute, null=True,
             help_text='liteattributes on this object. A LiteAttribute holds a key, a category and a string field for simple lookups.')
     db_tags = models.ManyToManyField(Tag, null=True,
