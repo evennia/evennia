@@ -9,6 +9,8 @@ by game/evennia.py).
 """
 import sys
 import os
+from src.server.webserver import EvenniaReverseProxyResource
+
 if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
@@ -256,7 +258,7 @@ if WEBSERVER_ENABLED:
             ifacestr = "-%s" % interface
         for proxyport, serverport in WEBSERVER_PORTS:
             pstring = "%s:%s<->%s" % (ifacestr, proxyport, serverport)
-            web_root = proxy.ReverseProxyResource('127.0.0.1', serverport, '')
+            web_root = EvenniaReverseProxyResource('127.0.0.1', serverport, '')
             webclientstr = ""
             if WEBCLIENT_ENABLED:
                 # create ajax client processes at /webclientdata
