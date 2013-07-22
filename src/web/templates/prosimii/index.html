@@ -58,7 +58,7 @@
       <h1>Recently Connected</h1>
       <ul>
       {% for player in players_connected_recent %}
-      <li>{{player.user.username}} -- <em>{{player.user.last_login|timesince}} ago</em></li>
+      <li>{{player.username}} -- <em>{{player.last_login|timesince}} ago</em></li>
       {% endfor %}
       </ul>
       <p class="filler"><!-- Filler para to extend left vertical line --></p>

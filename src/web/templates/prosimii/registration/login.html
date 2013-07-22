@@ -13,7 +13,8 @@ Login
       <p>Your username and password didn't match. Please try again.</p>
    {% endif %}
 
-   <form method="post" action="."{% csrf_token %} >
+   <form method="post" action=".">
+      {% csrf_token %}
       <table>
          <tr>
             <td><label for="id_username">Username:</label></td>
