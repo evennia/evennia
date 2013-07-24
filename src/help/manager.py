@@ -91,7 +91,7 @@ class HelpEntryManager(models.Manager):
         category - limit the search to a particular help topic
         """
         ostring = ostring.strip().lower()
-        if help_categories:
-            return self.filter(db_topicstr__iexact=ostring, db_help_category__iexact=help_category)
+        if help_category:
+            return self.filter(db_key__iexact=ostring, db_help_category__iexact=help_category)
         else:
-            return self.filter(db_topicstr__iexact=ostring)
+            return self.filter(db_key__iexact=ostring)
