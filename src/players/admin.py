@@ -33,7 +33,7 @@ class PlayerDBChangeForm(UserChangeForm):
         username = self.cleaned_data['username']
         if username.upper() == self.instance.username.upper():
             return username
-        elif User.objects.filter(username__iexact=username):
+        elif PlayerDB.objects.filter(username__iexact=username):
             raise forms.ValidationError('A player with that name already exists.')
         return self.cleaned_data['username']
 
@@ -52,7 +52,7 @@ class PlayerDBCreationForm(UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        if User.objects.filter(username__iexact=username):
+        if PlayerDB.objects.filter(username__iexact=username):
             raise forms.ValidationError('A player with that name already exists.')
         return username
 
@@ -139,7 +139,9 @@ class PlayerDBAdmin(BaseUserAdmin):
         ('Website dates', {'fields': ('last_login', 'date_joined'),
                              'description':'<i>Relevant only to the website.</i>'}),
         ('Website Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions','groups'),
-                                 'description': "<i>These are permissions/permission groups for accessing the admin site. They are unrelated to in-game access rights.</i>"}),)
+                                 'description': "<i>These are permissions/permission groups for accessing the admin site. They are unrelated to in-game access rights.</i>"}),
+        ('Game Options', {'fields': ('db_typeclass_path', 'db_cmdset_storage', 'db_permissions', 'db_lock_storage'),
+                          'description': '<i>These are attributes that are more relevant to gameplay.</i>'}))
 
 
     add_fieldsets = (
@@ -152,8 +154,7 @@ class PlayerDBAdmin(BaseUserAdmin):
         "Run all hooks on the player object"
         super(PlayerDBAdmin, self).save_formset(request, form, formset, change)
         userobj = form.instance
-        playerobj = userobj.get_profile()
-        playerobj.name = userobj.username
+        userobj.name = userobj.username
         if not change:
             #uname, passwd, email = str(request.POST.get(u"username")), \
             #        str(request.POST.get(u"password1")), str(request.POST.get(u"email"))
@@ -161,6 +162,6 @@ class PlayerDBAdmin(BaseUserAdmin):
             create.create_player("","","",
                                  user=userobj,
                                  typeclass=typeclass,
-                                 player_dbobj=playerobj)
+                                 player_dbobj=userobj)
 
 admin.site.register(PlayerDB, PlayerDBAdmin)

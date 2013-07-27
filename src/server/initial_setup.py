@@ -51,10 +51,7 @@ def create_objects():
     god_player = get_god_player()
 
     # Create a Player 'user profile' object to hold eventual
-    # mud-specific settings for the bog standard User object. This is
-    # accessed by user.get_profile() and can also store attributes.
-    # It also holds mud permissions, but for a superuser these
-    # have no effect anyhow.
+    # mud-specific settings for the PlayerDB object.
     player_typeclass = settings.BASE_PLAYER_TYPECLASS
 
     # run all creation hooks on god_player (we must do so manually since the manage.py command does not)

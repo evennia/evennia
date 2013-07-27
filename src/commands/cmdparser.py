@@ -245,7 +245,7 @@ def at_multimatch_cmd(caller, matches):
     """
     Format multiple command matches to a useful error.
     """
-    string = "There where multiple matches:"
+    string = "There were multiple matches:"
     for num, match in enumerate(matches):
         # each match is a tuple (candidate, cmd)
         cmdname, arg, cmd, dum, dum = match

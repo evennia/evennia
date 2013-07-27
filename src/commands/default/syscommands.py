@@ -88,7 +88,7 @@ class SystemMultimatch(MuxCommand):
         src.commands.cmdhandler.
 
         """
-        string = "There where multiple matches:"
+        string = "There were multiple matches:"
         for num, match in enumerate(matches):
             # each match is a tuple (candidate, cmd)
             candidate, cmd = match

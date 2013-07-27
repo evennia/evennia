@@ -172,6 +172,8 @@ def post_attr_update(sender, **kwargs):
         pass
     else:
         # forward relation changed (the Object holding the Attribute m2m field)
+        if not kwargs["pk_set"]:
+            return
         if action == "post_add":
             # cache all added objects
             for attr_id in kwargs["pk_set"]:
@@ -185,10 +187,7 @@ def post_attr_update(sender, **kwargs):
                 attr_obj.delete()
         elif action == "post_clear":
             # obj.db_attributes.clear() was called
-            for attr_id in kwargs["pk_set"]:
-                attr_obj = model.objects.get(pk=attr_id)
-                del_attr_cache(obj, _GA(attr_obj, "db_key"))
-                attr_obj.delete()
+            clear_obj_attr_cache(obj)
 
 # access methods
 
@@ -214,6 +213,11 @@ def flush_attr_cache():
     "Clear attribute cache"
     global _ATTR_CACHE
     _ATTR_CACHE = {}
+
+def clear_obj_attr_cache(obj):
+    global _ATTR_CACHE
+    hid = hashid(obj)
+    _ATTR_CACHE = {key:value for key, value in _ATTR_CACHE if not key.startswith(hid)}
 
 #------------------------------------------------------------
 # Property cache - this is a generic cache for properties stored on models.

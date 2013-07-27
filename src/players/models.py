@@ -1,21 +1,14 @@
 """
 Player
 
-The Player class is a simple extension of the django User model using
-the 'profile' system of django. A profile is a model that tack new
-fields to the User model without actually editing the User model
-(which would mean hacking into django internals which we want to avoid
-for future compatability reasons).  The profile, which we call
-'Player', is accessed with user.get_profile() by the property 'player'
-defined on ObjectDB objects. Since we can customize it, we will try to
-abstract as many operations as possible to work on Player rather than
-on User.
+The player class is an extension of the default Django user class,
+and is customized for the needs of Evennia.
 
 We use the Player to store a more mud-friendly style of permission
 system as well as to allow the admin more flexibility by storing
 attributes on the Player.  Within the game we should normally use the
-Player manager's methods to create users, since that automatically
-adds the profile extension.
+Player manager's methods to create users so that permissions are set
+correctly.
 
 To make the Player model more flexible for your own game, it can also
 persistently store attributes of its own. This is ideal for extra

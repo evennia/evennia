@@ -65,7 +65,6 @@ def identify_object(inp):
         obj = inp
     typ = type(obj)
     if typ == _PlayerDB: return obj, "player"
-    if typ == _User: return obj.get_profile(), "player"
     elif typ == _ObjectDB: return obj, "object"
     elif typ == _Channel: return obj, "channel"
     elif dbref(obj): return dbref(obj), "dbref"
