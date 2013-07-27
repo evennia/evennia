@@ -152,14 +152,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Return all objects inside and including the
         given boundaries.
         """
-        min_dbref, max_dbref = self.dbref(min_dbref), self.dbref(max_dbref)
-        if not min_dbref or not max_dbref:
-            return self.all()
-        if not min_dbref:
-            return self.filter(id__lte=max_dbref)
-        elif not max_dbref:
-            return self.filter(id__gte=min_dbref)
-        return self.filter(id__gte=min_dbref).filter(id__lte=min_dbref)
+        retval = super(TypedObjectManager, self).all()
+        if min_dbref != None:
+            retval = retval.filter(id__gte=self.dbref(min_dbref, reqhash=False))
+        if max_dbref != None:
+            retval = retval.filter(id__lte=self.dbref(max_dbref, reqhash=False))
+        return retval
 
     def object_totals(self):
         """
