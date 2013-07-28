@@ -134,7 +134,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     permission is also granted to all ranks higher up in the hierarchy.
 
     If accessing_object is an Object controlled by a Player, the
-    permissions of the Player is used unless the PlayerAttribute _quell
+    permissions of the Player is used unless the Attribute _quell
     is set to True on the Object. In this case however, the
     LOWEST hieararcy-permission of the Player/Object-pair will be used
     (this is order to avoid Players potentially escalating their own permissions
@@ -420,7 +420,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             return True
         objid = objid.lower()
         return any((True for obj in contents
-                    if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases]))
+                    if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases.all()]))
     if not args:
         # holds() - check if accessed_obj or accessed_obj.obj is held by accessing_obj
         try:

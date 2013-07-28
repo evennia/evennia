@@ -14,7 +14,7 @@ if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
     sys.path.insert(0, os.path.dirname(os.path.dirname(
                 os.path.dirname(os.path.abspath(__file__)))))
-
+from twisted.web import server, static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 import django
@@ -29,6 +29,12 @@ from src.server import initial_setup
 from src.utils.utils import get_evennia_version, mod_import, make_iter
 from src.comms import channelhandler
 from src.server.sessionhandler import SESSIONS
+
+# setting up server-side field cache
+
+from django.db.models.signals import pre_save
+from src.server.caches import field_pre_save
+pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
 
 _SA = object.__setattr__
 
@@ -57,10 +63,15 @@ AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
 AMP_INTERFACE = settings.AMP_INTERFACE
 
+WEBSERVER_PORTS = settings.WEBSERVER_PORTS
+WEBSERVER_INTERFACES = settings.WEBSERVER_INTERFACES
+
 # server-channel mappings
+WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 IMC2_ENABLED = settings.IMC2_ENABLED
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
+WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
 
 
 #------------------------------------------------------------
@@ -145,7 +156,7 @@ class Evennia(object):
             #from src.players.models import PlayerDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
-                print " one or more default cmdset/typeclass settings changed. Updating defaults stored in database ..."
+                print " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr)
                 if i == 0: [obj.__setattr__("cmdset_storage", curr) for obj in ObjectDB.objects.filter(db_cmdset_storage__exact=prev)]
                 if i == 1: [ply.__setattr__("cmdset_storage", curr) for ply in PlayerDB.objects.filter(db_cmdset_storage__exact=prev)]
                 if i == 2: [ply.__setattr__("typeclass_path", curr) for ply in PlayerDB.objects.filter(db_typeclass_path__exact=prev)]
@@ -325,7 +336,7 @@ if AMP_ENABLED:
     ifacestr = ""
     if AMP_INTERFACE != '127.0.0.1':
         ifacestr = "-%s" % AMP_INTERFACE
-    print '  amp (to Portal)%s:%s' % (ifacestr, AMP_PORT)
+    print '  amp (to Portal)%s: %s' % (ifacestr, AMP_PORT)
 
     from src.server import amp
 
@@ -333,6 +344,30 @@ if AMP_ENABLED:
     amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
     amp_service.setName("EvenniaPortal")
     EVENNIA.services.addService(amp_service)
+
+if WEBSERVER_ENABLED:
+
+    # Start a django-compatible webserver.
+
+    from twisted.python import threadpool
+    from src.server.webserver import DjangoWebRoot, WSGIWebServer
+
+    # start a thread pool and define the root url (/) as a wsgi resource
+    # recognized by Django
+    threads = threadpool.ThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
+                                    maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
+    web_root = DjangoWebRoot(threads)
+    # point our media resources to url /media
+    web_root.putChild("media", static.File(settings.MEDIA_ROOT))
+    web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
+
+    for proxyport, serverport in WEBSERVER_PORTS:
+        # create the webserver (we only need the port for this)
+        webserver = WSGIWebServer(threads, serverport, web_site, interface='127.0.0.1')
+        webserver.setName('EvenniaWebServer%s' % serverport)
+        EVENNIA.services.addService(webserver)
+
+        print "  webserver: %s" % serverport
 
 if IRC_ENABLED:
 

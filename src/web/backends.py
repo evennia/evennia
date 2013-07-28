@@ -1,5 +1,5 @@
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 class CaseInsensitiveModelBackend(ModelBackend):
   """
@@ -7,6 +7,7 @@ class CaseInsensitiveModelBackend(ModelBackend):
   generally expected.  This backend supports case insensitive username authentication.
   """
   def authenticate(self, username=None, password=None):
+    User = get_user_model()
     try:
       user = User.objects.get(username__iexact=username)
       if user.check_password(password):

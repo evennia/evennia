@@ -2,7 +2,7 @@
 
 MCCP - Mud Client Compression Protocol
 
-The implements the MCCP v2 telnet protocol as per
+This implements the MCCP v2 telnet protocol as per
 http://tintin.sourceforge.net/mccp/. MCCP allows for the server to
 compress data when sending to supporting clients, reducing bandwidth
 by 70-90%.. The compression is done using Python's builtin zlib

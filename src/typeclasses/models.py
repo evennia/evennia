@@ -34,20 +34,24 @@ import sys
 import traceback
 #from collections import defaultdict
 
-from django.db import models, IntegrityError
+from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_attr_cache, set_attr_cache, del_attr_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache, flush_attr_cache
-from src.server.caches import call_ndb_hooks
+from src.server.caches import get_attr_cache, set_attr_cache
+from src.server.caches import get_prop_cache, set_prop_cache, flush_attr_cache
+
+from django.db.models.signals import m2m_changed
+from src.server.caches import post_attr_update
+
+#from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger, utils
-from src.utils.utils import make_iter, is_iter, to_unicode, to_str
+from src.utils.utils import make_iter, is_iter, to_str
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -59,15 +63,13 @@ _CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-#_PLOADS = pickle.loads
-#_PDUMPS = pickle.dumps
+
 
 #------------------------------------------------------------
 #
 #   Attributes
 #
 #------------------------------------------------------------
-
 
 class Attribute(SharedMemoryModel):
     """
@@ -85,34 +87,22 @@ class Attribute(SharedMemoryModel):
       mode - which type of data is stored in attribute
       lock_storage - perm strings
       obj - which object the attribute is defined on
-      date_created - when the attribute was created
-      value - the data stored in the attribute
-         what is actually stored in the field is a dict
+      date_created - when the attribute was created.
+      value - the data stored in the attribute, in pickled form
+              using wrappers to be able to store/retrieve models.
 
-           {type : nodb|dbobj|dbiter,
-            data : <data>}
-
-         where type is info for the loader, telling it if holds a single
-         dbobject (dbobj), have to do a full scan for dbrefs (dbiter) or
-         if it is a normal Python structure without any dbobjs inside it
-         and can thus return it without further action (nodb).
     """
 
     #
     # Attribute Database Model setup
     #
-    #
-    # These databse fields are all set using their corresponding properties,
+    # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
-
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
-    db_value = PickledObjectField('value2', null=True)
+    db_value = PickledObjectField('value', null=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
-    # references the object the attribute is linked to (this is set
-    # by each child class to this abstact class)
-    db_obj =  None # models.ForeignKey("RefencedObject")
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
 
@@ -129,8 +119,8 @@ class Attribute(SharedMemoryModel):
 
     class Meta:
         "Define Django meta options"
-        abstract = True
         verbose_name = "Evennia Attribute"
+
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -242,10 +232,10 @@ class Attribute(SharedMemoryModel):
     #
 
     def __str__(self):
-        return smart_str("%s(%s)" % (self.key, self.id))
+        return smart_str("%s(%s)" % (_GA(self, "db_key", _GA(self, "id"))))
 
     def __unicode__(self):
-        return u"%s(%s)" % (self.key, self.id)
+        return u"%s(%s)" % (_GA(self, "db_key", _GA(self, "id")))
 
     def access(self, accessing_obj, access_type='read', default=False):
         """
@@ -262,53 +252,208 @@ class Attribute(SharedMemoryModel):
         """
         pass
 
-
 #------------------------------------------------------------
 #
-# Nicks
+# LiteAttributes
 #
 #------------------------------------------------------------
 
-class TypeNick(SharedMemoryModel):
-    """
-    This model holds whichever alternate names this object
-    has for OTHER objects, but also for arbitrary strings,
-    channels, players etc. Setting a nick does not affect
-    the nicknamed object at all (as opposed to Aliases above),
-    and only this object will be able to refer to the nicknamed
-    object by the given nick.
-
-    The default nick types used by Evennia are:
-    inputline (default) - match against all input
-    player - match against player searches
-    obj - match against object searches
-    channel - used to store own names for channels
+class LiteAttribute(models.Model):
 
     """
-    db_nick = models.CharField('nickname',max_length=255, db_index=True, help_text='the alias')
-    db_real = models.TextField('realname', help_text='the original string to match and replace.')
-    db_type = models.CharField('nick type',default="inputline", max_length=16, null=True, blank=True,
-       help_text="the nick type describes when the engine tries to do nick-replacement. Common options are 'inputline','player','obj' and 'channel'. Inputline checks everything being inserted, whereas the other cases tries to replace in various searches or when posting to channels.")
-    db_obj = None #models.ForeignKey("ObjectDB")
+    This specialized model is a middle-road between a Tag
+    and an Attribute. A LiteAttribute is smaller, less complex
+    to search than an Attribute (its key is indexed together with its
+    category) but can only hold strings in its db_value property whereas
+    an Attribute can hold arbitrary data. A LiteAttribute is also not
+    kept in memory in the same way as Attributes and has no inherent
+    concept of access restrictions which makes it unsuitable for modification
+    by untrusted users.
+
+    The difference between Liteattrs and Tags are that liteattrs are
+    not shared/unique but are created separately for each object holding them.
+
+    LiteAttributes are accessed through the db_liteattributes many2many field on
+    Typed Objects.
+
+
+    The main default use of the LiteAttribute is to implement Nick replacement.
+    In this case the category determines when the replacement is to be checked.
+    The key value is the input to replace and the data value holds the replacement
+    text.
+
+    The default nick category types used by Evennia are:
+    nick_inputline (default) - match against all input
+    nick_player - match against player searches
+    nick_obj - match against object searches
+    nick_channel - used to store own names for channels
+
+    """
+    db_key = models.CharField('key', max_length=255, help_text='name if liteattribute')
+    db_category = models.CharField('category', max_length=64, null=True, blank=True, help_text="liteattribute category")
+    db_data = models.TextField('data', help_text='holds string data')
+
+    objects = managers.LiteAttributeManager()
 
     class Meta:
         "Define Django meta options"
-        abstract = True
-        verbose_name = "Nickname"
-        unique_together = ("db_nick", "db_type", "db_obj")
+        verbose_name = "Lite Attribute"
+        index_together = (("db_key", "db_category"),)
+    def __unicode__(self):
+        return u"%s" % self.db_key
+    def __str__(self):
+        return str(self.db_key)
 
-class TypeNickHandler(object):
+#------------------------------------------------------------
+#
+# Tags
+#
+#------------------------------------------------------------
+
+class Tag(models.Model):
     """
-    Handles nick access and setting. Accessed through ObjectDB.nicks
+    Tags are quick markers for objects in-game. An typeobject
+    can have any number of tags, stored via its db_tags property.
+    Tagging similar objects will make it easier to quickly locate the
+    group later (such as when implementing zones). The main advantage
+    of tagging as opposed to using Attributes is speed; a tag is very
+    limited in what data it can hold, and the tag key+category is
+    indexed for efficient lookup in the database. Tags are shared between
+    objects - a new tag is only created if the key+category combination
+    did not previously exist, making them unsuitable for storing
+    object-related data (for this a LiteAttribute or a full Attribute
+    should be used).
+    The 'db_data' field is intended as a documentation
+    field for the tag itself, such as to document what this tag+category
+    stands for and display that in a web interface or similar.
+
+    The main default use for Tags is to implement Aliases for objects.
+    this uses the 'aliases' tag category, which is also checked by the
+    default search functions of Evennia to allow quick searches by alias.
     """
+    db_key = models.CharField('key', max_length=255, null=True, help_text="tag identifier")
+    db_category = models.CharField('category', max_length=64, null=True, help_text="tag category")
+    db_data = models.TextField('data', null=True, blank=True, help_text="optional data field with extra information. This is not searched for.")
 
-    NickClass = TypeNick
+    objects = managers.TagManager()
+    class Meta:
+        "Define Django meta options"
+        verbose_name = "Tag"
+        unique_together =(('db_key', 'db_category'),)
+        index_together = (('db_key', 'db_category'),)
+    def __unicode__(self):
+        return u"%s" % self.db_key
+    def __str__(self):
+        return str(self.db_key)
 
-    def __init__(self, obj):
+
+#
+# Helper handlers
+#
+
+class TagHandler(object):
+    """
+    Generic tag-handler. Accessed via TypedObject.tags.
+    """
+    def __init__(self, obj, category_prefix=""):
         """
-        This handler allows for accessing and setting nicks -
-        on-the-fly replacements for various text input passing through
-        this object (most often a Character)
+        Tags are stored internally in the TypedObject.db_tags m2m field
+        using the category <category_prefix><tag_category>
+        """
+        self.obj = obj
+        self.prefix = category_prefix.strip().lower() if category_prefix else ""
+
+    def add(self, tag, category=None, data=None):
+        "Add a new tag to the handler"
+        for tag in make_iter(tag):
+            tag = tag.strip().lower() if tag!=None else None
+            category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
+            data = str(data) if data!=None else None
+            # this will only create tag if no matches existed beforehand (it will overload
+            # data on an existing tag since that is not considered part of making the tag unique)
+            tagobj = Tag.objects.create_tag(key=tag, category=category, data=data)
+            self.obj.db_tags.add(tagobj)
+
+    def remove(self, tag, category=None):
+        "Remove a tag from the handler"
+        for tag in make_iter(tag):
+            tag = tag.strip().lower() if tag!=None else None
+            category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
+            #TODO This does not delete the tag object itself. Maybe it should do that when no
+            # objects reference the tag anymore?
+            tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
+            if tagobj:
+                self.obj.remove(tagobj[0])
+    def clear(self):
+        "Remove all tags from the handler"
+        self.obj.db_tags.clear()
+
+    def all(self):
+        "Get all tags in this handler"
+        return [p[0] for p in self.obj.db_tags.all().values_list("db_key")]
+
+    def __str__(self):
+        return ",".join(self.all())
+    def __unicode(self):
+        return u",".join(self.all())
+
+
+
+class AliasHandler(object):
+    """
+    Handles alias access and setting. Accessed through TypedObject.aliases.
+    """
+    def __init__(self, obj, category_prefix="object_"):
+        """
+        Aliases are alternate names for an entity.
+        Implements the alias handler, using Tags for storage and
+        the <categoryprefix>_alias tag category. It is available
+        as TypedObjects.aliases.
+        """
+        self.obj = obj
+        self.category = "%salias" % category_prefix
+
+    def add(self, alias):
+        "Add a new nick to the handler"
+        for al in make_iter(alias):
+            if not al or not al.strip():
+               continue
+            al = al.strip()
+            # create a unique tag only if it didn't already exist
+            aliasobj = Tag.objects.create_tag(key=al, category=self.category)
+            self.obj.db_tags.add(aliasobj)
+
+    def remove(self, alias):
+        "Remove alias from handler."
+        for alias in make_iter(alias):
+            aliasobj = self.obj.filter(db_key__iexact=alias.strip(), category=self.category)
+            #TODO note that this doesn't delete the tag itself. We might want to do this when no object
+            # uses it anymore ...
+            self.obj.db_tags.remove(aliasobj)
+    def clear(self):
+        "Clear all aliases from handler"
+        self.obj.db_tags.remove(self.obj.filter(categery=self.category))
+
+    def all(self):
+        "Get all aliases in this handler"
+        return [p[0] for p in self.obj.db_tags.filter(db_category=self.category).values_list("db_key")]
+
+    def __str__(self):
+        return ",".join(self.all())
+    def __unicode(self):
+        return u",".join(self.all())
+
+
+class NickHandler(object):
+    """
+    Handles nick access and setting. Accessed through TypedObject.nicks.
+    """
+
+    def __init__(self, obj, category_prefix="object_"):
+        """
+        Nicks are alternate names an entity as of ANOTHER entity. The
+        engine will auto-replace nicks under circumstances dictated
+        by the nick category. It uses LiteAttributes for storage.
 
         The default nick types used by Evennia are:
 
@@ -317,67 +462,89 @@ class TypeNickHandler(object):
         obj - match against object searches
         channel - used to store own names for channels
 
-        You can define other nicktypes by using the add() method of
-        this handler and set nick_type to whatever you want. It's then
-        up to you to somehow make use of this nick_type in your game
-        (such as for a "recog" system).
-
+        These are all stored interally using categories
+        <category_prefix>nick_inputline etc.
         """
         self.obj = obj
+        self.prefix = "%snick_" % category_prefix.strip().lower() if category_prefix else ""
 
-    def add(self, nick, realname, nick_type="inputline"):
+    def add(self, nick, realname, category="inputline"):
         """
         Assign a new nick for realname.
-          nick_types used by Evennia are
+          category used by Evennia are
             'inputline', 'player', 'obj' and 'channel'
         """
         if not nick or not nick.strip():
             return
-        nick = nick.strip()
-        real = realname.strip()
-        query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)
-        if query.count():
-            old_nick = query[0]
-            old_nick.db_real = real
-            old_nick.save()
-        else:
-            new_nick = self.NickClass(db_nick=nick, db_real=real, db_type=nick_type, db_obj=self.obj)
-            new_nick.save()
-    def delete(self, nick, nick_type="inputline"):
-        "Removes a previously stored nick"
-        nick = nick.strip()
-        query = self.NickClass.objects.filter(db_obj=self.obj, db_nick__iexact=nick, db_type__iexact=nick_type)
-        if query.count():
-            # remove the found nick(s)
-            query.delete()
-    def get(self, nick=None, nick_type="inputline", obj=None):
-        """
-        Retrieves a given nick (with a specified nick_type) on an object. If no nick is given, returns a list
-        of all nicks on the object, or the empty list.
-        Defaults to searching the current object.
-        """
-        if not obj:
-            # defaults to the current object
-            obj = self.obj
-        if nick:
-            query = self.NickClass.objects.filter(db_obj=obj, db_nick__iexact=nick, db_type__iexact=nick_type)
-            query = query.values_list("db_real", flat=True)
+        for nick in make_iter(nick):
+            nick = nick.strip()
+            real = realname
+            nick_type = "%s%s" % (self.prefix, category.strip().lower())
+            query = self.obj.db_liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
             if query.count():
-                return query[0]
+                old_nick = query[0]
+                old_nick.db_data = real
+                old_nick.save()
             else:
-                return nick
-        else:
-            return self.NickClass.objects.filter(db_obj=obj)
-    def has(self, nick, nick_type="inputline", obj=None):
-        """
-        Returns true/false if this nick and nick_type is defined on the given
-        object or not. If no obj is given, default to the current object the
-        handler is defined on.
+                new_nick = LiteAttribute(db_key=nick, db_category=nick_type, db_data=real)
+                new_nick.save()
+                self.obj.db_liteattributes.add(new_nick)
 
+    def remove(self, key, category="inputline"):
+        "Removes a previously stored nick"
+        for nick in make_iter(key):
+            nick = nick.strip()
+            nick_type = "%s%s" % (self.prefix, category.strip().lower())
+            query = self.obj.db_liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
+            if query.count():
+                # remove the found nick(s)
+                self.obj.db_liteattributes.remove(query[0])
+
+    def delete(self, *args, **kwargs):
+        "alias wrapper"
+        self.remove(*args, **kwargs)
+
+    def get(self, key=None, category="inputline"):
         """
-        if not obj:
-            obj = self.obj
-        return self.NickClass.objects.filter(db_obj=obj, db_nick__iexact=nick, db_type__iexact=nick_type).count()
+        Retrieves a given nick object based on the input key and category.
+        If no key is given, returns a list of all matching nick
+        objects (LiteAttributes) on the object, or the empty list.
+        """
+        returns = []
+        for nick in make_iter(key):
+            nick = nick.strip().lower() if nick!=None else None
+            nick_type = "%s%s" % (self.prefix, category.strip().lower())
+            if nick:
+                nicks = _GA(self.obj, "db_liteattributes").filter(db_key=nick, db_category=nick_type)
+                return nicks[0] if nicks else None
+            else:
+                returns.extend(list(self.obj.db_liteattributes.all()))
+        return returns
+
+    def get_replace(self, key, category="inputline", default=None):
+        """
+        Retrieves a given nick replacement based on the input nick. If
+        given but no matching conversion was found, returns
+        original input or default if given
+        If no nick is given, returns a list of all matching nick
+        objects (LiteAttributes) on the object, or the empty list.
+        """
+        returns = []
+        for nick in make_iter(key):
+            nick = nick.strip().lower() if nick!=None else None
+            nick_type = "%s%s" % (self.prefix, category.strip().lower())
+            nicks = _GA(self.obj, "db_liteattributes").filter(db_key=nick, db_category=nick_type)
+            default = default if default!=None else nick
+            returns.append(nicks[0].db_data) if nicks else returns.append(default)
+        if len(returns) == 1:
+            return returns[0]
+        return returns
+
+    def all(self):
+        "Get all nicks in this handler"
+        return [p[0] for p in self.obj.db_nicks.filter(db_category=self.category).values_list("db_key")]
+
+
 
 
 #------------------------------------------------------------
@@ -411,33 +578,43 @@ class TypedObject(SharedMemoryModel):
     # TypedObject Database Model setup
     #
     #
-    # These databse fields are all set using their corresponding properties,
-    # named same as the field, but withtou the db_* prefix.
+    # These databse fields are all accessed and set using their corresponding properties,
+    # named same as the field, but without the db_* prefix (no separate save() call is needed)
 
-    # Main identifier of the object, for searching. Can also
-    # be referenced as 'name'.
+    # Main identifier of the object, for searching. Is accessed with self.key or self.name
     db_key = models.CharField('key', max_length=255, db_index=True)
-    # This is the python path to the type class this object is tied to
-    # (the type class is what defines what kind of Object this is)
-    db_typeclass_path = models.CharField('typeclass', max_length=255, null=True, help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
-    # Creation date
+    # This is the python path to the type class this object is tied to the type class is what defines what kind of Object this is)
+    db_typeclass_path = models.CharField('typeclass', max_length=255, null=True,
+            help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+    # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
-    db_permissions = models.CharField('permissions', max_length=255, blank=True, help_text="a comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
+    db_permissions = models.CharField('permissions', max_length=255, blank=True,
+         help_text="a comma-separated list of text strings checked by in-game locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
     # Lock storage
-    db_lock_storage = models.TextField('locks', blank=True, help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
+    db_lock_storage = models.TextField('locks', blank=True,
+            help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
+    # many2many relationships
+    db_attributes = models.ManyToManyField(Attribute, null=True,
+            help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
+    db_liteattributes = models.ManyToManyField(LiteAttribute, null=True,
+            help_text='liteattributes on this object. A LiteAttribute holds a key, a category and a string field for simple lookups.')
+    db_tags = models.ManyToManyField(Tag, null=True,
+            help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
 
     # Database manager
     objects = managers.TypedObjectManager()
 
-    # object cache and flags
+    # quick on-object typeclass cache for speed
     _cached_typeclass = None
 
     # lock handler self.locks
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
-        SharedMemoryModel.__init__(self, *args, **kwargs)
-        self.locks = LockHandler(self)
+        super(SharedMemoryModel, self).__init__(*args, **kwargs)
+        #SharedMemoryModel.__init__(self, *args, **kwargs)
+        _SA(self, "dbobj", self)   # this allows for self-reference
+        _SA(self, "locks", LockHandler(self))
 
     class Meta:
         """
@@ -447,6 +624,7 @@ class TypedObject(SharedMemoryModel):
         verbose_name = "Evennia Database Object"
         ordering = ['-db_date_created', 'id', 'db_typeclass_path', 'db_key']
 
+    # wrapper
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
@@ -459,7 +637,8 @@ class TypedObject(SharedMemoryModel):
     #@property
     def __key_get(self):
         "Getter. Allows for value = self.key"
-        return get_field_cache(self, "key")
+        return _GA(self, "db_key")
+        #return get_field_cache(self, "key")
     #@key.setter
     def __key_set(self, value):
         "Setter. Allows for self.key = value"
@@ -470,54 +649,44 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete objectdb key!")
     key = property(__key_get, __key_set, __key_del)
 
-    # name property (wraps db_key too - alias to self.key)
-    #@property
-    def __name_get(self):
-        "Getter. Allows for value = self.name"
-        return get_field_cache(self, "key")
-    #@name.setter
-    def __name_set(self, value):
-        "Setter. Allows for self.name = value"
-        set_field_cache(self, "key", value)
-    #@name.deleter
-    def __name_del(self):
-        "Deleter. Allows for del self.name"
-        raise Exception("Cannot delete name!")
+    # name property (alias to self.key)
+    def __name_get(self): return self.key
+    def __name_set(self, value): self.key = value
+    def __name_del(self): raise Exception("Cannot delete name")
     name = property(__name_get, __name_set, __name_del)
 
-    # typeclass_path property
+    # typeclass_path property - we manage this separately.
     #@property
-    def __typeclass_path_get(self):
-        "Getter. Allows for value = self.typeclass_path"
-        return get_field_cache(self, "typeclass_path")
-    #@typeclass_path.setter
-    def __typeclass_path_set(self, value):
-        "Setter. Allows for self.typeclass_path = value"
-        set_field_cache(self, "typeclass_path", value)
-        _SA(self, "_cached_typeclass", None)
-    #@typeclass_path.deleter
-    def __typeclass_path_del(self):
-        "Deleter. Allows for del self.typeclass_path"
-        self.db_typeclass_path = ""
-        self.save()
-        del_field_cache(self, "typeclass_path")
-        _SA(self, "_cached_typeclass", None)
-    typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
+    #def __typeclass_path_get(self):
+    #    "Getter. Allows for value = self.typeclass_path"
+    #    return _GA(self, "db_typeclass_path")
+    ##@typeclass_path.setter
+    #def __typeclass_path_set(self, value):
+    #    "Setter. Allows for self.typeclass_path = value"
+    #    _SA(self, "db_typeclass_path", value)
+    #    update_fields = ["db_typeclass_path"] if _GA(self, "_get_pk_val")(_GA(self, "_meta")) is not None else None
+    #    _GA(self, "save")(update_fields=update_fields)
+    ##@typeclass_path.deleter
+    #def __typeclass_path_del(self):
+    #    "Deleter. Allows for del self.typeclass_path"
+    #    self.db_typeclass_path = ""
+    #    _GA(self, "save")(update_fields=["db_typeclass_path"])
+    #typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
 
     # date_created property
     #@property
-    def __date_created_get(self):
-        "Getter. Allows for value = self.date_created"
-        return get_field_cache(self, "date_created")
-    #@date_created.setter
-    def __date_created_set(self, value):
-        "Setter. Allows for self.date_created = value"
-        raise Exception("Cannot change date_created!")
-    #@date_created.deleter
-    def __date_created_del(self):
-        "Deleter. Allows for del self.date_created"
-        raise Exception("Cannot delete date_created!")
-    date_created = property(__date_created_get, __date_created_set, __date_created_del)
+    #def __date_created_get(self):
+    #    "Getter. Allows for value = self.date_created"
+    #    return get_field_cache(self, "date_created")
+    ##@date_created.setter
+    #def __date_created_set(self, value):
+    #    "Setter. Allows for self.date_created = value"
+    #    raise Exception("Cannot change date_created!")
+    ##@date_created.deleter
+    #def __date_created_del(self):
+    #    "Deleter. Allows for del self.date_created"
+    #    raise Exception("Cannot delete date_created!")
+    #date_created = property(__date_created_get, __date_created_set, __date_created_del)
 
     # permissions property
     #@property
@@ -542,18 +711,18 @@ class TypedObject(SharedMemoryModel):
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def __lock_storage_get(self):
-        "Getter. Allows for value = self.lock_storage"
-        return get_field_cache(self, "lock_storage")
-    #@lock_storage.setter
-    def __lock_storage_set(self, value):
-        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        set_field_cache(self, "lock_storage", value)
-    #@lock_storage.deleter
-    def __lock_storage_del(self):
-        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
+    #def __lock_storage_get(self):
+    #    "Getter. Allows for value = self.lock_storage"
+    #    return get_field_cache(self, "lock_storage")
+    ##@lock_storage.setter
+    #def __lock_storage_set(self, value):
+    #    """Saves the lock_storage. This is usually not called directly, but through self.lock()"""
+    #    set_field_cache(self, "lock_storage", value)
+    ##@lock_storage.deleter
+    #def __lock_storage_del(self):
+    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    #lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
 
 
@@ -565,17 +734,15 @@ class TypedObject(SharedMemoryModel):
 
     # these are identifiers for fast Attribute access and caching
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    _attribute_class = Attribute # replaced by relevant attribute class for child
-    _db_model_name = "typeclass" # used by attributes to safely store objects
 
     def __eq__(self, other):
         return other and hasattr(other, 'dbid') and self.dbid == other.dbid
 
     def __str__(self):
-        return smart_str("%s" % self.key)
+        return smart_str("%s" % _GA(self, "db_key"))
 
     def __unicode__(self):
-        return u"%s" % self.key
+        return u"%s" % _GA(self, "db_key")
 
     def __getattribute__(self, propname):
         """
@@ -588,6 +755,9 @@ class TypedObject(SharedMemoryModel):
         try:
             return _GA(self, propname)
         except AttributeError:
+            if propname.startswith('_'):
+                # don't relay private/special varname lookups to the typeclass
+                raise AttributeError("private property %s not found on db model (typeclass not searched)." % propname)
             # check if the attribute exists on the typeclass instead
             # (we make sure to not incur a loop by not triggering the
             # typeclass' __getattribute__, since that one would
@@ -917,10 +1087,10 @@ class TypedObject(SharedMemoryModel):
     #
 
     #
-    # Fully persistent attributes. You usually access these
+    # Fully attr_obj attributes. You usually access these
     # through the obj.db.attrname method.
 
-    # Helper methods for persistent attributes
+    # Helper methods for attr_obj attributes
 
     def has_attribute(self, attribute_name):
         """
@@ -929,10 +1099,9 @@ class TypedObject(SharedMemoryModel):
         attribute_name: (str) The attribute's name.
         """
         if not get_attr_cache(self, attribute_name):
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self, db_key__iexact=attribute_name)
-            if attrib_obj:
-                set_attr_cache(self, attribute_name, attrib_obj[0])
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if attr_obj:
+                set_attr_cache(self, attribute_name, attr_obj[0])
             else:
                 return False
         return True
@@ -950,46 +1119,38 @@ class TypedObject(SharedMemoryModel):
                      below to perform access-checked modification of attributes. Lock
                      types checked by secureattr are 'attrread','attredit','attrcreate'.
         """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrclass = _GA(self, "_attribute_class")
-            # check if attribute already exists.
-            attrib_obj = attrclass.objects.filter(
-                         db_obj=self, db_key__iexact=attribute_name)
-            if attrib_obj:
-                # use old attribute
-                attrib_obj = attrib_obj[0]
+        attr_obj = get_attr_cache(self, attribute_name)
+        if not attr_obj:
+            # check if attribute already exists
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if attr_obj:
+                # re-use old attribute object
+                attr_obj = attr_obj[0]
+                set_attr_cache(self, attribute_name, attr_obj) # renew cache
             else:
-                # no match; create new attribute
-                attrib_obj = attrclass(db_key=attribute_name, db_obj=self)
+                # no old attr available; create new (caches automatically)
+                attr_obj = Attribute(db_key=attribute_name)
+                attr_obj.save() # important
+                _GA(self, "db_attributes").add(attr_obj)
         if lockstring:
-            attrib_obj.locks.add(lockstring)
-        # re-set an old attribute value
-        try:
-            attrib_obj.value = new_value
-        except IntegrityError:
-            # this can happen if the cache was stale and the database object is
-            # missing. If so we need to clean self.hashid from the cache
-            flush_attr_cache(self)
-            self.delete()
-            raise IntegrityError("Attribute could not be saved - object %s was deleted from database." % self.key)
-        set_attr_cache(self, attribute_name, attrib_obj)
+            attr_obj.locks.add(lockstring)
+        # we shouldn't need to fear stale objects, the signalling should catch all cases
+        attr_obj.value = new_value
 
     def get_attribute_obj(self, attribute_name, default=None):
         """
         Get the actual attribute object named attribute_name
         """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
+        attr_obj = get_attr_cache(self, attribute_name)
+        if not attr_obj:
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if not attr_obj:
                 return default
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
-            return attrib_obj[0]
-        return attrib_obj
+            attr_obj = attr_obj[0] # query evaluated here
+            set_attr_cache(self, attribute_name, attr_obj)
+        return attr_obj
 
-    def get_attribute(self, attribute_name, default=None):
+    def get_attribute(self, attribute_name, default=None, raise_exception=False):
         """
         Returns the value of an attribute on an object. You may need to
         type cast the returned value from this function since the attribute
@@ -997,75 +1158,44 @@ class TypedObject(SharedMemoryModel):
 
         attribute_name: (str) The attribute's name.
         default: What to return if no attribute is found
+        raise_exception (bool) - raise an exception if no object exists instead of returning default.
         """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                             db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
+        attr_obj = get_attr_cache(self, attribute_name)
+        if not attr_obj:
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            if not attr_obj:
+                if raise_exception:
+                    raise AttributeError
                 return default
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
-            return attrib_obj[0].value
-        return attrib_obj.value
+            attr_obj = attr_obj[0] # query is evaluated here
+            set_attr_cache(self, attribute_name, attr_obj)
+        return attr_obj.value
 
-    def get_attribute_raise(self, attribute_name):
-        """
-        Returns value of an attribute. Raises AttributeError
-        if no match is found.
-
-        attribute_name: (str) The attribute's name.
-        """
-        attrib_obj = get_attr_cache(self, attribute_name)
-        if not attrib_obj:
-            attrib_obj = _GA(self, "_attribute_class").objects.filter(
-                    db_obj=self, db_key__iexact=attribute_name)
-            if not attrib_obj:
-                raise AttributeError
-            set_attr_cache(self, attribute_name, attrib_obj[0]) #query is first evaluated here
-            return  attrib_obj[0].value
-        return attrib_obj.value
-
-    def del_attribute(self, attribute_name):
+    def del_attribute(self, attribute_name, raise_exception=False):
         """
         Removes an attribute entirely.
 
         attribute_name: (str) The attribute's name.
+        raise_exception (bool) - raise exception if attribute to delete
+                                 could not be found
         """
         attr_obj = get_attr_cache(self, attribute_name)
-        if attr_obj:
-            del_attr_cache(self, attribute_name)
-            attr_obj.delete()
-        else:
-            try:
-                _GA(self, "_attribute_class").objects.filter(
-                db_obj=self, db_key__iexact=attribute_name)[0].delete()
-            except IndexError:
-                pass
-
-    def del_attribute_raise(self, attribute_name):
-        """
-        Removes and attribute. Raises AttributeError if
-        attribute is not found.
-
-        attribute_name: (str) The attribute's name.
-        """
-        attr_obj = get_attr_cache(self, attribute_name)
-        if attr_obj:
-            del_attr_cache(self, attribute_name)
-            attr_obj.delete()
-        else:
-            try:
-                _GA(self, "_attribute_class").objects.filter(
-                db_obj=self, db_key__iexact=attribute_name)[0].delete()
-            except IndexError:
-                pass
-        raise AttributeError
+        if not attr_obj:
+            attr_obj = _GA(self, "db_attributes").filter(db_key__iexact=attribute_name)
+            attr_obj = attr_obj[0] if attr_obj else None
+        if not attr_obj:
+            if raise_exception:
+                raise AttributeError
+            return
+        # the post-remove cache signal will auto-delete the attribute as well,
+        # don't call attr_obj.delete() after this.
+        self.db_attributes.remove(attr_obj)
 
     def get_all_attributes(self):
         """
         Returns all attributes defined on the object.
         """
-        return list(_GA(self,"_attribute_class").objects.filter(db_obj=self))
+        return list(_GA(self, "db_attributes").all())
 
     def attr(self, attribute_name=None, value=None, delete=False):
         """
@@ -1191,12 +1321,12 @@ class TypedObject(SharedMemoryModel):
     db = property(__db_get, __db_set, __db_del)
 
     #
-    # NON-PERSISTENT storage methods
+    # NON-attr_obj storage methods
     #
 
     def nattr(self, attribute_name=None, value=None, delete=False):
         """
-        This is the equivalence of self.attr but for non-persistent
+        This is the equivalence of self.attr but for non-attr_obj
         stores. Will not raise error but return None.
         """
         if attribute_name == None:
@@ -1222,7 +1352,7 @@ class TypedObject(SharedMemoryModel):
     #@property
     def __ndb_get(self):
         """
-        A non-persistent store (ndb: NonDataBase). Everything stored
+        A non-attr_obj store (ndb: NonDataBase). Everything stored
         to this is guaranteed to be cleared when a server is shutdown.
         Syntax is same as for the _get_db_holder() method and
         property, e.g. obj.ndb.attr = value etc.
@@ -1231,7 +1361,7 @@ class TypedObject(SharedMemoryModel):
             return self._ndb_holder
         except AttributeError:
             class NdbHolder(object):
-                "Holder for storing non-persistent attributes."
+                "Holder for storing non-attr_obj attributes."
                 def get_all(self):
                     return [val for val in self.__dict__.keys()
                             if not val.startswith('_')]
@@ -1244,7 +1374,7 @@ class TypedObject(SharedMemoryModel):
                         return None
                 def __setattr__(self, key, value):
                     # hook the oob handler here
-                    call_ndb_hooks(self, key, value)
+                    #call_ndb_hooks(self, key, value)
                     _SA(self, key, value)
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
@@ -1272,11 +1402,6 @@ class TypedObject(SharedMemoryModel):
         default - what to return if no lock of access_type was found
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
-
-    def has_perm(self, accessing_obj, access_type):
-        "Alias to access"
-        logger.log_depmsg("has_perm() is deprecated. Use access() instead.")
-        return self.access(accessing_obj, access_type)
 
     def check_permstring(self, permstring):
         """
@@ -1309,3 +1434,7 @@ class TypedObject(SharedMemoryModel):
         as a new Typeclass instance.
         """
         self.__class__.flush_cached_instance(self)
+
+
+# connect to attribute cache signal
+m2m_changed.connect(post_attr_update, sender=TypedObject.db_attributes.through)

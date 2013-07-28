@@ -4,8 +4,7 @@ Building and world design commands
 
 """
 from django.conf import settings
-from src.objects.models import ObjectDB, ObjAttribute
-from src.players.models import PlayerAttribute
+from src.objects.models import ObjectDB
 from src.utils import create, utils
 from src.utils.ansi import raw
 from src.commands.default.muxcommand import MuxCommand
@@ -124,7 +123,7 @@ class CmdSetObjAlias(MuxCommand):
             return
         if self.rhs == None:
             # no =, so we just list aliases on object.
-            aliases = obj.aliases
+            aliases = obj.aliases.all()
             if aliases:
                 caller.msg("Aliases for '%s': %s" % (obj.key, ", ".join(aliases)))
             else:
@@ -137,24 +136,24 @@ class CmdSetObjAlias(MuxCommand):
 
         if not self.rhs:
             # we have given an empty =, so delete aliases
-            old_aliases = obj.aliases
+            old_aliases = obj.aliases.all()
             if old_aliases:
                 caller.msg("Cleared aliases from %s: %s" % (obj.key, ", ".join(old_aliases)))
-                del obj.dbobj.aliases
+                obj.dbobj.db_aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
             return
 
         # merge the old and new aliases (if any)
-        old_aliases = obj.aliases
+        old_aliases = obj.aliases.all()
         new_aliases = [alias.strip().lower() for alias in self.rhs.split(',') if alias.strip()]
         # make the aliases only appear once
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))
         # save back to object.
-        obj.aliases = aliases
+        obj.aliases.add(aliases)
         # we treat this as a re-caching (relevant for exits to re-build their exit commands with the correct aliases)
-        caller.msg("Aliases for '%s' are now set to %s." % (obj.key, ", ".join(obj.aliases)))
+        caller.msg("Aliases for '%s' are now %s." % (obj.key, str(obj.aliases)))
 
 class CmdCopy(ObjManipCommand):
     """
@@ -192,7 +191,7 @@ class CmdCopy(ObjManipCommand):
             if not from_obj:
                 return
             to_obj_name = "%s_copy" % from_obj_name
-            to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases]
+            to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases.all()]
             copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name,
                                                      new_aliases=to_obj_aliases)
             if copiedobj:
@@ -599,8 +598,8 @@ class CmdDig(ObjManipCommand):
                                         aliases=room["aliases"], report_to=caller)
         new_room.locks.add(lockstring)
         alias_string = ""
-        if new_room.aliases:
-            alias_string = " (%s)" % ", ".join(new_room.aliases)
+        if new_room.aliases.all():
+            alias_string = " (%s)" % ", ".join(new_room.aliases.all())
         room_string = "Created room %s(%s)%s of type %s." % (new_room, new_room.dbref, alias_string, typeclass)
 
 
@@ -627,8 +626,8 @@ class CmdDig(ObjManipCommand):
                                                    aliases=to_exit["aliases"],
                                                    locks=lockstring, destination=new_room, report_to=caller)
                 alias_string = ""
-                if new_to_exit.aliases:
-                    alias_string = " (%s)" % ", ".join(new_to_exit.aliases)
+                if new_to_exit.aliases.all():
+                    alias_string = " (%s)" % ", ".join(new_to_exit.aliases.all())
                 exit_to_string = "\nCreated Exit from %s to %s: %s(%s)%s."
                 exit_to_string = exit_to_string % (location.name, new_room.name, new_to_exit,
                                                    new_to_exit.dbref, alias_string)
@@ -652,8 +651,8 @@ class CmdDig(ObjManipCommand):
                                                      new_room, aliases=back_exit["aliases"],
                                                      locks=lockstring, destination=location, report_to=caller)
                 alias_string = ""
-                if new_back_exit.aliases:
-                    alias_string = " (%s)" % ", ".join(new_back_exit.aliases)
+                if new_back_exit.aliases.all():
+                    alias_string = " (%s)" % ", ".join(new_back_exit.aliases.all())
                 exit_back_string = "\nCreated Exit back from %s to %s: %s(%s)%s."
                 exit_back_string = exit_back_string % (new_room.name, location.name,
                                                        new_back_exit, new_back_exit.dbref, alias_string)
@@ -980,7 +979,7 @@ class CmdName(ObjManipCommand):
             obj.name = newname
         astring = ""
         if aliases:
-            obj.aliases = aliases
+            [obj.aliases.add(alias) for alias in aliases]
             astring = " (%s)" % (", ".join(aliases))
         # fix for exits - we need their exit-command to change name too
         if obj.destination:
@@ -1038,7 +1037,7 @@ class CmdOpen(ObjManipCommand):
                 if old_destination.id != destination.id:
                     # reroute the old exit.
                     exit_obj.destination = destination
-                    exit_obj.aliases = exit_aliases
+                    [exit_obj.aliases.add(alias) for alias in exit_aliases]
                     string += " Rerouted its old destination '%s' to '%s' and changed aliases." % \
                         (old_destination.name, destination.name)
                 else:
@@ -1545,10 +1544,7 @@ class CmdExamine(ObjManipCommand):
             except Exception:
                 ndb_attr = None
         else:
-            if self.player_mode:
-                db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
-            else:
-                db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
+            db_attr = [(attr.key, attr.value) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items() if not aname.startswith("_")]
             except Exception:
@@ -1572,8 +1568,8 @@ class CmdExamine(ObjManipCommand):
         """
 
         string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
-        if hasattr(obj, "aliases") and obj.aliases:
-            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(obj.aliases)))
+        if hasattr(obj, "aliases") and obj.aliases.all():
+            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
         if hasattr(obj, "sessid") and obj.sessid:
             string += "\n{wsession{n: %s" % obj.sessid
         elif hasattr(obj, "sessions") and obj.sessions:
@@ -1789,7 +1785,7 @@ class CmdFind(MuxCommand):
             nresults = results.count()
             if not nresults:
                 # no matches on the keys. Try aliases instead.
-                results = results = ObjectDB.alias_set.related.model.objects.filter(db_key=searchstring)
+                results = ObjectDB.db_aliases.filter(db_key=searchstring)
                 if "room" in switches:
                     results = results.filter(db_obj__db_location__isnull=True)
                 if "exit" in switches:

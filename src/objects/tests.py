@@ -34,19 +34,20 @@ class TestObjAttrs(TestCase):
     """
     Test aspects of ObjAttributes
     """
-    def setUp(self):
-        "set up the test"
-        self.attr = models.ObjAttribute()
-        self.obj1 = create.create_object(objects.Object, key="testobj1", location=None)
-        self.obj2 = create.create_object(objects.Object, key="testobj2", location=self.obj1)
-    def test_store_str(self):
-        hstring = u"sdfv00=97sfjs842 ivfjlQKFos9GF^8dddsöäå-?%"
-        self.obj1.db.testattr = hstring
-        self.assertEqual(hstring, self.obj1.db.testattr)
-    def test_store_obj(self):
-        self.obj1.db.testattr = self.obj2
-        self.assertEqual(self.obj2 ,self.obj1.db.testattr)
-        self.assertEqual(self.obj2.location, self.obj1.db.testattr.location)
+    pass
+#    def setUp(self):
+#        "set up the test"
+#        self.attr = models.ObjAttribute()
+#        self.obj1 = create.create_object(objects.Object, key="testobj1", location=None)
+#        self.obj2 = create.create_object(objects.Object, key="testobj2", location=self.obj1)
+#    def test_store_str(self):
+#        hstring = u"sdfv00=97sfjs842 ivfjlQKFos9GF^8dddsöäå-?%"
+#        self.obj1.db.testattr = hstring
+#        self.assertEqual(hstring, self.obj1.db.testattr)
+#    def test_store_obj(self):
+#        self.obj1.db.testattr = self.obj2
+#        self.assertEqual(self.obj2 ,self.obj1.db.testattr)
+#        self.assertEqual(self.obj2.location, self.obj1.db.testattr.location)
 
 def suite():
     """

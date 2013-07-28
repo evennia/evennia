@@ -18,12 +18,11 @@ import traceback
 from django.db import models
 from django.conf import settings
 
-from src.utils.idmapper.models import SharedMemoryModel
-from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
+from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.server.caches import get_prop_cache, set_prop_cache
+
 from src.typeclasses.typeclass import TypeClass
-from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
@@ -34,7 +33,7 @@ from src.utils.utils import make_iter, to_unicode, variable_from_module, inherit
 
 from django.utils.translation import ugettext as _
 
-#__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
+#__all__ = ("ObjectDB", )
 
 _ScriptDB = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -46,78 +45,6 @@ _DA = object.__delattr__
 _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
-
-#------------------------------------------------------------
-#
-# ObjAttribute
-#
-#------------------------------------------------------------
-
-class ObjAttribute(Attribute):
-    "Attributes for ObjectDB objects."
-    db_obj = models.ForeignKey("ObjectDB")
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Object Attribute"
-        verbose_name_plural = "Object Attributes"
-
-#------------------------------------------------------------
-#
-# Alias
-#
-#------------------------------------------------------------
-
-class Alias(SharedMemoryModel):
-    """
-    This model holds a range of alternate names for an object.
-    These are intrinsic properties of the object. The split
-    is so as to allow for effective global searches also by
-    alias.
-    """
-    db_key = models.CharField('alias', max_length=255, db_index=True)
-    db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Object alias"
-        verbose_name_plural = "Object aliases"
-    def __unicode__(self):
-        return u"%s" % self.db_key
-    def __str__(self):
-        return str(self.db_key)
-
-
-
-#------------------------------------------------------------
-#
-# Object Nicks
-#
-#------------------------------------------------------------
-
-class ObjectNick(TypeNick):
-    """
-
-    The default nick types used by Evennia are:
-    inputline (default) - match against all input
-    player - match against player searches
-    obj - match against object searches
-    channel - used to store own names for channels
-    """
-    db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Nickname for Objects"
-        verbose_name_plural = "Nicknames for Objects"
-        unique_together = ("db_nick", "db_type", "db_obj")
-
-class ObjectNickHandler(TypeNickHandler):
-    """
-    Handles nick access and setting. Accessed through ObjectDB.nicks
-    """
-    NickClass = ObjectNick
-
 
 #------------------------------------------------------------
 #
@@ -171,9 +98,10 @@ class ObjectDB(TypedObject):
     # db_key (also 'name' works), db_typeclass_path, db_date_created,
     # db_permissions
     #
-    # These databse fields (including the inherited ones) are all set
-    # using their corresponding properties, named same as the field,
-    # but withtout the db_* prefix.
+    # These databse fields (including the inherited ones) should normally be set
+    # using their corresponding wrapper properties, named same as the field, but without
+    # the db_* prefix (e.g. the db_key field is set with self.key instead). The wrappers
+    # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
     db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player',
@@ -200,8 +128,11 @@ class ObjectDB(TypedObject):
     # Database manager
     objects = ObjectManager()
 
-    # Add the object-specific handlers
+    # caches for quick lookups of typeclass loading.
+    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
+    # Add the object-specific handlers
     def __init__(self, *args, **kwargs):
         "Parent must be initialized first."
         TypedObject.__init__(self, *args, **kwargs)
@@ -209,8 +140,11 @@ class ObjectDB(TypedObject):
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
-        _SA(self, "nicks", ObjectNickHandler(self))
-        # store the attribute class
+        _SA(self, "tags", TagHandler(self, category_prefix="object_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="object_"))
+        _SA(self, "nicks", NickHandler(self, category_prefix="object_"))
+        # make sure to sync the contents cache when initializing
+        self.contents_update()
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -220,30 +154,7 @@ class ObjectDB(TypedObject):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
-    # aliases property (wraps (db_aliases)
-    #@property
-    def __aliases_get(self):
-        "Getter. Allows for value = self.aliases"
-        aliases = get_prop_cache(self, "_aliases")
-        if aliases == None:
-            aliases = list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
-            set_prop_cache(self, "_aliases", aliases)
-        return aliases
-    #@aliases.setter
-    def __aliases_set(self, aliases):
-        "Setter. Allows for self.aliases = value"
-        for alias in make_iter(aliases):
-            new_alias = Alias(db_key=alias, db_obj=self)
-            new_alias.save()
-        set_prop_cache(self, "_aliases", make_iter(aliases))
-    #@aliases.deleter
-    def __aliases_del(self):
-        "Deleter. Allows for del self.aliases"
-        for alias in Alias.objects.filter(db_obj=self):
-            alias.delete()
-        del_prop_cache(self, "_aliases")
-    aliases = property(__aliases_get, __aliases_set, __aliases_del)
-
+    #TODO - make player-handler
     # player property (wraps db_player)
     #@property
     def __player_get(self):
@@ -279,47 +190,37 @@ class ObjectDB(TypedObject):
 
     # sessid property (wraps db_sessid)
     #@property
-    def __sessid_get(self):
-        """
-        Getter. Allows for value = self.sessid. Since sessid
-        is directly related to self.player, we cannot have
-        a sessid without a player being connected (but the
-        opposite could be true).
-        """
-        if not get_field_cache(self, "sessid"):
-            del_field_cache(self, "sessid")
-        return get_field_cache(self, "sessid")
-    #@sessid.setter
-    def __sessid_set(self, sessid):
-        "Setter. Allows for self.player = value"
-        set_field_cache(self, "sessid", sessid)
-    #@sessid.deleter
-    def __sessid_del(self):
-        "Deleter. Allows for del self.player"
-        del_field_cache(self, "sessid")
-    sessid = property(__sessid_get, __sessid_set, __sessid_del)
+    #def __sessid_get(self):
+    #    """
+    #    Getter. Allows for value = self.sessid. Since sessid
+    #    is directly related to self.player, we cannot have
+    #    a sessid without a player being connected (but the
+    #    opposite could be true).
+    #    """
+    #    if not get_field_cache(self, "sessid"):
+    #        del_field_cache(self, "sessid")
+    #    return get_field_cache(self, "sessid")
+    ##@sessid.setter
+    #def __sessid_set(self, sessid):
+    #    "Setter. Allows for self.player = value"
+    #    set_field_cache(self, "sessid", sessid)
+    ##@sessid.deleter
+    #def __sessid_del(self):
+    #    "Deleter. Allows for del self.player"
+    #    del_field_cache(self, "sessid")
+    #sessid = property(__sessid_get, __sessid_set, __sessid_del)
 
-    # location property (wraps db_location)
-    #@property
-    def __location_get(self):
-        "Getter. Allows for value = self.location."
-        loc = get_field_cache(self, "location")
-        if loc:
-            return _GA(loc, "typeclass")
-        return None
-    #@location.setter
-    def __location_set(self, location):
-        "Setter. Allows for self.location = location"
+    def _db_location_handler(self, loc, old_value=None):
+        "This handles changes to the db_location field."
+        #print "db_location_handler:", loc, old_value
         try:
-            old_loc = _GA(self, "location")
-            if ObjectDB.objects.dbref(location):
-                # dbref search
-                loc = ObjectDB.objects.dbref_search(location)
-                loc = loc and _GA(loc, "dbobj")
-            elif location and type(location) != ObjectDB:
-                loc = _GA(location, "dbobj")
-            else:
-                loc = location
+            old_loc = old_value
+            # new_value can be dbref, typeclass or dbmodel
+            if ObjectDB.objects.dbref(loc, reqhash=False):
+                loc = ObjectDB.objects.dbref_search(loc)
+            if loc and type(loc) != ObjectDB:
+                # this should not fail if new_value is valid.
+                loc = _GA(loc, "dbobj")
 
             # recursive location check
             def is_loc_loop(loc, depth=0):
@@ -332,13 +233,13 @@ class ObjectDB(TypedObject):
             try: is_loc_loop(loc)
             except RuntimeWarning: pass
 
-            # set the location
-            set_field_cache(self, "location", loc)
+            #print "db_location_handler2:", _GA(loc, "db_key") if loc else loc, type(loc)
             # update the contents of each location
             if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_update")()
+                _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
             if loc:
-                _GA(loc, "contents_update")()
+                _GA(loc, "contents_update")(self)
+            return loc
         except RuntimeError:
             string = "Cannot set location, "
             string += "%s.location = %s would create a location-loop." % (self.key, loc)
@@ -347,18 +248,71 @@ class ObjectDB(TypedObject):
             raise RuntimeError(string)
         except Exception, e:
             string = "Cannot set location (%s): " % str(e)
-            string += "%s is not a valid location." % location
+            string += "%s is not a valid location." % loc
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise Exception(string)
-    #@location.deleter
-    def __location_del(self):
-        "Deleter. Allows for del self.location"
-        _GA(self, "location").contents_update()
-        _SA(self, "db_location", None)
-        _GA(self, "save")()
-        del_field_cache(self, "location")
-    location = property(__location_get, __location_set, __location_del)
+
+    ## location property (wraps db_location)
+    ##@property
+    #def __location_get(self):
+    #    "Getter. Allows for value = self.location."
+    #    loc = get_field_cache(self, "location")
+    #    if loc:
+    #        return _GA(loc, "typeclass")
+    #    return None
+    ##@location.setter
+    #def __location_set(self, location):
+    #    "Setter. Allows for self.location = location"
+    #    try:
+    #        old_loc = _GA(self, "location")
+    #        if ObjectDB.objects.dbref(location):
+    #            # dbref search
+    #            loc = ObjectDB.objects.dbref_search(location)
+    #            loc = loc and _GA(loc, "dbobj")
+    #        elif location and type(location) != ObjectDB:
+    #            loc = _GA(location, "dbobj")
+    #        else:
+    #            loc = location
+
+    #        # recursive location check
+    #        def is_loc_loop(loc, depth=0):
+    #            "Recursively traverse the target location to make sure we are not in it."
+    #            if depth > 10: return
+    #            elif loc == self: raise RuntimeError
+    #            elif loc == None: raise RuntimeWarning # just to quickly get out
+    #            return is_loc_loop(_GA(loc, "db_location"), depth+1)
+    #        # check so we don't create a location loop - if so, RuntimeError will be raised.
+    #        try: is_loc_loop(loc)
+    #        except RuntimeWarning: pass
+
+    #        # set the location
+    #        set_field_cache(self, "location", loc)
+    #        # update the contents of each location
+    #        if old_loc:
+    #            _GA(_GA(old_loc, "dbobj"), "contents_update")()
+    #        if loc:
+    #            _GA(loc, "contents_update")()
+    #    except RuntimeError:
+    #        string = "Cannot set location, "
+    #        string += "%s.location = %s would create a location-loop." % (self.key, loc)
+    #        _GA(self, "msg")(_(string))
+    #        logger.log_trace(string)
+    #        raise RuntimeError(string)
+    #    except Exception, e:
+    #        string = "Cannot set location (%s): " % str(e)
+    #        string += "%s is not a valid location." % location
+    #        _GA(self, "msg")(_(string))
+    #        logger.log_trace(string)
+    #        raise Exception(string)
+    ##@location.deleter
+    #def __location_del(self):
+    #    "Deleter. Allows for del self.location"
+    #    _GA(self, "location").contents_update()
+    #    _SA(self, "db_location", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "location")
+    #location = property(__location_get, __location_set, __location_del)
 
     # home property (wraps db_home)
     #@property
@@ -466,11 +420,6 @@ class ObjectDB(TypedObject):
     # ObjectDB class access methods/properties
     #
 
-    # this is required to properly handle attributes and typeclass loading.
-    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    _attribute_class = ObjAttribute
-    _db_model_name = "objectdb" # used by attributes to safely store objects
-    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
     #@property
     def __sessions_get(self):
@@ -515,19 +464,26 @@ class ObjectDB(TypedObject):
         exclude = make_iter(exclude)
         if cont == None:
             cont = _GA(self, "contents_update")()
-        return [obj for obj in cont if obj not in exclude]
+        return [obj for obj in cont.values() if obj not in exclude]
     contents = property(contents_get)
 
-    def contents_update(self):
+    def contents_update(self, obj=None, remove=False):
         """
-        Updates the contents property of the object with a new
-        object Called by
-        self.location_set.
+        Updates the contents property of the object
 
-        obj -
-        remove (true/false) - remove obj from content list
+        add - object to add to content list
+        remove object to remove from content list
         """
-        cont = ObjectDB.objects.get_contents(self)
+        cont = get_prop_cache(self, "_contents")
+        if not cont:
+            cont = {}
+        if obj:
+            if remove:
+                cont.pop(self.dbid, None)
+            else:
+                cont[self.dbid] = obj
+        else:
+            cont = dict((o.dbid, o) for o in ObjectDB.objects.get_contents(self))
         set_prop_cache(self, "_contents", cont)
         return cont
 
@@ -609,15 +565,15 @@ class ObjectDB(TypedObject):
             return self.typeclass
 
         if use_nicks:
-            nick = None
             nicktype = "object"
-            # look up nicks
-            nicks = ObjectNick.objects.filter(db_obj=self, db_type=nicktype)
+            # get all valid nicks to search
+            nicks = self.nicks.get(category="object_nick_%s" % nicktype)
             if self.has_player:
-                nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type=nicktype))
+                pnicks = self.nicks.get(category="player_nick_%s" % nicktype)
+                nicks = nicks + pnicks
             for nick in nicks:
-                if searchdata == nick.db_nick:
-                    searchdata = nick.db_real
+                if searchdata == nick.db_key:
+                    searchdata = nick.db_data
                     break
 
         candidates=None
@@ -689,12 +645,15 @@ class ObjectDB(TypedObject):
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        nicks = ObjectNick.objects.filter(db_obj=self, db_type__in=("inputline", "channel"))
+        # fetch the nick data efficiently
+        nicks = self.db_liteattributes.filter(db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
         if self.has_player:
-            nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type__in=("inputline","channel")))
+            pnicks = self.player.db_liteattributes.filter(
+                    db_category__in=("player_nick_inputline", "player_nick_channel")).prefetch_related("db_key","db_data")
+            nicks = list(nicks) + list(pnicks)
         for nick in nicks:
-            if nick.db_nick in raw_list:
-                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
+            if nick.db_key in raw_list:
+                raw_string = raw_string.replace(nick.db_key, nick.db_data, 1)
                 break
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, sessid=sessid)
 

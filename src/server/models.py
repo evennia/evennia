@@ -48,9 +48,6 @@ class ServerConfig(SharedMemoryModel):
 
     objects = ServerConfigManager()
 
-    # used by Attributes eventually storing this safely
-    _db_model_name = "serverconfig"
-
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()

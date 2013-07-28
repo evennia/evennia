@@ -298,12 +298,8 @@ class CmdDelPlayer(MuxCommand):
                     string = "No Player nor User found matching '%s'." % args
                     self.msg(string)
                     return
-            try:
-                player = user.get_profile()
-            except Exception:
-                player = None
 
-            if player and not player.access(caller, 'delete'):
+            if user and not user.access(caller, 'delete'):
                 string = "You don't have the permissions to delete this player."
                 self.msg(string)
                 return
@@ -311,9 +307,9 @@ class CmdDelPlayer(MuxCommand):
             string = ""
             name = user.username
             user.delete()
-            if player:
-                name = player.name
-                player.delete()
+            if user:
+                name = user.name
+                user.delete()
                 string = "Player %s was deleted." % name
             else:
                 string += "The User %s was deleted. It had no Player associated with it." % name
@@ -322,16 +318,16 @@ class CmdDelPlayer(MuxCommand):
 
         elif utils.is_iter(players):
             string = "There were multiple matches:"
-            for player in players:
-                string += "\n %s %s" % (player.id, player.key)
+            for user in players:
+                string += "\n %s %s" % (user.id, user.key)
             return
         else:
             # one single match
 
-            player = players
-            user = player.user
+            user = players
+            user = user.user
 
-            if not player.access(caller, 'delete'):
+            if not user.access(caller, 'delete'):
                 string = "You don't have the permissions to delete that player."
                 self.msg(string)
                 return
@@ -342,12 +338,12 @@ class CmdDelPlayer(MuxCommand):
             string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
             if reason:
                 string += " Reason given:\n  '%s'" % reason
-            player.unpuppet_all()
-            for session in SESSIONS.sessions_from_player(player):
-                player.msg(string, sessid=session.sessid)
-                player.disconnect_session_from_player(session.sessid)
+            user.unpuppet_all()
+            for session in SESSIONS.sessions_from_player(user):
+                user.msg(string, sessid=session.sessid)
+                user.disconnect_session_from_player(session.sessid)
             user.delete()
-            player.delete()
+            user.delete()
             self.msg("Player %s was successfully deleted." % uname)
 
 

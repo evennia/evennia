@@ -63,11 +63,11 @@ class WebClient(resource.Resource):
         self.requests = {}
         self.databuffer = {}
 
-    def getChild(self, path, request):
-        """
-        This is the place to put dynamic content.
-        """
-        return self
+    #def getChild(self, path, request):
+    #    """
+    #    This is the place to put dynamic content.
+    #    """
+    #    return self
 
     def _responseFailed(self, failure, suid, request):
         "callback if a request is lost/timed out"

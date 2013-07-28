@@ -4,7 +4,6 @@ Commands that are available from the connect screen.
 import re
 import traceback
 from django.conf import settings
-from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
 from src.server.models import ServerConfig
@@ -68,7 +67,7 @@ class CmdUnconnectedConnect(MuxCommand):
         player = PlayerDB.objects.get_player_from_name(playername)
         pswd = None
         if player:
-            pswd = player.user.check_password(password)
+            pswd = player.check_password(password)
 
         if not (player and pswd):
         # No playername or password match
@@ -142,7 +141,7 @@ class CmdUnconnectedCreate(MuxCommand):
             return
         # strip excessive spaces in playername
         playername = re.sub(r"\s+", " ", playername).strip()
-        if PlayerDB.objects.filter(user__username__iexact=playername) or User.objects.filter(username__iexact=playername):
+        if PlayerDB.objects.filter(username__iexact=playername):
             # player already exists (we also ignore capitalization here)
             session.msg("Sorry, there is already a player with the name '%s'." % playername)
             return
@@ -167,6 +166,7 @@ class CmdUnconnectedCreate(MuxCommand):
 
             except Exception, e:
                 session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
+                logger.log_trace()
                 return
 
             # This needs to be called so the engine knows this player is logging in for the first time.

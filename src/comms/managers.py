@@ -65,7 +65,6 @@ def identify_object(inp):
         obj = inp
     typ = type(obj)
     if typ == _PlayerDB: return obj, "player"
-    if typ == _User: return obj.get_profile(), "player"
     elif typ == _ObjectDB: return obj, "object"
     elif typ == _Channel: return obj, "channel"
     elif dbref(obj): return dbref(obj), "dbref"
@@ -346,7 +345,7 @@ class ChannelManager(models.Manager):
             channels = self.filter(db_key__iexact=ostring)
         if not channels:
             # still no match. Search by alias.
-            channels = [channel for channel in self.all() if ostring.lower in [a.lower for a in channel.aliases]]
+            channels = [channel for channel in self.all() if ostring.lower() in [a.lower for a in channel.aliases]]
         return channels
 
 #

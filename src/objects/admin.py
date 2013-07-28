@@ -6,23 +6,24 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.objects.models import ObjAttribute, ObjectDB, ObjectNick, Alias
-from src.utils.utils import mod_import
+from src.typeclasses.models import Attribute
+from src.objects.models import ObjectDB
+from src.typeclasses.models import Tag, LiteAttribute
 
 
-class ObjAttributeInline(admin.TabularInline):
-    model = ObjAttribute
+class AttributeInline(admin.TabularInline):
+    model = Attribute
     fields = ('db_key', 'db_value')
     extra = 0
 
-class NickInline(admin.TabularInline):
-    model = ObjectNick
-    fields = ('db_nick', 'db_real', 'db_type')
+class TagInline(admin.TabularInline):
+    model = Tag
+    fields = ('db_key', 'db_category', 'db_data')
     extra = 0
 
-class AliasInline(admin.TabularInline):
-    model = Alias
-    fields = ("db_key",)
+class LiteAttributeInline(admin.TabularInline):
+    model = LiteAttribute
+    fields = ('db_key', 'db_category', 'db_data')
     extra = 0
 
 class ObjectCreateForm(forms.ModelForm):
@@ -45,6 +46,7 @@ class ObjectCreateForm(forms.ModelForm):
                                         required=False,
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="Most non-character objects don't need a cmdset and can leave this field blank.")
+    raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
 
 
@@ -59,15 +61,16 @@ class ObjectEditForm(ObjectCreateForm):
 
 class ObjectDBAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'db_key', 'db_location', 'db_player', 'db_typeclass_path')
+    list_display = ('id', 'db_key', 'db_player', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_player', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
+    raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
     save_as = True
     save_on_top = True
     list_select_related = True
-    list_filter = ('db_permissions', 'db_location', 'db_typeclass_path')
+    list_filter = ('db_permissions', 'db_typeclass_path')
 
     # editing fields setup
 
@@ -80,7 +83,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    inlines = [AliasInline]#, ObjAttributeInline]
+    #inlines = [AliasInline, AttributeInline]
 
 
     # Custom modification to give two different forms wether adding or not.
@@ -89,7 +92,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
     add_fieldsets = (
         (None, {
                 'fields': (('db_key','db_typeclass_path'), 'db_permissions',
-                           ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
+                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )
     def get_fieldsets(self, request, obj=None):
@@ -111,6 +114,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         return super(ObjectDBAdmin, self).get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
+        obj.save()
         if not change:
             # adding a new object
             obj = obj.typeclass

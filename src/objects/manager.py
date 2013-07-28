@@ -1,6 +1,7 @@
 """
 Custom manager for Objects.
 """
+from itertools import chain
 from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
@@ -13,7 +14,7 @@ __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
 
 # delayed import
-_OBJATTR = None
+_ATTR = None
 
 
 # Try to use a custom way to parse id-tagged multimatches.
@@ -34,7 +35,6 @@ class ObjectManager(TypedObjectManager):
     get_dbref_range
     object_totals
     typeclass_search
-    get_object_with_user
     get_object_with_player
     get_objs_with_key_and_typeclass
     get_objs_with_attr
@@ -52,29 +52,8 @@ class ObjectManager(TypedObjectManager):
     # ObjectManager Get methods
     #
 
-    # user/player related
+    # player related
 
-    @returns_typeclass
-    def get_object_with_user(self, user):
-        """
-        Matches objects with obj.player.user matching the argument.
-        A player<->user is a one-to-relationship, so this always
-        returns just one result or None.
-
-        user - may be a user object or user id.
-        """
-        dbref = self.dbref(user)
-        if dbref:
-            try:
-                return self.get(db_player__user__id=dbref)
-            except self.model.DoesNotExist:
-                pass
-        try:
-            return self.get(db_player__user=user)
-        except self.model.DoesNotExist:
-            return None
-
-    # This returns typeclass since get_object_with_user and get_dbref does.
     @returns_typeclass
     def get_object_with_player(self, ostring, exact=True, candidates=None):
         """
@@ -92,10 +71,10 @@ class ObjectManager(TypedObjectManager):
         # not a dbref. Search by name.
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if exact:
-            return self.filter(cand_restriction & Q(db_player__user__username__iexact=ostring))
+            return self.filter(cand_restriction & Q(db_player__username__iexact=ostring))
         else: # fuzzy matching
-            ply_cands = self.filter(cand_restriction & Q(playerdb__user__username__istartswith=ostring)).values_list("db_key", flat=True)
-            if candidates != None:
+            ply_cands = self.filter(cand_restriction & Q(playerdb__username__istartswith=ostring)).values_list("db_key", flat=True)
+            if candidates:
                 index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
                 return [obj for ind, obj in enumerate(make_iter(candidates)) if ind in index_matches]
             else:
@@ -136,18 +115,17 @@ class ObjectManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
 
         ## This doesn't work if attribute_value is an object. Workaround below
-        #q = self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name) & Q(objattribute__db_value=attribute_value))
-        #return list(q)
 
         if isinstance(attribute_value, (basestring, int, float, bool, long)):
-            return self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name, objattribute__db_value=attribute_value))
+            return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value))
         else:
             # We have to loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
-            global _OBJATTR
-            if not _OBJATTR:
-                from src.objects.models import ObjAttribute as _OBJATTR
-            cands = list(self.filter(cand_restriction & type_restriction & Q(objattribute__db_key=attribute_name)))
-            return [_GA(attr, "db_obj") for attr in _OBJATTR.objects.filter(db_obj__in=cands, db_value=attribute_value)]
+            global _ATTR
+            if not _ATTR:
+                from src.typeclasses.models import Attribute as _ATTR
+            cands = list(self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)))
+            results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(objectdb__in=cands, db_value=attribute_value)]
+            return chain(*results)
 
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, candidates=None):
@@ -219,8 +197,9 @@ class ObjectManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
             # exact match - do direct search
-            return self.filter(cand_restriction & type_restriction & (Q(db_key__iexact=ostring) | Q(alias__db_key__iexact=ostring))).distinct()
-        elif candidates != None:
+            return self.filter(cand_restriction & type_restriction & (Q(db_key__iexact=ostring) |
+                               Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_category__iexact="object_alias"))).distinct()
+        elif candidates:
             # fuzzy with candidates
             key_candidates = self.filter(cand_restriction & type_restriction)
         else:
@@ -233,7 +212,7 @@ class ObjectManager(TypedObjectManager):
         if index_matches:
             return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]
         else:
-            alias_candidates = self.model.alias_set.related.model.objects.filter(db_obj__pk__in=candidates_id)
+            alias_candidates = self.filter(id__in=candidates_id, db_tags__db_category__iexact="object_alias")
             alias_strings = alias_candidates.values_list("db_key", flat=True)
             index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
             if index_matches:

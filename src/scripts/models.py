@@ -26,26 +26,14 @@ Common examples of uses of Scripts:
 """
 from django.conf import settings
 from django.db import models
-from src.typeclasses.models import Attribute, TypedObject
+from django.db.models.signals import post_init, pre_delete
+
+from src.typeclasses.models import Attribute, TypedObject, TagHandler, AliasHandler, NickHandler
 from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
 
-__all__ = ("ScriptAttribute", "ScriptDB")
-
-#------------------------------------------------------------
-#
-# ScriptAttribute
-#
-#------------------------------------------------------------
-
-class ScriptAttribute(Attribute):
-    "Attributes for ScriptDB objects."
-    db_obj = models.ForeignKey("ScriptDB", verbose_name='script')
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Script Attribute"
-        verbose_name_plural = "Script Attributes"
+__all__ = ("ScriptDB",)
+_SA = object.__setattr__
 
 
 #------------------------------------------------------------
@@ -109,9 +97,18 @@ class ScriptDB(TypedObject):
     # Database manager
     objects = ScriptManager()
 
+    # caches for quick lookups
+    _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_SCRIPT_TYPECLASS or "src.scripts.scripts.DoNothing"
+
     class Meta:
         "Define Django meta options"
         verbose_name = "Script"
+
+    def __init__(self, *args, **kwargs):
+        super(ScriptDB, self).__init__(*args, **kwargs)
+        _SA(self, "tags", TagHandler(self, category_prefix="script_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="script_"))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -246,11 +243,6 @@ class ScriptDB(TypedObject):
     #
     #
 
-    # this is required to properly handle attributes and typeclass loading
-    _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS
-    _attribute_class = ScriptAttribute
-    _db_model_name = "scriptdb" # used by attributes to safely store objects
-    _default_typeclass_path = settings.BASE_SCRIPT_TYPECLASS or "src.scripts.scripts.DoNothing"
 
     def at_typeclass_error(self):
         """

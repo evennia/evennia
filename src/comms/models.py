@@ -88,7 +88,7 @@ class Msg(SharedMemoryModel):
     # these can be used to filter/hide a given message from supplied objects/players/channels
     db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True)
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
-    db_hide_from_channles = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
+    db_hide_from_channels = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
 
     # Database manager
     objects = managers.MsgManager()
@@ -302,8 +302,6 @@ class Msg(SharedMemoryModel):
         "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
         logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
     lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
-
-    _db_model_name = "msg" # used by attributes to safely store objects
 
     #
     # Msg class methods

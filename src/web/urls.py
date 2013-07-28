@@ -6,7 +6,7 @@
 # http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
 #
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.conf import settings
 from django.contrib import admin
 from django.views.generic import RedirectView
@@ -17,12 +17,12 @@ from django.db.models.loading import cache as model_cache
 if not model_cache.loaded:
     model_cache.get_models()
 
-# loop over all settings.INSTALLED_APPS and execute code in 
+# loop over all settings.INSTALLED_APPS and execute code in
 # files named admin.py in each such app (this will add those
 # models to the admin site)
 admin.autodiscover()
 
-# Setup the root url tree from / 
+# Setup the root url tree from /
 
 urlpatterns = patterns('',
     # User Authentication
@@ -36,11 +36,11 @@ urlpatterns = patterns('',
 
     # Page place-holder for things that aren't implemented yet.
     url(r'^tbi/', 'src.web.website.views.to_be_implemented'),
-    
+
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    
+
     # favicon
     url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
 

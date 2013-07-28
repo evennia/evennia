@@ -27,6 +27,8 @@ class Migration(DataMigration):
                         conf.save()
         except utils.DatabaseError:
             # this will happen if we start the db from scratch (in which case this migration fix is not needed)
+            db.commit_transaction()
+            db.start_transaction()
             pass
 
 

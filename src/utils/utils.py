@@ -287,22 +287,20 @@ def pypath_to_realpath(python_path, file_ending='.py'):
 
 def dbref(dbref, reqhash=True):
     """
-    Converts/checks if input is a valid dbref Valid forms of dbref
-    (database reference number) are either a string '#N' or
-    an integer N.  Output is the integer part.
+    Converts/checks if input is a valid dbref.
+    If reqhash is set, only input strings on the form '#N', where N is an integer
+    is accepted. Otherwise strings '#N', 'N' and integers N are all accepted.
+     Output is the integer part.
     """
-    if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
-        return None
-    if isinstance(dbref, basestring):
+    if reqhash:
+        return (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
+                                           dbref.startswith("#") and
+                                           dbref.lstrip('#').isdigit())
+                                       else None)
+    elif isinstance(dbref, basestring):
         dbref = dbref.lstrip('#')
-        try:
-            dbref = int(dbref)
-            if dbref < 1:
-                return None
-        except Exception:
-            return None
-        return dbref
-    return None
+        return int(dbref) if dbref.isdigit() else None
+    return dbref if isinstance(dbref, int) else None
 
 def to_unicode(obj, encoding='utf-8', force_string=False):
     """
@@ -467,9 +465,9 @@ def delay(delay=2, retval=None, callback=None):
     """
     Delay the return of a value.
     Inputs:
-      to_return (any) - this will be returned by this function after a delay
       delay (int) - the delay in seconds
-      callback (func(r)) - if given, this will be called with the to_return after delay seconds
+      retval (any) - this will be returned by this function after a delay
+      callback (func(retval)) - if given, this will be called with retval after delay seconds
     Returns:
       deferred that will fire with to_return after delay seconds
     """
@@ -901,3 +899,28 @@ def format_table(table, extra_space=1):
                        for icol, col in enumerate(table)])
     return ftable
 
+def get_evennia_pids():
+    """
+    Get the currently valids PIDs (Process IDs) of the Portal and Server
+    by trying to access an PID file. This can be used to determine if we
+    are in a subprocess by something like
+
+     self_pid = os.getpid()
+     server_pid, portal_pid = get_evennia_pids()
+     is_subprocess = self_pid not in (server_pid, portal_pid)
+
+    """
+    server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
+    portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
+    server_pid, portal_pid = None, None
+    if os.path.exists(server_pidfile):
+        f = open(server_pidfile, 'r')
+        server_pid = f.read()
+        f.close()
+    if os.path.exists(portal_pidfile):
+        f = open(portal_pidfile, 'r')
+        portal_pid = f.read()
+        f.close()
+    if server_pid and portal_pid:
+        return int(server_pid), int(portal_pid)
+    return None, None
