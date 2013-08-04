@@ -154,12 +154,13 @@ class TagManager(models.Manager):
         """
         Get all tags on obj, optionally limited by key and/or category
         """
-        if key or category:
-            key_cands = Q(db_key__iexact=key.lower().strip()) if key!=None else Q()
-            cat_cands = Q(db_category__iexact=category.lower.strip()) if key!=None else Q()
-            return _GA(obj, "db_tags").filter(cat_cands & key_cands)
-        else:
-            return list(_GA(obj, "db_tags").all())
+        print "Key: %s, Category: %s" % (key, category)
+        tags = _GA(obj, "db_tags").all()
+        if key:
+            tags = tags.filter(db_key__iexact=key.lower().strip())
+        if category:
+            tags = tags.filter(db_category__iexact=category.lower().strip())
+        return list(tags)
 
     def get_tag(self, key=None, category=None):
         """

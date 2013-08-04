@@ -97,7 +97,7 @@ class Attribute(SharedMemoryModel):
     # Attribute Database Model setup
     #
     # These database fields are all set using their corresponding properties,
-    # named same as the field, but without the db_* prefix.
+    # named same as the field, but withtout the db_* prefix.
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
     db_value = PickledObjectField('value', null=True)
@@ -378,12 +378,12 @@ class TagHandler(object):
         "Remove a tag from the handler"
         for tag in make_iter(tag):
             tag = tag.strip().lower() if tag!=None else None
-            category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
+            category = "%s%s" % (self.prefix, category.strip().lower()) if category!=None else None
             #TODO This does not delete the tag object itself. Maybe it should do that when no
             # objects reference the tag anymore?
             tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
             if tagobj:
-                self.obj.remove(tagobj[0])
+                self.obj.db_tags.remove(tagobj[0])
     def clear(self):
         "Remove all tags from the handler"
         self.obj.db_tags.clear()
