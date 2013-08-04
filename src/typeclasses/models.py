@@ -97,7 +97,7 @@ class Attribute(SharedMemoryModel):
     # Attribute Database Model setup
     #
     # These database fields are all set using their corresponding properties,
-    # named same as the field, but withtout the db_* prefix.
+    # named same as the field, but without the db_* prefix.
     db_key = models.CharField('key', max_length=255, db_index=True)
     # access through the value property
     db_value = PickledObjectField('value', null=True)
@@ -367,7 +367,7 @@ class TagHandler(object):
         "Add a new tag to the handler"
         for tag in make_iter(tag):
             tag = tag.strip().lower() if tag!=None else None
-            category = "%s%s" % (self.prefix, category.strip.lower()) if category!=None else None
+            category = "%s%s" % (self.prefix, category.strip().lower()) if category!=None else None
             data = str(data) if data!=None else None
             # this will only create tag if no matches existed beforehand (it will overload
             # data on an existing tag since that is not considered part of making the tag unique)

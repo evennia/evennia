@@ -12,19 +12,24 @@ from src.typeclasses.models import Tag, LiteAttribute
 
 
 class AttributeInline(admin.TabularInline):
+    # This class is currently not used, because PickleField objects are not editable.
+    # It's here for us to ponder making a way that allows them to be edited.
     model = Attribute
     fields = ('db_key', 'db_value')
     extra = 0
 
 class TagInline(admin.TabularInline):
-    model = Tag
-    fields = ('db_key', 'db_category', 'db_data')
+    model = ObjectDB.db_tags.through
+    raw_id_fields = ('tag',)
     extra = 0
 
 class LiteAttributeInline(admin.TabularInline):
     model = LiteAttribute
     fields = ('db_key', 'db_category', 'db_data')
     extra = 0
+
+class TagAdmin(admin.ModelAdmin):
+    fields = ('db_key', 'db_category', 'db_data')
 
 class ObjectCreateForm(forms.ModelForm):
     "This form details the look of the fields"
@@ -83,7 +88,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    #inlines = [AliasInline, AttributeInline]
+    inlines = [TagInline]
 
 
     # Custom modification to give two different forms wether adding or not.
@@ -125,3 +130,4 @@ class ObjectDBAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)
+admin.site.register(Tag, TagAdmin)
