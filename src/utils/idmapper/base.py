@@ -96,6 +96,7 @@ class SharedMemoryModelBase(ModelBase):
 
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
+                #print "_set:", fname
                 if hasattr(value, "dbobj"):
                     value = _GA(value, "dbobj")
                 elif isinstance(value, basestring) and (value.isdigit() or value.startswith("#")):

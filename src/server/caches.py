@@ -38,7 +38,7 @@ else:
 
 def hashid(obj, suffix=""):
     """
-    Returns a per-class unique that combines the object's
+    Returns a per-class unique hash that combines the object's
     class name with its idnum and creation time. This makes this id unique also
     between different typeclassed entities such as scripts and
     objects (which may still have the same id).

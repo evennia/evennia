@@ -137,9 +137,8 @@ def create_object(typeclass, key=None, location=None,
     else:
         new_object.home =  settings.CHARACTER_DEFAULT_HOME
 
-
     if location:
-         new_object.move_to(location, quiet=True)
+        new_object.move_to(location, quiet=True)
     else:
         # rooms would have location=None.
         new_object.location = None
