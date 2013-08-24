@@ -428,7 +428,7 @@ class NickHandler(AttributeHandler):
     def get(self, key, category="inputline", **kwargs):
         "Get the replacement value matching the given key and category"
         category = "nick_%s" % category
-        return super(NickHandler, self).get(key, category=category, **kwargs)
+        return super(NickHandler, self).get(key, category=category, strattr=True, **kwargs)
     def remove(self, key, category="inputline", **kwargs):
         "Remove Nick with matching category"
         category = "nick_%s" % category
@@ -548,103 +548,6 @@ class AliasHandler(TagHandler):
 class PermissionHandler(TagHandler):
     _base_category = "permission"
 
-#class NickHandler(object):
-#    """
-#    Handles nick access and setting. Created at initialization. Accessed through TypedObject.nicks.
-#    Makes use of LiteAttributes under the hood.
-#    """
-#
-#    def __init__(self, obj):
-#        """
-#        Nicks are alternate names an entity as of ANOTHER entity. The
-#        engine will auto-replace nicks under circumstances dictated
-#        by the nick category. It uses Attributes' strvalue field for quick storage.
-#
-#        The default nick types used by Evennia are:
-#
-#        inputline (default) - match against all input
-#        player - match against player searches
-#        obj - match against object searches
-#        channel - used to store own names for channels
-#        """
-#        self.obj = obj
-#
-#    def add(self, nick, realname, category="inputline"):
-#        """
-#        Assign a new nick for realname.
-#          category used by Evennia are
-#            'inputline', 'player', 'obj' and 'channel'
-#        """
-#        if not nick or not nick.strip():
-#            return
-#        for nick in make_iter(nick):
-#            nick = nick.strip()
-#            real = realname
-#            nick_type = "%s%s" % (self.prefix, category.strip().lower())
-#            query = self.obj.db_liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
-#            if query.count():
-#                old_nick = query[0]
-#                old_nick.db_data = real
-#                old_nick.save()
-#            else:
-#                new_nick = LiteAttribute(db_key=nick, db_category=nick_type, db_data=real)
-#                new_nick.save()
-#                self.obj.db_liteattributes.add(new_nick)
-#
-#    def remove(self, key, category="inputline"):
-#        "Removes a previously stored nick"
-#        for nick in make_iter(key):
-#            nick = nick.strip()
-#            nick_type = "%s%s" % (self.prefix, category.strip().lower())
-#            query = self.obj.db_liteattributes.filter(db_key__iexact=nick, db_category__iexact=nick_type)
-#            if query.count():
-#                # remove the found nick(s)
-#                self.obj.db_liteattributes.remove(query[0])
-#
-#    def delete(self, *args, **kwargs):
-#        "alias wrapper"
-#        self.remove(*args, **kwargs)
-#
-#    def get(self, key=None, category="inputline"):
-#        """
-#        Retrieves a given nick object based on the input key and category.
-#        If no key is given, returns a list of all matching nick
-#        objects (LiteAttributes) on the object, or the empty list.
-#        """
-#        returns = []
-#        for nick in make_iter(key):
-#            nick = nick.strip().lower() if nick!=None else None
-#            nick_type = "%s%s" % (self.prefix, category.strip().lower())
-#            if nick:
-#                nicks = _GA(self.obj, "db_liteattributes").filter(db_key=nick, db_category=nick_type)
-#                return nicks[0] if nicks else None
-#            else:
-#                returns.extend(list(self.obj.db_liteattributes.all()))
-#        return returns
-#
-#    def get_replace(self, key, category="inputline", default=None):
-#        """
-#        Retrieves a given nick replacement based on the input nick. If
-#        given but no matching conversion was found, returns
-#        original input or default if given
-#        If no nick is given, returns a list of all matching nick
-#        objects (LiteAttributes) on the object, or the empty list.
-#        """
-#        returns = []
-#        for nick in make_iter(key):
-#            nick = nick.strip().lower() if nick!=None else None
-#            nick_type = "%s%s" % (self.prefix, category.strip().lower())
-#            nicks = _GA(self.obj, "db_liteattributes").filter(db_key=nick, db_category=nick_type)
-#            default = default if default!=None else nick
-#            returns.append(nicks[0].db_data) if nicks else returns.append(default)
-#        if len(returns) == 1:
-#            return returns[0]
-#        return returns
-#
-#    def all(self):
-#        "Get all nicks in this handler"
-#        return [p[0] for p in self.obj.db_nicks.filter(db_category=self.category).values_list("db_key")]
-#
 
 #------------------------------------------------------------
 #

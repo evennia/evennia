@@ -484,11 +484,10 @@ class PlayerDB(TypedObject, AbstractUser):
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
         # get the nick replacement data directly from the database to be able to use db_category__in
-        nicks = self.db_attributes.filter(
-                db_category__in=("nick_inputline", "nick_channel")).prefetch_related("db_key","db_strvalue")
+        nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
         for nick in nicks:
             if nick.db_key in raw_list:
-                raw_string = raw_string.replace(nick.db_key, nick.db_data, 1)
+                raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
                 break
         if not sessid and _MULTISESSION_MODE in (0, 1):
             # in this case, we should either have only one sessid, or the sessid
