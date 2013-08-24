@@ -100,6 +100,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
     for field in update_fields:
         fieldname = field.name
         new_value = field.value_from_object(instance)
+        # try to see if there is a handler on object that should be triggered when saving.
         handlername = "_%s_handler" % fieldname
         try:
             handler = _GA(instance, handlername)

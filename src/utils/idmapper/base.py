@@ -11,7 +11,7 @@ import os, threading
 #from twisted.internet import reactor
 #from twisted.internet.threads import blockingCallFromThread
 from twisted.internet.reactor import callFromThread
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
 from src.utils.utils import dbref, get_evennia_pids
@@ -83,7 +83,7 @@ class SharedMemoryModelBase(ModelBase):
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
         super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
-        def create_wrapper(cls, fieldname, wrappername):
+        def create_wrapper(cls, fieldname, wrappername, editable=True):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
                 "Wrapper for getting database field"
@@ -94,6 +94,9 @@ class SharedMemoryModelBase(ModelBase):
                     return _GA(value, "typeclass")
                 return value
 
+            def _set_nonedit(cls, fname, value):
+                "Wrapper for blocking editing of field"
+                raise FieldError("Field %s cannot be edited." % fname)
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
                 #print "_set:", fname
@@ -108,7 +111,7 @@ class SharedMemoryModelBase(ModelBase):
                         try:
                             value = cls._default_manager.get(id=dbid)
                         except ObjectDoesNotExist:
-                            # maybe it is just a name
+                            # maybe it is just a name that happens to look like a dbid
                             pass
                 #print "_set wrapper:", fname, value, type(value), cls._get_pk_val(cls._meta)
                 _SA(cls, fname, value)
@@ -117,6 +120,9 @@ class SharedMemoryModelBase(ModelBase):
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
 
+            def _del_nonedit(cls, fname):
+                "wrapper for not allowing deletion"
+                raise FieldError("Field %s cannot be edited." % fname)
             def _del(cls, fname):
                 "Wrapper for clearing database field - sets it to None"
                 _SA(cls, fname, None)
@@ -125,8 +131,8 @@ class SharedMemoryModelBase(ModelBase):
 
             # create class wrappers
             fget = lambda cls: _get(cls, fieldname)
-            fset = lambda cls, val: _set(cls, fieldname, val)
-            fdel = lambda cls: _del(cls, fieldname)
+            fset = lambda cls, val: _set(cls, fieldname, val) if editable else _set_nonedit(cls, fieldname, val)
+            fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
             doc = "Wraps setting, saving and deleting the %s field." % fieldname
             type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel, doc))
 
@@ -138,11 +144,11 @@ class SharedMemoryModelBase(ModelBase):
             fieldname = field.name
             if not fieldname.startswith("db_"):
                 continue
-            wrappername = fieldname == "id" and "dbid" or fieldname.replace("db_", "")
+            wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "")
             if not hasattr(cls, wrappername):
                 # makes sure not to overload manually created wrappers on the model
                 #print "wrapping %s -> %s" % (fieldname, wrappername)
-                create_wrapper(cls, fieldname, wrappername)
+                create_wrapper(cls, fieldname, wrappername, editable=field.editable)
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default

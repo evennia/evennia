@@ -18,7 +18,7 @@ import traceback
 from django.db import models
 from django.conf import settings
 
-from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler
+from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
 from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache
 
@@ -140,9 +140,10 @@ class ObjectDB(TypedObject):
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
-        _SA(self, "tags", TagHandler(self, category_prefix="object_"))
-        _SA(self, "aliases", AliasHandler(self, category_prefix="object_"))
-        _SA(self, "nicks", NickHandler(self, category_prefix="object_"))
+        _SA(self, "attributes", AttributeHandler(self))
+        _SA(self, "tags", TagHandler(self))
+        _SA(self, "aliases", AliasHandler(self))
+        _SA(self, "nicks", NickHandler(self))
         # make sure to sync the contents cache when initializing
         self.contents_update()
 
@@ -646,10 +647,10 @@ class ObjectDB(TypedObject):
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
         # fetch the nick data efficiently
-        nicks = self.db_liteattributes.filter(db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
+        nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel")).prefetch_related("db_key","db_strvalue")
         if self.has_player:
-            pnicks = self.player.db_liteattributes.filter(
-                    db_category__in=("player_nick_inputline", "player_nick_channel")).prefetch_related("db_key","db_data")
+            pnicks = self.player.db_attributes.filter(
+                    db_category__in=("nick_inputline", "nick_channel")).prefetch_related("db_key","db_strvalue")
             nicks = list(nicks) + list(pnicks)
         for nick in nicks:
             if nick.db_key in raw_list:

@@ -25,7 +25,7 @@ from src.server.caches import get_field_cache, set_field_cache
 
 from src.players import manager
 from src.scripts.models import ScriptDB
-from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler
+from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils
@@ -113,9 +113,10 @@ class PlayerDB(TypedObject, AbstractUser):
         # handlers
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
+        _SA(self, "attributes", AttributeHandler(self))
         _SA(self, "tags", TagHandler(self, category_prefix="player_"))
         _SA(self, "aliases", AliasHandler(self, category_prefix="player_"))
-        _SA(self, "nicks", NickHandler(self, category_prefix="player_"))
+        _SA(self, "nicks", NickHandler(self))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -483,8 +484,8 @@ class PlayerDB(TypedObject, AbstractUser):
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
         # get the nick replacement data directly from the database to be able to use db_category__in
-        nicks = self.db_liteattributes.filter(
-                db_category__in=("object_nick_inputline", "object_nick_channel")).prefetch_related("db_key","db_data")
+        nicks = self.db_attributes.filter(
+                db_category__in=("nick_inputline", "nick_channel")).prefetch_related("db_key","db_strvalue")
         for nick in nicks:
             if nick.db_key in raw_list:
                 raw_string = raw_string.replace(nick.db_key, nick.db_data, 1)

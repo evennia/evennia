@@ -28,7 +28,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_init, pre_delete
 
-from src.typeclasses.models import Attribute, TypedObject, TagHandler, AliasHandler, NickHandler
+from src.typeclasses.models import Attribute, TypedObject, TagHandler, AttributeHandler#, AliasHandler, NickHandler
 from django.contrib.contenttypes.models import ContentType
 from src.scripts.manager import ScriptManager
 
@@ -108,7 +108,8 @@ class ScriptDB(TypedObject):
     def __init__(self, *args, **kwargs):
         super(ScriptDB, self).__init__(*args, **kwargs)
         _SA(self, "tags", TagHandler(self, category_prefix="script_"))
-        _SA(self, "aliases", AliasHandler(self, category_prefix="script_"))
+        _SA(self, "attributes", AttributeHandler(self))
+        #_SA(self, "aliases", AliasHandler(self, category_prefix="script_"))
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
