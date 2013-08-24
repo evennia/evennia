@@ -110,12 +110,12 @@ class CmdOOCLook(MuxPlayerCommand):
                     sess = player.get_session(csessid)
                     sid = sess in sessions and sessions.index(sess) + 1
                     if sess and sid:
-                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions), sid)
+                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
                     else:
-                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions))
+                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
                 else:
                     # character is "free to puppet"
-                    string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions))
+                    string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
         string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
         self.msg(string)
 
@@ -620,7 +620,7 @@ class CmdQuell(MuxPlayerCommand):
     def func(self):
         "Perform the command"
         player = self.caller
-        permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions))
+        permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions.all()))
         if self.cmdstring == '@unquell':
             if not player.get_attribute('_quell'):
                 self.msg("Already using normal Player permissions%s." % permstr)

@@ -35,7 +35,7 @@ Example:
        "Checking if the object has a particular, desired permission"
        if args:
            desired_perm = args[0]
-           return desired_perm in accessing_obj.permissions
+           return desired_perm in accessing_obj.permissions.all()
        return False
 
 Lock functions should most often be pretty general and ideally possible to
@@ -429,7 +429,7 @@ def _test():
 
     pdb.set_trace()
     obj1.locks = LockHandler(obj1)
-    obj2.permissions = ["Immortals"]
+    obj2.permissions.add("Immortals")
     obj2.id = 4
 
     #obj1.locks.add("edit:attr(test)")

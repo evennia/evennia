@@ -508,10 +508,10 @@ class CmdPerm(MuxCommand):
                 return
 
             string = "Permissions on {w%s{n: " % obj.key
-            if not obj.permissions:
+            if not obj.permissions.all():
                 string += "<None>"
             else:
-                string += ", ".join(obj.permissions)
+                string += ", ".join(obj.permissions.all())
                 if hasattr(obj, 'player') and hasattr(obj.player, 'is_superuser') and obj.player.is_superuser:
                     string += "\n(... but this object is currently controlled by a SUPERUSER! "
                     string += "All access checks are passed automatically.)"
@@ -528,20 +528,12 @@ class CmdPerm(MuxCommand):
         tstring = ""
         if 'del' in switches:
             # delete the given permission(s) from object.
-            for perm in self.rhslist:
-                try:
-                    index = obj.permissions.index(perm)
-                except ValueError:
-                    cstring += "\nPermission '%s' was not defined on %s." % (perm, obj.name)
-                    continue
-                permissions = obj.permissions
-                del permissions[index]
-                obj.permissions = permissions
-                cstring += "\nPermission '%s' was removed from %s." % (perm, obj.name)
-                tstring += "\n%s revokes the permission '%s' from you." % (caller.name, perm)
+            obj.permission.remove(self.rhslist)
+            cstring += "\nPermission(s) %s removed from %s (if they existed)." % (", ".join(self.rhslist), obj.name)
+            tstring += "\n%s revokes the permission(s) %s from you." % (caller.name, ", ".join(self.rhslist))
         else:
             # add a new permission
-            permissions = obj.permissions
+            permissions = obj.permissions.all()
 
             for perm in self.rhslist:
 
@@ -554,8 +546,7 @@ class CmdPerm(MuxCommand):
                 if perm in permissions:
                     cstring += "\nPermission '%s' is already defined on %s." % (rhs, obj.name)
                 else:
-                    permissions.append(perm)
-                    obj.permissions = permissions
+                    obj.permissions.add(perm)
                     cstring += "\nPermission '%s' given to %s." % (rhs, obj.name)
                     tstring += "\n%s gives you the permission '%s'." % (caller.name, rhs)
         caller.msg(cstring.strip())

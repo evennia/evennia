@@ -433,8 +433,8 @@ class CmdAccess(MuxCommand):
             cperms = "<Superuser>"
             pperms = "<Superuser>"
         else:
-            cperms = ", ".join(caller.permissions)
-            pperms = ", ".join(caller.player.permissions)
+            cperms = ", ".join(caller.permissions.all())
+            pperms = ", ".join(caller.player.permissions.all())
 
         string += "\n{wYour access{n:"
         string += "\nCharacter {c%s{n: %s" % (caller.key, cperms)

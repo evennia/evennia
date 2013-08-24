@@ -125,7 +125,7 @@ def create_object(typeclass, key=None, location=None,
 
     # custom-given perms/locks overwrite hooks
     if permissions:
-        new_object.permissions = permissions
+        new_object.permissions.add(permissions)
     if locks:
          new_object.locks.add(locks)
     if aliases:
@@ -463,9 +463,9 @@ def create_player(key, email, password,
 
         # custom given arguments potentially overrides the hook
         if permissions:
-            new_player.permissions = permissions
+            new_player.permissions.add(permissions)
         elif not new_player.permissions:
-            new_player.permissions = settings.PERMISSION_PLAYER_DEFAULT
+            new_player.permissions.add(settings.PERMISSION_PLAYER_DEFAULT)
         if locks:
             new_player.locks.add(locks)
         return new_player

@@ -99,7 +99,6 @@ class TagManager(models.Manager):
         """
         Get all tags on obj, optionally limited by key and/or category
         """
-        print "Key: %s, Category: %s" % (key, category)
         tags = _GA(obj, "db_tags").all()
         if key:
             tags = tags.filter(db_key__iexact=key.lower().strip())
@@ -153,10 +152,10 @@ class TagManager(models.Manager):
             tag.save()
         elif not tag:
             tag = self.create(db_key=key.lower().strip() if key!=None else None,
-                              db_category=category.lower().strip() if key!=None else None,
+                              db_category=category.lower().strip() if category and key!=None else None,
                               db_data=str(data) if data!=None else None)
             tag.save()
-        return tag
+        return make_iter(tag)[0]
 
 #
 # helper functions for the TypedObjectManager.

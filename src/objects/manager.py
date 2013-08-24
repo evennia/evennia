@@ -351,7 +351,7 @@ class ObjectManager(TypedObjectManager):
         if not new_locks:
             new_locks = original_object.db_lock_storage
         if not new_permissions:
-            new_permissions = original_object.permissions
+            new_permissions = original_object.permissions.all()
         if not new_destination:
             new_destination = original_object.destination
 

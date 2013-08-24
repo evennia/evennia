@@ -69,7 +69,7 @@ def create_objects():
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
-    god_character.permissions = "Immortals"
+    god_character.permissions.add("Immortals")
 
     god_character.save()
     god_player.set_attribute("_first_login", True)

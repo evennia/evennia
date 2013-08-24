@@ -13,6 +13,7 @@ from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.help.manager import HelpEntryManager
 from src.utils import ansi
+from src.typeclasses.models import Tag, TagHandler
 from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter
 __all__ = ("HelpEntry",)
@@ -52,10 +53,11 @@ class HelpEntry(SharedMemoryModel):
         help_text='organizes help entries in lists')
     # the actual help entry text, in any formatting.
     db_entrytext = models.TextField('help entry', blank=True, help_text='the main body of help text')
-    # a string of permissionstrings, separated by commas. Not used by help entries.
-    db_permissions = models.CharField('permissions', max_length=255, blank=True)
     # lock string storage
     db_lock_storage = models.TextField('locks', blank=True, help_text='normally view:all().')
+    # tags are primarily used for permissions
+    db_tags = models.ManyToManyField(Tag, null=True,
+            help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore.
     db_staff_only = models.BooleanField(default=False)
@@ -66,6 +68,7 @@ class HelpEntry(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
+        self.tags = TagHandler(self)
 
     class Meta:
         "Define Django meta options"
@@ -130,24 +133,24 @@ class HelpEntry(SharedMemoryModel):
     #    self.save()
     #entrytext = property(__entrytext_get, __entrytext_set, __entrytext_del)
 
-    # permissions property
-    #@property
-    def __permissions_get(self):
-        "Getter. Allows for value = self.permissions. Returns a list of permissions."
-        return [perm.strip() for perm in self.db_permissions.split(',')]
-    #@permissions.setter
-    def __permissions_set(self, value):
-        "Setter. Allows for self.permissions = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([str(val).strip().lower() for val in value])
-        self.db_permissions = value
-        self.save()
-    #@permissions.deleter
-    def __permissions_del(self):
-        "Deleter. Allows for del self.permissions"
-        self.db_permissions = ""
-        self.save()
-    permissions = property(__permissions_get, __permissions_set, __permissions_del)
+    ## permissions property
+    ##@property
+    #def __permissions_get(self):
+    #    "Getter. Allows for value = self.permissions. Returns a list of permissions."
+    #    return [perm.strip() for perm in self.db_permissions.split(',')]
+    ##@permissions.setter
+    #def __permissions_set(self, value):
+    #    "Setter. Allows for self.permissions = value. Stores as a comma-separated string."
+    #    if is_iter(value):
+    #        value = ",".join([str(val).strip().lower() for val in value])
+    #    self.db_permissions = value
+    #    self.save()
+    ##@permissions.deleter
+    #def __permissions_del(self):
+    #    "Deleter. Allows for del self.permissions"
+    #    self.db_permissions = ""
+    #    self.save()
+    #permissions = property(__permissions_get, __permissions_set, __permissions_del)
 
         # lock_storage property (wraps db_lock_storage)
     ##@property

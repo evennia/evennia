@@ -146,13 +146,13 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
     try:
         perm = args[0].lower()
-        perms_object = [p.lower() for p in accessing_obj.permissions]
+        perms_object = [p.lower() for p in accessing_obj.permissions.all()]
     except (AttributeError, IndexError):
         return False
 
     if utils.inherits_from(accessing_obj, "src.objects.objects.Object") and accessing_obj.player:
         player = accessing_obj.player
-        perms_player = [p.lower() for p in player.permissions]
+        perms_player = [p.lower() for p in player.permissions.all()]
         is_quell = player.get_attribute("_quell")
 
         if perm in _PERMISSION_HIERARCHY:

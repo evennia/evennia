@@ -59,7 +59,7 @@ class CommandTest(TestCase):
         self.player = create.create_player("TestPlayer%i" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
         self.player2 = create.create_player("TestPlayer%ib" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
 
-        self.player.permissions = "Immortals"
+        self.player.permissions.add("Immortals")
         self.char1.player = self.player
         self.char1.sessid = 1
 

@@ -1576,7 +1576,7 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wsession(s){n: %s" % (", ".join(str(sess.sessid) for sess in obj.sessions))
         if hasattr(obj, "has_player") and obj.has_player:
             string += "\n{wPlayer{n: {c%s{n" % obj.player.name
-            perms = obj.player.permissions
+            perms = obj.player.permissions.all()
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
@@ -1591,7 +1591,7 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wDestination{n: %s" % obj.destination
             if obj.destination:
                 string += " (#%s)" % obj.destination.id
-        perms = obj.permissions
+        perms = obj.permissions.all()
         if perms:
             perms_string = (", ".join(perms))
         else:
