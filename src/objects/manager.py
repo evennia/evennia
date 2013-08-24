@@ -8,7 +8,7 @@ from django.db.models.fields import exceptions
 from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
-from src.utils.utils import to_unicode, make_iter, string_partial_matching
+from src.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
 
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
@@ -190,6 +190,9 @@ class ObjectManager(TypedObjectManager):
                 ostring = ostring.key
             else:
                 return []
+        if is_iter(candidates) and not len(candidates):
+            # if candidates is an empty iterable there can be no matches. Exit early.
+            return []
 
         # build query objects
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
