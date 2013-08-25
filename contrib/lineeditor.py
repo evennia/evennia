@@ -642,7 +642,7 @@ class CmdEditor(Command):
             return target and str(target) or ""
         def save_attr():
             "Save line buffer to given attribute name. This should return True if successful and also report its status."
-            self.obj.set_attribute(self.attrname, self.editor.buffer)
+            self.obj.attributes.add(self.attrname, self.editor.buffer)
             self.caller.msg("Saved.")
             return True
         def quit_hook():

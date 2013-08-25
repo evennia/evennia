@@ -447,7 +447,7 @@ class ObjectDB(TypedObject):
     def __is_superuser_get(self):
         "Check if user has a player, and if so, if it is a superuser."
         return (_GA(self, "db_player") and _GA(_GA(self, "db_player"), "is_superuser")
-                and not _GA(_GA(self, "db_player"), "get_attribute")("_quell"))
+                and not _GA(_GA(self, "db_player"), "attributes").get("_quell"))
     is_superuser = property(__is_superuser_get)
 
     # contents

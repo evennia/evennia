@@ -281,10 +281,10 @@ class CmdCpAttr(ObjManipCommand):
         if not from_obj or not to_objs:
             caller.msg("You have to supply both source object and target(s).")
             return
-        if not from_obj.has_attribute(from_obj_attrs[0]):
+        if not from_obj.attributes.has(from_obj_attrs[0]):
             caller.msg("%s doesn't have an attribute %s." % (from_obj_name, from_obj_attrs[0]))
             return
-        srcvalue = from_obj.get_attribute(from_obj_attrs[0])
+        srcvalue = from_obj.attributes.get(from_obj_attrs[0])
 
         #copy to all to_obj:ects
         if "move" in self.switches:
@@ -307,7 +307,7 @@ class CmdCpAttr(ObjManipCommand):
                     # if there are too few attributes given
                     # on the to_obj, we copy the original name instead.
                     to_attr = from_attr
-                to_obj.set_attribute(to_attr, srcvalue)
+                to_obj.attributes.add(to_attr, srcvalue)
                 if "move" in self.switches and not (from_obj == to_obj and from_attr == to_attr):
                     from_obj.del_attribute(from_attr)
                     string += "\nMoved %s.%s -> %s.%s." % (from_obj.name, from_attr,
@@ -1228,8 +1228,8 @@ class CmdSetAttribute(ObjManipCommand):
                 if not attrs:
                     attrs = [attr.key for attr in obj.get_all_attributes()]
                 for attr in attrs:
-                    if obj.has_attribute(attr):
-                        string += "\nAttribute %s/%s = %s" % (obj.name, attr, obj.get_attribute(attr))
+                    if obj.attributes.has(attr):
+                        string += "\nAttribute %s/%s = %s" % (obj.name, attr, obj.attributes.get(attr))
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)
                     # we view it without parsing markup.
@@ -1238,9 +1238,9 @@ class CmdSetAttribute(ObjManipCommand):
             else:
                 # deleting the attribute(s)
                 for attr in attrs:
-                    if obj.has_attribute(attr):
-                        val = obj.get_attribute(attr)
-                        obj.del_attribute(attr)
+                    if obj.attributes.has(attr):
+                        val = obj.attributes.has(attr)
+                        obj.attributes.remove(attr)
                         string += "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)
@@ -1248,7 +1248,7 @@ class CmdSetAttribute(ObjManipCommand):
             # setting attribute(s). Make sure to convert to real Python type before saving.
              for attr in attrs:
                 try:
-                    obj.set_attribute(attr, self.convert_from_string(value))
+                    obj.attributes.add(attr, self.convert_from_string(value))
                     string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
                 except SyntaxError:
                     # this means literal_eval tried to parse a faulty string
@@ -1406,7 +1406,7 @@ class CmdWipe(ObjManipCommand):
             string = "Wiped all attributes on %s." % obj.name
         else:
             for attrname in attrs:
-                obj.attr(attrname, delete=True )
+                obj.attributes.remove(attrname)
             string = "Wiped attributes %s on %s."
             string = string % (",".join(attrs), obj.name)
         caller.msg(string)
@@ -1538,7 +1538,7 @@ class CmdExamine(ObjManipCommand):
         """
 
         if attrname:
-            db_attr = [(attrname, obj.attr(attrname))]
+            db_attr = [(attrname, obj.attributes.get(attrname))]
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:

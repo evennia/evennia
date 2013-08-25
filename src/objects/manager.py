@@ -366,7 +366,7 @@ class ObjectManager(TypedObjectManager):
 
         # copy over all attributes from old to new.
         for attr in original_object.get_all_attributes():
-            new_object.set_attribute(attr.key, attr.value)
+            new_object.attributes.add(attr.key, attr.value)
 
         # copy over all cmdsets, if any
         for icmdset, cmdset in enumerate(original_object.cmdset.all()):

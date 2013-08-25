@@ -72,8 +72,8 @@ def create_objects():
     god_character.permissions.add("Immortals")
 
     god_character.save()
-    god_player.set_attribute("_first_login", True)
-    god_player.set_attribute("_last_puppet", god_character)
+    god_player.attributes.add("_first_login", True)
+    god_player.attributes.add("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
 
     # Limbo is the default "nowhere" starting room
@@ -137,17 +137,6 @@ def create_channels():
     PlayerChannelConnection.objects.create_connection(goduser, pchan)
     PlayerChannelConnection.objects.create_connection(goduser, ichan)
     PlayerChannelConnection.objects.create_connection(goduser, cchan)
-
-def import_MUX_help_files():
-    """
-    Imports the MUX help files.
-    """
-    print " Importing MUX help database (devel reference only) ..."
-    management.call_command('loaddata', '../src/help/mux_help_db.json', verbosity=0)
-    # categorize the MUX help files into its own category.
-    default_category = "MUX"
-    print " Moving imported help db to help category '%(default)s'." % {'default': default_category}
-    HelpEntry.objects.all_to_category(default_category)
 
 def create_system_scripts():
     """
@@ -266,15 +255,9 @@ def handle_setup(last_step):
         create_system_scripts,
         start_game_time,
         create_admin_media_links,
-        import_MUX_help_files,
         at_initial_setup,
         reset_server
         ]
-
-    if not settings.IMPORT_MUX_HELP:
-        # skip importing of the MUX helpfiles, they are
-        # not interesting except for developers.
-        del setup_queue[-3]
 
     #print " Initial setup: %s steps." % (len(setup_queue))
 

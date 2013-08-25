@@ -153,7 +153,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     if utils.inherits_from(accessing_obj, "src.objects.objects.Object") and accessing_obj.player:
         player = accessing_obj.player
         perms_player = [p.lower() for p in player.permissions.all()]
-        is_quell = player.get_attribute("_quell")
+        is_quell = player.attributes.get("_quell")
 
         if perm in _PERMISSION_HIERARCHY:
             # check hierarchy without allowing escalation obj->player
@@ -306,11 +306,11 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
             return valcompare(str(getattr(accessing_obj, attrname)), value, compare)
         return bool(getattr(accessing_obj, attrname)) # will return Fail on False value etc
     # check attributes, if they exist
-    if (hasattr(accessing_obj, 'has_attribute') and accessing_obj.has_attribute(attrname)):
+    if (hasattr(accessing_obj, 'attributes') and accessing_obj.attributes.has(attrname)):
         if value:
-            return (hasattr(accessing_obj, 'get_attribute')
-                    and valcompare(accessing_obj.get_attribute(attrname), value, compare))
-        return bool(accessing_obj.get_attribute(attrname)) # fails on False/None values
+            return (hasattr(accessing_obj, 'attributes')
+                    and valcompare(accessing_obj.attributes.get(attrname), value, compare))
+        return bool(accessing_obj.attributes.get(attrname)) # fails on False/None values
     return False
 
 def objattr(accessing_obj, accessed_obj, *args, **kwargs):
@@ -435,7 +435,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     elif len(args = 2):
         # command is holds(attrname, value) check if any held object has the given attribute and value
         for obj in contents:
-            if obj.attr(args[0]) == args[1]:
+            if obj.attributes.get(args[0]) == args[1]:
                 return True
 
 

@@ -255,7 +255,7 @@ class Player(TypeClass):
         """
         # set an (empty) attribute holding the characters this player has
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
-        self.set_attribute("_playable_characters", [], lockstring=lockstring)
+        self.attributes.add("_playable_characters", [], lockstring=lockstring)
 
     def at_init(self):
         """

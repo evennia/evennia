@@ -193,7 +193,7 @@ def post_attr_update(sender, **kwargs):
 # access methods
 
 def get_attr_cache(obj, attrname):
-    "Called by get_attribute"
+    "Called by getting attribute"
     hid = hashid(obj, "-%s" % attrname)
     return hid and _ATTR_CACHE.get(hid, None) or None
 

@@ -97,7 +97,7 @@ _LOGGER = None
 #------------------------------------------------------------
 
 # specifically forbidden symbols
-_EV_UNALLOWED_SYMBOLS = ["attr", "set_attribute", "delete"]
+_EV_UNALLOWED_SYMBOLS = ["attr", "attributes", "delete"]
 try: _EV_UNALLOWED_SYMBOLS.expand(settings.EVLANG_UNALLOWED_SYMBOLS)
 except AttributeError: pass
 
@@ -285,7 +285,7 @@ class Evlang(object):
         if scripts:
             self.evlang_scripts.update(scripts)
         if self.obj:
-            self.evlang_scripts.update(obj.attr(storage_attr))
+            self.evlang_scripts.update(obj.attributes.get(storage_attr))
         self.safe_context = _EV_SAFE_CONTEXT # set by default + settings
         if safe_context:
             self.safe_context.update(safe_context)
@@ -401,7 +401,7 @@ class Evlang(object):
         self.evlang_scripts[scriptname] = (codestring, scripter)
         if self.obj:
             # save to database
-            self.obj.attr(self.evlang_storage_attr, self.evlang_scripts)
+            self.obj.attributes.add(self.evlang_storage_attr, self.evlang_scripts)
 
     def delete(self, scriptname):
         """
@@ -411,7 +411,7 @@ class Evlang(object):
             del self.evlang_scripts[scriptname]
         if self.obj:
             # update change to database
-            self.obj.attr(self.evlang_storage_attr, self.evlang_scripts)
+            self.obj.attributes.add(self.evlang_storage_attr, self.evlang_scripts)
 
 
 #----------------------------------------------------------------------
