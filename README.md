@@ -1,4 +1,6 @@
-# remarkdown, a markdown parser based on `docutils`
+# remarkdown
+
+A markdown parser based on `docutils`
 
 **Note that this code is still alpha, some markdown features might not work yet**
 
