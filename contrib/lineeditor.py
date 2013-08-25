@@ -635,7 +635,7 @@ class CmdEditor(Command):
         # hook save/load functions
         def load_attr():
             "inital loading of buffer data from given attribute."
-            target = self.obj.get_attribute(self.attrname)
+            target = self.obj.attributes.get(self.attrname)
             if target != None and not isinstance(target, basestring):
                 typ = type(target).__name__
                 self.caller.msg("{RWARNING! Saving this buffer will overwrite the current attribute (of type %s) with a string!{n" % typ)

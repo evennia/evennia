@@ -1291,15 +1291,15 @@ class TypedObject(SharedMemoryModel):
         logger.log_depmsg("obj.attr() is deprecated. Use handlers obj.db or obj.attributes.")
         if attribute_name == None:
             # act as a list method
-            return self.get_all_attributes()
+            return _GA(self, "attributes").all()
         elif delete == True:
-            self.del_attribute(attribute_name)
+            _GA(self, "attributes").remove(attribute_name)
         elif value == None:
             # act as a getter.
-            return self.get_attribute(attribute_name)
+            return _GA(self, "attributes").get(attribute_name)
         else:
             # act as a setter
-            self.set_attribute(attribute_name, value)
+            self._GA(self, "attributes").add(attribute_name, value)
 
     def secure_attr(self, accessing_object, attribute_name=None, value=None, delete=False,
                     default_access_read=True, default_access_edit=True, default_access_create=True):
@@ -1332,7 +1332,7 @@ class TypedObject(SharedMemoryModel):
             return _GA(self, "attributes").get(attribute_name, accessing_obj=accessing_object, default_access=default_access_read)
         else:
             # act as setter
-            attr = self.get_attribute_obj(attribute_name)
+            attr = _GA(self, "attributes").get(attribute_name, return_obj=True)
             if attr:
                # attribute already exists
                 _GA(self, "attributes").add(attribute_name, value, accessing_obj=accessing_object, default_access=default_access_edit)
