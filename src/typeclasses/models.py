@@ -388,19 +388,23 @@ class AttributeHandler(object):
                 del_attr_cache(self.obj, attr.db_key)
                 attr.delete()
 
-    def clear(self, accessing_obj=None, default_access=True):
+    def clear(self, category=None, accessing_obj=None, default_access=True):
         """
         Remove all Attributes on this object. If accessing_obj is
         given, check the 'attredit' lock on each Attribute before
         continuing. If not given, skip check.
         """
-        for attr in _GA(self.obj, self._m2m_fieldname).all():
+        if category==None:
+            all_attr = _GA(self.obj, self._m2m_fieldname).all()
+        else:
+            all_attrs = _GA(self.obj, self._m2m_fieldname).filter(db_category=category)
+        for attr in all_attrs:
             if accessing_obj and not attr.access(accessing_obj, self._attredit, default=default_access):
                 continue
             del_attr_cache(self.obj, attr.db_key)
             attr.delete()
 
-    def all(self, accessing_obj=None, default_access=True):
+    def all(self, category=None, accessing_obj=None, default_access=True):
         """
         Return all Attribute objects on this object.
 
@@ -408,10 +412,14 @@ class AttributeHandler(object):
         each attribute before returning them. If not given, this
         check is skipped.
         """
-        if accessing_obj:
-            return [attr for attr in _GA(self.obj, self._m2m_fieldname).all() if attr.access(accessing_obj, self._attrread, default=default_access)]
+        if category==None:
+            all_attrs = _GA(self.obj, self._m2m_fieldname).all()
         else:
-            return list(_GA(self.obj, self._m2m_fieldname).all())
+            all_attrs = _GA(self.obj, self._m2m_fieldname).filter(db_category=category)
+        if accessing_obj:
+            return [attr for attr in all_attrs if attr.access(accessing_obj, self._attrread, default=default_access)]
+        else:
+            return list(all_attrs)
 
 class NickHandler(AttributeHandler):
     """

@@ -49,7 +49,7 @@ from src.server import caches
 from src.server.caches import hashid
 from src.utils import logger, create
 
-class _OOBTracker(Script):
+class _OOBTrackerScript(Script):
     """
     Active tracker script, handles subscriptions
     """
