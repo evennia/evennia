@@ -96,11 +96,6 @@ AUTHENTICATION_BACKENDS = ('src.web.backends.CaseInsensitiveModelBackend',)
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'
-# Should the default MUX help files be imported? This might be
-# interesting to developers for reference, but is frustrating to users
-# since it creates a lot of help entries that has nothing to do
-# with what is actually available in the game.
-IMPORT_MUX_HELP = False
 # How long time (in seconds) a user may idle before being logged
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server

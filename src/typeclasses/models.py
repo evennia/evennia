@@ -371,7 +371,7 @@ class AttributeHandler(object):
             attr_obj.value = value
 
 
-    def remove(self, key, raise_exception=True, category=None, accessing_obj=None, default_access=True):
+    def remove(self, key, raise_exception=False, category=None, accessing_obj=None, default_access=True):
         """Remove attribute or a list of attributes from object.
 
         If accessing_obj is given, will check against the 'attredit' lock. If not given, this check is skipped.
@@ -514,8 +514,8 @@ class TagHandler(object):
             # this will only create tag if no matches existed beforehand (it will overload
             # data on an existing tag since that is not considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data)
-            print tagstr
-            print tagobj
+            #print tagstr
+            #print tagobj
             _GA(self.obj, self._m2m_fieldname).add(tagobj)
 
     def get(self, key, category="", return_obj=False):

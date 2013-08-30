@@ -559,7 +559,7 @@ class CrumblingWall(TutorialObject, Exit):
         "called when the object is first created."
         super(CrumblingWall, self).at_object_creation()
 
-        self.aliases = ["secret passage", "passage", "crack", "opening", "secret door"]
+        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret door"])
         # this is assigned first when pushing button, so assign this at creation time!
 
         self.db.destination = 2

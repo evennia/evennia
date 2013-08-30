@@ -121,22 +121,6 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         #    # update cache
         #    _FIELD_CACHE[hid] = new_value
 
-# access method
-#
-#def get_field_cache(obj, fieldname):
-#    "Called by _get wrapper"
-#    hid = hashid(obj, "-%s" % fieldname)
-#    return hid and _FIELD_CACHE.get(hid, None) or None
-#
-#def set_field_cache(obj, fieldname, value):
-#    hid = hashi(obj, "-%s" % fieldname)
-#    if hid:
-#        _FIELD_CACHE.set(hid, value)
-#
-#def flush_field_cache():
-#    "Clear the field cache"
-#    _FIELD_CACHE.clear()
-
 def get_cache_sizes():
     return (0, 0), (0, 0), (0, 0)
 def get_field_cache(obj, name):

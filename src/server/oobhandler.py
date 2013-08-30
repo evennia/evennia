@@ -34,11 +34,12 @@ from src.server.oobhandler import OOBHANDLER
 
 def track_desc(session, *args, **kwargs):
     "Sets up a passive watch for the desc attribute on session object"
-    if session.player and session.player.character:
-        char = session.player.character
-        OOBHANDLER.track_passive(session, char, "desc", entity="db")
-        # to start off we return the value once
-        return char.db.desc
+    if session.player:
+        char = session.player.get_puppet(session.sessid)
+        if char:
+            OOBHANDLER.track_passive(session, char, "desc", entity="db")
+            # to start off we return the value once
+            return char.db.desc
 
 """
 
@@ -49,7 +50,7 @@ from src.server import caches
 from src.server.caches import hashid
 from src.utils import logger, create
 
-class _OOBTrackerScript(Script):
+class _OOBTracker(Script):
     """
     Active tracker script, handles subscriptions
     """
@@ -126,7 +127,7 @@ class OOBhandler(object):
 
         tracker - object who is tracking
         tracked - object being tracked
-        entityname - field/property/attribute/ndb nam to watch
+        entityname - field/property/attribute/ndb name to watch
         function - function object to call when entity update. When entitye <key>
         is updated, this function will be called with called
               with function(obj, entityname, new_value, *args, **kwargs)
