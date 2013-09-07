@@ -25,6 +25,11 @@ _FIELD_CACHE = {}
 _ATTR_CACHE = {}
 _PROP_CACHE = defaultdict(dict)
 
+# OOB trackers
+_TRACKED_FIELDS = {}
+_TRACKED_ATTRS = {}
+_TRACKED_CACHE = {}
+
 
 #------------------------------------------------------------
 # Cache key hash generation
@@ -80,13 +85,13 @@ def hashid(obj, suffix=""):
 # they are saved, no matter from where.
 #------------------------------------------------------------
 
-# callback to pre_save signal (connected in src.server.server)
+# callback to field pre_save signal (connected in src.server.server)
 def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
     """
-    Called at the beginning of the save operation. The save method
+    Called at the beginning of the field save operation. The save method
     must be called with the update_fields keyword in order to be most efficient.
     This method should NOT save; rather it is the save() that triggers this function.
-    Its main purpose is to allow to plug-in a save handler.
+    Its main purpose is to allow to plug-in a save handler and oob handlers.
     """
     if raw:
         return
@@ -101,8 +106,9 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         fieldname = field.name
         new_value = field.value_from_object(instance)
         # try to see if there is a handler on object that should be triggered when saving.
-        handlername = "_%s_handler" % fieldname
+        handlername = "_at_%s_save" % fieldname
         try:
+            # try-except is about 14 times faster than hasattr in this case
             handler = _GA(instance, handlername)
         except AttributeError:
             handler = None
@@ -117,6 +123,8 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             new_value = handler(new_value, old_value=old_value)
             # we re-assign this to the field, save() will pick it up from there
             _SA(instance, fieldname, new_value)
+        if instance and hasattr(instance, "oobhandler"):
+            _GA(instance, "oobhandler").update("fieldset", fieldname, old_value, new_value)
         #if hid:
         #    # update cache
         #    _FIELD_CACHE[hid] = new_value
@@ -220,6 +228,8 @@ def get_prop_cache(obj, propname):
 def set_prop_cache(obj, propname, propvalue):
     "Set property cache"
     hid = hashid(obj, "-%s" % propname)
+    if obj and hasattr(obj, "oobhandler"):
+        obj.oobhandler.update(propname, _GA(obj, propname), propvalue, type="property", action="set")
     if hid:
         #print "set_prop_cache", propname, propvalue
         _PROP_CACHE[hid][propname] = propvalue
@@ -228,6 +238,8 @@ def set_prop_cache(obj, propname, propvalue):
 def del_prop_cache(obj, propname):
     "Delete element from property cache"
     hid = hashid(obj, "-%s" % propname)
+    if obj and hasattr(obj, "oobhandler"):
+        obj.oobhandler.update(propname, _GA(obj, propname), None, type="property", action="delete")
     if hid and propname in _PROP_CACHE[hid]:
         del _PROP_CACHE[hid][propname]
         #_PROP_CACHE.delete(hid)
@@ -319,212 +331,3 @@ def flush_prop_cache():
 #        if oob_hook:
 #            oob_hook[0](obj.typeclass, attrname, value, *oob_hook[1], **oob_hook[2])
 #
-#
-
-#    # old cache system
-#
-# if _ENABLE_LOCAL_CACHES:
-#    # Cache stores
-#    _ATTR_CACHE = defaultdict(dict)
-#    _FIELD_CACHE = defaultdict(dict)
-#    _PROP_CACHE = defaultdict(dict)
-#
-#
-#    def get_cache_sizes():
-#        """
-#        Get cache sizes, expressed in number of objects and memory size in MB
-#        """
-#        global _ATTR_CACHE, _FIELD_CACHE, _PROP_CACHE
-#
-#        attr_n = sum(len(dic) for dic in _ATTR_CACHE.values())
-#        attr_mb = sum(sum(getsizeof(obj) for obj in dic.values()) for dic in _ATTR_CACHE.values()) / 1024.0
-#
-#        field_n = sum(len(dic) for dic in _FIELD_CACHE.values())
-#        field_mb = sum(sum([getsizeof(obj) for obj in dic.values()]) for dic in _FIELD_CACHE.values()) / 1024.0
-#
-#        prop_n = sum(len(dic) for dic in _PROP_CACHE.values())
-#        prop_mb = sum(sum([getsizeof(obj) for obj in dic.values()]) for dic in _PROP_CACHE.values()) / 1024.0
-#
-#        return (attr_n, attr_mb), (field_n, field_mb), (prop_n, prop_mb)
-#
-#    # on-object database field cache
-#    def get_field_cache(obj, name):
-#        "On-model Cache handler."
-#        global _FIELD_CACHE
-#        hid = hashid(obj)
-#        if hid:
-#            try:
-#                return _FIELD_CACHE[hid][name]
-#            except KeyError:
-#                val = _GA(obj, "db_%s" % name)
-#                _FIELD_CACHE[hid][name] = val
-#                return val
-#        return _GA(obj, "db_%s" % name)
-#
-#    def set_field_cache(obj, name, val):
-#        "On-model Cache setter. Also updates database."
-#        _SA(obj, "db_%s" % name, val)
-#        _GA(obj, "save")()
-#        hid = hashid(obj)
-#        if hid:
-#            global _FIELD_CACHE
-#            _FIELD_CACHE[hid][name] = val
-#            # oob hook functionality
-#            if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
-#                _OOB_HANDLER.update(hid, name, val)
-#
-#    def del_field_cache(obj, name):
-#        "On-model cache deleter"
-#        hid = hashid(obj)
-#        _SA(obj, "db_%s" % name, None)
-#        _GA(obj, "save")()
-#        if hid:
-#            try:
-#                del _FIELD_CACHE[hid][name]
-#            except KeyError:
-#                pass
-#            if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
-#                _OOB_HANDLER.update(hid, name, None)
-#
-#    def flush_field_cache(obj=None):
-#        "On-model cache resetter"
-#        hid = hashid(obj)
-#        global _FIELD_CACHE
-#        if hid:
-#            try:
-#                del _FIELD_CACHE[hashid(obj)]
-#            except KeyError, e:
-#                pass
-#        else:
-#            # clean cache completely
-#            _FIELD_CACHE = defaultdict(dict)
-#
-#    # on-object property cache (unrelated to database)
-#    # Note that the get/set_prop_cache handler do not actually
-#    # get/set the property "on" the object but only reads the
-#    # value to/from the cache. This is intended to be used
-#    # with a get/setter property on the object.
-#
-#    def get_prop_cache(obj, name, default=None):
-#        "On-model Cache handler."
-#        global _PROP_CACHE
-#        hid = hashid(obj)
-#        if hid:
-#            try:
-#                val = _PROP_CACHE[hid][name]
-#            except KeyError:
-#                return default
-#            _PROP_CACHE[hid][name] = val
-#            return val
-#        return default
-#
-#    def set_prop_cache(obj, name, val):
-#        "On-model Cache setter. Also updates database."
-#        hid = hashid(obj)
-#        if hid:
-#            global _PROP_CACHE
-#            _PROP_CACHE[hid][name] = val
-#            # oob hook functionality
-#            oob_hook = _OOB_PROP_UPDATE_HOOKS[hid].get(name)
-#            if oob_hook:
-#                oob_hook[0](obj.typeclass, name, val, *oob_hook[1], **oob_hook[2])
-#
-#
-#    def del_prop_cache(obj, name):
-#        "On-model cache deleter"
-#        try:
-#            del _PROP_CACHE[hashid(obj)][name]
-#        except KeyError:
-#            pass
-#    def flush_prop_cache(obj=None):
-#        "On-model cache resetter"
-#        hid = hashid(obj)
-#        global _PROP_CACHE
-#        if hid:
-#            try:
-#                del _PROP_CACHE[hid]
-#            except KeyError,e:
-#                pass
-#        else:
-#            # clean cache completely
-#            _PROP_CACHE = defaultdict(dict)
-#
-#    # attribute cache
-#
-#    def get_attr_cache(obj, attrname):
-#        """
-#        Attribute cache store
-#        """
-#        return _ATTR_CACHE[hashid(obj)].get(attrname, None)
-#
-#    def set_attr_cache(obj, attrname, attrobj):
-#        """
-#        Cache an attribute object
-#        """
-#        hid = hashid(obj)
-#        if hid:
-#            global _ATTR_CACHE
-#            _ATTR_CACHE[hid][attrname] = attrobj
-#            # oob hook functionality
-#            oob_hook = _OOB_ATTR_UPDATE_HOOKS[hid].get(attrname)
-#            if oob_hook:
-#                oob_hook[0](obj.typeclass, attrname, attrobj.value, *oob_hook[1], **oob_hook[2])
-#
-#    def del_attr_cache(obj, attrname):
-#        """
-#        Remove attribute from cache
-#        """
-#        global _ATTR_CACHE
-#        try:
-#            _ATTR_CACHE[hashid(obj)][attrname].no_cache = True
-#            del _ATTR_CACHE[hashid(obj)][attrname]
-#        except KeyError:
-#            pass
-#
-#    def flush_attr_cache(obj=None):
-#        """
-#        Flush the attribute cache for this object.
-#        """
-#        global _ATTR_CACHE
-#        if obj:
-#            for attrobj in _ATTR_CACHE[hashid(obj)].values():
-#                attrobj.no_cache = True
-#            del _ATTR_CACHE[hashid(obj)]
-#        else:
-#            # clean cache completely
-#            for objcache in _ATTR_CACHE.values():
-#                for attrobj in objcache.values():
-#                    attrobj.no_cache = True
-#            _ATTR_CACHE = defaultdict(dict)
-#
-#
-#    def flush_obj_caches(obj=None):
-#        "Clean all caches on this object"
-#        flush_field_cache(obj)
-#        flush_prop_cache(obj)
-#        flush_attr_cache(obj)
-#
-
-#else:
-    # local caches disabled. Use simple pass-through replacements
-
-#def flush_field_cache(obj=None):
-#    pass
-# these should get oob handlers when oob is implemented.
-#def get_prop_cache(obj, name, default=None):
-#    return None
-#def set_prop_cache(obj, name, val):
-#    pass
-#def del_prop_cache(obj, name):
-#    pass
-#def flush_prop_cache(obj=None):
-#    pass
-#def get_attr_cache(obj, attrname):
-#    return None
-#def set_attr_cache(obj, attrname, attrobj):
-#    pass
-#def del_attr_cache(obj, attrname):
-#    pass
-#def flush_attr_cache(obj=None):
-#    pass
-

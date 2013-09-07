@@ -211,9 +211,10 @@ class ObjectDB(TypedObject):
     #    del_field_cache(self, "sessid")
     #sessid = property(__sessid_get, __sessid_set, __sessid_del)
 
-    def _db_location_handler(self, loc, old_value=None):
-        "This handles changes to the db_location field."
+    def _at_db_location_save(self, new_value, old_value=None):
+        "This is called automatically just before a new location is saved."
         #print "db_location_handler:", loc, old_value
+        loc = new_value
         try:
             old_loc = old_value
             # new_value can be dbref, typeclass or dbmodel

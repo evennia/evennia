@@ -727,6 +727,13 @@ def mod_import(module):
             result[0].close()
     return mod
 
+def all_from_module(module):
+    """
+    Return all global-level variables from a module
+    """
+    mod = mod_import(module)
+    return [val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))]
+
 def variable_from_module(module, variable=None, default=None):
     """
     Retrieve a variable or list of variables from a module. The variable(s) must be defined
