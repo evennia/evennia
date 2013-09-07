@@ -15,6 +15,7 @@ There are two similar but separate stores of sessions:
 import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
+from src.utils.utils import variable_from_module
 
 # delayed imports
 _PlayerDB = None
@@ -43,7 +44,9 @@ def delayed_import():
     "Helper method for delayed import of all needed entities"
     global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
     if not _ServerSession:
-        from src.server.serversession import ServerSession as _ServerSession
+        # we allow optional arbitrary serversession class for overloading
+        modulename, classname = settings.SERVER_SESSION_CLASS.rsplit(".", 1)
+        _ServerSession = variable_from_module(modulename, classname)
     if not _PlayerDB:
         from src.players.models import PlayerDB as _PlayerDB
     if not _ServerConfig:

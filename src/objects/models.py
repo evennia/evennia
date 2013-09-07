@@ -656,7 +656,7 @@ class ObjectDB(TypedObject):
             if nick.db_key in raw_list:
                 raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
                 break
-        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, sessid=sessid)
+        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
 
     def msg(self, msg=None, from_obj=None, data=None, sessid=0):
         """

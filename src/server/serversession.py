@@ -13,6 +13,7 @@ from django.conf import settings
 from src.scripts.models import ScriptDB
 from src.comms.models import Channel
 from src.utils import logger, utils
+from src.utils.utils import make_iter
 from src.commands import cmdhandler, cmdsethandler
 from src.server.session import Session
 
@@ -46,6 +47,15 @@ class ServerSession(Session):
     def __init__(self):
         "Initiate to avoid AttributeErrors down the line"
         self.puppet = None
+        self.player = None
+        self.cmdset_storage_string = ""
+        self.cmdset = cmdsethandler.CmdSetHandler(self)
+
+    def __cmdset_storage_get(self):
+        return [path.strip() for path  in self.cmdset_storage_string.split(',')]
+    def __cmdset_storage_set(self, value):
+        self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
+    cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
 
     def at_sync(self):
         """
@@ -62,10 +72,11 @@ class ServerSession(Session):
 
         if not self.logged_in:
             # assign the unloggedin-command set.
-            self.cmdset = cmdsethandler.CmdSetHandler(self)
-            self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
-            self.cmdset.update(init_mode=True)
-        elif self.puid:
+            self.cmdset_storage = settings.CMDSET_UNLOGGEDIN
+
+        self.cmdset.update(init_mode=True)
+
+        if self.puid:
             # reconnect puppet (puid is only set if we are coming back from a server reload)
             obj = _ObjectDB.objects.get(id=self.puid)
             self.player.puppet_object(self.sessid, obj, normal_mode=False)
@@ -83,10 +94,15 @@ class ServerSession(Session):
         self.conn_time = time.time()
         self.puid = None
         self.puppet = None
+        self.cmdset_storage = settings.CMDSET_SESSION
 
         # Update account's last login time.
         self.player.last_login = datetime.now()
         self.player.save()
+
+        # add the session-level cmdset
+        self.cmdset = cmdsethandler.CmdSetHandler(self)
+        self.cmdset.update(init_mode=True)
 
     def at_disconnect(self):
         """
@@ -156,13 +172,14 @@ class ServerSession(Session):
         if str(command_string).strip() == IDLE_COMMAND:
             self.update_session_counters(idle=True)
             return
-        if self.logged_in:
-            # the inmsg handler will relay to the right place
-            self.player.inmsg(command_string, self)
-        else:
-            # we are not logged in. Execute cmd with the the session directly
-            # (it uses the settings.UNLOGGEDIN cmdset)
-            cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
+        cmdhandler.cmdhandler(self, command_string, callertype="session", sessid=self.sessid)
+        #if self.logged_in:
+        #    # the inmsg handler will relay to the right place
+        #    self.player.inmsg(command_string, self)
+        #else:
+        #    # we are not logged in. Execute cmd with the the session directly
+        #    # (it uses the settings.UNLOGGEDIN cmdset)
+        #    cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
         self.update_session_counters()
     execute_cmd = data_in # alias
 

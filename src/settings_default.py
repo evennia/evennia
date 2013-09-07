@@ -216,16 +216,21 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # to point to these copies instead - these you can then change as you please
 # (or copy/paste from the default modules in src/ if you prefer).
 
-# Command set used before player has logged in
+# Command set used on session before player has logged in
 CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
+# Command set used on the logged-in session
+CMDSET_SESSION = "src.commands.default.cmdset_session.SessionCmdSet"
 # Default set for logged in player with characters (fallback)
 CMDSET_CHARACTER = "src.commands.default.cmdset_character.CharacterCmdSet"
 # Command set for players without a character (ooc)
 CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
 
 ######################################################################
-# Typeclasses
+# Typeclasses and other paths
 ######################################################################
+
+# Server-side session class used.
+SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in

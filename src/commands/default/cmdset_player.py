@@ -29,7 +29,7 @@ class PlayerCmdSet(CmdSet):
         self.add(player.CmdIC())
         self.add(player.CmdOOC())
         self.add(player.CmdCharCreate())
-        self.add(player.CmdSessions())
+        #self.add(player.CmdSessions())
         self.add(player.CmdWho())
         self.add(player.CmdEncoding())
         self.add(player.CmdQuit())

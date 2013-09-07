@@ -494,7 +494,7 @@ class PlayerDB(TypedObject, AbstractUser):
             # should not matter (since the return goes to all of them we can just
             # use the first one as the source)
             sessid = self.get_all_sessions()[0].sessid
-        return cmdhandler.cmdhandler(self.typeclass, raw_string, sessid=sessid)
+        return cmdhandler.cmdhandler(self.typeclass, raw_string, callertype="player", sessid=sessid)
 
     def search(self, ostring, return_character=False, **kwargs):
         """

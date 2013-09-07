@@ -1673,7 +1673,7 @@ class CmdExamine(ObjManipCommand):
                     caller.execute_cmd('look %s' % obj.name)
                     return
                 # using callback for printing result whenever function returns.
-                get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.player, obj, "session").addCallback(get_cmdset_callback)
             else:
                 self.msg("You need to supply a target to examine.")
             return
@@ -1708,7 +1708,7 @@ class CmdExamine(ObjManipCommand):
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
                 # using callback to print results whenever function returns.
-                get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.player, obj, "session").addCallback(get_cmdset_callback)
 
 
 class CmdFind(MuxCommand):
