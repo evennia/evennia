@@ -206,7 +206,11 @@ class Attribute(SharedMemoryModel):
         self.no_cache = False
         self.db_value = to_store
         self.save()
-        self.at_set(self.cached_value)
+
+        try:
+            self._track_db_value_change.update(self.cached_value)
+        except AttributeError:
+            pass
 
     #@value.deleter
     def __value_del(self):

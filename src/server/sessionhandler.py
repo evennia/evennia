@@ -21,9 +21,6 @@ try:
 except ImportError:
     import pickle
 
-dumps = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
-loads = lambda data: pickle.loads(to_str(data))
-
 # delayed imports
 _PlayerDB = None
 _ServerSession = None
@@ -326,6 +323,12 @@ class ServerSessionHandler(SessionHandler):
         Only logged-in players are counted here.
         """
         return len(set(session.uid for session in self.sessions.values() if session.logged_in))
+
+    def session_from_sessid(self, sessid):
+        """
+        Return session based on sessid, or None if not found
+        """
+        return self.sessions.get(sessid)
 
     def session_from_player(self, player, sessid):
         """

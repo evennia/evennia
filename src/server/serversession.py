@@ -22,9 +22,9 @@ _GA = object.__getattribute__
 _ObjectDB = None
 
 # load optional out-of-band function module
-OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
-if OOB_FUNC_MODULE:
-    OOB_FUNC_MODULE = utils.mod_import(settings.OOB_FUNC_MODULE)
+OOB_PLUGIN_MODULE = settings.OOB_PLUGIN_MODULE
+if OOB_PLUGIN_MODULE:
+    OOB_PLUGIN_MODULE = utils.mod_import(settings.OOB_PLUGIN_MODULE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -206,7 +206,7 @@ class ServerSession(Session):
            data = {"get_hp": ("oob_get_hp, [], {}),
                    "update_counter", ("counter", ["counter1"], {"now":True}) }
 
-        All function names must be defined in settings.OOB_FUNC_MODULE. Each
+        All function names must be defined in settings.OOB_PLUGIN_MODULE. Each
         function will be called with the oobkey and a back-reference to this session
         as their first two arguments.
         """
@@ -215,14 +215,14 @@ class ServerSession(Session):
 
         for oobkey, functuple in data.items():
             # loop through the data, calling available functions.
-            func = OOB_FUNC_MODULE.__dict__.get(functuple[0])
+            func = OOB_PLUGIN_MODULE.__dict__.get(functuple[0])
             if func:
                 try:
                     outdata[functuple[0]] = func(oobkey, self, *functuple[1], **functuple[2])
                 except Exception:
                     logger.log_trace()
             else:
-                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % functuple[0])
+                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_PLUGIN_MODULE." % functuple[0])
         if outdata:
             # we have a direct result - send it back right away
             self.oob_data_out(outdata)

@@ -184,7 +184,7 @@ class _SaverSet(_SaverMutable, MutableSet):
 # serialization helpers
 #
 
-def _pack_dbobj(item):
+def pack_dbobj(item):
     """
     Check and convert django database objects to an internal representation.
     This either returns the original input item or a tuple ("__packed_dbobj__", key, creation_time, id)
@@ -241,7 +241,7 @@ def to_pickle(data):
                 return item.__class__([process_item(val) for val in item])
             except (AttributeError, TypeError):
                 return [process_item(val) for val in item]
-        return _pack_dbobj(item)
+        return pack_dbobj(item)
     return process_item(data)
 
 @transaction.autocommit

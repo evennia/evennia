@@ -1,319 +1,308 @@
 """
--- OBS - OOB is not yet functional in Evennia. Don't use this module --
+OOBHandler - Out Of Band Handler
 
-OOB - Out-of-band central handler
+The OOBHandler is called directly by out-of-band protocols. It supplies three
+pieces of functionality:
 
-This module presents a central API for requesting data from objects in
-Evennia via OOB negotiation. It is meant specifically to be imported
-and used by the module defined in settings.OOB_FUNC_MODULE.
+    function execution - the oob protocol can execute a function directly on
+                         the server. Only functions specified in settings.OOB_PLUGIN_MODULE.OOB_FUNCS
+                         are valid for this use.
+    repeat func execution - the oob protocol can request a given function be executed repeatedly
+                            at a regular interval.
+    tracking - the oob protocol can request Evennia to track changes to fields/properties on
+               objects, as well as changes in Attributes. This is done by dynamically adding
+               tracker-objects on entities. The behaviour of those objects can be customized
+               via settings.OOB_PLUGIN_MODULE.OOB_TRACKERS.
 
-Import src.server.oobhandler and use the methods in OOBHANDLER.
+oob functions have the following call signature:
+    function(caller, *args, **kwargs)
 
-The actual client protocol (MSDP, GMCP, whatever) does not matter at
-this level, serialization is assumed to happen at the protocol level
-only.
-
-This module offers the following basic functionality:
-
-track_passive - retrieve field, property, db/ndb attribute from an object, then continue reporting
-         changes henceforth. This is done efficiently and on-demand using hooks. This should be
-         used preferentially since it's very resource efficient.
-track_active - this is an active reporting mechanism making use of a Script. This should normally
-         only be used if:
-         1) you want changes to be reported SLOWER than the actual rate of update (such
-            as only wanting to show an average of change over time)
-         2) the data you are reporting is NOT stored as a field/property/db/ndb on an object (such
-            as some sort of server statistic calculated on the fly).
-
-Trivial operations such as get/setting individual properties one time is best done directly from
-the OOB_MODULE functions.
-
-Examples of call from OOB_FUNC_MODULE:
-
-from src.server.oobhandler import OOBHANDLER
-
-def track_desc(session, *args, **kwargs):
-    "Sets up a passive watch for the desc attribute on session object"
-    if session.player:
-        char = session.player.get_puppet(session.sessid)
-        if char:
-            OOBHANDLER.track_passive(session, char, "desc", entity="db")
-            # to start off we return the value once
-            return char.db.desc
-
-
-What is passed around is a dictionary (pickled to a string) on the form
- {oobfunction: ((arg1,arg2,...),{kwarg1:val,kwarg2:val}), oobfunction2: ... }
-
+oob trackers should inherit from the OOBTracker class in this
+    module and implement a minimum of the same functionality.
 
 """
 
 from django.conf import settings
-from collections import defaultdict
-from src.scripts.objects import ScriptDB
-from src.scripts.script import Script
-from src.server import caches
-from src.server.caches import hashid
-from src.utils import logger, create
-from src.utils.utils import variable_from_module
+from src.server.models import ServerConfig
+from src.server.sessionhandler import SESSIONS
+from src.scripts.scripts import Script
+from src.create import create_script
+from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
+from src.utils import logger
+from src.utils.utils import variable_from_module, to_str
 
-# get the custom function map of available oob functions
-_OOB_FUNCMAP = variable_from_module(settings.OOB_FUNC_MODULE, "OOB_FUNC_MAP", default={})
+_SA = object.__setattr__
+_GA = object.__getattribute__
+_DA = object.__delattribute__
 
+# trackers track property changes and keep returning until they are removed
+_OOB_TRACKERS = variable_from_module(settings.OBB_PLUGIN_MODULE, "OBB_TRACKERS", default={})
+# functions return immediately
+_OOB_FUNCS = variable_from_module(settings.OBB_PLUGIN_MODULE, "OBB_FUNCS", default={})
 
-class _TrackerPool(object):
+class OOBTrackerBase(object):
     """
-    This maintains a pool of __OOBTracker scripts, ordered by interval
+    Base class for OOB Tracker objects. This can be overloaded in settings.to implement
+    callback functionality. Stored as a property given by the key in _OOB_TRACKERS or
+    by the value of a class variable property_name.
     """
+    def __init__(self, obj, *args, **kwargs):
+        self.obj = obj
+    def update(self, *args, **kwargs):
+        "Called by tracked objects"
+        pass
+    def at_remove(self, *args, **kwargs):
+        "Called when OOB is removed, in case cleanup is needed"
+        pass
+
+# Default tracker OOB class
+
+class OOBTracker(OOBTrackerBase):
+    """
+    A OOB object that passively responds whenever
+    a named database field, property or attribute
+    changes. This is directly supported by Evennia's
+    caching mechanism, which looks for hooks stored with
+    names on the form
+      _at_db_<name>_change - track database field changes
+      _at_prop_<name>_change - track other property changes
+      _at_attr_<name>_change - track Attribute changes
+    and will call the update() method
+
+    OOBHandler launches this tracking with e.g.
+     OOBHANDLER.track(obj, "_at_db_key_change", "db_key", "field", sessid)
+    """
+    def __init__(self, obj, name, sessid, *args, **kwargs):
+        """
+        obj - the object to store this hook on
+        name - name of entity to track, such as "db_key"
+        track_type - one of "field", "prop" or "attr" for Database fields,
+                     non-database Property or Attribute
+        sessid - sessid of session to report to
+        """
+        self.obj = obj
+        self.name = name
+        self.sessid = sessid
+
+    def update(self, new_value, *args, **kwargs):
+        "Called by cache when updating the tracked entitiy"
+        SESSIONS.session_from_sessid(self.sessid).msg(oob={"cmdkey":"trackreturn",
+                                                           "name":self.name,
+                                                           "value":new_value})
+
+
+class _RepeaterPool(object):
+    """
+    This maintains a pool of _RepeaterScript scripts, ordered one per interval. It
+    will automatically cull itself once a given interval's script has no more
+    subscriptions.
+    """
+
+    class _RepeaterScript(Script):
+        """
+        Repeating script for triggering OOB functions. Maintained in the pool.
+        """
+        def at_script_creation(self):
+            "Called when script is initialized"
+            self.key = "oob_func"
+            self.desc = "OOB functionality script"
+            self.persistent = False #oob scripts should always be non-persistent
+            self.ndb.subscriptions = {}
+
+        def at_repeat(self):
+            """
+            Calls subscriptions every self.interval seconds
+            """
+            for (func_key, caller, interval, args, kwargs) in self.ndb.subscriptions.values():
+                try:
+                    _OOB_FUNCS[func_key](caller, *args, **kwargs)
+                except Exception:
+                    logger.log_trace()
+
+        def subscribe(self, store_key, caller, func_key, interval, *args, **kwargs):
+            """
+            Sign up a subscriber to this oobfunction. Subscriber is
+            a database object with a dbref.
+            """
+            self.ndb.subscriptions[store_key] = (func_key, caller, interval, args, kwargs)
+
+        def unsubscribe(self, store_key):
+            """
+            Unsubscribe from oobfunction. Returns True if removal was
+            successful, False otherwise
+            """
+            self.ndb.subscriptions.pop(store_key, None)
+
     def __init__(self):
-        self.trackerscripts = {}
-    def add(self, obj, interval, oobkey):
+        self.scripts = {}
+
+    def add(self, store_key, caller, func_key, interval, *args, **kwargs):
         """
         Add a new tracking
         """
-        if interval not in self.trackerscripts:
+        if interval not in self.scripts:
             # if no existing interval exists, create new script to fill the gap
-            new_tracker = create.script(_OOBTracker, interval=interval)
-            self.trackerscripts[interval] = new_tracker
-        self.trackerscripts[interval].subscribe(obj, oobkey)
+            new_tracker = create_script(self._RepeaterScript, key="oob_repeater_%is" % interval, interval=interval)
+            self.scripts[interval] = new_tracker
+        self.scripts[interval].subscribe(store_key, caller, func_key, interval, *args, **kwargs)
+
+    def remove(self, store_key, interval):
+        """
+        Remove tracking
+        """
+        if interval in self.scripts:
+            self.scripts[interval].unsubscribe(store_key)
+            if len(self.scripts[interval].ndb.subscriptions) == 0:
+                # no more subscriptions for this interval. Clean out the script.
+                self.scripts[interval].stop()
 
 
-class _OOBTracker(Script):
-    """
-    Active tracker script
-    """
-    def at_script_creation(self):
-        "Called when script is initialized"
-        self.key = "oob_func"
-        self.desc = "OOB functionality script"
-        self.persistent = False #oob scripts should always be non-persistent
-        self.db.subscriptions = {}
+# Default OOB funcs
 
-    def at_repeat(self):
-        """
-        Calls subscriptions every self.interval seconds
-        """
-        for obj, oobkey in self.db.subscriptions.values():
-            try:
-                obj.oobhandler.execute_func()
-            except Exception:
-                logger.log_trace()
+def OOB_get_attr_val(caller, attrname):
+    "Get the given attrback from caller"
+    caller.msg(oob={"cmdkey":"get_attr", "value":to_str(caller.attributes.get(attrname))})
 
-    def subscribe(self, subscriber, oobkey, **kwargs):
-        """
-        Sign up a subscriber to this oobfunction. Subscriber is
-        a database object with a dbref.
-        """
-        self.db.subscriptions[subscriber.dbid] = (subscriber.dbobj, oobkey, kwargs)
 
-    def unsubscribe(self, subscriber):
-        """
-        Unsubscribe from oobfunction. Returns True if removal was
-        successful, False otherwise
-        """
-        removed = self.db.subscriptions.pop(subscriber.dbid, False)
-        return True if removed else False
-
+# Main OOB Handler
 
 class OOBHandler(object):
     """
-    Out-of-band handler. Should be initialized on each model that should be possible to track.
-    Tracking will apply
+    The OOBHandler maintains all dynamic on-object oob hooks. It will store the
+    creation instructions and and re-apply them at a server reload (but not after
+    a server shutdown)
     """
-    def __init__(self, obj):
-        "initialize the handler with the object it is stored on"
-        self.obj = obj
-        self.tracked = defaultdict(dict)
-        self.oobstrings = ""
+    def __init__(self):
+        """
+        Initialize handler
+        """
+        self.oob_tracker_storage = {}
+        self.oob_repeat_storage = {}
+        self.oob_tracker_pool = _RepeaterPool()
 
-    def parse_commanddict(self, dic):
+    def save(self):
         """
-        The command dict is on the form
-         {functionname:((args), {kwargs}), ...}
-        It is stored in text form as a pickle.
+        Save the command_storage as a serialized string into a temporary
+        ServerConf field
         """
+        if self.oob_tracker_storage:
+            ServerConfig.objects.conf(key="oob_tracker_storage", value=dbserialize(self.oob_tracker_storage))
+        if  self.oob_repeat_storage:
+            ServerConfig.objects.conf(key="oob_repeat_storage", value=dbserialize(self.oob_repeat_storage))
+
+    def restore(self):
+        """
+        Restore the command_storage from database and re-initialize the handler from storage.. This is
+        only triggered after a server reload, not after a shutdown-restart
+        """
+        # load stored command instructions and use them to re-initialize handler
+        tracker_storage = ServerConfig.objects.conf(key="oob_tracker_storage")
+        if tracker_storage:
+            self.oob_tracker_storage = dbunserialize(tracker_storage)
+            for tracker_key, (obj, prop_name, args, kwargs) in self.oob_tracker_storage.items():
+                self.track(obj, tracker_key, *args, **kwargs)
+
+        repeat_storage = ServerConfig.objects.conf(key="oob_repeat_storage")
+        if repeat_storage:
+            self.oob_repeat_storage = dbunserialize(repeat_storage)
+            for func_key, (caller, func_key, interval, args, kwargs) in self.oob_repeat_storage.items():
+                self.repeat(caller, func_key, interval, *args, **kwargs)
 
 
+    def track(self, obj, tracker_key, property_name=None, *args, **kwargs):
+        """
+        Create an OOB obj of class _oob_MAPPING[tracker_key] on obj. args,
+        kwargs will be used to initialize the OOB hook  before adding
+        it to obj.
+        If property_key is not given, but the OOB has a class property property_name, this
+        will be used as the property name when assigning the OOB to
+        obj, otherwise tracker_key is ysed as the property name.
+        """
+        oobclass = _OOB_TRACKERS[tracker_key] # raise traceback if not found
+        prop_name = property_name or (hasattr(oobclass,"property_name") and oobclass.property_name) or tracker_key
+        # initialize
+        oob = oobclass(obj, *args, **kwargs)
+        _SA(obj, prop_name, oob)
+        # store calling arguments as a pickle for retrieval later
+        storekey = (pack_dbobj(obj), prop_name)
+        stored = (obj, prop_name, args, kwargs)
+        self.oob_tracker_storage[storekey] = stored
 
-    def _make_hash(self, callback_key, hashkey):
+    def untrack(self, obj, tracker_key, *args, **kwargs):
         """
-        create an id-hash for storage
+        Remove the OOB from obj. If oob implements an
+        at_delete hook, this will be called with args, kwargs
         """
-        return "%s-%s" % (callback_key, hashkey)
-
-    def track(self, callback_key, hashkey, interval=None, **kwargs):
-        """
-        Access method - start tracking given changes on this object
-
-        oobkey - available function key mapped in OOB_FUNC_MODULE.OOB_FUNC_MAP
-        interval - if None, updating will happen on-demand, only when appropriate callbacks are triggered.
-                   if int > 0, the tracker will actively call oobfunc at this interval. Usually, on-demand
-                   updating is preferred for efficiency reasons.
-        other kwargs will be passed to oob function given by oobkey at run-time along with other on-the-fly kwargs.
-        """
-        hid = self._make_hash(callback_key, hashkey)
-        if interval:
-            _OOBTrackPool.add(self, interval, hid)
-        self.tracked[hid] = kwargs
-
-    def update_tracked(self, callback_key, hashkey, **kwargs):
-        """
-        Called by tracked systems when they update
-        """
-        hid = self._make_hash(callback_key, hashkey)
-        if hid in self.tracked:
-            tkwargs = self.tracked[hid]
-            kwargs.update(tkwargs)
-            self.execute_func(oobkey, **kwargs)
-
-    def execute_func(self, callback_key, hashkey, **kwargs):
-        """
-        This is called from the outside to crank the oob mechanism manually
-        """
+        oobclass = _OOB_TRACKERS[tracker_key] # raise traceback if not found
+        prop_name = oobclass.property_name if hasattr(oobclass, "property_name") else tracker_key
         try:
-            _OOB_FUNC_MAP[callback_key](self.obj, hashkey, **kwargs)
+            # call at_delete hook
+            _GA(obj, prop_name).at_delete(*args, **kwargs)
+        except AttributeError:
+            pass
+        _DA(obj, prop_name)
+        # remove the pickle from storage
+        store_key = (pack_dbobj(obj), prop_name)
+        self.oob_tracker_storage.pop(store_key, None)
+
+    def track_field(self, obj, sessid, field_name, tracker_key="oobtracker"):
+        """
+        Shortcut wrapper method for specifically tracking a database field.
+        Uses OOBTracker by default (change tracker_key to redirect)
+        Will create a tracker with a property name that the field cache
+        expects.
+        """
+        # all database field names starts with db_*
+        field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
+        oob_tracker_name = "_track_%s_change" % field_name # field cache looks for name on this form
+        self.track(obj, tracker_key, field_name, sessid, property_name=oob_tracker_name)
+
+    def track_attribute(self, obj, sessid, attr_name, tracker_key="oobtracker"):
+        """
+        Shortcut wrapper method for specifically tracking the changes of an
+        Attribute on an object. Will create a tracker on the Attribute Object and
+        name in a way the Attribute expects.
+        """
+        # get the attribute object if we can
+        attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
+        if attrobj:
+            oob_tracker_name = "_track_db_value_change"
+            self.track(attrobj, tracker_key, attr_name, sessid, property_name=oob_tracker_name)
+
+
+    def run(self, func_key, *args, **kwargs):
+        """
+        Retrieve oobfunc from OOB_FUNCS and execute it immediately
+        using *args and **kwargs
+        """
+        oobfunc = _OOB_FUNCS[func_key] # raise traceback if not found
+        try:
+            oobfunc(*args, **kwargs)
         except Exception:
             logger.log_trace()
 
-class OOBhandler(object):
-    """
-    Main Out-of-band handler
-    """
-    def __init__(self, obj):
-        "initialization"
-        self.obj = obj
-        self.track_passive_subs = defaultdict(dict)
-        scripts = ScriptDB.objects.filter(db_key__startswith="oob_tracking_")
-        self.track_active_subs = dict((s.interval, s) for s in scripts)
-        # set reference on caches module
-        caches._OOB_HANDLER = self
-
-    def _init_func(self):
+    def repeat(self, caller, func_key, interval=20, *args, **kwargs):
         """
-        Initialize the
+        Start a repeating action. Every interval seconds,
+        the oobfunc corresponding to func_key is called with
+        args and kwargs.
         """
+        if not func_key in _OOB_FUNCS:
+            raise KeyError("%s is not a valid OOB function name.")
+        store_key = (pack_dbobj(caller), func_key, interval)
+        # prepare to store
+        self.oob_repeat_storage[store_key] = (caller, func_key, interval, args, kwargs)
+        self.oob_tracker_pool.add(store_key, caller, func_key, interval, *args, **kwargs)
 
-    def track_passive(self, oobkey, tracker, tracked, entityname, callback=None, mode="db", *args, **kwargs):
+    def unrepeat(self, caller, func_key, interval=20):
         """
-        Passively track changes to an object property,
-        attribute or non-db-attribute. Uses cache hooks to
-        do this on demand, without active tracking.
-
-        tracker - object who is tracking
-        tracked - object being tracked
-        entityname - field/property/attribute/ndb name to watch
-        function - function object to call when entity update. When entitye <key>
-        is updated, this function will be called with called
-              with function(obj, entityname, new_value, *args, **kwargs)
-        *args - additional, optional arguments to send to function
-        mode (keyword) - the type of entity to track. One of
-             "property", "db", "ndb" or "custom" ("property" includes both
-             changes to database fields and cached on-model properties)
-        **kwargs - additional, optionak keywords to send to function
-
-        Only entities that are being -cached- can be tracked. For custom
-        on-typeclass properties, a custom hook needs to be created, calling
-        the update() function in this module whenever the tracked entity changes.
+        Stop a repeating action
         """
+        store_key = (pack_dbobj(caller), func_key, interval)
+        self.oob_tracker_pool.remove(store_key, interval)
+        self.oob_repeat_storage.pop(store_key, None)
 
-        # always store database object (in case typeclass changes along the way)
-        try: tracker = tracker.dbobj
-        except AttributeError: pass
-        try: tracked = tracked.dbobj
-        except AttributeError: pass
 
-        def default_callback(tracker, tracked, entityname, new_val, *args, **kwargs):
-            "Callback used if no function is supplied"
-            pass
 
-        thid = hashid(tracked)
-        if not thid:
-            return
-        oob_call = (function, oobkey, tracker, tracked, entityname, args, kwargs)
-        if thid not in self.track_passive_subs:
-            if mode in ("db", "ndb", "custom"):
-                caches.register_oob_update_hook(tracked, entityname, mode=mode)
-            elif mode == "property":
-                # track property/field. We must first determine which cache to use.
-                if hasattr(tracked, 'db_%s' % entityname.lstrip("db_")):
-                    hid = caches.register_oob_update_hook(tracked, entityname, mode="field")
-                else:
-                    hid = caches.register_oob_update_hook(tracked, entityname, mode="property")
-        if not self.track_pass_subs[hid][entityname]:
-            self.track_pass_subs[hid][entityname] = {tracker:oob_call}
-        else:
-            self.track_passive_subs[hid][entityname][tracker] = oob_call
-
-    def untrack_passive(self, tracker, tracked, entityname, mode="db"):
-        """
-        Remove passive tracking from an object's entity.
-        mode - one of "property", "db", "ndb" or "custom"
-        """
-        try: tracked = tracked.dbobj
-        except AttributeError: pass
-
-        thid = hashid(tracked)
-        if not thid:
-            return
-        if len(self.track_passive_subs[thid][entityname]) == 1:
-            if mode in ("db", "ndb", "custom"):
-                caches.unregister_oob_update_hook(tracked, entityname, mode=mode)
-            elif mode == "property":
-                if hasattr(self.obj, 'db_%s' % entityname.lstrip("db_")):
-                    caches.unregister_oob_update_hook(tracked, entityname, mode="field")
-                else:
-                    caches.unregister_oob_update_hook(tracked, entityname, mode="property")
-
-        try: del self.track_passive_subs[thid][entityname][tracker]
-        except (KeyError, TypeError): pass
-
-    def update(self, hid, entityname, new_val):
-        """
-        This is called by the caches when the  object when its
-        property/field/etc is updated, to inform the oob handler and
-        all subscribing to this particular entity has been updated
-        with new_val.
-        """
-        # tell all tracking objects of the update
-        for tracker, oob in self.track_passive_subs[hid][entityname].items():
-            try:
-                # function(oobkey, tracker, tracked, entityname, new_value, *args, **kwargs)
-                oob[0](tracker, oob[1], oob[2], new_val, *oob[3], **oob[4])
-            except Exception:
-                logger.log_trace()
-
-    # Track (active/proactive tracking)
-
-    # creating and storing tracker scripts
-    def track_active(self, oobkey, func, interval=30, *args, **kwargs):
-        """
-        Create a tracking, re-use script with same interval if available,
-        otherwise create a new one.
-
-        args:
-         oobkey - interval-unique identifier needed for removing tracking later
-         func - function to call at interval seconds
-            (all other args become argjs into func)
-        keywords:
-         interval (default 30s) - how often to update tracker
-            (all other kwargs become kwargs into func)
-        """
-        if interval in self.track_active_subs:
-            # tracker with given interval found. Add to its subs
-            self.track_active_subs[interval].track(oobkey, func, *args, **kwargs)
-        else:
-            # create new tracker with given interval
-            new_tracker = create.create_script(_OOBTracker, oobkey="oob_tracking_%i" % interval, interval=interval)
-            new_tracker.track(oobkey, func, *args, **kwargs)
-            self.track_active_subs[interval] = new_tracker
-
-    def untrack_active(self, oobkey, interval):
-        """
-        Remove tracking for a given interval and oobkey
-        """
-        tracker = self.track_active_subs.get(interval)
-        if tracker:
-            tracker.untrack(oobkey)
-
-# handler object
-OOBHANDLER = OOBhandler()
+# access object
+OOB_HANDLER = OOBHandler()

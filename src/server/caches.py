@@ -113,6 +113,10 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         except AttributeError:
             handler = None
         #hid = hashid(instance, "-%s" % fieldname)
+            try:
+                old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
+            except AttributeError:
+                old_value=None
         if callable(handler):
             try:
                 old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
@@ -123,8 +127,12 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             new_value = handler(new_value, old_value=old_value)
             # we re-assign this to the field, save() will pick it up from there
             _SA(instance, fieldname, new_value)
-        if instance and hasattr(instance, "oobhandler"):
-            _GA(instance, "oobhandler").update("fieldset", fieldname, old_value, new_value)
+        oob_tracker_name = "_track_%s_change" % fieldname
+        try:
+            _GA(instance, oob_tracker_name).update(new_value)
+        except AttributeError:
+            pass
+
         #if hid:
         #    # update cache
         #    _FIELD_CACHE[hid] = new_value
