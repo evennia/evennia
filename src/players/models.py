@@ -248,7 +248,7 @@ class PlayerDB(TypedObject, AbstractUser):
     # PlayerDB class access methods
     #
 
-    def msg(self, outgoing_string, from_obj=None, data=None, sessid=None):
+    def msg(self, text=None, **kwargs):#outgoing_string, from_obj=None, data=None, sessid=None):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
@@ -262,25 +262,27 @@ class PlayerDB(TypedObject, AbstractUser):
                  a command on a Character, the character automatically stores and
                  handles the sessid).
         """
+        from_obj = kwargs.pop("from_obj", None)
+        sessid = kwargs.pop("sessid", 0)
         if from_obj:
             # call hook
             try:
-                _GA(from_obj, "at_msg_send")(outgoing_string, to_obj=self, data=data)
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, data=data)
             except Exception:
                 pass
-        outgoing_string = utils.to_str(outgoing_string, force_string=True)
+        outgoing_string = utils.to_str(text, force_string=True)
 
         session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
         if session:
             obj = session.puppet
-            if obj and not obj.at_msg_receive(outgoing_string, from_obj=from_obj, data=data):
+            if obj and not obj.at_msg_receive(text, **kwargs):
                 # if hook returns false, cancel send
                 return
-            session.msg(outgoing_string, data)
+            session.msg(text=text, **kwargs)
         else:
             # if no session was specified, send to them all
             for sess in _GA(self, 'get_all_sessions')():
-                sess.msg(outgoing_string, data)
+                sess.msg(text=text, **kwargs)
 
     def inmsg(self, ingoing_string, session):
         """

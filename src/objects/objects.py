@@ -222,7 +222,7 @@ class Object(TypeClass):
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
-    def msg(self, message, from_obj=None, data=None, sessid=0):
+    def msg(self, text=None, **kwargs):#message, from_obj=None, data=None, sessid=0):
         """
         Emits something to any sessions attached to the object.
 
@@ -233,7 +233,7 @@ class Object(TypeClass):
         sessid: optional session target. If sessid=0, the session will
                 default to self.sessid or from_obj.sessid.
         """
-        self.dbobj.msg(message, from_obj=from_obj, data=data, sessid=0)
+        self.dbobj.msg(text=text, **kwargs)#message, from_obj=from_obj, data=data, sessid=0)
 
     def msg_contents(self, message, exclude=None, from_obj=None, data=None):
         """
@@ -653,7 +653,7 @@ class Object(TypeClass):
         """
         pass
 
-    def at_msg_receive(self, msg, from_obj=None, data=None):
+    def at_msg_receive(self, text=None, **kwargs):#from_obj=None, data=None):
         """
         This hook is called whenever someone
         sends a message to this object.
@@ -674,7 +674,7 @@ class Object(TypeClass):
         """
         return True
 
-    def at_msg_send(self, msg, to_obj=None, data=None):
+    def at_msg_send(self, text=None, **kwargs):#msg, to_obj=None, data=None):
         """
         This is a hook that is called when /this/ object
         sends a message to another object with obj.msg()

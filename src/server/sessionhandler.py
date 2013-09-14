@@ -15,7 +15,14 @@ There are two similar but separate stores of sessions:
 import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
-from src.utils.utils import variable_from_module
+from src.utils.utils import variable_from_module, to_str
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+dumps = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
+loads = lambda data: pickle.loads(to_str(data))
 
 # delayed imports
 _PlayerDB = None
@@ -350,20 +357,21 @@ class ServerSessionHandler(SessionHandler):
         for sess in self.sessions.values():
             self.data_out(sess, message)
 
-    def data_out(self, session, string="", data=""):
+    def data_out(self, session, text="", **kwargs):
         """
         Sending data Server -> Portal
         """
         self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
-                                                              msg=string,
-                                                              data=data)
-    def data_in(self, sessid, string="", data=""):
+                                                              msg=text,
+                                                              data=kwargs)
+    def data_in(self, sessid, text="", data=""):
         """
         Data Portal -> Server
         """
         session = self.sessions.get(sessid, None)
         if session:
-            session.data_in(string)
+            kwargs = data if data else {}
+            session.data_in(text, **kwargs)
 
         # ignore 'data' argument for now; this is otherwise the place
         # to put custom effects on the server due to data input, e.g.

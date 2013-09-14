@@ -96,7 +96,7 @@ class Player(TypeClass):
 
     ## methods inherited from database model
 
-    def msg(self, outgoing_string, from_obj=None, data=None, sessid=None):
+    def msg(self, text=None, **kwargs):#outgoing_string, from_obj=None, data=None, sessid=None):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
@@ -110,7 +110,7 @@ class Player(TypeClass):
                  a command on a Character, the character automatically stores and
                  handles the sessid).
                  """
-        self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data, sessid=sessid)
+        self.dbobj.msg(text=text, **kwargs)#outgoing_string, from_obj=from_obj, data=data, sessid=sessid)
 
     def swap_character(self, new_character, delete_old_character=False):
         """

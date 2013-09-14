@@ -658,7 +658,7 @@ class ObjectDB(TypedObject):
                 break
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
 
-    def msg(self, msg=None, from_obj=None, data=None, sessid=0):
+    def msg(self, text=None, **kwargs):#from_obj=None, data=None, sessid=0):
         """
         Emits something to a session attached to the object.
 
@@ -672,13 +672,13 @@ class ObjectDB(TypedObject):
         """
         if _GA(self, 'player'):
             # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
-            if sessid == 0:
+            if kwargs.get("sessid",0) == 0:
                 sessid = None
-                if from_obj and hasattr(from_obj, "sessid"):
-                    sessid = from_obj.sessid
+                if "from_obj" in kwargs and hasattr(kwargs["from_obj"], "sessid"):
+                    kwargs["sessid"] = from_obj.sessid
                 elif hasattr(self, "sessid"):
-                    sessid = self.sessid
-            _GA(_GA(self, 'player'), "typeclass").msg(msg, from_obj=from_obj, data=data, sessid=sessid)
+                    kwargs["sessid"] = self.sessid
+            _GA(_GA(self, 'player'), "typeclass").msg(text=text, **kwargs)#from_obj=from_obj, data=data, sessid=sessid)
 
     def emit_to(self, message, from_obj=None, data=None):
         "Deprecated. Alias for msg"

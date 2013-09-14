@@ -82,7 +82,6 @@ class Attribute(SharedMemoryModel):
     attributes, rather than making different classes for each object type and
     storing them directly. The added benefit is that we can add/remove
     attributes on the fly as we like.
-
     The Attribute class defines the following properties:
       key - primary identifier
       lock_storage - perm strings

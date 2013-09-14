@@ -370,7 +370,7 @@ class CmdWho(MuxPlayerCommand):
                                session.protocol_key,
                                isinstance(session.address, tuple) and session.address[0] or session.address])
         else:
-            table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{Idle"])
+            table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{wIdle"])
             for session in session_list:
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible

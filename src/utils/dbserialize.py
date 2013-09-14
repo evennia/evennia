@@ -251,9 +251,10 @@ def from_pickle(data, db_obj=None):
     to a form that may contain database objects again. Note that if a database
     object was removed (or changed in-place) in the database, None will be returned.
 
-    db_obj - this is the model instance (normally an Attribute) that Saver*-type
-             iterables will save to when they update. It must have a 'value'
-             property that saves assigned data to the database.
+    db_obj - this is the model instance (normally an Attribute) that _Saver*-type
+             iterables (_SaverList etc) will save to when they update. It must have a 'value'
+             property that saves assigned data to the database. Skip if not serializing onto
+             a given object.
 
     If db_obj is given, this function will convert lists, dicts and sets to their
     _SaverList, _SaverDict and _SaverSet counterparts.
@@ -338,3 +339,10 @@ def do_pickle(data):
 def do_unpickle(data):
     "Retrieve pickle from pickled string"
     return loads(to_str(data))
+
+def dbserialize(data):
+    "Serialize to pickled form in one step"
+    return do_pickle(to_pickle(data))
+def dbunserialize(data, db_obj=None):
+    "Un-serialize in one step. See from_pickle for help db_obj."
+    return do_unpickle(from_pickle(data, db_obj=db_obj))

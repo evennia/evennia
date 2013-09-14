@@ -126,6 +126,14 @@ class OOBHandler(object):
         self.tracked = defaultdict(dict)
         self.oobstrings = ""
 
+    def parse_commanddict(self, dic):
+        """
+        The command dict is on the form
+         {functionname:((args), {kwargs}), ...}
+        It is stored in text form as a pickle.
+        """
+
+
 
     def _make_hash(self, callback_key, hashkey):
         """

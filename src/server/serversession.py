@@ -183,11 +183,11 @@ class ServerSession(Session):
         self.update_session_counters()
     execute_cmd = data_in # alias
 
-    def data_out(self, msg, data=None):
+    def data_out(self, text=None, **kwargs):
         """
         Send Evennia -> Player
         """
-        self.sessionhandler.data_out(self, msg, data)
+        self.sessionhandler.data_out(self, text=text, **kwargs)
 
     def oob_data_in(self, data):
         """
@@ -276,9 +276,9 @@ class ServerSession(Session):
     #def disconnect(self):
     #    "alias for session_disconnect"
     #    self.session_disconnect()
-    def msg(self, string='', data=None):
+    def msg(self, text='', **kwargs):
         "alias for at_data_out"
-        self.data_out(string, data=data)
+        self.data_out(text=text, **kwargs)
 
 
     # Dummy API hooks for use during non-loggedin operation
