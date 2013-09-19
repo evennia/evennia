@@ -17,9 +17,9 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Object
+from ev import Object as DefaultObject
 
-class ExampleObject(Object):
+class Object(DefaultObject):
     """
     This is the root typeclass object, implementing an in-game Evennia
     game object, such as having a location, being able to be

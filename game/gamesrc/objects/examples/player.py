@@ -16,9 +16,9 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Player
+from ev import Player as DefaultPlayer
 
-class ExamplePlayer(Player):
+class Player(DefaultPlayer):
     """
     This class describes the actual OOC player (i.e. the user connecting
     to the MUD). It does NOT have visual appearance in the game world (that

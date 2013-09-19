@@ -16,9 +16,9 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Character
+from ev import Character as DefaultCharacter
 
-class ExampleCharacter(Character):
+class Character(DefaultCharacter):
     """
     The Character is like any normal Object (see example/object.py for
     a list of properties and methods), except it actually implements

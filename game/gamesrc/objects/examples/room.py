@@ -17,9 +17,9 @@ this change, you have to convert them manually e.g. with the
 
 """
 
-from ev import Room
+from ev import Room as DefaultRoom
 
-class ExampleRoom(Room):
+class Room(DefaultRoom):
     """
     Rooms are like any Object, except their location is None
     (which is default). They also use basetype_setup() to

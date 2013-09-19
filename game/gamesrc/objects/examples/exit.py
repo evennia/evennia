@@ -16,9 +16,9 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Exit
+from ev import Exit as DefaultExit
 
-class ExampleExit(Exit):
+class Exit(DefaultExit):
     """
     Exits are connectors between rooms. Exits are normal Objects except
     they defines the 'destination' property. It also does work in the
