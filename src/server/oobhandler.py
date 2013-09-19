@@ -40,54 +40,91 @@ _OOB_TRACKERS = variable_from_module(settings.OBB_PLUGIN_MODULE, "OBB_TRACKERS",
 # functions return immediately
 _OOB_FUNCS = variable_from_module(settings.OBB_PLUGIN_MODULE, "OBB_FUNCS", default={})
 
-class OOBTrackerBase(object):
+
+class TrackerHandler(object):
     """
-    Base class for OOB Tracker objects. This can be overloaded in settings.to implement
-    callback functionality. Stored as a property given by the key in _OOB_TRACKERS or
-    by the value of a class variable property_name.
+    This object is dynamically assigned to objects whenever one of its fields
+    are to be tracked. It holds an internal dictionary mapping to the fields
+    on that object. Each field can be tracked by any number of trackers (each
+    tied to a different callback).
     """
-    def __init__(self, obj, *args, **kwargs):
-        self.obj = obj
+    def __init__(self, obj):
+        """
+        This is initiated and stored on the object as a property _trackerhandler.
+        """
+        self.obj = obj.dbobj
+        self.ntrackers = 0
+        # initiate store only with valid on-object fieldnames
+        self.tracktargets = dict((key, {}) for key in _GA(_GA(self.obj, "_meta"), "get_all_field_names")())
+
+    def add(self, fieldname, trackerkey, trackerobj):
+        """
+        Add tracker to the handler. Raises KeyError if fieldname
+        does not exist.
+        """
+        self.tracktargets[fieldname][trackerkey] = trackerobj
+        self.ntrackers += 1
+
+    def remove(self, fieldname, trackerkey, *args, **kwargs):
+        """
+        Remove tracker from handler. Raises KeyError if tracker
+        is not found.
+        """
+        oobobj = self.tracktargets[fieldname][trackerkey]
+        try:
+            oobobj.at_delete(*args, **kwargs)
+        except Exception:
+            logger.log_trace()
+        del oobobj
+        self.ntrackers -= 1
+        if self.ntrackers <= 0:
+            # if there are no more trackers, clean this handler
+            del self
+
+    def update(self, fieldname, new_value):
+        """
+        Called by the field when it updates to a new value
+        """
+        for trackerobj in self.tracktargets[fieldname].values():
+            try:
+                trackerobj.update(fieldname, new_value)
+            except Exception:
+                logger.log_trace()
+
+class TrackerBase(object):
+    """
+    Base class for OOB Tracker objects.
+    """
+    def __init__(self, *args, **kwargs):
+        pass
     def update(self, *args, **kwargs):
         "Called by tracked objects"
         pass
     def at_remove(self, *args, **kwargs):
-        "Called when OOB is removed, in case cleanup is needed"
+        "Called when tracker is removed"
         pass
 
 # Default tracker OOB class
 
-class OOBTracker(OOBTrackerBase):
+class OOBTracker(TrackerBase):
     """
-    A OOB object that passively responds whenever
-    a named database field, property or attribute
-    changes. This is directly supported by Evennia's
-    caching mechanism, which looks for hooks stored with
-    names on the form
-      _at_db_<name>_change - track database field changes
-      _at_prop_<name>_change - track other property changes
-      _at_attr_<name>_change - track Attribute changes
-    and will call the update() method
-
-    OOBHandler launches this tracking with e.g.
-     OOBHANDLER.track(obj, "_at_db_key_change", "db_key", "field", sessid)
+    A OOB object that passively sends data to a stored sessid whenever
+    a named database field changes.
     """
-    def __init__(self, obj, name, sessid, *args, **kwargs):
+    def __init__(self, fieldname, sessid, *args, **kwargs):
         """
-        obj - the object to store this hook on
         name - name of entity to track, such as "db_key"
         track_type - one of "field", "prop" or "attr" for Database fields,
                      non-database Property or Attribute
         sessid - sessid of session to report to
         """
-        self.obj = obj
-        self.name = name
+        self.fieldname = fieldname
         self.sessid = sessid
 
     def update(self, new_value, *args, **kwargs):
         "Called by cache when updating the tracked entitiy"
         SESSIONS.session_from_sessid(self.sessid).msg(oob={"cmdkey":"trackreturn",
-                                                           "name":self.name,
+                                                           "name":self.fieldname,
                                                            "value":new_value})
 
 
@@ -161,8 +198,9 @@ class _RepeaterPool(object):
 
 def OOB_get_attr_val(caller, attrname):
     "Get the given attrback from caller"
-    caller.msg(oob={"cmdkey":"get_attr", "value":to_str(caller.attributes.get(attrname))})
-
+    caller.msg(oob={"cmdkey":"get_attr",
+                             "name":attrname,
+                             "value":to_str(caller.attributes.get(attrname))})
 
 # Main OOB Handler
 
@@ -199,8 +237,8 @@ class OOBHandler(object):
         tracker_storage = ServerConfig.objects.conf(key="oob_tracker_storage")
         if tracker_storage:
             self.oob_tracker_storage = dbunserialize(tracker_storage)
-            for tracker_key, (obj, prop_name, args, kwargs) in self.oob_tracker_storage.items():
-                self.track(obj, tracker_key, *args, **kwargs)
+            for tracker_key, (obj, sessid, fieldname, args, kwargs) in self.oob_tracker_storage.items():
+                self.track(obj, sessid, fieldname, tracker_key, *args, **kwargs)
 
         repeat_storage = ServerConfig.objects.conf(key="oob_repeat_storage")
         if repeat_storage:
@@ -209,7 +247,7 @@ class OOBHandler(object):
                 self.repeat(caller, func_key, interval, *args, **kwargs)
 
 
-    def track(self, obj, tracker_key, property_name=None, *args, **kwargs):
+    def track(self, obj, sessid, fieldname, tracker_key, *args, **kwargs):
         """
         Create an OOB obj of class _oob_MAPPING[tracker_key] on obj. args,
         kwargs will be used to initialize the OOB hook  before adding
@@ -219,30 +257,30 @@ class OOBHandler(object):
         obj, otherwise tracker_key is ysed as the property name.
         """
         oobclass = _OOB_TRACKERS[tracker_key] # raise traceback if not found
-        prop_name = property_name or (hasattr(oobclass,"property_name") and oobclass.property_name) or tracker_key
-        # initialize
-        oob = oobclass(obj, *args, **kwargs)
-        _SA(obj, prop_name, oob)
+        if not "_trackerhandler" in _GA(obj, "__dict__"):
+            # assign trackerhandler to object
+            _SA(obj, "_trackerhandler", TrackerHandler(obj))
+        # initialize object
+        oob = oobclass(obj, sessid, fieldname, *args, **kwargs)
+        _GA(obj, "_trackerhandler").add(oob, fieldname)
+
         # store calling arguments as a pickle for retrieval later
-        storekey = (pack_dbobj(obj), prop_name)
-        stored = (obj, prop_name, args, kwargs)
+        storekey = (pack_dbobj(obj), sessid, fieldname)
+        stored = (obj, sessid, fieldname, args, kwargs)
         self.oob_tracker_storage[storekey] = stored
 
-    def untrack(self, obj, tracker_key, *args, **kwargs):
+    def untrack(self, obj, sessid, fieldname, tracker_key, *args, **kwargs):
         """
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
         """
-        oobclass = _OOB_TRACKERS[tracker_key] # raise traceback if not found
-        prop_name = oobclass.property_name if hasattr(oobclass, "property_name") else tracker_key
         try:
             # call at_delete hook
-            _GA(obj, prop_name).at_delete(*args, **kwargs)
+            _GA(obj, "_trackerhandler").remove(fieldname, tracker_key, *args, **kwargs)
         except AttributeError:
             pass
-        _DA(obj, prop_name)
         # remove the pickle from storage
-        store_key = (pack_dbobj(obj), prop_name)
+        store_key = (pack_dbobj(obj), sessid, fieldname)
         self.oob_tracker_storage.pop(store_key, None)
 
     def track_field(self, obj, sessid, field_name, tracker_key="oobtracker"):
@@ -250,7 +288,7 @@ class OOBHandler(object):
         Shortcut wrapper method for specifically tracking a database field.
         Uses OOBTracker by default (change tracker_key to redirect)
         Will create a tracker with a property name that the field cache
-        expects.
+        expects
         """
         # all database field names starts with db_*
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
@@ -268,7 +306,6 @@ class OOBHandler(object):
         if attrobj:
             oob_tracker_name = "_track_db_value_change"
             self.track(attrobj, tracker_key, attr_name, sessid, property_name=oob_tracker_name)
-
 
     def run(self, func_key, *args, **kwargs):
         """

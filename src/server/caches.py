@@ -107,17 +107,9 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         new_value = field.value_from_object(instance)
         # try to see if there is a handler on object that should be triggered when saving.
         handlername = "_at_%s_save" % fieldname
-        try:
-            # try-except is about 14 times faster than hasattr in this case
-            handler = _GA(instance, handlername)
-        except AttributeError:
-            handler = None
-        #hid = hashid(instance, "-%s" % fieldname)
-            try:
-                old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
-            except AttributeError:
-                old_value=None
+        handler = _GA(instance, handlername) if handlername in _GA(instance, '__dict__') else None
         if callable(handler):
+            #hid = hashid(instance, "-%s" % fieldname)
             try:
                 old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
             except AttributeError:
@@ -127,12 +119,9 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
             new_value = handler(new_value, old_value=old_value)
             # we re-assign this to the field, save() will pick it up from there
             _SA(instance, fieldname, new_value)
-        oob_tracker_name = "_track_%s_change" % fieldname
-        try:
-            _GA(instance, oob_tracker_name).update(new_value)
-        except AttributeError:
-            pass
-
+        trackerhandler = _GA(instance, "_trackerhandler") if "_trackerhandler" in _GA(instance, '__dict__') else None
+        if trackerhandler:
+            trackerhandler.update(fieldname, new_value)
         #if hid:
         #    # update cache
         #    _FIELD_CACHE[hid] = new_value

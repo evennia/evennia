@@ -591,10 +591,10 @@ class Channel(SharedMemoryModel):
         # get all players connected to this channel and send to them
         for conn in Channel.objects.get_all_connections(self, online=online):
             try:
-                conn.player.msg(msg, senders)
+                conn.player.msg(msg, from_object=senders)
             except AttributeError:
                 try:
-                    conn.to_external(msg, senders, from_channel=self)
+                    conn.to_external(msg, from_object=senders, from_channel=self)
                 except Exception:
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
         return True
