@@ -658,7 +658,7 @@ class ObjectDB(TypedObject):
                 break
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
 
-    def msg(self, text=None, **kwargs):#from_obj=None, data=None, sessid=0):
+    def msg(self, text=None, from_obj=None, sessid=0, **kwargs):
         """
         Emits something to a session attached to the object.
 
@@ -670,22 +670,24 @@ class ObjectDB(TypedObject):
                       If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
                       If None, echo to all connected sessions
         """
+        if "data" in kwargs:
+            from src.utils import logger
+            logger.log_depmsg("ObjectDB.msg(): 'data'-dict keyword is deprecated. Use **kwargs instead.")
+            data = kwargs.pop("data")
+            if isinstance(data, dict):
+                kwargs.update(data)
+
+
         if _GA(self, 'player'):
             # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
-            if kwargs.get("sessid",0) == 0:
-                sessid = None
-                if "from_obj" in kwargs and hasattr(kwargs["from_obj"], "sessid"):
-                    kwargs["sessid"] = from_obj.sessid
+            if not sessid:
+                if from_obj and hasattr(from_obj, "sessid"):
+                    sessid = from_obj.sessid
                 elif hasattr(self, "sessid"):
-                    kwargs["sessid"] = self.sessid
-            _GA(_GA(self, 'player'), "typeclass").msg(text=text, **kwargs)#from_obj=from_obj, data=data, sessid=sessid)
+                    sessid = self.sessid
+            _GA(_GA(self, 'player'), "typeclass").msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
-    def emit_to(self, message, from_obj=None, data=None):
-        "Deprecated. Alias for msg"
-        logger.log_depmsg("emit_to() is deprecated. Use msg() instead.")
-        _GA(self, "msg")(message, from_obj, data)
-
-    def msg_contents(self, message, exclude=None, from_obj=None, data=None):
+    def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
         Emits something to all objects inside an object.
 
@@ -697,12 +699,7 @@ class ObjectDB(TypedObject):
             contents = [obj for obj in contents
                         if (obj not in exclude and obj not in exclude)]
         for obj in contents:
-            obj.msg(message, from_obj=from_obj, data=data)
-
-    def emit_to_contents(self, message, exclude=None, from_obj=None, data=None):
-        "Deprecated. Alias for msg_contents"
-        logger.log_depmsg("emit_to_contents() is deprecated. Use msg_contents() instead.")
-        self.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
+            obj.msg(message, from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False):

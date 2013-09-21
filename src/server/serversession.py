@@ -13,7 +13,7 @@ from django.conf import settings
 from src.scripts.models import ScriptDB
 from src.comms.models import Channel
 from src.utils import logger, utils
-from src.utils.utils import make_iter
+from src.utils.utils import make_iter, to_str
 from src.commands import cmdhandler, cmdsethandler
 from src.server.session import Session
 
@@ -162,25 +162,25 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = time.time()
 
-    def data_in(self, command_string):
+    def data_in(self, text=None, **kwargs):
         """
         Send Player->Evennia. This will in effect
         execute a command string on the server.
         Eventual extra data moves through oob_data_in
         """
-        # handle the 'idle' command
-        if str(command_string).strip() == IDLE_COMMAND:
-            self.update_session_counters(idle=True)
-            return
-        cmdhandler.cmdhandler(self, command_string, callertype="session", sessid=self.sessid)
-        #if self.logged_in:
-        #    # the inmsg handler will relay to the right place
-        #    self.player.inmsg(command_string, self)
-        #else:
-        #    # we are not logged in. Execute cmd with the the session directly
-        #    # (it uses the settings.UNLOGGEDIN cmdset)
-        #    cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
-        self.update_session_counters()
+        if text:
+            # this is treated as a command input
+            text = to_str(text)
+            # handle the 'idle' command
+            if text.strip() == IDLE_COMMAND:
+                self.update_session_counters(idle=True)
+                return
+            cmdhandler.cmdhandler(self, text, callertype="session", sessid=self.sessid)
+            self.update_session_counters()
+        if "oob" in kwargs:
+            # relay to OOB handler
+            pass
+
     execute_cmd = data_in # alias
 
     def data_out(self, text=None, **kwargs):
@@ -188,58 +188,6 @@ class ServerSession(Session):
         Send Evennia -> Player
         """
         self.sessionhandler.data_out(self, text=text, **kwargs)
-
-    def oob_data_in(self, data):
-        """
-        This receives out-of-band data from the Portal.
-
-        OBS - preliminary. OOB not yet functional in Evennia. Don't use.
-
-        This method parses the data input (a dict) and uses
-        it to launch correct methods from those plugged into
-        the system.
-
-        data = {oobkey: (funcname, (args), {kwargs}),
-                oobkey: (funcname, (args), {kwargs}), ...}
-
-        example:
-           data = {"get_hp": ("oob_get_hp, [], {}),
-                   "update_counter", ("counter", ["counter1"], {"now":True}) }
-
-        All function names must be defined in settings.OOB_PLUGIN_MODULE. Each
-        function will be called with the oobkey and a back-reference to this session
-        as their first two arguments.
-        """
-
-        outdata = {}
-
-        for oobkey, functuple in data.items():
-            # loop through the data, calling available functions.
-            func = OOB_PLUGIN_MODULE.__dict__.get(functuple[0])
-            if func:
-                try:
-                    outdata[functuple[0]] = func(oobkey, self, *functuple[1], **functuple[2])
-                except Exception:
-                    logger.log_trace()
-            else:
-                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_PLUGIN_MODULE." % functuple[0])
-        if outdata:
-            # we have a direct result - send it back right away
-            self.oob_data_out(outdata)
-
-
-    def oob_data_out(self, data):
-        """
-        This sends data from Server to the Portal across the AMP connection.
-
-        OBS - preliminary. OOB not yet functional in Evennia. Don't use.
-
-        data = {oobkey: (funcname, (args), {kwargs}),
-                oobkey: (funcname, (args), {kwargs}), ...}
-
-        """
-        self.sessionhandler.oob_data_out(self, data)
-
 
     def __eq__(self, other):
         return self.address == other.address

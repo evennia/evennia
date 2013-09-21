@@ -248,26 +248,31 @@ class PlayerDB(TypedObject, AbstractUser):
     # PlayerDB class access methods
     #
 
-    def msg(self, text=None, **kwargs):#outgoing_string, from_obj=None, data=None, sessid=None):
+    def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
 
         outgoing_string (string) - text data to send
         from_obj (Object/Player) - source object of message to send
-        data (dict) - arbitrary data object containing eventual protocol-specific options
         sessid - the session id of the session to send to. If not given, return to
                  all sessions connected to this player. This is usually only
                  relevant when using msg() directly from a player-command (from
                  a command on a Character, the character automatically stores and
                  handles the sessid).
+        kwargs (dict) - All other keywords are parsed as extra data.
         """
-        from_obj = kwargs.pop("from_obj", None)
-        sessid = kwargs.pop("sessid", 0)
+        if "data" in kwargs:
+            from src.utils import logger
+            logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
+            data = kwargs.pop("data")
+            if isinstance(data, dict):
+                kwargs.update(data)
+
         if from_obj:
             # call hook
             try:
-                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, data=data)
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
             except Exception:
                 pass
         outgoing_string = utils.to_str(text, force_string=True)
@@ -275,7 +280,7 @@ class PlayerDB(TypedObject, AbstractUser):
         session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
         if session:
             obj = session.puppet
-            if obj and not obj.at_msg_receive(text, **kwargs):
+            if obj and not obj.at_msg_receive(text=text, **kwargs):
                 # if hook returns false, cancel send
                 return
             session.msg(text=text, **kwargs)

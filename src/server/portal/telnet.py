@@ -141,28 +141,31 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.data_out(reason)
         self.connectionLost(reason)
 
-    def data_out(self, string, data=None):
+    def data_out(self, text=None, **kwargs):
         """
         generic hook method for engine to call in order to send data
         through the telnet connection.
         Data Evennia -> Player.
-        data argument may contain a dict with output flags.
+
+        valid telnet kwargs:
+            raw=True - pass string through without any ansi processing (i.e. include Evennia
+                  ansi markers but do not convert them into ansi tokens)
+            nomarkup=True - strip all ansi markup
+
+        The telnet ttype negotiation flags, if any, are used if no kwargs are given.
         """
         try:
-            string = utils.to_str(string, encoding=self.encoding)
+            text = utils.to_str(text if text else "", encoding=self.encoding)
         except Exception, e:
             self.sendLine(str(e))
             return
         ttype = self.protocol_flags.get('TTYPE', {})
+        raw = kwargs.get("raw", False)
         nomarkup = not (ttype or ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))
-        raw = False
-        if type(data) == dict:
-            # check if we want escape codes to go through unparsed.
-            raw = data.get("raw", False)
-            # check if we want to remove all markup (TTYPE override)
-            nomarkup = data.get("nomarkup", False)
+        nomarkup = kwargs.get("nomarkup", nomarkup)
         if raw:
-            self.sendLine(string)
+            # no processing whatsoever
+            self.sendLine(text)
         else:
             # we need to make sure to kill the color at the end in order to match the webclient output.
-            self.sendLine(ansi.parse_ansi(_RE_N.sub("", string) + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))
+            self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))

@@ -78,9 +78,11 @@ class CommandTest(TestCase):
         cmdobj.cmdstring = cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
+        cmdobj.sessid = 1
+        cmdobj.session = None
+        cmdobj.player = self.player
         cmdobj.raw_string = cmdobj.key + " " + args
         cmdobj.obj = self.char1
-        cmdobj.sessid = 1
         # test
         self.char1.player.ndb.stored_msg = []
         cmdobj.at_pre_cmd()

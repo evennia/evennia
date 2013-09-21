@@ -591,7 +591,7 @@ class Channel(SharedMemoryModel):
         # get all players connected to this channel and send to them
         for conn in Channel.objects.get_all_connections(self, online=online):
             try:
-                conn.player.msg(msg, from_object=senders)
+                conn.player.msg(msg, from_obj=senders)
             except AttributeError:
                 try:
                     conn.to_external(msg, from_object=senders, from_channel=self)

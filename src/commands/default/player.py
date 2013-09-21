@@ -628,10 +628,10 @@ class CmdQuell(MuxPlayerCommand):
                 player.attributes.remove('_quell')
                 self.msg("Player permissions%s restored." % permstr)
         else:
-            if player.get('_quell'):
+            if player.attributes.get('_quell'):
                 self.msg("Already quelling Player%s permissions." % permstr)
                 return
-            player.add('_quell', True)
+            player.attributes.add('_quell', True)
             self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(player)
 

@@ -416,9 +416,8 @@ class CmdEmit(MuxCommand):
                 continue
             if obj.access(caller, 'tell'):
                 obj.msg(message)
-                if send_to_contents:
-                    for content in obj.contents:
-                        content.msg(message)
+                if send_to_contents and hasattr(obj, "msg_contents"):
+                    obj.msg_contents(message)
                     caller.msg("Emitted to %s and its contents." % objname)
                 else:
                     caller.msg("Emitted to %s." % objname)

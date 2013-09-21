@@ -59,7 +59,7 @@ class ExamplePlayer(Player):
 
     * Helper methods
 
-     msg(outgoing_string, from_obj=None, data=None)
+     msg(text=None, **kwargs)
      swap_character(new_character, delete_old_character=False)
      execute_cmd(raw_string, sessid=None)
      search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)

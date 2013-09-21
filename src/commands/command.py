@@ -206,7 +206,7 @@ class Command(object):
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
-    def msg(self, msg="", to_obj=None, from_obj=None, data=None, sessid=None, all_sessions=False):
+    def msg(self, msg="", to_obj=None, from_obj=None, sessid=None, all_sessions=False, **kwargs):
         """
         This is a shortcut instad of calling msg() directly on an object - it will
         detect if caller is an Object or a Player and also appends self.sessid
@@ -234,7 +234,7 @@ class Command(object):
                 # if to_obj is a different Player, all their sessions
                 # will be notified unless sessid was given specifically
                 sessid = None
-        to_obj.msg(msg, from_obj=from_obj, data=data, sessid=sessid)
+        to_obj.msg(msg, from_obj=from_obj, sessid=sessid, **kwargs)
 
     # Common Command hooks
 

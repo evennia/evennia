@@ -155,7 +155,7 @@ class CmdDelCom(MuxPlayerCommand):
             return
         else:
             # we are removing a channel nick
-            channame = caller.nicks.get_replace(key=ostring, category="channel")
+            channame = caller.nicks.get(key=ostring, category="channel")
             channel = find_channel(caller, channame, silent=True)
             if not channel:
                 self.msg("No channel with alias '%s' was found." % ostring)
@@ -949,7 +949,7 @@ class CmdIMCInfo(MuxCommand):
                 return
             from src.comms.imc2 import IMC2_CLIENT
             self.msg("Sending IMC whois request. If you receive no response, no matches were found.")
-            IMC2_CLIENT.msg_imc2(None, from_obj=self.caller, packet_type="imcwhois", data={"target":self.args})
+            IMC2_CLIENT.msg_imc2(None, from_obj=self.caller, packet_type="imcwhois", target=self.args)
 
         elif not self.switches or "channels" in self.switches or self.cmdstring == "@imcchanlist":
             # show channels
@@ -1007,7 +1007,7 @@ class CmdIMCTell(MuxCommand):
         data = {"target":target, "destination":destination}
 
         # send to imc2
-        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", data=data)
+        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", **data)
 
         self.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
 

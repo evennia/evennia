@@ -190,7 +190,7 @@ class CmdEditorGroup(CmdEditorBase):
                 string = editor.display_buffer(buf=buf, offset=lstart, linenums=False)
             else:
                 string = editor.display_buffer(linenums=False)
-            self.caller.msg(string, data={"raw":True})
+            self.caller.msg(string, raw=True)
             return
         elif cmd == ":::":
             # Insert single colon alone on a line

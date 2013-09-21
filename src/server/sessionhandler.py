@@ -367,31 +367,13 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
                                                               msg=text,
                                                               data=kwargs)
-    def data_in(self, sessid, text="", data=""):
+    def data_in(self, sessid, text="", **kwargs):
         """
         Data Portal -> Server
         """
         session = self.sessions.get(sessid, None)
         if session:
-            kwargs = data if data else {}
-            session.data_in(text, **kwargs)
+            session.data_in(text=text, **kwargs)
 
-        # ignore 'data' argument for now; this is otherwise the place
-        # to put custom effects on the server due to data input, e.g.
-        # from a custom client.
 
-    def oob_data_in(self, sessid, data):
-        """
-        OOB (Out-of-band) Data Portal -> Server
-        """
-        session = self.sessions.get(sessid, None)
-        if session:
-            session.oob_data_in(data)
-
-    def oob_data_out(self, session, data):
-        """
-        OOB (Out-of-band) Data Server -> Portal
-        """
-        self.server.amp_protocol.call_remote_OOBServer2Portal(session.sessid,
-                                                              data=data)
 SESSIONS = ServerSessionHandler()

@@ -343,11 +343,11 @@ def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessi
             cmd.cmdstring = cmdname
             cmd.args = args
             cmd.cmdset = cmdset
+            cmd.sessid = session.sessid if session else sessid
             cmd.session = session
             cmd.player = player
-            #cmd.obj  # set via command handler
-            cmd.sessid = session.sessid if session else sessid
             cmd.raw_string = unformatted_raw_string
+            #cmd.obj  # set via command handler
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
                 # cmd.obj is automatically made available by the cmdhandler.

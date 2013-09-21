@@ -224,33 +224,24 @@ class WebClientSession(session.Session):
             self.client.lineSend(self.suid, reason)
         self.client.client_disconnect(self.suid)
 
-    def data_out(self, string='', data=None):
+    def data_out(self, text=None, **kwargs):
         """
         Data Evennia -> Player access hook.
 
-        data argument may be used depending on
-        the client-server implementation.
+        webclient flags checked are
+        raw=True - no parsing at all (leave ansi-to-html markers unparsed)
+        nomarkup=True - clean out all ansi/html markers and tokens
+
         """
-
-        if data:
-            # treat data?
-            pass
-
         # string handling is similar to telnet
         try:
-            string = utils.to_str(string, encoding=self.encoding)
-
-            nomarkup = False
-            raw = False
-            if type(data) == dict:
-                # check if we want escape codes to go through unparsed.
-                raw = data.get("raw", False)
-                # check if we want to remove all markup
-                nomarkup = data.get("nomarkup", False)
+            text = utils.to_str(text if text else "", encoding=self.encoding)
+            raw = kwargs.get("raw", False)
+            nomarkup = kwargs.get("nomarkup", False)
             if raw:
-                self.client.lineSend(self.suid, string)
+                self.client.lineSend(self.suid, text)
             else:
-                self.client.lineSend(self.suid, parse_html(string, strip_ansi=nomarkup))
+                self.client.lineSend(self.suid, parse_html(text, strip_ansi=nomarkup))
             return
-        except Exception, e:
+        except Exception:
             logger.log_trace()

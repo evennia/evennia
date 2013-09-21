@@ -163,9 +163,9 @@ class CmdPy(MuxCommand):
                           'inherits_from':utils.inherits_from}
 
         try:
-            self.msg(">>> %s" % pycode, data={"raw":True}, sessid=self.sessid)
+            self.msg(">>> %s" % pycode, raw=True, sessid=self.sessid)
         except TypeError:
-            self.msg(">>> %s" % pycode, data={"raw":True})
+            self.msg(">>> %s" % pycode, raw=True)
 
 
         mode = "eval"

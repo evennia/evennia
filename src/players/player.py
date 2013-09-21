@@ -64,7 +64,7 @@ class Player(TypeClass):
 
         * Helper methods
 
-         msg(outgoing_string, from_obj=None, data=None)
+         msg(outgoing_string, from_obj=None, **kwargs)
          swap_character(new_character, delete_old_character=False)
          execute_cmd(raw_string)
          search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
@@ -96,21 +96,21 @@ class Player(TypeClass):
 
     ## methods inherited from database model
 
-    def msg(self, text=None, **kwargs):#outgoing_string, from_obj=None, data=None, sessid=None):
+    def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the server.
 
-        outgoing_string (string) - text data to send
+        text (string) - text data to send
         from_obj (Object/Player) - source object of message to send
-        data (dict) - arbitrary data object containing eventual protocol-specific options
         sessid - the session id of the session to send to. If not given, return to
                  all sessions connected to this player. This is usually only
                  relevant when using msg() directly from a player-command (from
                  a command on a Character, the character automatically stores and
                  handles the sessid).
+        kwargs - extra data to send through protocol
                  """
-        self.dbobj.msg(text=text, **kwargs)#outgoing_string, from_obj=from_obj, data=data, sessid=sessid)
+        self.dbobj.msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def swap_character(self, new_character, delete_old_character=False):
         """

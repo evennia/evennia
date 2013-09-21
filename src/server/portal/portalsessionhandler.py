@@ -121,7 +121,7 @@ class PortalSessionHandler(SessionHandler):
         return [sess for sess in self.get_sessions(include_unloggedin=True)
                 if hasattr(sess, 'suid') and sess.suid == suid]
 
-    def data_in(self, session, string="", data=""):
+    def data_in(self, session, string="", **kwargs):
         """
         Called by portal sessions for relaying data coming
         in from the protocol to the server. data is
@@ -130,7 +130,7 @@ class PortalSessionHandler(SessionHandler):
         #print "portal_data_in:", string
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=string,
-                                                              data=data)
+                                                              data=kwargs)
     def announce_all(self, message):
         """
         Send message to all connection sessions
@@ -138,30 +138,13 @@ class PortalSessionHandler(SessionHandler):
         for session in self.sessions.values():
             session.data_out(message)
 
-    def data_out(self, sessid, string="", data=""):
+    def data_out(self, sessid, text=None, **kwargs):
         """
         Called by server for having the portal relay messages and data
         to the correct session protocol.
         """
         session = self.sessions.get(sessid, None)
         if session:
-            session.data_out(string, data=data)
-
-    def oob_data_in(self, session, data):
-        """
-        OOB (Out-of-band) data Portal -> Server
-        """
-        print "portal_oob_data_in:", data
-        self.portal.amp_protocol.call_remote_OOBPortal2Server(session.sessid,
-                                                              data=data)
-
-    def oob_data_out(self, sessid, data):
-        """
-        OOB (Out-of-band) data Server -> Portal
-        """
-        print "portal_oob_data_out:", data
-        session = self.sessions.get(sessid, None)
-        if session:
-            session.oob_data_out(data)
+            session.data_out(text=text, **kwargs)
 
 PORTAL_SESSIONS = PortalSessionHandler()

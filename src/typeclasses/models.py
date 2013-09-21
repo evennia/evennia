@@ -428,6 +428,9 @@ class NickHandler(AttributeHandler):
     """
     Handles the addition and removal of Nicks
     (uses Attributes' strvalue and category fields)
+
+    Nicks are stored as Attributes
+    with categories nick_<nicktype>
     """
     def has(self, key, category="inputline"):
         categry = "nick_%s" % category
