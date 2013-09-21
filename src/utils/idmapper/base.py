@@ -134,8 +134,7 @@ class SharedMemoryModelBase(ModelBase):
             fget = lambda cls: _get(cls, fieldname)
             fset = lambda cls, val: _set(cls, fieldname, val) if editable else _set_nonedit(cls, fieldname, val)
             fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
-            doc = "Wraps setting, saving and deleting the %s field." % fieldname
-            type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel, doc))
+            type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))
 
         # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):

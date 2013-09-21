@@ -303,18 +303,18 @@ class AMPProtocol(amp.AMP):
         return {}
     MsgPortal2Server.responder(amp_msg_portal2server)
 
-    def call_remote_MsgPortal2Server(self, sessid, msg, **kwargs):
+    def call_remote_MsgPortal2Server(self, sessid, msg, data=""):
         """
         Access method called by the Portal and executed on the Portal.
         """
-        #print "msg portal->server (portal side):", sessid, msg
+        #print "msg portal->server (portal side):", sessid, msg, data
         try:
             return self.callRemote(MsgPortal2Server,
                             sessid=sessid,
                             msg=msg,
                             ipart=0,
                             nparts=1,
-                            data=dumps(kwargs)).addErrback(self.errback, "MsgPortal2Server")
+                            data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
         except amp.TooLong:
             # the msg (or data) was too long for AMP to send. We need to send in blocks.
             return self.send_split_msg(sessid, msg, kwargs, MsgPortal2Server)
@@ -343,18 +343,18 @@ class AMPProtocol(amp.AMP):
         return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
-    def call_remote_MsgServer2Portal(self, sessid, msg, **kwargs):
+    def call_remote_MsgServer2Portal(self, sessid, msg, data=""):
         """
         Access method called by the Server and executed on the Server.
         """
-        #print "msg server->portal (server side):", sessid, msg, kwargs
+        #print "msg server->portal (server side):", sessid, msg, data
         try:
             return self.callRemote(MsgServer2Portal,
                             sessid=sessid,
                             msg=to_str(msg),
                             ipart=0,
                             nparts=1,
-                            data=dumps(kwargs)).addErrback(self.errback, "MsgServer2Portal")
+                            data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
         except amp.TooLong:
             # the msg (or data) was too long for AMP to send. We need to send in blocks.
             return self.send_split_msg(sessid, msg, kwargs, MsgServer2Portal)
