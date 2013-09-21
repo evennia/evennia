@@ -31,11 +31,11 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)
 # ------------------------------------------------------------
 
 class TestPlayerClass(Player):
-    def msg(self, message, **kwargs):
+    def msg(self, text="", **kwargs):
         "test message"
         if not self.ndb.stored_msg:
             self.ndb.stored_msg = []
-        self.ndb.stored_msg.append(message)
+        self.ndb.stored_msg.append(text)
     def _get_superuser(self):
         "test with superuser flag"
         return self.ndb.is_superuser

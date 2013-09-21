@@ -272,10 +272,11 @@ class CmdChannels(MuxPlayerCommand):
             # full listing (of channels caller is able to listen to)
             comtable = prettytable.PrettyTable(["{wsub","{wchannel","{wmy aliases","{wlocks","{wdescription"])
             for chan in channels:
-                nicks = [nick for nick in caller.nicks.get(category="channel")]
-                comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
+                nicks = caller.nicks.get(category="channel")
+                if nicks:
+                    comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
                                   "%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
-                                  "%s".join(nick.db_nick for nick in nicks if nick.db_real.lower()==clower()),
+                                  "%s".join(nick.db_nick for nick in make_iter(nicks) if nick.db_real.lower()==clower()),
                                   chan.locks,
                                   chan.desc])
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)

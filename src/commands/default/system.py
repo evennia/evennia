@@ -17,6 +17,7 @@ from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
 from src.utils import logger, utils, gametime, create, is_pypy, prettytable
+from src.utils.utils import crop
 from src.commands.default.muxcommand import MuxCommand
 
 # delayed imports
@@ -213,24 +214,17 @@ def format_script_list(scripts):
     table.align = 'r'
     for script in scripts:
         nextrep = script.time_until_next_repeat()
-        #print ([script.id,
-        #               (not hasattr(script, 'obj') or not script.obj) and "<Global>" or script.obj.key,
-        #               script.key,
-        #               (not hasattr(script, 'interval') or script.interval < 0) and "--" or "%ss" % script.interval,
-        #               not nextrep and "--" or "%ss" % nextrep,
-        #               (not hasattr(script, 'repeats') or not script.repeats) and "--" or "%i" % script.repeats,
-        #               script.persistent and "*" or "-",
-        #               script.typeclass_path.rsplit('.', 1)[-1],
-        #               script.desc])
+        print type(script),
+        print script.key
         table.add_row([script.id,
-                       (not hasattr(script, 'obj') or not script.obj) and "<Global>" or script.obj.key,
+                       script.obj.key if (hasattr(script, 'obj') and script.obj) else "<Global>",
                        script.key,
-                       (not hasattr(script, 'interval') or script.interval < 0) and "--" or "%ss" % script.interval,
-                       not nextrep and "--" or "%ss" % nextrep,
-                       (not hasattr(script, 'repeats') or not script.repeats) and "--" or "%i" % script.repeats,
-                       script.persistent and "*" or "-",
+                       script.interval if script.interval > 0 else "--",
+                       "%ss" % nextrep if nextrep else "--",
+                       "%i" % script.repeats if script.repeats else "--",
+                       "*" if script.persistent else "-",
                        script.typeclass_path.rsplit('.', 1)[-1],
-                       script.desc])
+                       crop(script.desc, width=20)])
     return "%s" % table
 
 

@@ -347,7 +347,7 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Server and executed on the Server.
         """
-        #print "msg server->portal (server side):", sessid, msg, data
+        #print "msg server->portal (server side):", sessid, msg, kwargs
         try:
             return self.callRemote(MsgServer2Portal,
                             sessid=sessid,
@@ -370,7 +370,7 @@ class AMPProtocol(amp.AMP):
         data = loads(data)
         server_sessionhandler = self.factory.server.sessions
 
-        #print "serveradmin (server side):", sessid, operation, data
+        #print "serveradmin (server side):", sessid, ord(operation), data
 
         if operation == PCONN: #portal_session_connect
             # create a new session and sync it
@@ -395,7 +395,7 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Portal and Executed on the Portal.
         """
-        #print "serveradmin (portal side):", sessid, operation, data
+        #print "serveradmin (portal side):", sessid, ord(operation), data
         data = dumps(data)
 
         return self.callRemote(ServerAdmin,
@@ -441,7 +441,7 @@ class AMPProtocol(amp.AMP):
         return {}
     PortalAdmin.responder(amp_portal_admin)
 
-    def call_remote_PortalAdmin(self, sessid, operation="", **kwargs):
+    def call_remote_PortalAdmin(self, sessid, operation="", data=""):
         """
         Access method called by the server side.
         """
@@ -449,7 +449,7 @@ class AMPProtocol(amp.AMP):
         return self.callRemote(PortalAdmin,
                         sessid=sessid,
                         operation=operation,
-                        data=dumps(kwargs)).addErrback(self.errback, "PortalAdmin")
+                        data=dumps(data)).addErrback(self.errback, "PortalAdmin")
 
     # Extra functions
 

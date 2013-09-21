@@ -677,7 +677,6 @@ class ObjectDB(TypedObject):
             if isinstance(data, dict):
                 kwargs.update(data)
 
-
         if _GA(self, 'player'):
             # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
             if not sessid:

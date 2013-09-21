@@ -110,9 +110,10 @@ class SharedMemoryModelBase(ModelBase):
                     if dbid:
                         try:
                             value = cls._default_manager.get(id=dbid)
-                        except ObjectDoesNotExist:
+                        except ObjectDoesNotExist,e:
                             # maybe it is just a name that happens to look like a dbid
-                            pass
+                            from src.utils.logger import log_trace
+                            log_trace()
                 #print "_set wrapper:", fname, value, type(value), cls._get_pk_val(cls._meta)
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a

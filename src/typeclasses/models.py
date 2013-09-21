@@ -295,7 +295,7 @@ class AttributeHandler(object):
                 ret.append(True if _GA(self.obj, self._m2m_fieldname).filter(Q(db_key__iexact=keystr) & category_cond) else False)
         return ret[0] if len(ret)==1 else ret
 
-    def get(self, key, category=None, default=None, return_obj=False, strattr=False,
+    def get(self, key=None, category=None, default=None, return_obj=False, strattr=False,
             raise_exception=False, accessing_obj=None, default_access=True):
         """
         Returns the value of the given Attribute or list of Attributes.
@@ -316,8 +316,9 @@ class AttributeHandler(object):
         for keystr in make_iter(key):
             cachekey = "%s%s" % (category if category else "", keystr)
             attr_obj = get_attr_cache(self.obj, cachekey)
+            key_cond = Q(db_key__iexact=keystr) if key!=None else Q()
             if not attr_obj:
-                attr_obj = _GA(self.obj, "db_attributes").filter(Q(db_key__iexact=keystr) & category_cond)
+                attr_obj = _GA(self.obj, "db_attributes").filter(key_cond & category_cond)
                 if not attr_obj:
                     if raise_exception:
                         raise AttributeError
@@ -439,10 +440,10 @@ class NickHandler(AttributeHandler):
         "Add a new nick"
         category = "nick_%s" % category
         super(NickHandler, self).add(key, replacement, category=category, strattr=True, **kwargs)
-    def get(self, key, category="inputline", **kwargs):
+    def get(self, key=None, category="inputline", **kwargs):
         "Get the replacement value matching the given key and category"
         category = "nick_%s" % category
-        return super(NickHandler, self).get(key, category=category, strattr=True, **kwargs)
+        return super(NickHandler, self).get(key=key, category=category, strattr=True, **kwargs)
     def remove(self, key, category="inputline", **kwargs):
         "Remove Nick with matching category"
         category = "nick_%s" % category
