@@ -214,7 +214,6 @@ def format_script_list(scripts):
     table.align = 'r'
     for script in scripts:
         nextrep = script.time_until_next_repeat()
-        print "@script:", script.key, type(script.key)
         table.add_row([script.id,
                        script.obj.key if (hasattr(script, 'obj') and script.obj) else "<Global>",
                        script.key,

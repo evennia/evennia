@@ -85,19 +85,20 @@ class SharedMemoryModelBase(ModelBase):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
                 "Wrapper for getting database field"
+                return _GA(cls, fieldname)
+            def _get_foreign(cls, fname):
+                "Wrapper for returing foreignkey fields"
                 value = _GA(cls, fieldname)
-                if isinstance(value, (basestring, int, float, bool)):
-                    return value
-                elif hasattr(value, "typeclass"):
-                    if fieldname == "db_key": print "idmapper _get typeclass:, ", cls.__class__.__name__, fieldname, _GA(value, "typeclass")
+                #print "_get_foreign:value:", value
+                try:
                     return _GA(value, "typeclass")
-                return value
+                except:
+                    return value
             def _set_nonedit(cls, fname, value):
                 "Wrapper for blocking editing of field"
                 raise FieldError("Field %s cannot be edited." % fname)
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
-                if fname=="db_key": print "db_key _set:", value, type(value)
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
@@ -142,6 +143,7 @@ class SharedMemoryModelBase(ModelBase):
             if not editable:
                 fset = lambda cls, val: _set_nonedit(cls, fieldname, val)
             elif foreignkey:
+                fget = lambda cls: _get_foreign(cls, fieldname)
                 fset = lambda cls, val: _set_foreign(cls, fieldname, val)
             else:
                 fset = lambda cls, val: _set(cls, fieldname, val)

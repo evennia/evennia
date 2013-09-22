@@ -146,7 +146,7 @@ class ObjectDB(TypedObject):
         _SA(self, "aliases", AliasHandler(self))
         _SA(self, "nicks", NickHandler(self))
         # make sure to sync the contents cache when initializing
-        self.contents_update()
+        _GA(self, "contents_update")()
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -214,17 +214,9 @@ class ObjectDB(TypedObject):
 
     def _at_db_location_save(self, new_value, old_value=None):
         "This is called automatically just before a new location is saved."
-        #print "db_location_handler:", loc, old_value
         loc = new_value
         try:
             old_loc = old_value
-            # new_value can be dbref, typeclass or dbmodel
-            if ObjectDB.objects.dbref(loc, reqhash=False):
-                loc = ObjectDB.objects.dbref_search(loc)
-            if loc and type(loc) != ObjectDB:
-                # this should not fail if new_value is valid.
-                loc = _GA(loc, "dbobj")
-
             # recursive location check
             def is_loc_loop(loc, depth=0):
                 "Recursively traverse the target location to make sure we are not in it."
@@ -239,9 +231,9 @@ class ObjectDB(TypedObject):
             #print "db_location_handler2:", _GA(loc, "db_key") if loc else loc, type(loc)
             # update the contents of each location
             if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_update")(self, remove=True)
+                _GA(_GA(old_loc, "dbobj"), "contents_remove")(self)
             if loc:
-                _GA(loc, "contents_update")(self)
+                _GA(loc, "contents_add")(self)
             return loc
         except RuntimeError:
             string = "Cannot set location, "
@@ -463,32 +455,35 @@ class ObjectDB(TypedObject):
 
         exclude is one or more objects to not return
         """
-        cont = get_prop_cache(self, "_contents")
+        contents = get_prop_cache(self, "_contents")
         exclude = make_iter(exclude)
-        if cont == None:
-            cont = _GA(self, "contents_update")()
-        return [obj for obj in cont.values() if obj not in exclude]
+        if contents == None:
+            contents = _GA(self, "contents_update")()
+        return [obj.typeclass for obj in contents.values() if obj not in exclude]
     contents = property(contents_get)
 
-    def contents_update(self, obj=None, remove=False):
-        """
-        Updates the contents property of the object
-
-        add - object to add to content list
-        remove object to remove from content list
-        """
-        cont = get_prop_cache(self, "_contents")
-        if not cont:
-            cont = {}
-        if obj:
-            if remove:
-                cont.pop(self.dbid, None)
-            else:
-                cont[self.dbid] = obj
+    # manage the content cache
+    def contents_add(self, obj):
+        "Add a new object to the internal content cache"
+        contents = get_prop_cache(self, "_contents")
+        if contents == None:
+            contents={obj.dbid:obj}
         else:
-            cont = dict((o.dbid, o) for o in ObjectDB.objects.get_contents(self))
-        set_prop_cache(self, "_contents", cont)
-        return cont
+            contents[obj.dbid] = obj
+        set_prop_cache(self, "_contents", contents)
+    def contents_remove(self, obj):
+        "Remove object from internal content cache"
+        contents = get_prop_cache(self, "_contents")
+        if contents == None:
+            contents = {}
+        else:
+            contents.pop(obj.dbid, None)
+        set_prop_cache(self, "_contents", contents)
+    def contents_update(self):
+        "Re-sync the contents cache"
+        contents = dict((o.dbid, o) for o in ObjectDB.objects.get_contents(self))
+        set_prop_cache(self, "_contents", contents)
+        return contents
 
     #@property
     def __exits_get(self):
