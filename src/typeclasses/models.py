@@ -312,13 +312,16 @@ class AttributeHandler(object):
         accessing_obj is given, no check will be done.
         """
         ret = []
-        category_cond = Q(db_category__iexact=category) if category else Q()
         for keystr in make_iter(key):
             cachekey = "%s%s" % (category if category else "", keystr)
             attr_obj = get_attr_cache(self.obj, cachekey)
-            key_cond = Q(db_key__iexact=keystr) if key!=None else Q()
             if not attr_obj:
-                attr_obj = _GA(self.obj, "db_attributes").filter(key_cond & category_cond)
+                key_cond = Q(db_key__iexact=keystr) if keystr!=None else Q()
+                category_cond = Q(db_category__iexact=category) if category else Q()
+                attr_obj = _GA(self.obj, self._m2m_fieldname).filter(key_cond & category_cond)
+                if category and attr_obj and category.startswith("nick_"):
+                    o = attr_obj[0]
+                    print "attrhandler:", o.db_key, o.db_category, o.strvalue
                 if not attr_obj:
                     if raise_exception:
                         raise AttributeError
@@ -354,7 +357,9 @@ class AttributeHandler(object):
         attr_obj = get_attr_cache(self.obj, cachekey)
         if not attr_obj:
             # check if attribute already exists
-            attr_obj = _GA(self.obj, self._m2m_fieldname).filter(db_key__iexact=key)
+            key_cond = Q(db_key__iexact=key) if key!=None else Q()
+            category_cond = Q(db_category__iexact=category) if category else Q()
+            attr_obj = _GA(self.obj, self._m2m_fieldname).filter(key_cond & category_cond)
             if attr_obj.count():
                 # re-use old attribute object
                 attr_obj = attr_obj[0]
@@ -364,6 +369,7 @@ class AttributeHandler(object):
                 attr_obj = Attribute(db_key=key, db_category=category)
                 attr_obj.save() # important
                 _GA(self.obj, self._m2m_fieldname).add(attr_obj)
+                set_attr_cache(self.obj, cachekey, attr_obj)
         if lockstring:
             attr_obj.locks.add(lockstring)
         # we shouldn't need to fear stale objects, the field signalling should catch all cases
@@ -381,12 +387,13 @@ class AttributeHandler(object):
         If accessing_obj is given, will check against the 'attredit' lock. If not given, this check is skipped.
         """
         keys = make_iter(key)
-        category_cond = Q(db_category__iexact=category) if category else Q()
         for attrkey in keys:
-            matches = _GA(self.obj, self._m2m_fieldname).filter(Q(db_key__iexact=attrkey) & Q())
-            if not matches and raise_exception:
+            key_cond = Q(db_key__iexact=key) if key!=None else Q()
+            category_cond = Q(db_category__iexact=category) if category else Q()
+            attr_obj = _GA(self.obj, self._m2m_fieldname).filter(key_cond & category_cond)
+            if not attr_obj and raise_exception:
                 raise AttributeError
-            for attr in matches:
+            for attr in attr_obj:
                 if accessing_obj and not attr.access(accessing_obj, self._attredit, default=default_access):
                     continue
                 del_attr_cache(self.obj, attr.db_key)
@@ -436,19 +443,28 @@ class NickHandler(AttributeHandler):
     def has(self, key, category="inputline"):
         categry = "nick_%s" % category
         return super(NickHandler, self).has(key, category=category)
-    def add(self, key, replacement, category="inputline", **kwargs):
-        "Add a new nick"
-        category = "nick_%s" % category
-        super(NickHandler, self).add(key, replacement, category=category, strattr=True, **kwargs)
+
     def get(self, key=None, category="inputline", **kwargs):
         "Get the replacement value matching the given key and category"
         category = "nick_%s" % category
         return super(NickHandler, self).get(key=key, category=category, strattr=True, **kwargs)
+
+    def add(self, key, replacement, category="inputline", **kwargs):
+        "Add a new nick"
+        category = "nick_%s" % category
+        super(NickHandler, self).add(key, replacement, category=category, strattr=True, **kwargs)
+
     def remove(self, key, category="inputline", **kwargs):
         "Remove Nick with matching category"
         category = "nick_%s" % category
         super(NickHandler, self).remove(key, category=category, **kwargs)
 
+    def all(self, category=None):
+        "Return all attributes with nick_* category"
+        if category:
+            category = "nick_%s" % category
+            return super(NickHandler, self).all(category=category)
+        return _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith="nick_")
 
 #------------------------------------------------------------
 #
