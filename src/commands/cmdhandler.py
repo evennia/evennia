@@ -347,7 +347,9 @@ def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessi
             cmd.session = session
             cmd.player = player
             cmd.raw_string = unformatted_raw_string
-            #cmd.obj  # set via command handler
+            #cmd.obj  # set via on-object cmdset handler for each command,
+                      # since this may be different for every command when
+                      # merging multuple cmdsets
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
                 # cmd.obj is automatically made available by the cmdhandler.

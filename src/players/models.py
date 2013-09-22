@@ -254,7 +254,8 @@ class PlayerDB(TypedObject, AbstractUser):
         This is the main route for sending data back to the user from the server.
 
         outgoing_string (string) - text data to send
-        from_obj (Object/Player) - source object of message to send
+        from_obj (Object/Player) - source object of message to send. Its at_msg_send
+                                   hook will be called.
         sessid - the session id of the session to send to. If not given, return to
                  all sessions connected to this player. This is usually only
                  relevant when using msg() directly from a player-command (from
@@ -263,20 +264,20 @@ class PlayerDB(TypedObject, AbstractUser):
         kwargs (dict) - All other keywords are parsed as extra data.
         """
         if "data" in kwargs:
+            # deprecation warning
             from src.utils import logger
             logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
             data = kwargs.pop("data")
             if isinstance(data, dict):
                 kwargs.update(data)
 
+        text = utils.to_str(text, force_string=True) if text else ""
         if from_obj:
             # call hook
             try:
                 _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
             except Exception:
                 pass
-        outgoing_string = utils.to_str(text, force_string=True)
-
         session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
         if session:
             obj = session.puppet
@@ -288,33 +289,6 @@ class PlayerDB(TypedObject, AbstractUser):
             # if no session was specified, send to them all
             for sess in _GA(self, 'get_all_sessions')():
                 sess.msg(text=text, **kwargs)
-
-    def inmsg(self, ingoing_string, session):
-        """
-        User -> Evennia
-        This is the reverse of msg - used by sessions to relay
-        messages/data back into the game. It is not called
-        from inside game code but only by the serversessions directly.
-
-        ingoing_string - text string (i.e. command string)
-        data - dictionary of optional data
-        session - session sending this data (no need to look it up again)
-        """
-        if _MULTISESSION_MODE == 1:
-            # many sessions - one puppet
-            sessions = [session for session in self.get_all_sessions() if session.puppet]
-            session = sessions and sessions[0] or session
-
-        puppet = session.puppet
-        if puppet:
-            # execute command on the puppeted object (this will include
-            # cmdsets both on object and on player)
-            _GA(puppet, "execute_cmd")(ingoing_string, sessid=session.sessid)
-        else:
-            # a non-character session; this executes on player directly
-            # (this will only include cmdsets on player)
-            _GA(self, "execute_cmd")(ingoing_string, sessid=session.sessid)
-
 
     # session-related methods
 

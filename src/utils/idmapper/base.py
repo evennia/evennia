@@ -93,7 +93,6 @@ class SharedMemoryModelBase(ModelBase):
                 elif hasattr(value, "typeclass"):
                     return _GA(value, "typeclass")
                 return value
-
             def _set_nonedit(cls, fname, value):
                 "Wrapper for blocking editing of field"
                 raise FieldError("Field %s cannot be edited." % fname)
@@ -117,10 +116,9 @@ class SharedMemoryModelBase(ModelBase):
                 #print "_set wrapper:", fname, value, type(value), cls._get_pk_val(cls._meta)
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
-                # primary key assigned already (won't be when first creating object)
+                # primary key assigned already (won't be set when first creating object)
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
-
             def _del_nonedit(cls, fname):
                 "wrapper for not allowing deletion"
                 raise FieldError("Field %s cannot be edited." % fname)
@@ -130,11 +128,11 @@ class SharedMemoryModelBase(ModelBase):
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
 
-            # create class wrappers
+            # create class field wrappers
             fget = lambda cls: _get(cls, fieldname)
             fset = lambda cls, val: _set(cls, fieldname, val) if editable else _set_nonedit(cls, fieldname, val)
             fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
-            type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))
+            type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))
 
         # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):
@@ -142,13 +140,12 @@ class SharedMemoryModelBase(ModelBase):
         # dynamically create the wrapper properties for all fields not already handled
         for field in cls._meta.fields:
             fieldname = field.name
-            if not fieldname.startswith("db_"):
-                continue
-            wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "")
-            if not hasattr(cls, wrappername):
-                # makes sure not to overload manually created wrappers on the model
-                #print "wrapping %s -> %s" % (fieldname, wrappername)
-                create_wrapper(cls, fieldname, wrappername, editable=field.editable)
+            if fieldname.startswith("db_"):
+                wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "")
+                if not hasattr(cls, wrappername):
+                    # makes sure not to overload manually created wrappers on the model
+                    #print "wrapping %s -> %s" % (fieldname, wrappername)
+                    create_wrapper(cls, fieldname, wrappername, editable=field.editable)
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default

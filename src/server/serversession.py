@@ -164,7 +164,7 @@ class ServerSession(Session):
 
     def data_in(self, text=None, **kwargs):
         """
-        Send Player->Evennia. This will in effect
+        Send User->Evennia. This will in effect
         execute a command string on the server.
         Eventual extra data moves through oob_data_in
         """
@@ -185,13 +185,12 @@ class ServerSession(Session):
 
     def data_out(self, text=None, **kwargs):
         """
-        Send Evennia -> Player
+        Send Evennia -> User
         """
         self.sessionhandler.data_out(self, text=text, **kwargs)
 
     def __eq__(self, other):
         return self.address == other.address
-
 
     def __str__(self):
         """

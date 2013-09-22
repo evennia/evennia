@@ -37,6 +37,7 @@ from django.utils.translation import ugettext as _
 
 _ScriptDB = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_SESSIONS = None
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -670,21 +671,30 @@ class ObjectDB(TypedObject):
                       If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
                       If None, echo to all connected sessions
         """
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+
+        text = utils.to_str(text, force_string=True) if text else ""
+
         if "data" in kwargs:
+            # deprecation warning
             from src.utils import logger
             logger.log_depmsg("ObjectDB.msg(): 'data'-dict keyword is deprecated. Use **kwargs instead.")
             data = kwargs.pop("data")
             if isinstance(data, dict):
                 kwargs.update(data)
 
-        if _GA(self, 'player'):
-            # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
-            if not sessid:
-                if from_obj and hasattr(from_obj, "sessid"):
-                    sessid = from_obj.sessid
-                elif hasattr(self, "sessid"):
-                    sessid = self.sessid
-            _GA(_GA(self, 'player'), "typeclass").msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
+        if from_obj:
+            # call hook
+            try:
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
+            except Exception:
+                pass
+
+        session = _SESSIONS.session_from_sessid(sessid if sessid else _GA(self, "sessid"))
+        if session:
+            session.msg(text=text, **kwargs)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """

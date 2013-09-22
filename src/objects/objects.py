@@ -682,7 +682,7 @@ class Object(TypeClass):
 
         Note that this method is executed on the object
         passed along with the msg() function (i.e. using
-        obj.msg(msg, caller) will then launch caller.at_msg())
+        obj.msg(msg, from_obj=caller) will then launch caller.at_msg())
         and if no object was passed, it will never be called.
         """
         pass
