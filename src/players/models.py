@@ -29,6 +29,7 @@ from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHa
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils
+from src.utils.utils import to_str
 
 from django.utils.translation import ugettext as _
 
@@ -271,7 +272,7 @@ class PlayerDB(TypedObject, AbstractUser):
             if isinstance(data, dict):
                 kwargs.update(data)
 
-        text = utils.to_str(text, force_string=True) if text else ""
+        text = to_str(text, force_string=True) if text else ""
         if from_obj:
             # call hook
             try:

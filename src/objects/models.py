@@ -29,7 +29,7 @@ from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_unicode, variable_from_module, inherits_from
+from src.utils.utils import make_iter, to_str, to_unicode, variable_from_module, inherits_from
 
 from django.utils.translation import ugettext as _
 
@@ -675,7 +675,7 @@ class ObjectDB(TypedObject):
         if not _SESSIONS:
             from src.server.sessionhandler import SESSIONS as _SESSIONS
 
-        text = utils.to_str(text, force_string=True) if text else ""
+        text = to_str(text, force_string=True) if text else ""
 
         if "data" in kwargs:
             # deprecation warning
@@ -705,8 +705,7 @@ class ObjectDB(TypedObject):
         contents = _GA(self, "contents")
         if exclude:
             exclude = make_iter(exclude)
-            contents = [obj for obj in contents
-                        if (obj not in exclude and obj not in exclude)]
+            contents = [obj for obj in contents if obj not in exclude]
         for obj in contents:
             obj.msg(message, from_obj=from_obj, **kwargs)
 

@@ -204,11 +204,14 @@ class ServerSessionHandler(SessionHandler):
                                                          data="")
     # server-side access methods
 
-    def login(self, session, player):
+    def login(self, session, player, testmode=False):
         """
         Log in the previously unloggedin session and the player we by
         now should know is connected to it. After this point we
         assume the session to be logged in one way or another.
+
+        testmode - this is used by unittesting for faking login without
+        any AMP being actually active
         """
 
         # we have to check this first before uid has been assigned
@@ -241,7 +244,8 @@ class ServerSessionHandler(SessionHandler):
         session.logged_in = True
         # sync the portal to the session
         sessdata = session.get_sync_data()
-        self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
+        if not testmode:
+            self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
                                                          operation=SLOGIN,
                                                          data=sessdata)
         player.at_post_login(sessid=session.sessid)
