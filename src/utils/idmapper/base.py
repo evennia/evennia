@@ -14,7 +14,7 @@ from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
-from src.utils.utils import dbref, get_evennia_pids
+from src.utils.utils import dbref, get_evennia_pids, to_str
 
 from manager import SharedMemoryManager
 
@@ -30,7 +30,6 @@ _DA = object.__delattr__
 from src import PROC_MODIFIED_OBJS
 
 # get info about the current process and thread
-
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
@@ -74,7 +73,7 @@ class SharedMemoryModelBase(ModelBase):
         cls.__instance_cache__ = {}  #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
 
-    def __init__(cls, *args, **kwargs):
+    def __new__(cls, classname, bases, classdict, *args, **kwargs):
         """
         Field shortcut creation:
         Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key
@@ -82,15 +81,15 @@ class SharedMemoryModelBase(ModelBase):
         already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
-        super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
-        def create_wrapper(cls, fieldname, wrappername, editable=True):
+        def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
                 "Wrapper for getting database field"
                 value = _GA(cls, fieldname)
-                if type(value) in (basestring, int, float, bool):
+                if isinstance(value, (basestring, int, float, bool)):
                     return value
                 elif hasattr(value, "typeclass"):
+                    if fieldname == "db_key": print "idmapper _get typeclass:, ", cls.__class__.__name__, fieldname, _GA(value, "typeclass")
                     return _GA(value, "typeclass")
                 return value
             def _set_nonedit(cls, fname, value):
@@ -98,22 +97,32 @@ class SharedMemoryModelBase(ModelBase):
                 raise FieldError("Field %s cannot be edited." % fname)
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
-                #print "_set:", fname
-                if hasattr(value, "dbobj"):
+                if fname=="db_key": print "db_key _set:", value, type(value)
+                _SA(cls, fname, value)
+                # only use explicit update_fields in save if we actually have a
+                # primary key assigned already (won't be set when first creating object)
+                update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                _GA(cls, "save")(update_fields=update_fields)
+            def _set_foreign(cls, fname, value):
+                "Setter only used on foreign key relations, allows setting with #dbref"
+                try:
                     value = _GA(value, "dbobj")
-                elif isinstance(value, basestring) and (value.isdigit() or value.startswith("#")):
-                    # we also allow setting using dbrefs, if so we try to load the matching object.
-                    # (we assume the object is of the same type as the class holding the field, if
-                    # not a custom handler must be used for that field)
-                    dbid = dbref(value, reqhash=False)
-                    if dbid:
-                        try:
-                            value = cls._default_manager.get(id=dbid)
-                        except ObjectDoesNotExist,e:
-                            # maybe it is just a name that happens to look like a dbid
-                            from src.utils.logger import log_trace
-                            log_trace()
-                #print "_set wrapper:", fname, value, type(value), cls._get_pk_val(cls._meta)
+                except AttributeError:
+                    pass
+                if isinstance(value, (basestring, int)):
+                    value = to_str(value, force_string=True)
+                    if (value.isdigit() or value.startswith("#")):
+                        # we also allow setting using dbrefs, if so we try to load the matching object.
+                        # (we assume the object is of the same type as the class holding the field, if
+                        # not a custom handler must be used for that field)
+                        dbid = dbref(value, reqhash=False)
+                        if dbid:
+                            model = _GA(cls, "_meta").get_field(fname).model
+                            try:
+                                value = model._default_manager.get(id=dbid)
+                            except ObjectDoesNotExist:
+                                # maybe it is just a name that happens to look like a dbid
+                                pass
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
@@ -128,24 +137,106 @@ class SharedMemoryModelBase(ModelBase):
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
 
-            # create class field wrappers
+            # wrapper factories
             fget = lambda cls: _get(cls, fieldname)
-            fset = lambda cls, val: _set(cls, fieldname, val) if editable else _set_nonedit(cls, fieldname, val)
+            if not editable:
+                fset = lambda cls, val: _set_nonedit(cls, fieldname, val)
+            elif foreignkey:
+                fset = lambda cls, val: _set_foreign(cls, fieldname, val)
+            else:
+                fset = lambda cls, val: _set(cls, fieldname, val)
             fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
-            type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))
+            # assigning
+            classdict[wrappername] = property(fget, fset, fdel)
+            #type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))
 
         # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):
             return
-        # dynamically create the wrapper properties for all fields not already handled
-        for field in cls._meta.fields:
-            fieldname = field.name
-            if fieldname.startswith("db_"):
-                wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "")
-                if not hasattr(cls, wrappername):
-                    # makes sure not to overload manually created wrappers on the model
-                    #print "wrapping %s -> %s" % (fieldname, wrappername)
-                    create_wrapper(cls, fieldname, wrappername, editable=field.editable)
+        # dynamically create the wrapper properties for all fields not already handled (manytomanyfields are always handlers)
+        for fieldname, field in ((fname, field) for fname, field in classdict.items()
+                                  if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
+            foreignkey = type(field).__name__ == "ForeignKey"
+            #print fieldname, type(field).__name__, field
+            wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
+            if wrappername not in classdict:
+                # makes sure not to overload manually created wrappers on the model
+                #print "wrapping %s -> %s" % (fieldname, wrappername)
+                create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
+        return super(SharedMemoryModelBase, cls).__new__(cls, classname, bases, classdict, *args, **kwargs)
+
+    #def __init__(cls, *args, **kwargs):
+    #    """
+    #    Field shortcut creation:
+    #    Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key
+    #    This wrapper happens on the class level, so there is no overhead when creating objects. If a class
+    #    already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
+    #    document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
+    #    """
+    #    super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
+    #    def create_wrapper(cls, fieldname, wrappername, editable=True):
+    #        "Helper method to create property wrappers with unique names (must be in separate call)"
+    #        def _get(cls, fname):
+    #            "Wrapper for getting database field"
+    #            value = _GA(cls, fieldname)
+    #            if type(value) in (basestring, int, float, bool):
+    #                return value
+    #            elif hasattr(value, "typeclass"):
+    #                return _GA(value, "typeclass")
+    #            return value
+    #        def _set_nonedit(cls, fname, value):
+    #            "Wrapper for blocking editing of field"
+    #            raise FieldError("Field %s cannot be edited." % fname)
+    #        def _set(cls, fname, value):
+    #            "Wrapper for setting database field"
+    #            #print "_set:", fname
+    #            if hasattr(value, "dbobj"):
+    #                value = _GA(value, "dbobj")
+    #            elif isinstance(value, basestring) and (value.isdigit() or value.startswith("#")):
+    #                # we also allow setting using dbrefs, if so we try to load the matching object.
+    #                # (we assume the object is of the same type as the class holding the field, if
+    #                # not a custom handler must be used for that field)
+    #                dbid = dbref(value, reqhash=False)
+    #                if dbid:
+    #                    try:
+    #                        value = cls._default_manager.get(id=dbid)
+    #                    except ObjectDoesNotExist:
+    #                        # maybe it is just a name that happens to look like a dbid
+    #                        from src.utils.logger import log_trace
+    #                        log_trace()
+    #            #print "_set wrapper:", fname, value, type(value), cls._get_pk_val(cls._meta)
+    #            _SA(cls, fname, value)
+    #            # only use explicit update_fields in save if we actually have a
+    #            # primary key assigned already (won't be set when first creating object)
+    #            update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+    #            _GA(cls, "save")(update_fields=update_fields)
+    #        def _del_nonedit(cls, fname):
+    #            "wrapper for not allowing deletion"
+    #            raise FieldError("Field %s cannot be edited." % fname)
+    #        def _del(cls, fname):
+    #            "Wrapper for clearing database field - sets it to None"
+    #            _SA(cls, fname, None)
+    #            update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+    #            _GA(cls, "save")(update_fields=update_fields)
+
+    #        # create class field wrappers
+    #        fget = lambda cls: _get(cls, fieldname)
+    #        fset = lambda cls, val: _set(cls, fieldname, val) if editable else _set_nonedit(cls, fieldname, val)
+    #        fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
+    #        type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))
+
+    #    # exclude some models that should not auto-create wrapper fields
+    #    if cls.__name__ in ("ServerConfig", "TypeNick"):
+    #        return
+    #    # dynamically create the wrapper properties for all fields not already handled
+    #    for field in cls._meta.fields:
+    #        fieldname = field.name
+    #        if fieldname.startswith("db_"):
+    #            wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "")
+    #            if not hasattr(cls, wrappername):
+    #                # makes sure not to overload manually created wrappers on the model
+    #                #print "wrapping %s -> %s" % (fieldname, wrappername)
+    #                create_wrapper(cls, fieldname, wrappername, editable=field.editable)
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default

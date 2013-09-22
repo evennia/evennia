@@ -175,8 +175,8 @@ class TypeClass(object):
                                                dbobj.dbid,
                                                dbobj.typeclass_path,))
 
-    def __str__(self):
-        "represent the object"
-        return self.key
-    def __unicode__(self):
-        return u"%s" % self.key
+   # def __str__(self):
+   #     "represent the object"
+   #     return _GA(self, "key")
+   # def __unicode__(self):
+   #     return u"%s" % _GA(self, "key")

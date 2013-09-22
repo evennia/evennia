@@ -33,9 +33,11 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)
 # Command testing
 # ------------------------------------------------------------
 
-def dummy_data_out(self, text=None, **kwargs):
+def dummy(self, *args, **kwargs):
     pass
-SESSIONS.data_out = dummy_data_out
+
+SESSIONS.data_out = dummy
+SESSIONS.disconnect = dummy
 
 class TestObjectClass(Object):
     def msg(self, text="", **kwargs):
@@ -46,6 +48,10 @@ class TestCharacterClass(Character):
         "test message"
         if self.player:
             self.player.msg(text=text, **kwargs)
+        else:
+            if not self.ndb.stored_msg:
+                self.ndb.stored_msg = []
+            self.ndb.stored_msg.append(text)
 class TestPlayerClass(Player):
     def msg(self, text="", **kwargs):
         "test message"
@@ -116,7 +122,8 @@ class CommandTest(TestCase):
         cmdobj.func()
         cmdobj.at_post_cmd()
         # clean out prettytable sugar
-        returned_msg = "|".join(_RE.sub("", mess) for mess in self.char1.player.ndb.stored_msg)
+        stored_msg = self.char1.player.ndb.stored_msg if self.char1.player else self.char1.ndb.stored_msg
+        returned_msg = "|".join(_RE.sub("", mess) for mess in stored_msg)
         #returned_msg = "|".join(self.char1.player.ndb.stored_msg)
         returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
         if msg != None:
@@ -189,6 +196,8 @@ class TestPlayer(CommandTest):
    CID = 5
    def test_cmds(self):
         self.call(player.CmdOOCLook(), "", "Account TestPlayer5 (you are OutofCharacter)", caller=self.player)
+        self.call(player.CmdOOC(), "", "You are already", caller=self.player)
+        self.call(player.CmdIC(), "Char5","You become Char5.", caller=self.player)
         self.call(player.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.player)
         self.call(player.CmdEncoding(), "", "Default encoding:", caller=self.player)
         self.call(player.CmdWho(), "", "Players:", caller=self.player)
@@ -197,8 +206,6 @@ class TestPlayer(CommandTest):
         self.call(player.CmdColorTest(), "ansi", "ANSI colors:", caller=self.player)
         self.call(player.CmdCharCreate(), "Test1=Test char","Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
         self.call(player.CmdQuell(), "", "Quelling Player permissions (immortals). Use @unquell to get them back.", caller=self.player)
-        self.call(player.CmdIC(), "Char5","Char5 is now acted from another", caller=self.player)
-        self.call(player.CmdOOC(), "", "You are already", caller=self.player)
 
 from src.commands.default import building
 class TestBuilding(CommandTest):

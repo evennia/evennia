@@ -108,6 +108,8 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         # try to see if there is a handler on object that should be triggered when saving.
         handlername = "_at_%s_save" % fieldname
         handler = _GA(instance, handlername) if handlername in _GA(instance, '__dict__') else None
+        #if handlername == "_at_db_location_save":
+        #    print  "handler:", handlername, handler, _GA(sender, '__dict__').keys()
         if callable(handler):
             #hid = hashid(instance, "-%s" % fieldname)
             try:

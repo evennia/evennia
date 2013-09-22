@@ -1008,6 +1008,8 @@ class PrettyTable(object):
         if self.rowcount == 0 and (not options["print_empty"] or not options["border"]):
             return ""
 
+        #print "prettytable:", self._rows
+
         # Get the rows we need to print, taking into account slicing, sorting, etc.
         rows = self._get_rows(options)
 
