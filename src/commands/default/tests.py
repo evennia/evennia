@@ -229,8 +229,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
         self.call(building.CmdSetHome(), "Obj6 = Room6b", "Obj6's home location was changed from Room6")
         self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
-        self.call(building.CmdTypeclass(), "Obj6 = src.objects.objects.Character",
-                "Obj6's changed typeclass from src.commands.default.tests.TestObjectClass to src.objects.objects.Character")
+        self.call(building.CmdTypeclass(), "Obj6 = src.objects.objects.Exit",
+                "Obj6 changed typeclass from src.commands.default.tests.TestObjectClass to src.objects.objects.Exit")
         self.call(building.CmdLock(), "Obj6 = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj6.")
         self.call(building.CmdExamine(), "Obj6", "Name/key: Obj6")
         self.call(building.CmdFind(), "TestRoom1", "One Match")

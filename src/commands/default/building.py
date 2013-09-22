@@ -1331,20 +1331,20 @@ class CmdTypeclass(MuxCommand):
             caller.msg("This object cannot have a type at all!")
             return
 
-        is_same = obj.is_typeclass(typeclass)
+        is_same = obj.is_typeclass(typeclass, exact=True)
         if is_same and not 'force' in self.switches:
             string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, typeclass)
         else:
             reset = "reset" in self.switches
-            old_typeclass_path = obj.typeclass.path
+            old_typeclass_path = obj.typeclass_path
             ok = obj.swap_typeclass(typeclass, clean_attributes=reset)
             if ok:
                 if is_same:
                     string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.typeclass.path)
                 else:
-                    string = "%s's changed typeclass from %s to %s.\n" % (obj.name,
+                    string = "%s changed typeclass from %s to %s.\n" % (obj.name,
                                                                          old_typeclass_path,
-                                                                         obj.typeclass.path)
+                                                                         obj.typeclass_path)
                 string += "Creation hooks were run."
                 if reset:
                     string += " All old attributes where deleted before the swap."
@@ -1356,7 +1356,6 @@ class CmdTypeclass(MuxCommand):
                 string += "\nCould not swap '%s' (%s) to typeclass '%s'." % (obj.name,
                                                                           old_typeclass_path,
                                                                           typeclass)
-
         caller.msg(string)
 
 

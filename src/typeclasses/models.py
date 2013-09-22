@@ -766,7 +766,6 @@ class TypedObject(SharedMemoryModel):
     #
     #
 
-    # these are identifiers for fast Attribute access and caching
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
 
     def __eq__(self, other):
@@ -1001,7 +1000,7 @@ class TypedObject(SharedMemoryModel):
             logger.log_trace()
         return typeclass
 
-    def is_typeclass(self, typeclass, exact=False):
+    def is_typeclass(self, typeclass, exact=True):
         """
         Returns true if this object has this type
           OR has a typeclass which is an subclass of
