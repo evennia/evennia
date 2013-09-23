@@ -27,7 +27,7 @@ from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHa
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils
-from src.utils.utils import to_str
+from src.utils.utils import to_str, make_iter
 
 from django.utils.translation import ugettext as _
 
@@ -146,20 +146,18 @@ class PlayerDB(TypedObject, AbstractUser):
     #@property
     def cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
-        if _GA(self, "db_cmdset_storage"):
-            return [path.strip() for path  in _GA(self, "db_cmdset_storage").split(',')]
-        return []
+        storage = _GA(self, "db_cmdset_storage")
+        # we need to check so storage is not None
+        return [path.strip() for path  in storage.split(',')] if storage else []
     #@cmdset_storage.setter
     def cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
-        if utils.is_iter(value):
-            value = ",".join([str(val).strip() for val in value])
-        _SA(self, "db_cmdset_storage", value)
+        _SA(self, "db_cmdset_storage", ",".join(str(val).strip() for val in make_iter(value)))
         _GA(self, "save")()
     #@cmdset_storage.deleter
     def cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
-        _SA(self, "db_cmdset_storage", "")
+        _SA(self, "db_cmdset_storage", None)
         _GA(self, "save")()
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
@@ -195,37 +193,39 @@ class PlayerDB(TypedObject, AbstractUser):
 
     # name property (wraps self.user.username)
     #@property
-    def __name_get(self):
-        "Getter. Allows for value = self.name"
-        return self.username
-        #name = get_prop_cache(self, "_name")
-        #if not name:
-        #    name = _GA(self,"user").username
-        #    set_prop_cache(self, "_name", name)
-        #return name
-    #@name.setter
-    def __name_set(self, value):
-        "Setter. Allows for player.name = newname"
-        self.username = value
-        #_GA(self, "user").username = value
-        #_GA(self, "user").save()
-        #set_prop_cache(self, "_name", value)
-    #@name.deleter
-    def __name_del(self):
-        "Deleter. Allows for del self.name"
-        raise Exception("Player name cannot be deleted!")
-    name = property(__name_get, __name_set, __name_del)
-    key = property(__name_get, __name_set, __name_del)
+    #def __name_get(self):
+    #    "Getter. Allows for value = self.name"
+    #    return self.username
+    #    #name = get_prop_cache(self, "_name")
+    #    #if not name:
+    #    #    name = _GA(self,"user").username
+    #    #    set_prop_cache(self, "_name", name)
+    #    #return name
+    ##@name.setter
+    #def __name_set(self, value):
+    #    "Setter. Allows for player.name = newname"
+    #    _SA(self, "username", value)
+
+    #    #_GA(self, "user").username = value
+    #    #_GA(self, "user").save()
+    #    #set_prop_cache(self, "_name", value)
+    ##@name.deleter
+    #def __name_del(self):
+    #    "Deleter. Allows for del self.name"
+    #    raise Exception("Player name cannot be deleted!")
+    def __username_get(self):
+        return _GA(self, "username")
+    def __username_set(self, value):
+        _SA(self, "username", value)
+    def __username_del(self):
+        _DA(self, "username", value)
+    name = property(__username_get, __username_set, __username_del)
+    key = property(__username_get, __username_set, __username_del)
 
     #@property
     def __uid_get(self):
         "Getter. Retrieves the user id"
         return self.id
-        #uid = get_prop_cache(self, "_uid")
-        #if not uid:
-        #    uid = _GA(self, "user").id
-        #    set_prop_cache(self, "_uid", uid)
-        #return uid
     def __uid_set(self, value):
         raise Exception("User id cannot be set!")
     def __uid_del(self):

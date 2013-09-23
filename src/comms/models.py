@@ -212,53 +212,53 @@ class Msg(SharedMemoryModel):
 
     # header property (wraps db_header)
     #@property
-    def __header_get(self):
-        "Getter. Allows for value = self.message"
-        return self.db_header
-    #@message.setter
-    def __header_set(self, value):
-        "Setter. Allows for self.message = value"
-        if value:
-            self.db_header = value
-            self.save()
-    #@message.deleter
-    def __header_del(self):
-        "Deleter. Allows for del self.message"
-        self.db_header = ""
-        self.save()
-    header = property(__header_get, __header_set, __header_del)
+    #def __header_get(self):
+    #    "Getter. Allows for value = self.message"
+    #    return self.db_header
+    ##@message.setter
+    #def __header_set(self, value):
+    #    "Setter. Allows for self.message = value"
+    #    if value:
+    #        self.db_header = value
+    #        self.save()
+    ##@message.deleter
+    #def __header_del(self):
+    #    "Deleter. Allows for del self.message"
+    #    self.db_header = ""
+    #    self.save()
+    #header = property(__header_get, __header_set, __header_del)
 
-    # message property (wraps db_message)
-    #@property
-    def __message_get(self):
-        "Getter. Allows for value = self.message"
-        return self.db_message
-    #@message.setter
-    def __message_set(self, value):
-        "Setter. Allows for self.message = value"
-        self.db_message = value
-        self.save()
-    #@message.deleter
-    def __message_del(self):
-        "Deleter. Allows for del self.message"
-        self.db_message = ""
-        self.save()
-    message = property(__message_get, __message_set, __message_del)
+    ## message property (wraps db_message)
+    ##@property
+    #def __message_get(self):
+    #    "Getter. Allows for value = self.message"
+    #    return self.db_message
+    ##@message.setter
+    #def __message_set(self, value):
+    #    "Setter. Allows for self.message = value"
+    #    self.db_message = value
+    #    self.save()
+    ##@message.deleter
+    #def __message_del(self):
+    #    "Deleter. Allows for del self.message"
+    #    self.db_message = ""
+    #    self.save()
+    #message = property(__message_get, __message_set, __message_del)
 
-    # date_sent property (wraps db_date_sent)
-    #@property
-    def __date_sent_get(self):
-        "Getter. Allows for value = self.date_sent"
-        return self.db_date_sent
-    #@date_sent.setter
-    def __date_sent_set(self, value):
-        "Setter. Allows for self.date_sent = value"
-        raise Exception("You cannot edit date_sent!")
-    #@date_sent.deleter
-    def __date_sent_del(self):
-        "Deleter. Allows for del self.date_sent"
-        raise Exception("You cannot delete the date_sent property!")
-    date_sent = property(__date_sent_get, __date_sent_set, __date_sent_del)
+    ## date_sent property (wraps db_date_sent)
+    ##@property
+    #def __date_sent_get(self):
+    #    "Getter. Allows for value = self.date_sent"
+    #    return self.db_date_sent
+    ##@date_sent.setter
+    #def __date_sent_set(self, value):
+    #    "Setter. Allows for self.date_sent = value"
+    #    raise Exception("You cannot edit date_sent!")
+    ##@date_sent.deleter
+    #def __date_sent_del(self):
+    #    "Deleter. Allows for del self.date_sent"
+    #    raise Exception("You cannot delete the date_sent property!")
+    #date_sent = property(__date_sent_get, __date_sent_set, __date_sent_del)
 
     # hide_from property
     #@property
@@ -289,19 +289,19 @@ class Msg(SharedMemoryModel):
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def __lock_storage_get(self):
-        "Getter. Allows for value = self.lock_storage"
-        return self.db_lock_storage
-    #@nick.setter
-    def __lock_storage_set(self, value):
-        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        self.db_lock_storage = value
-        self.save()
-    #@nick.deleter
-    def __lock_storage_del(self):
-        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
+    #def __lock_storage_get(self):
+    #    "Getter. Allows for value = self.lock_storage"
+    #    return self.db_lock_storage
+    ##@nick.setter
+    #def __lock_storage_set(self, value):
+    #    """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
+    #    self.db_lock_storage = value
+    #    self.save()
+    ##@nick.deleter
+    #def __lock_storage_del(self):
+    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    #lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
     #
     # Msg class methods
@@ -438,36 +438,36 @@ class Channel(SharedMemoryModel):
 
     # key property (wraps db_key)
     #@property
-    def key_get(self):
-        "Getter. Allows for value = self.key"
-        return self.db_key
-    #@key.setter
-    def key_set(self, value):
-        "Setter. Allows for self.key = value"
-        self.db_key = value
-        self.save()
-    #@key.deleter
-    def key_del(self):
-        "Deleter. Allows for del self.key"
-        raise Exception("You cannot delete the channel key!")
-    key = property(key_get, key_set, key_del)
+    #def key_get(self):
+    #    "Getter. Allows for value = self.key"
+    #    return self.db_key
+    ##@key.setter
+    #def key_set(self, value):
+    #    "Setter. Allows for self.key = value"
+    #    self.db_key = value
+    #    self.save()
+    ##@key.deleter
+    #def key_del(self):
+    #    "Deleter. Allows for del self.key"
+    #    raise Exception("You cannot delete the channel key!")
+    #key = property(key_get, key_set, key_del)
 
     # desc property (wraps db_desc)
     #@property
-    def desc_get(self):
-        "Getter. Allows for value = self.desc"
-        return self.db_desc
-    #@desc.setter
-    def desc_set(self, value):
-        "Setter. Allows for self.desc = value"
-        self.db_desc = value
-        self.save()
-    #@desc.deleter
-    def desc_del(self):
-        "Deleter. Allows for del self.desc"
-        self.db_desc = ""
-        self.save()
-    desc = property(desc_get, desc_set, desc_del)
+    #def desc_get(self):
+    #    "Getter. Allows for value = self.desc"
+    #    return self.db_desc
+    ##@desc.setter
+    #def desc_set(self, value):
+    #    "Setter. Allows for self.desc = value"
+    #    self.db_desc = value
+    #    self.save()
+    ##@desc.deleter
+    #def desc_del(self):
+    #    "Deleter. Allows for del self.desc"
+    #    self.db_desc = ""
+    #    self.save()
+    #desc = property(desc_get, desc_set, desc_del)
 
     # aliases property
     #@property
@@ -492,36 +492,36 @@ class Channel(SharedMemoryModel):
 
     # keep_log property (wraps db_keep_log)
     #@property
-    def keep_log_get(self):
-        "Getter. Allows for value = self.keep_log"
-        return self.db_keep_log
-    #@keep_log.setter
-    def keep_log_set(self, value):
-        "Setter. Allows for self.keep_log = value"
-        self.db_keep_log = value
-        self.save()
-    #@keep_log.deleter
-    def keep_log_del(self):
-        "Deleter. Allows for del self.keep_log"
-        self.db_keep_log = False
-        self.save()
-    keep_log = property(keep_log_get, keep_log_set, keep_log_del)
+    #def keep_log_get(self):
+    #    "Getter. Allows for value = self.keep_log"
+    #    return self.db_keep_log
+    ##@keep_log.setter
+    #def keep_log_set(self, value):
+    #    "Setter. Allows for self.keep_log = value"
+    #    self.db_keep_log = value
+    #    self.save()
+    ##@keep_log.deleter
+    #def keep_log_del(self):
+    #    "Deleter. Allows for del self.keep_log"
+    #    self.db_keep_log = False
+    #    self.save()
+    #keep_log = property(keep_log_get, keep_log_set, keep_log_del)
 
     # lock_storage property (wraps db_lock_storage)
     #@property
-    def lock_storage_get(self):
-        "Getter. Allows for value = self.lock_storage"
-        return self.db_lock_storage
-    #@nick.setter
-    def lock_storage_set(self, value):
-        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        self.db_lock_storage = value
-        self.save()
-    #@nick.deleter
-    def lock_storage_del(self):
-        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
+    #def lock_storage_get(self):
+    #    "Getter. Allows for value = self.lock_storage"
+    #    return self.db_lock_storage
+    ##@nick.setter
+    #def lock_storage_set(self, value):
+    #    """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
+    #    self.db_lock_storage = value
+    #    self.save()
+    ##@nick.deleter
+    #def lock_storage_del(self):
+    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
+    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
+    #lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
 
     class Meta:
         "Define Django meta options"
