@@ -194,7 +194,6 @@ class Attribute(SharedMemoryModel):
             self.cached_value = value
             self.no_cache = False
         return self.cached_value
-
     #@value.setter
     def __value_set(self, new_value):
         """
@@ -205,12 +204,10 @@ class Attribute(SharedMemoryModel):
         self.no_cache = False
         self.db_value = to_store
         self.save()
-
         try:
             self._track_db_value_change.update(self.cached_value)
         except AttributeError:
             pass
-
     #@value.deleter
     def __value_del(self):
         "Deleter. Allows for del attr.value. This removes the entire attribute."

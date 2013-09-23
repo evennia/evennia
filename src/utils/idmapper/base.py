@@ -85,6 +85,7 @@ class SharedMemoryModelBase(ModelBase):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
                 "Wrapper for getting database field"
+                #print "_get:", fieldname, wrappername,_GA(cls,fieldname)
                 return _GA(cls, fieldname)
             def _get_foreign(cls, fname):
                 "Wrapper for returing foreignkey fields"

@@ -155,74 +155,84 @@ class ObjectDB(TypedObject):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
-    #TODO - make player-handler
-    # player property (wraps db_player)
-    #@property
-    def __player_get(self):
-        """
-        Getter. Allows for value = self.player.
-        We have to be careful here since Player is also
-        a TypedObject, so as to not create a loop.
-        """
-        player = _GA(self, "db_player")
-        #player = get_field_cache(self, "player")
-        if player:
-            try:
-                return player.typeclass
-            except Exception,e:
-                print "player_get:", e
-        return player
 
-    #@player.setter
-    def __player_set(self, player):
-        "Setter. Allows for self.player = value"
-        if inherits_from(player, TypeClass):
-            player = player.dbobj
-        _SA(self, "db_player", player)
-        _GA(self, "save")()
-        #set_field_cache(self, "player", player)
-        # we must set this here or superusers won't be able to
-        # bypass lockchecks unless they start the game connected
-        # to the character in question.
-        self.locks.cache_lock_bypass(self)
+    ## player property (wraps db_player)
+    ##@property
+    #def __player_get(self):
+    #    """
+    #    Getter. Allows for value = self.player.
+    #    We have to be careful here since Player is also
+    #    a TypedObject, so as to not create a loop.
+    #    """
+    #    player = _GA(self, "db_player")
+    #    #player = get_field_cache(self, "player")
+    #    if player:
+    #        try:
+    #            return player.typeclass
+    #        except Exception,e:
+    #            print "player_get:", e
+    #    return player
 
-    #@player.deleter
-    def __player_del(self):
-        "Deleter. Allows for del self.player"
-        _SA(self, "db_player", None)
-        _GA(self, "save")()
-        #del_field_cache(self, "player")
-    player = property(__player_get, __player_set, __player_del)
+    ##@player.setter
+    #def __player_set(self, player):
+    #    "Setter. Allows for self.player = value"
+    #    if inherits_from(player, TypeClass):
+    #        player = player.dbobj
+    #    _SA(self, "db_player", player)
+    #    _GA(self, "save")()
+    #    #set_field_cache(self, "player", player)
+    #    # we must set this here or superusers won't be able to
+    #    # bypass lockchecks unless they start the game connected
+    #    # to the character in question.
+    #    self.locks.cache_lock_bypass(self)
+
+    ##@player.deleter
+    #def __player_del(self):
+    #    "Deleter. Allows for del self.player"
+    #    _SA(self, "db_player", None)
+    #    _GA(self, "save")()
+    #    #del_field_cache(self, "player")
+    #player = property(__player_get, __player_set, __player_del)
 
     #sessid property (wraps db_sessid)
     #@property
-    def __sessid_get(self):
+    #def __sessid_get(self):
+    #    """
+    #    Getter. Allows for value = self.sessid. Since sessid
+    #    is directly related to self.player, we cannot have
+    #    a sessid without a player being connected (but the
+    #    opposite could be true).
+    #    """
+    #    return _GA(self, "db_sessid")
+    #    #if not get_field_cache(self, "sessid"):
+    #    #    del_field_cache(self, "sessid")
+    #    #return get_field_cache(self, "sessid")
+    ##@sessid.setter
+    #def __sessid_set(self, sessid):
+    #    "Setter. Allows for self.player = value"
+    #    _SA(self, "db_sessid", sessid)
+    #    _GA(self, "save")()
+    #    #set_field_cache(self, "sessid", sessid)
+    ##@sessid.deleter
+    #def __sessid_del(self):
+    #    "Deleter. Allows for del self.player"
+    #    _SA(self, "db_sessid", None)
+    #    _GA(self, "save")()
+    #    #del_field_cache(self, "sessid")
+    #sessid = property(__sessid_get, __sessid_set, __sessid_del)
+
+    def _at_db_player_save(self, new_value, old_value=None):
         """
-        Getter. Allows for value = self.sessid. Since sessid
-        is directly related to self.player, we cannot have
-        a sessid without a player being connected (but the
-        opposite could be true).
+        This is called automatically just before a new player is saved.
         """
-        return _GA(self, "db_sessid")
-        #if not get_field_cache(self, "sessid"):
-        #    del_field_cache(self, "sessid")
-        #return get_field_cache(self, "sessid")
-    #@sessid.setter
-    def __sessid_set(self, sessid):
-        "Setter. Allows for self.player = value"
-        _SA(self, "db_sessid", sessid)
-        _GA(self, "save")()
-        #set_field_cache(self, "sessid", sessid)
-    #@sessid.deleter
-    def __sessid_del(self):
-        "Deleter. Allows for del self.player"
-        _SA(self, "db_sessid", None)
-        _GA(self, "save")()
-        #del_field_cache(self, "sessid")
-    sessid = property(__sessid_get, __sessid_set, __sessid_del)
+        # we need to re-cache this for superusers to bypass.
+        self.locks.cache_lock_bypass(self)
+        return new_value
 
     def _at_db_location_save(self, new_value, old_value=None):
-        "This is called automatically just before a new location is saved."
+        """
+        This is called automatically just before a new location is saved.
+        """
         loc = new_value
         try:
             old_loc = old_value
@@ -394,24 +404,23 @@ class ObjectDB(TypedObject):
     #    del_field_cache(self, "destination")
     #destination = property(__destination_get, __destination_set, __destination_del)
 
-    # cmdset_storage property.
-    # This seems very sensitive to caching, so leaving it be for now. /Griatch
+    # cmdset_storage property. We use a custom wrapper to manage this. This also
+    # seems very sensitive to caching, so leaving it be for now. /Griatch
     #@property
     def __cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
-        if _GA(self, "db_cmdset_storage"):
-            return [path.strip() for path  in _GA(self, "db_cmdset_storage").split(',')]
-        return []
+        storage = _GA(self, "db_cmdset_storage")
+        # we need to check so storage is not None
+        return [path.strip() for path  in storage.split(',')] if storage else []
     #@cmdset_storage.setter
     def __cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
-        value = ",".join(str(val).strip() for val in make_iter(value))
-        _SA(self, "db_cmdset_storage", value)
+        _SA(self, "db_cmdset_storage", ",".join(str(val).strip() for val in make_iter(value)))
         _GA(self, "save")()
     #@cmdset_storage.deleter
     def __cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
-        _SA(self, "db_cmdset_storage", "")
+        _SA(self, "db_cmdset_storage", None)
         _GA(self, "save")()
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
