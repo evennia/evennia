@@ -3,6 +3,7 @@ Central caching module.
 
 """
 
+from sys import getsizeof
 import os, threading
 from collections import defaultdict
 
@@ -21,15 +22,8 @@ _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
 # Set up the cache stores
 #
 
-_FIELD_CACHE = {}
 _ATTR_CACHE = {}
 _PROP_CACHE = defaultdict(dict)
-
-# OOB trackers
-_TRACKED_FIELDS = {}
-_TRACKED_ATTRS = {}
-_TRACKED_CACHE = {}
-
 
 #------------------------------------------------------------
 # Cache key hash generation
@@ -110,7 +104,7 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         if callable(handler):
             #hid = hashid(instance, "-%s" % fieldname)
             try:
-                old_value = _GA(instance, _GA(field, "get_cache_name")())#_FIELD_CACHE.get(hid) if hid else None
+                old_value = _GA(instance, _GA(field, "get_cache_name")())
             except AttributeError:
                 old_value=None
             # the handler may modify the stored value in various ways
@@ -127,21 +121,6 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
 
 def get_cache_sizes():
     return (0, 0), (0, 0), (0, 0)
-def get_field_cache(obj, name):
-    return _GA(obj, "db_%s" % name)
-def set_field_cache(obj, name, val):
-    _SA(obj, "db_%s" % name, val)
-    _GA(obj, "save")()
-    #hid = hashid(obj)
-    #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
-    #    _OOB_HANDLER.update(hid, name, val)
-def del_field_cache(obj, name):
-    _SA(obj, "db_%s" % name, None)
-    _GA(obj, "save")()
-    #hid = hashid(obj)
-    #if _OOB_FIELD_UPDATE_HOOKS[hid].get(name):
-    #    _OOB_HANDLER.update(hid, name, None)
-
 
 #------------------------------------------------------------
 # Attr cache - caching the attribute objects related to a given object to
@@ -151,11 +130,10 @@ def del_field_cache(obj, name):
 
 # connected to m2m_changed signal in respective model class
 def post_attr_update(sender, **kwargs):
-    "Called when the many2many relation changes some way"
+    "Called when the many2many relation changes (NOT when updating the value of an Attribute!)"
     obj = kwargs['instance']
     model = kwargs['model']
     action = kwargs['action']
-    #print "update_attr_cache:", obj, model, action
     if kwargs['reverse']:
         # the reverse relation changed (the Attribute itself was acted on)
         pass
@@ -183,7 +161,7 @@ def post_attr_update(sender, **kwargs):
 def get_attr_cache(obj, attrname):
     "Called by getting attribute"
     hid = hashid(obj, "-%s" % attrname)
-    return hid and _ATTR_CACHE.get(hid, None) or None
+    return _ATTR_CACHE.get(hid, None)
 
 def set_attr_cache(obj, attrname, attrobj):
     "Set the attr cache manually; this can be used to update"
@@ -217,28 +195,20 @@ def clear_obj_attr_cache(obj):
 def get_prop_cache(obj, propname):
     "retrieve data from cache"
     hid = hashid(obj, "-%s" % propname)
-    if hid:
-        #print "get_prop_cache", hid, propname, _PROP_CACHE.get(hid, None)
-        return _PROP_CACHE[hid].get(propname, None)
+    return _PROP_CACHE[hid].get(propname, None) if hid else None
 
 def set_prop_cache(obj, propname, propvalue):
     "Set property cache"
     hid = hashid(obj, "-%s" % propname)
-    if obj and hasattr(obj, "oobhandler"):
-        obj.oobhandler.update(propname, _GA(obj, propname), propvalue, type="property", action="set")
     if hid:
-        #print "set_prop_cache", propname, propvalue
         _PROP_CACHE[hid][propname] = propvalue
-        #_PROP_CACHE.set(hid, propvalue)
 
 def del_prop_cache(obj, propname):
     "Delete element from property cache"
     hid = hashid(obj, "-%s" % propname)
-    if obj and hasattr(obj, "oobhandler"):
-        obj.oobhandler.update(propname, _GA(obj, propname), None, type="property", action="delete")
-    if hid and propname in _PROP_CACHE[hid]:
-        del _PROP_CACHE[hid][propname]
-        #_PROP_CACHE.delete(hid)
+    if hid:
+        if propname in _PROP_CACHE[hid]:
+            del _PROP_CACHE[hid][propname]
 
 def flush_prop_cache():
     "Clear property cache"
@@ -246,84 +216,17 @@ def flush_prop_cache():
     _PROP_CACHE = defaultdict(dict)
     #_PROP_CACHE.clear()
 
+def get_cache_sizes():
+    """
+    Get cache sizes, expressed in number of objects and memory size in MB
+    """
+    global _ATTR_CACHE, _PROP_CACHE
+    attr_n = len(_ATTR_CACHE)
+    attr_mb = sum(getsizeof(obj) for obj in _ATTR_CACHE) / 1024.0
+    field_n = 0 #sum(len(dic) for dic in _FIELD_CACHE.values())
+    field_mb = 0 # sum(sum([getsizeof(obj) for obj in dic.values()]) for dic in _FIELD_CACHE.values()) / 1024.0
+    prop_n = sum(len(dic) for dic in _PROP_CACHE.values())
+    prop_mb = sum(sum([getsizeof(obj) for obj in dic.values()]) for dic in _PROP_CACHE.values()) / 1024.0
+    return (attr_n, attr_mb), (field_n, field_mb), (prop_n, prop_mb)
 
-#_ENABLE_LOCAL_CACHES = settings.GAME_CACHE_TYPE
-## oob helper functions
-# OOB hooks (OOB not yet functional, don't use yet)
-#_OOB_FIELD_UPDATE_HOOKS = defaultdict(dict)
-#_OOB_PROP_UPDATE_HOOKS = defaultdict(dict)
-#_OOB_ATTR_UPDATE_HOOKS = defaultdict(dict)
-#_OOB_NDB_UPDATE_HOOKS = defaultdict(dict)
-#_OOB_CUSTOM_UPDATE_HOOKS = defaultdict(dict)
-#
-#_OOB_HANDLER = None # set by oob handler when it initializes
-#def register_oob_update_hook(obj,name, entity="field"):
-#    """
-#    Register hook function to be called when field/property/db/ndb is updated.
-#    Given function will be called with function(obj, entityname, newvalue, *args, **kwargs)
-#     entity - one of "field", "property", "db", "ndb" or "custom"
-#    """
-#    hid = hashid(obj)
-#    if hid:
-#        if entity == "field":
-#            global _OOB_FIELD_UPDATE_HOOKS
-#            _OOB_FIELD_UPDATE_HOOKS[hid][name] = True
-#            return
-#        elif entity == "property":
-#            global _OOB_PROP_UPDATE_HOOKS
-#            _OOB_PROP_UPDATE_HOOKS[hid][name] = True
-#        elif entity == "db":
-#            global _OOB_ATTR_UPDATE_HOOKS
-#            _OOB_ATTR_UPDATE_HOOKS[hid][name] = True
-#        elif entity == "ndb":
-#            global _OOB_NDB_UPDATE_HOOKS
-#            _OOB_NDB_UPDATE_HOOKS[hid][name] = True
-#        elif entity == "custom":
-#            global _OOB_CUSTOM_UPDATE_HOOKS
-#            _OOB_CUSTOM_UPDATE_HOOKS[hid][name] = True
-#        else:
-#            return None
-#
-#def unregister_oob_update_hook(obj, name, entity="property"):
-#    """
-#    Un-register a report hook
-#    """
-#    hid = hashid(obj)
-#    if hid:
-#        global _OOB_FIELD_UPDATE_HOOKS,_OOB_PROP_UPDATE_HOOKS, _OOB_ATTR_UPDATE_HOOKS
-#        global _OOB_CUSTOM_UPDATE_HOOKS, _OOB_NDB_UPDATE_HOOKS
-#        if entity == "field" and name in _OOB_FIELD_UPDATE_HOOKS:
-#            del _OOB_FIELD_UPDATE_HOOKS[hid][name]
-#        elif entity == "property" and name in _OOB_PROP_UPDATE_HOOKS:
-#            del _OOB_PROP_UPDATE_HOOKS[hid][name]
-#        elif entity == "db" and name in _OOB_ATTR_UPDATE_HOOKS:
-#            del _OOB_ATTR_UPDATE_HOOKS[hid][name]
-#        elif entity == "ndb" and name in _OOB_NDB_UPDATE_HOOKS:
-#            del _OOB_NDB_UPDATE_HOOKS[hid][name]
-#        elif entity == "custom" and name in _OOB_CUSTOM_UPDATE_HOOKS:
-#            del _OOB_CUSTOM_UPDATE_HOOKS[hid][name]
-#        else:
-#            return None
-#
-#def call_ndb_hooks(obj, attrname, value):
-#    """
-#    No caching is done of ndb here, but
-#    we use this as a way to call OOB hooks.
-#    """
-#    hid = hashid(obj)
-#    if hid:
-#        oob_hook = _OOB_NDB_UPDATE_HOOKS[hid].get(attrname)
-#        if oob_hook:
-#            oob_hook[0](obj.typeclass, attrname, value, *oob_hook[1], **oob_hook[2])
-#
-#def call_custom_hooks(obj, attrname, value):
-#    """
-#    Custom handler for developers adding their own oob hooks, e.g. to
-#    custom typeclass properties.
-#    """
-#    hid = hashid(obj)
-#    if hid:
-#        oob_hook = _OOB_CUSTOM_UPDATE_HOOKS[hid].get(attrname)
-#        if oob_hook:
-#            oob_hook[0](obj.typeclass, attrname, value, *oob_hook[1], **oob_hook[2])
-#
+

@@ -19,7 +19,6 @@ from django.db import models
 from django.conf import settings
 
 from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
-from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_prop_cache, set_prop_cache
 
 from src.typeclasses.typeclass import TypeClass
@@ -165,7 +164,8 @@ class ObjectDB(TypedObject):
         We have to be careful here since Player is also
         a TypedObject, so as to not create a loop.
         """
-        player = get_field_cache(self, "player")
+        player = _GA(self, "db_player")
+        #player = get_field_cache(self, "player")
         if player:
             try:
                 return player.typeclass
@@ -178,7 +178,9 @@ class ObjectDB(TypedObject):
         "Setter. Allows for self.player = value"
         if inherits_from(player, TypeClass):
             player = player.dbobj
-        set_field_cache(self, "player", player)
+        _SA(self, "db_player", player)
+        _GA(self, "save")()
+        #set_field_cache(self, "player", player)
         # we must set this here or superusers won't be able to
         # bypass lockchecks unless they start the game connected
         # to the character in question.
@@ -187,30 +189,37 @@ class ObjectDB(TypedObject):
     #@player.deleter
     def __player_del(self):
         "Deleter. Allows for del self.player"
-        del_field_cache(self, "player")
+        _SA(self, "db_player", None)
+        _GA(self, "save")()
+        #del_field_cache(self, "player")
     player = property(__player_get, __player_set, __player_del)
 
-    # sessid property (wraps db_sessid)
+    #sessid property (wraps db_sessid)
     #@property
-    #def __sessid_get(self):
-    #    """
-    #    Getter. Allows for value = self.sessid. Since sessid
-    #    is directly related to self.player, we cannot have
-    #    a sessid without a player being connected (but the
-    #    opposite could be true).
-    #    """
-    #    if not get_field_cache(self, "sessid"):
-    #        del_field_cache(self, "sessid")
-    #    return get_field_cache(self, "sessid")
-    ##@sessid.setter
-    #def __sessid_set(self, sessid):
-    #    "Setter. Allows for self.player = value"
-    #    set_field_cache(self, "sessid", sessid)
-    ##@sessid.deleter
-    #def __sessid_del(self):
-    #    "Deleter. Allows for del self.player"
-    #    del_field_cache(self, "sessid")
-    #sessid = property(__sessid_get, __sessid_set, __sessid_del)
+    def __sessid_get(self):
+        """
+        Getter. Allows for value = self.sessid. Since sessid
+        is directly related to self.player, we cannot have
+        a sessid without a player being connected (but the
+        opposite could be true).
+        """
+        return _GA(self, "db_sessid")
+        #if not get_field_cache(self, "sessid"):
+        #    del_field_cache(self, "sessid")
+        #return get_field_cache(self, "sessid")
+    #@sessid.setter
+    def __sessid_set(self, sessid):
+        "Setter. Allows for self.player = value"
+        _SA(self, "db_sessid", sessid)
+        _GA(self, "save")()
+        #set_field_cache(self, "sessid", sessid)
+    #@sessid.deleter
+    def __sessid_del(self):
+        "Deleter. Allows for del self.player"
+        _SA(self, "db_sessid", None)
+        _GA(self, "save")()
+        #del_field_cache(self, "sessid")
+    sessid = property(__sessid_get, __sessid_set, __sessid_del)
 
     def _at_db_location_save(self, new_value, old_value=None):
         "This is called automatically just before a new location is saved."
@@ -311,79 +320,79 @@ class ObjectDB(TypedObject):
 
     # home property (wraps db_home)
     #@property
-    def __home_get(self):
-        "Getter. Allows for value = self.home"
-        home = get_field_cache(self, "home")
-        if home:
-            return _GA(home, "typeclass")
-        return None
-    #@home.setter
-    def __home_set(self, home):
-        "Setter. Allows for self.home = value"
-        try:
-            if home == None or type(home) == ObjectDB:
-                hom = home
-            elif ObjectDB.objects.dbref(home):
-                hom = ObjectDB.objects.dbref_search(home)
-                if hom and hasattr(hom,'dbobj'):
-                    hom = _GA(hom, "dbobj")
-                else:
-                    hom = _GA(home, "dbobj")
-            else:
-                hom = _GA(home, "dbobj")
-            set_field_cache(self, "home", hom)
-        except Exception:
-            string = "Cannot set home: "
-            string += "%s is not a valid home."
-            _GA(self, "msg")(_(string) % home)
-            logger.log_trace(string)
-            #raise
-    #@home.deleter
-    def __home_del(self):
-        "Deleter. Allows for del self.home."
-        _SA(self, "db_home", None)
-        _GA(self, "save")()
-        del_field_cache(self, "home")
-    home = property(__home_get, __home_set, __home_del)
+    #def __home_get(self):
+    #    "Getter. Allows for value = self.home"
+    #    home = get_field_cache(self, "home")
+    #    if home:
+    #        return _GA(home, "typeclass")
+    #    return None
+    ##@home.setter
+    #def __home_set(self, home):
+    #    "Setter. Allows for self.home = value"
+    #    try:
+    #        if home == None or type(home) == ObjectDB:
+    #            hom = home
+    #        elif ObjectDB.objects.dbref(home):
+    #            hom = ObjectDB.objects.dbref_search(home)
+    #            if hom and hasattr(hom,'dbobj'):
+    #                hom = _GA(hom, "dbobj")
+    #            else:
+    #                hom = _GA(home, "dbobj")
+    #        else:
+    #            hom = _GA(home, "dbobj")
+    #        set_field_cache(self, "home", hom)
+    #    except Exception:
+    #        string = "Cannot set home: "
+    #        string += "%s is not a valid home."
+    #        _GA(self, "msg")(_(string) % home)
+    #        logger.log_trace(string)
+    #        #raise
+    ##@home.deleter
+    #def __home_del(self):
+    #    "Deleter. Allows for del self.home."
+    #    _SA(self, "db_home", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "home")
+    #home = property(__home_get, __home_set, __home_del)
 
     # destination property (wraps db_destination)
     #@property
-    def __destination_get(self):
-        "Getter. Allows for value = self.destination."
-        dest = get_field_cache(self, "destination")
-        if dest:
-            return _GA(dest, "typeclass")
-        return None
-    #@destination.setter
-    def __destination_set(self, destination):
-        "Setter. Allows for self.destination = destination"
-        try:
-            if destination == None or type(destination) == ObjectDB:
-                # destination is None or a valid object
-                dest = destination
-            elif ObjectDB.objects.dbref(destination):
-                # destination is a dbref; search
-                dest = ObjectDB.objects.dbref_search(destination)
-                if dest and _GA(self, "_hasattr")(dest,'dbobj'):
-                    dest = _GA(dest, "dbobj")
-                else:
-                    dest = _GA(destination, "dbobj")
-            else:
-                dest = destination.dbobj
-            set_field_cache(self, "destination", dest)
-        except Exception:
-            string = "Cannot set destination: "
-            string += "%s is not a valid destination." % destination
-            _GA(self, "msg")(string)
-            logger.log_trace(string)
-            raise
-    #@destination.deleter
-    def __destination_del(self):
-        "Deleter. Allows for del self.destination"
-        _SA(self, "db_destination", None)
-        _GA(self, "save")()
-        del_field_cache(self, "destination")
-    destination = property(__destination_get, __destination_set, __destination_del)
+    #def __destination_get(self):
+    #    "Getter. Allows for value = self.destination."
+    #    dest = get_field_cache(self, "destination")
+    #    if dest:
+    #        return _GA(dest, "typeclass")
+    #    return None
+    ##@destination.setter
+    #def __destination_set(self, destination):
+    #    "Setter. Allows for self.destination = destination"
+    #    try:
+    #        if destination == None or type(destination) == ObjectDB:
+    #            # destination is None or a valid object
+    #            dest = destination
+    #        elif ObjectDB.objects.dbref(destination):
+    #            # destination is a dbref; search
+    #            dest = ObjectDB.objects.dbref_search(destination)
+    #            if dest and _GA(self, "_hasattr")(dest,'dbobj'):
+    #                dest = _GA(dest, "dbobj")
+    #            else:
+    #                dest = _GA(destination, "dbobj")
+    #        else:
+    #            dest = destination.dbobj
+    #        set_field_cache(self, "destination", dest)
+    #    except Exception:
+    #        string = "Cannot set destination: "
+    #        string += "%s is not a valid destination." % destination
+    #        _GA(self, "msg")(string)
+    #        logger.log_trace(string)
+    #        raise
+    ##@destination.deleter
+    #def __destination_del(self):
+    #    "Deleter. Allows for del self.destination"
+    #    _SA(self, "db_destination", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "destination")
+    #destination = property(__destination_get, __destination_set, __destination_del)
 
     # cmdset_storage property.
     # This seems very sensitive to caching, so leaving it be for now. /Griatch

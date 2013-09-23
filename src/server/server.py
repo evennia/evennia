@@ -36,6 +36,12 @@ from django.db.models.signals import pre_save
 from src.server.caches import field_pre_save
 pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
 
+from django.db.models.signals import m2m_changed
+from src.typeclasses.models import TypedObject
+from src.server.caches import post_attr_update
+# connect to attribute cache signal
+m2m_changed.connect(post_attr_update, sender=TypedObject.db_attributes.through)
+
 _SA = object.__setattr__
 
 if os.name == 'nt':

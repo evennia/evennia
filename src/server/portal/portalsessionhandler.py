@@ -121,7 +121,7 @@ class PortalSessionHandler(SessionHandler):
         return [sess for sess in self.get_sessions(include_unloggedin=True)
                 if hasattr(sess, 'suid') and sess.suid == suid]
 
-    def data_in(self, session, string="", **kwargs):
+    def data_in(self, session, text="", **kwargs):
         """
         Called by portal sessions for relaying data coming
         in from the protocol to the server. data is
@@ -129,7 +129,7 @@ class PortalSessionHandler(SessionHandler):
         """
         #print "portal_data_in:", string
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
-                                                              msg=string,
+                                                              msg=text,
                                                               data=kwargs)
     def announce_all(self, message):
         """

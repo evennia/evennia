@@ -72,7 +72,7 @@ class CommandTest(TestCase):
         "sets up testing environment"
         self.player = create.create_player("TestPlayer%i" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
         self.player2 = create.create_player("TestPlayer%ib" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
-        self.room1 = create.create_object("src.objects.objects.Room", key="Room%i"%self.CID)
+        self.room1 = create.create_object("src.objects.objects.Room", key="Room%i"%self.CID, testmode=True)
         self.room1.db.desc = "room_desc"
         self.room2 = create.create_object("src.objects.objects.Room", key="Room%ib" % self.CID)
         self.obj1 = create.create_object(TestObjectClass, key="Obj%i" % self.CID, location=self.room1, home=self.room1)

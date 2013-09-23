@@ -94,11 +94,11 @@ class PlayerForm(forms.ModelForm):
                                         initial=settings.BASE_PLAYER_TYPECLASS,
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="Required. Defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass. Defaults to settings.BASE_PLAYER_TYPECLASS.")
-    db_permissions = forms.CharField(label="Permissions",
-                                     initial=settings.PERMISSION_PLAYER_DEFAULT,
-                                     required=False,
-                                     widget=forms.TextInput(attrs={'size':'78'}),
-                                     help_text="In-game permissions. A comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. A Player permission can be overloaded by the permissions of a controlled Character. Normal players use 'Players' by default.")
+    #db_permissions = forms.CharField(label="Permissions",
+    #                                 initial=settings.PERMISSION_PLAYER_DEFAULT,
+    #                                 required=False,
+    #                                 widget=forms.TextInput(attrs={'size':'78'}),
+    #                                 help_text="In-game permissions. A comma-separated list of text strings checked by certain locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. A Player permission can be overloaded by the permissions of a controlled Character. Normal players use 'Players' by default.")
     db_lock_storage = forms.CharField(label="Locks",
                                       widget=forms.Textarea(attrs={'cols':'100', 'rows':'2'}),
                                       required=False,
@@ -116,7 +116,8 @@ class PlayerInline(admin.StackedInline):
     form = PlayerForm
     fieldsets = (
         ("In-game Permissions and Locks",
-         {'fields': ('db_permissions', 'db_lock_storage'),
+         {'fields': ('db_lock_storage',),
+         #{'fields': ('db_permissions', 'db_lock_storage'),
           'description':"<i>These are permissions/locks for in-game use. They are unrelated to website access rights.</i>"}),
         ("In-game Player data",
          {'fields':('db_typeclass_path', 'db_cmdset_storage'),
@@ -140,8 +141,10 @@ class PlayerDBAdmin(BaseUserAdmin):
                              'description':'<i>Relevant only to the website.</i>'}),
         ('Website Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions','groups'),
                                  'description': "<i>These are permissions/permission groups for accessing the admin site. They are unrelated to in-game access rights.</i>"}),
-        ('Game Options', {'fields': ('db_typeclass_path', 'db_cmdset_storage', 'db_permissions', 'db_lock_storage'),
+        ('Game Options', {'fields': ('db_typeclass_path', 'db_cmdset_storage', 'db_lock_storage'),
                           'description': '<i>These are attributes that are more relevant to gameplay.</i>'}))
+        #('Game Options', {'fields': ('db_typeclass_path', 'db_cmdset_storage', 'db_permissions', 'db_lock_storage'),
+        #                  'description': '<i>These are attributes that are more relevant to gameplay.</i>'}))
 
 
     add_fieldsets = (

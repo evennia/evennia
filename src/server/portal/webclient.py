@@ -137,9 +137,9 @@ class WebClient(resource.Resource):
         sess = self.sessionhandler.session_from_suid(suid)
         if sess:
             sess = sess[0]
-            string = request.args.get('msg', [''])[0]
+            text = request.args.get('msg', [''])[0]
             data = request.args.get('data', [None])[0]
-            sess.sessionhandler.data_in(sess, string, data)
+            sess.sessionhandler.data_in(sess, text, data=data)
         return ''
 
     def mode_receive(self, request):

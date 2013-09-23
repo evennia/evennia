@@ -6,10 +6,8 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.typeclasses.models import Attribute
+from src.typeclasses.models import Attribute, Tag
 from src.objects.models import ObjectDB
-from src.typeclasses.models import Tag, LiteAttribute
-
 
 class AttributeInline(admin.TabularInline):
     # This class is currently not used, because PickleField objects are not editable.
@@ -21,11 +19,6 @@ class AttributeInline(admin.TabularInline):
 class TagInline(admin.TabularInline):
     model = ObjectDB.db_tags.through
     raw_id_fields = ('tag',)
-    extra = 0
-
-class LiteAttributeInline(admin.TabularInline):
-    model = LiteAttribute
-    fields = ('db_key', 'db_category', 'db_data')
     extra = 0
 
 class TagAdmin(admin.ModelAdmin):
@@ -41,11 +34,11 @@ class ObjectCreateForm(forms.ModelForm):
     db_typeclass_path = forms.CharField(label="Typeclass",initial="Change to (for example) %s or %s." % (settings.BASE_OBJECT_TYPECLASS, settings.BASE_CHARACTER_TYPECLASS),
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="This defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass. If you are creating a Character you should use the typeclass defined by settings.BASE_CHARACTER_TYPECLASS or one derived from that.")
-    db_permissions = forms.CharField(label="Permissions",
-                                     initial=settings.PERMISSION_PLAYER_DEFAULT,
-                                     required=False,
-                                     widget=forms.TextInput(attrs={'size':'78'}),
-                                     help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
+    #db_permissions = forms.CharField(label="Permissions",
+    #                                 initial=settings.PERMISSION_PLAYER_DEFAULT,
+    #                                 required=False,
+    #                                 widget=forms.TextInput(attrs={'size':'78'}),
+    #                                 help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
     db_cmdset_storage = forms.CharField(label="CmdSet",
                                         initial=settings.CMDSET_CHARACTER,
                                         required=False,
@@ -75,17 +68,24 @@ class ObjectDBAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     list_select_related = True
-    list_filter = ('db_permissions', 'db_typeclass_path')
+    list_filter = ('db_typeclass_path',)
+    #list_filter = ('db_permissions', 'db_typeclass_path')
 
     # editing fields setup
 
     form = ObjectEditForm
     fieldsets = (
         (None, {
-                'fields': (('db_key','db_typeclass_path'), ('db_permissions', 'db_lock_storage'),
+                'fields': (('db_key','db_typeclass_path'), ('db_lock_storage', ),
                            ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
                            )}),
         )
+    #fieldsets = (
+    #    (None, {
+    #            'fields': (('db_key','db_typeclass_path'), ('db_permissions', 'db_lock_storage'),
+    #                       ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
+    #                       )}),
+    #    )
 
     #deactivated temporarily, they cause empty objects to be created in admin
     inlines = [TagInline]
@@ -96,10 +96,16 @@ class ObjectDBAdmin(admin.ModelAdmin):
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
-                'fields': (('db_key','db_typeclass_path'), 'db_permissions',
+                'fields': (('db_key','db_typeclass_path'),
                            ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )
+    #add_fieldsets = (
+    #    (None, {
+    #            'fields': (('db_key','db_typeclass_path'), 'db_permissions',
+    #                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
+    #                       )}),
+    #    )
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets

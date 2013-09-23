@@ -21,8 +21,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
 
-from src.server.caches import get_field_cache, set_field_cache
-
 from src.players import manager
 from src.scripts.models import ScriptDB
 from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
@@ -165,19 +163,19 @@ class PlayerDB(TypedObject, AbstractUser):
         _GA(self, "save")()
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
-    #@property
-    def is_connected_get(self):
-        "Getter. Allows for value = self.is_connected"
-        return get_field_cache(self, "is_connected")
-    #@is_connected.setter
-    def is_connected_set(self, value):
-        "Setter. Allows for self.is_connected = value"
-        set_field_cache(self, "is_connected", value)
-    #@is_connected.deleter
-    def is_connected_del(self):
-        "Deleter. Allows for del is_connected"
-        set_field_cache(self, "is_connected", False)
-    is_connected = property(is_connected_get, is_connected_set, is_connected_del)
+    ##@property
+    #def is_connected_get(self):
+    #    "Getter. Allows for value = self.is_connected"
+    #    return get_field_cache(self, "is_connected")
+    ##@is_connected.setter
+    #def is_connected_set(self, value):
+    #    "Setter. Allows for self.is_connected = value"
+    #    set_field_cache(self, "is_connected", value)
+    ##@is_connected.deleter
+    #def is_connected_del(self):
+    #    "Deleter. Allows for del is_connected"
+    #    set_field_cache(self, "is_connected", False)
+    #is_connected = property(is_connected_get, is_connected_set, is_connected_del)
 
     class Meta:
         "Define Django meta options"

@@ -42,7 +42,6 @@ from django.db.models import Q
 from django.db.models.signals import m2m_changed
 
 from src.utils.idmapper.models import SharedMemoryModel
-from src.server.caches import get_field_cache, set_field_cache, del_field_cache
 from src.server.caches import get_attr_cache, del_attr_cache, set_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, flush_attr_cache
 from src.server.caches import post_attr_update
@@ -363,7 +362,7 @@ class AttributeHandler(object):
             if attr_obj.count():
                 # re-use old attribute object
                 attr_obj = attr_obj[0]
-                set_attr_cache(self.obj, key, attr_obj) # renew cache
+                #set_attr_cache(self.obj, key, attr_obj) # renew cache
             else:
                 # no old attr available; create new (caches automatically)
                 attr_obj = Attribute(db_key=key, db_category=category)
@@ -1423,5 +1422,3 @@ class TypedObject(SharedMemoryModel):
 
 
 
-# connect to attribute cache signal
-m2m_changed.connect(post_attr_update, sender=TypedObject.db_attributes.through)
