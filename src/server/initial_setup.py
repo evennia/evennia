@@ -60,11 +60,11 @@ def create_objects():
     god_player.at_player_creation()
     god_player.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
 
-    # Create the in-game god-character for player #1. We can't set location and home yet since nothing
-    # exists. Also, all properties (name, email, password, is_superuser)
-    # is inherited from the user so we don't specify it again here.
+    # Limbo is the default "nowhere" starting room
+
+    # Create the in-game god-character for player #1 and set it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-    god_character = create.create_object(character_typeclass, key=god_player.username)
+    god_character = create.create_object(character_typeclass, key=god_player.username, nohome=True)
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
@@ -76,10 +76,8 @@ def create_objects():
     god_player.attributes.add("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
 
-    # Limbo is the default "nowhere" starting room
-
     room_typeclass = settings.BASE_ROOM_TYPECLASS
-    limbo_obj = create.create_object(room_typeclass, _('Limbo'))
+    limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
     limbo_obj.id = 2
     string = " ".join([
         "Welcome to your new {wEvennia{n-based game. From here you are ready to begin development.",

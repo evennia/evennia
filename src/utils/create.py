@@ -53,7 +53,7 @@ _GA = object.__getattribute__
 
 def create_object(typeclass, key=None, location=None,
                   home=None, permissions=None, locks=None,
-                  aliases=None, destination=None, report_to=None, testmode=False):
+                  aliases=None, destination=None, report_to=None, nohome=False):
     """
     Create a new in-game object. Any game object is a combination
     of a database object that stores data persistently to
@@ -69,7 +69,8 @@ def create_object(typeclass, key=None, location=None,
               If report_to is not set, errors will be raised as en Exception
               containing the error message. If set, this method will return
               None upon errors.
-    testmode is only intended for Evennia unittest system
+    nohome - this allows the creation of objects without a default home location;
+             this only used when creating default location itself or during unittests
     """
     global _Object, _ObjectDB
     if not _Object:
@@ -135,11 +136,8 @@ def create_object(typeclass, key=None, location=None,
     # perform a move_to in order to display eventual messages.
     if home:
         new_object.home = home
-    elif testmode:
-        # this is required by unittest
-        pass
     else:
-        new_object.home =  settings.CHARACTER_DEFAULT_HOME
+        new_object.home =  settings.CHARACTER_DEFAULT_HOME if not nohome else None
 
     if location:
         new_object.move_to(location, quiet=True)
