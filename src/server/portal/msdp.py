@@ -24,10 +24,14 @@ MSDP_TABLE_CLOSE = chr(4)
 MSDP_ARRAY_OPEN = chr(5)
 MSDP_ARRAY_CLOSE = chr(6)
 
+IAC = chr(255)
+SB = chr(250)
+SE = chr(240)
+
 # pre-compiled regexes
 regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)) # return 2-tuple
 regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
-regex_varval = re.compile(r"%s(.*?)%s(.*?)" % (MSDP_VAR, MSDP_VAL)) # return 2-tuple
+regex_varval = re.compile(r"%s(.*?)%s(.*)" % (MSDP_VAR, MSDP_VAL)) # return 2-tuple
 
 # MSDP default definition commands supported by Evennia (can be supplemented with custom commands as well)
 MSDP_COMMANDS = ("LIST", "REPORT", "RESET", "SEND", "UNREPORT")
@@ -103,7 +107,7 @@ MSDP_REPORTABLE = {
 MSDP_SENDABLE = MSDP_REPORTABLE
 
 # try to load custom OOB module
-OOB_MODULE = mod_import(settings.OOB_FUNC_MODULE)
+OOB_MODULE = None#mod_import(settings.OOB_FUNC_MODULE)
 if OOB_MODULE:
     # loading customizations from OOB_FUNC_MODULE if available
     try: MSDP_REPORTABLE = OOB_MODULE.OOB_REPORTABLE # replaces the default MSDP definitions
@@ -127,20 +131,25 @@ class Msdp(object):
         if the client supports MSDP.
         """
         self.protocol = protocol
-        self.protocol.protocol_FLAGS['MSDP'] = False
-        self.protocol.negotiationMap['MSDP'] = self.parse_msdp
+        self.protocol.protocol_flags['MSDP'] = False
+        self.protocol.negotiationMap[MSDP] = self.msdp_to_func
         self.protocol.will(MSDP).addCallbacks(self.do_msdp, self.no_msdp)
         self.msdp_reported = {}
 
     def no_msdp(self, option):
         "No msdp supported or wanted"
+        print "No msdp supported"
         pass
 
     def do_msdp(self, option):
         """
         Called when client confirms that it can do MSDP.
         """
+        print "msdp supported"
         self.protocol.protocol_flags['MSDP'] = True
+
+    def parse_msdp(self, args):
+        "Called with arguments to subnegotiation"
 
     def func_to_msdp(self, cmdname, data):
         """
@@ -168,7 +177,7 @@ class Msdp(object):
             string += MSDP_TABLE_CLOSE
             return string
 
-        def make_array(name, string, datalist):
+        def make_array(name, datalist, string):
             "build a simple array. Arrays may not nest tables by definition."
             string += MSDP_VAR + name + MSDP_ARRAY_OPEN
             for val in datalist:
@@ -176,7 +185,7 @@ class Msdp(object):
             string += MSDP_ARRAY_CLOSE
             return string
 
-        if type(data) == type({}):
+        if isinstance(data, dict):
             msdp_string = make_table(cmdname, data, "")
         elif hasattr(data, '__iter__'):
             msdp_string = make_array(cmdname, data, "")
@@ -206,11 +215,19 @@ class Msdp(object):
         arrays = {}
         variables = {}
 
+        if hasattr(data, "__iter__"):
+            data = "".join(data)
+
+        logger.log_infomsg("MSDP SUBNEGOTIATION: %s" % data)
+
         for table in regex_table.findall(data):
-            tables[table[0].upper()] = dict(regex_varval(table[1]))
+            tables[table[0].upper()] = dict(regex_varval.findall(table[1]))
         for array in regex_array.findall(data):
-            arrays[array[0].upper()] = dict(regex_varval(array[1]))
-        variables = dict((key.upper(), val) for key, val in regex_varval(regex_array.sub("", regex_table.sub("", data))))
+            arrays[array[0].upper()] = dict(regex_varval.findall(array[1]))
+        # get all stand-alone variables, but first we must clean out all tables and arrays (which also contain vars)
+        variables = dict((key.upper(), val) for key, val in regex_varval.findall(regex_array.sub("", regex_table.sub("", data))))
+
+        print "MSDP: table, array, variables:", tables, arrays, variables
 
         ret = ""
 
@@ -253,7 +270,20 @@ class Msdp(object):
             ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
             if ooc_func:
                 ret += self.func_to_msdp(tablename, ooc_func(**table))
-        return ret
+
+        if ret:
+            # send return value if it exists
+            self.msdp_send(ret)
+            ret = IAC + SB + MSDP + ret + IAC + SE
+            #ret = IAC + SB + MSDP + MSDP_VAR + "SEND" + MSDP_VAL + "Testsend" + IAC + SE
+            self.protocol._write(ret)
+            logger.log_infomsg("MSDP_RESULT: %s" % ret)
+
+    def msdp_send(self, msdp_string):
+        """
+        Return a msdp-valid subnegotiation across the protocol.
+        """
+        self.protocol._write(IAC + SB + MSDP + msdp_string + IAC + SE)
 
     # MSDP Commands
     # Some given MSDP (varname, value) pairs can also be treated as command + argument.
@@ -289,7 +319,7 @@ class Msdp(object):
         reportable variable to the client.
         """
         try:
-            MSDP_REPORTABLE[arg](report=True)
+            return MSDP_REPORTABLE[arg](report=True)
         except Exception:
             logger.log_trace()
 
@@ -319,11 +349,12 @@ class Msdp(object):
         arg - this is a list of variables the client wants.
         """
         ret = []
-        for var in make_iter(arg):
-            try:
-                ret.append(MSDP_REPORTABLE[arg](send=True))
-            except Exception:
-                logger.log_trace()
+        if arg:
+            for var in make_iter(arg):
+                try:
+                    ret.append(MSDP_REPORTABLE[var.upper()])# (send=True))
+                except Exception:
+                    ret.append("ERROR")#logger.log_trace()
         return ret
 
 

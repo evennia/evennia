@@ -314,8 +314,7 @@ PERMISSION_PLAYER_DEFAULT = "Players"
 # In-game Channels created from server start
 ######################################################################
 
-# Defines a dict with one key for each from-start
-# channel. Each key points to a tuple containing
+# Each default channel is defined by a tuple containing
 # (name, aliases, description, locks)
 # where aliases may be a tuple too, and locks is
 # a valid lockstring definition.

@@ -10,7 +10,7 @@ sessions etc.
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
 from src.server.session import Session
-from src.server.portal import ttype, mssp
+from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
 
@@ -32,12 +32,13 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client
         self.init_session("telnet", client_address, self.factory.sessionhandler)
         # negotiate mccp (data compression)
-        self.mccp = Mccp(self)
+        #self.mccp = Mccp(self)
         # negotiate ttype (client info)
-        self.ttype = ttype.Ttype(self)
+        #self.ttype = ttype.Ttype(self)
         # negotiate mssp (crawler communication)
         self.mssp = mssp.Mssp(self)
-
+        # msdp
+        #self.msdp = msdp.Msdp(self)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
@@ -45,7 +46,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def enableRemote(self, option):
         """
-        This sets up the options we allow for this protocol.
+        This sets up the remote-activated options we allow for this protocol.
         """
         return (option == LINEMODE or
                 option == ttype.TTYPE or
@@ -54,11 +55,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def enableLocal(self, option):
         """
-        Allow certain options on this protocol
+        Call to allow the activation of options for this protocol
         """
         return option == MCCP
 
     def disableLocal(self, option):
+        """
+        Disable a given option
+        """
         if option == MCCP:
             self.mccp.no_mccp(option)
             return True

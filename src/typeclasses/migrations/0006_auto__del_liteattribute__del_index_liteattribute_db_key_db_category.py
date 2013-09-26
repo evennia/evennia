@@ -7,6 +7,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (("scripts", "0014_create_db_liteattributes_db_tags"),
+                  ("objects", "0022_add_db_liteattributes_db_tags"),
+                  ("players", "0025_auto__add_db_liteattributes_db_tags"))
+
     def forwards(self, orm):
         # Deleting model 'LiteAttribute'
         db.delete_table(u'typeclasses_liteattribute')

@@ -12,6 +12,7 @@ from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChan
 from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils, prettytable
+from src.utils.utils import make_iter
 from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
@@ -263,9 +264,9 @@ class CmdChannels(MuxPlayerCommand):
             comtable = prettytable.PrettyTable(["{wchannel","{wmy aliases", "{wdescription"])
             for chan in subs:
                 clower = chan.key.lower()
-                nicks = [nick for nick in caller.nicks.get(category="channel")]
+                nicks = caller.nicks.get(category="channel")
                 comtable.add_row(["%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
-                                  "%s".join(nick.db_nick for nick in nicks if nick.db_real.lower()==clower()),
+                                  "%s".join(nick.db_key for nick in make_iter(nicks) if nick and nick.value.lower()==clower()),
                                   chan.desc])
             caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
@@ -276,7 +277,7 @@ class CmdChannels(MuxPlayerCommand):
                 if nicks:
                     comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
                                   "%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
-                                  "%s".join(nick.db_nick for nick in make_iter(nicks) if nick.db_real.lower()==clower()),
+                                  "%s".join(nick.db_key for nick in make_iter(nicks) if nick.value.lower()==clower()),
                                   chan.locks,
                                   chan.desc])
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)

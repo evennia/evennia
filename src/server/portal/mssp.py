@@ -8,7 +8,6 @@ listings to have their crawlers find the mud and automatically
 extract relevant information about it, such as genre, how many
 active players and so on.
 
-Most of these settings are de
 
 """
 from django.conf import settings
