@@ -527,7 +527,7 @@ class CmdPerm(MuxCommand):
         tstring = ""
         if 'del' in switches:
             # delete the given permission(s) from object.
-            obj.permission.remove(self.rhslist)
+            obj.permissions.remove(self.rhslist)
             cstring += "\nPermission(s) %s removed from %s (if they existed)." % (", ".join(self.rhslist), obj.name)
             tstring += "\n%s revokes the permission(s) %s from you." % (caller.name, ", ".join(self.rhslist))
         else:
