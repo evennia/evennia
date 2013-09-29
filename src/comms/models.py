@@ -102,6 +102,7 @@ class Msg(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
+        self.extra_senders = []
 
     class Meta:
         "Define Django meta options"
@@ -120,7 +121,9 @@ class Msg(SharedMemoryModel):
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
         return [hasattr(o, "typeclass") and o.typeclass or o for o in
-                list(self.db_sender_players.all()) + list(self.db_sender_objects.all())]
+                list(self.db_sender_players.all()) +
+                list(self.db_sender_objects.all()) +
+                self.extra_senders]
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
@@ -130,6 +133,10 @@ class Msg(SharedMemoryModel):
                 self.db_sender_players.add(obj)
             elif typ == 'object':
                 self.db_sender_objects.add(obj)
+            elif typ == 'external':
+                self.db_sender_external = "1"
+                self.extra_senders.append(obj)
+                print "I ran!"
             elif isinstance(typ, basestring):
                 self.db_sender_external = obj
             elif not obj:
@@ -143,6 +150,7 @@ class Msg(SharedMemoryModel):
         self.db_sender_players.clear()
         self.db_sender_objects.clear()
         self.db_sender_external = ""
+        self.extra_senders = []
         self.save()
     senders = property(__senders_get, __senders_set, __senders_del)
 
@@ -154,8 +162,11 @@ class Msg(SharedMemoryModel):
                 self.db_sender_players.remove(obj)
             elif typ == 'object':
                 self.db_sender_objects.remove(obj)
-            elif isinstance(obj, basestring) and self.db_sender_external == obj:
-                self.db_sender_external = ""
+            elif typ == 'external':
+                self.extra_senders = [receiver for receiver in
+                    self.extra_senders if receiver != obj]
+            elif isinstance(obj, basestring):
+                self.db_sender_external = obj
             else:
                 raise ValueError(obj)
             self.save()
@@ -185,6 +196,7 @@ class Msg(SharedMemoryModel):
         "Deleter. Clears all receivers"
         self.db_receivers_players.clear()
         self.db_receivers_objects.clear()
+        self.extra_senders = []
         self.save()
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
@@ -240,22 +252,6 @@ class Msg(SharedMemoryModel):
         self.db_hide_from_channels.clear()
         self.save()
     hide_from = property(__hide_from_get, __hide_from_set, __hide_from_del)
-
-    # lock_storage property (wraps db_lock_storage)
-    #@property
-    #def __lock_storage_get(self):
-    #    "Getter. Allows for value = self.lock_storage"
-    #    return self.db_lock_storage
-    ##@nick.setter
-    #def __lock_storage_set(self, value):
-    #    """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-    #    self.db_lock_storage = value
-    #    self.save()
-    ##@nick.deleter
-    #def __lock_storage_del(self):
-    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    #lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
     #
     # Msg class methods
@@ -385,77 +381,36 @@ class ChannelDB(TypedObject):
         # do the check
         return PlayerChannelConnection.objects.has_player_connection(player, self)
 
-    def msg(self, msgobj, header=None, senders=None, persistent=True, online=False):
-        """
-        Send the given message to all players connected to channel. Note that
-        no permission-checking is done here; it is assumed to have been
-        done before calling this method. The optional keywords are not used if persistent is False.
-
-        msgobj - a Msg/TempMsg instance or a message string. If one of the former, the remaining
-              keywords will be ignored. If a string, this will either be sent as-is (if persistent=False) or
-              it will be used together with header and senders keywords to create a Msg instance on the fly.
-        senders (object, player or a list of objects or players) - ignored if msgobj is a Msg or TempMsg, or if
-                 persistent=False.
-        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, using
-                header and senders keywords. If False, other keywords will be ignored.
-        online (bool) - If this is set true, only messages people who are online. Otherwise, messages all players
-                connected. This can make things faster, but may not trigger listeners on players that are offline.
-        """
-
-        if isinstance(msgobj, basestring):
-            # given msgobj is a string
-            if persistent:
-                msg = msgobj
-                msgobj = Msg()
-                msgobj.save()
-                if senders:
-                    msgobj.senders = make_iter(senders)
-                msgobj.header = header
-                msgobj.message = msg
-                msgobj.channels = [self] # add this channel
-            else:
-                # just use the msg as-is
-                msg = msgobj
-        else:
-            # already in a Msg/TempMsg
-            msg = msgobj.message
-
-        # get all players connected to this channel and send to them
-        for conn in ChannelDB.objects.get_all_connections(self, online=online):
-            try:
-                conn.player.msg(msg, from_obj=senders)
-            except AttributeError:
-                try:
-                    conn.to_external(msg, senders=senders, from_channel=self)
-                except Exception:
-                    logger.log_trace("Cannot send msg to connection '%s'" % conn)
-        return True
-
-    def tempmsg(self, message, header=None, senders=None):
-        """
-        A wrapper for sending non-persistent messages.
-        """
-        self.msg(message, senders=senders, header=header, persistent=False)
-
     def connect_to(self, player):
         "Connect the user to this channel"
+        self.typeclass.pre_join_channel(player)
         if not self.access(player, 'listen'):
+            return False
+        connect = self.typeclass.pre_join_channel(player)
+        if not connect:
             return False
         player = player.dbobj
         conn = PlayerChannelConnection.objects.create_connection(player, self)
         if conn:
+            self.typeclass.post_join_channel(player)
             return True
         return False
 
     def disconnect_from(self, player):
         "Disconnect user from this channel."
+        disconnect = self.typeclass.pre_leave_channel(self, player)
+        if not disconnect:
+            return False
         PlayerChannelConnection.objects.break_connection(player, self)
+        self.typeclass.post_leave_channel(self, player)
+        return True
 
     def delete(self):
         "Clean out all connections to this channel and delete it."
         for connection in ChannelDB.objects.get_all_connections(self):
             connection.delete()
         super(ChannelDB, self).delete()
+
     def access(self, accessing_obj, access_type='listen', default=False):
         """
         Determines if another object has permission to access.
@@ -637,17 +592,18 @@ class ExternalChannelConnection(SharedMemoryModel):
     # methods
     #
 
-    def to_channel(self, message, from_obj=None):
+    def to_channel(self, message, *args, **kwargs):
         "Send external -> channel"
-        if not from_obj:
+        if 'from_obj' in kwargs and kwargs.pop('from_obj'):
             from_obj = self.external_key
-        self.channel.msg(message, senders=[self])
+        self.channel.msg(message, senders=[self], *args, **kwargs)
 
     def to_external(self, message, senders=None, from_channel=None):
         "Send channel -> external"
 
         # make sure we are not echoing back our own message to ourselves
         # (this would result in a nasty infinite loop)
+        print senders
         if self in make_iter(senders):#.external_key:
             return
 

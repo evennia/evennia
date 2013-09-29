@@ -384,6 +384,7 @@ def create_channel(key, aliases=None, desc=None,
         new_channel.locks.add(locks)
     new_channel.save()
     _channelhandler.CHANNELHANDLER.add_channel(new_channel)
+    new_channel.at_channel_create()
     return new_channel
 
 channel = create_channel

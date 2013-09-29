@@ -151,8 +151,9 @@ class CmdDelCom(MuxPlayerCommand):
             for nick in [nick for nick in caller.nicks.get(category="channel")
                          if nick.db_data.lower() == chkey]:
                 nick.delete()
-            channel.disconnect_from(player)
-            self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
+            disconnect = channel.disconnect_from(player)
+            if disconnect:
+                self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
             return
         else:
             # we are removing a channel nick

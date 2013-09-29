@@ -321,7 +321,8 @@ class ChannelManager(models.Manager):
             unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
             online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
             for player in online_players:
-                players.extend(PlayerChannelConnection.objects.filter(db_player=player.dbobj, db_channel=channel))
+                players.extend(PlayerChannelConnection.objects.filter(
+                    db_player=player.dbobj, db_channel=channel.dbobj))
         else:
             players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
 

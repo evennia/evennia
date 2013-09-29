@@ -77,20 +77,8 @@ class ChannelCommand(command.Command):
             string = "You are not permitted to send to channel '%s'."
             self.msg(string % channelkey)
             return
-        msg = "[%s] %s: %s" % (channel.key, caller.name, msg)
-        # we can't use the utils.create function to make the Msg,
-        # since that creates an import recursive loop.
-        try:
-            sender = caller.player
-        except AttributeError:
-            # this could happen if a player is calling directly.
-            sender = caller.dbobj
-        msgobj = Msg(db_message=msg)
-        msgobj.save()
-        msgobj.senders = sender
-        msgobj.channels = channel
-        # send new message object to channel
-        channel.msg(msgobj, senders=sender, online=True)
+        channel.msg(msg, senders=self.caller, online=True)
+
 
 class ChannelHandler(object):
     """
