@@ -8,7 +8,7 @@ for easy handling.
 
 """
 from django.conf import settings
-from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
+from src.comms.models import ChannelDB, Msg, PlayerChannelConnection, ExternalChannelConnection
 from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils, prettytable
@@ -27,10 +27,10 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
     Helper function for searching for a single channel with
     some error handling.
     """
-    channels = Channel.objects.channel_search(channelname)
+    channels = ChannelDB.objects.channel_search(channelname)
     if not channels:
         if not noaliases:
-            channels = [chan for chan in Channel.objects.all() if channelname in chan.aliases]
+            channels = [chan for chan in ChannelDB.objects.get_all_channels() if channelname in chan.aliases.all()]
         if channels:
             return channels[0]
         if not silent:
@@ -197,7 +197,7 @@ class CmdAllCom(MuxPlayerCommand):
 
         if args == "on":
             # get names of all channels available to listen to and activate them all
-            channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
+            channels = [chan for chan in ChannelDB.objects.get_all_channels() if chan.access(caller, 'listen')]
             for channel in channels:
                 caller.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
@@ -207,13 +207,13 @@ class CmdAllCom(MuxPlayerCommand):
                 caller.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
             # destroy all channels you control
-            channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'control')]
+            channels = [chan for chan in ChannelDB.objects.get_all_channels() if chan.access(caller, 'control')]
             for channel in channels:
                 caller.execute_cmd("@cdestroy %s" % channel.key)
         elif args == "who":
             # run a who, listing the subscribers on visible channels.
             string = "\n{CChannel subscriptions{n"
-            channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
+            channels = [chan for chan in ChannelDB.objects.get_all_channels() if chan.access(caller, 'listen')]
             if not channels:
                 string += "No channels."
             for channel in channels:
@@ -237,8 +237,8 @@ class CmdChannels(MuxPlayerCommand):
       @clist
       comlist
 
-    Lists all channels available to you, wether you listen to them or not.
-    Use 'comlist" to only view your current channel subscriptions.
+    Lists all channels available to you, whether you listen to them or not.
+    Use 'comlist' to only view your current channel subscriptions.
     Use addcom/delcom to join and leave channels
     """
     key = "@channels"
@@ -252,12 +252,14 @@ class CmdChannels(MuxPlayerCommand):
         caller = self.caller
 
         # all channels we have available to listen to
-        channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
+        channels = [chan for chan in ChannelDB.objects.get_all_channels() if chan.access(caller, 'listen')]
+        print channels
         if not channels:
             self.msg("No channels available.")
             return
         # all channel we are already subscribed to
         subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
+        print subs
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
@@ -265,21 +267,22 @@ class CmdChannels(MuxPlayerCommand):
             for chan in subs:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel")
-                comtable.add_row(["%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
-                                  "%s".join(nick.db_key for nick in make_iter(nicks) if nick and nick.value.lower()==clower()),
-                                  chan.desc])
+                comtable.add_row(["%s%s" % (chan.key, chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or ""),
+                                  "%s".join(nick for nick in make_iter(nicks) if nick and nick.lower()==clower),
+                                  chan.db.desc])
             caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
             comtable = prettytable.PrettyTable(["{wsub","{wchannel","{wmy aliases","{wlocks","{wdescription"])
             for chan in channels:
+                clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel")
-                if nicks:
-                    comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
-                                  "%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""),
-                                  "%s".join(nick.db_key for nick in make_iter(nicks) if nick.value.lower()==clower()),
-                                  chan.locks,
-                                  chan.desc])
+                nicks = nicks or []
+                comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
+                                  "%s%s" % (chan.key, chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or ""),
+                                  "%s".join(nick for nick in make_iter(nicks) if nick.lower()==clower),
+                                  str(chan.locks),
+                                  chan.db.desc])
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
 class CmdCdestroy(MuxPlayerCommand):
@@ -353,7 +356,7 @@ class CmdCBoot(MuxPlayerCommand):
             searchstring = playername.lstrip('*')
         else:
             searchstring = self.rhs.lstrip('*')
-        player = self.search(searchstring, player=True)
+        player = self.caller.search(searchstring, player=True)
         if not player:
             return
         if reason:
@@ -362,7 +365,7 @@ class CmdCBoot(MuxPlayerCommand):
             string = "You don't control this channel."
             self.msg(string)
             return
-        if not PlayerChannelConnection.objects.has_connection(player, channel):
+        if not PlayerChannelConnection.objects.has_player_connection(player, channel):
             string = "Player %s is not connected to channel %s." % (player.key, channel.key)
             self.msg(string)
             return
@@ -370,7 +373,8 @@ class CmdCBoot(MuxPlayerCommand):
             string = "%s boots %s from channel.%s" % (self.caller, player.key, reason)
             channel.msg(string)
         # find all player's nicks linked to this channel and delete them
-        for nick in [nick for nick in player.character.nicks.get(category="channel")
+        for nick in [nick for nick in
+                     player.character.nicks.get(category="channel") or []
                      if nick.db_real.lower() == channel.key]:
             nick.delete()
         # disconnect player
@@ -497,7 +501,7 @@ class CmdChannelCreate(MuxPlayerCommand):
                                  for part in lhs.split(';', 1) if part.strip()]
             aliases = [alias.strip().lower()
                        for alias in aliases.split(';') if alias.strip()]
-        channel = Channel.objects.channel_search(channame)
+        channel = ChannelDB.objects.channel_search(channame)
         if channel:
             self.msg("A channel with that name already exists.")
             return
@@ -508,27 +512,27 @@ class CmdChannelCreate(MuxPlayerCommand):
         self.msg("Created channel %s and connected to it." % new_chan.key)
 
 
-class CmdCset(MuxPlayerCommand):
+class CmdClock(MuxPlayerCommand):
     """
-    @cset - changes channel access restrictions
+    @clock - changes channel access restrictions
 
     Usage:
-      @cset <channel> [= <lockstring>]
+      @clock <channel> [= <lockstring>]
 
     Changes the lock access restrictions of a channel. If no
     lockstring was given, view the current lock definitions.
     """
 
-    key = "@cset"
+    key = "@clock"
     locks = "cmd:not pperm(channel_banned)"
-    aliases = ["@cclock"]
+    aliases = ["@clock"]
     help_category = "Comms"
 
     def func(self):
         "run the function"
 
         if not self.args:
-            string = "Usage: @cset channel [= lockstring]"
+            string = "Usage: @clock channel [= lockstring]"
             self.msg(string)
             return
 
@@ -586,7 +590,7 @@ class CmdCdesc(MuxPlayerCommand):
             self.msg("You cannot admin this channel.")
             return
         # set the description
-        channel.desc = self.rhs
+        channel.db.desc = self.rhs
         channel.save()
         self.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
 

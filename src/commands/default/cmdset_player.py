@@ -60,7 +60,7 @@ class PlayerCmdSet(CmdSet):
         self.add(comms.CmdChannels())
         self.add(comms.CmdCdestroy())
         self.add(comms.CmdChannelCreate())
-        self.add(comms.CmdCset())
+        self.add(comms.CmdClock())
         self.add(comms.CmdCBoot())
         self.add(comms.CmdCemit())
         self.add(comms.CmdCWho())

@@ -38,7 +38,7 @@ _Msg = None
 _Player = None
 _PlayerDB = None
 _to_object = None
-_Channel = None
+_ChannelDB = None
 _channelhandler = None
 
 
@@ -344,7 +344,8 @@ def create_message(senderobj, message, channels=None,
 message = create_message
 
 def create_channel(key, aliases=None, desc=None,
-                   locks=None, keep_log=True):
+                   locks=None, keep_log=True,
+                   typeclass=None):
     """
     Create A communication Channel. A Channel serves as a central
     hub for distributing Msgs to groups of people without
@@ -357,20 +358,24 @@ def create_channel(key, aliases=None, desc=None,
     aliases - list of alternative (likely shorter) keynames.
     locks - lock string definitions
     """
-    global _Channel, _channelhandler
-    if not _Channel:
-        from src.comms.models import Channel as _Channel
+    global _ChannelDB, _channelhandler
+    if not _ChannelDB:
+        from src.comms.models import ChannelDB as _ChannelDB
     if not _channelhandler:
         from src.comms import channelhandler as _channelhandler
+    if not typeclass:
+        typeclass = settings.BASE_COMM_TYPECLASS
     try:
-        new_channel = _Channel()
-        new_channel.key = key
+        new_channel = _ChannelDB(typeclass=typeclass, db_key=key)
+        new_channel.save()
+        new_channel = new_channel.typeclass
         if aliases:
             if not utils.is_iter(aliases):
                 aliases = [aliases]
-            new_channel.aliases = ",".join([alias for alias in aliases])
-        new_channel.desc = desc
-        new_channel.keep_log = keep_log
+            new_channel.aliases.add(aliases)
+        new_channel.save()
+        new_channel.db.desc = desc
+        new_channel.db.keep_log = keep_log
     except IntegrityError:
         string = "Could not add channel: key '%s' already exists." % key
         logger.log_errmsg(string)

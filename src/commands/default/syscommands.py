@@ -18,7 +18,7 @@ line with a command (if there is no match to a known command,
 the line is just added to the editor buffer).
 """
 
-from src.comms.models import Channel
+from src.comms.models import ChannelDB
 from src.utils import create
 
 # The command keys the engine is calling
@@ -153,7 +153,7 @@ class SystemSendToChannel(MuxCommand):
         if not msg:
             caller.msg("Say what?")
             return
-        channel = Channel.objects.get_channel(channelkey)
+        channel = ChannelDB.objects.get_channel(channelkey)
         if not channel:
             caller.msg("Channel '%s' not found." % channelkey)
             return

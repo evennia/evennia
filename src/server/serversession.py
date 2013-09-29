@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 from django.conf import settings
 from src.scripts.models import ScriptDB
-from src.comms.models import Channel
+from src.comms.models import ChannelDB
 from src.utils import logger, utils
 from src.utils.utils import make_iter, to_str
 from src.commands import cmdhandler, cmdsethandler
@@ -143,7 +143,7 @@ class ServerSession(Session):
         if channel:
             try:
                 cchan = settings.CHANNEL_CONNECTINFO
-                cchan = Channel.objects.get_channel(cchan[0])
+                cchan = ChannelDB.objects.get_channel(cchan[0])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
                 pass

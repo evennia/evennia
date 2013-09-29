@@ -14,7 +14,7 @@ instead for most things).
 import datetime
 from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
-from src.comms.models import Channel
+from src.comms.models import ChannelDB
 from src.utils import logger
 __all__ = ("Player",)
 
@@ -303,7 +303,7 @@ class Player(TypeClass):
         global _CONNECT_CHANNEL
         if not _CONNECT_CHANNEL:
             try:
-                _CONNECT_CHANNEL = Channel.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
+                _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
             except Exception:
                 logger.log_trace()
         now = datetime.datetime.now()

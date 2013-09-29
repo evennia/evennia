@@ -239,6 +239,7 @@ SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
 OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects", "game.gamesrc.objects.examples", "contrib"]
 SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples", "contrib"]
 PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
+COMM_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "src.players.player.Player"
@@ -250,6 +251,8 @@ BASE_CHARACTER_TYPECLASS = "src.objects.objects.Character"
 BASE_ROOM_TYPECLASS = "src.objects.objects.Room"
 # Typeclass for Exit objects (fallback).
 BASE_EXIT_TYPECLASS = "src.objects.objects.Exit"
+# Typeclass for Comms (fallback).
+BASE_COMM_TYPECLASS = "src.comms.comms.Comm"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"

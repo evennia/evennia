@@ -247,7 +247,7 @@ class TestComms(CommandTest):
         self.call(comms.CmdDelCom(), "tc",  "Your alias 'tc' for channel testchan was cleared.")
         self.call(comms.CmdChannels(), "" ,"Available channels (use comlist,addcom and delcom to manage")
         self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage")
-        self.call(comms.CmdCset(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:")
+        self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:")
         self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.")
         self.call(comms.CmdCemit(), "testchan = Test Message", "Sent to channel testchan: [testchan] Test Message")
         self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer7")

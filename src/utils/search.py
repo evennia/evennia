@@ -38,7 +38,7 @@ ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_
 PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
 ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
 Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
-Channel = ContentType.objects.get(app_label="comms", model="channel").model_class()
+Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
 HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
 
 #

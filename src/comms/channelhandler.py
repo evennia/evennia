@@ -23,7 +23,7 @@ update() on the channelhandler. Or use Channel.objects.delete() which
 does this for you.
 
 """
-from src.comms.models import Channel, Msg
+from src.comms.models import ChannelDB, Msg
 from src.commands import cmdset, command
 from src.utils import utils
 
@@ -64,7 +64,7 @@ class ChannelCommand(command.Command):
         if not msg:
             self.msg("Say what?")
             return
-        channel = Channel.objects.get_channel(channelkey)
+        channel = ChannelDB.objects.get_channel(channelkey)
 
         if not channel:
             self.msg("Channel '%s' not found." % channelkey)
@@ -112,11 +112,9 @@ class ChannelHandler(object):
     def _format_help(self, channel):
         "builds a doc string"
         key = channel.key
-        aliases = channel.aliases
-        if not utils.is_iter(aliases):
-            aliases = [aliases]
+        aliases = channel.aliases.all()
         ustring = "%s <message>" % key.lower() + "".join(["\n           %s <message>" % alias.lower() for alias in aliases])
-        desc = channel.desc
+        desc = channel.db.desc
         string = \
         """
         Channel '%s'
@@ -137,7 +135,7 @@ class ChannelHandler(object):
         """
         # map the channel to a searchable command
         cmd = ChannelCommand(key=channel.key.strip().lower(),
-                             aliases=channel.aliases if channel.aliases else [],
+                             aliases=channel.aliases.all(),
                              locks="cmd:all();%s" % channel.locks,
                              obj=channel)
         cmd.__doc__= self._format_help(channel)
@@ -148,7 +146,7 @@ class ChannelHandler(object):
         "Updates the handler completely."
         self.cached_channel_cmds = []
         self.cached_cmdsets = {}
-        for channel in Channel.objects.all():
+        for channel in ChannelDB.objects.get_all_channels():
             self.add_channel(channel)
 
     def get_cmdset(self, source_object):

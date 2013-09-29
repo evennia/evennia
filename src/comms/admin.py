@@ -4,7 +4,7 @@
 #
 
 from django.contrib import admin
-from src.comms.models import Channel, Msg, PlayerChannelConnection, ExternalChannelConnection
+from src.comms.models import ChannelDB, Msg, PlayerChannelConnection, ExternalChannelConnection
 
 class MsgAdmin(admin.ModelAdmin):
     list_display = ('id', 'db_date_sent', 'db_sender', 'db_receivers', 'db_channels', 'db_message', 'db_lock_storage')
@@ -48,7 +48,7 @@ class ChannelAdmin(admin.ModelAdmin):
         (None, {'fields':(('db_key', 'db_aliases', 'db_desc'),'db_lock_storage', 'db_keep_log')}),
         )
 
-admin.site.register(Channel, ChannelAdmin)
+admin.site.register(ChannelDB, ChannelAdmin)
 
 # class PlayerChannelConnectionAdmin(admin.ModelAdmin):
 #     list_display = ('db_channel', 'db_player')

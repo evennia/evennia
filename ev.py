@@ -133,7 +133,7 @@ from src.locks import lockfuncs
 from src.scripts.scripts import Script
 
 # comms
-from src.comms.models import Msg, Channel, PlayerChannelConnection, ExternalChannelConnection
+from src.comms.models import Msg, ChannelDB, PlayerChannelConnection, ExternalChannelConnection
 
 # objects
 from src.objects.objects import Object, Character, Room, Exit
@@ -194,7 +194,7 @@ class DBmanagers(_EvContainer):
     from src.help.models import HelpEntry
     from src.players.models import PlayerDB
     from src.scripts.models import ScriptDB
-    from src.comms.models import Msg, Channel, PlayerChannelConnection, ExternalChannelConnection
+    from src.comms.models import Msg, ChannelDB, PlayerChannelConnection, ExternalChannelConnection
     from src.objects.models import ObjectDB
     from src.server.models import ServerConfig
 
@@ -202,12 +202,12 @@ class DBmanagers(_EvContainer):
     players = PlayerDB.objects
     scripts = ScriptDB.objects
     msgs = Msg.objects
-    channels = Channel.objects
+    channels = ChannelDB.objects
     connections = PlayerChannelConnection.objects
     externalconnections = ExternalChannelConnection.objects
     objects = ObjectDB.objects
     serverconfigs = ServerConfig.objects
-    del HelpEntry, PlayerDB, ScriptDB, Msg, Channel, PlayerChannelConnection,
+    del HelpEntry, PlayerDB, ScriptDB, Msg, ChannelDB, PlayerChannelConnection,
     del ExternalChannelConnection, ObjectDB, ServerConfig
 
 managers = DBmanagers()

@@ -278,11 +278,9 @@ def handle_setup(last_step):
                 for profile in PlayerDB.objects.all():
                     profile.delete()
             elif last_step + num == 3:
-                from src.comms.models import Channel, PlayerChannelConnection
-                for chan in Channel.objects.all():
-                    chan.delete()
-                for conn in PlayerChannelConnection.objects.all():
-                    conn.delete()
+                from src.comms.models import ChannelDB, PlayerChannelConnection
+                ChannelDB.objects.all().delete()
+                PlayerChannelConnection.objects.all().delete()
             raise
         ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1)
     # We got through the entire list. Set last_step to -1 so we don't

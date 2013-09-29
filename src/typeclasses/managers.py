@@ -170,7 +170,7 @@ def returns_typeclass_list(method):
     def func(self, *args, **kwargs):
         "decorator. Returns a list."
         self.__doc__ = method.__doc__
-        matches = method(self, *args, **kwargs)
+        matches = make_iter(method(self, *args, **kwargs))
         return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj for dbobj in make_iter(matches)]
     return update_wrapper(func, method)
 

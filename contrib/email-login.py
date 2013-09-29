@@ -38,7 +38,7 @@ from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
 from src.server.models import ServerConfig
-from src.comms.models import Channel
+from src.comms.models import ChannelDB
 
 from src.commands.cmdset import CmdSet
 from src.utils import create, logger, utils, ansi
@@ -231,7 +231,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             # join the new player to the public channel
             pchanneldef = settings.CHANNEL_PUBLIC
             if pchanneldef:
-                pchannel = Channel.objects.get_channel(pchanneldef[0])
+                pchannel = ChannelDB.objects.get_channel(pchanneldef[0])
                 if not pchannel.connect_to(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)

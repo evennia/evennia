@@ -7,13 +7,13 @@ from twisted.application import internet
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 from django.conf import settings
-from src.comms.models import ExternalChannelConnection, Channel
+from src.comms.models import ExternalChannelConnection, ChannelDB
 from src.utils import logger, utils
 from src.server.sessionhandler import SESSIONS
 
 from django.utils.translation import ugettext as _
 
-INFOCHANNEL = Channel.objects.channel_search(settings.CHANNEL_MUDINFO[0])
+INFOCHANNEL = ChannelDB.objects.channel_search(settings.CHANNEL_MUDINFO[0])
 IRC_CHANNELS = []
 
 def msg_info(message):
@@ -134,8 +134,8 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
     """
     This will create a new IRC<->channel connection.
     """
-    if not type(channel) == Channel:
-        new_channel = Channel.objects.filter(db_key=channel)
+    if not type(channel) == ChannelDB:
+        new_channel = ChannelDB.objects.filter(db_key=channel)
         if not new_channel:
             logger.log_errmsg(_("Cannot attach IRC<->Evennia: Evennia Channel '%s' not found") % channel)
             return False
