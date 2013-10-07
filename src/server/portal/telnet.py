@@ -13,6 +13,7 @@ from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
+from src.utils.utils import make_iter, is_iter
 
 _RE_N = re.compile(r"\{n$")
 
@@ -36,13 +37,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # negotiate ttype (client info)
         #self.ttype = ttype.Ttype(self)
         # negotiate mssp (crawler communication)
-        self.mssp = mssp.Mssp(self)
+        #self.mssp = mssp.Mssp(self)
         # msdp
-        #self.msdp = msdp.Msdp(self)
+        self.msdp = msdp.Msdp(self)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
-
 
     def enableRemote(self, option):
         """
@@ -68,7 +68,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             return True
         else:
             return super(TelnetProtocol, self).disableLocal(option)
-
 
     def connectionLost(self, reason):
         """
@@ -163,6 +162,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         except Exception, e:
             self.sendLine(str(e))
             return
+        if "oob" in kwargs:
+            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
+            if "MSDP" in self.protocol_flags:
+                print "oobstruct:", oobstruct
+                for cmdname, args in oobstruct:
+                    print "cmdname, args:", cmdname, args
+                    msdp_string = self.msdp.func_to_msdp(cmdname, args)
+                    print "msdp_string:", msdp_string
+                    self.msdp.data_out(msdp_string)
+
         ttype = self.protocol_flags.get('TTYPE', {})
         raw = kwargs.get("raw", False)
         nomarkup = not (ttype or ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))

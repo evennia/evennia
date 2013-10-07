@@ -26,10 +26,10 @@ from django.conf import settings
 from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
 from src.scripts.scripts import Script
-from src.create import create_script
+from src.utils.create import create_script
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
 from src.utils import logger
-from src.utils.utils import variable_from_module, to_str
+from src.utils.utils import variable_from_module, to_str, is_iter, make_iter
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
@@ -307,7 +307,7 @@ class OOBHandler(object):
             oob_tracker_name = "_track_db_value_change"
             self.track(attrobj, tracker_key, attr_name, sessid, property_name=oob_tracker_name)
 
-    def run(self, func_key, *args, **kwargs):
+    def execute_cmd(self, func_key, *args, **kwargs):
         """
         Retrieve oobfunc from OOB_FUNCS and execute it immediately
         using *args and **kwargs

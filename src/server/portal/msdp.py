@@ -132,7 +132,7 @@ class Msdp(object):
         """
         self.protocol = protocol
         self.protocol.protocol_flags['MSDP'] = False
-        self.protocol.negotiationMap[MSDP] = self.msdp_to_func
+        self.protocol.negotiationMap[MSDP] = self.msdp_to_evennia
         self.protocol.will(MSDP).addCallbacks(self.do_msdp, self.no_msdp)
         self.msdp_reported = {}
 
@@ -148,10 +148,7 @@ class Msdp(object):
         print "msdp supported"
         self.protocol.protocol_flags['MSDP'] = True
 
-    def parse_msdp(self, args):
-        "Called with arguments to subnegotiation"
-
-    def func_to_msdp(self, cmdname, data):
+    def evennia_to_msdp(self, cmdname, data):
         """
         handle return data from cmdname by converting it to
         a proper msdp structure. data can either be a single value (will be
@@ -179,6 +176,7 @@ class Msdp(object):
 
         def make_array(name, datalist, string):
             "build a simple array. Arrays may not nest tables by definition."
+            print "make_array", datalist, string
             string += MSDP_VAR + name + MSDP_ARRAY_OPEN
             for val in datalist:
                 string += MSDP_VAL + val
@@ -190,11 +188,11 @@ class Msdp(object):
         elif hasattr(data, '__iter__'):
             msdp_string = make_array(cmdname, data, "")
         else:
-            msdp_string = MSDP_VAR + cmdname + MSDP_VAL + data
+            msdp_string = MSDP_VAR + cmdname + MSDP_VAL + data if data!=None else ""
         return msdp_string
 
 
-    def msdp_to_func(self, data):
+    def msdp_to_evennia(self, data):
         """
         Handle a client's requested negotiation, converting
         it into a function mapping - either one of the MSDP
@@ -229,57 +227,55 @@ class Msdp(object):
 
         print "MSDP: table, array, variables:", tables, arrays, variables
 
+        # all variables sent through msdp to Evennia are considered commands with arguments.
+        # there are three forms of commands possible through msdp:
+        #
+        # VARNAME VAR -> varname(var)
+        # ARRAYNAME VAR VAL VAR VAL VAR VAL ENDARRAY -> arrayname(val,val,val)
+        # TABLENAME TABLE VARNAME VAL VARNAME VAL ENDTABLE -> tablename(varname=val, varname=val)
+        #
+
+
         ret = ""
 
         # default MSDP functions
         if "LIST" in variables:
-            ret += self.func_to_msdp("LIST", self.msdp_cmd_list(variables["LIST"]))
-            del variables["LIST"]
+            ret += self.evennia_to_msdp("LIST", self.msdp_cmd_list(*(variables.pop("LIST"),)))
         if "REPORT" in variables:
-            ret += self.func_to_msdp("REPORT", self.msdp_cmd_report(*(variables["REPORT"],)))
-            del variables["REPORT"]
+            ret += self.evennia_to_msdp("REPORT", self.msdp_cmd_report(*(variables.pop("REPORT"),)))
         if "REPORT" in arrays:
-            ret += self.func_to_msdp("REPORT", self.msdp_cmd_report(*arrays["REPORT"]))
-            del arrays["REPORT"]
+            ret += self.evennia_to_msdp("REPORT", self.msdp_cmd_report(*arrays.pop("REPORT")))
         if "RESET" in variables:
-            ret += self.func_to_msdp("RESET", self.msdp_cmd_reset(*(variables["RESET"],)))
-            del variables["RESET"]
+            ret += self.evennia_to_msdp("RESET", self.msdp_cmd_reset(*(variables.pop("RESET"),)))
         if "RESET" in arrays:
-            ret += self.func_to_msdp("RESET", self.msdp_cmd_reset(*arrays["RESET"]))
-            del arrays["RESET"]
+            ret += self.evennia_to_msdp("RESET", self.msdp_cmd_reset(*arrays.pop("RESET",)))
         if "SEND" in variables:
-            ret += self.func_to_msdp("SEND", self.msdp_cmd_send(*(variables["SEND"],)))
-            del variables["SEND"]
+            ret += self.evennia_to_msdp("SEND", self.msdp_cmd_send(*(variables.pop("SEND",))))
         if "SEND" in arrays:
-            ret += self.func_to_msdp("SEND",self.msdp_cmd_send(*arrays["SEND"]))
-            del arrays["SEND"]
+            ret += self.evennia_to_msdp("SEND",self.msdp_cmd_send(*arrays.pop("SEND")))
 
         # if there are anything left we look for a custom function
         for varname, var in variables.items():
             # a simple function + argument
             ooc_func = MSDP_COMMANDS_CUSTOM.get(varname.upper())
             if ooc_func:
-                ret += self.func_to_msdp(varname, ooc_func(var))
+                ret += self.evennia_to_msdp(varname, ooc_func(var))
         for arrayname, array in arrays.items():
             # we assume the array are multiple arguments to the function
             ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
             if ooc_func:
-                ret += self.func_to_msdp(arrayname, ooc_func(*array))
+                ret += self.evennia_to_msdp(arrayname, ooc_func(*array))
         for tablename, table in tables.items():
             # we assume tables are keyword arguments to the function
             ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
             if ooc_func:
-                ret += self.func_to_msdp(tablename, ooc_func(**table))
+                ret += self.evennia_to_msdp(tablename, ooc_func(**table))
 
+        # return any result
         if ret:
-            # send return value if it exists
-            self.msdp_send(ret)
-            ret = IAC + SB + MSDP + ret + IAC + SE
-            #ret = IAC + SB + MSDP + MSDP_VAR + "SEND" + MSDP_VAL + "Testsend" + IAC + SE
-            self.protocol._write(ret)
-            logger.log_infomsg("MSDP_RESULT: %s" % ret)
+            self.data_out(ret)
 
-    def msdp_send(self, msdp_string):
+    def data_out(self, msdp_string):
         """
         Return a msdp-valid subnegotiation across the protocol.
         """
@@ -295,21 +291,21 @@ class Msdp(object):
         The List command allows for retrieving various info about the server/client
         """
         if arg == 'COMMANDS':
-            return self.func_to_msdp(arg, MSDP_COMMANDS)
+            return self.evennia_to_msdp(arg, MSDP_COMMANDS)
         elif arg == 'LISTS':
-            return self.func_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
+            return self.evennia_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
                                            "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
         elif arg == 'CONFIGURABLE_VARIABLES':
-            return self.func_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
+            return self.evennia_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
         elif arg == 'REPORTABLE_VARIABLES':
-            return self.func_to_msdp(arg, MSDP_REPORTABLE.keys())
+            return self.evennia_to_msdp(arg, MSDP_REPORTABLE.keys())
         elif arg == 'REPORTED_VARIABLES':
             # the dynamically set items to report
-            return self.func_to_msdp(arg, self.msdp_reported.keys())
+            return self.evennia_to_msdp(arg, self.msdp_reported.keys())
         elif arg == 'SENDABLE_VARIABLES':
-            return self.func_to_msdp(arg, MSDP_SENDABLE.keys())
+            return self.evennia_to_msdp(arg, MSDP_SENDABLE.keys())
         else:
-            return self.func_to_msdp("LIST", arg)
+            return self.evennia_to_msdp("LIST", arg)
 
     # default msdp commands
 

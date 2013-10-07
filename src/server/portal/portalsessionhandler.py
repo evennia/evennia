@@ -138,6 +138,7 @@ class PortalSessionHandler(SessionHandler):
         for session in self.sessions.values():
             session.data_out(message)
 
+
     def data_out(self, sessid, text=None, **kwargs):
         """
         Called by server for having the portal relay messages and data
