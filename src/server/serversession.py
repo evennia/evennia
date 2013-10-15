@@ -137,6 +137,14 @@ class ServerSession(Session):
         return self.logged_in and self.puppet
     get_character = get_puppet
 
+    def get_puppet_or_player(self):
+        """
+        Returns session if not logged in; puppet if one exists, otherwise return the player.
+        """
+        if self.logged_in:
+            return self.puppet if self.puppet else self.player
+        return None
+
     def log(self, message, channel=True):
         """
         Emits session info to the appropriate outputs and info channels.
@@ -182,10 +190,11 @@ class ServerSession(Session):
             # handle oob instructions
             global _OOB_HANDLER
             if not _OOB_HANDLER:
-                from src.servever.oobhandler import OOB_HANDLER as _OOB_HANDLER
+                from src.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob", None))
             for (funcname, args, kwargs) in oobstruct:
-                _OOBHANDLER.execute_cmd(funcname, *args, **kwargs)
+                if funcname:
+                    _OOB_HANDLER.execute_cmd(self, funcname, *args, **kwargs)
 
     execute_cmd = data_in # alias
 

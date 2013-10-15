@@ -240,7 +240,7 @@ class AMPProtocol(amp.AMP):
 
     def errback(self, e, info):
         "error handler, to avoid dropping connections on server tracebacks."
-        e.trap(Exception)
+        f = e.trap(Exception)
         print "AMP Error for %(info)s: %(e)s" % {'info': info, 'e': e.getErrorMessage()}
 
     def send_split_msg(self, sessid, msg, data, command):
@@ -286,7 +286,7 @@ class AMPProtocol(amp.AMP):
         data comes in multiple chunks; if so (nparts>1) we buffer the data
         and wait for the remaining parts to arrive before continuing.
         """
-        #print "msg portal -> server (server side):", sessid, msg
+        #print "msg portal -> server (server side):", sessid, msg, data
         global MSGBUFFER
         if nparts > 1:
             # a multipart message
@@ -311,7 +311,7 @@ class AMPProtocol(amp.AMP):
         try:
             return self.callRemote(MsgPortal2Server,
                             sessid=sessid,
-                            msg=msg,
+                            msg=to_str(msg) if msg!=None else "",
                             ipart=0,
                             nparts=1,
                             data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
@@ -351,7 +351,7 @@ class AMPProtocol(amp.AMP):
         try:
             return self.callRemote(MsgServer2Portal,
                             sessid=sessid,
-                            msg=to_str(msg),
+                            msg=to_str(msg) if msg!=None else "",
                             ipart=0,
                             nparts=1,
                             data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")

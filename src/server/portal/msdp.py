@@ -12,7 +12,7 @@ etc.
 """
 import re
 from django.conf import settings
-from src.utils.utils import make_iter, mod_import
+from src.utils.utils import make_iter, mod_import, to_str
 from src.utils import logger
 
 # MSDP-relevant telnet cmd/opt-codes
@@ -28,10 +28,13 @@ IAC = chr(255)
 SB = chr(250)
 SE = chr(240)
 
+force_str = lambda inp: to_str(inp, force_string=True)
+
 # pre-compiled regexes
 regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)) # return 2-tuple
 regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
-regex_varval = re.compile(r"%s(.*?)%s(.*)" % (MSDP_VAR, MSDP_VAL)) # return 2-tuple
+regex_var = re.compile(MSDP_VAR)
+regex_val = re.compile(MSDP_VAL)
 
 # MSDP default definition commands supported by Evennia (can be supplemented with custom commands as well)
 MSDP_COMMANDS = ("LIST", "REPORT", "RESET", "SEND", "UNREPORT")
@@ -138,59 +141,75 @@ class Msdp(object):
 
     def no_msdp(self, option):
         "No msdp supported or wanted"
-        print "No msdp supported"
         pass
 
     def do_msdp(self, option):
         """
         Called when client confirms that it can do MSDP.
         """
-        print "msdp supported"
         self.protocol.protocol_flags['MSDP'] = True
 
-    def evennia_to_msdp(self, cmdname, data):
+    def evennia_to_msdp(self, cmdname, *args, **kwargs):
         """
         handle return data from cmdname by converting it to
         a proper msdp structure. data can either be a single value (will be
         converted to a string), a list (will be converted to an MSDP_ARRAY),
         or a dictionary (will be converted to MSDP_TABLE).
 
-        OBS - this supports nested tables and even arrays nested
-        inside tables, as opposed to the receive method. Arrays
-        cannot hold tables by definition (the table must be named
-        with MSDP_VAR, and an array can only contain MSDP_VALs).
+        Obs - this normally only returns tables and lists (var val val ...) rather than
+        arrays.  It will convert *args to lists and **kwargs to tables and
+        if both are given to this method, this will result in a list followed
+        by a table, both having the same names.
         """
 
-        def make_table(name, datadict, string):
+        def make_table(name, **kwargs):
             "build a table that may be nested with other tables or arrays."
-            string += MSDP_VAR + name + MSDP_VAL + MSDP_TABLE_OPEN
-            for key, val in datadict.items():
-                if type(val) == type({}):
-                    string += make_table(key, val, string)
+            string = MSDP_VAR + force_str(name) + MSDP_VAL + MSDP_TABLE_OPEN
+            for key, val in kwargs.items():
+                if isinstance(val, dict):
+                    string += make_table(string, key, **val)
                 elif hasattr(val, '__iter__'):
-                    string += make_array(key, val, string)
+                    string += make_array(string, key, *val)
                 else:
-                    string += MSDP_VAR + key + MSDP_VAL + val
+                    string += MSDP_VAR + force_str(key) + MSDP_VAL + force_str(val)
             string += MSDP_TABLE_CLOSE
             return string
 
-        def make_array(name, datalist, string):
-            "build a simple array. Arrays may not nest tables by definition."
-            print "make_array", datalist, string
-            string += MSDP_VAR + name + MSDP_ARRAY_OPEN
-            for val in datalist:
-                string += MSDP_VAL + val
+        def make_array(name, *args):
+            "build a array. Arrays may not nest tables by definition."
+            string = MSDP_VAR + force_str(name) + MSDP_ARRAY_OPEN
+            string += MSDP_VAL.join(force_str(arg) for arg in args)
             string += MSDP_ARRAY_CLOSE
             return string
 
-        if isinstance(data, dict):
-            msdp_string = make_table(cmdname, data, "")
-        elif hasattr(data, '__iter__'):
-            msdp_string = make_array(cmdname, data, "")
-        else:
-            msdp_string = MSDP_VAR + cmdname + MSDP_VAL + data if data!=None else ""
-        return msdp_string
+        def make_list(name, *args):
+            "build a simple list - an array without start/end markers"
+            string = MSDP_VAR + force_str(name)
+            string += MSDP_VAL.join(force_str(arg) for arg in args)
+            return string
 
+        # Default MSDP commands
+
+        cupper = cmdname.upper()
+        if cupper == "LIST":
+            self.data_out(make_list("LIST", *args))
+        elif cupper == "REPORT":
+            self.data_out(make_list("REPORT", *args))
+        elif cupper == "UNREPORT":
+            self.data_out(make_list("UNREPORT", *args))
+        elif cupper == "RESET":
+            self.data_out(make_list("RESET", *args))
+        elif cupper == "SEND":
+            self.data_out(make_list("SEND", *args))
+        else:
+            # return list or tables. If both arg/kwarg is given, return one array and one table, both
+            # with the same name.
+            msdp_string = ""
+            if args:
+                msdp_string += make_list(cupper, *args)
+            if kwargs:
+                msdp_string += make_table(cupper, **kwargs)
+            self.data_out(msdp_string)
 
     def msdp_to_evennia(self, data):
         """
@@ -216,16 +235,24 @@ class Msdp(object):
         if hasattr(data, "__iter__"):
             data = "".join(data)
 
-        logger.log_infomsg("MSDP SUBNEGOTIATION: %s" % data)
+        #logger.log_infomsg("MSDP SUBNEGOTIATION: %s" % data)
 
-        for table in regex_table.findall(data):
-            tables[table[0].upper()] = dict(regex_varval.findall(table[1]))
-        for array in regex_array.findall(data):
-            arrays[array[0].upper()] = dict(regex_varval.findall(array[1]))
-        # get all stand-alone variables, but first we must clean out all tables and arrays (which also contain vars)
-        variables = dict((key.upper(), val) for key, val in regex_varval.findall(regex_array.sub("", regex_table.sub("", data))))
+        for key, table in regex_table.findall(data):
+            tables[key] = {}
+            for varval in regex_var.split(table):
+                parts = regex_val.split(varval)
+                tables[key].expand({parts[0] : tuple(parts[1:]) if len(parts)>1 else ("",)})
+        for key, array in regex_array.findall(data):
+            arrays[key] = []
+            for val in regex_val.split(array):
+                arrays[key].append(val)
+            arrays[key] = tuple(arrays[key])
+        for varval in regex_var.split(regex_array.sub("", regex_table.sub("", data))):
+            # get remaining varvals after cleaning away tables/arrays
+            parts = regex_val.split(varval)
+            variables[parts[0].upper()] = tuple(parts[1:]) if len(parts)>1 else ("", )
 
-        print "MSDP: table, array, variables:", tables, arrays, variables
+        #print "MSDP: table, array, variables:", tables, arrays, variables
 
         # all variables sent through msdp to Evennia are considered commands with arguments.
         # there are three forms of commands possible through msdp:
@@ -235,122 +262,124 @@ class Msdp(object):
         # TABLENAME TABLE VARNAME VAL VARNAME VAL ENDTABLE -> tablename(varname=val, varname=val)
         #
 
-
-        ret = ""
-
         # default MSDP functions
         if "LIST" in variables:
-            ret += self.evennia_to_msdp("LIST", self.msdp_cmd_list(*(variables.pop("LIST"),)))
+            self.data_in("list", *variables.pop("LIST"))
         if "REPORT" in variables:
-            ret += self.evennia_to_msdp("REPORT", self.msdp_cmd_report(*(variables.pop("REPORT"),)))
+            self.data_in("report", *variables.pop("REPORT"))
         if "REPORT" in arrays:
-            ret += self.evennia_to_msdp("REPORT", self.msdp_cmd_report(*arrays.pop("REPORT")))
+            self.data_in("report", *(arrays.pop("REPORT")))
+        if "UNREPORT" in variables:
+            self.data_in("unreport", *(arrays.pop("UNREPORT")))
         if "RESET" in variables:
-            ret += self.evennia_to_msdp("RESET", self.msdp_cmd_reset(*(variables.pop("RESET"),)))
+            self.data_in("reset", *variables.pop("RESET"))
         if "RESET" in arrays:
-            ret += self.evennia_to_msdp("RESET", self.msdp_cmd_reset(*arrays.pop("RESET",)))
+            self.data_in("reset", *(arrays.pop("RESET")))
         if "SEND" in variables:
-            ret += self.evennia_to_msdp("SEND", self.msdp_cmd_send(*(variables.pop("SEND",))))
+            self.data_in("send", *variables.pop("SEND"))
         if "SEND" in arrays:
-            ret += self.evennia_to_msdp("SEND",self.msdp_cmd_send(*arrays.pop("SEND")))
+            self.data_in("send", *(arrays.pop("SEND")))
 
-        # if there are anything left we look for a custom function
+        # if there are anything left consider it a call to a custom function
+
         for varname, var in variables.items():
             # a simple function + argument
-            ooc_func = MSDP_COMMANDS_CUSTOM.get(varname.upper())
-            if ooc_func:
-                ret += self.evennia_to_msdp(varname, ooc_func(var))
+            self.data_in(varname, (var,))
         for arrayname, array in arrays.items():
             # we assume the array are multiple arguments to the function
-            ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
-            if ooc_func:
-                ret += self.evennia_to_msdp(arrayname, ooc_func(*array))
+            self.data_in(arrayname, *array)
         for tablename, table in tables.items():
             # we assume tables are keyword arguments to the function
-            ooc_func = MSDP_COMMANDS_CUSTOM.get(arrayname.upper())
-            if ooc_func:
-                ret += self.evennia_to_msdp(tablename, ooc_func(**table))
-
-        # return any result
-        if ret:
-            self.data_out(ret)
+            self.data_in(tablename, **table)
 
     def data_out(self, msdp_string):
         """
         Return a msdp-valid subnegotiation across the protocol.
         """
-        self.protocol._write(IAC + SB + MSDP + msdp_string + IAC + SE)
+        #print "msdp data_out (without IAC SE):", msdp_string
+        self.protocol ._write(IAC + SB + MSDP + force_str(msdp_string) + IAC + SE)
 
-    # MSDP Commands
-    # Some given MSDP (varname, value) pairs can also be treated as command + argument.
-    # Generic msdp command map. The argument will be sent to the given command.
-    # See http://tintin.sourceforge.net/msdp/ for definitions of each command.
-    # These are client->server commands.
-    def msdp_cmd_list(self, arg):
+    def data_in(self, funcname, *args, **kwargs):
         """
-        The List command allows for retrieving various info about the server/client
+        Send oob data to Evennia
         """
-        if arg == 'COMMANDS':
-            return self.evennia_to_msdp(arg, MSDP_COMMANDS)
-        elif arg == 'LISTS':
-            return self.evennia_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
-                                           "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
-        elif arg == 'CONFIGURABLE_VARIABLES':
-            return self.evennia_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
-        elif arg == 'REPORTABLE_VARIABLES':
-            return self.evennia_to_msdp(arg, MSDP_REPORTABLE.keys())
-        elif arg == 'REPORTED_VARIABLES':
-            # the dynamically set items to report
-            return self.evennia_to_msdp(arg, self.msdp_reported.keys())
-        elif arg == 'SENDABLE_VARIABLES':
-            return self.evennia_to_msdp(arg, MSDP_SENDABLE.keys())
-        else:
-            return self.evennia_to_msdp("LIST", arg)
+        #print "msdp data_in:", funcname, args, kwargs
+        self.protocol.data_in(text=None, oob=(funcname, args, kwargs))
 
-    # default msdp commands
+   # # MSDP Commands
+   # # Some given MSDP (varname, value) pairs can also be treated as command + argument.
+   # # Generic msdp command map. The argument will be sent to the given command.
+   # # See http://tintin.sourceforge.net/msdp/ for definitions of each command.
+   # # These are client->server commands.
+   # def msdp_cmd_list(self, arg):
+   #     """
+   #     The List command allows for retrieving various info about the server/client
+   #     """
+   #     if arg == 'COMMANDS':
+   #         return self.evennia_to_msdp(arg, MSDP_COMMANDS)
+   #     elif arg == 'LISTS':
+   #         return self.evennia_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
+   #                                        "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
+   #     elif arg == 'CONFIGURABLE_VARIABLES':
+   #         return self.evennia_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
+   #     elif arg == 'REPORTABLE_VARIABLES':
+   #         return self.evennia_to_msdp(arg, MSDP_REPORTABLE.keys())
+   #     elif arg == 'REPORTED_VARIABLES':
+   #         # the dynamically set items to report
+   #         return self.evennia_to_msdp(arg, self.msdp_reported.keys())
+   #     elif arg == 'SENDABLE_VARIABLES':
+   #         return self.evennia_to_msdp(arg, MSDP_SENDABLE.keys())
+   #     else:
+   #         return self.evennia_to_msdp("LIST", arg)
 
-    def msdp_cmd_report(self, *arg):
-        """
-        The report command instructs the server to start reporting a
-        reportable variable to the client.
-        """
-        try:
-            return MSDP_REPORTABLE[arg](report=True)
-        except Exception:
-            logger.log_trace()
+   # # default msdp commands
 
-    def msdp_cmd_unreport(self, arg):
-        """
-        Unreport a previously reported variable
-        """
-        try:
-            MSDP_REPORTABLE[arg](report=False)
-        except Exception:
-            self.logger.log_trace()
+   # def msdp_cmd_report(self, *arg):
+   #     """
+   #     The report command instructs the server to start reporting a
+   #     reportable variable to the client.
+   #     """
+   #     try:
+   #         return MSDP_REPORTABLE[arg](report=True)
+   #     except Exception:
+   #         logger.log_trace()
 
-    def msdp_cmd_reset(self, arg):
-        """
-        The reset command resets a variable to its initial state.
-        """
-        try:
-            MSDP_REPORTABLE[arg](reset=True)
-        except Exception:
-            logger.log_trace()
+   # def msdp_cmd_unreport(self, arg):
+   #     """
+   #     Unreport a previously reported variable
+   #     """
+   #     try:
+   #         MSDP_REPORTABLE[arg](report=False)
+   #     except Exception:
+   #         self.logger.log_trace()
 
-    def msdp_cmd_send(self, arg):
-        """
-        Request the server to send a particular variable
-        to the client.
+   # def msdp_cmd_reset(self, arg):
+   #     """
+   #     The reset command resets a variable to its initial state.
+   #     """
+   #     try:
+   #         MSDP_REPORTABLE[arg](reset=True)
+   #     except Exception:
+   #         logger.log_trace()
 
-        arg - this is a list of variables the client wants.
-        """
-        ret = []
-        if arg:
-            for var in make_iter(arg):
-                try:
-                    ret.append(MSDP_REPORTABLE[var.upper()])# (send=True))
-                except Exception:
-                    ret.append("ERROR")#logger.log_trace()
-        return ret
+   # def msdp_cmd_send(self, *args):
+   #     """
+   #     Request the server to send a particular variable
+   #     to the client.
+
+   #     arg - this is a list of variables the client wants.
+   #     """
+   #     ret = []
+   #     for var in make_iter(arg)
+
+
+
+
+   #         for var in make_iter(arg):
+   #             try:
+   #                 ret.append(MSDP_REPORTABLE[var.upper()])# (send=True))
+   #             except Exception:
+   #                 ret.append("ERROR")#logger.log_trace()
+   #     return ret
 
 

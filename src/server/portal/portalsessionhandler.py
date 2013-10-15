@@ -127,7 +127,6 @@ class PortalSessionHandler(SessionHandler):
         in from the protocol to the server. data is
         serialized before passed on.
         """
-        #print "portal_data_in:", string
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)

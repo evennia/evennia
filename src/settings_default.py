@@ -199,7 +199,7 @@ MSSP_META_MODULE = ""
 # Module holding OOB (Out of Band) hook objects. This allows for customization
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
-OOB_PLUGIN_MODULE = ""
+OOB_PLUGIN_MODULE = "src.server.oob_defaults"
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
 LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)

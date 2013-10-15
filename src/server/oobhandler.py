@@ -22,6 +22,7 @@ oob trackers should inherit from the OOBTracker class in this
 
 """
 
+from inspect import isfunction
 from django.conf import settings
 from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
@@ -29,16 +30,15 @@ from src.scripts.scripts import Script
 from src.utils.create import create_script
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
 from src.utils import logger
-from src.utils.utils import variable_from_module, to_str, is_iter, make_iter
+from src.utils.utils import all_from_module, to_str, is_iter, make_iter
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
-_DA = object.__delattribute__
+_DA = object.__delattr__
 
-# trackers track property changes and keep returning until they are removed
-_OOB_TRACKERS = variable_from_module(settings.OBB_PLUGIN_MODULE, "OBB_TRACKERS", default={})
-# functions return immediately
-_OOB_FUNCS = variable_from_module(settings.OBB_PLUGIN_MODULE, "OBB_FUNCS", default={})
+# load from plugin module
+_OOB_FUNCS = dict((key, func) for key, func in all_from_module(settings.OOB_PLUGIN_MODULE).items() if isfunction(func))
+_OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 
 
 class TrackerHandler(object):
@@ -123,10 +123,8 @@ class OOBTracker(TrackerBase):
 
     def update(self, new_value, *args, **kwargs):
         "Called by cache when updating the tracked entitiy"
-        SESSIONS.session_from_sessid(self.sessid).msg(oob={"cmdkey":"trackreturn",
-                                                           "name":self.fieldname,
-                                                           "value":new_value})
-
+        SESSIONS.session_from_sessid(self.sessid).msg(oob=("trackreturn",
+                                                           (self.fieldname, new_value)))
 
 class _RepeaterPool(object):
     """
@@ -194,14 +192,6 @@ class _RepeaterPool(object):
                 self.scripts[interval].stop()
 
 
-# Default OOB funcs
-
-def OOB_get_attr_val(caller, attrname):
-    "Get the given attrback from caller"
-    caller.msg(oob={"cmdkey":"get_attr",
-                             "name":attrname,
-                             "value":to_str(caller.attributes.get(attrname))})
-
 # Main OOB Handler
 
 class OOBHandler(object):
@@ -214,6 +204,7 @@ class OOBHandler(object):
         """
         Initialize handler
         """
+        self.sessionhandler = SESSIONS
         self.oob_tracker_storage = {}
         self.oob_repeat_storage = {}
         self.oob_tracker_pool = _RepeaterPool()
@@ -247,7 +238,7 @@ class OOBHandler(object):
                 self.repeat(caller, func_key, interval, *args, **kwargs)
 
 
-    def track(self, obj, sessid, fieldname, tracker_key, *args, **kwargs):
+    def track(self, obj, sessid, fieldname, oobclass, *args, **kwargs):
         """
         Create an OOB obj of class _oob_MAPPING[tracker_key] on obj. args,
         kwargs will be used to initialize the OOB hook  before adding
@@ -307,17 +298,6 @@ class OOBHandler(object):
             oob_tracker_name = "_track_db_value_change"
             self.track(attrobj, tracker_key, attr_name, sessid, property_name=oob_tracker_name)
 
-    def execute_cmd(self, func_key, *args, **kwargs):
-        """
-        Retrieve oobfunc from OOB_FUNCS and execute it immediately
-        using *args and **kwargs
-        """
-        oobfunc = _OOB_FUNCS[func_key] # raise traceback if not found
-        try:
-            oobfunc(*args, **kwargs)
-        except Exception:
-            logger.log_trace()
-
     def repeat(self, caller, func_key, interval=20, *args, **kwargs):
         """
         Start a repeating action. Every interval seconds,
@@ -339,7 +319,31 @@ class OOBHandler(object):
         self.oob_tracker_pool.remove(store_key, interval)
         self.oob_repeat_storage.pop(store_key, None)
 
+    def msg(self, sessid, funcname, *args, **kwargs):
+        "Shortcut to relay oob data back to portal"
+        session = self.sessionhandler.session_from_sessid(sessid)
+        if session:
+            session.msg(oob=(funcname, args, kwargs))
 
-
+    def execute_cmd(self, session, func_key, *args, **kwargs):
+        """
+        Retrieve oobfunc from OOB_FUNCS and execute it immediately
+        using *args and **kwargs
+        """
+        try:
+            oobfunc = _OOB_FUNCS[func_key] # raise traceback if not found
+            oobfunc(self, session, *args, **kwargs)
+        except KeyError:
+            errmsg = "OOB Error: function '%s' not recognized." % func_key
+            if _OOB_ERROR:
+                _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+            else:
+                logger.log_trace(errmsg)
+        except Exception, err:
+            errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (func_key, args, kwargs, err)
+            if _OOB_ERROR:
+                _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+            else:
+                logger.log_trace(errmsg)
 # access object
 OOB_HANDLER = OOBHandler()
