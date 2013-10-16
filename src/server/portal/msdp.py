@@ -45,69 +45,6 @@ MSDP_COMMANDS_CUSTOM = {}
 # this maps MSDP command names to Evennia commands found in OOB_FUNC_MODULE. It
 # is up to these commands to return data on proper form. This is overloaded if
 # OOB_REPORTABLE is defined in the custom OOB module below.
-MSDP_REPORTABLE = {
-    # General
-    "CHARACTER_NAME": "get_character_name",
-    "SERVER_ID": "get_server_id",
-    "SERVER_TIME": "get_server_time",
-    # Character
-    "AFFECTS": "char_affects",
-    "ALIGNMENT": "char_alignment",
-    "EXPERIENCE": "char_experience",
-    "EXPERIENCE_MAX": "char_experience_max",
-    "EXPERIENCE_TNL": "char_experience_tnl",
-    "HEALTH": "char_health",
-    "HEALTH_MAX": "char_health_max",
-    "LEVEL": "char_level",
-    "RACE": "char_race",
-    "CLASS": "char_class",
-    "MANA": "char_mana",
-    "MANA_MAX": "char_mana_max",
-    "WIMPY": "char_wimpy",
-    "PRACTICE": "char_practice",
-    "MONEY": "char_money",
-    "MOVEMENT": "char_movement",
-    "MOVEMENT_MAX": "char_movement_max",
-    "HITROLL": "char_hitroll",
-    "DAMROLL": "char_damroll",
-    "AC": "char_ac",
-    "STR": "char_str",
-    "INT": "char_int",
-    "WIS": "char_wis",
-    "DEX": "char_dex",
-    "CON": "char_con",
-    # Combat
-    "OPPONENT_HEALTH": "opponent_health",
-    "OPPONENT_HEALTH_MAX":"opponent_health_max",
-    "OPPONENT_LEVEL": "opponent_level",
-    "OPPONENT_NAME": "opponent_name",
-    # World
-    "AREA_NAME": "area_name",
-    "ROOM_EXITS": "area_room_exits",
-    "ROOM_NAME": "room_name",
-    "ROOM_VNUM": "room_dbref",
-    "WORLD_TIME": "world_time",
-    # Configurable variables
-    "CLIENT_ID": "client_id",
-    "CLIENT_VERSION": "client_version",
-    "PLUGIN_ID": "plugin_id",
-    "ANSI_COLORS": "ansi_colours",
-    "XTERM_256_COLORS": "xterm_256_colors",
-    "UTF_8": "utf_8",
-    "SOUND": "sound",
-    "MXP": "mxp",
-   # GUI variables
-    "BUTTON_1": "button1",
-    "BUTTON_2": "button2",
-    "BUTTON_3": "button3",
-    "BUTTON_4": "button4",
-    "BUTTON_5": "button5",
-    "GAUGE_1": "gauge1",
-    "GAUGE_2": "gauge2",
-    "GAUGE_3": "gauge3",
-    "GAUGE_4": "gauge4",
-    "GAUGE_5": "gauge5"}
-MSDP_SENDABLE = MSDP_REPORTABLE
 
 # try to load custom OOB module
 OOB_MODULE = None#mod_import(settings.OOB_FUNC_MODULE)
@@ -156,10 +93,13 @@ class Msdp(object):
         converted to a string), a list (will be converted to an MSDP_ARRAY),
         or a dictionary (will be converted to MSDP_TABLE).
 
-        Obs - this normally only returns tables and lists (var val val ...) rather than
-        arrays.  It will convert *args to lists and **kwargs to tables and
-        if both are given to this method, this will result in a list followed
-        by a table, both having the same names.
+        OBS - there is no actual use of arrays and tables in the MSDP
+        specification or default commands -- are returns are implemented
+        as simple lists or named lists (our name for them here, these
+        un-bounded structures are not named in the specification). So for
+        now, this routine will not explicitly create arrays nor tables,
+        although there are helper methods ready should it be needed in
+        the future.
         """
 
         def make_table(name, **kwargs):
@@ -173,7 +113,7 @@ class Msdp(object):
                 else:
                     string += MSDP_VAR + force_str(key) + MSDP_VAL + force_str(val)
             string += MSDP_TABLE_CLOSE
-            return string
+            return stringk
 
         def make_array(name, *args):
             "build a array. Arrays may not nest tables by definition."
@@ -188,7 +128,16 @@ class Msdp(object):
             string += MSDP_VAL.join(force_str(arg) for arg in args)
             return string
 
+        def make_named_list(name, **kwargs):
+            "build a named list - a table without start/end markers"
+            string = MSDP_VAR + force_str(name)
+            for key, val in kwargs.items():
+                string += MSDP_VAR + force_str(key) + MSDP_VAL + force_str(val)
+            return string
+
         # Default MSDP commands
+
+        print "MSDP outgoing:", cmdname, args, kwargs
 
         cupper = cmdname.upper()
         if cupper == "LIST":
@@ -200,15 +149,14 @@ class Msdp(object):
         elif cupper == "RESET":
             self.data_out(make_list("RESET", *args))
         elif cupper == "SEND":
-            self.data_out(make_list("SEND", *args))
+            self.data_out(make_named_list("SEND", **kwargs))
         else:
-            # return list or tables. If both arg/kwarg is given, return one array and one table, both
-            # with the same name.
+            # return list or named lists.
             msdp_string = ""
             if args:
                 msdp_string += make_list(cupper, *args)
             if kwargs:
-                msdp_string += make_table(cupper, **kwargs)
+                msdp_string += make_named_list(cupper, **kwargs)
             self.data_out(msdp_string)
 
     def msdp_to_evennia(self, data):

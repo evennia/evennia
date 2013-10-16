@@ -196,7 +196,7 @@ def pack_dbobj(item):
     # build the internal representation as a tuple ("__packed_dbobj__", key, creation_time, id)
     return natural_key and ('__packed_dbobj__', natural_key, _TO_DATESTRING(obj), _GA(obj, "id")) or item
 
-def _unpack_dbobj(item):
+def unpack_dbobj(item):
     """
     Check and convert internal representations back to Django database models.
     The fact that item is a packed dbobj should be checked before this call.
@@ -267,7 +267,7 @@ def from_pickle(data, db_obj=None):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
-            return _unpack_dbobj(item)
+            return unpack_dbobj(item)
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
@@ -289,7 +289,7 @@ def from_pickle(data, db_obj=None):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
-            return _unpack_dbobj(item)
+            return unpack_dbobj(item)
         elif dtype == tuple:
             return tuple(process_tree(val) for val in item)
         elif dtype == list:
