@@ -7,8 +7,6 @@ http://tintin.sourceforge.net/msdp/.  MSDP manages out-of-band
 communication between the client and server, for updating health bars
 etc.
 
-!TODO - this is just a partial implementation and not used by telnet yet.
-
 """
 import re
 from django.conf import settings
@@ -35,27 +33,6 @@ regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY
 regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
 regex_var = re.compile(MSDP_VAR)
 regex_val = re.compile(MSDP_VAL)
-
-# MSDP default definition commands supported by Evennia (can be supplemented with custom commands as well)
-MSDP_COMMANDS = ("LIST", "REPORT", "RESET", "SEND", "UNREPORT")
-
-# fallbacks if no custom OOB module is available
-MSDP_COMMANDS_CUSTOM = {}
-# MSDP_REPORTABLE is a standard suggestions for making it easy to create generic guis.
-# this maps MSDP command names to Evennia commands found in OOB_FUNC_MODULE. It
-# is up to these commands to return data on proper form. This is overloaded if
-# OOB_REPORTABLE is defined in the custom OOB module below.
-
-# try to load custom OOB module
-OOB_MODULE = None#mod_import(settings.OOB_FUNC_MODULE)
-if OOB_MODULE:
-    # loading customizations from OOB_FUNC_MODULE if available
-    try: MSDP_REPORTABLE = OOB_MODULE.OOB_REPORTABLE # replaces the default MSDP definitions
-    except AttributeError: pass
-    try: MSDP_SENDABLE = OOB_MODULE.OOB_SENDABLE
-    except AttributeError: MSDP_SENDABLE = MSDP_REPORTABLE
-    try: MSDP_COMMANDS_CUSTOM = OOB_MODULE.OOB_COMMANDS
-    except: pass
 
 # Msdp object handler
 
@@ -141,7 +118,10 @@ class Msdp(object):
 
         cupper = cmdname.upper()
         if cupper == "LIST":
-            self.data_out(make_list("LIST", *args))
+            if args:
+                args = list(args)
+                mode = args.pop(0).upper()
+            self.data_out(make_array(mode, *args))
         elif cupper == "REPORT":
             self.data_out(make_list("REPORT", *args))
         elif cupper == "UNREPORT":

@@ -37,7 +37,7 @@ _GA = object.__getattribute__
 _DA = object.__delattr__
 
 # load from plugin module
-_OOB_FUNCS = dict((key, func) for key, func in all_from_module(settings.OOB_PLUGIN_MODULE).items() if isfunction(func))
+_OOB_FUNCS = dict((key.lower(), func) for key, func in all_from_module(settings.OOB_PLUGIN_MODULE).items() if isfunction(func))
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 
 
