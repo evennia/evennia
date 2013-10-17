@@ -37,7 +37,7 @@ msgid " Type \"help\" for help."
 msgstr "Skriv \"help\" för hjälp."
 
 #: src/commands/cmdhandler.py:212
-msgid "There where multiple matches."
+msgid "There were multiple matches."
 msgstr "Det fanns många träffar."
 
 #: src/commands/cmdparser.py:144

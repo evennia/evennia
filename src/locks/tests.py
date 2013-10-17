@@ -36,7 +36,7 @@ class TestLockCheck(LockTest):
     def testrun(self):
         dbref = self.obj2.dbref
         self.obj1.locks.add("owner:dbref(%s);edit:dbref(%s) or perm(Wizards);examine:perm(Builders) and id(%s);delete:perm(Wizards);get:all()" % (dbref, dbref, dbref))
-        self.obj2.permissions = ['Wizards']
+        self.obj2.permissions.add('Wizards')
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'owner'))
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'edit'))
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'examine'))
@@ -47,7 +47,7 @@ class TestLockCheck(LockTest):
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'not_exist', default=True))
 class TestLockfuncs(LockTest):
     def testrun(self):
-        self.obj2.permissions = ['Wizards']
+        self.obj2.permissions.add('Wizards')
         self.assertEquals(True, lockfuncs.true(self.obj2, self.obj1))
         self.assertEquals(False, lockfuncs.false(self.obj2, self.obj1))
         self.assertEquals(True, lockfuncs.perm(self.obj2, self.obj1, 'Wizards'))

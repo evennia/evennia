@@ -151,24 +151,6 @@ class MsgServer2Portal(amp.Command):
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
-class OOBPortal2Server(amp.Command):
-    """
-    OOB data portal -> server
-    """
-    arguments = [('sessid', amp.Integer()),
-                 ('data', amp.String())]
-    errors = [(Exception, "EXCEPTION")]
-    response = []
-
-class OOBServer2Portal(amp.Command):
-    """
-    OOB data server -> portal
-    """
-    arguments = [('sessid', amp.Integer()),
-                 ('data', amp.String())]
-    errors = [(Exception, "EXCEPTION")]
-    response = []
-
 class ServerAdmin(amp.Command):
     """
     Portal -> Server
@@ -258,7 +240,7 @@ class AMPProtocol(amp.AMP):
 
     def errback(self, e, info):
         "error handler, to avoid dropping connections on server tracebacks."
-        e.trap(Exception)
+        f = e.trap(Exception)
         print "AMP Error for %(info)s: %(e)s" % {'info': info, 'e': e.getErrorMessage()}
 
     def send_split_msg(self, sessid, msg, data, command):
@@ -289,7 +271,7 @@ class AMPProtocol(amp.AMP):
                         msg=to_str(msg),
                         ipart=icall,
                         nparts=nmsglist,
-                        data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
+                        data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
                 for icall, (msg, data) in enumerate(zip(msglist, datalist))]
 
     # Message definition + helper methods to call/create each message type
@@ -304,7 +286,7 @@ class AMPProtocol(amp.AMP):
         data comes in multiple chunks; if so (nparts>1) we buffer the data
         and wait for the remaining parts to arrive before continuing.
         """
-        #print "msg portal -> server (server side):", sessid, msg
+        #print "msg portal -> server (server side):", sessid, msg, data
         global MSGBUFFER
         if nparts > 1:
             # a multipart message
@@ -317,7 +299,7 @@ class AMPProtocol(amp.AMP):
                 data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o:o[0]))
                 del MSGBUFFER[sessid]
         # call session hook with the data
-        self.factory.server.sessions.data_in(sessid, msg, loads(data))
+        self.factory.server.sessions.data_in(sessid, text=msg, **loads(data))
         return {}
     MsgPortal2Server.responder(amp_msg_portal2server)
 
@@ -325,17 +307,17 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Portal and executed on the Portal.
         """
-        #print "msg portal->server (portal side):", sessid, msg
+        #print "msg portal->server (portal side):", sessid, msg, data
         try:
             return self.callRemote(MsgPortal2Server,
                             sessid=sessid,
-                            msg=msg,
+                            msg=to_str(msg) if msg!=None else "",
                             ipart=0,
                             nparts=1,
                             data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
         except amp.TooLong:
             # the msg (or data) was too long for AMP to send. We need to send in blocks.
-            return self.send_split_msg(sessid, msg, data, MsgPortal2Server)
+            return self.send_split_msg(sessid, msg, kwargs, MsgPortal2Server)
 
     # Server -> Portal message
 
@@ -357,7 +339,7 @@ class AMPProtocol(amp.AMP):
                 data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o:o[0]))
                 del MSGBUFFER[sessid]
         # call session hook with the data
-        self.factory.portal.sessions.data_out(sessid, msg, loads(data))
+        self.factory.portal.sessions.data_out(sessid, text=msg, **loads(data))
         return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
@@ -369,55 +351,13 @@ class AMPProtocol(amp.AMP):
         try:
             return self.callRemote(MsgServer2Portal,
                             sessid=sessid,
-                            msg=to_str(msg),
+                            msg=to_str(msg) if msg!=None else "",
                             ipart=0,
                             nparts=1,
-                            data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
+                            data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
         except amp.TooLong:
             # the msg (or data) was too long for AMP to send. We need to send in blocks.
-            return self.send_split_msg(sessid, msg, data, MsgServer2Portal)
-
-    # OOB Portal -> Server
-
-    # Portal -> Server Msg
-
-    def amp_oob_portal2server(self, sessid, data):
-        """
-        Relays out-of-band data to server. This method is executed on the Server.
-        """
-        #print "oob portal -> server (server side):", sessid, loads(data)
-        self.factory.server.sessions.oob_data_in(sessid, loads(data))
-        return {}
-    OOBPortal2Server.responder(amp_oob_portal2server)
-
-    def call_remote_OOBPortal2Server(self, sessid, data=""):
-        """
-        Access method called by the Portal and executed on the Portal.
-        """
-        #print "oob portal->server (portal side):", sessid, data
-        self.callRemote(OOBPortal2Server,
-                        sessid=sessid,
-                        data=dumps(data)).addErrback(self.errback, "OOBPortal2Server")
-
-    # OOB Server -> Portal message
-
-    def amp_oob_server2portal(self, sessid, data):
-        """
-        Relays out-of-band data to Portal. This method is executed on the Portal.
-        """
-        #print "oob server->portal (portal side):", sessid, data
-        self.factory.portal.sessions.oob_data_out(sessid, loads(data))
-        return {}
-    OOBServer2Portal.responder(amp_oob_server2portal)
-
-    def call_remote_OOBServer2Portal(self, sessid, data=""):
-        """
-        Access method called by the Server and executed on the Portal.
-        """
-        #print "oob server->portal (server side):", sessid, data
-        return self.callRemote(OOBServer2Portal,
-                        sessid=sessid,
-                        data=dumps(data)).addErrback(self.errback, "OOBServer2Portal")
+            return self.send_split_msg(sessid, msg, kwargs, MsgServer2Portal)
 
 
     # Server administration from the Portal side
@@ -430,7 +370,7 @@ class AMPProtocol(amp.AMP):
         data = loads(data)
         server_sessionhandler = self.factory.server.sessions
 
-        #print "serveradmin (server side):", sessid, operation, data
+        #print "serveradmin (server side):", sessid, ord(operation), data
 
         if operation == PCONN: #portal_session_connect
             # create a new session and sync it
@@ -455,7 +395,7 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Portal and Executed on the Portal.
         """
-        #print "serveradmin (portal side):", sessid, operation, data
+        #print "serveradmin (portal side):", sessid, ord(operation), data
         data = dumps(data)
 
         return self.callRemote(ServerAdmin,
@@ -506,16 +446,14 @@ class AMPProtocol(amp.AMP):
         Access method called by the server side.
         """
         #print "portaladmin (server side):", sessid, ord(operation), data
-        data = dumps(data)
-
         return self.callRemote(PortalAdmin,
                         sessid=sessid,
                         operation=operation,
-                        data=data).addErrback(self.errback, "PortalAdmin")
+                        data=dumps(data)).addErrback(self.errback, "PortalAdmin")
 
     # Extra functions
 
-    def amp_function_call(self, module, function, args, kwargs):
+    def amp_function_call(self, module, function, args, **kwargs):
         """
         This allows Portal- and Server-process to call an arbitrary function
         in the other process. It is intended for use by plugin modules.

@@ -110,12 +110,12 @@ class CmdOOCLook(MuxPlayerCommand):
                     sess = player.get_session(csessid)
                     sid = sess in sessions and sessions.index(sess) + 1
                     if sess and sid:
-                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions), sid)
+                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
                     else:
-                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions))
+                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
                 else:
                     # character is "free to puppet"
-                    string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions))
+                    string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
         string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
         self.msg(string)
 
@@ -370,7 +370,7 @@ class CmdWho(MuxPlayerCommand):
                                session.protocol_key,
                                isinstance(session.address, tuple) and session.address[0] or session.address])
         else:
-            table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{Idle"])
+            table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{wIdle"])
             for session in session_list:
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible
@@ -465,18 +465,13 @@ class CmdPassword(MuxPlayerCommand):
             return
         oldpass = self.lhslist[0] # this is already stripped by parse()
         newpass = self.rhslist[0] #               ''
-        try:
-            uaccount = player.user
-        except AttributeError:
-            self.msg("This is only applicable for players.")
-            return
-        if not uaccount.check_password(oldpass):
+        if not player.check_password(oldpass):
             self.msg("The specified old password isn't correct.")
         elif len(newpass) < 3:
             self.msg("Passwords must be at least three characters long.")
         else:
-            uaccount.set_password(newpass)
-            uaccount.save()
+            player.set_password(newpass)
+            player.save()
             self.msg("Password changed.")
 
 class CmdQuit(MuxPlayerCommand):
@@ -625,18 +620,18 @@ class CmdQuell(MuxPlayerCommand):
     def func(self):
         "Perform the command"
         player = self.caller
-        permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions))
+        permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions.all()))
         if self.cmdstring == '@unquell':
-            if not player.get_attribute('_quell'):
+            if not player.attributes.get('_quell'):
                 self.msg("Already using normal Player permissions%s." % permstr)
             else:
-                player.del_attribute('_quell')
+                player.attributes.remove('_quell')
                 self.msg("Player permissions%s restored." % permstr)
         else:
-            if player.get_attribute('_quell'):
+            if player.attributes.get('_quell'):
                 self.msg("Already quelling Player%s permissions." % permstr)
                 return
-            player.set_attribute('_quell', True)
+            player.attributes.add('_quell', True)
             self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(player)
 

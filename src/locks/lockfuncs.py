@@ -117,7 +117,7 @@ def self(accessing_obj, accessed_obj, *args, **kwargs):
     This can be used to lock specifically only to
     the same object that the lock is defined on.
     """
-    return accessing_obj == accessed_obj
+    return accessing_obj.typeclass == accessed_obj.typeclass
 
 
 def perm(accessing_obj, accessed_obj, *args, **kwargs):
@@ -134,7 +134,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     permission is also granted to all ranks higher up in the hierarchy.
 
     If accessing_object is an Object controlled by a Player, the
-    permissions of the Player is used unless the PlayerAttribute _quell
+    permissions of the Player is used unless the Attribute _quell
     is set to True on the Object. In this case however, the
     LOWEST hieararcy-permission of the Player/Object-pair will be used
     (this is order to avoid Players potentially escalating their own permissions
@@ -146,14 +146,14 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
     try:
         perm = args[0].lower()
-        perms_object = [p.lower() for p in accessing_obj.permissions]
+        perms_object = [p.lower() for p in accessing_obj.permissions.all()]
     except (AttributeError, IndexError):
         return False
 
     if utils.inherits_from(accessing_obj, "src.objects.objects.Object") and accessing_obj.player:
         player = accessing_obj.player
-        perms_player = [p.lower() for p in player.permissions]
-        is_quell = player.get_attribute("_quell")
+        perms_player = [p.lower() for p in player.permissions.all()]
+        is_quell = player.attributes.get("_quell")
 
         if perm in _PERMISSION_HIERARCHY:
             # check hierarchy without allowing escalation obj->player
@@ -306,11 +306,11 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
             return valcompare(str(getattr(accessing_obj, attrname)), value, compare)
         return bool(getattr(accessing_obj, attrname)) # will return Fail on False value etc
     # check attributes, if they exist
-    if (hasattr(accessing_obj, 'has_attribute') and accessing_obj.has_attribute(attrname)):
+    if (hasattr(accessing_obj, 'attributes') and accessing_obj.attributes.has(attrname)):
         if value:
-            return (hasattr(accessing_obj, 'get_attribute')
-                    and valcompare(accessing_obj.get_attribute(attrname), value, compare))
-        return bool(accessing_obj.get_attribute(attrname)) # fails on False/None values
+            return (hasattr(accessing_obj, 'attributes')
+                    and valcompare(accessing_obj.attributes.get(attrname), value, compare))
+        return bool(accessing_obj.attributes.get(attrname)) # fails on False/None values
     return False
 
 def objattr(accessing_obj, accessed_obj, *args, **kwargs):
@@ -420,7 +420,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             return True
         objid = objid.lower()
         return any((True for obj in contents
-                    if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases]))
+                    if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases.all()]))
     if not args:
         # holds() - check if accessed_obj or accessed_obj.obj is held by accessing_obj
         try:
@@ -435,7 +435,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     elif len(args = 2):
         # command is holds(attrname, value) check if any held object has the given attribute and value
         for obj in contents:
-            if obj.attr(args[0]) == args[1]:
+            if obj.attributes.get(args[0]) == args[1]:
                 return True
 
 

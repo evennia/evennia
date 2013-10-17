@@ -168,7 +168,7 @@ class TypeClass(object):
                 log_trace("This is probably due to an unsafe reload.")
                 return # ignore delete
             try:
-                dbobj.del_attribute_raise(propname)
+                dbobj.del_attribute(propname, raise_exception=True)
             except AttributeError:
                 string = "Object: '%s' not found on %s(#%s), nor on its typeclass %s."
                 raise AttributeError(string % (propname, dbobj,

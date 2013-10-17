@@ -9,4 +9,4 @@ Also, the initiated object manager is available as src.comms.msgmanager and src.
 from src.comms.models import * 
 
 msgmanager = Msg.objects
-channelmanager = Channel.objects
+channelmanager = ChannelDB.objects

@@ -11,7 +11,7 @@ from django.conf import settings
 from src.utils import logger, create, search, utils
 from src.server.sessionhandler import SESSIONS
 from src.scripts.scripts import Script
-from src.comms.models import Channel, ExternalChannelConnection
+from src.comms.models import ChannelDB, ExternalChannelConnection
 from src.comms.imc2lib import imc2_packets as pck
 from src.comms.imc2lib.imc2_trackers import IMC2MudList, IMC2ChanList
 from src.comms.imc2lib.imc2_listeners import handle_whois_reply
@@ -26,7 +26,7 @@ IMC2_CLIENT_PWD = settings.IMC2_CLIENT_PWD
 IMC2_SERVER_PWD = settings.IMC2_SERVER_PWD
 
 # channel to send info to
-INFOCHANNEL = Channel.objects.channel_search(settings.CHANNEL_MUDINFO[0])
+INFOCHANNEL = ChannelDB.objects.channel_search(settings.CHANNEL_MUDINFO[0])
 # all linked channel connections
 IMC2_CLIENT = None
 # IMC2 debug mode
@@ -407,8 +407,8 @@ def create_connection(channel, imc2_channel):
     This will create a new IMC2<->channel connection.
     """
 
-    if not type(channel) == Channel:
-        new_channel = Channel.objects.filter(db_key=channel)
+    if not type(channel) == ChannelDB:
+        new_channel = ChannelDB.objects.filter(db_key=channel)
         if not new_channel:
             logger.log_errmsg(_("Cannot attach IMC2<->Evennia: Evennia Channel '%s' not found") % channel)
             return False

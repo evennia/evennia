@@ -71,8 +71,8 @@ class Object(DefaultObject):
 
      search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
      execute_cmd(raw_string)
-     msg(message, from_obj=None, data=None)
-     msg_contents(message, exclude=None, from_obj=None, data=None)
+     msg(text=None, **kwargs)
+     msg_contents(message, exclude=None, from_obj=None, **kwargs)
      move_to(destination, quiet=False, emit_to_obj=None, use_destination=True)
      copy(new_key=None)
      delete()
@@ -113,9 +113,9 @@ class Object(DefaultObject):
      at_after_traverse(traversing_object, source_location) - (exit-objects only) called just after a traversal has happened.
      at_failed_traverse(traversing_object)      - (exit-objects only) called if traversal fails and property err_traverse is not defined.
 
-     at_msg_receive(self, msg, from_obj=None, data=None) - called when a message (via self.msg()) is sent to this obj.
+     at_msg_receive(self, msg, from_obj=None, **kwargs) - called when a message (via self.msg()) is sent to this obj.
                                                            If returns false, aborts send.
-     at_msg_send(self, msg, to_obj=None, data=None) - called when this objects sends a message to someone via self.msg().
+     at_msg_send(self, msg, to_obj=None, **kwargs) - called when this objects sends a message to someone via self.msg().
 
      return_appearance(looker) - describes this object. Used by "look" command by default
      at_desc(looker=None)      - called by 'look' whenever the appearance is requested.

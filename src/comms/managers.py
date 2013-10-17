@@ -6,11 +6,12 @@ import itertools
 from django.db import models
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
+from src.typeclasses.managers import returns_typeclass_list, returns_typeclass
 
 _GA = object.__getattribute__
 _PlayerDB = None
 _ObjectDB = None
-_Channel = None
+_ChannelDB = None
 _SESSIONS = None
 _ExternalConnection = None
 _User = None
@@ -45,13 +46,13 @@ def dbref(dbref, reqhash=True):
 def identify_object(inp):
     "identify if an object is a player or an object; return its database model"
     # load global stores
-    global _PlayerDB, _ObjectDB, _Channel, _ExternalConnection, _User
+    global _PlayerDB, _ObjectDB, _ChannelDB, _ExternalConnection, _User
     if not _PlayerDB:
         from src.players.models import PlayerDB as _PlayerDB
     if not _ObjectDB:
         from src.objects.models import ObjectDB as _ObjectDB
-    if not _Channel:
-        from src.comms.models import Channel as _Channel
+    if not _ChannelDB:
+        from src.comms.models import ChannelDB as _ChannelDB
     if not _ExternalConnection:
         from src.comms.models import ExternalChannelConnection as _ExternalConnection
     if not _User:
@@ -65,9 +66,8 @@ def identify_object(inp):
         obj = inp
     typ = type(obj)
     if typ == _PlayerDB: return obj, "player"
-    if typ == _User: return obj.get_profile(), "player"
     elif typ == _ObjectDB: return obj, "object"
-    elif typ == _Channel: return obj, "channel"
+    elif typ == _ChannelDB: return obj, "channel"
     elif dbref(obj): return dbref(obj), "dbref"
     elif typ == basestring: return obj, "string"
     elif typ == _ExternalConnection: return obj, "external"
@@ -97,8 +97,8 @@ def to_object(inp, objtype='player'):
         print objtype, inp, obj, typ, type(inp)
         raise CommError()
     elif objtype == 'channel':
-        if typ == 'string': return _Channel.objects.get(db_key__iexact=obj)
-        if typ == 'dbref': return _Channel.objects.get(id=obj)
+        if typ == 'string': return _ChannelDB.objects.get(db_key__iexact=obj)
+        if typ == 'dbref': return _ChannelDB.objects.get(id=obj)
         print objtype, inp, obj, typ, type(inp)
         raise CommError()
     elif objtype == 'external':
@@ -263,13 +263,14 @@ class ChannelManager(models.Manager):
     channel_search (equivalent to ev.search_channel)
 
     """
-
+    @returns_typeclass_list
     def get_all_channels(self):
         """
         Returns all channels in game.
         """
         return self.all()
 
+    @returns_typeclass
     def get_channel(self, channelkey):
         """
         Return the channel object if given its key.
@@ -280,7 +281,7 @@ class ChannelManager(models.Manager):
         if not channels:
             # also check aliases
             channels = [channel for channel in self.all()
-                        if channelkey in channel.aliases]
+                        if channelkey in channel.aliases.all()]
         if channels:
             return channels[0]
         return None
@@ -320,7 +321,8 @@ class ChannelManager(models.Manager):
             unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
             online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
             for player in online_players:
-                players.extend(PlayerChannelConnection.objects.filter(db_player=player, db_channel=channel))
+                players.extend(PlayerChannelConnection.objects.filter(
+                    db_player=player.dbobj, db_channel=channel.dbobj))
         else:
             players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
 
@@ -328,6 +330,7 @@ class ChannelManager(models.Manager):
 
         return itertools.chain(players, external_connections)
 
+    @returns_typeclass_list
     def channel_search(self, ostring):
         """
         Search the channel database for a particular channel.
@@ -346,7 +349,7 @@ class ChannelManager(models.Manager):
             channels = self.filter(db_key__iexact=ostring)
         if not channels:
             # still no match. Search by alias.
-            channels = [channel for channel in self.all() if ostring.lower in [a.lower for a in channel.aliases]]
+            channels = [channel for channel in self.all() if ostring.lower() in [a.lower for a in channel.aliases.all()]]
         return channels
 
 #
@@ -372,7 +375,7 @@ class PlayerChannelConnectionManager(models.Manager):
     break_connection
 
     """
-
+    @returns_typeclass_list
     def get_all_player_connections(self, player):
         "Get all connections that the given player has."
         player = to_object(player)
@@ -381,7 +384,8 @@ class PlayerChannelConnectionManager(models.Manager):
     def has_player_connection(self, player, channel):
         "Checks so a connection exists player<->channel"
         if player and channel:
-            return self.filter(db_player=player).filter(db_channel=channel).count() > 0
+            return self.filter(db_player=player.dbobj).filter(
+                db_channel=channel.dbobj).count() > 0
         return False
 
     def get_all_connections(self, channel):

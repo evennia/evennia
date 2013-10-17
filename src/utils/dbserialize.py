@@ -28,12 +28,9 @@ except ImportError:
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
+from src.server.models import ServerConfig
 from src.utils.utils import to_str, uses_database
 from src.utils import logger
-
-
-
-
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
@@ -47,13 +44,21 @@ _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
 _TO_TYPECLASS = lambda o: hasattr(o, 'typeclass') and o.typeclass or o
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
-_TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:%f")
-if uses_database("mysql"):
-    from src.server.models import ServerConfig
-    mysql_version = ServerConfig.objects.get_mysql_db_version()
-    if mysql_version < '5.6.4':
-        # mysql <5.6.4 don't support millisecond precision
-        _TO_DATESTRING = lambda o: _GA(o, "db_date_created").strftime("%Y:%m:%d-%H:%M:%S:000000")
+if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
+    # mysql <5.6.4 don't support millisecond precision
+    _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
+else:
+    _DATESTRING = "%Y:%m:%d-%H:%M:%S:%f"
+
+def _TO_DATESTRING(obj):
+    "this will only be called with valid database objects. Returns datestring on correct form."
+    try:
+        return _GA(obj, "db_date_created").strftime(_DATESTRING)
+    except AttributeError:
+        # this can happen if object is not yet saved - no datestring is then set
+        obj.save()
+        return _GA(obj, "db_date_created").strftime(_DATESTRING)
+
 
 def _init_globals():
     "Lazy importing to avoid circular import issues"
@@ -179,7 +184,7 @@ class _SaverSet(_SaverMutable, MutableSet):
 # serialization helpers
 #
 
-def _pack_dbobj(item):
+def pack_dbobj(item):
     """
     Check and convert django database objects to an internal representation.
     This either returns the original input item or a tuple ("__packed_dbobj__", key, creation_time, id)
@@ -191,7 +196,7 @@ def _pack_dbobj(item):
     # build the internal representation as a tuple ("__packed_dbobj__", key, creation_time, id)
     return natural_key and ('__packed_dbobj__', natural_key, _TO_DATESTRING(obj), _GA(obj, "id")) or item
 
-def _unpack_dbobj(item):
+def unpack_dbobj(item):
     """
     Check and convert internal representations back to Django database models.
     The fact that item is a packed dbobj should be checked before this call.
@@ -204,7 +209,9 @@ def _unpack_dbobj(item):
     except ObjectDoesNotExist:
         return None
     # even if we got back a match, check the sanity of the date (some databases may 're-use' the id)
-    return _TO_DATESTRING(obj.dbobj) == item[2] and obj or None
+    try: dbobj = obj.dbobj
+    except AttributeError: dbobj = obj
+    return _TO_DATESTRING(dbobj) == item[2] and obj or None
 
 #
 # Access methods
@@ -236,7 +243,7 @@ def to_pickle(data):
                 return item.__class__([process_item(val) for val in item])
             except (AttributeError, TypeError):
                 return [process_item(val) for val in item]
-        return _pack_dbobj(item)
+        return pack_dbobj(item)
     return process_item(data)
 
 @transaction.autocommit
@@ -246,9 +253,10 @@ def from_pickle(data, db_obj=None):
     to a form that may contain database objects again. Note that if a database
     object was removed (or changed in-place) in the database, None will be returned.
 
-    db_obj - this is the model instance (normally an Attribute) that Saver*-type
-             iterables will save to when they update. It must have a 'value'
-             property that saves assigned data to the database.
+    db_obj - this is the model instance (normally an Attribute) that _Saver*-type
+             iterables (_SaverList etc) will save to when they update. It must have a 'value'
+             property that saves assigned data to the database. Skip if not serializing onto
+             a given object.
 
     If db_obj is given, this function will convert lists, dicts and sets to their
     _SaverList, _SaverDict and _SaverSet counterparts.
@@ -261,7 +269,7 @@ def from_pickle(data, db_obj=None):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
-            return _unpack_dbobj(item)
+            return unpack_dbobj(item)
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
@@ -283,7 +291,7 @@ def from_pickle(data, db_obj=None):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
-            return _unpack_dbobj(item)
+            return unpack_dbobj(item)
         elif dtype == tuple:
             return tuple(process_tree(val) for val in item)
         elif dtype == list:
@@ -333,3 +341,10 @@ def do_pickle(data):
 def do_unpickle(data):
     "Retrieve pickle from pickled string"
     return loads(to_str(data))
+
+def dbserialize(data):
+    "Serialize to pickled form in one step"
+    return do_pickle(to_pickle(data))
+def dbunserialize(data, db_obj=None):
+    "Un-serialize in one step. See from_pickle for help db_obj."
+    return do_unpickle(from_pickle(data, db_obj=db_obj))

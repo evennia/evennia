@@ -6,24 +6,23 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.objects.models import ObjAttribute, ObjectDB, ObjectNick, Alias
-from src.utils.utils import mod_import
+from src.typeclasses.models import Attribute, Tag
+from src.objects.models import ObjectDB
 
-
-class ObjAttributeInline(admin.TabularInline):
-    model = ObjAttribute
+class AttributeInline(admin.TabularInline):
+    # This class is currently not used, because PickleField objects are not editable.
+    # It's here for us to ponder making a way that allows them to be edited.
+    model = Attribute
     fields = ('db_key', 'db_value')
     extra = 0
 
-class NickInline(admin.TabularInline):
-    model = ObjectNick
-    fields = ('db_nick', 'db_real', 'db_type')
+class TagInline(admin.TabularInline):
+    model = ObjectDB.db_tags.through
+    raw_id_fields = ('tag',)
     extra = 0
 
-class AliasInline(admin.TabularInline):
-    model = Alias
-    fields = ("db_key",)
-    extra = 0
+class TagAdmin(admin.ModelAdmin):
+    fields = ('db_key', 'db_category', 'db_data')
 
 class ObjectCreateForm(forms.ModelForm):
     "This form details the look of the fields"
@@ -35,16 +34,17 @@ class ObjectCreateForm(forms.ModelForm):
     db_typeclass_path = forms.CharField(label="Typeclass",initial="Change to (for example) %s or %s." % (settings.BASE_OBJECT_TYPECLASS, settings.BASE_CHARACTER_TYPECLASS),
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="This defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass. If you are creating a Character you should use the typeclass defined by settings.BASE_CHARACTER_TYPECLASS or one derived from that.")
-    db_permissions = forms.CharField(label="Permissions",
-                                     initial=settings.PERMISSION_PLAYER_DEFAULT,
-                                     required=False,
-                                     widget=forms.TextInput(attrs={'size':'78'}),
-                                     help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
+    #db_permissions = forms.CharField(label="Permissions",
+    #                                 initial=settings.PERMISSION_PLAYER_DEFAULT,
+    #                                 required=False,
+    #                                 widget=forms.TextInput(attrs={'size':'78'}),
+    #                                 help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
     db_cmdset_storage = forms.CharField(label="CmdSet",
                                         initial=settings.CMDSET_CHARACTER,
                                         required=False,
                                         widget=forms.TextInput(attrs={'size':'78'}),
                                         help_text="Most non-character objects don't need a cmdset and can leave this field blank.")
+    raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
 
 
@@ -59,28 +59,36 @@ class ObjectEditForm(ObjectCreateForm):
 
 class ObjectDBAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'db_key', 'db_location', 'db_player', 'db_typeclass_path')
+    list_display = ('id', 'db_key', 'db_player', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_player', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
+    raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
     save_as = True
     save_on_top = True
     list_select_related = True
-    list_filter = ('db_permissions', 'db_location', 'db_typeclass_path')
+    list_filter = ('db_typeclass_path',)
+    #list_filter = ('db_permissions', 'db_typeclass_path')
 
     # editing fields setup
 
     form = ObjectEditForm
     fieldsets = (
         (None, {
-                'fields': (('db_key','db_typeclass_path'), ('db_permissions', 'db_lock_storage'),
+                'fields': (('db_key','db_typeclass_path'), ('db_lock_storage', ),
                            ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
                            )}),
         )
+    #fieldsets = (
+    #    (None, {
+    #            'fields': (('db_key','db_typeclass_path'), ('db_permissions', 'db_lock_storage'),
+    #                       ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
+    #                       )}),
+    #    )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    inlines = [AliasInline]#, ObjAttributeInline]
+    inlines = [TagInline]
 
 
     # Custom modification to give two different forms wether adding or not.
@@ -88,10 +96,16 @@ class ObjectDBAdmin(admin.ModelAdmin):
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
-                'fields': (('db_key','db_typeclass_path'), 'db_permissions',
-                           ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
+                'fields': (('db_key','db_typeclass_path'),
+                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )
+    #add_fieldsets = (
+    #    (None, {
+    #            'fields': (('db_key','db_typeclass_path'), 'db_permissions',
+    #                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
+    #                       )}),
+    #    )
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets
@@ -111,6 +125,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         return super(ObjectDBAdmin, self).get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
+        obj.save()
         if not change:
             # adding a new object
             obj = obj.typeclass
@@ -121,3 +136,4 @@ class ObjectDBAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)
+admin.site.register(Tag, TagAdmin)

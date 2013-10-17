@@ -1,5 +1,5 @@
 """
-This defines some generally useful scripts for the tutorial world. 
+This defines some generally useful scripts for the tutorial world.
 """
 
 import random
@@ -9,11 +9,11 @@ from ev import Script
 #
 # IrregularEvent - script firing at random intervals
 #
-# This is a generally useful script for updating 
+# This is a generally useful script for updating
 # objects at irregular intervals. This is used by as diverse
-# entities as Weather rooms and mobs. 
+# entities as Weather rooms and mobs.
 #
-# 
+#
 #
 #------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class IrregularEvent(Script):
     This script, which should be tied to a particular object upon
     instantiation, calls update_irregular on the object at random
     intervals.
-    """        
+    """
     def at_script_creation(self):
         "This setups the script"
 
@@ -30,7 +30,7 @@ class IrregularEvent(Script):
         self.desc = "Updates at irregular intervals"
         self.interval = random.randint(30, 70) # interval to call.
         self.start_delay = True # wait at least self.interval seconds before calling at_repeat the first time
-        self.persistent = True 
+        self.persistent = True
 
         # this attribute determines how likely it is the
         # 'update_irregular' method gets called on self.obj (value is
@@ -69,7 +69,7 @@ class FastIrregularEvent(IrregularEvent):
 # #
 # # Note that this will of course allow a single player to end up with multiple versions of objects if
 # # they just wait around between resets; In a real game environment this would have to be resolved e.g.
-# # with custom versions of the 'get' command not accepting doublets. 
+# # with custom versions of the 'get' command not accepting doublets.
 # #
 
 # # setting up an event for reseting the world.
@@ -91,20 +91,20 @@ class FastIrregularEvent(IrregularEvent):
 #         #this you see when running @ps in game:
 #         self.description = 'Reset the tutorial world .'
 #         self.interval = UPDATE_INTERVAL
-#         self.persistent = True 
+#         self.persistent = True
 
 #     def event_function(self):
 #         """
 #         This is called every self.interval seconds.
 #         """
 #         #find all objects inheriting the subscribing parents
-#         for parent in RESET_SUBSCRIBERS:            
+#         for parent in RESET_SUBSCRIBERS:
 #             objects = Object.objects.global_object_script_parent_search(parent)
 #             for obj in objects:
-#                 try: 
+#                 try:
 #                     obj.scriptlink.reset()
 #                 except:
 #                     logger.log_errmsg(traceback.print_exc())
-        
+
 
 

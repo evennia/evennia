@@ -173,22 +173,22 @@ class SshProtocol(Manhole, session.Session):
             self.data_out(reason)
         self.connectionLost(reason)
 
-    def data_out(self, string, data=None):
+    def data_out(self, text=None, **kwargs):
         """
         Data Evennia -> Player access hook. 'data' argument is a dict parsed for string settings.
+
+        ssh flags:
+            raw=True - leave all ansi markup and tokens unparsed
+            nomarkup=True - remove all ansi markup
+
         """
         try:
-            string = utils.to_str(string, encoding=self.encoding)
+            text = utils.to_str(text if text else "", encoding=self.encoding)
         except Exception, e:
             self.lineSend(str(e))
             return
-        nomarkup = False
-        raw = False
-        if type(data) == dict:
-            # check if we want escape codes to go through unparsed.
-            raw = data.get("raw", False)
-            # check if we want to remove all markup
-            nomarkup = data.get("nomarkup", False)
+        raw = kwargs.get("raw", False)
+        nomarkup = kwargs.get("nomarkup", False)
         if raw:
             self.lineSend(string)
         else:

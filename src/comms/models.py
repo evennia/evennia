@@ -20,7 +20,9 @@ be able to delete connections on the fly).
 """
 
 from datetime import datetime
+from django.conf import settings
 from django.db import models
+from src.typeclasses.models import TypedObject, TagHandler, AttributeHandler, AliasHandler
 from src.utils.idmapper.models import SharedMemoryModel
 from src.comms import managers
 from src.comms.managers import identify_object
@@ -28,7 +30,11 @@ from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import is_iter, to_str, crop, make_iter
 
-__all__ = ("Msg", "TempMsg", "Channel", "PlayerChannelConnection", "ExternalChannelConnection")
+__all__ = ("Msg", "TempMsg", "ChannelDB", "PlayerChannelConnection", "ExternalChannelConnection")
+
+_GA = object.__getattribute__
+_SA = object.__setattr__
+_DA = object.__delattr__
 
 #------------------------------------------------------------
 #
@@ -72,7 +78,7 @@ class Msg(SharedMemoryModel):
     # with channels below.
     db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set', null=True, help_text="player receivers")
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set', null=True, help_text="object receivers")
-    db_receivers_channels = models.ManyToManyField("Channel", related_name='channel_set', null=True, help_text="channel recievers")
+    db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set', null=True, help_text="channel recievers")
 
     # header could be used for meta-info about the message if your system needs it, or as a separate
     # store for the mail subject line maybe.
@@ -88,7 +94,7 @@ class Msg(SharedMemoryModel):
     # these can be used to filter/hide a given message from supplied objects/players/channels
     db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True)
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
-    db_hide_from_channles = models.ManyToManyField("Channel", related_name='hide_from_channels_set', null=True)
+    db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True)
 
     # Database manager
     objects = managers.MsgManager()
@@ -96,6 +102,7 @@ class Msg(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
+        self.extra_senders = []
 
     class Meta:
         "Define Django meta options"
@@ -114,7 +121,9 @@ class Msg(SharedMemoryModel):
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
         return [hasattr(o, "typeclass") and o.typeclass or o for o in
-                list(self.db_sender_players.all()) + list(self.db_sender_objects.all())]
+                list(self.db_sender_players.all()) +
+                list(self.db_sender_objects.all()) +
+                self.extra_senders]
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
@@ -124,6 +133,10 @@ class Msg(SharedMemoryModel):
                 self.db_sender_players.add(obj)
             elif typ == 'object':
                 self.db_sender_objects.add(obj)
+            elif typ == 'external':
+                self.db_sender_external = "1"
+                self.extra_senders.append(obj)
+                print "I ran!"
             elif isinstance(typ, basestring):
                 self.db_sender_external = obj
             elif not obj:
@@ -137,6 +150,7 @@ class Msg(SharedMemoryModel):
         self.db_sender_players.clear()
         self.db_sender_objects.clear()
         self.db_sender_external = ""
+        self.extra_senders = []
         self.save()
     senders = property(__senders_get, __senders_set, __senders_del)
 
@@ -148,8 +162,11 @@ class Msg(SharedMemoryModel):
                 self.db_sender_players.remove(obj)
             elif typ == 'object':
                 self.db_sender_objects.remove(obj)
-            elif isinstance(obj, basestring) and self.db_sender_external == obj:
-                self.db_sender_external = ""
+            elif typ == 'external':
+                self.extra_senders = [receiver for receiver in
+                    self.extra_senders if receiver != obj]
+            elif isinstance(obj, basestring):
+                self.db_sender_external = obj
             else:
                 raise ValueError(obj)
             self.save()
@@ -179,6 +196,7 @@ class Msg(SharedMemoryModel):
         "Deleter. Clears all receivers"
         self.db_receivers_players.clear()
         self.db_receivers_objects.clear()
+        self.extra_senders = []
         self.save()
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
@@ -201,7 +219,7 @@ class Msg(SharedMemoryModel):
     #@channels.setter
     def __channels_set(self, value):
         "Setter. Allows for self.channels = value. Requires a channel to be added."
-        for val in (v for v in make_iter(value) if v):
+        for val in (v.dbobj for v in make_iter(value) if v):
             self.db_receivers_channels.add(val)
     #@channels.deleter
     def __channels_del(self):
@@ -210,58 +228,6 @@ class Msg(SharedMemoryModel):
         self.save()
     channels = property(__channels_get, __channels_set, __channels_del)
 
-    # header property (wraps db_header)
-    #@property
-    def __header_get(self):
-        "Getter. Allows for value = self.message"
-        return self.db_header
-    #@message.setter
-    def __header_set(self, value):
-        "Setter. Allows for self.message = value"
-        if value:
-            self.db_header = value
-            self.save()
-    #@message.deleter
-    def __header_del(self):
-        "Deleter. Allows for del self.message"
-        self.db_header = ""
-        self.save()
-    header = property(__header_get, __header_set, __header_del)
-
-    # message property (wraps db_message)
-    #@property
-    def __message_get(self):
-        "Getter. Allows for value = self.message"
-        return self.db_message
-    #@message.setter
-    def __message_set(self, value):
-        "Setter. Allows for self.message = value"
-        self.db_message = value
-        self.save()
-    #@message.deleter
-    def __message_del(self):
-        "Deleter. Allows for del self.message"
-        self.db_message = ""
-        self.save()
-    message = property(__message_get, __message_set, __message_del)
-
-    # date_sent property (wraps db_date_sent)
-    #@property
-    def __date_sent_get(self):
-        "Getter. Allows for value = self.date_sent"
-        return self.db_date_sent
-    #@date_sent.setter
-    def __date_sent_set(self, value):
-        "Setter. Allows for self.date_sent = value"
-        raise Exception("You cannot edit date_sent!")
-    #@date_sent.deleter
-    def __date_sent_del(self):
-        "Deleter. Allows for del self.date_sent"
-        raise Exception("You cannot delete the date_sent property!")
-    date_sent = property(__date_sent_get, __date_sent_set, __date_sent_del)
-
-    # hide_from property
-    #@property
     def __hide_from_get(self):
         "Getter. Allows for value = self.hide_from. Returns 3 lists of players, objects and channels"
         return self.db_hide_from_players.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
@@ -287,24 +253,6 @@ class Msg(SharedMemoryModel):
         self.save()
     hide_from = property(__hide_from_get, __hide_from_set, __hide_from_del)
 
-    # lock_storage property (wraps db_lock_storage)
-    #@property
-    def __lock_storage_get(self):
-        "Getter. Allows for value = self.lock_storage"
-        return self.db_lock_storage
-    #@nick.setter
-    def __lock_storage_set(self, value):
-        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        self.db_lock_storage = value
-        self.save()
-    #@nick.deleter
-    def __lock_storage_del(self):
-        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
-
-    _db_model_name = "msg" # used by attributes to safely store objects
-
     #
     # Msg class methods
     #
@@ -314,15 +262,6 @@ class Msg(SharedMemoryModel):
         senders = ",".join(obj.key for obj in self.senders)
         receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
-
-    def access(self, accessing_obj, access_type='read', default=False):
-        """
-        Determines if another object has permission to access.
-        accessing_obj - object trying to access this one
-        access_type - type of access sought
-        default - what to return if no lock of access_type was found
-        """
-        return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
 
 #------------------------------------------------------------
@@ -377,14 +316,13 @@ class TempMsg(object):
         "checks lock access"
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
-
 #------------------------------------------------------------
 #
 # Channel
 #
 #------------------------------------------------------------
 
-class Channel(SharedMemoryModel):
+class ChannelDB(TypedObject):
     """
     This is the basis of a comm channel, only implementing
     the very basics of distributing messages.
@@ -398,134 +336,18 @@ class Channel(SharedMemoryModel):
 
     """
 
-    #
-    # Channel database model setup
-    #
-    #
-    # These databse fields are all set using their corresponding properties,
-    # named same as the field, but withtout the db_* prefix.
-
-    # unique identifier for this channel
-    db_key = models.CharField('key', max_length=255, unique=True, db_index=True)
-    # optional description of channel
-    db_desc = models.CharField('description', max_length=80, blank=True, null=True)
-    # aliases for the channel. These are searched by cmdhandler
-    # as well to determine if a command is the name of a channel.
-    # Several aliases are separated by commas.
-    db_aliases = models.CharField('aliases', max_length=255)
-    # Whether this channel should remember its past messages
-    db_keep_log = models.BooleanField(default=True)
-    # Storage of lock definitions
-    db_lock_storage = models.TextField('locks', blank=True)
-
-
     # Database manager
     objects = managers.ChannelManager()
 
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Channel"
+    _typeclass_paths = settings.COMM_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_COMM_TYPECLASS or "src.comms.comms.Comm"
 
     def __init__(self, *args, **kwargs):
-        SharedMemoryModel.__init__(self, *args, **kwargs)
-        self.locks = LockHandler(self)
+        TypedObject.__init__(self, *args, **kwargs)
+        _SA(self, "tags", TagHandler(self, category_prefix="comm_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="comm_"))
+        _SA(self, "attributes", AttributeHandler(self))
 
-    # Wrapper properties to easily set database fields. These are
-    # @property decorators that allows to access these fields using
-    # normal python operations (without having to remember to save()
-    # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value,
-    # value = self.attr and del self.attr respectively (where self
-    # is the object in question).
-
-    # key property (wraps db_key)
-    #@property
-    def key_get(self):
-        "Getter. Allows for value = self.key"
-        return self.db_key
-    #@key.setter
-    def key_set(self, value):
-        "Setter. Allows for self.key = value"
-        self.db_key = value
-        self.save()
-    #@key.deleter
-    def key_del(self):
-        "Deleter. Allows for del self.key"
-        raise Exception("You cannot delete the channel key!")
-    key = property(key_get, key_set, key_del)
-
-    # desc property (wraps db_desc)
-    #@property
-    def desc_get(self):
-        "Getter. Allows for value = self.desc"
-        return self.db_desc
-    #@desc.setter
-    def desc_set(self, value):
-        "Setter. Allows for self.desc = value"
-        self.db_desc = value
-        self.save()
-    #@desc.deleter
-    def desc_del(self):
-        "Deleter. Allows for del self.desc"
-        self.db_desc = ""
-        self.save()
-    desc = property(desc_get, desc_set, desc_del)
-
-    # aliases property
-    #@property
-    def aliases_get(self):
-        "Getter. Allows for value = self.aliases. Returns a list of aliases."
-        if self.db_aliases:
-            return [perm.strip() for perm in self.db_aliases.split(',')]
-        return []
-    #@aliases.setter
-    def aliases_set(self, value):
-        "Setter. Allows for self.aliases = value. Stores as a comma-separated string."
-        if is_iter(value):
-            value = ",".join([str(val).strip().lower() for val in value])
-        self.db_aliases = value
-        self.save()
-    #@aliases_del.deleter
-    def aliases_del(self):
-        "Deleter. Allows for del self.aliases"
-        self.db_aliases = ""
-        self.save()
-    aliases = property(aliases_get, aliases_set, aliases_del)
-
-    # keep_log property (wraps db_keep_log)
-    #@property
-    def keep_log_get(self):
-        "Getter. Allows for value = self.keep_log"
-        return self.db_keep_log
-    #@keep_log.setter
-    def keep_log_set(self, value):
-        "Setter. Allows for self.keep_log = value"
-        self.db_keep_log = value
-        self.save()
-    #@keep_log.deleter
-    def keep_log_del(self):
-        "Deleter. Allows for del self.keep_log"
-        self.db_keep_log = False
-        self.save()
-    keep_log = property(keep_log_get, keep_log_set, keep_log_del)
-
-    # lock_storage property (wraps db_lock_storage)
-    #@property
-    def lock_storage_get(self):
-        "Getter. Allows for value = self.lock_storage"
-        return self.db_lock_storage
-    #@nick.setter
-    def lock_storage_set(self, value):
-        """Saves the lock_storagetodate. This is usually not called directly, but through self.lock()"""
-        self.db_lock_storage = value
-        self.save()
-    #@nick.deleter
-    def lock_storage_del(self):
-        "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-        logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    lock_storage = property(lock_storage_get, lock_storage_set, lock_storage_del)
-
-    db_model_name = "channel" # used by attributes to safely store objects
 
     class Meta:
         "Define Django meta options"
@@ -537,7 +359,7 @@ class Channel(SharedMemoryModel):
     #
 
     def __str__(self):
-        return "Channel '%s' (%s)" % (self.key, self.desc)
+        return "Channel '%s' (%s)" % (self.key, self.typeclass.db.desc)
 
     def has_connection(self, player):
         """
@@ -555,77 +377,36 @@ class Channel(SharedMemoryModel):
         # do the check
         return PlayerChannelConnection.objects.has_player_connection(player, self)
 
-    def msg(self, msgobj, header=None, senders=None, persistent=True, online=False):
-        """
-        Send the given message to all players connected to channel. Note that
-        no permission-checking is done here; it is assumed to have been
-        done before calling this method. The optional keywords are not used if persistent is False.
-
-        msgobj - a Msg/TempMsg instance or a message string. If one of the former, the remaining
-              keywords will be ignored. If a string, this will either be sent as-is (if persistent=False) or
-              it will be used together with header and senders keywords to create a Msg instance on the fly.
-        senders (object, player or a list of objects or players) - ignored if msgobj is a Msg or TempMsg, or if
-                 persistent=False.
-        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, using
-                header and senders keywords. If False, other keywords will be ignored.
-        online (bool) - If this is set true, only messages people who are online. Otherwise, messages all players
-                connected. This can make things faster, but may not trigger listeners on players that are offline.
-        """
-
-        if isinstance(msgobj, basestring):
-            # given msgobj is a string
-            if persistent:
-                msg = msgobj
-                msgobj = Msg()
-                msgobj.save()
-                if senders:
-                    msgobj.senders = make_iter(senders)
-                msgobj.header = header
-                msgobj.message = msg
-                msgobj.channels = [self] # add this channel
-            else:
-                # just use the msg as-is
-                msg = msgobj
-        else:
-            # already in a Msg/TempMsg
-            msg = msgobj.message
-
-        # get all players connected to this channel and send to them
-        for conn in Channel.objects.get_all_connections(self, online=online):
-            try:
-                conn.player.msg(msg, senders)
-            except AttributeError:
-                try:
-                    conn.to_external(msg, senders, from_channel=self)
-                except Exception:
-                    logger.log_trace("Cannot send msg to connection '%s'" % conn)
-        return True
-
-    def tempmsg(self, message, header=None, senders=None):
-        """
-        A wrapper for sending non-persistent messages.
-        """
-        self.msg(message, senders=senders, header=header, persistent=False)
-
     def connect_to(self, player):
         "Connect the user to this channel"
+        self.typeclass.pre_join_channel(player)
         if not self.access(player, 'listen'):
+            return False
+        connect = self.typeclass.pre_join_channel(player)
+        if not connect:
             return False
         player = player.dbobj
         conn = PlayerChannelConnection.objects.create_connection(player, self)
         if conn:
+            self.typeclass.post_join_channel(player)
             return True
         return False
 
     def disconnect_from(self, player):
         "Disconnect user from this channel."
+        disconnect = self.typeclass.pre_leave_channel(self, player)
+        if not disconnect:
+            return False
         PlayerChannelConnection.objects.break_connection(player, self)
+        self.typeclass.post_leave_channel(self, player)
+        return True
 
     def delete(self):
         "Clean out all connections to this channel and delete it."
-        for connection in Channel.objects.get_all_connections(self):
+        for connection in ChannelDB.objects.get_all_connections(self):
             connection.delete()
-        super(Channel, self).delete()
+        super(ChannelDB, self).delete()
+
     def access(self, accessing_obj, access_type='listen', default=False):
         """
         Determines if another object has permission to access.
@@ -645,7 +426,7 @@ class PlayerChannelConnection(SharedMemoryModel):
     # Player connected to a channel
     db_player = models.ForeignKey("players.PlayerDB", verbose_name='player')
     # Channel the player is connected to
-    db_channel = models.ForeignKey(Channel, verbose_name='channel')
+    db_channel = models.ForeignKey(ChannelDB, verbose_name='channel')
 
     # Database manager
     objects = managers.PlayerChannelConnectionManager()
@@ -670,11 +451,11 @@ class PlayerChannelConnection(SharedMemoryModel):
     #@property
     def channel_get(self):
         "Getter. Allows for value = self.channel"
-        return self.db_channel
+        return self.db_channel.typeclass
     #@channel.setter
     def channel_set(self, value):
         "Setter. Allows for self.channel = value"
-        self.db_channel = value
+        self.db_channel = value.dbobj
         self.save()
     #@channel.deleter
     def channel_del(self):
@@ -698,7 +479,7 @@ class ExternalChannelConnection(SharedMemoryModel):
     that connection.
     """
     # evennia channel connecting to
-    db_channel = models.ForeignKey(Channel, verbose_name='channel',
+    db_channel = models.ForeignKey(ChannelDB, verbose_name='channel',
                                    help_text='which channel this connection is tied to.')
     # external connection identifier
     db_external_key = models.CharField('external key', max_length=128,
@@ -807,17 +588,18 @@ class ExternalChannelConnection(SharedMemoryModel):
     # methods
     #
 
-    def to_channel(self, message, from_obj=None):
+    def to_channel(self, message, *args, **kwargs):
         "Send external -> channel"
-        if not from_obj:
+        if 'from_obj' in kwargs and kwargs.pop('from_obj'):
             from_obj = self.external_key
-        self.channel.msg(message, senders=[self])
+        self.channel.msg(message, senders=[self], *args, **kwargs)
 
     def to_external(self, message, senders=None, from_channel=None):
         "Send channel -> external"
 
         # make sure we are not echoing back our own message to ourselves
         # (this would result in a nasty infinite loop)
+        print senders
         if self in make_iter(senders):#.external_key:
             return
 

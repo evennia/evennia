@@ -42,13 +42,14 @@ class ScriptManager(TypedObjectManager):
         """
         if not obj:
             return []
+        obj = obj.dbobj
         if key:
             dbref = self.dbref(key)
             if dbref or dbref == 0:
                 script = self.filter(db_obj=obj, id=dbref)
                 if script:
                     return script
-            return self.filter(db_obj=obj, db_key=key)
+            return self.filter(db_obj=obj.dbobj, db_key=key)
         return self.filter(db_obj=obj)
 
     @returns_typeclass_list

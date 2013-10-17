@@ -7,13 +7,13 @@ from twisted.application import internet
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 from django.conf import settings
-from src.comms.models import ExternalChannelConnection, Channel
+from src.comms.models import ExternalChannelConnection, ChannelDB
 from src.utils import logger, utils
 from src.server.sessionhandler import SESSIONS
 
 from django.utils.translation import ugettext as _
 
-INFOCHANNEL = Channel.objects.channel_search(settings.CHANNEL_MUDINFO[0])
+INFOCHANNEL = ChannelDB.objects.channel_search(settings.CHANNEL_MUDINFO[0])
 IRC_CHANNELS = []
 
 def msg_info(message):
@@ -52,9 +52,10 @@ class IRC_Bot(irc.IRCClient):
         msg_info(msg)
         logger.log_infomsg(msg)
 
-
-    def privmsg(self, user, irc_channel, msg):
-        "Someone has written something in irc channel. Echo it to the evennia channel"
+    def get_mesg_info(self, user, irc_channel, msg):
+        """
+        Get basic information about a message posted in IRC.
+        """
         #find irc->evennia channel mappings
         conns = ExternalChannelConnection.objects.filter(db_external_key=self.factory.key)
         if not conns:
@@ -65,28 +66,31 @@ class IRC_Bot(irc.IRCClient):
             user.strip()
         else:
             user = _("Unknown")
-        msg = "[%s] %s@%s: %s" % (self.factory.evennia_channel, user, irc_channel, msg.strip())
+        msg = msg.strip()
+        sender_strings = ["%s@%s" % (user, irc_channel)]
+        return conns, msg, sender_strings
+
+    def privmsg(self, user, irc_channel, msg):
+        "Someone has written something in irc channel. Echo it to the evennia channel"
+        conns, msg, sender_strings = self.get_mesg_info(user, irc_channel, msg)
         #logger.log_infomsg("<IRC: " + msg)
         for conn in conns:
             if conn.channel:
-                conn.to_channel(msg)
+                conn.to_channel(msg, sender_strings=sender_strings)
+
     def action(self, user, irc_channel, msg):
         "Someone has performed an action, e.g. using /me <pose>"
         #find irc->evennia channel mappings
         conns = ExternalChannelConnection.objects.filter(db_external_key=self.factory.key)
         if not conns:
             return
-        #format message:
-        user = user.split("!")[0]
-        if user:
-            user.strip()
-        else:
-            user = _("Unknown")
-        msg = "[%s] *%s@%s %s*" % (self.factory.evennia_channel, user, irc_channel, msg.strip())
+        conns, msg, sender_strings = self.get_mesg_info(user, irc_channel, msg)
+        # Transform this into a pose.
+        msg = ':' + msg
         #logger.log_infomsg("<IRC: " + msg)
         for conn in conns:
             if conn.channel:
-                conn.to_channel(msg)
+                conn.to_channel(msg, sender_strings=sender_strings)
 
     def msg_irc(self, msg, senders=None):
         """
@@ -134,8 +138,8 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
     """
     This will create a new IRC<->channel connection.
     """
-    if not type(channel) == Channel:
-        new_channel = Channel.objects.filter(db_key=channel)
+    if not type(channel) == ChannelDB:
+        new_channel = ChannelDB.objects.filter(db_key=channel)
         if not new_channel:
             logger.log_errmsg(_("Cannot attach IRC<->Evennia: Evennia Channel '%s' not found") % channel)
             return False

@@ -129,11 +129,9 @@ PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
 
 # Check so a database exists and is accessible
 from django.db import DatabaseError
-from src.objects.models import ObjectDB
+from src.players.models import PlayerDB
 try:
-    test = ObjectDB.objects.get(id=1)
-except ObjectDB.DoesNotExist:
-    pass # this is fine at this point
+    superuser = PlayerDB.objects.get(id=1)
 except DatabaseError,e:
     print """
     Your database does not seem to be set up correctly.
@@ -147,6 +145,11 @@ except DatabaseError,e:
     When you have a database set up, rerun evennia.py.
     """ % e
     sys.exit()
+except PlayerDB.DoesNotExist:
+    # no superuser yet. We need to create it.
+    from django.core.management import call_command
+    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    call_command("createsuperuser", interactive=True)
 
 # Add this to the environmental variable for the 'twistd' command.
 currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -403,6 +406,7 @@ def error_check_python_modules():
     deprstring = "settings.%s should be renamed to %s. If defaults are used, their path/classname must be updated (see src/settings_default.py)."
     if hasattr(settings, "CMDSET_DEFAULT"): raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"): raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
+    if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple): raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
 
     from src.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"

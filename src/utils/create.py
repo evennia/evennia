@@ -22,7 +22,6 @@ Models covered:
  Players
 """
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import IntegrityError
 from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import utils, logger
@@ -39,7 +38,7 @@ _Msg = None
 _Player = None
 _PlayerDB = None
 _to_object = None
-_Channel = None
+_ChannelDB = None
 _channelhandler = None
 
 
@@ -54,7 +53,7 @@ _GA = object.__getattribute__
 
 def create_object(typeclass, key=None, location=None,
                   home=None, permissions=None, locks=None,
-                  aliases=None, destination=None, report_to=None):
+                  aliases=None, destination=None, report_to=None, nohome=False):
     """
     Create a new in-game object. Any game object is a combination
     of a database object that stores data persistently to
@@ -70,6 +69,8 @@ def create_object(typeclass, key=None, location=None,
               If report_to is not set, errors will be raised as en Exception
               containing the error message. If set, this method will return
               None upon errors.
+    nohome - this allows the creation of objects without a default home location;
+             this only used when creating default location itself or during unittests
     """
     global _Object, _ObjectDB
     if not _Object:
@@ -126,21 +127,20 @@ def create_object(typeclass, key=None, location=None,
 
     # custom-given perms/locks overwrite hooks
     if permissions:
-        new_object.permissions = permissions
+        new_object.permissions.add(permissions)
     if locks:
          new_object.locks.add(locks)
     if aliases:
-        new_object.aliases = aliases
+        new_object.aliases.add(aliases)
 
     # perform a move_to in order to display eventual messages.
     if home:
         new_object.home = home
     else:
-        new_object.home =  settings.CHARACTER_DEFAULT_HOME
-
+        new_object.home =  settings.CHARACTER_DEFAULT_HOME if not nohome else None
 
     if location:
-         new_object.move_to(location, quiet=True)
+        new_object.move_to(location, quiet=True)
     else:
         # rooms would have location=None.
         new_object.location = None
@@ -344,7 +344,8 @@ def create_message(senderobj, message, channels=None,
 message = create_message
 
 def create_channel(key, aliases=None, desc=None,
-                   locks=None, keep_log=True):
+                   locks=None, keep_log=True,
+                   typeclass=None):
     """
     Create A communication Channel. A Channel serves as a central
     hub for distributing Msgs to groups of people without
@@ -357,20 +358,24 @@ def create_channel(key, aliases=None, desc=None,
     aliases - list of alternative (likely shorter) keynames.
     locks - lock string definitions
     """
-    global _Channel, _channelhandler
-    if not _Channel:
-        from src.comms.models import Channel as _Channel
+    global _ChannelDB, _channelhandler
+    if not _ChannelDB:
+        from src.comms.models import ChannelDB as _ChannelDB
     if not _channelhandler:
         from src.comms import channelhandler as _channelhandler
+    if not typeclass:
+        typeclass = settings.BASE_COMM_TYPECLASS
     try:
-        new_channel = _Channel()
-        new_channel.key = key
+        new_channel = _ChannelDB(typeclass=typeclass, db_key=key)
+        new_channel.save()
+        new_channel = new_channel.typeclass
         if aliases:
             if not utils.is_iter(aliases):
                 aliases = [aliases]
-            new_channel.aliases = ",".join([alias for alias in aliases])
-        new_channel.desc = desc
-        new_channel.keep_log = keep_log
+            new_channel.aliases.add(aliases)
+        new_channel.save()
+        new_channel.db.desc = desc
+        new_channel.db.keep_log = keep_log
     except IntegrityError:
         string = "Could not add channel: key '%s' already exists." % key
         logger.log_errmsg(string)
@@ -379,6 +384,7 @@ def create_channel(key, aliases=None, desc=None,
         new_channel.locks.add(locks)
     new_channel.save()
     _channelhandler.CHANNELHANDLER.add_channel(new_channel)
+    new_channel.at_channel_create()
     return new_channel
 
 channel = create_channel
@@ -387,49 +393,32 @@ channel = create_channel
 # Player creation methods
 #
 
-def create_player(name, email, password,
-                  user=None,
+def create_player(key, email, password,
                   typeclass=None,
                   is_superuser=False,
                   locks=None, permissions=None,
-                  player_dbobj=None, report_to=None):
+                  report_to=None):
 
     """
-    This creates a new player, handling the creation of the User
-    object and its associated Player object.
+    This creates a new player.
 
-    If player_dbobj is given, this player object is used instead of
-    creating a new one. This is called by the admin interface since it
-    needs to create the player object in order to relate it automatically
-    to the user.
+    key - the player's name. This should be unique.
+    email - email on valid addr@addr.domain form.
+    password - password in cleartext
+    is_superuser - wether or not this player is to be a superuser
+    locks - lockstring
+    permission - list of permissions
+    report_to - an object with a msg() method to report errors to. If
+                not given, errors will be logged.
 
-    If create_character is
-    True, a game player object with the same name as the User/Player will
-    also be created. Its typeclass and base properties can also be given.
-
-    Returns the new game character, or the Player obj if no
-    character is created.  For more info about the typeclass argument,
-    see create_objects() above.
-
-    Note: if user is supplied, it will NOT be modified (args name, email,
-    passw and is_superuser will be ignored). Change those properties
-    directly on the User instead.
-
-    If no permissions are given (None), the default permission group
-    as defined in settings.PERMISSION_PLAYER_DEFAULT will be
-    assigned. If permissions are given, no automatic assignment will
-    occur.
+    Will return the Player-typeclass or None/raise Exception if the
+    Typeclass given failed to load.
 
     Concerning is_superuser:
-     A superuser should have access to everything
-     in the game and on the server/web interface. The very first user
-     created in the database is always a superuser (that's using
-     django's own creation, not this one).
      Usually only the server admin should need to be superuser, all
      other access levels can be handled with more fine-grained
-     permissions or groups.
-     Since superuser overrules all permissions, we don't
-     set any in this case.
+     permissions or groups. A superuser bypasses all lock checking
+     operations and is thus not suitable for play-testing the game.
 
     """
     global _PlayerDB, _Player
@@ -440,48 +429,28 @@ def create_player(name, email, password,
 
     if not email:
         email = "dummy@dummy.com"
-    if user:
-        new_user = user
-        email = user.email
-
-    if user:
-        conflict_check = User.objects.filter(username__iexact=user.username)
-        conflict_check = len(conflict_check) > 1
-    else:
-        conflict_check = User.objects.filter(username__iexact=name)
-
-    if conflict_check:
-        raise ValueError("A user with this name already exists.")
-
-    if not user:
-        if is_superuser:
-            new_user = User.objects.create_superuser(name, email, password)
-        else:
-            new_user = User.objects.create_user(name, email, password)
+    if _PlayerDB.objects.filter(username__iexact=key):
+        raise ValueError("A Player with this name already exists.")
     try:
+
+        # create the correct Player object
+        if is_superuser:
+            new_db_player = _PlayerDB.objects.create_superuser(key, email, password)
+        else:
+            new_db_player = _PlayerDB.objects.create_user(key, email, password)
+
         if not typeclass:
             typeclass = settings.BASE_PLAYER_TYPECLASS
         elif isinstance(typeclass, _PlayerDB):
-            # this is already an objectdb instance, extract its typeclass
+            # this is an PlayerDB instance, extract its typeclass path
             typeclass = typeclass.typeclass.path
         elif isinstance(typeclass, _Player) or utils.inherits_from(typeclass, _Player):
-            # this is already an object typeclass, extract its path
+            # this is Player object typeclass, extract its path
             typeclass = typeclass.path
-        if player_dbobj:
-            try:
-                _GA(player_dbobj, "dbobj")
-                new_db_player = player_dbobj.dbobj
-            except AttributeError:
-                new_db_player = player_dbobj
-            # use the typeclass from this object
-            typeclass = new_db_player.typeclass_path
-        else:
-            new_user = User.objects.get(username=new_user.username)
-            new_db_player = _PlayerDB(db_key=name, user=new_user)
-            new_db_player.save()
-            # assign the typeclass
-            typeclass = utils.to_unicode(typeclass)
-            new_db_player.typeclass_path = typeclass
+
+        # assign the typeclass
+        typeclass = utils.to_unicode(typeclass)
+        new_db_player.typeclass_path = typeclass
 
         # this will either load the typeclass or the default one
         new_player = new_db_player.typeclass
@@ -500,34 +469,27 @@ def create_player(name, email, password,
         # call hook method (may override default permissions)
         new_player.at_player_creation()
 
-        print
         # custom given arguments potentially overrides the hook
         if permissions:
-            new_player.permissions = permissions
+            new_player.permissions.add(permissions)
         elif not new_player.permissions:
-            new_player.permissions = settings.PERMISSION_PLAYER_DEFAULT
-
+            new_player.permissions.add(settings.PERMISSION_PLAYER_DEFAULT)
         if locks:
             new_player.locks.add(locks)
-
         return new_player
+
     except Exception:
-        # a failure in creating the character
-        if not user:
-            # in there was a failure we clean up everything we can
-            logger.log_trace()
-            try:
-                new_user.delete()
-            except Exception:
-                pass
-            try:
-                new_player.delete()
-            except Exception:
-                pass
-            try:
-                del new_player
-            except Exception:
-                pass
+        # a failure in creating the player; we try to clean
+        # up as much as we can
+        logger.log_trace()
+        try:
+            new_player.delete()
+        except Exception:
+            pass
+        try:
+            del new_player
+        except Exception:
+            pass
         raise
 
 # alias

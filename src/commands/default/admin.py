@@ -298,12 +298,8 @@ class CmdDelPlayer(MuxCommand):
                     string = "No Player nor User found matching '%s'." % args
                     self.msg(string)
                     return
-            try:
-                player = user.get_profile()
-            except Exception:
-                player = None
 
-            if player and not player.access(caller, 'delete'):
+            if user and not user.access(caller, 'delete'):
                 string = "You don't have the permissions to delete this player."
                 self.msg(string)
                 return
@@ -311,9 +307,9 @@ class CmdDelPlayer(MuxCommand):
             string = ""
             name = user.username
             user.delete()
-            if player:
-                name = player.name
-                player.delete()
+            if user:
+                name = user.name
+                user.delete()
                 string = "Player %s was deleted." % name
             else:
                 string += "The User %s was deleted. It had no Player associated with it." % name
@@ -322,16 +318,16 @@ class CmdDelPlayer(MuxCommand):
 
         elif utils.is_iter(players):
             string = "There were multiple matches:"
-            for player in players:
-                string += "\n %s %s" % (player.id, player.key)
+            for user in players:
+                string += "\n %s %s" % (user.id, user.key)
             return
         else:
             # one single match
 
-            player = players
-            user = player.user
+            user = players
+            user = user.user
 
-            if not player.access(caller, 'delete'):
+            if not user.access(caller, 'delete'):
                 string = "You don't have the permissions to delete that player."
                 self.msg(string)
                 return
@@ -342,12 +338,12 @@ class CmdDelPlayer(MuxCommand):
             string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
             if reason:
                 string += " Reason given:\n  '%s'" % reason
-            player.unpuppet_all()
-            for session in SESSIONS.sessions_from_player(player):
-                player.msg(string, sessid=session.sessid)
-                player.disconnect_session_from_player(session.sessid)
+            user.unpuppet_all()
+            for session in SESSIONS.sessions_from_player(user):
+                user.msg(string, sessid=session.sessid)
+                user.disconnect_session_from_player(session.sessid)
             user.delete()
-            player.delete()
+            user.delete()
             self.msg("Player %s was successfully deleted." % uname)
 
 
@@ -420,9 +416,8 @@ class CmdEmit(MuxCommand):
                 continue
             if obj.access(caller, 'tell'):
                 obj.msg(message)
-                if send_to_contents:
-                    for content in obj.contents:
-                        content.msg(message)
+                if send_to_contents and hasattr(obj, "msg_contents"):
+                    obj.msg_contents(message)
                     caller.msg("Emitted to %s and its contents." % objname)
                 else:
                     caller.msg("Emitted to %s." % objname)
@@ -512,10 +507,10 @@ class CmdPerm(MuxCommand):
                 return
 
             string = "Permissions on {w%s{n: " % obj.key
-            if not obj.permissions:
+            if not obj.permissions.all():
                 string += "<None>"
             else:
-                string += ", ".join(obj.permissions)
+                string += ", ".join(obj.permissions.all())
                 if hasattr(obj, 'player') and hasattr(obj.player, 'is_superuser') and obj.player.is_superuser:
                     string += "\n(... but this object is currently controlled by a SUPERUSER! "
                     string += "All access checks are passed automatically.)"
@@ -532,20 +527,12 @@ class CmdPerm(MuxCommand):
         tstring = ""
         if 'del' in switches:
             # delete the given permission(s) from object.
-            for perm in self.rhslist:
-                try:
-                    index = obj.permissions.index(perm)
-                except ValueError:
-                    cstring += "\nPermission '%s' was not defined on %s." % (perm, obj.name)
-                    continue
-                permissions = obj.permissions
-                del permissions[index]
-                obj.permissions = permissions
-                cstring += "\nPermission '%s' was removed from %s." % (perm, obj.name)
-                tstring += "\n%s revokes the permission '%s' from you." % (caller.name, perm)
+            obj.permissions.remove(self.rhslist)
+            cstring += "\nPermission(s) %s removed from %s (if they existed)." % (", ".join(self.rhslist), obj.name)
+            tstring += "\n%s revokes the permission(s) %s from you." % (caller.name, ", ".join(self.rhslist))
         else:
             # add a new permission
-            permissions = obj.permissions
+            permissions = obj.permissions.all()
 
             for perm in self.rhslist:
 
@@ -558,8 +545,7 @@ class CmdPerm(MuxCommand):
                 if perm in permissions:
                     cstring += "\nPermission '%s' is already defined on %s." % (rhs, obj.name)
                 else:
-                    permissions.append(perm)
-                    obj.permissions = permissions
+                    obj.permissions.add(perm)
                     cstring += "\nPermission '%s' given to %s." % (rhs, obj.name)
                     tstring += "\n%s gives you the permission '%s'." % (caller.name, rhs)
         caller.msg(cstring.strip())

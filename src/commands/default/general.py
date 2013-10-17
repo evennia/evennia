@@ -3,7 +3,6 @@ General Character commands usually availabe to all characters
 """
 from django.conf import settings
 from src.utils import utils, prettytable
-from src.objects.models import ObjectNick as Nick
 from src.commands.default.muxcommand import MuxCommand
 
 
@@ -124,17 +123,17 @@ class CmdNick(MuxCommand):
 
         caller = self.caller
         switches = self.switches
-        nicks = Nick.objects.filter(db_obj=caller.dbobj).exclude(db_type="channel")
+        nicks = caller.nicks.get(category="channel")
 
         if 'list' in switches:
             table = prettytable.PrettyTable(["{wNickType", "{wNickname", "{wTranslates-to"])
             for nick in nicks:
-                table.add_row([nick.db_type, nick.db_nick, nick.db_real])
+                table.add_row([nick.db_category, nick.db_key, nick.db_data])
             string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
         if 'clearall' in switches:
-            nicks.delete()
+            caller.nicks.clear()
             caller.msg("Cleared all aliases.")
             return
         if not self.args or not self.lhs:
@@ -152,13 +151,14 @@ class CmdNick(MuxCommand):
             switches = ["inputline"]
         string = ""
         for switch in switches:
-            oldnick = Nick.objects.filter(db_obj=caller.dbobj, db_nick__iexact=nick, db_type__iexact=switch)
+            oldnick = caller.nicks.get(key=nick, category=switch)
+            #oldnick = Nick.objects.filter(db_obj=caller.dbobj, db_nick__iexact=nick, db_type__iexact=switch)
             if not real:
                 # removal of nick
                 if oldnick:
                     # clear the alias
                     string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick[0].db_real)
-                    caller.nicks.delete(nick, nick_type=switch)
+                    caller.nicks.delete(nick, category=switch)
                 else:
                     string += "\nNo nick '%s' found, so it could not be removed." % nick
             else:
@@ -167,7 +167,7 @@ class CmdNick(MuxCommand):
                     string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick[0].db_real, real)
                 else:
                     string += "\nNick set: '%s' = '%s'." % (nick, real)
-                caller.nicks.add(nick, real, nick_type=switch)
+                caller.nicks.add(nick, real, category=switch)
         caller.msg(string)
 
 class CmdInventory(MuxCommand):
@@ -220,6 +220,7 @@ class CmdGet(MuxCommand):
         if not self.args:
             caller.msg("Get what?")
             return
+        #print "general/get:", caller, caller.location, self.args, caller.location.contents
         obj = caller.search(self.args, location=caller.location)
         if not obj:
             return
@@ -432,8 +433,8 @@ class CmdAccess(MuxCommand):
             cperms = "<Superuser>"
             pperms = "<Superuser>"
         else:
-            cperms = ", ".join(caller.permissions)
-            pperms = ", ".join(caller.player.permissions)
+            cperms = ", ".join(caller.permissions.all())
+            pperms = ", ".join(caller.player.permissions.all())
 
         string += "\n{wYour access{n:"
         string += "\nCharacter {c%s{n: %s" % (caller.key, cperms)

@@ -559,7 +559,7 @@ class CrumblingWall(TutorialObject, Exit):
         "called when the object is first created."
         super(CrumblingWall, self).at_object_creation()
 
-        self.aliases = ["secret passage", "passage", "crack", "opening", "secret door"]
+        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret door"])
         # this is assigned first when pushing button, so assign this at creation time!
 
         self.db.destination = 2
@@ -808,7 +808,7 @@ class CmdGetWeapon(Command):
         "Implement the command"
 
         rack_id = self.obj.db.rack_id
-        if self.caller.get_attribute(rack_id):
+        if self.caller.attributes.get(rack_id):
             # we don't allow a player to take more than one weapon from rack.
             self.caller.msg("%s has no more to offer you." % self.obj.name)
         else:
@@ -826,7 +826,7 @@ class CmdGetWeapon(Command):
             else:
                 self.caller.msg(ostring)
             # tag the caller so they cannot keep taking objects from the rack.
-            self.caller.set_attribute(rack_id, True)
+            self.caller.attributes.add(rack_id, True)
 
 
 class CmdSetWeaponRack(CmdSet):

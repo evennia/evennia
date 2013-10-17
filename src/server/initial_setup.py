@@ -7,12 +7,13 @@ Everything starts at handle_setup()
 """
 
 import django
-from django.contrib.auth.models import User
 from django.core import management
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from src.server.models import ServerConfig
 from src.help.models import HelpEntry
 from src.utils import create
+
 
 from django.utils.translation import ugettext as _
 
@@ -23,11 +24,20 @@ def create_config_values():
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
-def get_god_user():
+def get_god_player():
     """
-    Returns the initially created 'god' User object.
+    Creates the god user.
     """
-    return User.objects.get(id=1)
+    PlayerDB = get_user_model()
+    try:
+        god_player = PlayerDB.objects.get(id=1)
+    except PlayerDB.DoesNotExist:
+        txt = "\n\nNo superuser exists yet. The superuser is the 'owner' account on the"
+        txt += "\nEvennia server. Create a new superuser using the command"
+        txt += "\n\n  python manage.py createsuperuser"
+        txt += "\n\nFollow the prompts, then restart the server."
+        raise Exception(txt)
+    return god_player
 
 def create_objects():
     """
@@ -38,37 +48,36 @@ def create_objects():
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password.
-    god_user = get_god_user()
+    god_player = get_god_player()
 
     # Create a Player 'user profile' object to hold eventual
-    # mud-specific settings for the bog standard User object. This is
-    # accessed by user.get_profile() and can also store attributes.
-    # It also holds mud permissions, but for a superuser these
-    # have no effect anyhow.
+    # mud-specific settings for the PlayerDB object.
+    player_typeclass = settings.BASE_PLAYER_TYPECLASS
+
+    # run all creation hooks on god_player (we must do so manually since the manage.py command does not)
+    god_player.typeclass_path = player_typeclass
+    god_player.basetype_setup()
+    god_player.at_player_creation()
+    god_player.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
+
+    # Limbo is the default "nowhere" starting room
+
+    # Create the in-game god-character for player #1 and set it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-
-    # Create the Player object as well as the in-game god-character
-    # for user #1. We can't set location and home yet since nothing
-    # exists. Also, all properties (name, email, password, is_superuser)
-    # is inherited from the user so we don't specify it again here.
-
-    god_player = create.create_player(god_user.username, None, None, user=god_user)
-    god_character = create.create_object(character_typeclass, key=god_user.username)
+    god_character = create.create_object(character_typeclass, key=god_player.username, nohome=True)
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
-    god_character.permissions = "Immortals"
+    god_character.permissions.add("Immortals")
 
     god_character.save()
-    god_player.set_attribute("_first_login", True)
-    god_player.set_attribute("_last_puppet", god_character)
+    god_player.attributes.add("_first_login", True)
+    god_player.attributes.add("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
 
-    # Limbo is the default "nowhere" starting room
-
     room_typeclass = settings.BASE_ROOM_TYPECLASS
-    limbo_obj = create.create_object(room_typeclass, _('Limbo'))
+    limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
     limbo_obj.id = 2
     string = " ".join([
         "Welcome to your new {wEvennia{n-based game. From here you are ready to begin development.",
@@ -121,22 +130,11 @@ def create_channels():
         return
 
     # connect the god user to all these channels by default.
-    goduser = get_god_user()
+    goduser = get_god_player()
     from src.comms.models import PlayerChannelConnection
     PlayerChannelConnection.objects.create_connection(goduser, pchan)
     PlayerChannelConnection.objects.create_connection(goduser, ichan)
     PlayerChannelConnection.objects.create_connection(goduser, cchan)
-
-def import_MUX_help_files():
-    """
-    Imports the MUX help files.
-    """
-    print " Importing MUX help database (devel reference only) ..."
-    management.call_command('loaddata', '../src/help/mux_help_db.json', verbosity=0)
-    # categorize the MUX help files into its own category.
-    default_category = "MUX"
-    print " Moving imported help db to help category '%(default)s'." % {'default': default_category}
-    HelpEntry.objects.all_to_category(default_category)
 
 def create_system_scripts():
     """
@@ -255,15 +253,9 @@ def handle_setup(last_step):
         create_system_scripts,
         start_game_time,
         create_admin_media_links,
-        import_MUX_help_files,
         at_initial_setup,
         reset_server
         ]
-
-    if not settings.IMPORT_MUX_HELP:
-        # skip importing of the MUX helpfiles, they are
-        # not interesting except for developers.
-        del setup_queue[-3]
 
     #print " Initial setup: %s steps." % (len(setup_queue))
 
@@ -286,11 +278,9 @@ def handle_setup(last_step):
                 for profile in PlayerDB.objects.all():
                     profile.delete()
             elif last_step + num == 3:
-                from src.comms.models import Channel, PlayerChannelConnection
-                for chan in Channel.objects.all():
-                    chan.delete()
-                for conn in PlayerChannelConnection.objects.all():
-                    conn.delete()
+                from src.comms.models import ChannelDB, PlayerChannelConnection
+                ChannelDB.objects.all().delete()
+                PlayerChannelConnection.objects.all().delete()
             raise
         ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1)
     # We got through the entire list. Set last_step to -1 so we don't

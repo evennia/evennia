@@ -17,6 +17,7 @@ from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
 from src.utils import logger, utils, gametime, create, is_pypy, prettytable
+from src.utils.utils import crop
 from src.commands.default.muxcommand import MuxCommand
 
 # delayed imports
@@ -163,9 +164,9 @@ class CmdPy(MuxCommand):
                           'inherits_from':utils.inherits_from}
 
         try:
-            self.msg(">>> %s" % pycode, data={"raw":True}, sessid=self.sessid)
+            self.msg(">>> %s" % pycode, raw=True, sessid=self.sessid)
         except TypeError:
-            self.msg(">>> %s" % pycode, data={"raw":True})
+            self.msg(">>> %s" % pycode, raw=True)
 
 
         mode = "eval"
@@ -214,14 +215,14 @@ def format_script_list(scripts):
     for script in scripts:
         nextrep = script.time_until_next_repeat()
         table.add_row([script.id,
-                       (not hasattr(script, 'obj') or not script.obj) and "<Global>" or script.obj.key,
+                       script.obj.key if (hasattr(script, 'obj') and script.obj) else "<Global>",
                        script.key,
-                       (not hasattr(script, 'interval') or script.interval < 0) and "--" or "%ss" % script.interval,
-                       not nextrep and "--" or "%ss" % nextrep,
-                       (not hasattr(script, 'repeats') or not script.repeats) and "--" or "%i" % script.repeats,
-                       script.persistent and "*" or "-",
+                       script.interval if script.interval > 0 else "--",
+                       "%ss" % nextrep if nextrep else "--",
+                       "%i" % script.repeats if script.repeats else "--",
+                       "*" if script.persistent else "-",
                        script.typeclass_path.rsplit('.', 1)[-1],
-                       script.desc])
+                       crop(script.desc, width=20)])
     return "%s" % table
 
 
@@ -395,7 +396,7 @@ class CmdPlayers(MuxCommand):
     """
     key = "@players"
     aliases = ["@listplayers"]
-    locks = "cmd:perm(listplayers) or perm(Admins)"
+    locks = "cmd:perm(listplayers) or perm(Wizards)"
     def func(self):
         "List the players"
 

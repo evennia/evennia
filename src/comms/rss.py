@@ -9,13 +9,13 @@ to the channel whenever the feed updates.
 import re
 from twisted.internet import task
 from django.conf import settings
-from src.comms.models import ExternalChannelConnection, Channel
+from src.comms.models import ExternalChannelConnection, ChannelDB
 from src.utils import logger, utils
 from src.scripts.models import ScriptDB
 
 RSS_ENABLED = settings.RSS_ENABLED
 RSS_UPDATE_INTERVAL = settings.RSS_UPDATE_INTERVAL
-INFOCHANNEL = Channel.objects.channel_search(settings.CHANNEL_MUDINFO[0])
+INFOCHANNEL = ChannelDB.objects.channel_search(settings.CHANNEL_MUDINFO[0])
 RETAG = re.compile(r'<[^>]*?>')
 
 # holds rss readers they can be shut down at will.
@@ -102,8 +102,8 @@ def create_connection(channel, url, interval):
     """
     This will create a new RSS->channel connection
     """
-    if not type(channel) == Channel:
-        new_channel = Channel.objects.filter(db_key=channel)
+    if not type(channel) == ChannelDB:
+        new_channel = ChannelDB.objects.filter(db_key=channel)
         if not new_channel:
             logger.log_errmsg("Cannot attach RSS->Evennia: Evennia Channel '%s' not found." % channel)
             return False

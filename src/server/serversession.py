@@ -11,19 +11,21 @@ import time
 from datetime import datetime
 from django.conf import settings
 from src.scripts.models import ScriptDB
-from src.comms.models import Channel
+from src.comms.models import ChannelDB
 from src.utils import logger, utils
+from src.utils.utils import make_iter, to_str
 from src.commands import cmdhandler, cmdsethandler
 from src.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _ObjectDB = None
+_OOB_HANDLER = None
 
 # load optional out-of-band function module
-OOB_FUNC_MODULE = settings.OOB_FUNC_MODULE
-if OOB_FUNC_MODULE:
-    OOB_FUNC_MODULE = utils.mod_import(settings.OOB_FUNC_MODULE)
+OOB_PLUGIN_MODULE = settings.OOB_PLUGIN_MODULE
+if OOB_PLUGIN_MODULE:
+    OOB_PLUGIN_MODULE = utils.mod_import(settings.OOB_PLUGIN_MODULE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -46,6 +48,15 @@ class ServerSession(Session):
     def __init__(self):
         "Initiate to avoid AttributeErrors down the line"
         self.puppet = None
+        self.player = None
+        self.cmdset_storage_string = ""
+        self.cmdset = cmdsethandler.CmdSetHandler(self)
+
+    def __cmdset_storage_get(self):
+        return [path.strip() for path  in self.cmdset_storage_string.split(',')]
+    def __cmdset_storage_set(self, value):
+        self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
+    cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
 
     def at_sync(self):
         """
@@ -62,10 +73,11 @@ class ServerSession(Session):
 
         if not self.logged_in:
             # assign the unloggedin-command set.
-            self.cmdset = cmdsethandler.CmdSetHandler(self)
-            self.cmdset_storage = [settings.CMDSET_UNLOGGEDIN]
-            self.cmdset.update(init_mode=True)
-        elif self.puid:
+            self.cmdset_storage = settings.CMDSET_UNLOGGEDIN
+
+        self.cmdset.update(init_mode=True)
+
+        if self.puid:
             # reconnect puppet (puid is only set if we are coming back from a server reload)
             obj = _ObjectDB.objects.get(id=self.puid)
             self.player.puppet_object(self.sessid, obj, normal_mode=False)
@@ -77,17 +89,21 @@ class ServerSession(Session):
         player - the player associated with the session
         """
         self.player = player
-        self.user = player.user
-        self.uid = self.user.id
-        self.uname = self.user.username
+        self.uid = self.player.id
+        self.uname = self.player.username
         self.logged_in = True
         self.conn_time = time.time()
         self.puid = None
         self.puppet = None
+        self.cmdset_storage = settings.CMDSET_SESSION
 
         # Update account's last login time.
-        self.user.last_login = datetime.now()
-        self.user.save()
+        self.player.last_login = datetime.now()
+        self.player.save()
+
+        # add the session-level cmdset
+        self.cmdset = cmdsethandler.CmdSetHandler(self)
+        self.cmdset.update(init_mode=True)
 
     def at_disconnect(self):
         """
@@ -97,7 +113,7 @@ class ServerSession(Session):
             sessid = self.sessid
             player = self.player
             _GA(player.dbobj, "unpuppet_object")(sessid)
-            uaccount = _GA(player.dbobj, "user")
+            uaccount = player.dbobj
             uaccount.last_login = datetime.now()
             uaccount.save()
             # calling player hook
@@ -121,6 +137,14 @@ class ServerSession(Session):
         return self.logged_in and self.puppet
     get_character = get_puppet
 
+    def get_puppet_or_player(self):
+        """
+        Returns session if not logged in; puppet if one exists, otherwise return the player.
+        """
+        if self.logged_in:
+            return self.puppet if self.puppet else self.player
+        return None
+
     def log(self, message, channel=True):
         """
         Emits session info to the appropriate outputs and info channels.
@@ -128,7 +152,7 @@ class ServerSession(Session):
         if channel:
             try:
                 cchan = settings.CHANNEL_CONNECTINFO
-                cchan = Channel.objects.get_channel(cchan[0])
+                cchan = ChannelDB.objects.get_channel(cchan[0])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
                 pass
@@ -147,87 +171,41 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = time.time()
 
-    def data_in(self, command_string):
+    def data_in(self, text=None, **kwargs):
         """
-        Send Player->Evennia. This will in effect
+        Send User->Evennia. This will in effect
         execute a command string on the server.
         Eventual extra data moves through oob_data_in
         """
-        # handle the 'idle' command
-        if str(command_string).strip() == IDLE_COMMAND:
-            self.update_session_counters(idle=True)
-            return
-        if self.logged_in:
-            # the inmsg handler will relay to the right place
-            self.player.inmsg(command_string, self)
-        else:
-            # we are not logged in. Execute cmd with the the session directly
-            # (it uses the settings.UNLOGGEDIN cmdset)
-            cmdhandler.cmdhandler(self, command_string, sessid=self.sessid)
-        self.update_session_counters()
+        if text:
+            # this is treated as a command input
+            text = to_str(text)
+            # handle the 'idle' command
+            if text.strip() == IDLE_COMMAND:
+                self.update_session_counters(idle=True)
+                return
+            cmdhandler.cmdhandler(self, text, callertype="session", sessid=self.sessid)
+            self.update_session_counters()
+        if "oob" in kwargs:
+            # handle oob instructions
+            global _OOB_HANDLER
+            if not _OOB_HANDLER:
+                from src.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
+            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob", None))
+            for (funcname, args, kwargs) in oobstruct:
+                if funcname:
+                    _OOB_HANDLER.execute_cmd(self, funcname, *args, **kwargs)
+
     execute_cmd = data_in # alias
 
-    def data_out(self, msg, data=None):
+    def data_out(self, text=None, **kwargs):
         """
-        Send Evennia -> Player
+        Send Evennia -> User
         """
-        self.sessionhandler.data_out(self, msg, data)
-
-    def oob_data_in(self, data):
-        """
-        This receives out-of-band data from the Portal.
-
-        OBS - preliminary. OOB not yet functional in Evennia. Don't use.
-
-        This method parses the data input (a dict) and uses
-        it to launch correct methods from those plugged into
-        the system.
-
-        data = {oobkey: (funcname, (args), {kwargs}),
-                oobkey: (funcname, (args), {kwargs}), ...}
-
-        example:
-           data = {"get_hp": ("oob_get_hp, [], {}),
-                   "update_counter", ("counter", ["counter1"], {"now":True}) }
-
-        All function names must be defined in settings.OOB_FUNC_MODULE. Each
-        function will be called with the oobkey and a back-reference to this session
-        as their first two arguments.
-        """
-
-        outdata = {}
-
-        for oobkey, functuple in data.items():
-            # loop through the data, calling available functions.
-            func = OOB_FUNC_MODULE.__dict__.get(functuple[0])
-            if func:
-                try:
-                    outdata[functuple[0]] = func(oobkey, self, *functuple[1], **functuple[2])
-                except Exception:
-                    logger.log_trace()
-            else:
-                logger.log_errmsg("oob_data_in error: funcname '%s' not found in OOB_FUNC_MODULE." % functuple[0])
-        if outdata:
-            # we have a direct result - send it back right away
-            self.oob_data_out(outdata)
-
-
-    def oob_data_out(self, data):
-        """
-        This sends data from Server to the Portal across the AMP connection.
-
-        OBS - preliminary. OOB not yet functional in Evennia. Don't use.
-
-        data = {oobkey: (funcname, (args), {kwargs}),
-                oobkey: (funcname, (args), {kwargs}), ...}
-
-        """
-        self.sessionhandler.oob_data_out(self, data)
-
+        self.sessionhandler.data_out(self, text=text, **kwargs)
 
     def __eq__(self, other):
         return self.address == other.address
-
 
     def __str__(self):
         """
@@ -260,9 +238,9 @@ class ServerSession(Session):
     #def disconnect(self):
     #    "alias for session_disconnect"
     #    self.session_disconnect()
-    def msg(self, string='', data=None):
+    def msg(self, text='', **kwargs):
         "alias for at_data_out"
-        self.data_out(string, data=data)
+        self.data_out(text=text, **kwargs)
 
 
     # Dummy API hooks for use during non-loggedin operation

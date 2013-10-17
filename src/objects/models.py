@@ -18,26 +18,25 @@ import traceback
 from django.db import models
 from django.conf import settings
 
-from src.utils.idmapper.models import SharedMemoryModel
-from src.typeclasses.models import Attribute, TypedObject, TypeNick, TypeNickHandler
-from src.server.caches import get_field_cache, set_field_cache, del_field_cache
-from src.server.caches import get_prop_cache, set_prop_cache, del_prop_cache
+from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
+from src.server.caches import get_prop_cache, set_prop_cache
+
 from src.typeclasses.typeclass import TypeClass
-from src.players.models import PlayerNick
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_unicode, variable_from_module, inherits_from
+from src.utils.utils import make_iter, to_str, to_unicode, variable_from_module, inherits_from
 
 from django.utils.translation import ugettext as _
 
-#__all__ = ("ObjAttribute", "Alias", "ObjectNick", "ObjectDB")
+#__all__ = ("ObjectDB", )
 
 _ScriptDB = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_SESSIONS = None
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -46,78 +45,6 @@ _DA = object.__delattr__
 _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
-
-#------------------------------------------------------------
-#
-# ObjAttribute
-#
-#------------------------------------------------------------
-
-class ObjAttribute(Attribute):
-    "Attributes for ObjectDB objects."
-    db_obj = models.ForeignKey("ObjectDB")
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Object Attribute"
-        verbose_name_plural = "Object Attributes"
-
-#------------------------------------------------------------
-#
-# Alias
-#
-#------------------------------------------------------------
-
-class Alias(SharedMemoryModel):
-    """
-    This model holds a range of alternate names for an object.
-    These are intrinsic properties of the object. The split
-    is so as to allow for effective global searches also by
-    alias.
-    """
-    db_key = models.CharField('alias', max_length=255, db_index=True)
-    db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Object alias"
-        verbose_name_plural = "Object aliases"
-    def __unicode__(self):
-        return u"%s" % self.db_key
-    def __str__(self):
-        return str(self.db_key)
-
-
-
-#------------------------------------------------------------
-#
-# Object Nicks
-#
-#------------------------------------------------------------
-
-class ObjectNick(TypeNick):
-    """
-
-    The default nick types used by Evennia are:
-    inputline (default) - match against all input
-    player - match against player searches
-    obj - match against object searches
-    channel - used to store own names for channels
-    """
-    db_obj = models.ForeignKey("ObjectDB", verbose_name='object')
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Nickname for Objects"
-        verbose_name_plural = "Nicknames for Objects"
-        unique_together = ("db_nick", "db_type", "db_obj")
-
-class ObjectNickHandler(TypeNickHandler):
-    """
-    Handles nick access and setting. Accessed through ObjectDB.nicks
-    """
-    NickClass = ObjectNick
-
 
 #------------------------------------------------------------
 #
@@ -171,9 +98,10 @@ class ObjectDB(TypedObject):
     # db_key (also 'name' works), db_typeclass_path, db_date_created,
     # db_permissions
     #
-    # These databse fields (including the inherited ones) are all set
-    # using their corresponding properties, named same as the field,
-    # but withtout the db_* prefix.
+    # These databse fields (including the inherited ones) should normally be set
+    # using their corresponding wrapper properties, named same as the field, but without
+    # the db_* prefix (e.g. the db_key field is set with self.key instead). The wrappers
+    # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
     db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player',
@@ -200,8 +128,11 @@ class ObjectDB(TypedObject):
     # Database manager
     objects = ObjectManager()
 
-    # Add the object-specific handlers
+    # caches for quick lookups of typeclass loading.
+    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
+    # Add the object-specific handlers
     def __init__(self, *args, **kwargs):
         "Parent must be initialized first."
         TypedObject.__init__(self, *args, **kwargs)
@@ -209,8 +140,12 @@ class ObjectDB(TypedObject):
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
-        _SA(self, "nicks", ObjectNickHandler(self))
-        # store the attribute class
+        _SA(self, "attributes", AttributeHandler(self))
+        _SA(self, "tags", TagHandler(self))
+        _SA(self, "aliases", AliasHandler(self))
+        _SA(self, "nicks", NickHandler(self))
+        # make sure to sync the contents cache when initializing
+        _GA(self, "contents_update")()
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -220,107 +155,87 @@ class ObjectDB(TypedObject):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
-    # aliases property (wraps (db_aliases)
-    #@property
-    def __aliases_get(self):
-        "Getter. Allows for value = self.aliases"
-        aliases = get_prop_cache(self, "_aliases")
-        if aliases == None:
-            aliases = list(Alias.objects.filter(db_obj=self).values_list("db_key", flat=True))
-            set_prop_cache(self, "_aliases", aliases)
-        return aliases
-    #@aliases.setter
-    def __aliases_set(self, aliases):
-        "Setter. Allows for self.aliases = value"
-        for alias in make_iter(aliases):
-            new_alias = Alias(db_key=alias, db_obj=self)
-            new_alias.save()
-        set_prop_cache(self, "_aliases", make_iter(aliases))
-    #@aliases.deleter
-    def __aliases_del(self):
-        "Deleter. Allows for del self.aliases"
-        for alias in Alias.objects.filter(db_obj=self):
-            alias.delete()
-        del_prop_cache(self, "_aliases")
-    aliases = property(__aliases_get, __aliases_set, __aliases_del)
 
-    # player property (wraps db_player)
-    #@property
-    def __player_get(self):
-        """
-        Getter. Allows for value = self.player.
-        We have to be careful here since Player is also
-        a TypedObject, so as to not create a loop.
-        """
-        player = get_field_cache(self, "player")
-        if player:
-            try:
-                return player.typeclass
-            except Exception,e:
-                print "player_get:", e
-        return player
+    ## player property (wraps db_player)
+    ##@property
+    #def __player_get(self):
+    #    """
+    #    Getter. Allows for value = self.player.
+    #    We have to be careful here since Player is also
+    #    a TypedObject, so as to not create a loop.
+    #    """
+    #    player = _GA(self, "db_player")
+    #    #player = get_field_cache(self, "player")
+    #    if player:
+    #        try:
+    #            return player.typeclass
+    #        except Exception,e:
+    #            print "player_get:", e
+    #    return player
 
-    #@player.setter
-    def __player_set(self, player):
-        "Setter. Allows for self.player = value"
-        if inherits_from(player, TypeClass):
-            player = player.dbobj
-        set_field_cache(self, "player", player)
-        # we must set this here or superusers won't be able to
-        # bypass lockchecks unless they start the game connected
-        # to the character in question.
+    ##@player.setter
+    #def __player_set(self, player):
+    #    "Setter. Allows for self.player = value"
+    #    if inherits_from(player, TypeClass):
+    #        player = player.dbobj
+    #    _SA(self, "db_player", player)
+    #    _GA(self, "save")()
+    #    #set_field_cache(self, "player", player)
+    #    # we must set this here or superusers won't be able to
+    #    # bypass lockchecks unless they start the game connected
+    #    # to the character in question.
+    #    self.locks.cache_lock_bypass(self)
+
+    ##@player.deleter
+    #def __player_del(self):
+    #    "Deleter. Allows for del self.player"
+    #    _SA(self, "db_player", None)
+    #    _GA(self, "save")()
+    #    #del_field_cache(self, "player")
+    #player = property(__player_get, __player_set, __player_del)
+
+    #sessid property (wraps db_sessid)
+    #@property
+    #def __sessid_get(self):
+    #    """
+    #    Getter. Allows for value = self.sessid. Since sessid
+    #    is directly related to self.player, we cannot have
+    #    a sessid without a player being connected (but the
+    #    opposite could be true).
+    #    """
+    #    return _GA(self, "db_sessid")
+    #    #if not get_field_cache(self, "sessid"):
+    #    #    del_field_cache(self, "sessid")
+    #    #return get_field_cache(self, "sessid")
+    ##@sessid.setter
+    #def __sessid_set(self, sessid):
+    #    "Setter. Allows for self.player = value"
+    #    _SA(self, "db_sessid", sessid)
+    #    _GA(self, "save")()
+    #    #set_field_cache(self, "sessid", sessid)
+    ##@sessid.deleter
+    #def __sessid_del(self):
+    #    "Deleter. Allows for del self.player"
+    #    _SA(self, "db_sessid", None)
+    #    _GA(self, "save")()
+    #    #del_field_cache(self, "sessid")
+    #sessid = property(__sessid_get, __sessid_set, __sessid_del)
+
+    def _at_db_player_save(self, new_value, old_value=None):
+        """
+        This is called automatically just before a new player is saved.
+        """
+        # we need to re-cache this for superusers to bypass.
         self.locks.cache_lock_bypass(self)
+        return new_value
 
-    #@player.deleter
-    def __player_del(self):
-        "Deleter. Allows for del self.player"
-        del_field_cache(self, "player")
-    player = property(__player_get, __player_set, __player_del)
-
-    # sessid property (wraps db_sessid)
-    #@property
-    def __sessid_get(self):
+    def _at_db_location_save(self, new_value, old_value=None):
         """
-        Getter. Allows for value = self.sessid. Since sessid
-        is directly related to self.player, we cannot have
-        a sessid without a player being connected (but the
-        opposite could be true).
+        This is called automatically just before a new location is saved.
         """
-        if not get_field_cache(self, "sessid"):
-            del_field_cache(self, "sessid")
-        return get_field_cache(self, "sessid")
-    #@sessid.setter
-    def __sessid_set(self, sessid):
-        "Setter. Allows for self.player = value"
-        set_field_cache(self, "sessid", sessid)
-    #@sessid.deleter
-    def __sessid_del(self):
-        "Deleter. Allows for del self.player"
-        del_field_cache(self, "sessid")
-    sessid = property(__sessid_get, __sessid_set, __sessid_del)
-
-    # location property (wraps db_location)
-    #@property
-    def __location_get(self):
-        "Getter. Allows for value = self.location."
-        loc = get_field_cache(self, "location")
-        if loc:
-            return _GA(loc, "typeclass")
-        return None
-    #@location.setter
-    def __location_set(self, location):
-        "Setter. Allows for self.location = location"
+        loc = new_value
         try:
-            old_loc = _GA(self, "location")
-            if ObjectDB.objects.dbref(location):
-                # dbref search
-                loc = ObjectDB.objects.dbref_search(location)
-                loc = loc and _GA(loc, "dbobj")
-            elif location and type(location) != ObjectDB:
-                loc = _GA(location, "dbobj")
-            else:
-                loc = location
-
+            old_loc = old_value
             # recursive location check
             def is_loc_loop(loc, depth=0):
                 "Recursively traverse the target location to make sure we are not in it."
@@ -332,13 +247,13 @@ class ObjectDB(TypedObject):
             try: is_loc_loop(loc)
             except RuntimeWarning: pass
 
-            # set the location
-            set_field_cache(self, "location", loc)
+            #print "db_location_handler2:", _GA(loc, "db_key") if loc else loc, type(loc)
             # update the contents of each location
             if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_update")()
+                _GA(_GA(old_loc, "dbobj"), "contents_remove")(self)
             if loc:
-                _GA(loc, "contents_update")()
+                _GA(loc, "contents_add")(self)
+            return loc
         except RuntimeError:
             string = "Cannot set location, "
             string += "%s.location = %s would create a location-loop." % (self.key, loc)
@@ -347,113 +262,165 @@ class ObjectDB(TypedObject):
             raise RuntimeError(string)
         except Exception, e:
             string = "Cannot set location (%s): " % str(e)
-            string += "%s is not a valid location." % location
+            string += "%s is not a valid location." % loc
             _GA(self, "msg")(_(string))
             logger.log_trace(string)
             raise Exception(string)
-    #@location.deleter
-    def __location_del(self):
-        "Deleter. Allows for del self.location"
-        _GA(self, "location").contents_update()
-        _SA(self, "db_location", None)
-        _GA(self, "save")()
-        del_field_cache(self, "location")
-    location = property(__location_get, __location_set, __location_del)
+
+    ## location property (wraps db_location)
+    ##@property
+    #def __location_get(self):
+    #    "Getter. Allows for value = self.location."
+    #    loc = get_field_cache(self, "location")
+    #    if loc:
+    #        return _GA(loc, "typeclass")
+    #    return None
+    ##@location.setter
+    #def __location_set(self, location):
+    #    "Setter. Allows for self.location = location"
+    #    try:
+    #        old_loc = _GA(self, "location")
+    #        if ObjectDB.objects.dbref(location):
+    #            # dbref search
+    #            loc = ObjectDB.objects.dbref_search(location)
+    #            loc = loc and _GA(loc, "dbobj")
+    #        elif location and type(location) != ObjectDB:
+    #            loc = _GA(location, "dbobj")
+    #        else:
+    #            loc = location
+
+    #        # recursive location check
+    #        def is_loc_loop(loc, depth=0):
+    #            "Recursively traverse the target location to make sure we are not in it."
+    #            if depth > 10: return
+    #            elif loc == self: raise RuntimeError
+    #            elif loc == None: raise RuntimeWarning # just to quickly get out
+    #            return is_loc_loop(_GA(loc, "db_location"), depth+1)
+    #        # check so we don't create a location loop - if so, RuntimeError will be raised.
+    #        try: is_loc_loop(loc)
+    #        except RuntimeWarning: pass
+
+    #        # set the location
+    #        set_field_cache(self, "location", loc)
+    #        # update the contents of each location
+    #        if old_loc:
+    #            _GA(_GA(old_loc, "dbobj"), "contents_update")()
+    #        if loc:
+    #            _GA(loc, "contents_update")()
+    #    except RuntimeError:
+    #        string = "Cannot set location, "
+    #        string += "%s.location = %s would create a location-loop." % (self.key, loc)
+    #        _GA(self, "msg")(_(string))
+    #        logger.log_trace(string)
+    #        raise RuntimeError(string)
+    #    except Exception, e:
+    #        string = "Cannot set location (%s): " % str(e)
+    #        string += "%s is not a valid location." % location
+    #        _GA(self, "msg")(_(string))
+    #        logger.log_trace(string)
+    #        raise Exception(string)
+    ##@location.deleter
+    #def __location_del(self):
+    #    "Deleter. Allows for del self.location"
+    #    _GA(self, "location").contents_update()
+    #    _SA(self, "db_location", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "location")
+    #location = property(__location_get, __location_set, __location_del)
 
     # home property (wraps db_home)
     #@property
-    def __home_get(self):
-        "Getter. Allows for value = self.home"
-        home = get_field_cache(self, "home")
-        if home:
-            return _GA(home, "typeclass")
-        return None
-    #@home.setter
-    def __home_set(self, home):
-        "Setter. Allows for self.home = value"
-        try:
-            if home == None or type(home) == ObjectDB:
-                hom = home
-            elif ObjectDB.objects.dbref(home):
-                hom = ObjectDB.objects.dbref_search(home)
-                if hom and hasattr(hom,'dbobj'):
-                    hom = _GA(hom, "dbobj")
-                else:
-                    hom = _GA(home, "dbobj")
-            else:
-                hom = _GA(home, "dbobj")
-            set_field_cache(self, "home", hom)
-        except Exception:
-            string = "Cannot set home: "
-            string += "%s is not a valid home."
-            _GA(self, "msg")(_(string) % home)
-            logger.log_trace(string)
-            #raise
-    #@home.deleter
-    def __home_del(self):
-        "Deleter. Allows for del self.home."
-        _SA(self, "db_home", None)
-        _GA(self, "save")()
-        del_field_cache(self, "home")
-    home = property(__home_get, __home_set, __home_del)
+    #def __home_get(self):
+    #    "Getter. Allows for value = self.home"
+    #    home = get_field_cache(self, "home")
+    #    if home:
+    #        return _GA(home, "typeclass")
+    #    return None
+    ##@home.setter
+    #def __home_set(self, home):
+    #    "Setter. Allows for self.home = value"
+    #    try:
+    #        if home == None or type(home) == ObjectDB:
+    #            hom = home
+    #        elif ObjectDB.objects.dbref(home):
+    #            hom = ObjectDB.objects.dbref_search(home)
+    #            if hom and hasattr(hom,'dbobj'):
+    #                hom = _GA(hom, "dbobj")
+    #            else:
+    #                hom = _GA(home, "dbobj")
+    #        else:
+    #            hom = _GA(home, "dbobj")
+    #        set_field_cache(self, "home", hom)
+    #    except Exception:
+    #        string = "Cannot set home: "
+    #        string += "%s is not a valid home."
+    #        _GA(self, "msg")(_(string) % home)
+    #        logger.log_trace(string)
+    #        #raise
+    ##@home.deleter
+    #def __home_del(self):
+    #    "Deleter. Allows for del self.home."
+    #    _SA(self, "db_home", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "home")
+    #home = property(__home_get, __home_set, __home_del)
 
     # destination property (wraps db_destination)
     #@property
-    def __destination_get(self):
-        "Getter. Allows for value = self.destination."
-        dest = get_field_cache(self, "destination")
-        if dest:
-            return _GA(dest, "typeclass")
-        return None
-    #@destination.setter
-    def __destination_set(self, destination):
-        "Setter. Allows for self.destination = destination"
-        try:
-            if destination == None or type(destination) == ObjectDB:
-                # destination is None or a valid object
-                dest = destination
-            elif ObjectDB.objects.dbref(destination):
-                # destination is a dbref; search
-                dest = ObjectDB.objects.dbref_search(destination)
-                if dest and _GA(self, "_hasattr")(dest,'dbobj'):
-                    dest = _GA(dest, "dbobj")
-                else:
-                    dest = _GA(destination, "dbobj")
-            else:
-                dest = destination.dbobj
-            set_field_cache(self, "destination", dest)
-        except Exception:
-            string = "Cannot set destination: "
-            string += "%s is not a valid destination." % destination
-            _GA(self, "msg")(string)
-            logger.log_trace(string)
-            raise
-    #@destination.deleter
-    def __destination_del(self):
-        "Deleter. Allows for del self.destination"
-        _SA(self, "db_destination", None)
-        _GA(self, "save")()
-        del_field_cache(self, "destination")
-    destination = property(__destination_get, __destination_set, __destination_del)
+    #def __destination_get(self):
+    #    "Getter. Allows for value = self.destination."
+    #    dest = get_field_cache(self, "destination")
+    #    if dest:
+    #        return _GA(dest, "typeclass")
+    #    return None
+    ##@destination.setter
+    #def __destination_set(self, destination):
+    #    "Setter. Allows for self.destination = destination"
+    #    try:
+    #        if destination == None or type(destination) == ObjectDB:
+    #            # destination is None or a valid object
+    #            dest = destination
+    #        elif ObjectDB.objects.dbref(destination):
+    #            # destination is a dbref; search
+    #            dest = ObjectDB.objects.dbref_search(destination)
+    #            if dest and _GA(self, "_hasattr")(dest,'dbobj'):
+    #                dest = _GA(dest, "dbobj")
+    #            else:
+    #                dest = _GA(destination, "dbobj")
+    #        else:
+    #            dest = destination.dbobj
+    #        set_field_cache(self, "destination", dest)
+    #    except Exception:
+    #        string = "Cannot set destination: "
+    #        string += "%s is not a valid destination." % destination
+    #        _GA(self, "msg")(string)
+    #        logger.log_trace(string)
+    #        raise
+    ##@destination.deleter
+    #def __destination_del(self):
+    #    "Deleter. Allows for del self.destination"
+    #    _SA(self, "db_destination", None)
+    #    _GA(self, "save")()
+    #    del_field_cache(self, "destination")
+    #destination = property(__destination_get, __destination_set, __destination_del)
 
-    # cmdset_storage property.
-    # This seems very sensitive to caching, so leaving it be for now. /Griatch
+    # cmdset_storage property. We use a custom wrapper to manage this. This also
+    # seems very sensitive to caching, so leaving it be for now. /Griatch
     #@property
     def __cmdset_storage_get(self):
         "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
-        if _GA(self, "db_cmdset_storage"):
-            return [path.strip() for path  in _GA(self, "db_cmdset_storage").split(',')]
-        return []
+        storage = _GA(self, "db_cmdset_storage")
+        # we need to check so storage is not None
+        return [path.strip() for path  in storage.split(',')] if storage else []
     #@cmdset_storage.setter
     def __cmdset_storage_set(self, value):
         "Setter. Allows for self.name = value. Stores as a comma-separated string."
-        value = ",".join(str(val).strip() for val in make_iter(value))
-        _SA(self, "db_cmdset_storage", value)
+        _SA(self, "db_cmdset_storage", ",".join(str(val).strip() for val in make_iter(value)))
         _GA(self, "save")()
     #@cmdset_storage.deleter
     def __cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
-        _SA(self, "db_cmdset_storage", "")
+        _SA(self, "db_cmdset_storage", None)
         _GA(self, "save")()
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
@@ -466,11 +433,6 @@ class ObjectDB(TypedObject):
     # ObjectDB class access methods/properties
     #
 
-    # this is required to properly handle attributes and typeclass loading.
-    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
-    _attribute_class = ObjAttribute
-    _db_model_name = "objectdb" # used by attributes to safely store objects
-    _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
     #@property
     def __sessions_get(self):
@@ -497,7 +459,7 @@ class ObjectDB(TypedObject):
     def __is_superuser_get(self):
         "Check if user has a player, and if so, if it is a superuser."
         return (_GA(self, "db_player") and _GA(_GA(self, "db_player"), "is_superuser")
-                and not _GA(_GA(self, "db_player"), "get_attribute")("_quell"))
+                and not _GA(_GA(self, "db_player"), "attributes").get("_quell"))
     is_superuser = property(__is_superuser_get)
 
     # contents
@@ -511,25 +473,35 @@ class ObjectDB(TypedObject):
 
         exclude is one or more objects to not return
         """
-        cont = get_prop_cache(self, "_contents")
+        contents = get_prop_cache(self, "_contents")
         exclude = make_iter(exclude)
-        if cont == None:
-            cont = _GA(self, "contents_update")()
-        return [obj for obj in cont if obj not in exclude]
+        if contents == None:
+            contents = _GA(self, "contents_update")()
+        return [obj.typeclass for obj in contents.values() if obj not in exclude]
     contents = property(contents_get)
 
+    # manage the content cache
+    def contents_add(self, obj):
+        "Add a new object to the internal content cache"
+        contents = get_prop_cache(self, "_contents")
+        if contents == None:
+            contents={obj.dbid:obj}
+        else:
+            contents[obj.dbid] = obj
+        set_prop_cache(self, "_contents", contents)
+    def contents_remove(self, obj):
+        "Remove object from internal content cache"
+        contents = get_prop_cache(self, "_contents")
+        if contents == None:
+            contents = {}
+        else:
+            contents.pop(obj.dbid, None)
+        set_prop_cache(self, "_contents", contents)
     def contents_update(self):
-        """
-        Updates the contents property of the object with a new
-        object Called by
-        self.location_set.
-
-        obj -
-        remove (true/false) - remove obj from content list
-        """
-        cont = ObjectDB.objects.get_contents(self)
-        set_prop_cache(self, "_contents", cont)
-        return cont
+        "Re-sync the contents cache"
+        contents = dict((o.dbid, o) for o in ObjectDB.objects.get_contents(self))
+        set_prop_cache(self, "_contents", contents)
+        return contents
 
     #@property
     def __exits_get(self):
@@ -609,15 +581,15 @@ class ObjectDB(TypedObject):
             return self.typeclass
 
         if use_nicks:
-            nick = None
             nicktype = "object"
-            # look up nicks
-            nicks = ObjectNick.objects.filter(db_obj=self, db_type=nicktype)
+            # get all valid nicks to search
+            nicks = self.nicks.all(category="object_nick_%s" % nicktype)
             if self.has_player:
-                nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type=nicktype))
+                pnicks = self.nicks.all(category="player_nick_%s" % nicktype)
+                nicks = nicks + pnicks
             for nick in nicks:
-                if searchdata == nick.db_nick:
-                    searchdata = nick.db_real
+                if searchdata == nick.db_key:
+                    searchdata = nick.db_data
                     break
 
         candidates=None
@@ -689,16 +661,18 @@ class ObjectDB(TypedObject):
 
         raw_list = raw_string.split(None)
         raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        nicks = ObjectNick.objects.filter(db_obj=self, db_type__in=("inputline", "channel"))
+        # fetch the nick data efficiently
+        nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
         if self.has_player:
-            nicks = list(nicks) + list(PlayerNick.objects.filter(db_obj=self.db_player, db_type__in=("inputline","channel")))
+            pnicks = self.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
+            nicks = list(nicks) + list(pnicks)
         for nick in nicks:
-            if nick.db_nick in raw_list:
-                raw_string = raw_string.replace(nick.db_nick, nick.db_real, 1)
+            if nick.db_key in raw_list:
+                raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
                 break
-        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, sessid=sessid)
+        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
 
-    def msg(self, msg=None, from_obj=None, data=None, sessid=0):
+    def msg(self, text=None, from_obj=None, sessid=0, **kwargs):
         """
         Emits something to a session attached to the object.
 
@@ -710,22 +684,32 @@ class ObjectDB(TypedObject):
                       If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
                       If None, echo to all connected sessions
         """
-        if _GA(self, 'player'):
-            # note that we must call the player *typeclass'* msg(), otherwise one couldn't overload it.
-            if sessid == 0:
-                sessid = None
-                if from_obj and hasattr(from_obj, "sessid"):
-                    sessid = from_obj.sessid
-                elif hasattr(self, "sessid"):
-                    sessid = self.sessid
-            _GA(_GA(self, 'player'), "typeclass").msg(msg, from_obj=from_obj, data=data, sessid=sessid)
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
 
-    def emit_to(self, message, from_obj=None, data=None):
-        "Deprecated. Alias for msg"
-        logger.log_depmsg("emit_to() is deprecated. Use msg() instead.")
-        _GA(self, "msg")(message, from_obj, data)
+        text = to_str(text, force_string=True) if text else ""
 
-    def msg_contents(self, message, exclude=None, from_obj=None, data=None):
+        if "data" in kwargs:
+            # deprecation warning
+            from src.utils import logger
+            logger.log_depmsg("ObjectDB.msg(): 'data'-dict keyword is deprecated. Use **kwargs instead.")
+            data = kwargs.pop("data")
+            if isinstance(data, dict):
+                kwargs.update(data)
+
+        if from_obj:
+            # call hook
+            try:
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
+            except Exception:
+                pass
+
+        session = _SESSIONS.session_from_sessid(sessid if sessid else _GA(self, "sessid"))
+        if session:
+            session.msg(text=text, **kwargs)
+
+    def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
         Emits something to all objects inside an object.
 
@@ -734,15 +718,9 @@ class ObjectDB(TypedObject):
         contents = _GA(self, "contents")
         if exclude:
             exclude = make_iter(exclude)
-            contents = [obj for obj in contents
-                        if (obj not in exclude and obj not in exclude)]
+            contents = [obj for obj in contents if obj not in exclude]
         for obj in contents:
-            obj.msg(message, from_obj=from_obj, data=data)
-
-    def emit_to_contents(self, message, exclude=None, from_obj=None, data=None):
-        "Deprecated. Alias for msg_contents"
-        logger.log_depmsg("emit_to_contents() is deprecated. Use msg_contents() instead.")
-        self.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
+            obj.msg(message, from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False):
@@ -833,6 +811,7 @@ class ObjectDB(TypedObject):
 
         # Perform move
         try:
+            #print "move_to location:", destination
             _SA(self, "location", destination)
         except Exception:
             emit_to_obj.msg(errtxt % "location change")

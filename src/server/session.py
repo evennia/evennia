@@ -36,7 +36,7 @@ class Session(object):
     _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid', 'uname',
                       'logged_in', 'puid', 'encoding',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
-                      'protocol_flags', 'server_data')
+                      'protocol_flags', 'server_data', "cmdset_storage_string")
 
     def init_session(self, protocol_key, address, sessionhandler):
         """
@@ -111,7 +111,7 @@ class Session(object):
         """
         pass
 
-    def data_out(self, msg, data=None):
+    def data_out(self, text=None, **kwargs):
         """
         generic hook for sending data out through the protocol. Server
         protocols can use this right away. Portal sessions
@@ -119,26 +119,9 @@ class Session(object):
         """
         pass
 
-    def data_in(self, msg, data=None):
+    def data_in(self, text=None, **kwargs):
         """
         hook for protocols to send incoming data to the engine.
         """
         pass
 
-    def oob_data_out(self, data):
-        """
-        for Portal, this receives out-of-band data from Server across the AMP.
-        for Server, this sends out-of-band data to Portal.
-
-        data is a dictionary
-        """
-        pass
-
-    def oob_data_in(self, data):
-        """
-        for Portal, this sends out-of-band requests to Server over the AMP.
-        for Server, this receives data from Portal.
-
-        data is a dictionary
-        """
-        pass

@@ -190,7 +190,7 @@ class CmdEditorGroup(CmdEditorBase):
                 string = editor.display_buffer(buf=buf, offset=lstart, linenums=False)
             else:
                 string = editor.display_buffer(linenums=False)
-            self.caller.msg(string, data={"raw":True})
+            self.caller.msg(string, raw=True)
             return
         elif cmd == ":::":
             # Insert single colon alone on a line
@@ -635,14 +635,14 @@ class CmdEditor(Command):
         # hook save/load functions
         def load_attr():
             "inital loading of buffer data from given attribute."
-            target = self.obj.get_attribute(self.attrname)
+            target = self.obj.attributes.get(self.attrname)
             if target != None and not isinstance(target, basestring):
                 typ = type(target).__name__
                 self.caller.msg("{RWARNING! Saving this buffer will overwrite the current attribute (of type %s) with a string!{n" % typ)
             return target and str(target) or ""
         def save_attr():
             "Save line buffer to given attribute name. This should return True if successful and also report its status."
-            self.obj.set_attribute(self.attrname, self.editor.buffer)
+            self.obj.attributes.add(self.attrname, self.editor.buffer)
             self.caller.msg("Saved.")
             return True
         def quit_hook():

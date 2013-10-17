@@ -16,11 +16,11 @@ the database model and call its 'objects' property.
 Also remember that all commands in this file return lists (also if
 there is only one match) unless noted otherwise.
 
-Example: To reach the search method 'get_object_with_user'
+Example: To reach the search method 'get_object_with_player'
          in src/objects/managers.py:
 
 > from src.objects.models import ObjectDB
-> match = Object.objects.get_object_with_user(...)
+> match = Object.objects.get_object_with_player(...)
 
 
 """
@@ -38,7 +38,7 @@ ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_
 PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
 ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
 Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
-Channel = ContentType.objects.get(app_label="comms", model="channel").model_class()
+Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
 HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
 
 #

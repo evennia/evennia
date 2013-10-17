@@ -87,8 +87,8 @@ class Object(TypeClass):
          search(ostring, global_search=False, global_dbref=False, attribute_name=None,
                 use_nicks=False, location=None, ignore_errors=False, player=False)
          execute_cmd(raw_string)
-         msg(message, from_obj=None, data=None)
-         msg_contents(message, exclude=None, from_obj=None, data=None)
+         msg(message, **kwargs)
+         msg_contents(message, exclude=None, from_obj=None, **kwargs)
          move_to(destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False)
          copy(new_key=None)
          delete()
@@ -222,7 +222,7 @@ class Object(TypeClass):
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
-    def msg(self, message, from_obj=None, data=None, sessid=0):
+    def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Emits something to any sessions attached to the object.
 
@@ -233,15 +233,15 @@ class Object(TypeClass):
         sessid: optional session target. If sessid=0, the session will
                 default to self.sessid or from_obj.sessid.
         """
-        self.dbobj.msg(message, from_obj=from_obj, data=data, sessid=0)
+        self.dbobj.msg(text=text, **kwargs)#message, from_obj=from_obj, data=data, sessid=0)
 
-    def msg_contents(self, message, exclude=None, from_obj=None, data=None):
+    def msg_contents(self, text=None, exclude=None, from_obj=None, **kwargs):
         """
         Emits something to all objects inside an object.
 
         exclude is a list of objects not to send to. See self.msg() for more info.
         """
-        self.dbobj.msg_contents(message, exclude=exclude, from_obj=from_obj, data=data)
+        self.dbobj.msg_contents(text, exclude=exclude, from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False):
@@ -420,7 +420,7 @@ class Object(TypeClass):
                                  "get:all()",                # pick up object
                                  "call:true()",              # allow to call commands on this object
                                  "tell:perm(Wizards)",        # allow emits to this object
-                                 "puppet:id(%s) or perm(Immortals) or pperm(Immortals)" % dbref])) # restricts puppeting of this object
+                                 "puppet:pid(%s) or perm(Immortals) or pperm(Immortals)" % dbref])) # restricts puppeting of this object
 
     def basetype_posthook_setup(self):
         """
@@ -653,7 +653,7 @@ class Object(TypeClass):
         """
         pass
 
-    def at_msg_receive(self, msg, from_obj=None, data=None):
+    def at_msg_receive(self, text=None, **kwargs):
         """
         This hook is called whenever someone
         sends a message to this object.
@@ -674,7 +674,7 @@ class Object(TypeClass):
         """
         return True
 
-    def at_msg_send(self, msg, to_obj=None, data=None):
+    def at_msg_send(self, text=None, to_obj=None, **kwargs):
         """
         This is a hook that is called when /this/ object
         sends a message to another object with obj.msg()
@@ -682,7 +682,7 @@ class Object(TypeClass):
 
         Note that this method is executed on the object
         passed along with the msg() function (i.e. using
-        obj.msg(msg, caller) will then launch caller.at_msg())
+        obj.msg(msg, from_obj=caller) will then launch caller.at_msg())
         and if no object was passed, it will never be called.
         """
         pass
@@ -910,7 +910,7 @@ class Exit(Object):
 
         # create an exit command.
         cmd = ExitCommand(key=exidbobj.db_key.strip().lower(),
-                          aliases=exidbobj.aliases,
+                          aliases=exidbobj.aliases.all(),
                           locks=str(exidbobj.locks),
                           auto_help=False,
                           destination=exidbobj.db_destination,

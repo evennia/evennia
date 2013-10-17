@@ -54,28 +54,28 @@ class GameTime(Script):
         self.interval = REAL_MIN # update every minute
         self.persistent = True
         self.start_delay = True
-        self.attr("game_time", 0.0) #IC time
-        self.attr("run_time", 0.0) #OOC time
-        self.attr("up_time", 0.0) #OOC time
+        self.attributes.add("game_time", 0.0) #IC time
+        self.attributes.add("run_time", 0.0) #OOC time
+        self.attributes.add("up_time", 0.0) #OOC time
 
     def at_repeat(self):
         """
         Called every minute to update the timers.
         """
         # We store values as floats to avoid drift over time
-        game_time = float(self.attr("game_time"))
-        run_time = float(self.attr("run_time"))
-        up_time = float(self.attr("up_time"))
-        self.attr("game_time", game_time + MIN)
-        self.attr("run_time", run_time + REAL_MIN)
-        self.attr("up_time", up_time + REAL_MIN)
+        game_time = float(self.attributes.get("game_time"))
+        run_time = float(self.attributes.get("run_time"))
+        up_time = float(self.attributes.get("up_time"))
+        self.attributes.add("game_time", game_time + MIN)
+        self.attributes.add("run_time", run_time + REAL_MIN)
+        self.attributes.add("up_time", up_time + REAL_MIN)
 
     def at_start(self):
         """
         This is called once every server restart.
         We reset the up time.
         """
-        self.attr("up_time", 0.0)
+        self.attributes.add("up_time", 0.0)
 
 # Access routines
 
@@ -131,7 +131,7 @@ def gametime(format=False):
         logger.log_trace("GameTime script not found.")
         return
     # we return this as an integer (second-precision is good enough)
-    game_time = int(script.attr("game_time"))
+    game_time = int(script.attributes.get("game_time"))
     if format:
         return gametime_format(game_time)
     return game_time
@@ -146,7 +146,7 @@ def runtime(format=False):
         logger.log_trace("GameTime script not found.")
         return
     # we return this as an integer (second-precision is good enough)
-    run_time = int(script.attr("run_time"))
+    run_time = int(script.attributes.get("run_time"))
     if format:
         return realtime_format(run_time)
     return run_time
@@ -161,7 +161,7 @@ def uptime(format=False):
         logger.log_trace("GameTime script not found.")
         return
     # we return this as an integer (second-precision is good enough)
-    up_time = int(script.attr("up_time"))
+    up_time = int(script.attributes.get("up_time"))
     if format:
         return realtime_format(up_time)
     return up_time

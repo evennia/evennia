@@ -44,13 +44,21 @@ WEBSERVER_ENABLED = True
 # attacks.  It defaults to allowing all. In production, make
 # sure to change this to your actual host addresses/IPs.
 ALLOWED_HOSTS = ["*"]
-# A list of ports the Evennia webserver listens on
-WEBSERVER_PORTS = [8000]
+# The webserver sits behind a Portal proxy. This is a list
+# of tuples (proxyport,serverport) used. The proxyports are what
+# the Portal proxy presents to the world. The serverports are
+# the internal ports the proxy uses to forward data to the Server-side
+# webserver (these should not be publicly open)
+WEBSERVER_PORTS = [(8000, 5001)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all.
 WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
 # like NginX.
 UPSTREAM_IPS = ['127.0.0.1']
+# The webserver uses threadpool for handling requests. This will scale
+# with server load. Set the minimum and maximum number of threads it
+# may use as (min, max) (must be > 0)
+WEBSERVER_THREADPOOL_LIMITS = (1, 20)
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True
@@ -88,11 +96,6 @@ AUTHENTICATION_BACKENDS = ('src.web.backends.CaseInsensitiveModelBackend',)
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'
-# Should the default MUX help files be imported? This might be
-# interesting to developers for reference, but is frustrating to users
-# since it creates a lot of help entries that has nothing to do
-# with what is actually available in the game.
-IMPORT_MUX_HELP = False
 # How long time (in seconds) a user may idle before being logged
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
@@ -151,13 +154,6 @@ DATABASES = {
         'HOST':'',
         'PORT':''
         }}
-# Engine Config style for Django versions < 1.2 only. See above.
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(GAME_DIR, 'evennia.db3')
-DATABASE_USER = ''
-DATABASE_PASSWORD = ''
-DATABASE_HOST = ''
-DATABASE_PORT = ''
 
 ######################################################################
 # Evennia pluggable modules
@@ -200,9 +196,10 @@ PORTAL_SERVICES_PLUGIN_MODULES = []
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
 # what type of game you are running, how many players you have etc.
 MSSP_META_MODULE = ""
-# Module holding server-side custom functions for out-of-band protocols to call.
-# Note that OOB_ENABLED must be True for this to be used.
-OOB_FUNC_MODULE = "" # Not yet available in Evennia - do not use!
+# Module holding OOB (Out of Band) hook objects. This allows for customization
+# and expansion of which hooks OOB protocols are allowed to call on the server
+# protocols for attaching tracker hooks for when various object field change
+OOB_PLUGIN_MODULE = "src.server.oob_defaults"
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
 LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
@@ -220,16 +217,21 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # to point to these copies instead - these you can then change as you please
 # (or copy/paste from the default modules in src/ if you prefer).
 
-# Command set used before player has logged in
+# Command set used on session before player has logged in
 CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
+# Command set used on the logged-in session
+CMDSET_SESSION = "src.commands.default.cmdset_session.SessionCmdSet"
 # Default set for logged in player with characters (fallback)
 CMDSET_CHARACTER = "src.commands.default.cmdset_character.CharacterCmdSet"
 # Command set for players without a character (ooc)
 CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
 
 ######################################################################
-# Typeclasses
+# Typeclasses and other paths
 ######################################################################
+
+# Server-side session class used.
+SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
@@ -237,6 +239,7 @@ CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
 OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects", "game.gamesrc.objects.examples", "contrib"]
 SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples", "contrib"]
 PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
+COMM_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "src.players.player.Player"
@@ -248,6 +251,8 @@ BASE_CHARACTER_TYPECLASS = "src.objects.objects.Character"
 BASE_ROOM_TYPECLASS = "src.objects.objects.Room"
 # Typeclass for Exit objects (fallback).
 BASE_EXIT_TYPECLASS = "src.objects.objects.Exit"
+# Typeclass for Comms (fallback).
+BASE_COMM_TYPECLASS = "src.comms.comms.Comm"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
@@ -312,8 +317,7 @@ PERMISSION_PLAYER_DEFAULT = "Players"
 # In-game Channels created from server start
 ######################################################################
 
-# Defines a dict with one key for each from-start
-# channel. Each key points to a tuple containing
+# Each default channel is defined by a tuple containing
 # (name, aliases, description, locks)
 # where aliases may be a tuple too, and locks is
 # a valid lockstring definition.
@@ -479,6 +483,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'src.server',
+    'src.typeclasses',
     'src.players',
     'src.objects',
     'src.comms',
@@ -488,7 +493,8 @@ INSTALLED_APPS = (
     'src.web.website',)
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
-AUTH_PROFILE_MODULE = "players.PlayerDB"
+AUTH_USER_MODEL = "players.PlayerDB"
+#AUTH_PROFILE_MODULE = "players.PlayerDB"
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
 

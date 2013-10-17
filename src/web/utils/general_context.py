@@ -22,7 +22,7 @@ SERVER_VERSION = get_evennia_version()
 # Setup lists of the most relevant apps so 
 # the adminsite becomes more readable. 
 
-USER_RELATED = ['Players', 'Auth']
+PLAYER_RELATED = ['Players']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
 CONNECTIONS = ['Irc', 'Imc2']
@@ -39,7 +39,7 @@ def general_context(request):
     return {
         'game_name': GAME_NAME,
         'game_slogan': SERVER_VERSION,
-        'evennia_userapps': USER_RELATED,
+        'evennia_userapps': PLAYER_RELATED,
         'evennia_entityapps': GAME_ENTITIES,
         'evennia_setupapps': GAME_SETUP,
         'evennia_connectapps': CONNECTIONS,

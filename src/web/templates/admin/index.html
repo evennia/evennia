@@ -18,7 +18,7 @@
 
         {% if app.name in evennia_userapps %}
 
-        {% if app.name == 'Auth' %}
+        {% if app.name == 'Players' %}
         <h2>Admin</h2> 
         <p><i>Players are the out-of-character representation of a
         game account. A Player can potentially control any number of
@@ -30,7 +30,7 @@
         <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
         {% for model in app.models %}
             <tr>
-            {% if model.name == "Users" %}      
+            {% if model.name == "Players" %}
               {% if model.perms.change %}
                   <th scope="row"><a href="{{ model.admin_url }}">Player</a></th>
               {% else %}

@@ -15,12 +15,18 @@ There are two similar but separate stores of sessions:
 import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
+from src.utils.utils import variable_from_module, to_str
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 # delayed imports
 _PlayerDB = None
 _ServerSession = None
 _ServerConfig = None
 _ScriptDB = None
+
 
 # AMP signals
 PCONN = chr(1)       # portal session connect
@@ -43,7 +49,9 @@ def delayed_import():
     "Helper method for delayed import of all needed entities"
     global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
     if not _ServerSession:
-        from src.server.serversession import ServerSession as _ServerSession
+        # we allow optional arbitrary serversession class for overloading
+        modulename, classname = settings.SERVER_SESSION_CLASS.rsplit(".", 1)
+        _ServerSession = variable_from_module(modulename, classname)
     if not _PlayerDB:
         from src.players.models import PlayerDB as _PlayerDB
     if not _ServerConfig:
@@ -88,6 +96,55 @@ class SessionHandler(object):
         sessions in store.
         """
         return dict((sessid, sess.get_sync_data()) for sessid, sess in self.sessions.items())
+
+    def oobstruct_parser(self, oobstruct):
+        """
+         Helper method for each session to use to parse oob structures
+         (The 'oob' kwarg of the msg() method)
+         allowed oob structures are
+                 cmdname
+                ((cmdname,), (cmdname,))
+                (cmdname,(arg, ))
+                (cmdname,(arg1,arg2))
+                (cmdname,{key:val,key2:val2})
+                (cmdname, (args,), {kwargs})
+                ((cmdname, (arg1,arg2)), cmdname, (cmdname, (arg1,)))
+        outputs an ordered structure on the form
+                ((cmdname, (args,), {kwargs}), ...), where the two last parts of each tuple may be empty
+        """
+        def _parse(oobstruct):
+            slen = len(oobstruct)
+            if not oobstruct:
+                return tuple(None, (), {})
+            elif not hasattr(oobstruct, "__iter__"):
+                # a singular command name, without arguments or kwargs
+                return (oobstruct.lower(), (), {})
+            # regardless of number of args/kwargs, the first element must be the function name.
+            # we will not catch this error if not, but allow it to propagate.
+            if slen == 1:
+                return (oobstruct[0].lower(), (), {})
+            elif slen == 2:
+                if isinstance(oobstruct[1], dict):
+                    # cmdname, {kwargs}
+                    return (oobstruct[0].lower(), (), dict(oobstruct[1]))
+                elif isinstance(oobstruct[1], (tuple, list)):
+                    # cmdname, (args,)
+                    return (oobstruct[0].lower(), tuple(oobstruct[1]), {})
+            else:
+                # cmdname, (args,), {kwargs}
+                return (oobstruct[0].lower(), tuple(oobstruct[1]), dict(oobstruct[2]))
+
+        if hasattr(oobstruct, "__iter__"):
+            # differentiate between (cmdname, cmdname), (cmdname, args, kwargs) and ((cmdname,args,kwargs), (cmdname,args,kwargs), ...)
+
+            if oobstruct and isinstance(oobstruct[0], basestring):
+                return (tuple(_parse(oobstruct)),)
+            else:
+                out = []
+                for oobpart in oobstruct:
+                    out.append(_parse(oobpart))
+                return (tuple(out),)
+        return (_parse(oobstruct),)
 
 #------------------------------------------------------------
 # Server-SessionHandler class
@@ -197,11 +254,14 @@ class ServerSessionHandler(SessionHandler):
                                                          data="")
     # server-side access methods
 
-    def login(self, session, player):
+    def login(self, session, player, testmode=False):
         """
         Log in the previously unloggedin session and the player we by
         now should know is connected to it. After this point we
         assume the session to be logged in one way or another.
+
+        testmode - this is used by unittesting for faking login without
+        any AMP being actually active
         """
 
         # we have to check this first before uid has been assigned
@@ -234,7 +294,8 @@ class ServerSessionHandler(SessionHandler):
         session.logged_in = True
         # sync the portal to the session
         sessdata = session.get_sync_data()
-        self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
+        if not testmode:
+            self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
                                                          operation=SLOGIN,
                                                          data=sessdata)
         player.at_post_login(sessid=session.sessid)
@@ -317,6 +378,12 @@ class ServerSessionHandler(SessionHandler):
         """
         return len(set(session.uid for session in self.sessions.values() if session.logged_in))
 
+    def session_from_sessid(self, sessid):
+        """
+        Return session based on sessid, or None if not found
+        """
+        return self.sessions.get(sessid)
+
     def session_from_player(self, player, sessid):
         """
         Given a player and a session id, return the actual session object
@@ -340,6 +407,7 @@ class ServerSessionHandler(SessionHandler):
             return self.sessions.get(sessid)
         return None
 
+
     def announce_all(self, message):
         """
         Send message to all connected sessions
@@ -347,200 +415,19 @@ class ServerSessionHandler(SessionHandler):
         for sess in self.sessions.values():
             self.data_out(sess, message)
 
-    def data_out(self, session, string="", data=""):
+    def data_out(self, session, text="", **kwargs):
         """
         Sending data Server -> Portal
         """
         self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
-                                                              msg=string,
-                                                              data=data)
-    def data_in(self, sessid, string="", data=""):
+                                                              msg=text,
+                                                              data=kwargs)
+    def data_in(self, sessid, text="", **kwargs):
         """
         Data Portal -> Server
         """
         session = self.sessions.get(sessid, None)
         if session:
-            session.data_in(string)
-
-        # ignore 'data' argument for now; this is otherwise the place
-        # to put custom effects on the server due to data input, e.g.
-        # from a custom client.
-
-    def oob_data_in(self, sessid, data):
-        """
-        OOB (Out-of-band) Data Portal -> Server
-        """
-        session = self.sessions.get(sessid, None)
-        if session:
-            session.oob_data_in(data)
-
-    def oob_data_out(self, session, data):
-        """
-        OOB (Out-of-band) Data Server -> Portal
-        """
-        self.server.amp_protocol.call_remote_OOBServer2Portal(session.sessid,
-                                                              data=data)
-
-#------------------------------------------------------------
-# Portal-SessionHandler class
-#------------------------------------------------------------
-
-class PortalSessionHandler(SessionHandler):
-    """
-    This object holds the sessions connected to the portal at any time.
-    It is synced with the server's equivalent SessionHandler over the AMP
-    connection.
-
-    Sessions register with the handler using the connect() method. This
-    will assign a new unique sessionid to the session and send that sessid
-    to the server using the AMP connection.
-
-    """
-
-    def __init__(self):
-        """
-        Init the handler
-        """
-        self.portal = None
-        self.sessions = {}
-        self.latest_sessid = 0
-        self.uptime = time.time()
-        self.connection_time = 0
-
-    def at_server_connection(self):
-        """
-        Called when the Portal establishes connection with the
-        Server. At this point, the AMP connection is already
-        established.
-        """
-        self.connection_time = time.time()
-
-    def connect(self, session):
-        """
-        Called by protocol at first connect. This adds a not-yet authenticated session
-        using an ever-increasing counter for sessid.
-        """
-        self.latest_sessid += 1
-        sessid = self.latest_sessid
-        session.sessid = sessid
-        sessdata = session.get_sync_data()
-        self.sessions[sessid] = session
-        # sync with server-side
-        self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
-                                                         operation=PCONN,
-                                                         data=sessdata)
-    def disconnect(self, session):
-        """
-        Called from portal side when the connection is closed from the portal side.
-        """
-        sessid = session.sessid
-        if sessid in self.sessions:
-            del self.sessions[sessid]
-        del session
-        # tell server to also delete this session
-        self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
-                                                         operation=PDISCONN)
-
-    def server_disconnect(self, sessid, reason=""):
-        """
-        Called by server to force a disconnect by sessid
-        """
-        session = self.sessions.get(sessid, None)
-        if session:
-            session.disconnect(reason)
-            if sessid in self.sessions:
-                # in case sess.disconnect doesn't delete it
-                del self.sessions[sessid]
-            del session
-
-    def server_disconnect_all(self, reason=""):
-        """
-        Called by server when forcing a clean disconnect for everyone.
-        """
-        for session in self.sessions.values():
-            session.disconnect(reason)
-            del session
-        self.sessions = {}
-
-    def server_logged_in(self, sessid, data):
-        "The server tells us that the session has been authenticated. Updated it."
-        sess = self.get_session(sessid)
-        sess.load_sync_data(data)
-
-    def server_session_sync(self, serversessions):
-        """
-        Server wants to save data to the portal, maybe because it's about to shut down.
-        We don't overwrite any sessions here, just update them in-place and remove
-        any that are out of sync (which should normally not be the case)
-
-        serversessions - dictionary {sessid:{property:value},...} describing the properties
-                         to sync on all sessions
-        """
-        to_save = [sessid for sessid in serversessions if sessid in self.sessions]
-        to_delete = [sessid for sessid in self.sessions if sessid not in to_save]
-        # save protocols
-        for sessid in to_save:
-            self.sessions[sessid].load_sync_data(serversessions[sessid])
-        # disconnect out-of-sync missing protocols
-        for sessid in to_delete:
-            self.server_disconnect(sessid)
-
-    def count_loggedin(self, include_unloggedin=False):
-        """
-        Count loggedin connections, alternatively count all connections.
-        """
-        return len(self.get_sessions(include_unloggedin=include_unloggedin))
-
-    def session_from_suid(self, suid):
-        """
-        Given a session id, retrieve the session (this is primarily
-        intended to be called by web clients)
-        """
-        return [sess for sess in self.get_sessions(include_unloggedin=True)
-                if hasattr(sess, 'suid') and sess.suid == suid]
-
-    def data_in(self, session, string="", data=""):
-        """
-        Called by portal sessions for relaying data coming
-        in from the protocol to the server. data is
-        serialized before passed on.
-        """
-        #print "portal_data_in:", string
-        self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
-                                                              msg=string,
-                                                              data=data)
-    def announce_all(self, message):
-        """
-        Send message to all connection sessions
-        """
-        for session in self.sessions.values():
-            session.data_out(message)
-
-    def data_out(self, sessid, string="", data=""):
-        """
-        Called by server for having the portal relay messages and data
-        to the correct session protocol.
-        """
-        session = self.sessions.get(sessid, None)
-        if session:
-            session.data_out(string, data=data)
-
-    def oob_data_in(self, session, data):
-        """
-        OOB (Out-of-band) data Portal -> Server
-        """
-        print "portal_oob_data_in:", data
-        self.portal.amp_protocol.call_remote_OOBPortal2Server(session.sessid,
-                                                              data=data)
-
-    def oob_data_out(self, sessid, data):
-        """
-        OOB (Out-of-band) data Server -> Portal
-        """
-        print "portal_oob_data_out:", data
-        session = self.sessions.get(sessid, None)
-        if session:
-            session.oob_data_out(data)
+            session.data_in(text=text, **kwargs)
 
 SESSIONS = ServerSessionHandler()
-PORTAL_SESSIONS = PortalSessionHandler()
