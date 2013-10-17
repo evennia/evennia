@@ -209,7 +209,9 @@ def unpack_dbobj(item):
     except ObjectDoesNotExist:
         return None
     # even if we got back a match, check the sanity of the date (some databases may 're-use' the id)
-    return _TO_DATESTRING(obj.dbobj) == item[2] and obj or None
+    try: dbobj = obj.dbobj
+    except AttributeError: dbobj = obj
+    return _TO_DATESTRING(dbobj) == item[2] and obj or None
 
 #
 # Access methods

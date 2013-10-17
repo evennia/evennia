@@ -52,7 +52,9 @@ class TrackerHandler(object):
         """
         This is initiated and stored on the object as a property _trackerhandler.
         """
-        self.obj = obj.dbobj
+        try: obj = obj.dbobj
+        except AttributeError: pass
+        self.obj = obj
         self.ntrackers = 0
         # initiate store only with valid on-object fieldnames
         self.tracktargets = dict((key, {}) for key in _GA(_GA(self.obj, "_meta"), "get_all_field_names")())
@@ -204,10 +206,10 @@ class OOBHandler(object):
         ServerConf field
         """
         if self.oob_tracker_storage:
-            print "saved tracker_storage:", self.oob_tracker_storage
+            #print "saved tracker_storage:", self.oob_tracker_storage
             ServerConfig.objects.conf(key="oob_tracker_storage", value=dbserialize(self.oob_tracker_storage))
         if  self.oob_repeat_storage:
-            print "saved repeat_storage:", self.oob_repeat_storage
+            #print "saved repeat_storage:", self.oob_repeat_storage
             ServerConfig.objects.conf(key="oob_repeat_storage", value=dbserialize(self.oob_repeat_storage))
         self.oob_tracker_pool.stop()
 
@@ -220,7 +222,7 @@ class OOBHandler(object):
         tracker_storage = ServerConfig.objects.conf(key="oob_tracker_storage")
         if tracker_storage:
             self.oob_tracker_storage = dbunserialize(tracker_storage)
-            print "recovered from tracker_storage:", self.oob_tracker_storage
+            #print "recovered from tracker_storage:", self.oob_tracker_storage
             for (obj, sessid, fieldname, trackerclass, args, kwargs) in self.oob_tracker_storage.values():
                 self.track(unpack_dbobj(obj), sessid, fieldname, trackerclass, *args, **kwargs)
             # make sure to purce the storage
@@ -229,7 +231,7 @@ class OOBHandler(object):
         repeat_storage = ServerConfig.objects.conf(key="oob_repeat_storage")
         if repeat_storage:
             self.oob_repeat_storage = dbunserialize(repeat_storage)
-            print "recovered from repeat_storage:", self.oob_repeat_storage
+            #print "recovered from repeat_storage:", self.oob_repeat_storage
             for (obj, sessid, func_key, interval, args, kwargs) in self.oob_repeat_storage.values():
                 self.repeat(unpack_dbobj(obj), sessid, func_key, interval, *args, **kwargs)
             # make sure to purge the storage
@@ -242,19 +244,17 @@ class OOBHandler(object):
         it to obj.
         If property_key is not given, but the OOB has a class property property_name, this
         will be used as the property name when assigning the OOB to
-        obj, otherwise tracker_key is ysed as the property name.
+        obj, otherwise tracker_key is used as the property name.
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
+        try: obj = obj.dbobj
+        except AttributeError: pass
+
         if not "_trackerhandler" in _GA(obj, "__dict__"):
             # assign trackerhandler to object
             _SA(obj, "_trackerhandler", TrackerHandler(obj))
         # initialize object
         tracker = trackerclass(self, fieldname, sessid, *args, **kwargs)
         _GA(obj, "_trackerhandler").add(fieldname, tracker)
-
         # store calling arguments as a pickle for retrieval later
         obj_packed = pack_dbobj(obj)
         storekey = (obj_packed, sessid, fieldname)
@@ -266,10 +266,8 @@ class OOBHandler(object):
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
+        try: obj = obj.dbobj
+        except AttributeError: pass
 
         try:
             # call at_delete hook
@@ -303,14 +301,18 @@ class OOBHandler(object):
         name in a way the Attribute expects.
         """
         # get the attribute object if we can
+        try: obj = obj.dbobj
+        except AttributeError: pass
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
-            self.track(attrobj, sessid, attr_name, trackerclass)
+            self.track(attrobj, sessid, "db_value", trackerclass, attr_name)
 
     def untrack_attribute(self, obj, sessid, attr_name, trackerclass):
         """
         Shortcut for deactivating tracking for a given attribute.
         """
+        try: obj = obj.dbobj
+        except AttributeError: pass
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
             self.untrack(attrobj, sessid, attr_name, trackerclass)
@@ -363,17 +365,19 @@ class OOBHandler(object):
             #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc = _OOB_FUNCS[func_key] # raise traceback if not found
             oobfunc(self, session, *args, **kwargs)
-        except KeyError:
-            errmsg = "OOB Error: function '%s' not recognized." % func_key
+        except KeyError,e:
+            errmsg = "OOB Error: function '%s' not recognized: %s" % (func_key, e)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
             else:
                 logger.log_trace(errmsg)
+            raise
         except Exception, err:
             errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (func_key, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
             else:
                 logger.log_trace(errmsg)
+            raise
 # access object
 OOB_HANDLER = OOBHandler()
