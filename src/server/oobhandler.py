@@ -307,13 +307,13 @@ class OOBHandler(object):
         if attrobj:
             self.track(attrobj, sessid, attr_name, trackerclass)
 
-    def untrack_attribute(self, obj, sessid, attr_name, tracker_key="oobtracker"):
+    def untrack_attribute(self, obj, sessid, attr_name, trackerclass):
         """
         Shortcut for deactivating tracking for a given attribute.
         """
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
-            self.untrack(attrobj, sessid, attr_name)
+            self.untrack(attrobj, sessid, attr_name, trackerclass)
 
     def repeat(self, obj, sessid, func_key, interval=20, *args, **kwargs):
         """
@@ -348,7 +348,7 @@ class OOBHandler(object):
     def msg(self, sessid, funcname, *args, **kwargs):
         "Shortcut to relay oob data back to portal"
         session = self.sessionhandler.session_from_sessid(sessid)
-        print "oobhandler msg:", sessid, session, funcname, args, kwargs
+        #print "oobhandler msg:", sessid, session, funcname, args, kwargs
         if session:
             session.msg(oob=(funcname, args, kwargs))
 
@@ -360,7 +360,7 @@ class OOBHandler(object):
         using *args and **kwargs
         """
         try:
-            print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
+            #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc = _OOB_FUNCS[func_key] # raise traceback if not found
             oobfunc(self, session, *args, **kwargs)
         except KeyError:
