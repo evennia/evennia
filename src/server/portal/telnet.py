@@ -13,6 +13,7 @@ from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
+from src.utils.utils import make_iter, is_iter
 
 _RE_N = re.compile(r"\{n$")
 
@@ -36,13 +37,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # negotiate ttype (client info)
         #self.ttype = ttype.Ttype(self)
         # negotiate mssp (crawler communication)
-        self.mssp = mssp.Mssp(self)
+        #self.mssp = mssp.Mssp(self)
         # msdp
-        #self.msdp = msdp.Msdp(self)
+        self.msdp = msdp.Msdp(self)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
-
 
     def enableRemote(self, option):
         """
@@ -69,7 +69,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         else:
             return super(TelnetProtocol, self).disableLocal(option)
 
-
     def connectionLost(self, reason):
         """
         This is executed when the connection is lost for
@@ -86,13 +85,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         be handled in line mode. Some clients also sends an erroneous
         line break after IAC, which we must watch out for.
         """
-        #print "dataRcv (%s):" % data,
-        #try:
-        #    for b in data:
-        #        print ord(b),
-        #    print ""
-        #except Exception, e:
-        #    print str(e) + ":", str(data)
 
         if data and data[0] == IAC or self.iaw_mode:
             try:
@@ -103,8 +95,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 else:
                     self.iaw_mode = False
                 return
-            except Exception:
-                logger.log_trace()
+            except Exception, err1:
+                conv = ""
+                try:
+                    for b in data:
+                        conv += " " + repr(ord(b))
+                except Exception, err2:
+                    conv = str(err2) + ":", str(data)
+                out = "Telnet Error (%s): %s (%s)" % (err1, data, conv)
+                logger.log_trace(out)
+                return
         # if we get to this point the command must end with a linebreak.
         # We make sure to add it, to fix some clients messing this up.
         data = data.rstrip("\r\n") + "\n"
@@ -131,7 +131,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Telnet method called when data is coming in over the telnet
         connection. We pass it on to the game engine directly.
         """
-        self.sessionhandler.data_in(self, string)
+        self.data_in(text=string)
 
 
     # Session hooks
@@ -145,11 +145,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.data_out(reason)
         self.connectionLost(reason)
 
+    def data_in(self, text=None, **kwargs):
+        """
+        Data Telnet -> Server
+        """
+        self.sessionhandler.data_in(self, text=text, **kwargs)
+
     def data_out(self, text=None, **kwargs):
         """
+        Data Evennia -> Player.
         generic hook method for engine to call in order to send data
         through the telnet connection.
-        Data Evennia -> Player.
 
         valid telnet kwargs:
             raw=True - pass string through without any ansi processing (i.e. include Evennia
@@ -163,6 +169,15 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         except Exception, e:
             self.sendLine(str(e))
             return
+        if "oob" in kwargs:
+            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
+            if "MSDP" in self.protocol_flags:
+                for cmdname, args, kwargs in oobstruct:
+                    #print "cmdname, args, kwargs:", cmdname, args, kwargs
+                    msdp_string = self.msdp.evennia_to_msdp(cmdname, *args, **kwargs)
+                    #print "msdp_string:", msdp_string
+                    self.msdp.data_out(msdp_string)
+
         ttype = self.protocol_flags.get('TTYPE', {})
         raw = kwargs.get("raw", False)
         nomarkup = not (ttype or ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))

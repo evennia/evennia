@@ -342,10 +342,6 @@ class ChannelDB(TypedObject):
     _typeclass_paths = settings.COMM_TYPECLASS_PATHS
     _default_typeclass_path = settings.BASE_COMM_TYPECLASS or "src.comms.comms.Comm"
 
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Channel"
-
     def __init__(self, *args, **kwargs):
         TypedObject.__init__(self, *args, **kwargs)
         _SA(self, "tags", TagHandler(self, category_prefix="comm_"))

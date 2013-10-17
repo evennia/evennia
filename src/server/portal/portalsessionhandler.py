@@ -127,7 +127,6 @@ class PortalSessionHandler(SessionHandler):
         in from the protocol to the server. data is
         serialized before passed on.
         """
-        #print "portal_data_in:", string
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)
@@ -137,6 +136,7 @@ class PortalSessionHandler(SessionHandler):
         """
         for session in self.sessions.values():
             session.data_out(message)
+
 
     def data_out(self, sessid, text=None, **kwargs):
         """

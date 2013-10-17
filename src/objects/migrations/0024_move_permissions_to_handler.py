@@ -11,12 +11,16 @@ class Migration(DataMigration):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-
+        Tag = orm['typeclasses.Tag']
         for obj in orm.ObjectDB.objects.all():
             if obj.db_permissions:
                 for perm in [perm.strip() for perm in obj.db_permissions.split(",")]:
-                    tag = orm['typeclasses.Tag'].create(db_key=perm, db_category="permissions")
-                    tag.save()
+                    tag = Tag.objects.filter(db_key=perm.lower().strip(), db_category="permissions")
+                    if tag:
+                        tag = tag[0]
+                    else:
+                        tag = Tag(db_key=perm.lower().strip(), db_category="permissions")
+                        tag.save()
                     obj.db_tags.add(tag)
 
     def backwards(self, orm):

@@ -27,6 +27,7 @@ _ServerSession = None
 _ServerConfig = None
 _ScriptDB = None
 
+
 # AMP signals
 PCONN = chr(1)       # portal session connect
 PDISCONN = chr(2)    # portal session disconnect
@@ -95,6 +96,55 @@ class SessionHandler(object):
         sessions in store.
         """
         return dict((sessid, sess.get_sync_data()) for sessid, sess in self.sessions.items())
+
+    def oobstruct_parser(self, oobstruct):
+        """
+         Helper method for each session to use to parse oob structures
+         (The 'oob' kwarg of the msg() method)
+         allowed oob structures are
+                 cmdname
+                ((cmdname,), (cmdname,))
+                (cmdname,(arg, ))
+                (cmdname,(arg1,arg2))
+                (cmdname,{key:val,key2:val2})
+                (cmdname, (args,), {kwargs})
+                ((cmdname, (arg1,arg2)), cmdname, (cmdname, (arg1,)))
+        outputs an ordered structure on the form
+                ((cmdname, (args,), {kwargs}), ...), where the two last parts of each tuple may be empty
+        """
+        def _parse(oobstruct):
+            slen = len(oobstruct)
+            if not oobstruct:
+                return tuple(None, (), {})
+            elif not hasattr(oobstruct, "__iter__"):
+                # a singular command name, without arguments or kwargs
+                return (oobstruct.lower(), (), {})
+            # regardless of number of args/kwargs, the first element must be the function name.
+            # we will not catch this error if not, but allow it to propagate.
+            if slen == 1:
+                return (oobstruct[0].lower(), (), {})
+            elif slen == 2:
+                if isinstance(oobstruct[1], dict):
+                    # cmdname, {kwargs}
+                    return (oobstruct[0].lower(), (), dict(oobstruct[1]))
+                elif isinstance(oobstruct[1], (tuple, list)):
+                    # cmdname, (args,)
+                    return (oobstruct[0].lower(), tuple(oobstruct[1]), {})
+            else:
+                # cmdname, (args,), {kwargs}
+                return (oobstruct[0].lower(), tuple(oobstruct[1]), dict(oobstruct[2]))
+
+        if hasattr(oobstruct, "__iter__"):
+            # differentiate between (cmdname, cmdname), (cmdname, args, kwargs) and ((cmdname,args,kwargs), (cmdname,args,kwargs), ...)
+
+            if oobstruct and isinstance(oobstruct[0], basestring):
+                return (tuple(_parse(oobstruct)),)
+            else:
+                out = []
+                for oobpart in oobstruct:
+                    out.append(_parse(oobpart))
+                return (tuple(out),)
+        return (_parse(oobstruct),)
 
 #------------------------------------------------------------
 # Server-SessionHandler class
@@ -357,6 +407,7 @@ class ServerSessionHandler(SessionHandler):
             return self.sessions.get(sessid)
         return None
 
+
     def announce_all(self, message):
         """
         Send message to all connected sessions
@@ -378,6 +429,5 @@ class ServerSessionHandler(SessionHandler):
         session = self.sessions.get(sessid, None)
         if session:
             session.data_in(text=text, **kwargs)
-
 
 SESSIONS = ServerSessionHandler()

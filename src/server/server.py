@@ -214,10 +214,14 @@ class Evennia(object):
         [(o.typeclass, o.at_init()) for o in ObjectDB.get_all_cached_instances()]
         [(p.typeclass, p.at_init()) for p in PlayerDB.get_all_cached_instances()]
 
+        with open(SERVER_RESTART, 'r') as f:
+            mode = f.read()
+        if mode in ('True', 'reload'):
+            from src.server.oobhandler import OOB_HANDLER
+            OOB_HANDLER.restore()
+
         if SERVER_STARTSTOP_MODULE:
             # call correct server hook based on start file value
-            with open(SERVER_RESTART, 'r') as f:
-                mode = f.read()
             if mode in ('True', 'reload'):
                 # True was the old reload flag, kept for compatibilty
                 SERVER_STARTSTOP_MODULE.at_server_reload_start()
@@ -279,6 +283,9 @@ class Evennia(object):
             yield [(s.typeclass, s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
             yield self.sessions.all_sessions_portal_sync()
             ServerConfig.objects.conf("server_restart_mode", "reload")
+
+            from src.server.oobhandler import OOB_HANDLER
+            OOB_HANDLER.save()
 
             if SERVER_STARTSTOP_MODULE:
                 SERVER_STARTSTOP_MODULE.at_server_reload_stop()

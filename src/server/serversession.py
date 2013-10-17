@@ -20,6 +20,7 @@ from src.server.session import Session
 IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _ObjectDB = None
+_OOB_HANDLER = None
 
 # load optional out-of-band function module
 OOB_PLUGIN_MODULE = settings.OOB_PLUGIN_MODULE
@@ -136,6 +137,14 @@ class ServerSession(Session):
         return self.logged_in and self.puppet
     get_character = get_puppet
 
+    def get_puppet_or_player(self):
+        """
+        Returns session if not logged in; puppet if one exists, otherwise return the player.
+        """
+        if self.logged_in:
+            return self.puppet if self.puppet else self.player
+        return None
+
     def log(self, message, channel=True):
         """
         Emits session info to the appropriate outputs and info channels.
@@ -178,8 +187,14 @@ class ServerSession(Session):
             cmdhandler.cmdhandler(self, text, callertype="session", sessid=self.sessid)
             self.update_session_counters()
         if "oob" in kwargs:
-            # relay to OOB handler
-            pass
+            # handle oob instructions
+            global _OOB_HANDLER
+            if not _OOB_HANDLER:
+                from src.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
+            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob", None))
+            for (funcname, args, kwargs) in oobstruct:
+                if funcname:
+                    _OOB_HANDLER.execute_cmd(self, funcname, *args, **kwargs)
 
     execute_cmd = data_in # alias
 

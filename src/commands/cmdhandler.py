@@ -316,6 +316,7 @@ def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessi
                 else:
                     # fallback to default error text
                     sysarg = _("Command '%s' is not available.") % raw_string
+                    cmdset.get_all_cmd_keys_and_aliases(caller)
                     suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(caller), cutoff=0.7, maxnum=3)
                     if suggestions:
                         sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
@@ -332,7 +333,7 @@ def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessi
                 if syscmd:
                     # replace system command with custom version
                     cmd = syscmd
-                cmd.sessid = caller.sessid if callertype=="session" else None
+                cmd.sessid = session.sessid if session else None
                 sysarg = "%s:%s" % (cmdname, args)
                 raise ExecSystemCommand(cmd, sysarg)
 
@@ -398,7 +399,7 @@ def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessi
                 syscmd.cmdstring = syscmd.key
                 syscmd.args = sysarg
                 syscmd.cmdset = cmdset
-                syscmd.sessid = caller.sessid if callertype=="session" else None
+                syscmd.sessid = session.sessid if session else None
                 syscmd.raw_string = unformatted_raw_string
 
                 if hasattr(syscmd, 'obj') and hasattr(syscmd.obj, 'scripts'):

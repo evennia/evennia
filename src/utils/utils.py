@@ -729,10 +729,10 @@ def mod_import(module):
 
 def all_from_module(module):
     """
-    Return all global-level variables from a module
+    Return all global-level variables from a module as a dict
     """
     mod = mod_import(module)
-    return [val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))]
+    return dict((key, val) for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val)))
 
 def variable_from_module(module, variable=None, default=None):
     """

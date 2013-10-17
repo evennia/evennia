@@ -8,7 +8,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        # Note: Don't use "from appname.models import ModelName". 
+        # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
         ChannelDB = orm['comms.ChannelDB']
@@ -28,8 +28,12 @@ class Migration(DataMigration):
             new_channel.db_attributes.add(keep_log)
             for name in [alias.strip() for alias in
                     channel.db_aliases.split(',')]:
-                tag = Tag(db_key=name, db_category='comm_alias')
-                tag.save()
+                tag = Tag.objects.filter(db_key=name.lower().strip(), db_category='comm_alias')
+                if tag:
+                    tag = tag[0]
+                else:
+                   tag = Tag(db_key=name.lower().strip(), db_category='comm_alias')
+                   tag.save()
                 new_channel.db_tags.add(tag)
             new_channel.save()
 

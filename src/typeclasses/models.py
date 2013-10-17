@@ -437,7 +437,7 @@ class NickHandler(AttributeHandler):
     with categories nick_<nicktype>
     """
     def has(self, key, category="inputline"):
-        categry = "nick_%s" % category
+        category = "nick_%s" % category
         return super(NickHandler, self).has(key, category=category)
 
     def get(self, key=None, category="inputline", **kwargs):
@@ -461,6 +461,34 @@ class NickHandler(AttributeHandler):
             category = "nick_%s" % category
             return super(NickHandler, self).all(category=category)
         return _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith="nick_")
+
+class NAttributeHandler(object):
+    """
+    This stand-alone handler manages non-database saved properties by storing them
+    as properties on obj.ndb. It has the same methods as AttributeHandler, but they
+    are much simplified.
+    """
+    def __init__(self, obj):
+        "initialized on the object"
+        self.ndb = _GA(obj, "ndb")
+    def has(self, key):
+        "Check if object has this attribute or not"
+        return _GA(self.ndb, key) # ndb returns None if not found
+    def get(self, key):
+        "Returns named key value"
+        return _GA(self.ndb, key)
+    def add(self, key, value):
+        "Add new key and value"
+        _SA(self.ndb, key, value)
+    def remove(self, key):
+        "Remove key from storage"
+        _DA(self.ndb, key)
+    def all(self):
+        "List all keys stored"
+        if callable(self.ndb.all):
+            return self.ndb.all()
+        else:
+            return [val for val in self.ndb.__dict__.keys() if not val.startswith('_')]
 
 #------------------------------------------------------------
 #
@@ -645,6 +673,7 @@ class TypedObject(SharedMemoryModel):
         _SA(self, "dbobj", self)   # this allows for self-reference
         _SA(self, "locks", LockHandler(self))
         _SA(self, "permissions", PermissionHandler(self))
+        _SA(self, "nattributes", NAttributeHandler(self))
 
     class Meta:
         """
@@ -1148,6 +1177,9 @@ class TypedObject(SharedMemoryModel):
                        if hperm in perms and hpos > ppos)
         return False
 
+    #
+    # Memory management
+    #
 
     def flush_from_cache(self):
         """
@@ -1156,6 +1188,60 @@ class TypedObject(SharedMemoryModel):
         as a new Typeclass instance.
         """
         self.__class__.flush_cached_instance(self)
+
+    #
+    # Attribute storage
+    #
+
+    #@property db
+    def __db_get(self):
+        """
+        Attribute handler wrapper. Allows for the syntax
+           obj.db.attrname = value
+             and
+           value = obj.db.attrname
+             and
+           del obj.db.attrname
+             and
+           all_attr = obj.db.all (unless there is no attribute named 'all', in which
+                                    case that will be returned instead).
+        """
+        try:
+            return self._db_holder
+        except AttributeError:
+            class DbHolder(object):
+                "Holder for allowing property access of attributes"
+                def __init__(self, obj):
+                    _SA(self, 'obj', obj)
+                    _SA(self, "attrhandler", _GA(_GA(self, "obj"), "attributes"))
+                def __getattribute__(self, attrname):
+                    if attrname == 'all':
+                        # we allow to overload our default .all
+                        attr = _GA(self, "attrhandler").get("all")
+                        if attr:
+                            return attr
+                        return _GA(self, 'all')
+                    return _GA(self, "attrhandler").get(attrname)
+                def __setattr__(self, attrname, value):
+                    _GA(self, "attrhandler").add(attrname, value)
+                def __delattr__(self, attrname):
+                    _GA(self, "attrhandler").remove(attrname)
+                def get_all(self):
+                    return _GA(self, "attrhandler").all()
+                all = property(get_all)
+            self._db_holder = DbHolder(self)
+            return self._db_holder
+    #@db.setter
+    def __db_set(self, value):
+        "Stop accidentally replacing the db object"
+        string = "Cannot assign directly to db object! "
+        string += "Use db.attr=value instead."
+        raise Exception(string)
+    #@db.deleter
+    def __db_del(self):
+        "Stop accidental deletion."
+        raise Exception("Cannot delete the db object!")
+    db = property(__db_get, __db_set, __db_del)
 
     #
     # Non-persistent (ndb) storage
@@ -1202,35 +1288,12 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete the ndb object!")
     ndb = property(__ndb_get, __ndb_set, __ndb_del)
 
-    #def nattr(self, attribute_name=None, value=None, delete=False):
-    #    """
-    #    This allows for assigning non-persistent data on the object using
-    #    a method call. Will return None if trying to access a non-existing property.
-    #    """
-    #    if attribute_name == None:
-    #        # act as a list method
-    #        if callable(self.ndb.all):
-    #            return self.ndb.all()
-    #        else:
-    #            return [val for val in self.ndb.__dict__.keys()
-    #                    if not val.startswith['_']]
-    #    elif delete == True:
-    #        if hasattr(self.ndb, attribute_name):
-    #            _DA(_GA(self, "ndb"), attribute_name)
-    #    elif value == None:
-    #        # act as a getter.
-    #        if hasattr(self.ndb, attribute_name):
-    #            _GA(_GA(self, "ndb"), attribute_name)
-    #        else:
-    #            return None
-    #    else:
-    #        # act as a setter
-    #        _SA(self.ndb, attribute_name, value)
+
 
 
 
     #
-    # Attribute handler methods  - DEPRECATED!
+    # ***** DEPRECATED METHODS BELOW   *******
     #
 
     #
@@ -1366,56 +1429,31 @@ class TypedObject(SharedMemoryModel):
                 # creating a new attribute - check access on storing object!
                 _GA(self, "attributes").add(attribute_name, value, accessing_obj=accessing_object, default_access=default_access_create)
 
-    #@property
-    def __db_get(self):
+    def nattr(self, attribute_name=None, value=None, delete=False):
         """
-        A second convenience wrapper for the the attribute methods. It
-        allows for the syntax
-           obj.db.attrname = value
-             and
-           value = obj.db.attrname
-             and
-           del obj.db.attrname
-             and
-           all_attr = obj.db.all (unless there is no attribute named 'all', in which
-                                    case that will be returned instead).
+        This allows for assigning non-persistent data on the object using
+        a method call. Will return None if trying to access a non-existing property.
         """
-        try:
-            return self._db_holder
-        except AttributeError:
-            class DbHolder(object):
-                "Holder for allowing property access of attributes"
-                def __init__(self, obj):
-                    _SA(self, 'obj', obj)
-                    _SA(self, "attrhandler", _GA(_GA(self, "obj"), "attributes"))
-                def __getattribute__(self, attrname):
-                    if attrname == 'all':
-                        # we allow to overload our default .all
-                        attr = _GA(self, "attrhandler").get("all")
-                        if attr:
-                            return attr
-                        return _GA(self, 'all')
-                    return _GA(self, "attrhandler").get(attrname)
-                def __setattr__(self, attrname, value):
-                    _GA(self, "attrhandler").add(attrname, value)
-                def __delattr__(self, attrname):
-                    _GA(self, "attrhandler").remove(attrname)
-                def get_all(self):
-                    return _GA(self, "attrhandler").all()
-                all = property(get_all)
-            self._db_holder = DbHolder(self)
-            return self._db_holder
-    #@db.setter
-    def __db_set(self, value):
-        "Stop accidentally replacing the db object"
-        string = "Cannot assign directly to db object! "
-        string += "Use db.attr=value instead."
-        raise Exception(string)
-    #@db.deleter
-    def __db_del(self):
-        "Stop accidental deletion."
-        raise Exception("Cannot delete the db object!")
-    db = property(__db_get, __db_set, __db_del)
+        logger.log_depmsg("obj.nattr() is deprecated. Use obj.nattributes instead.")
+        if attribute_name == None:
+            # act as a list method
+            if callable(self.ndb.all):
+                return self.ndb.all()
+            else:
+                return [val for val in self.ndb.__dict__.keys()
+                        if not val.startswith['_']]
+        elif delete == True:
+            if hasattr(self.ndb, attribute_name):
+                _DA(_GA(self, "ndb"), attribute_name)
+        elif value == None:
+            # act as a getter.
+            if hasattr(self.ndb, attribute_name):
+                _GA(_GA(self, "ndb"), attribute_name)
+            else:
+                return None
+        else:
+            # act as a setter
+            _SA(self.ndb, attribute_name, value)
 
 
 
