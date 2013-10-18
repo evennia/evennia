@@ -556,7 +556,7 @@ class TagHandler(object):
         "Add a new tag to the handler. Tag is a string or a list of strings."
         for tagstr in make_iter(tag):
             tagstr = tagstr.strip().lower() if tagstr!=None else None
-            category = "%s%s" % (self.prefix, category.strip().lower()) if category!=None else None
+            category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
             data = str(data) if data!=None else None
             # this will only create tag if no matches existed beforehand (it will overload
             # data on an existing tag since that is not considered part of making the tag unique)
@@ -568,7 +568,7 @@ class TagHandler(object):
     def get(self, key, category="", return_obj=False):
         "Get the data field for the given tag or list of tags. If return_obj=True, return the matching Tag objects instead."
         ret = []
-        category = "%s%s" % (self.prefix, category.strip().lower()) if category!=None else None
+        category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
         for keystr in make_iter(key):
             ret.expand(_GA(self.obj, self._m2m_fieldname).filter(db_key__iexact=keystr, db_category__iexact=category))
         ret = ret if return_obj else [to_str(tag.db_data) for tag in ret]
@@ -580,7 +580,7 @@ class TagHandler(object):
             if not tag or tag.strip(): # we don't allow empty tags
                 continue
             tag = tag.strip().lower() if tag!=None else None
-            category = "%s%s" % (self.prefix, category.strip().lower()) if category!=None else None
+            category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
             #TODO This does not delete the tag object itself. Maybe it should do that when no
             # objects reference the tag anymore?
             tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
@@ -588,11 +588,11 @@ class TagHandler(object):
                 _GA(self.obj, self._m2m_fieldname).remove(tagobj[0])
     def clear(self):
         "Remove all tags from the handler"
-        _GA(self.obj, self._m2m_fieldname).clear()
+        _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).clear()
 
     def all(self):
         "Get all tags in this handler"
-        return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).all().values_list("db_key") if p[0]]
+        return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())
