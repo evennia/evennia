@@ -36,6 +36,8 @@ class Migration(DataMigration):
                    tag.save()
                 new_channel.db_tags.add(tag)
             new_channel.save()
+        orm['contenttypes.ContentType'].objects.filter(
+            app_label='comms', model='channel').update(model='channeldb', name='ChannelDB')
 
     def backwards(self, orm):
         "Remove all InterimChannels."

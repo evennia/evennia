@@ -20,3 +20,4 @@ docs/sphinx/wiki2rest/wiki2html/*
 docs/sphinx/wiki2rest/rest/*
 docs/sphinx/wiki2rest/html/*
 docs/sphinx/wiki2html/*
+.idea/*
