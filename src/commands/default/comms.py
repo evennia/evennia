@@ -18,7 +18,7 @@ from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 # limit symbol import for API
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
            "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
-           "CmdCWho", "CmdChannelCreate", "CmdCset", "CmdCdesc",
+           "CmdCWho", "CmdChannelCreate", "CmdClock", "CmdCdesc",
            "CmdPage", "CmdIRC2Chan", "CmdIMC2Chan", "CmdIMCInfo",
            "CmdIMCTell", "CmdRSS2Chan")
 

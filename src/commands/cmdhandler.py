@@ -224,11 +224,11 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None)
 # Main command-handler function
 
 @inlineCallbacks
-def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessid=None):
+def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessid=None):
     """
     This is the main function to handle any string sent to the engine.
 
-    called_on - object on which this was called from. This is either a Session, a Player or an Object.
+    called_by - object on which this was called from. This is either a Session, a Player or an Object.
     raw_string - the command string given on the command line
     testing - if we should actually execute the command or not.
               if True, the command instance will be returned instead.
@@ -246,16 +246,16 @@ def cmdhandler(called_on, raw_string, testing=False, callertype="session", sessi
     """
     session, player, obj = None, None, None
     if callertype == "session":
-        session = called_on
+        session = called_by
         player = session.player
         if player:
             obj = yield _GA(player.dbobj, "get_puppet")(session.sessid)
     elif callertype == "player":
-        player = called_on
+        player = called_by
         if sessid:
             obj = yield _GA(player.dbobj, "get_puppet")(sessid)
     elif callertype == "object":
-        obj = called_on
+        obj = called_by
     else:
         raise RuntimeError("cmdhandler: callertype %s is not valid." % callertype)
 
