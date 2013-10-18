@@ -141,8 +141,8 @@ class ObjectDB(TypedObject):
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "scripts", ScriptHandler(self))
         _SA(self, "attributes", AttributeHandler(self))
-        _SA(self, "tags", TagHandler(self))
-        _SA(self, "aliases", AliasHandler(self))
+        _SA(self, "tags", TagHandler(self, category_prefix="object_"))
+        _SA(self, "aliases", AliasHandler(self, category_prefix="object_"))
         _SA(self, "nicks", NickHandler(self))
         # make sure to sync the contents cache when initializing
         _GA(self, "contents_update")()

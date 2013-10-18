@@ -207,7 +207,7 @@ class ObjectManager(TypedObjectManager):
             key_candidates = self.filter(cand_restriction & type_restriction)
         else:
             # fuzzy without supplied candidates - we select our own candidates
-            key_candidates = self.filter(type_restriction & (Q(db_key__istartswith=ostring) | Q(alias__db_key__istartswith=ostring))).distinct()
+            key_candidates = self.filter(type_restriction & (Q(db_key__istartswith=ostring) | Q(db_tags__db_key__istartswith=ostring))).distinct()
             candidates_id = [_GA(obj, "id") for obj in key_candidates]
         # fuzzy matching
         key_strings = key_candidates.values_list("db_key", flat=True)
