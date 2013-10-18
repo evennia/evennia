@@ -9,10 +9,10 @@ pieces of functionality:
                          are valid for this use.
     repeat func execution - the oob protocol can request a given function be executed repeatedly
                             at a regular interval.
-    tracking - the oob protocol can request Evennia to track changes to fields/properties on
+    tracking - the oob protocol can request Evennia to track changes to fields on
                objects, as well as changes in Attributes. This is done by dynamically adding
                tracker-objects on entities. The behaviour of those objects can be customized
-               via settings.OOB_PLUGIN_MODULE.OOB_TRACKERS.
+               via settings.OOB_PLUGIN_MODULE
 
 oob functions have the following call signature:
     function(caller, *args, **kwargs)
@@ -278,6 +278,13 @@ class OOBHandler(object):
         store_key = (pack_dbobj(obj), sessid, fieldname)
         self.oob_tracker_storage.pop(store_key, None)
 
+    def get_all_tracked(session):
+        """
+        Get the names of all variables this session is tracking.
+        """
+        sessid = session.sessid
+        return [key[2].lstrip("db_") for key in self.oob_tracker_storage.keys() if key[1] == sessid]
+
     def track_field(self, obj, sessid, field_name, trackerclass):
         """
         Shortcut wrapper method for specifically tracking a database field.
@@ -328,7 +335,7 @@ class OOBHandler(object):
         try:
             obj = obj.dbobj
         except AttributeError:
-            pass
+            passj
         store_obj = pack_dbobj(obj)
         store_key = (store_obj, sessid, func_key, interval)
         # prepare to store
@@ -348,13 +355,14 @@ class OOBHandler(object):
         self.oob_repeat_storage.pop(store_key, None)
 
     def msg(self, sessid, funcname, *args, **kwargs):
-        "Shortcut to relay oob data back to portal"
+        "Shortcut to relay oob data back to portal. Used by oob functions."
         session = self.sessionhandler.session_from_sessid(sessid)
         #print "oobhandler msg:", sessid, session, funcname, args, kwargs
         if session:
             session.msg(oob=(funcname, args, kwargs))
 
-    # access method - called from msg()
+    # access method - called from session.msg()
+
 
     def execute_cmd(self, session, func_key, *args, **kwargs):
         """

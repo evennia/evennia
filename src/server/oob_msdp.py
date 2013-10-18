@@ -1,5 +1,7 @@
 """
-Out-of-band default plugin functions for the OOB handler
+Out-of-band default plugin commands available for OOB handler. This
+follows the standards defined by the MSDP out-of-band protocol
+(http://tintin.sourceforge.net/msdp/)
 
 """
 from django.conf import settings
@@ -187,19 +189,19 @@ def LIST(oobhandler, session, mode, *args, **kwargs):
     mode = mode.upper()
     # the first return argument is treated by the msdp protocol as the name of the msdp array to return
     if mode == "COMMANDS":
-        session.msg(oob=("list", ("COMMANDS", "LIST", "REPORT", "UNREPORT", "SEND", "RESET")))
+        session.msg(oob=("list", ("COMMANDS", "LIST", "REPORT", "UNREPORT", "SEND"))) # RESET
     elif mode == "LISTS":
         session.msg(oob=("list", ("LISTS", "REPORTABLE_VARIABLES","REPORTED_VARIABLES", "SENDABLE_VARIABLES"))) #CONFIGURABLE_VARIABLES
     elif mode == "REPORTABLE_VARIABLES":
         session.msg(oob=("list", ("REPORTABLE_VARIABLES",) + tuple(key for key in OOB_REPORTABLE.keys())))
     elif mode == "REPORTED_VARIABLES":
-        pass
+        session.msg(oob=("list", ("REPORTED_VARIABLES",) + tuple(oobhandler.get_all_tracked(session))))
     elif mode == "SENDABLE_VARIABLES":
-        pass
-    elif mode == "CONFIGURABLE_VARIABLES":
-        pass
+        session.msg(oob=("list", ("SENDABLE_VARIABLES",) + tuple(key for key in OOB_REPORTABLE.keys())))
+    #elif mode == "CONFIGURABLE_VARIABLES":
+    #    pass
     else:
-        session.msg(oob=("list", ("wrong mode",)))
+        session.msg(oob=("list", ("unsupported mode",)))
 
 
 def send(oobhandler, session, *args, **kwargs):
