@@ -115,6 +115,7 @@ class Comm(TypeClass):
         Run right before a channel is joined. If this returns a false value,
         channel joining is aborted.
         """
+        return True
 
     def post_join_channel(self, joiner):
         """
