@@ -136,7 +136,6 @@ class Msg(SharedMemoryModel):
             elif typ == 'external':
                 self.db_sender_external = "1"
                 self.extra_senders.append(obj)
-                print "I ran!"
             elif isinstance(typ, basestring):
                 self.db_sender_external = obj
             elif not obj:
@@ -599,7 +598,7 @@ class ExternalChannelConnection(SharedMemoryModel):
 
         # make sure we are not echoing back our own message to ourselves
         # (this would result in a nasty infinite loop)
-        print senders
+        #print senders
         if self in make_iter(senders):#.external_key:
             return
 

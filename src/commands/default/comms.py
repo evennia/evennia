@@ -254,13 +254,13 @@ class CmdChannels(MuxPlayerCommand):
 
         # all channels we have available to listen to
         channels = [chan for chan in ChannelDB.objects.get_all_channels() if chan.access(caller, 'listen')]
-        print channels
+        #print channels
         if not channels:
             self.msg("No channels available.")
             return
         # all channel we are already subscribed to
         subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
-        print subs
+        #print subs
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
@@ -320,7 +320,7 @@ class CmdCdestroy(MuxPlayerCommand):
         channel.msg(msgobj)
         channel.delete()
         CHANNELHANDLER.update()
-        self.msg("%s was destroyed." % channel)
+        self.msg("Channel '%s' was destroyed." % channel)
 
 class CmdCBoot(MuxPlayerCommand):
     """

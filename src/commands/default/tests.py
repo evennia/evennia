@@ -134,7 +134,6 @@ class CommandTest(TestCase):
                 retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                 raise AssertionError(retval)
 
-
 #------------------------------------------------------------
 # Individual module Tests
 #------------------------------------------------------------
@@ -253,7 +252,7 @@ class TestComms(CommandTest):
         self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer7")
         self.call(comms.CmdPage(), "TestPlayer7b = Test", "You paged TestPlayer7b with: 'Test'.")
         self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]") # noone else connected to boot
-        self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' (Test Channel) was destroyed.")
+        self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' was destroyed.")
 
 from src.commands.default import batchprocess
 class TestBatchProcess(CommandTest):
