@@ -30,7 +30,7 @@ def _init_command(mcs, **kwargs):
             mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases.split(',')]
         except Exception:
             mcs.aliases = []
-    mcs.aliases = list(set(alias for alias in mcs.aliases if alias != mcs.key))
+    mcs.aliases = list(set(alias for alias in mcs.aliases if alias and alias != mcs.key))
 
     # optimization - a set is much faster to match against than a list
     mcs._matchset = set([mcs.key] + mcs.aliases)

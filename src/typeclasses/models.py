@@ -592,7 +592,7 @@ class TagHandler(object):
 
     def all(self):
         "Get all tags in this handler"
-        return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).all().values_list("db_key")]
+        return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).all().values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())

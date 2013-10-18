@@ -316,7 +316,6 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                 else:
                     # fallback to default error text
                     sysarg = _("Command '%s' is not available.") % raw_string
-                    cmdset.get_all_cmd_keys_and_aliases(caller)
                     suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(caller), cutoff=0.7, maxnum=3)
                     if suggestions:
                         sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)

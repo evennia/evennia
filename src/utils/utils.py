@@ -39,7 +39,6 @@ def is_iter(iterable):
     except AttributeError:
         return False
 
-
 def make_iter(obj):
     "Makes sure that the object is always iterable."
     return not hasattr(obj, '__iter__') and [obj] or obj
@@ -796,7 +795,7 @@ def string_similarity(string1, string2):
     This implements a "cosine-similarity" algorithm as described for example in
        Proceedings of the 22nd International Conference on Computation Linguistics
        (Coling 2008), pages 593-600, Manchester, August 2008
-    The measure vectors used is simply a "bag of words" type histogram (but for letters).
+    The measure-vectors used is simply a "bag of words" type histogram (but for letters).
 
     The function returns a value 0...1 rating how similar the two strings are. The strings can
     contain multiple words.
@@ -804,8 +803,12 @@ def string_similarity(string1, string2):
     vocabulary = set(list(string1 + string2))
     vec1 = [string1.count(v) for v in vocabulary]
     vec2 = [string2.count(v) for v in vocabulary]
-    return float(sum(vec1[i]*vec2[i] for i in range(len(vocabulary)))) / \
-           (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
+    try:
+        return float(sum(vec1[i]*vec2[i] for i in range(len(vocabulary)))) / \
+               (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
+    except ZeroDivisionError:
+        # can happen if empty-string cmdnames appear for some reason. This is a no-match.
+        return 0
 
 def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     """
