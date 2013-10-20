@@ -119,9 +119,6 @@ def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwarg
         #    # update cache
         #    _FIELD_CACHE[hid] = new_value
 
-def get_cache_sizes():
-    return (0, 0), (0, 0), (0, 0)
-
 #------------------------------------------------------------
 # Attr cache - caching the attribute objects related to a given object to
 # avoid lookups more than necessary (this makes Attributes en par in speed

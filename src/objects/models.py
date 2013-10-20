@@ -250,9 +250,9 @@ class ObjectDB(TypedObject):
             #print "db_location_handler2:", _GA(loc, "db_key") if loc else loc, type(loc)
             # update the contents of each location
             if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_remove")(self)
+                _GA(_GA(old_loc, "dbobj"), "contents_update")()
             if loc:
-                _GA(loc, "contents_add")(self)
+                _GA(loc, "contents_update")()
             return loc
         except RuntimeError:
             string = "Cannot set location, "
@@ -474,32 +474,19 @@ class ObjectDB(TypedObject):
         exclude is one or more objects to not return
         """
         contents = get_prop_cache(self, "_contents")
-        exclude = make_iter(exclude)
         if contents == None:
+            # this is the case if this is the first call
             contents = _GA(self, "contents_update")()
-        return [obj.typeclass for obj in contents.values() if obj not in exclude]
+        if exclude:
+            exclude = [obj.typeclass for obj in make_iter(exclude)]
+            return [obj for obj in contents if obj not in exclude]
+        else:
+            return contents
     contents = property(contents_get)
 
-    # manage the content cache
-    def contents_add(self, obj):
-        "Add a new object to the internal content cache"
-        contents = get_prop_cache(self, "_contents")
-        if contents == None:
-            contents={obj.dbid:obj}
-        else:
-            contents[obj.dbid] = obj
-        set_prop_cache(self, "_contents", contents)
-    def contents_remove(self, obj):
-        "Remove object from internal content cache"
-        contents = get_prop_cache(self, "_contents")
-        if contents == None:
-            contents = {}
-        else:
-            contents.pop(obj.dbid, None)
-        set_prop_cache(self, "_contents", contents)
     def contents_update(self):
         "Re-sync the contents cache"
-        contents = dict((o.dbid, o) for o in ObjectDB.objects.get_contents(self))
+        contents = ObjectDB.objects.get_contents(self)
         set_prop_cache(self, "_contents", contents)
         return contents
 
