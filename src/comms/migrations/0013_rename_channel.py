@@ -9,13 +9,11 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         db.rename_table('comms_channel', 'comms_channeldb')
-        db.rename_column('comms_externalchannelconnection', 'channel_id', 'channeldb_id')
         db.rename_column('comms_msg_db_hide_from_channels', 'channel_id', 'channeldb_id')
         db.rename_column('comms_msg_db_receivers_channels', 'channel_id', 'channeldb_id')
 
     def backwards(self, orm):
         db.rename_table('comms_channeldb', 'comms_channel')
-        db.rename_column('comms_externalchannelconnection', 'channeldb_id', 'channel_id')
         db.rename_column('comms_msg_db_hide_from_channels', 'channeldb_id', 'channel_id')
         db.rename_column('comms_msg_db_receivers_channels', 'channeldb_id', 'channel_id')
 
