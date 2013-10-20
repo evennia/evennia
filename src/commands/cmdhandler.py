@@ -47,8 +47,8 @@ from src.utils.utils import string_suggestions, make_iter
 from django.utils.translation import ugettext as _
 
 __all__ = ("cmdhandler",)
-
 _GA = object.__getattribute__
+_CMDSET_MERGE_CACHE = {}
 
 # This decides which command parser is to be used.
 # You have to restart the server for changes to take effect.
@@ -193,26 +193,32 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None)
     yield [report_to.msg(cmdset.errmessage) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
 
     if cmdsets:
-        # we group and merge all same-prio cmdsets separately (this avoids order-dependent
-        # clashes in certain cases, such as when duplicates=True)
-        tempmergers = {}
-        for cmdset in cmdsets:
-            prio = cmdset.priority
-            if prio in tempmergers:
-                # merge same-prio cmdset together separately
-                tempmergers[prio] = yield cmdset + tempmergers[prio]
-            else:
-                tempmergers[prio] = cmdset
+        mergehash = tuple([id(cmdset) for cmdset in cmdsets]) # faster to do tuple on list than to build tuple directly
+        if mergehash in _CMDSET_MERGE_CACHE:
+            # cached merge exist; use that
+            cmdset = _CMDSET_MERGE_CACHE[mergehash]
+        else:
+            # we group and merge all same-prio cmdsets separately (this avoids order-dependent
+            # clashes in certain cases, such as when duplicates=True)
+            tempmergers = {}
+            for cmdset in cmdsets:
+                prio = cmdset.priority
+                if prio in tempmergers:
+                    # merge same-prio cmdset together separately
+                    tempmergers[prio] = yield cmdset + tempmergers[prio]
+                else:
+                    tempmergers[prio] = cmdset
 
-        # sort cmdsets after reverse priority (highest prio are merged in last)
-        cmdsets = yield sorted(tempmergers.values(), key=lambda x: x.priority)
+            # sort cmdsets after reverse priority (highest prio are merged in last)
+            cmdsets = yield sorted(tempmergers.values(), key=lambda x: x.priority)
 
-        # Merge all command sets into one, beginning with the lowest-prio one
-        cmdset = cmdsets.pop(0)
-        for merging_cmdset in cmdsets:
-            #print "<%s(%s,%s)> onto <%s(%s,%s)>" % (merging_cmdset.key, merging_cmdset.priority, merging_cmdset.mergetype,
-            #                                        cmdset.key, cmdset.priority, cmdset.mergetype)
-            cmdset = yield merging_cmdset + cmdset
+            # Merge all command sets into one, beginning with the lowest-prio one
+            cmdset = cmdsets.pop(0)
+            for merging_cmdset in cmdsets:
+                #print "<%s(%s,%s)> onto <%s(%s,%s)>" % (merging_cmdset.key, merging_cmdset.priority, merging_cmdset.mergetype,
+                #                                        cmdset.key, cmdset.priority, cmdset.mergetype)
+                cmdset = yield merging_cmdset + cmdset
+            _CMDSET_MERGE_CACHE[mergehash] = cmdset
     else:
         cmdset = None
 

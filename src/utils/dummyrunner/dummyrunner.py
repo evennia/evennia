@@ -41,14 +41,15 @@ from twisted.internet.task import LoopingCall
 
 # Tack on the root evennia directory to the python path and initialize django settings
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-from game import settings
-try:
-    from django.conf import settings as settings2
-    settings2.configure()
-except RuntimeError
-    pass
-finally:
-    del settings2
+os.environ["DJANGO_SETTINGS_MODULE"] = "game.settings"
+#from game import settings
+#try:
+#    from django.conf import settings as settings2
+#    settings2.configure()
+#except RuntimeError:
+#    pass
+#finally:
+#    del settings2
 
 from django.conf import settings
 from src.utils import utils
