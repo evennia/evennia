@@ -247,12 +247,13 @@ class ObjectDB(TypedObject):
             try: is_loc_loop(loc)
             except RuntimeWarning: pass
 
-            #print "db_location_handler2:", _GA(loc, "db_key") if loc else loc, type(loc)
             # update the contents of each location
             if old_loc:
                 _GA(_GA(old_loc, "dbobj"), "contents_update")()
+                #print "after contents_update for old_loc:", old_loc.key, old_loc.contents
             if loc:
-                _GA(loc, "contents_update")()
+                _GA(_GA(loc, "dbobj"), "contents_update")()
+                #print "after contents_update for loc:", loc.key, loc.contents
             return loc
         except RuntimeError:
             string = "Cannot set location, "
@@ -464,7 +465,6 @@ class ObjectDB(TypedObject):
 
     # contents
 
-    #@property
     def contents_get(self, exclude=None):
         """
         Returns the contents of this object, i.e. all
@@ -973,5 +973,5 @@ class ObjectDB(TypedObject):
         super(ObjectDB, self).delete()
         # clear object's old  location's content cache of this object
         if old_loc:
-            old_loc.contents_update()
+            _GA(old_loc.dbobj, "contents_update")()
         return True

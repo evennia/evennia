@@ -194,7 +194,10 @@ from src.commands.default import player
 class TestPlayer(CommandTest):
    CID = 5
    def test_cmds(self):
-        self.call(player.CmdOOCLook(), "", "Account TestPlayer5 (you are OutofCharacter)", caller=self.player)
+        if settings.MULTISESSION_MODE < 2:
+            self.call(player.CmdOOCLook(), "", "You are outofcharacter (OOC).", caller=self.player)
+        if settings.MULTISESSION_MODE == 2:
+            self.call(player.CmdOOCLook(), "", "Account TestPlayer5 (you are OutofCharacter)", caller=self.player)
         self.call(player.CmdOOC(), "", "You are already", caller=self.player)
         self.call(player.CmdIC(), "Char5","You become Char5.", caller=self.player)
         self.call(player.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.player)

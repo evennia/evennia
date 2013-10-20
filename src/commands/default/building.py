@@ -421,6 +421,7 @@ class CmdCreate(ObjManipCommand):
             if 'drop' in self.switches:
                 if caller.location:
                     obj.home = caller.location
+                    print "Doing the drop"
                     obj.move_to(caller.location, quiet=True)
         if string:
            caller.msg(string)

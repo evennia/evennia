@@ -38,19 +38,15 @@ from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
-from django.db.models.signals import m2m_changed
 
 from src.utils.idmapper.models import SharedMemoryModel
-from src.server.caches import get_attr_cache, del_attr_cache, set_attr_cache
 from src.server.caches import get_prop_cache, set_prop_cache, flush_attr_cache
-from src.server.caches import post_attr_update
 
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
-from src.utils import logger, utils
+from src.utils import logger
 from src.utils.utils import make_iter, is_iter, to_str
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
@@ -58,6 +54,7 @@ from src.utils.picklefield import PickledObjectField
 __all__ = ("Attribute", "TypeNick", "TypedObject")
 
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
+_TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
 _CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
@@ -126,7 +123,6 @@ class Attribute(SharedMemoryModel):
         "Define Django meta options"
         verbose_name = "Evennia Attribute"
 
-
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
@@ -134,53 +130,6 @@ class Attribute(SharedMemoryModel):
     # defined that allows the user to do self.attr = value,
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
-
-    # key property (wraps db_key)
-    #@property
-    #def __key_get(self):
-    #    "Getter. Allows for value = self.key"
-    #    return get_field_cache(self, "key")
-    ##@key.setter
-    #def __key_set(self, value):
-    #    "Setter. Allows for self.key = value"
-    #    set_field_cache(self, "key", value)
-    ##@key.deleter
-    #def __key_del(self):
-    #    "Deleter. Allows for del self.key"
-    #    raise Exception("Cannot delete attribute key!")
-    #key = property(__key_get, __key_set, __key_del)
-
-    ## obj property (wraps db_obj)
-    ##@property
-    #def __obj_get(self):
-    #    "Getter. Allows for value = self.obj"
-    #    return get_field_cache(self, "obj")
-    ##@obj.setter
-    #def __obj_set(self, value):
-    #    "Setter. Allows for self.obj = value"
-    #    set_field_cache(self, "obj", value)
-    ##@obj.deleter
-    #def __obj_del(self):
-    #    "Deleter. Allows for del self.obj"
-    #    self.db_obj = None
-    #    self.save()
-    #    del_field_cache(self, "obj")
-    #obj = property(__obj_get, __obj_set, __obj_del)
-
-    ## date_created property (wraps db_date_created)
-    ##@property
-    #def __date_created_get(self):
-    #    "Getter. Allows for value = self.date_created"
-    #    return get_field_cache(self, "date_created")
-    ##@date_created.setter
-    #def __date_created_set(self, value):
-    #    "Setter. Allows for self.date_created = value"
-    #    raise Exception("Cannot edit date_created!")
-    ##@date_created.deleter
-    #def __date_created_del(self):
-    #    "Deleter. Allows for del self.date_created"
-    #    raise Exception("Cannot delete date_created!")
-    #date_created = property(__date_created_get, __date_created_set, __date_created_del)
 
     # value property (wraps db_value)
     #@property
@@ -213,22 +162,6 @@ class Attribute(SharedMemoryModel):
         "Deleter. Allows for del attr.value. This removes the entire attribute."
         self.delete()
     value = property(__value_get, __value_set, __value_del)
-
-    # lock_storage property (wraps db_lock_storage)
-    #@property
-    #def __lock_storage_get(self):
-    #    "Getter. Allows for value = self.lock_storage"
-    #    return get_field_cache(self, "lock_storage")
-    ##@lock_storage.setter
-    #def __lock_storage_set(self, value):
-    #    """Saves the lock_storage. This is usually not called directly, but through self.lock()"""
-    #    self.db_lock_storage = value
-    #    self.save()
-    ##@lock_storage.deleter
-    #def __lock_storage_del(self):
-    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    #lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
 
     #
@@ -274,6 +207,11 @@ class AttributeHandler(object):
     def __init__(self, obj):
         "Initialize handler"
         self.obj = obj
+        self._cache = None
+
+    def _recache(self):
+        self._cache = dict(("%s_%s" % (to_str(attr.db_key).lower(), to_str(attr.db_category, force_string=True).lower()), attr)
+                            for attr in _GA(self.obj, self._m2m_fieldname).all())
 
     def has(self, key, category=None):
         """
@@ -281,15 +219,12 @@ class AttributeHandler(object):
 
         If an iterable is given, returns list of booleans.
         """
-        ret = []
-        category_cond = Q(db_category__iexact=category) if category else Q()
-        cachekey = "%s%s" % (category, category)
-        for keystr in make_iter(key):
-            if get_attr_cache(self.obj, keystr):
-                ret.append(True)
-            else:
-                ret.append(True if _GA(self.obj, self._m2m_fieldname).filter(Q(db_key__iexact=keystr) & category_cond) else False)
-        return ret[0] if len(ret)==1 else ret
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
+        catkey = to_str(category, force_string=True).lower()
+        searchkeys = ["%s_%s" % (k.lower(), catkey) for k in make_iter(key)]
+        ret = [self._cache[skey] for skey in searchkeys if skey in self._cache]
+        return ret[0] if len(ret) == 1 else ret
 
     def get(self, key=None, category=None, default=None, return_obj=False, strattr=False,
             raise_exception=False, accessing_obj=None, default_access=True):
@@ -307,25 +242,21 @@ class AttributeHandler(object):
         checked before displaying each looked-after Attribute. If no
         accessing_obj is given, no check will be done.
         """
+        if not key:
+            return None
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
+        catkey = to_str(category, force_string=True).lower()
         ret = []
-        for keystr in make_iter(key):
-            cachekey = "%s%s" % (category if category else "", keystr)
-            attr_obj = get_attr_cache(self.obj, cachekey)
-            if not attr_obj:
-                key_cond = Q(db_key__iexact=keystr) if keystr!=None else Q()
-                category_cond = Q(db_category__iexact=category) if category else Q()
-                attr_obj = _GA(self.obj, self._m2m_fieldname).filter(key_cond & category_cond)
-                if category and attr_obj and category.startswith("nick_"):
-                    o = attr_obj[0]
-                    print "attrhandler:", o.db_key, o.db_category, o.strvalue
-                if not attr_obj:
-                    if raise_exception:
-                        raise AttributeError
+        for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
+            attr_obj = self._cache.get(keystr)
+            if attr_obj:
+                ret.append(attr_obj)
+            else:
+                if raise_exception:
+                    raise AttributeError
+                else:
                     ret.append(default)
-                    continue
-                attr_obj = attr_obj[0] # query is evaluated here
-                set_attr_cache(self.obj, cachekey, attr_obj)
-            ret.append(attr_obj)
         if accessing_obj:
             # check 'attrread' locks
             ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]
@@ -348,52 +279,45 @@ class AttributeHandler(object):
         if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
             # check create access
             return
-
-        cachekey = "%s%s" % (category if category else "", key)
-        attr_obj = get_attr_cache(self.obj, cachekey)
+        if self._cache == None:
+            self._recache()
+        cachekey = "%s_%s" % (key.lower(), to_str(category, force_string=True).lower())
+        attr_obj = self._cache.get(cachekey)
         if not attr_obj:
-            # check if attribute already exists
-            key_cond = Q(db_key__iexact=key) if key!=None else Q()
-            category_cond = Q(db_category__iexact=category) if category else Q()
-            attr_obj = _GA(self.obj, self._m2m_fieldname).filter(key_cond & category_cond)
-            if attr_obj.count():
-                # re-use old attribute object
-                attr_obj = attr_obj[0]
-                #set_attr_cache(self.obj, key, attr_obj) # renew cache
-            else:
-                # no old attr available; create new (caches automatically)
-                attr_obj = Attribute(db_key=key, db_category=category)
-                attr_obj.save() # important
-                _GA(self.obj, self._m2m_fieldname).add(attr_obj)
-                set_attr_cache(self.obj, cachekey, attr_obj)
+            # no old attr available; create new.
+            attr_obj = Attribute(db_key=key, db_category=category)
+            attr_obj.save() # important
+            _GA(self.obj, self._m2m_fieldname).add(attr_obj)
+            self._cache[cachekey] = attr_obj
         if lockstring:
             attr_obj.locks.add(lockstring)
         # we shouldn't need to fear stale objects, the field signalling should catch all cases
         if strattr:
             # store as a simple string
             attr_obj.strvalue = value
+            attr_obj.value = None
         else:
             # pickle arbitrary data
             attr_obj.value = value
-
+            attr_obj.strvalue = None
 
     def remove(self, key, raise_exception=False, category=None, accessing_obj=None, default_access=True):
         """Remove attribute or a list of attributes from object.
 
         If accessing_obj is given, will check against the 'attredit' lock. If not given, this check is skipped.
         """
-        keys = make_iter(key)
-        for attrkey in keys:
-            key_cond = Q(db_key__iexact=key) if key!=None else Q()
-            category_cond = Q(db_category__iexact=category) if category else Q()
-            attr_obj = _GA(self.obj, self._m2m_fieldname).filter(key_cond & category_cond)
-            if not attr_obj and raise_exception:
-                raise AttributeError
-            for attr in attr_obj:
-                if accessing_obj and not attr.access(accessing_obj, self._attredit, default=default_access):
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
+        catkey = to_str(category, force_string=True).lower()
+        for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
+            attr_obj = self._cache.get(keystr)
+            if attr_obj:
+                if accessing_obj and not attr_obj.access(accessing_obj, self._attredit, default=default_access):
                     continue
-                del_attr_cache(self.obj, attr.db_key)
-                attr.delete()
+                attr_obj.delete()
+            elif not attr_obj and raise_exception:
+                raise AttributeError
+        self._recache()
 
     def clear(self, category=None, accessing_obj=None, default_access=True):
         """
@@ -401,15 +325,11 @@ class AttributeHandler(object):
         given, check the 'attredit' lock on each Attribute before
         continuing. If not given, skip check.
         """
-        if category==None:
-            all_attr = _GA(self.obj, self._m2m_fieldname).all()
-        else:
-            all_attrs = _GA(self.obj, self._m2m_fieldname).filter(db_category=category)
-        for attr in all_attrs:
+        for attr in self.all(category=category, accessing_obj=accessing_obj, default_access=default_access):
             if accessing_obj and not attr.access(accessing_obj, self._attredit, default=default_access):
                 continue
-            del_attr_cache(self.obj, attr.db_key)
             attr.delete()
+        self._recache()
 
     def all(self, category=None, accessing_obj=None, default_access=True):
         """
@@ -419,14 +339,19 @@ class AttributeHandler(object):
         each attribute before returning them. If not given, this
         check is skipped.
         """
-        if category==None:
-            all_attrs = _GA(self.obj, self._m2m_fieldname).all()
-        else:
-            all_attrs = _GA(self.obj, self._m2m_fieldname).filter(db_category=category)
-        if accessing_obj:
-            return [attr for attr in all_attrs if attr.access(accessing_obj, self._attrread, default=default_access)]
-        else:
-            return list(all_attrs)
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
+        catkey = "_%s" % to_str(category, force_string=True).lower()
+        return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
+
+        #if category==None:
+        #    all_attrs = _GA(self.obj, self._m2m_fieldname).all()
+        #else:
+        #    all_attrs = _GA(self.obj, self._m2m_fieldname).filter(db_category=category)
+        #if accessing_obj:
+        #    return [attr for attr in all_attrs if attr.access(accessing_obj, self._attrread, default=default_access)]
+        #else:
+        #    return list(all_attrs)
 
 class NickHandler(AttributeHandler):
     """
@@ -551,6 +476,11 @@ class TagHandler(object):
         """
         self.obj = obj
         self.prefix = "%s%s" % (category_prefix.strip().lower() if category_prefix else "", self._base_category)
+        self._cache = None
+
+    def _recache(self):
+        self._cache = dict([(to_str(p[0]), True) for p in _GA(self.obj, self._m2m_fieldname).filter(
+                            db_category__startswith=self.prefix).values_list("db_key")])
 
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
@@ -561,38 +491,50 @@ class TagHandler(object):
             # this will only create tag if no matches existed beforehand (it will overload
             # data on an existing tag since that is not considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data)
-            #print tagstr
-            #print tagobj
             _GA(self.obj, self._m2m_fieldname).add(tagobj)
+            if self._cache == None:
+                self._recache()
+            self._cache[tagstr] = True
 
     def get(self, key, category="", return_obj=False):
         "Get the data field for the given tag or list of tags. If return_obj=True, return the matching Tag objects instead."
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
         ret = []
         category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
-        for keystr in make_iter(key):
-            ret.expand(_GA(self.obj, self._m2m_fieldname).filter(db_key__iexact=keystr, db_category__iexact=category))
+        for keystr in (k.strip.lower() for k in make_iter(key)):
+            ret.append(self._cache.get(keystr))
         ret = ret if return_obj else [to_str(tag.db_data) for tag in ret]
         return ret[0] if len(ret)==1 else ret
 
     def remove(self, tag, category=None):
         "Remove a tag from the handler"
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
         for tag in make_iter(tag):
             if not tag or tag.strip(): # we don't allow empty tags
                 continue
-            tag = tag.strip().lower() if tag!=None else None
+            tagstr = tag.strip().lower() if tag!=None else None
             category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
             #TODO This does not delete the tag object itself. Maybe it should do that when no
             # objects reference the tag anymore?
-            tagobj = self.obj.db_tags.filter(db_key=tag, db_category=category)
+            tagobj = self.obj.db_tags.filter(db_key=tagstr, db_category=category)
             if tagobj:
                 _GA(self.obj, self._m2m_fieldname).remove(tagobj[0])
+            if tagstr in self._cache:
+                del self._cache[tagstr]
+
     def clear(self):
         "Remove all tags from the handler"
         _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).clear()
+        self._recache()
 
     def all(self):
         "Get all tags in this handler"
-        return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
+        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
+        return self._cache.keys()
+        #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())

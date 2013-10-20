@@ -261,6 +261,14 @@ BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # start locations, copy the "create" command from
 # src/commands/default/unloggedin.py and customize.
 CHARACTER_DEFAULT_HOME = "#2"
+# Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
+# cached to avoid repeated database hits. This often gives noticeable
+# performance gains since they are called so often. Drawback is that
+# if you are accessing the database from multiple processes (such as
+# from a website -not- running Evennia's own webserver) data may go
+# out of sync between the processes. Keep on unless you face such
+# issues.
+TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
 # Batch processors
