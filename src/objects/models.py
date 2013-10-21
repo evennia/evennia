@@ -243,7 +243,7 @@ class ObjectDB(TypedObject):
 
     def search(self, searchdata,
                global_search=False,
-               use_nicks=False,
+               use_nicks=True, # should this default to off?
                typeclass=None,
                location=None,
                attribute_name=None,
