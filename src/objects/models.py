@@ -145,265 +145,14 @@ class ObjectDB(TypedObject):
         _SA(self, "aliases", AliasHandler(self, category_prefix="object_"))
         _SA(self, "nicks", NickHandler(self))
         # make sure to sync the contents cache when initializing
-        _GA(self, "contents_update")()
+        #_GA(self, "contents_update")()
 
-    # Wrapper properties to easily set database fields. These are
-    # @property decorators that allows to access these fields using
-    # normal python operations (without having to remember to save()
-    # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value,
-    # value = self.attr and del self.attr respectively (where self
-    # is the object in question).
-
-
-    ## player property (wraps db_player)
-    ##@property
-    #def __player_get(self):
-    #    """
-    #    Getter. Allows for value = self.player.
-    #    We have to be careful here since Player is also
-    #    a TypedObject, so as to not create a loop.
-    #    """
-    #    player = _GA(self, "db_player")
-    #    #player = get_field_cache(self, "player")
-    #    if player:
-    #        try:
-    #            return player.typeclass
-    #        except Exception,e:
-    #            print "player_get:", e
-    #    return player
-
-    ##@player.setter
-    #def __player_set(self, player):
-    #    "Setter. Allows for self.player = value"
-    #    if inherits_from(player, TypeClass):
-    #        player = player.dbobj
-    #    _SA(self, "db_player", player)
-    #    _GA(self, "save")()
-    #    #set_field_cache(self, "player", player)
-    #    # we must set this here or superusers won't be able to
-    #    # bypass lockchecks unless they start the game connected
-    #    # to the character in question.
-    #    self.locks.cache_lock_bypass(self)
-
-    ##@player.deleter
-    #def __player_del(self):
-    #    "Deleter. Allows for del self.player"
-    #    _SA(self, "db_player", None)
-    #    _GA(self, "save")()
-    #    #del_field_cache(self, "player")
-    #player = property(__player_get, __player_set, __player_del)
-
-    #sessid property (wraps db_sessid)
-    #@property
-    #def __sessid_get(self):
-    #    """
-    #    Getter. Allows for value = self.sessid. Since sessid
-    #    is directly related to self.player, we cannot have
-    #    a sessid without a player being connected (but the
-    #    opposite could be true).
-    #    """
-    #    return _GA(self, "db_sessid")
-    #    #if not get_field_cache(self, "sessid"):
-    #    #    del_field_cache(self, "sessid")
-    #    #return get_field_cache(self, "sessid")
-    ##@sessid.setter
-    #def __sessid_set(self, sessid):
-    #    "Setter. Allows for self.player = value"
-    #    _SA(self, "db_sessid", sessid)
-    #    _GA(self, "save")()
-    #    #set_field_cache(self, "sessid", sessid)
-    ##@sessid.deleter
-    #def __sessid_del(self):
-    #    "Deleter. Allows for del self.player"
-    #    _SA(self, "db_sessid", None)
-    #    _GA(self, "save")()
-    #    #del_field_cache(self, "sessid")
-    #sessid = property(__sessid_get, __sessid_set, __sessid_del)
-
-    def _at_db_player_save(self, new_value, old_value=None):
+    def _at_db_player_presave(self):
         """
-        This is called automatically just before a new player is saved.
+        This hook is called automatically just before the player field is saved.
         """
         # we need to re-cache this for superusers to bypass.
         self.locks.cache_lock_bypass(self)
-        return new_value
-
-    def _at_db_location_save(self, new_value, old_value=None):
-        """
-        This is called automatically just before a new location is saved.
-        """
-        loc = new_value
-        try:
-            old_loc = old_value
-            # recursive location check
-            def is_loc_loop(loc, depth=0):
-                "Recursively traverse the target location to make sure we are not in it."
-                if depth > 10: return
-                elif loc == self: raise RuntimeError
-                elif loc == None: raise RuntimeWarning # just to quickly get out
-                return is_loc_loop(_GA(loc, "db_location"), depth+1)
-            # check so we don't create a location loop - if so, RuntimeError will be raised.
-            try: is_loc_loop(loc)
-            except RuntimeWarning: pass
-
-            # update the contents of each location
-            if old_loc:
-                _GA(_GA(old_loc, "dbobj"), "contents_update")()
-                #print "after contents_update for old_loc:", old_loc.key, old_loc.contents
-            if loc:
-                _GA(_GA(loc, "dbobj"), "contents_update")()
-                #print "after contents_update for loc:", loc.key, loc.contents
-            return loc
-        except RuntimeError:
-            string = "Cannot set location, "
-            string += "%s.location = %s would create a location-loop." % (self.key, loc)
-            _GA(self, "msg")(_(string))
-            logger.log_trace(string)
-            raise RuntimeError(string)
-        except Exception, e:
-            string = "Cannot set location (%s): " % str(e)
-            string += "%s is not a valid location." % loc
-            _GA(self, "msg")(_(string))
-            logger.log_trace(string)
-            raise Exception(string)
-
-    ## location property (wraps db_location)
-    ##@property
-    #def __location_get(self):
-    #    "Getter. Allows for value = self.location."
-    #    loc = get_field_cache(self, "location")
-    #    if loc:
-    #        return _GA(loc, "typeclass")
-    #    return None
-    ##@location.setter
-    #def __location_set(self, location):
-    #    "Setter. Allows for self.location = location"
-    #    try:
-    #        old_loc = _GA(self, "location")
-    #        if ObjectDB.objects.dbref(location):
-    #            # dbref search
-    #            loc = ObjectDB.objects.dbref_search(location)
-    #            loc = loc and _GA(loc, "dbobj")
-    #        elif location and type(location) != ObjectDB:
-    #            loc = _GA(location, "dbobj")
-    #        else:
-    #            loc = location
-
-    #        # recursive location check
-    #        def is_loc_loop(loc, depth=0):
-    #            "Recursively traverse the target location to make sure we are not in it."
-    #            if depth > 10: return
-    #            elif loc == self: raise RuntimeError
-    #            elif loc == None: raise RuntimeWarning # just to quickly get out
-    #            return is_loc_loop(_GA(loc, "db_location"), depth+1)
-    #        # check so we don't create a location loop - if so, RuntimeError will be raised.
-    #        try: is_loc_loop(loc)
-    #        except RuntimeWarning: pass
-
-    #        # set the location
-    #        set_field_cache(self, "location", loc)
-    #        # update the contents of each location
-    #        if old_loc:
-    #            _GA(_GA(old_loc, "dbobj"), "contents_update")()
-    #        if loc:
-    #            _GA(loc, "contents_update")()
-    #    except RuntimeError:
-    #        string = "Cannot set location, "
-    #        string += "%s.location = %s would create a location-loop." % (self.key, loc)
-    #        _GA(self, "msg")(_(string))
-    #        logger.log_trace(string)
-    #        raise RuntimeError(string)
-    #    except Exception, e:
-    #        string = "Cannot set location (%s): " % str(e)
-    #        string += "%s is not a valid location." % location
-    #        _GA(self, "msg")(_(string))
-    #        logger.log_trace(string)
-    #        raise Exception(string)
-    ##@location.deleter
-    #def __location_del(self):
-    #    "Deleter. Allows for del self.location"
-    #    _GA(self, "location").contents_update()
-    #    _SA(self, "db_location", None)
-    #    _GA(self, "save")()
-    #    del_field_cache(self, "location")
-    #location = property(__location_get, __location_set, __location_del)
-
-    # home property (wraps db_home)
-    #@property
-    #def __home_get(self):
-    #    "Getter. Allows for value = self.home"
-    #    home = get_field_cache(self, "home")
-    #    if home:
-    #        return _GA(home, "typeclass")
-    #    return None
-    ##@home.setter
-    #def __home_set(self, home):
-    #    "Setter. Allows for self.home = value"
-    #    try:
-    #        if home == None or type(home) == ObjectDB:
-    #            hom = home
-    #        elif ObjectDB.objects.dbref(home):
-    #            hom = ObjectDB.objects.dbref_search(home)
-    #            if hom and hasattr(hom,'dbobj'):
-    #                hom = _GA(hom, "dbobj")
-    #            else:
-    #                hom = _GA(home, "dbobj")
-    #        else:
-    #            hom = _GA(home, "dbobj")
-    #        set_field_cache(self, "home", hom)
-    #    except Exception:
-    #        string = "Cannot set home: "
-    #        string += "%s is not a valid home."
-    #        _GA(self, "msg")(_(string) % home)
-    #        logger.log_trace(string)
-    #        #raise
-    ##@home.deleter
-    #def __home_del(self):
-    #    "Deleter. Allows for del self.home."
-    #    _SA(self, "db_home", None)
-    #    _GA(self, "save")()
-    #    del_field_cache(self, "home")
-    #home = property(__home_get, __home_set, __home_del)
-
-    # destination property (wraps db_destination)
-    #@property
-    #def __destination_get(self):
-    #    "Getter. Allows for value = self.destination."
-    #    dest = get_field_cache(self, "destination")
-    #    if dest:
-    #        return _GA(dest, "typeclass")
-    #    return None
-    ##@destination.setter
-    #def __destination_set(self, destination):
-    #    "Setter. Allows for self.destination = destination"
-    #    try:
-    #        if destination == None or type(destination) == ObjectDB:
-    #            # destination is None or a valid object
-    #            dest = destination
-    #        elif ObjectDB.objects.dbref(destination):
-    #            # destination is a dbref; search
-    #            dest = ObjectDB.objects.dbref_search(destination)
-    #            if dest and _GA(self, "_hasattr")(dest,'dbobj'):
-    #                dest = _GA(dest, "dbobj")
-    #            else:
-    #                dest = _GA(destination, "dbobj")
-    #        else:
-    #            dest = destination.dbobj
-    #        set_field_cache(self, "destination", dest)
-    #    except Exception:
-    #        string = "Cannot set destination: "
-    #        string += "%s is not a valid destination." % destination
-    #        _GA(self, "msg")(string)
-    #        logger.log_trace(string)
-    #        raise
-    ##@destination.deleter
-    #def __destination_del(self):
-    #    "Deleter. Allows for del self.destination"
-    #    _SA(self, "db_destination", None)
-    #    _GA(self, "save")()
-    #    del_field_cache(self, "destination")
-    #destination = property(__destination_get, __destination_set, __destination_del)
 
     # cmdset_storage property. We use a custom wrapper to manage this. This also
     # seems very sensitive to caching, so leaving it be for now. /Griatch
@@ -433,7 +182,6 @@ class ObjectDB(TypedObject):
     #
     # ObjectDB class access methods/properties
     #
-
 
     #@property
     def __sessions_get(self):
@@ -473,22 +221,10 @@ class ObjectDB(TypedObject):
 
         exclude is one or more objects to not return
         """
-        contents = get_prop_cache(self, "_contents")
-        if contents == None:
-            # this is the case if this is the first call
-            contents = _GA(self, "contents_update")()
         if exclude:
-            exclude = [obj.typeclass for obj in make_iter(exclude)]
-            return [obj for obj in contents if obj not in exclude]
-        else:
-            return contents
+            return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+        return ObjectDB.objects.get_contents(self)
     contents = property(contents_get)
-
-    def contents_update(self):
-        "Re-sync the contents cache"
-        contents = ObjectDB.objects.get_contents(self)
-        set_prop_cache(self, "_contents", contents)
-        return contents
 
     #@property
     def __exits_get(self):
@@ -972,6 +708,6 @@ class ObjectDB(TypedObject):
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         # clear object's old  location's content cache of this object
-        if old_loc:
-            _GA(old_loc.dbobj, "contents_update")()
+        #if old_loc:
+        #    _GA(old_loc.dbobj, "contents_update")()
         return True

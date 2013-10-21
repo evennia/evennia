@@ -40,7 +40,7 @@ from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
-from src.server.caches import get_prop_cache, set_prop_cache, flush_attr_cache
+from src.server.caches import get_prop_cache, set_prop_cache
 
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
@@ -634,98 +634,11 @@ class TypedObject(SharedMemoryModel):
     # value = self.attr and del self.attr respectively (where self
     # is the object in question).
 
-    # key property (wraps db_key)
-    #@property
-    #def __key_get(self):
-    #    "Getter. Allows for value = self.key"
-    #    #return _GA(self, "db_key")
-    #    return get_field_cache(self, "key")
-    ##@key.setter
-    #def __key_set(self, value):
-    #    "Setter. Allows for self.key = value"
-    #    set_field_cache(self, "key", value)
-    ##@key.deleter
-    #def __key_del(self):
-    #    "Deleter. Allows for del self.key"
-    #    raise Exception("Cannot delete objectdb key!")
-    #key = property(__key_get, __key_set, __key_del)
-
     # name property (alias to self.key)
     def __name_get(self): return self.key
     def __name_set(self, value): self.key = value
     def __name_del(self): raise Exception("Cannot delete name")
     name = property(__name_get, __name_set, __name_del)
-
-    # typeclass_path property - we manage this separately.
-    #@property
-    #def __typeclass_path_get(self):
-    #    "Getter. Allows for value = self.typeclass_path"
-    #    return _GA(self, "db_typeclass_path")
-    ##@typeclass_path.setter
-    #def __typeclass_path_set(self, value):
-    #    "Setter. Allows for self.typeclass_path = value"
-    #    _SA(self, "db_typeclass_path", value)
-    #    update_fields = ["db_typeclass_path"] if _GA(self, "_get_pk_val")(_GA(self, "_meta")) is not None else None
-    #    _GA(self, "save")(update_fields=update_fields)
-    ##@typeclass_path.deleter
-    #def __typeclass_path_del(self):
-    #    "Deleter. Allows for del self.typeclass_path"
-    #    self.db_typeclass_path = ""
-    #    _GA(self, "save")(update_fields=["db_typeclass_path"])
-    #typeclass_path = property(__typeclass_path_get, __typeclass_path_set, __typeclass_path_del)
-
-    # date_created property
-    #@property
-    #def __date_created_get(self):
-    #    "Getter. Allows for value = self.date_created"
-    #    return get_field_cache(self, "date_created")
-    ##@date_created.setter
-    #def __date_created_set(self, value):
-    #    "Setter. Allows for self.date_created = value"
-    #    raise Exception("Cannot change date_created!")
-    ##@date_created.deleter
-    #def __date_created_del(self):
-    #    "Deleter. Allows for del self.date_created"
-    #    raise Exception("Cannot delete date_created!")
-    #date_created = property(__date_created_get, __date_created_set, __date_created_del)
-
-    # permissions property
-    #@property
-    #def __permissions_get(self):
-    #    "Getter. Allows for value = self.name. Returns a list of permissions."
-    #    perms = get_field_cache(self, "permissions")
-    #    if perms:
-    #        return [perm.strip() for perm in perms.split(',')]
-    #    return []
-    ##@permissions.setter
-    #def __permissions_set(self, value):
-    #    "Setter. Allows for self.name = value. Stores as a comma-separated string."
-    #    value = ",".join([utils.to_unicode(val).strip() for val in make_iter(value)])
-    #    set_field_cache(self, "permissions", value)
-    ##@permissions.deleter
-    #def __permissions_del(self):
-    #    "Deleter. Allows for del self.name"
-    #    self.db_permissions = ""
-    #    self.save()
-    #    del_field_cache(self, "permissions")
-    #permissions = property(__permissions_get, __permissions_set, __permissions_del)
-
-    # lock_storage property (wraps db_lock_storage)
-    #@property
-    #def __lock_storage_get(self):
-    #    "Getter. Allows for value = self.lock_storage"
-    #    return get_field_cache(self, "lock_storage")
-    ##@lock_storage.setter
-    #def __lock_storage_set(self, value):
-    #    """Saves the lock_storage. This is usually not called directly, but through self.lock()"""
-    #    set_field_cache(self, "lock_storage", value)
-    ##@lock_storage.deleter
-    #def __lock_storage_del(self):
-    #    "Deleter is disabled. Use the lockhandler.delete (self.lock.delete) instead"""
-    #    logger.log_errmsg("Lock_Storage (on %s) cannot be deleted. Use obj.lock.delete() instead." % self)
-    #lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
-
-
 
     #
     #
@@ -1000,13 +913,11 @@ class TypedObject(SharedMemoryModel):
         """
         Type-level cleanup
         """
-        flush_attr_cache()
         super(TypedObject, self).delete(*args, **kwargs)
 
 
     #
     # Object manipulation methods
-    #
     #
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
@@ -1230,16 +1141,12 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete the ndb object!")
     ndb = property(__ndb_get, __ndb_set, __ndb_del)
 
-
-
-
-
     #
     # ***** DEPRECATED METHODS BELOW   *******
     #
 
     #
-    # Fully attr_obj attributes. You usually access these
+    # Full attr_obj attributes. You usually access these
     # through the obj.db.attrname method.
 
     # Helper methods for attr_obj attributes

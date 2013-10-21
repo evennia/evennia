@@ -174,7 +174,7 @@ class ObjectManager(TypedObjectManager):
 
         excludeobj - one or more object keys to exclude from the match
         """
-        exclude_restriction = excludeobj and Q(pk__in=[_GA(obj, "in") for obj in make_iter(excludeobj)]) or Q()
+        exclude_restriction = Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
         return self.filter(db_location=location).exclude(exclude_restriction)
 
     @returns_typeclass_list

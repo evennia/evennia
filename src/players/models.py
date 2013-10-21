@@ -117,29 +117,11 @@ class PlayerDB(TypedObject, AbstractUser):
         _SA(self, "aliases", AliasHandler(self, category_prefix="player_"))
         _SA(self, "nicks", NickHandler(self))
 
-    # Wrapper properties to easily set database fields. These are
-    # @property decorators that allows to access these fields using
-    # normal python operations (without having to remember to save()
-    # etc). So e.g. a property 'attr' has a get/set/del decorator
-    # defined that allows the user to do self.attr = value,
-    # value = self.attr and del self.attr respectively (where self
-    # is the object in question).
-
-    # obj property (wraps db_obj)
-    #@property
-    def objs_get(self):
-        "Getter. Allows for value = self.obj"
-        return list(self.db_objs.all())
-    #@objs.setter
-    def objs_set(self, value):
-        "Setter. Allows for self.objs = value"
-        raise Exception("Use access methods to add new characters instead.")
-    #@obj.deleter
-    def objs_del(self):
-        "Deleter. Allows for del self.obj"
-        raise Exception("Use access methods to delete new characters instead.")
-    objs = property(objs_get, objs_set, objs_del)
-    characters = property(objs_get, objs_set, objs_del)
+    # alias to the objs property
+    def __characters_get(self): return self.objs
+    def __characters_set(self, value): self.objs = value
+    def __characters_del(self): raise Exception("Cannot delete name")
+    characters = property(__characters_get, __characters_set, __characters_del)
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
@@ -161,20 +143,6 @@ class PlayerDB(TypedObject, AbstractUser):
         _GA(self, "save")()
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
-    ##@property
-    #def is_connected_get(self):
-    #    "Getter. Allows for value = self.is_connected"
-    #    return get_field_cache(self, "is_connected")
-    ##@is_connected.setter
-    #def is_connected_set(self, value):
-    #    "Setter. Allows for self.is_connected = value"
-    #    set_field_cache(self, "is_connected", value)
-    ##@is_connected.deleter
-    #def is_connected_del(self):
-    #    "Deleter. Allows for del is_connected"
-    #    set_field_cache(self, "is_connected", False)
-    #is_connected = property(is_connected_get, is_connected_set, is_connected_del)
-
     class Meta:
         "Define Django meta options"
         verbose_name = "Player"
@@ -190,35 +158,14 @@ class PlayerDB(TypedObject, AbstractUser):
     def __unicode__(self):
         return u"%s(player#%s)" % (_GA(self, "name"), _GA(self, "dbid"))
 
-
-    # name property (wraps self.user.username)
     #@property
-    #def __name_get(self):
-    #    "Getter. Allows for value = self.name"
-    #    return self.username
-    #    #name = get_prop_cache(self, "_name")
-    #    #if not name:
-    #    #    name = _GA(self,"user").username
-    #    #    set_prop_cache(self, "_name", name)
-    #    #return name
-    ##@name.setter
-    #def __name_set(self, value):
-    #    "Setter. Allows for player.name = newname"
-    #    _SA(self, "username", value)
-
-    #    #_GA(self, "user").username = value
-    #    #_GA(self, "user").save()
-    #    #set_prop_cache(self, "_name", value)
-    ##@name.deleter
-    #def __name_del(self):
-    #    "Deleter. Allows for del self.name"
-    #    raise Exception("Player name cannot be deleted!")
     def __username_get(self):
         return _GA(self, "username")
     def __username_set(self, value):
         _SA(self, "username", value)
     def __username_del(self):
         _DA(self, "username", value)
+    # aliases
     name = property(__username_get, __username_set, __username_del)
     key = property(__username_get, __username_set, __username_del)
 

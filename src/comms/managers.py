@@ -338,6 +338,7 @@ class ChannelManager(models.Manager):
         ostring - the key or database id of the channel.
         """
         channels = []
+        if not ostring: return channels
         try:
             # try an id match first
             dbref = int(ostring.strip('#'))

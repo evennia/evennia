@@ -152,8 +152,8 @@ def create_system_scripts():
     # update the channel handler to make sure it's in sync
     script3 = create.create_script(scripts.ValidateChannelHandler)
     # clear the attribute cache regularly
-    script4 = create.create_script(scripts.ClearAttributeCache)
-    if not script1 or not script2 or not script3 or not script4:
+    #script4 = create.create_script(scripts.ClearAttributeCache)
+    if not script1 or not script2 or not script3:# or not script4:
         print " Error creating system scripts."
 
 def start_game_time():
