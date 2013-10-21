@@ -304,15 +304,14 @@ class ObjectDB(TypedObject):
             return self.typeclass
 
         if use_nicks:
-            nicktype = "object"
             # get all valid nicks to search
-            nicks = self.nicks.all(category="object_nick_%s" % nicktype)
+            nicks = self.nicks.all(category="object")
             if self.has_player:
-                pnicks = self.nicks.all(category="player_nick_%s" % nicktype)
+                pnicks = self.nicks.all(category="player")
                 nicks = nicks + pnicks
             for nick in nicks:
                 if searchdata == nick.db_key:
-                    searchdata = nick.db_data
+                    searchdata = nick.strvalue
                     break
 
         candidates=None

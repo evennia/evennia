@@ -149,7 +149,7 @@ class CmdDelCom(MuxPlayerCommand):
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
             for nick in [nick for nick in caller.nicks.get(category="channel")
-                         if nick.db_data.lower() == chkey]:
+                         if nick.strvalue.lower() == chkey]:
                 nick.delete()
             disconnect = channel.disconnect_from(player)
             if disconnect:

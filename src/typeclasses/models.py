@@ -242,21 +242,24 @@ class AttributeHandler(object):
         checked before displaying each looked-after Attribute. If no
         accessing_obj is given, no check will be done.
         """
-        if not key:
-            return None
         if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        catkey = to_str(category, force_string=True).lower()
         ret = []
-        for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
-            attr_obj = self._cache.get(keystr)
-            if attr_obj:
-                ret.append(attr_obj)
-            else:
-                if raise_exception:
-                    raise AttributeError
+        catkey = to_str(category, force_string=True).lower()
+        if not key:
+            # return all with matching category (or no category)
+            catkey = "_%s" % catkey
+            ret = [attr for key, attr in self._cache.items() if key.endswith(catkey)]
+        else:
+            for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
+                attr_obj = self._cache.get(keystr)
+                if attr_obj:
+                    ret.append(attr_obj)
                 else:
-                    ret.append(default)
+                    if raise_exception:
+                        raise AttributeError
+                    else:
+                        ret.append(default)
         if accessing_obj:
             # check 'attrread' locks
             ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]

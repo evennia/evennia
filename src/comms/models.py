@@ -393,11 +393,11 @@ class ChannelDB(TypedObject):
 
     def disconnect_from(self, player):
         "Disconnect user from this channel."
-        disconnect = self.typeclass.pre_leave_channel(self, player)
+        disconnect = self.typeclass.pre_leave_channel(player)
         if not disconnect:
             return False
         PlayerChannelConnection.objects.break_connection(player, self)
-        self.typeclass.post_leave_channel(self, player)
+        self.typeclass.post_leave_channel(player)
         return True
 
     def delete(self):
