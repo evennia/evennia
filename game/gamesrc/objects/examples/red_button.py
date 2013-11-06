@@ -8,7 +8,7 @@ Create this button with
 
  @create/drop examples.red_button.RedButton
 
-Note that if you must drop the button before you can see its messages!
+Note that you must drop the button before you can see its messages!
 """
 import random
 from ev import Object
