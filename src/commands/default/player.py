@@ -616,6 +616,7 @@ class CmdQuell(MuxPlayerCommand):
                 # we are already puppeting an object. We need to reset the lock caches
                 # (otherwise the superuser status change won't be visible until repuppet)
                 char.locks.reset()
+        player.locks.reset()
 
     def func(self):
         "Perform the command"

@@ -168,9 +168,7 @@ class LockHandler(object):
         self.obj = obj
         self.locks = {}
         self.log_obj = None
-        self.reset_flag = False
-        self._cache_locks(self.obj.lock_storage)
-        self.cache_lock_bypass(obj)
+        self.reset()
 
     def __str__(self):
         return ";".join(self.locks[key][2] for key in sorted(self.locks))
@@ -332,7 +330,8 @@ class LockHandler(object):
         Set the reset flag, so the the lock will be re-cached at next checking.
         This is usually set by @reload.
         """
-        self.reset_flag = True
+        self._cache_locks(self.obj.lock_storage)
+        self.cache_lock_bypass(self.obj)
 
     def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
         """
@@ -362,12 +361,6 @@ class LockHandler(object):
         functions (as defined by your settings) are executed.
 
         """
-        if self.reset_flag:
-            # rebuild cache, either directly or next call
-            self._cache_locks(self.obj.lock_storage)
-            self.reset_flag = False
-            self.cache_lock_bypass(self.obj)
-
         try:
             # check if the lock should be bypassed (e.g. superuser status)
             if accessing_obj.locks.lock_bypass and not no_superuser_bypass:

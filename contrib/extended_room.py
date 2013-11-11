@@ -43,7 +43,7 @@ The Extended Room can be "detailed" with special keywords. This makes
 use of a special Look command. Details are "virtual" targets to look
 at, without there having to be a database object created for it. The
 Details are simply stored in a dictionary on the room and if the look
-command cannot find an object match for a a "look <target>" command it
+command cannot find an object match for a "look <target>" command it
 will also look through the available details at the current location
 if applicable. An extended @desc command is used to set details.
 
@@ -119,7 +119,7 @@ class ExtendedRoom(Room):
 
     def get_time_and_season(self):
         """
-        Calcualte the current time and season ids
+        Calculate the current time and season ids
         """
         # get the current time as parts of year and parts of day
         time = gametime.gametime(format=True) # returns a tuple (years,months,weeks,days,hours,minutes,sec)
