@@ -125,7 +125,9 @@ class ChannelHandler(object):
         cmd = ChannelCommand(key=channel.key.strip().lower(),
                              aliases=channel.aliases.all(),
                              locks="cmd:all();%s" % channel.locks,
-                             obj=channel)
+                             help_category="Channel names",
+                             obj=channel,
+                             is_channel=True)
         cmd.__doc__= self._format_help(channel)
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}

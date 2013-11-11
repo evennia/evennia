@@ -888,10 +888,7 @@ class Exit(Object):
             This is a command that simply cause the caller
             to traverse the object it is attached to.
             """
-            locks = "cmd:all()" # should always be set to this.
             obj = None
-            arg_regex=r"\s.*?|$"
-            is_exit = True      # this helps cmdhandler disable exits in cmdsets with no_exits=True.
 
             def func(self):
                 "Default exit traverse if no syscommand is defined."
@@ -908,12 +905,14 @@ class Exit(Object):
                         # No shorthand error message. Call hook.
                         self.obj.at_failed_traverse(self.caller)
 
-        # create an exit command.
+        # create an exit command. We give the properties here, to always trigger metaclass preparations
         cmd = ExitCommand(key=exidbobj.db_key.strip().lower(),
                           aliases=exidbobj.aliases.all(),
                           locks=str(exidbobj.locks),
                           auto_help=False,
                           destination=exidbobj.db_destination,
+                          arg_regex=r"$",
+                          is_exit=True,
                           obj=exidbobj)
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
