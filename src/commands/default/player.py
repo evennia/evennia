@@ -633,6 +633,14 @@ class CmdQuell(MuxPlayerCommand):
                 self.msg("Already quelling Player%s permissions." % permstr)
                 return
             player.attributes.add('_quell', True)
-            self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
+            puppet = player.get_puppet(self.sessid)
+            if puppet:
+                cpermstr = " (%s)" % ", ".join(puppet.permissions.all())
+                cpermstr = "Quelling to current puppet's permissions%s." % cpermstr
+                cpermstr += "\n(Note: If this is higher than Player permissions%s, the lowest of the two will be used.)" % permstr
+                cpermstr += "\nUse @unquell to return to normal permission usage."
+                self.msg(cpermstr)
+            else:
+                self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(player)
 

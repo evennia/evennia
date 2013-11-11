@@ -482,8 +482,8 @@ class TagHandler(object):
         self._cache = None
 
     def _recache(self):
-        self._cache = dict([(to_str(p[0]), True) for p in _GA(self.obj, self._m2m_fieldname).filter(
-                            db_category__startswith=self.prefix).values_list("db_key")])
+        self._cache = dict((to_str(p.db_key), p) for p in _GA(self.obj, self._m2m_fieldname).filter(
+                            db_category__startswith=self.prefix))
 
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
@@ -505,9 +505,8 @@ class TagHandler(object):
             self._recache()
         ret = []
         category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
-        for keystr in (k.strip.lower() for k in make_iter(key)):
-            ret.append(self._cache.get(keystr))
-        ret = ret if return_obj else [to_str(tag.db_data) for tag in ret]
+        ret = [val for val in (self._cache.get(keystr.strip().lower()) for keystr in make_iter(key)) if val]
+        ret = ret if return_obj else [to_str(tag.db_data) for tag in ret if tag]
         return ret[0] if len(ret)==1 else ret
 
     def remove(self, tag, category=None):
@@ -515,7 +514,7 @@ class TagHandler(object):
         if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         for tag in make_iter(tag):
-            if not tag or tag.strip(): # we don't allow empty tags
+            if not (tag or tag.strip()): # we don't allow empty tags
                 continue
             tagstr = tag.strip().lower() if tag!=None else None
             category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
@@ -524,8 +523,7 @@ class TagHandler(object):
             tagobj = self.obj.db_tags.filter(db_key=tagstr, db_category=category)
             if tagobj:
                 _GA(self.obj, self._m2m_fieldname).remove(tagobj[0])
-            if tagstr in self._cache:
-                del self._cache[tagstr]
+        self._recache()
 
     def clear(self):
         "Remove all tags from the handler"

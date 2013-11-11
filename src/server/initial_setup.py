@@ -59,6 +59,7 @@ def create_objects():
     god_player.basetype_setup()
     god_player.at_player_creation()
     god_player.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
+    god_player.permissions.add("Immortals") # this is necessary for quelling to work correctly.
 
     # Limbo is the default "nowhere" starting room
 
