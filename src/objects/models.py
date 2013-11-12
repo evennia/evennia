@@ -389,7 +389,7 @@ class ObjectDB(TypedObject):
         nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
         if self.has_player:
             # attach player nicks as well, but after the object-level nicks
-            nicks = list(nicks) + list(pself.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel")))
+            nicks = list(nicks) + list(self.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel")))
         for nick in nicks:
             if nick.db_key in raw_list:
                 raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
