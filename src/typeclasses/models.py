@@ -135,28 +135,39 @@ class Attribute(SharedMemoryModel):
     #@property
     def __value_get(self):
         """
-        Getter. Allows for value = self.value. Reads from cache if possible.
+        Getter. Allows for value = self.value.
+        We cannot cache here since it makes certain cases (such
+        as storing a dbobj which is then deleted elswhere) out-of-sync.
+        The overhead of unpickling seems hard to avoid.
         """
-        if self.no_cache:
-            # re-create data from database and cache it
-            value = from_pickle(self.db_value, db_obj=self)
-            self.cached_value = value
-            self.no_cache = False
-        return self.cached_value
+        return from_pickle(self.db_value, db_obj=self)
+        #if self.no_cache:
+        #    # re-create data from database and cache it
+        #    value = from_pickle(self.db_value, db_obj=self)
+        #    self.cached_value = value
+        #    self.no_cache = False
+        #return self.cached_value
     #@value.setter
     def __value_set(self, new_value):
         """
         Setter. Allows for self.value = value. We make sure to cache everything.
         """
-        to_store = to_pickle(new_value)
-        self.cached_value = from_pickle(to_store, db_obj=self)
-        self.no_cache = False
-        self.db_value = to_store
+        self.db_value = to_pickle(new_value)
         self.save()
         try:
             self._track_db_value_change.update(self.cached_value)
         except AttributeError:
             pass
+        return
+        #to_store = to_pickle(new_value)
+        #self.cached_value = from_pickle(to_store, db_obj=self)
+        #self.no_cache = False
+        #self.db_value = to_store
+        #self.save()
+        #try:
+        #    self._track_db_value_change.update(self.cached_value)
+        #except AttributeError:
+        #    pass
     #@value.deleter
     def __value_del(self):
         "Deleter. Allows for del attr.value. This removes the entire attribute."

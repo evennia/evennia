@@ -2,6 +2,10 @@
 
 Contribution - Griatch 2011
 
+[Note - with the advent of MULTISESSION_MODE=2, this is not really
+as necessary anymore - the ooclook and @charcreate commands in that
+mode replaces this module with better functionality.]
+
 This is a simple character creation commandset. A suggestion is to
 test this together with menu_login, which doesn't create a Character
 on its own. This shows some more info and gives the Player the option
