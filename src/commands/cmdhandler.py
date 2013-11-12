@@ -224,6 +224,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None)
 
     for cset in (cset for cset in local_obj_cmdsets if cset):
         cset.duplicates = cset.old_duplicates
+    #print "merged set:", cmdset.key
     returnValue(cmdset)
 
 

@@ -1611,8 +1611,10 @@ class CmdExamine(ObjManipCommand):
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
             # list the current cmdsets
             all_cmdsets = obj.cmdset.all() + (hasattr(obj, "player") and obj.player and obj.player.cmdset.all() or [])
+            all_cmdsets += hasattr(obj, "sessid") and hasattr(obj, "player") and obj.player.get_session(obj.sessid).cmdset.all()
             all_cmdsets.sort(key=lambda x:x.priority, reverse=True)
-            string += "\n{wCurrent Cmdset(s){n:\n %s" % ("\n ".join("%s (prio %s)" % (cmdset.path, cmdset.priority) for cmdset in all_cmdsets))
+            string += "\n{wStored Cmdset(s){n:\n %s" % ("\n ".join("%s [%s] (prio %s)" %
+                                                (cmdset.path, cmdset.key, cmdset.priority) for cmdset in all_cmdsets))
 
             # list the commands available to this object
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
