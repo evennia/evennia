@@ -73,7 +73,8 @@ class Ttype(object):
         certain piece of information about the client. All data is
         stored on protocol.protocol_flags under the TTYPE key.
         """
-        if self.protocol.protocol_flags['TTYPE']['init_done']:
+        options = self.protocol.protocol_flags.get('TTYPE')
+        if options and options.get('init_done'):
             return
 
         self.ttype_step += 1
@@ -106,10 +107,10 @@ class Ttype(object):
                 for codenum, standard in MTTS:
                     if option == 0:
                         break
-                    status = option % codenum < option
+                    status = option & codenum
                     self.protocol.protocol_flags['TTYPE'][standard] = status
-                    if status:
-                        option = option % codenum
+                    #if status:
+                    #    option = option % codenum
                 self.protocol.protocol_flags['TTYPE']['init_done'] = True
 
-            #print "ttype results:", self.protocol.protocol_flags['TTYPE']
+            #print "ttype results:", self.protocol.protocol_flags['TTYPE'],id(self.protocol)

@@ -9,6 +9,7 @@ sessions etc.
 
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
+from twisted.internet.defer import inlineCallbacks, returnValue
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
@@ -33,16 +34,29 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client
         self.init_session("telnet", client_address, self.factory.sessionhandler)
         # negotiate mccp (data compression)
-        #self.mccp = Mccp(self)
+        self.mccp = Mccp(self)
         # negotiate ttype (client info)
-        #self.ttype = ttype.Ttype(self)
+        self.ttype = ttype.Ttype(self)
         # negotiate mssp (crawler communication)
-        #self.mssp = mssp.Mssp(self)
+        self.mssp = mssp.Mssp(self)
         # msdp
         self.msdp = msdp.Msdp(self)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
-        self.sessionhandler.connect(self)
+
+        # This is a fix to make sure the connection does not
+        # continue until the handshakes are done. This is a
+        # dumb delay of 1 second. This solution is not ideal (and
+        # potentially buggy for slow connections?) but
+        # adding a callback chain to all protocols (and notably
+        # to their handshakes, which in some cases are multi-part)
+        # is not trivial. Without it, the protocol will default
+        # to their defaults since sessionhandler.connect will sync
+        # before the handshakes have had time to finish. Keeping this patch
+        # until coming up with a more elegant solution /Griatch
+        from src.utils.utils import delay
+        delay(1, self, self.sessionhandler.connect)
+        #self.sessionhandler.connect(self)
 
     def enableRemote(self, option):
         """
@@ -187,4 +201,5 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.sendLine(text)
         else:
             # we need to make sure to kill the color at the end in order to match the webclient output.
+            #print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self)
             self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))
