@@ -278,6 +278,9 @@ class CmdSet(object):
             cmdset_c.no_channels = self.no_channels
             cmdset_c.no_exits = self.no_exits
             cmdset_c.no_objs = self.no_objs
+            if self.key.startswith("_"):
+                # don't rename new output if the merge set's name starts with _
+                cmdset_c.key = cmdset_b.key
 
         else:
             # B higher priority than A
@@ -297,6 +300,9 @@ class CmdSet(object):
             cmdset_c.no_channels = cmdset_b.no_channels
             cmdset_c.no_exits = cmdset_b.no_exits
             cmdset_c.no_objs = cmdset_b.no_objs
+            if cmdset_b.key.startswith("_"):
+                # don't rename new output if the merge set's name starts with _
+                cmdset_c.key = self.key
 
         # we store actual_mergetype since key_mergetypes
         # might be different from the main mergetype.
