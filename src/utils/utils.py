@@ -540,7 +540,7 @@ def run_async(to_execute, *args, **kwargs):
               instead are used to define the executable environment
               that should be available to execute the code in to_execute.
 
-    run_async will relay executed code to a thread.
+    run_async will relay executed code to a thread or procpool.
 
     Use this function with restrain and only for features/commands
     that you know has no influence on the cause-and-effect order of your
@@ -557,8 +557,8 @@ def run_async(to_execute, *args, **kwargs):
     """
 
     # handle special reserved input kwargs
-    callback = convert_return(kwargs.pop("at_return", None))
-    errback = convert_err(kwargs.pop("at_err", None))
+    callback = kwargs.pop("at_return", None)
+    errback = kwargs.pop("at_err", None)
     callback_kwargs = kwargs.pop("at_return_kwargs", {})
     errback_kwargs = kwargs.pop("at_err_kwargs", {})
 
