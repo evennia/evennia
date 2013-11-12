@@ -360,12 +360,14 @@ class ObjectDB(TypedObject):
 
     def execute_cmd(self, raw_string, sessid=None):
         """
-        Do something as this object. This command transparently
-        lets its typeclass execute the command. Evennia also calls
-        this method whenever the player sends a command on the command line.
+        Do something as this object. This method is a copy of the execute_cmd method on the
+        session. This is never called normally, it's only used when wanting specifically to
+        let an object be the caller of a command. It makes use of nicks of eventual connected
+        players as well.
 
         Argument:
         raw_string (string) - raw command input
+        sessid (int) - optional session id to return results to
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To overload
@@ -386,8 +388,8 @@ class ObjectDB(TypedObject):
         # fetch the nick data efficiently
         nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
         if self.has_player:
-            pnicks = self.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
-            nicks = list(nicks) + list(pnicks)
+            # attach player nicks as well, but after the object-level nicks
+            nicks = list(nicks) + list(pself.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel")))
         for nick in nicks:
             if nick.db_key in raw_list:
                 raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)

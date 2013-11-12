@@ -49,7 +49,6 @@ class PortalSessionHandler(SessionHandler):
         self.sessions[sessid] = session
         # sync with server-side
         if self.portal.amp_protocol: # this is a timing issue
-            print "syncing", sessdata
             self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PCONN,
                                                          data=sessdata)

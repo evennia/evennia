@@ -184,6 +184,19 @@ class ServerSession(Session):
             if text.strip() == IDLE_COMMAND:
                 self.update_session_counters(idle=True)
                 return
+            if self.player:
+                # nick replacement
+                nicks = self.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
+                puppet = self.player.get_puppet(self.sessid)
+                if puppet:
+                    # merge, give prio to the lowest level (puppet)
+                    nicks = list(puppet.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))) + list(nicks)
+                raw_list = text.split(None)
+                raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
+                for nick in nicks:
+                    if nick.db_key in raw_list:
+                        text = text.replace(nick.db_key, nick.db_strvalue, 1)
+                        break
             cmdhandler.cmdhandler(self, text, callertype="session", sessid=self.sessid)
             self.update_session_counters()
         if "oob" in kwargs:

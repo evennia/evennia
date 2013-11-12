@@ -400,8 +400,9 @@ class PlayerDB(TypedObject, AbstractUser):
 
     def execute_cmd(self, raw_string, sessid=None):
         """
-        Do something as this player. This command transparently
-        lets its typeclass execute the command.
+        Do something as this player. This method is never called normally,
+        but only when the player object itself is supposed to execute the command. It
+        does not take nicks on eventual puppets into account.
         raw_string - raw command input coming from the command line.
         """
         # nick replacement - we require full-word matching.
