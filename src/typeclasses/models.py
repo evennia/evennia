@@ -147,6 +147,7 @@ class Attribute(SharedMemoryModel):
         #    self.cached_value = value
         #    self.no_cache = False
         #return self.cached_value
+
     #@value.setter
     def __value_set(self, new_value):
         """
@@ -168,12 +169,12 @@ class Attribute(SharedMemoryModel):
         #    self._track_db_value_change.update(self.cached_value)
         #except AttributeError:
         #    pass
+
     #@value.deleter
     def __value_del(self):
         "Deleter. Allows for del attr.value. This removes the entire attribute."
         self.delete()
     value = property(__value_get, __value_set, __value_del)
-
 
     #
     #
@@ -202,6 +203,7 @@ class Attribute(SharedMemoryModel):
         """
         pass
 
+
 #
 # Handlers making use of the Attribute model
 #
@@ -226,19 +228,21 @@ class AttributeHandler(object):
 
     def has(self, key, category=None):
         """
-        Checks if the given Attribute (or list of Attributes) exists on the object.
+        Checks if the given Attribute (or list of Attributes) exists on
+        the object.
 
         If an iterable is given, returns list of booleans.
         """
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         catkey = to_str(category, force_string=True).lower()
         searchkeys = ["%s_%s" % (k.lower(), catkey) for k in make_iter(key)]
         ret = [self._cache[skey] for skey in searchkeys if skey in self._cache]
         return ret[0] if len(ret) == 1 else ret
 
-    def get(self, key=None, category=None, default=None, return_obj=False, strattr=False,
-            raise_exception=False, accessing_obj=None, default_access=True):
+    def get(self, key=None, category=None, default=None, return_obj=False,
+            strattr=False, raise_exception=False, accessing_obj=None,
+            default_access=True):
         """
         Returns the value of the given Attribute or list of Attributes.
         strattr will cause the string-only value field instead of the normal
@@ -253,7 +257,7 @@ class AttributeHandler(object):
         checked before displaying each looked-after Attribute. If no
         accessing_obj is given, no check will be done.
         """
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         ret = []
         catkey = to_str(category, force_string=True).lower()
@@ -280,32 +284,36 @@ class AttributeHandler(object):
             ret = ret if return_obj else [attr.value if attr else None for attr in ret]
         return ret[0] if len(ret)==1 else ret
 
-    def add(self, key, value, category=None, lockstring="", strattr=False, accessing_obj=None, default_access=True):
+    def add(self, key, value, category=None, lockstring="",
+            strattr=False, accessing_obj=None, default_access=True):
         """
         Add attribute to object, with optional lockstring.
 
-        If strattr is set, the db_strvalue field will be used (no pickling). Use the get() method
-        with the strattr keyword to get it back.
+        If strattr is set, the db_strvalue field will be used (no pickling).
+        Use the get() method with the strattr keyword to get it back.
 
         If accessing_obj is given, self.obj's  'attrcreate' lock access
-        will be checked against it. If no accessing_obj is given, no check will be done.
+        will be checked against it. If no accessing_obj is given, no check
+        will be done.
         """
-        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
+        if accessing_obj and not self.obj.access(accessing_obj,
+                                      self._attrcreate, default=default_access):
             # check create access
             return
-        if self._cache == None:
+        if self._cache is None:
             self._recache()
         cachekey = "%s_%s" % (key.lower(), to_str(category, force_string=True).lower())
         attr_obj = self._cache.get(cachekey)
         if not attr_obj:
             # no old attr available; create new.
             attr_obj = Attribute(db_key=key, db_category=category)
-            attr_obj.save() # important
+            attr_obj.save()  # important
             _GA(self.obj, self._m2m_fieldname).add(attr_obj)
             self._cache[cachekey] = attr_obj
         if lockstring:
             attr_obj.locks.add(lockstring)
-        # we shouldn't need to fear stale objects, the field signalling should catch all cases
+        # we shouldn't need to fear stale objects, the field signalling
+        # should catch all cases
         if strattr:
             # store as a simple string
             attr_obj.strvalue = value
@@ -315,18 +323,21 @@ class AttributeHandler(object):
             attr_obj.value = value
             attr_obj.strvalue = None
 
-    def remove(self, key, raise_exception=False, category=None, accessing_obj=None, default_access=True):
+    def remove(self, key, raise_exception=False, category=None,
+               accessing_obj=None, default_access=True):
         """Remove attribute or a list of attributes from object.
 
-        If accessing_obj is given, will check against the 'attredit' lock. If not given, this check is skipped.
+        If accessing_obj is given, will check against the 'attredit' lock.
+        If not given, this check is skipped.
         """
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         catkey = to_str(category, force_string=True).lower()
         for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
             attr_obj = self._cache.get(keystr)
             if attr_obj:
-                if accessing_obj and not attr_obj.access(accessing_obj, self._attredit, default=default_access):
+                if accessing_obj and not attr_obj.access(accessing_obj,
+                                    self._attredit, default=default_access):
                     continue
                 attr_obj.delete()
             elif not attr_obj and raise_exception:
@@ -353,7 +364,7 @@ class AttributeHandler(object):
         each attribute before returning them. If not given, this
         check is skipped.
         """
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         catkey = "_%s" % to_str(category, force_string=True).lower()
         return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
@@ -366,6 +377,7 @@ class AttributeHandler(object):
         #    return [attr for attr in all_attrs if attr.access(accessing_obj, self._attrread, default=default_access)]
         #else:
         #    return list(all_attrs)
+
 
 class NickHandler(AttributeHandler):
     """
@@ -401,33 +413,40 @@ class NickHandler(AttributeHandler):
             return super(NickHandler, self).all(category=category)
         return _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith="nick_")
 
+
 class NAttributeHandler(object):
     """
-    This stand-alone handler manages non-database saved properties by storing them
-    as properties on obj.ndb. It has the same methods as AttributeHandler, but they
-    are much simplified.
+    This stand-alone handler manages non-database saved properties by storing
+    them as properties on obj.ndb. It has the same methods as AttributeHandler,
+    but they are much simplified.
     """
     def __init__(self, obj):
         "initialized on the object"
         self.ndb = _GA(obj, "ndb")
+
     def has(self, key):
         "Check if object has this attribute or not"
-        return _GA(self.ndb, key) # ndb returns None if not found
+        return _GA(self.ndb, key)  # ndb returns None if not found
+
     def get(self, key):
         "Returns named key value"
         return _GA(self.ndb, key)
+
     def add(self, key, value):
         "Add new key and value"
         _SA(self.ndb, key, value)
+
     def remove(self, key):
         "Remove key from storage"
         _DA(self.ndb, key)
+
     def all(self):
         "List all keys stored"
         if callable(self.ndb.all):
             return self.ndb.all()
         else:
             return [val for val in self.ndb.__dict__.keys() if not val.startswith('_')]
+
 
 #------------------------------------------------------------
 #
@@ -456,18 +475,25 @@ class Tag(models.Model):
     this uses the 'aliases' tag category, which is also checked by the
     default search functions of Evennia to allow quick searches by alias.
     """
-    db_key = models.CharField('key', max_length=255, null=True, help_text="tag identifier", db_index=True)
-    db_category = models.CharField('category', max_length=64, null=True, help_text="tag category", db_index=True)
-    db_data = models.TextField('data', null=True, blank=True, help_text="optional data field with extra information. This is not searched for.")
+    db_key = models.CharField('key', max_length=255, null=True,
+                              help_text="tag identifier", db_index=True)
+    db_category = models.CharField('category', max_length=64, null=True,
+                                   help_text="tag category", db_index=True)
+    db_data = models.TextField('data', null=True, blank=True,
+                               help_text="optional data field with extra information. This is not searched for.")
 
     objects = managers.TagManager()
+
+
     class Meta:
         "Define Django meta options"
         verbose_name = "Tag"
-        unique_together =(('db_key', 'db_category'),)
+        unique_together = (('db_key', 'db_category'),)
         index_together = (('db_key', 'db_category'),)
+
     def __unicode__(self):
         return u"%s" % self.db_key
+
     def __str__(self):
         return str(self.db_key)
 
@@ -489,7 +515,8 @@ class TagHandler(object):
         using the category <category_prefix><tag_category>
         """
         self.obj = obj
-        self.prefix = "%s%s" % (category_prefix.strip().lower() if category_prefix else "", self._base_category)
+        self.prefix = "%s%s" % (category_prefix.strip().lower()
+                                if category_prefix else "", self._base_category)
         self._cache = None
 
     def _recache(self):
@@ -499,38 +526,46 @@ class TagHandler(object):
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
         for tagstr in make_iter(tag):
-            tagstr = tagstr.strip().lower() if tagstr!=None else None
-            category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
-            data = str(data) if data!=None else None
-            # this will only create tag if no matches existed beforehand (it will overload
-            # data on an existing tag since that is not considered part of making the tag unique)
+            tagstr = tagstr.strip().lower() if tagstr is not None else None
+            category = "%s%s" % (self.prefix, category.strip().lower() if category is not None else "")
+            data = str(data) if data is not None else None
+            # this will only create tag if no matches existed beforehand (it
+            # will overload data on an existing tag since that is not
+            # considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data)
             _GA(self.obj, self._m2m_fieldname).add(tagobj)
-            if self._cache == None:
+            if self._cache is None:
                 self._recache()
             self._cache[tagstr] = True
 
     def get(self, key, category="", return_obj=False):
-        "Get the data field for the given tag or list of tags. If return_obj=True, return the matching Tag objects instead."
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        """
+        Get the data field for the given tag or list of tags. If
+        return_obj=True, return the matching Tag objects instead.
+        """
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         ret = []
-        category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
-        ret = [val for val in (self._cache.get(keystr.strip().lower()) for keystr in make_iter(key)) if val]
+        category = "%s%s" % (self.prefix, category.strip().lower()
+                             if category is not None else "")
+        ret = [val for val in (self._cache.get(keystr.strip().lower())
+                 for keystr in make_iter(key)) if val]
         ret = ret if return_obj else [to_str(tag.db_data) for tag in ret if tag]
-        return ret[0] if len(ret)==1 else ret
+        return ret[0] if len(ret) == 1 else ret
 
     def remove(self, tag, category=None):
         "Remove a tag from the handler"
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         for tag in make_iter(tag):
-            if not (tag or tag.strip()): # we don't allow empty tags
+            if not (tag or tag.strip()):  # we don't allow empty tags
                 continue
-            tagstr = tag.strip().lower() if tag!=None else None
-            category = "%s%s" % (self.prefix, category.strip().lower() if category!=None else "")
-            #TODO This does not delete the tag object itself. Maybe it should do that when no
-            # objects reference the tag anymore?
+            tagstr = tag.strip().lower() if tag is not None else None
+            category = "%s%s" % (self.prefix, category.strip().lower()
+                                 if category is not None else "")
+
+            # This does not delete the tag object itself. Maybe it should do
+            # that when no objects reference the tag anymore (how to check)?
             tagobj = self.obj.db_tags.filter(db_key=tagstr, db_category=category)
             if tagobj:
                 _GA(self.obj, self._m2m_fieldname).remove(tagobj[0])
@@ -543,18 +578,21 @@ class TagHandler(object):
 
     def all(self):
         "Get all tags in this handler"
-        if self._cache == None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         return self._cache.keys()
         #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())
+
     def __unicode(self):
         return u",".join(self.all())
 
+
 class AliasHandler(TagHandler):
     _base_category = "alias"
+
 
 class PermissionHandler(TagHandler):
     _base_category = "permission"
@@ -591,19 +629,23 @@ class TypedObject(SharedMemoryModel):
     # TypedObject Database Model setup
     #
     #
-    # These databse fields are all accessed and set using their corresponding properties,
-    # named same as the field, but without the db_* prefix (no separate save() call is needed)
+    # These databse fields are all accessed and set using their corresponding
+    # properties, named same as the field, but without the db_* prefix
+    # (no separate save() call is needed)
 
-    # Main identifier of the object, for searching. Is accessed with self.key or self.name
+    # Main identifier of the object, for searching. Is accessed with self.key
+    # or self.name
     db_key = models.CharField('key', max_length=255, db_index=True)
-    # This is the python path to the type class this object is tied to the type class is what defines what kind of Object this is)
+    # This is the python path to the type class this object is tied to the
+    # typeclass is what defines what kind of Object this is)
     db_typeclass_path = models.CharField('typeclass', max_length=255, null=True,
             help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
     # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
     # Permissions (access these through the 'permissions' property)
     #db_permissions = models.CharField('permissions', max_length=255, blank=True,
-    #     help_text="a comma-separated list of text strings checked by in-game locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
+    #     help_text="a comma-separated list of text strings checked by
+    # in-game locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True,
             help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
@@ -647,9 +689,14 @@ class TypedObject(SharedMemoryModel):
     # is the object in question).
 
     # name property (alias to self.key)
-    def __name_get(self): return self.key
-    def __name_set(self, value): self.key = value
-    def __name_del(self): raise Exception("Cannot delete name")
+    def __name_get(self):
+        return self.key
+
+    def __name_set(self, value):
+        self.key = value
+
+    def __name_del(self):
+        raise Exception("Cannot delete name")
     name = property(__name_get, __name_set, __name_del)
 
     #
@@ -711,8 +758,10 @@ class TypedObject(SharedMemoryModel):
             dbid = _GA(self, "id")
             set_prop_cache(self, "_dbid", dbid)
         return dbid
+
     def __dbid_set(self, value):
         raise Exception("dbid cannot be set!")
+
     def __dbid_del(self):
         raise Exception("dbid cannot be deleted!")
     dbid = property(__dbid_get, __dbid_set, __dbid_del)
@@ -723,12 +772,13 @@ class TypedObject(SharedMemoryModel):
         Returns the object's dbref on the form #NN.
         """
         return "#%s" % _GA(self, "_TypedObject__dbid_get")()
+
     def __dbref_set(self):
         raise Exception("dbref cannot be set!")
+
     def __dbref_del(self):
         raise Exception("dbref cannot be deleted!")
     dbref = property(__dbref_get, __dbref_set, __dbref_del)
-
 
     # typeclass property
     #@property
@@ -760,9 +810,10 @@ class TypedObject(SharedMemoryModel):
         else:
             # handle loading/importing of typeclasses, searching all paths.
             # (self._typeclass_paths is a shortcut to settings.TYPECLASS_*_PATHS
-            # where '*' is either OBJECT, SCRIPT or PLAYER depending on the typed
-            # entities).
-            typeclass_paths = [path] + ["%s.%s" % (prefix, path) for prefix in _GA(self, '_typeclass_paths')]
+            # where '*' is either OBJECT, SCRIPT or PLAYER depending on the
+            # typed entities).
+            typeclass_paths = [path] + ["%s.%s" % (prefix, path)
+                                    for prefix in _GA(self, '_typeclass_paths')]
 
             for tpath in typeclass_paths:
 
@@ -787,8 +838,9 @@ class TypedObject(SharedMemoryModel):
                     errstring +=  " to specify the actual typeclass name inside the module too."
                 else:
                     errstring += "\n%s" % typeclass # this will hold a growing error message.
-        # If we reach this point we couldn't import any typeclasses. Return default. It's up to the calling
-        # method to use e.g. self.is_typeclass() to detect that the result is not the one asked for.
+        # If we reach this point we couldn't import any typeclasses. Return
+        # default. It's up to the calling method to use e.g. self.is_typeclass()
+        # to detect that the result is not the one asked for.
         _GA(self, "_display_errmsg")(errstring)
         _SA(self, "typeclass_lasterrmsg", errstring)
         return _GA(self, "_get_default_typeclass")(cache=False, silent=False, save=False)
@@ -818,12 +870,13 @@ class TypedObject(SharedMemoryModel):
             return None
         try:
             modpath, class_name = path.rsplit('.', 1)
-            module =  __import__(modpath, fromlist=["none"])
+            module = __import__(modpath, fromlist=["none"])
             return module.__dict__[class_name]
         except ImportError:
             trc = sys.exc_traceback
             if not trc.tb_next:
-                # we separate between not finding the module, and finding a buggy one.
+                # we separate between not finding the module, and finding
+                # a buggy one.
                 errstring = "Typeclass not found trying path '%s'." % path
             else:
                 # a bug in the module is reported normally.
@@ -866,7 +919,8 @@ class TypedObject(SharedMemoryModel):
 
         if not callable(typeclass):
             # if typeclass still doesn't exist at this point, we're in trouble.
-            # fall back to hardcoded core class which is wrong for e.g. scripts/players etc.
+            # fall back to hardcoded core class which is wrong for e.g.
+            # scripts/players etc.
             failpath = defpath
             defpath = "src.objects.objects.Object"
             typeclass = _GA(self, "_path_import")(defpath)
@@ -876,7 +930,8 @@ class TypedObject(SharedMemoryModel):
                 errstring += "\n  Using Evennia's default class '%s'." % defpath
                 _GA(self, "_display_errmsg")(errstring)
         if not callable(typeclass):
-            # if this is still giving an error, Evennia is wrongly configured or buggy
+            # if this is still giving an error, Evennia is wrongly
+            # configured or buggy
             raise Exception("CRITICAL ERROR: The final fallback typeclass %s cannot load!!" % defpath)
         typeclass = typeclass(self)
         if save:
@@ -911,22 +966,23 @@ class TypedObject(SharedMemoryModel):
             typeclass = _GA(typeclass, "path")
         except AttributeError:
             pass
-        typeclasses = [typeclass] + ["%s.%s" % (path, typeclass) for path in _GA(self, "_typeclass_paths")]
+        typeclasses = [typeclass] + ["%s.%s" % (path, typeclass)
+                                     for path in _GA(self, "_typeclass_paths")]
         if exact:
             current_path = _GA(self.typeclass, "path") #"_GA(self, "_cached_db_typeclass_path")
             return typeclass and any((current_path == typec for typec in typeclasses))
         else:
             # check parent chain
             return any((cls for cls in self.typeclass.__class__.mro()
-                        if any(("%s.%s" % (_GA(cls,"__module__"), _GA(cls,"__name__")) == typec for typec in typeclasses))))
-
+                        if any(("%s.%s" % (_GA(cls, "__module__"),
+                                _GA(cls, "__name__")) == typec
+                                    for typec in typeclasses))))
 
     def delete(self, *args, **kwargs):
         """
         Type-level cleanup
         """
         super(TypedObject, self).delete(*args, **kwargs)
-
 
     #
     # Object manipulation methods
@@ -1020,13 +1076,15 @@ class TypedObject(SharedMemoryModel):
 
     def check_permstring(self, permstring):
         """
-        This explicitly checks if we hold particular permission without involving
-        any locks.
+        This explicitly checks if we hold particular permission without
+        involving any locks.
         """
         if hasattr(self, "player"):
-            if self.player and self.player.is_superuser: return True
+            if self.player and self.player.is_superuser:
+                return True
         else:
-            if self.is_superuser: return True
+            if self.is_superuser:
+                return True
 
         if not permstring:
             return False
@@ -1048,9 +1106,9 @@ class TypedObject(SharedMemoryModel):
 
     def flush_from_cache(self):
         """
-        Flush this object instance from cache, forcing an object reload. Note that this
-        will kill all temporary attributes on this object since it will be recreated
-        as a new Typeclass instance.
+        Flush this object instance from cache, forcing an object reload.
+        Note that this will kill all temporary attributes on this object
+         since it will be recreated as a new Typeclass instance.
         """
         self.__class__.flush_cached_instance(self)
 
@@ -1068,8 +1126,8 @@ class TypedObject(SharedMemoryModel):
              and
            del obj.db.attrname
              and
-           all_attr = obj.db.all (unless there is no attribute named 'all', in which
-                                    case that will be returned instead).
+           all_attr = obj.db.all() (unless there is an attribute
+                      named 'all', in which case that will be returned instead).
         """
         try:
             return self._db_holder
@@ -1079,6 +1137,7 @@ class TypedObject(SharedMemoryModel):
                 def __init__(self, obj):
                     _SA(self, 'obj', obj)
                     _SA(self, "attrhandler", _GA(_GA(self, "obj"), "attributes"))
+
                 def __getattribute__(self, attrname):
                     if attrname == 'all':
                         # we allow to overload our default .all
@@ -1087,21 +1146,26 @@ class TypedObject(SharedMemoryModel):
                             return attr
                         return _GA(self, 'all')
                     return _GA(self, "attrhandler").get(attrname)
+
                 def __setattr__(self, attrname, value):
                     _GA(self, "attrhandler").add(attrname, value)
+
                 def __delattr__(self, attrname):
                     _GA(self, "attrhandler").remove(attrname)
+
                 def get_all(self):
                     return _GA(self, "attrhandler").all()
                 all = property(get_all)
             self._db_holder = DbHolder(self)
             return self._db_holder
+
     #@db.setter
     def __db_set(self, value):
         "Stop accidentally replacing the db object"
         string = "Cannot assign directly to db object! "
         string += "Use db.attr=value instead."
         raise Exception(string)
+
     #@db.deleter
     def __db_del(self):
         "Stop accidental deletion."
@@ -1129,24 +1193,28 @@ class TypedObject(SharedMemoryModel):
                     return [val for val in self.__dict__.keys()
                             if not val.startswith('_')]
                 all = property(get_all)
+
                 def __getattribute__(self, key):
                     # return None if no matching attribute was found.
                     try:
                         return _GA(self, key)
                     except AttributeError:
                         return None
+
                 def __setattr__(self, key, value):
                     # hook the oob handler here
                     #call_ndb_hooks(self, key, value)
                     _SA(self, key, value)
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
+
     #@ndb.setter
     def __ndb_set(self, value):
         "Stop accidentally replacing the db object"
         string = "Cannot assign directly to ndb object! "
         string = "Use ndb.attr=value instead."
         raise Exception(string)
+
     #@ndb.deleter
     def __ndb_del(self):
         "Stop accidental deletion."
@@ -1239,12 +1307,12 @@ class TypedObject(SharedMemoryModel):
         value to None using this method. Use set_attribute.
         """
         logger.log_depmsg("obj.attr() is deprecated. Use handlers obj.db or obj.attributes.")
-        if attribute_name == None:
+        if attribute_name is None:
             # act as a list method
             return _GA(self, "attributes").all()
-        elif delete == True:
+        elif delete is True:
             _GA(self, "attributes").remove(attribute_name)
-        elif value == None:
+        elif value is None:
             # act as a getter.
             return _GA(self, "attributes").get(attribute_name)
         else:
@@ -1272,12 +1340,12 @@ class TypedObject(SharedMemoryModel):
 
         """
         logger.log_depmsg("obj.secure_attr() is deprecated. Use obj.attributes methods, giving accessing_obj keyword.")
-        if attribute_name == None:
+        if attribute_name is None:
             return _GA(self, "attributes").all(accessing_obj=accessing_object, default_access=default_access_read)
-        elif delete == True:
+        elif delete is True:
             # act as deleter
             _GA(self, "attributes").remove(attribute_name, accessing_obj=accessing_object, default_access=default_access_edit)
-        elif value == None:
+        elif value is None:
             # act as getter
             return _GA(self, "attributes").get(attribute_name, accessing_obj=accessing_object, default_access=default_access_read)
         else:
@@ -1296,17 +1364,17 @@ class TypedObject(SharedMemoryModel):
         a method call. Will return None if trying to access a non-existing property.
         """
         logger.log_depmsg("obj.nattr() is deprecated. Use obj.nattributes instead.")
-        if attribute_name == None:
+        if attribute_name is None:
             # act as a list method
             if callable(self.ndb.all):
                 return self.ndb.all()
             else:
                 return [val for val in self.ndb.__dict__.keys()
                         if not val.startswith['_']]
-        elif delete == True:
+        elif delete is True:
             if hasattr(self.ndb, attribute_name):
                 _DA(_GA(self, "ndb"), attribute_name)
-        elif value == None:
+        elif value is None:
             # act as a getter.
             if hasattr(self.ndb, attribute_name):
                 _GA(_GA(self, "ndb"), attribute_name)

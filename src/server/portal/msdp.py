@@ -9,9 +9,7 @@ etc.
 
 """
 import re
-from django.conf import settings
-from src.utils.utils import make_iter, mod_import, to_str
-from src.utils import logger
+from src.utils.utils import to_str
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = chr(69)
@@ -29,10 +27,17 @@ SE = chr(240)
 force_str = lambda inp: to_str(inp, force_string=True)
 
 # pre-compiled regexes
-regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)) # return 2-tuple
-regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)) # return 2-tuple (may be nested)
+# returns 2-tuple
+regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL,
+                                                  MSDP_ARRAY_OPEN,
+                                                  MSDP_ARRAY_CLOSE))
+# returns 2-tuple (may be nested)
+regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL,
+                                                  MSDP_TABLE_OPEN,
+                                                  MSDP_TABLE_CLOSE))
 regex_var = re.compile(MSDP_VAR)
 regex_val = re.compile(MSDP_VAL)
+
 
 # Msdp object handler
 
@@ -90,7 +95,7 @@ class Msdp(object):
                 else:
                     string += MSDP_VAR + force_str(key) + MSDP_VAL + force_str(val)
             string += MSDP_TABLE_CLOSE
-            return stringk
+            return string
 
         def make_array(name, *args):
             "build a array. Arrays may not nest tables by definition."
@@ -169,7 +174,7 @@ class Msdp(object):
             tables[key] = {}
             for varval in regex_var.split(table):
                 parts = regex_val.split(varval)
-                tables[key].expand({parts[0] : tuple(parts[1:]) if len(parts)>1 else ("",)})
+                tables[key].expand({parts[0]: tuple(parts[1:]) if len(parts) > 1 else ("",)})
         for key, array in regex_array.findall(data):
             arrays[key] = []
             for val in regex_val.split(array):
@@ -178,16 +183,18 @@ class Msdp(object):
         for varval in regex_var.split(regex_array.sub("", regex_table.sub("", data))):
             # get remaining varvals after cleaning away tables/arrays
             parts = regex_val.split(varval)
-            variables[parts[0].upper()] = tuple(parts[1:]) if len(parts)>1 else ("", )
+            variables[parts[0].upper()] = tuple(parts[1:]) if len(parts) > 1 else ("", )
 
         #print "MSDP: table, array, variables:", tables, arrays, variables
 
-        # all variables sent through msdp to Evennia are considered commands with arguments.
-        # there are three forms of commands possible through msdp:
+        # all variables sent through msdp to Evennia are considered commands
+        # with arguments. There are three forms of commands possible
+        # through msdp:
         #
         # VARNAME VAR -> varname(var)
         # ARRAYNAME VAR VAL VAR VAL VAR VAL ENDARRAY -> arrayname(val,val,val)
-        # TABLENAME TABLE VARNAME VAL VARNAME VAL ENDTABLE -> tablename(varname=val, varname=val)
+        # TABLENAME TABLE VARNAME VAL VARNAME VAL ENDTABLE ->
+        #                                    tablename(varname=val, varname=val)
         #
 
         # default MSDP functions
@@ -233,81 +240,3 @@ class Msdp(object):
         """
         #print "msdp data_in:", funcname, args, kwargs
         self.protocol.data_in(text=None, oob=(funcname, args, kwargs))
-
-   # # MSDP Commands
-   # # Some given MSDP (varname, value) pairs can also be treated as command + argument.
-   # # Generic msdp command map. The argument will be sent to the given command.
-   # # See http://tintin.sourceforge.net/msdp/ for definitions of each command.
-   # # These are client->server commands.
-   # def msdp_cmd_list(self, arg):
-   #     """
-   #     The List command allows for retrieving various info about the server/client
-   #     """
-   #     if arg == 'COMMANDS':
-   #         return self.evennia_to_msdp(arg, MSDP_COMMANDS)
-   #     elif arg == 'LISTS':
-   #         return self.evennia_to_msdp(arg, ("COMMANDS", "LISTS", "CONFIGURABLE_VARIABLES",
-   #                                        "REPORTED_VARIABLES", "SENDABLE_VARIABLES"))
-   #     elif arg == 'CONFIGURABLE_VARIABLES':
-   #         return self.evennia_to_msdp(arg, ("CLIENT_NAME", "CLIENT_VERSION", "PLUGIN_ID"))
-   #     elif arg == 'REPORTABLE_VARIABLES':
-   #         return self.evennia_to_msdp(arg, MSDP_REPORTABLE.keys())
-   #     elif arg == 'REPORTED_VARIABLES':
-   #         # the dynamically set items to report
-   #         return self.evennia_to_msdp(arg, self.msdp_reported.keys())
-   #     elif arg == 'SENDABLE_VARIABLES':
-   #         return self.evennia_to_msdp(arg, MSDP_SENDABLE.keys())
-   #     else:
-   #         return self.evennia_to_msdp("LIST", arg)
-
-   # # default msdp commands
-
-   # def msdp_cmd_report(self, *arg):
-   #     """
-   #     The report command instructs the server to start reporting a
-   #     reportable variable to the client.
-   #     """
-   #     try:
-   #         return MSDP_REPORTABLE[arg](report=True)
-   #     except Exception:
-   #         logger.log_trace()
-
-   # def msdp_cmd_unreport(self, arg):
-   #     """
-   #     Unreport a previously reported variable
-   #     """
-   #     try:
-   #         MSDP_REPORTABLE[arg](report=False)
-   #     except Exception:
-   #         self.logger.log_trace()
-
-   # def msdp_cmd_reset(self, arg):
-   #     """
-   #     The reset command resets a variable to its initial state.
-   #     """
-   #     try:
-   #         MSDP_REPORTABLE[arg](reset=True)
-   #     except Exception:
-   #         logger.log_trace()
-
-   # def msdp_cmd_send(self, *args):
-   #     """
-   #     Request the server to send a particular variable
-   #     to the client.
-
-   #     arg - this is a list of variables the client wants.
-   #     """
-   #     ret = []
-   #     for var in make_iter(arg)
-
-
-
-
-   #         for var in make_iter(arg):
-   #             try:
-   #                 ret.append(MSDP_REPORTABLE[var.upper()])# (send=True))
-   #             except Exception:
-   #                 ret.append("ERROR")#logger.log_trace()
-   #     return ret
-
-

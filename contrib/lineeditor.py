@@ -26,6 +26,7 @@ CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
 RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
 
+
 class CmdEditorBase(Command):
     """
     Base parent for editor commands
@@ -44,7 +45,8 @@ class CmdEditorBase(Command):
          :cmd [li] [w] [txt]
 
         Where all arguments are optional.
-          li  - line number (int), starting from 1. This could also be a range given as <l>:<l>
+          li  - line number (int), starting from 1. This could also
+                be a range given as <l>:<l>
           w   - word(s) (string), could be encased in quotes.
           txt - extra text (string), could be encased in quotes
         """
@@ -63,14 +65,14 @@ class CmdEditorBase(Command):
         arglist = [part for part in RE_GROUP.findall(self.args) if part]
         temp = []
         for arg in arglist:
-            # we want to clean the quotes, but only one type, in case we are nesting.
+            # we want to clean the quotes, but only one type,
+            # in case we are nesting.
             if arg.startswith('"'):
                 arg.strip('"')
             elif arg.startswith("'"):
                 arg.strip("'")
             temp.append(arg)
         arglist = temp
-
 
         # A dumb split, without grouping quotes
         words = self.args.split()
@@ -106,8 +108,8 @@ class CmdEditorBase(Command):
         else:
             lstr = "lines %i-%i" % (lstart + 1, lend)
 
-
-        # arg1 and arg2 is whatever arguments. Line numbers or -ranges are never included here.
+        # arg1 and arg2 is whatever arguments. Line numbers or -ranges are
+        # never included here.
         args = " ".join(arglist)
         arg1, arg2 = "", ""
         if len(arglist) > 1:
@@ -141,6 +143,7 @@ class CmdLineInput(CmdEditorBase):
     """
     key = CMD_NOMATCH
     aliases = [CMD_NOINPUT]
+
     def func(self):
         "Adds the line without any formatting changes."
         # add a line of text
@@ -150,8 +153,10 @@ class CmdLineInput(CmdEditorBase):
             buf = self.editor.buffer + "\n%s" % self.args
         self.editor.update_buffer(buf)
         if self.editor.echo_mode:
-            cline = len(self.editor.buffer.split('\n')) # need to do it here or we will be off one line
+            # need to do it here or we will be off one line
+            cline = len(self.editor.buffer.split('\n'))
             self.caller.msg("{b%02i|{n %s" % (cline, self.args))
+
 
 class CmdEditorGroup(CmdEditorBase):
     """
@@ -165,8 +170,9 @@ class CmdEditorGroup(CmdEditorBase):
 
     def func(self):
         """
-        This command handles all the in-editor :-style commands. Since each command
-        is small and very limited, this makes for a more efficient presentation.
+        This command handles all the in-editor :-style commands. Since
+        each command is small and very limited, this makes for a more
+        efficient presentation.
         """
         caller = self.caller
         editor = self.editor
@@ -187,7 +193,9 @@ class CmdEditorGroup(CmdEditorBase):
             # Echo buffer without the line numbers and syntax parsing
             if self.linerange:
                 buf = linebuffer[lstart:lend]
-                string = editor.display_buffer(buf=buf, offset=lstart, linenums=False)
+                string = editor.display_buffer(buf=buf,
+                                               offset=lstart,
+                                               linenums=False)
             else:
                 string = editor.display_buffer(linenums=False)
             self.caller.msg(string, raw=True)
@@ -242,7 +250,7 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    string = "Removed %s for lines %i-%i." % (self.arg1, lstart + 1 , lend + 1)
+                    string = "Removed %s for lines %i-%i." % (self.arg1, lstart + 1, lend + 1)
                 else:
                     string = "Removed %s for %s." % (self.arg1, self.lstr)
                 sarea = "\n".join(linebuffer[lstart:lend])
@@ -279,7 +287,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not new_lines:
                 string = "You need to enter a new line and where to insert it."
             else:
-                buf = linebuffer[:lstart] + new_lines  + linebuffer[lstart:]
+                buf = linebuffer[:lstart] + new_lines + linebuffer[lstart:]
                 editor.update_buffer(buf)
                 string = "Inserted %i new line(s) at %s." % (len(new_lines), self.lstr)
         elif cmd == ":r":
@@ -308,7 +316,8 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.update_buffer(buf)
                 string = "Appended text to end of %s." % self.lstr
         elif cmd == ":s":
-            # :s <li> <w> <txt> - search and replace words in entire buffer or on certain lines
+            # :s <li> <w> <txt> - search and replace words
+            # in entire buffer or on certain lines
             if not self.arg1 or not self.arg2:
                 string = "You must give a search word and something to replace it with."
             else:
@@ -376,6 +385,7 @@ class EditorCmdSet(CmdSet):
     key = "editorcmdset"
     mergetype = "Replace"
 
+
 class LineEditor(object):
     """
     This defines a line editor object. It creates all relevant commands
@@ -391,17 +401,21 @@ class LineEditor(object):
         """
         caller - who is using the editor
 
-        loadfunc - this will be called as func(*loadfunc_args) when the editor is first started, e.g. for pre-loading text into it.
+        loadfunc - this will be called as func(*loadfunc_args) when the
+                   editor is first started, e.g. for pre-loading text into it.
         loadfunc_args - optional tuple of arguments to supply to loadfunc.
-        savefunc - this will be called as func(*savefunc_args) when the save-command is given and is
-                   used to actually determine where/how result is saved. It should return True if save was successful and
-                   also handle any feedback to the user.
+        savefunc - this will be called as func(*savefunc_args) when the
+                   save-command is given and is used to actually determine
+                   where/how result is saved. It should return True if save
+                   was successful and also handle any feedback to the user.
         savefunc_args - optional tuple of arguments to supply to savefunc.
-        quitfunc - this will optionally e called as func(*quitfunc_args) when the editor is exited. If defined, it should
-                   handle all wanted feedback to the user.
+        quitfunc - this will optionally e called as func(*quitfunc_args) when
+                   the editor is exited. If defined, it should handle all
+                   wanted feedback to the user.
         quitfunc_args - optional tuple of arguments to supply to quitfunc.
 
-        key = an optional key for naming this session (such as which attribute is being edited)
+        key = an optional key for naming this session (such as which attribute
+              is being edited)
         """
         self.key = key
         self.caller = caller
@@ -420,12 +434,11 @@ class LineEditor(object):
             # If no save function is defined, save an error-reporting function
             err = "{rNo save function defined. Buffer cannot be saved.{n"
             caller.msg(err)
-            savefunc = lambda:  self.caller.msg(err)
+            savefunc = lambda: self.caller.msg(err)
         self.savefunc = savefunc
         self.savefunc_args = savefunc_args or ()
         self.quitfunc = quitfunc
         self.quitfunc_args = quitfunc_args or ()
-
 
         # Create the commands we need
         cmd1 = CmdLineInput()
@@ -494,8 +507,9 @@ class LineEditor(object):
         if self.unsaved:
             try:
                 if self.savefunc(*self.savefunc_args):
-                    # Save codes should return a true value to indicate save worked.
-                    # The saving function is responsible for any status messages.
+                    # Save codes should return a true value to indicate
+                    # save worked. The saving function is responsible for
+                    # any status messages.
                     self.unsaved = False
                 return ""
             except Exception, e:
@@ -555,7 +569,7 @@ class LineEditor(object):
         """
         Shows the help entry for the editor.
         """
-        string = self.sep*78 + """
+        string = self.sep * 78 + """
 <txt>  - any non-command is appended to the end of the buffer.
 :  <l> - view buffer or only line <l>
 :: <l> - view buffer without line numbers or other parsing
@@ -578,7 +592,7 @@ class LineEditor(object):
 :y  <l>        - yank (copy) line <l> to the copy buffer
 :x  <l>        - cut line <l> and store it in the copy buffer
 :p  <l>        - put (paste) previously copied line directly after <l>
-:i  <l> <txt>  - insert new text <txt> at line <l>. Old line will be shifted down
+:i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down
 :r  <l> <txt>  - replace line <l> with text <txt>
 :I  <l> <txt>  - insert text at the beginning of line <l>
 :A  <l> <txt>  - append text after the end of line <l>
@@ -627,7 +641,8 @@ class CmdEditor(Command):
         if not self.args or not '/' in self.args:
             self.caller.msg("Usage: @editor <obj>/<attrname>")
             return
-        self.objname, self.attrname = [part.strip() for part in self.args.split("/", 1)]
+        self.objname, self.attrname = [part.strip()
+                                            for part in self.args.split("/", 1)]
         self.obj = self.caller.search(self.objname)
         if not self.obj:
             return
@@ -636,20 +651,28 @@ class CmdEditor(Command):
         def load_attr():
             "inital loading of buffer data from given attribute."
             target = self.obj.attributes.get(self.attrname)
-            if target != None and not isinstance(target, basestring):
+            if target is not None and not isinstance(target, basestring):
                 typ = type(target).__name__
                 self.caller.msg("{RWARNING! Saving this buffer will overwrite the current attribute (of type %s) with a string!{n" % typ)
             return target and str(target) or ""
+
         def save_attr():
-            "Save line buffer to given attribute name. This should return True if successful and also report its status."
+            """
+            Save line buffer to given attribute name. This should
+            return True if successful and also report its status.
+            """
             self.obj.attributes.add(self.attrname, self.editor.buffer)
             self.caller.msg("Saved.")
             return True
+
         def quit_hook():
             "Example quit hook. Since it's given, it's responsible for giving feedback messages."
             self.caller.msg("Exited Editor.")
 
-
         editor_key = "%s/%s" % (self.objname, self.attrname)
         # start editor, it will handle things from here.
-        self.editor = LineEditor(self.caller, loadfunc=load_attr, savefunc=save_attr, quitfunc=quit_hook, key=editor_key)
+        self.editor = LineEditor(self.caller,
+                                 loadfunc=load_attr,
+                                 savefunc=save_attr,
+                                 quitfunc=quit_hook,
+                                 key=editor_key)

@@ -122,8 +122,10 @@ class CmdOOCLook(default_cmds.CmdLook):
 
         else:
             # not ooc mode - leave back to normal look
-            self.caller = self.character # we have to put this back for normal look to work.
+            # we have to put this back for normal look to work.
+            self.caller = self.character
             super(CmdOOCLook, self).func()
+
 
 class CmdOOCCharacterCreate(Command):
     """
@@ -179,8 +181,8 @@ class CmdOOCCharacterCreate(Command):
         else:
             avail_chars = [new_character.id]
         self.caller.db._character_dbrefs = avail_chars
-
         self.caller.msg("{gThe Character {c%s{g was successfully created!" % charname)
+
 
 class OOCCmdSetCharGen(default_cmds.OOCCmdSet):
     """

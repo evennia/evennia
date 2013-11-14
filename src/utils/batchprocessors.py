@@ -167,15 +167,17 @@ script = create.create_script()
 
 import re
 import codecs
-import traceback, sys
-from traceback import format_exc
+import traceback
+import sys
+#from traceback import format_exc
 from django.conf import settings
 from src.utils import logger
 from src.utils import utils
-from game import settings as settings_module
+#from game import settings as settings_module
 
 ENCODINGS = settings.ENCODINGS
 CODE_INFO_HEADER = re.compile(r"\(.*?\)")
+
 
 #------------------------------------------------------------
 # Helper function
@@ -216,7 +218,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
             continue
 
         load_errors = []
-        err =None
+        err = None
         # We have successfully found and opened the file. Now actually
         # try to decode it using the given protocol.
         try:
@@ -246,6 +248,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
     else:
         return lines
 
+
 #------------------------------------------------------------
 #
 # Batch-command processor
@@ -261,9 +264,9 @@ class BatchCommandProcessor(object):
         """
         This parses the lines of a batchfile according to the following
         rules:
-          1) # at the beginning of a line marks the end of the command before it.
-               It is also a comment and any number of # can exist on subsequent
-               lines (but not inside comments).
+          1) # at the beginning of a line marks the end of the command before
+               it. It is also a comment and any number of # can exist on
+               subsequent lines (but not inside comments).
           2) #INSERT at the beginning of a line imports another
              batch-cmd file file and pastes it into the batch file as if
              it was written there.
@@ -323,10 +326,10 @@ class BatchCommandProcessor(object):
                 curr_cmd = ""
                 filename = line.lstrip("#INSERT").strip()
                 insert_commands = self.parse_file(filename)
-                if insert_commands == None:
+                if insert_commands is None:
                     insert_commands = ["{rINSERT ERROR: %s{n" % filename]
                 commands.extend(insert_commands)
-            else: #comment
+            else:  #comment
                 if curr_cmd:
                     commands.append(curr_cmd.strip())
                 curr_cmd = ""
@@ -341,6 +344,7 @@ class BatchCommandProcessor(object):
         commands = [c.strip('\r\n') for c in commands]
         return commands
 
+
 #------------------------------------------------------------
 #
 # Batch-code processor
@@ -350,10 +354,13 @@ class BatchCommandProcessor(object):
 def tb_filename(tb):
     "Helper to get filename from traceback"
     return tb.tb_frame.f_code.co_filename
+
+
 def tb_iter(tb):
     while tb is not None:
         yield tb
         tb = tb.tb_next
+
 
 class BatchCodeProcessor(object):
     """
@@ -368,7 +375,8 @@ class BatchCodeProcessor(object):
 
         1) Lines starting with #HEADER starts a header block (ends other blocks)
         2) Lines starting with #CODE begins a code block (ends other blocks)
-        3) #CODE headers may be of the following form: #CODE (info) objname, objname2, ...
+        3) #CODE headers may be of the following form:
+                              #CODE (info) objname, objname2, ...
         4) Lines starting with #INSERT are on form #INSERT filename.
         3) All lines outside blocks are stripped.
         4) All excess whitespace beginning/ending a block is stripped.
@@ -378,8 +386,8 @@ class BatchCodeProcessor(object):
         # helper function
         def parse_line(line):
             """
-            Identifies the line type: block command, comment, empty or normal code.
-
+            Identifies the line type:
+                block command, comment, empty or normal code.
             """
             parseline = line.strip()
 
@@ -432,7 +440,7 @@ class BatchCodeProcessor(object):
                 # are not checking for cyclic imports!
                 in_header = False
                 in_code = False
-                inserted_codes = self.parse_file(line) or [{'objs':"", 'info':line, 'code':""}]
+                inserted_codes = self.parse_file(line) or [{'objs': "", 'info': line, 'code': ""}]
                 for codedict in inserted_codes:
                     codedict["inserted"] = True
                 codes.extend(inserted_codes)
@@ -444,7 +452,7 @@ class BatchCodeProcessor(object):
                 in_code = True
                 # the line is a list of object variable names
                 # (or an empty list) at this point.
-                codedict = {'objs':line, 'info':info, 'code':""}
+                codedict = {'objs': line, 'info': info, 'code': ""}
                 codes.append(codedict)
             elif mode == 'comment' and in_header:
                 continue
@@ -485,7 +493,7 @@ class BatchCodeProcessor(object):
         """
         # define the execution environment
         environ = "settings_module.configure()"
-        environdict = {"settings_module":settings}
+        environdict = {"settings_module": settings}
         if extra_environ:
             for key, value in extra_environ.items():
                 environdict[key] = value

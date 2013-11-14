@@ -62,6 +62,7 @@ PROCPOOL_DIRECTORY = None
 # don't need to change normally
 SERVICE_NAME = "PythonProcPool"
 
+
 # plugin hook
 
 def start_plugin_services(server):
@@ -87,8 +88,8 @@ def start_plugin_services(server):
                  os.path.join(os.pardir, "contrib", "procpools", "ampoule"),
                  os.path.join(os.pardir, "ev"),
                  "settings")
-    aenv = {"DJANGO_SETTINGS_MODULE":"settings",
-            "DATABASE_NAME":settings.DATABASES.get("default", {}).get("NAME") or settings.DATABASE_NAME}
+    aenv = {"DJANGO_SETTINGS_MODULE": "settings",
+            "DATABASE_NAME": settings.DATABASES.get("default", {}).get("NAME") or settings.DATABASE_NAME}
     if PROCPOOL_DEBUG:
         _BOOTSTRAP = _BOOTSTRAP % "log.startLogging(sys.stderr)"
     else:

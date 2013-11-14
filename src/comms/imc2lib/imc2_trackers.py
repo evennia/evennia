@@ -6,6 +6,7 @@ contains stuff like this.
 """
 from time import time
 
+
 class IMC2Mud(object):
     """
     Stores information about other games connected to our current IMC2 network.
@@ -20,6 +21,7 @@ class IMC2Mud(object):
         self.sha256 = packet.optional_data.get('sha256', None)
         # This is used to determine when a Mud has fallen into inactive status.
         self.last_updated = time()
+
 
 class IMC2MudList(object):
     """
@@ -56,6 +58,7 @@ class IMC2MudList(object):
             # No matching entry, no big deal.
             pass
 
+
 class IMC2Channel(object):
     """
     Stores information about channels available on the network.
@@ -67,6 +70,7 @@ class IMC2Channel(object):
         self.owner = packet.optional_data.get('owner', None)
         self.policy = packet.optional_data.get('policy', None)
         self.last_updated = time()
+
 
 class IMC2ChanList(object):
     """

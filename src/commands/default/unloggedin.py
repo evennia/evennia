@@ -14,7 +14,8 @@ from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import CMD_LOGINSTART
 
 # limit symbol import for API
-__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate", "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
+__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
+           "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
@@ -25,6 +26,7 @@ except Exception:
     pass
 if not CONNECTION_SCREEN:
     CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
+
 
 class CmdUnconnectedConnect(MuxCommand):
     """
@@ -40,7 +42,7 @@ class CmdUnconnectedConnect(MuxCommand):
     """
     key = "connect"
     aliases = ["conn", "con", "co"]
-    locks = "cmd:all()" # not really needed
+    locks = "cmd:all()"  # not really needed
 
     def func(self):
         """
@@ -92,11 +94,12 @@ class CmdUnconnectedConnect(MuxCommand):
 
         # actually do the login. This will call all other hooks:
         #   session.at_login()
-        #   player.at_init()         # always called when object is loaded from disk
+        #   player.at_init()  # always called when object is loaded from disk
         #   player.at_pre_login()
         #   player.at_first_login()  # only once
         #   player.at_post_login(sessid=sessid)
         session.sessionhandler.login(session, player)
+
 
 class CmdUnconnectedCreate(MuxCommand):
     """
@@ -134,8 +137,9 @@ class CmdUnconnectedCreate(MuxCommand):
 
         # sanity checks
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
-            # this echoes the restrictions made by django's auth module (except not
-            # allowing spaces, for convenience of logging in).
+            # this echoes the restrictions made by django's auth
+            # module (except not allowing spaces, for convenience of
+            # logging in).
             string = "\n\r Playername can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only."
             session.msg(string)
             return
@@ -163,14 +167,14 @@ class CmdUnconnectedCreate(MuxCommand):
                 new_player = create.create_player(playername, None, password,
                                                      permissions=permissions)
 
-
             except Exception, e:
                 session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
                 logger.log_trace()
                 return
 
-            # This needs to be called so the engine knows this player is logging in for the first time.
-            # (so it knows to call the right hooks during login later)
+            # This needs to be called so the engine knows this player is
+            # logging in for the first time. (so it knows to call the right
+            # hooks during login later)
             utils.init_new_player(new_player)
 
             # join the new player to the public channel
@@ -180,7 +184,6 @@ class CmdUnconnectedCreate(MuxCommand):
                 if not pchannel.connect_to(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
-
 
             if MULTISESSION_MODE < 2:
                 # if we only allow one character, create one with the same name as Player
@@ -210,11 +213,13 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string % (playername, playername))
 
         except Exception:
-            # We are in the middle between logged in and -not, so we have to handle tracebacks
-            # ourselves at this point. If we don't, we won't see any errors at all.
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             session.msg(string % (traceback.format_exc()))
             logger.log_errmsg(traceback.format_exc())
+
 
 class CmdUnconnectedQuit(MuxCommand):
     """
@@ -230,7 +235,8 @@ class CmdUnconnectedQuit(MuxCommand):
         "Simply close the connection."
         session = self.caller
         #session.msg("Good bye! Disconnecting ...")
-        session.sessionhandler.disconnect(session, "Good bye! Disconnecting ...")
+        session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
+
 
 class CmdUnconnectedLook(MuxCommand):
     """
@@ -246,6 +252,7 @@ class CmdUnconnectedLook(MuxCommand):
     def func(self):
         "Show the connect screen."
         self.caller.msg(CONNECTION_SCREEN)
+
 
 class CmdUnconnectedHelp(MuxCommand):
     """

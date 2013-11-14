@@ -19,6 +19,7 @@ from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
 # Definition of the object itself
 #
 
+
 class RedButton(Object):
     """
     This class describes an evil red button.  It will use the script

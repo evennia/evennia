@@ -23,15 +23,16 @@ from django.utils.encoding import smart_str
 
 from src.players import manager
 from src.scripts.models import ScriptDB
-from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
+from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
+                                    AliasHandler, AttributeHandler)
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
-from src.utils import utils
+from src.utils import utils, logger
 from src.utils.utils import to_str, make_iter
 
 from django.utils.translation import ugettext as _
 
-__all__  = ("PlayerDB",)
+__all__ = ("PlayerDB",)
 
 _ME = _("me")
 _SELF = _("self")
@@ -47,13 +48,11 @@ _DA = object.__delattr__
 _TYPECLASS = None
 
 
-
 #------------------------------------------------------------
 #
 # PlayerDB
 #
 #------------------------------------------------------------
-
 
 class PlayerDB(TypedObject, AbstractUser):
     """
@@ -90,7 +89,9 @@ class PlayerDB(TypedObject, AbstractUser):
 
     # store a connected flag here too, not just in sessionhandler.
     # This makes it easier to track from various out-of-process locations
-    db_is_connected = models.BooleanField(default=False, verbose_name="is_connected", help_text="If player is connected to game or not")
+    db_is_connected = models.BooleanField(default=False,
+                                          verbose_name="is_connected",
+                                          help_text="If player is connected to game or not")
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
@@ -118,24 +119,36 @@ class PlayerDB(TypedObject, AbstractUser):
         _SA(self, "nicks", NickHandler(self))
 
     # alias to the objs property
-    def __characters_get(self): return self.objs
-    def __characters_set(self, value): self.objs = value
-    def __characters_del(self): raise Exception("Cannot delete name")
+    def __characters_get(self):
+        return self.objs
+
+    def __characters_set(self, value):
+        self.objs = value
+
+    def __characters_del(self):
+        raise Exception("Cannot delete name")
     characters = property(__characters_get, __characters_set, __characters_del)
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
     #@property
     def cmdset_storage_get(self):
-        "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
+        """
+        Getter. Allows for value = self.name. Returns a list of cmdset_storage.
+        """
         storage = _GA(self, "db_cmdset_storage")
         # we need to check so storage is not None
-        return [path.strip() for path  in storage.split(',')] if storage else []
+        return [path.strip() for path in storage.split(',')] if storage else []
+
     #@cmdset_storage.setter
     def cmdset_storage_set(self, value):
-        "Setter. Allows for self.name = value. Stores as a comma-separated string."
+        """
+        Setter. Allows for self.name = value. Stores as a comma-separated
+        string.
+        """
         _SA(self, "db_cmdset_storage", ",".join(str(val).strip() for val in make_iter(value)))
         _GA(self, "save")()
+
     #@cmdset_storage.deleter
     def cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
@@ -161,10 +174,12 @@ class PlayerDB(TypedObject, AbstractUser):
     #@property
     def __username_get(self):
         return _GA(self, "username")
+
     def __username_set(self, value):
         _SA(self, "username", value)
+
     def __username_del(self):
-        _DA(self, "username", value)
+        _DA(self, "username")
     # aliases
     name = property(__username_get, __username_set, __username_del)
     key = property(__username_get, __username_set, __username_del)
@@ -173,8 +188,10 @@ class PlayerDB(TypedObject, AbstractUser):
     def __uid_get(self):
         "Getter. Retrieves the user id"
         return self.id
+
     def __uid_set(self, value):
         raise Exception("User id cannot be set!")
+
     def __uid_del(self):
         raise Exception("User id cannot be deleted!")
     uid = property(__uid_get, __uid_set, __uid_del)
@@ -197,21 +214,21 @@ class PlayerDB(TypedObject, AbstractUser):
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Evennia -> User
-        This is the main route for sending data back to the user from the server.
+        This is the main route for sending data back to the user from the
+        server.
 
         outgoing_string (string) - text data to send
-        from_obj (Object/Player) - source object of message to send. Its at_msg_send
-                                   hook will be called.
-        sessid - the session id of the session to send to. If not given, return to
-                 all sessions connected to this player. This is usually only
+        from_obj (Object/Player) - source object of message to send. Its
+                 at_msg_send() hook will be called.
+        sessid - the session id of the session to send to. If not given, return
+                 to all sessions connected to this player. This is usually only
                  relevant when using msg() directly from a player-command (from
-                 a command on a Character, the character automatically stores and
-                 handles the sessid).
+                 a command on a Character, the character automatically stores
+                 and handles the sessid).
         kwargs (dict) - All other keywords are parsed as extra data.
         """
         if "data" in kwargs:
             # deprecation warning
-            from src.utils import logger
             logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
             data = kwargs.pop("data")
             if isinstance(data, dict):
@@ -253,16 +270,17 @@ class PlayerDB(TypedObject, AbstractUser):
         if not _SESSIONS:
             from src.server.sessionhandler import SESSIONS as _SESSIONS
         return _SESSIONS.sessions_from_player(self)
-    sessions = property(get_all_sessions) # alias shortcut
-
+    sessions = property(get_all_sessions)  # alias shortcut
 
     def disconnect_session_from_player(self, sessid):
         """
         Access method for disconnecting a given session from the player
         (connection happens automatically in the sessionhandler)
         """
-        # this should only be one value, loop just to make sure to clean everything
-        sessions = (session for session in self.get_all_sessions() if session.sessid == sessid)
+        # this should only be one value, loop just to make sure to
+        # clean everything
+        sessions = (session for session in self.get_all_sessions()
+                    if session.sessid == sessid)
         for session in sessions:
             # this will also trigger unpuppeting
             session.sessionhandler.disconnect(session)
@@ -292,8 +310,9 @@ class PlayerDB(TypedObject, AbstractUser):
             # we don't allow to puppet an object already controlled by an active
             # player. To kick a player, call unpuppet_object on them explicitly.
             return
-        # if we get to this point the character is ready to puppet or it was left
-        # with a lingering player/sessid reference from an unclean server kill or similar
+        # if we get to this point the character is ready to puppet or it
+        # was left with a lingering player/sessid reference from an unclean
+        # server kill or similar
 
         if normal_mode:
             _GA(obj.typeclass, "at_pre_puppet")(self.typeclass, sessid=sessid)
@@ -341,8 +360,9 @@ class PlayerDB(TypedObject, AbstractUser):
 
     def get_puppet(self, sessid, return_dbobj=False):
         """
-        Get an object puppeted by this session through this player. This is the main
-        method for retrieving the puppeted object from the player's end.
+        Get an object puppeted by this session through this player. This is
+        the main method for retrieving the puppeted object from the
+        player's end.
 
         sessid - return character connected to this sessid,
         character - return character if connected to this player, else None.
@@ -359,7 +379,8 @@ class PlayerDB(TypedObject, AbstractUser):
         """
         Get all currently puppeted objects as a list
         """
-        puppets = [session.puppet for session in self.get_all_sessions() if session.puppet]
+        puppets = [session.puppet for session in self.get_all_sessions()
+                                                            if session.puppet]
         if return_dbobj:
             return puppets
         return [puppet.typeclass for puppet in puppets]
@@ -379,30 +400,25 @@ class PlayerDB(TypedObject, AbstractUser):
 
     # utility methods
 
-
     def delete(self, *args, **kwargs):
         """
         Deletes the player permanently.
-        Makes sure to delete user also when deleting player - the two may never exist separately.
         """
         for session in self.get_all_sessions():
             # unpuppeting all objects and disconnecting the user, if any
-            # sessions remain (should usually be handled from the deleting command)
+            # sessions remain (should usually be handled from the
+            # deleting command)
             self.unpuppet_object(session.sessid)
             session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
 
-        #try:
-        #    if _GA(self, "user"):
-        #        _GA(_GA(self, "user"), "delete")()
-        #except AssertionError:
-        #    pass
         super(PlayerDB, self).delete(*args, **kwargs)
 
     def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this player. This method is never called normally,
-        but only when the player object itself is supposed to execute the command. It
-        does not take nicks on eventual puppets into account.
+        but only when the player object itself is supposed to execute the
+        command. It does not take nicks on eventual puppets into account.
+
         raw_string - raw command input coming from the command line.
         """
         # nick replacement - we require full-word matching.
@@ -410,8 +426,9 @@ class PlayerDB(TypedObject, AbstractUser):
         raw_string = utils.to_unicode(raw_string)
 
         raw_list = raw_string.split(None)
-        raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
-        # get the nick replacement data directly from the database to be able to use db_category__in
+        raw_list = [" ".join(raw_list[:i + 1]) for i in range(len(raw_list)) if raw_list[:i + 1]]
+        # get the nick replacement data directly from the database to be
+        # able to use db_category__in
         nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
         for nick in nicks:
             if nick.db_key in raw_list:
@@ -419,22 +436,30 @@ class PlayerDB(TypedObject, AbstractUser):
                 break
         if not sessid and _MULTISESSION_MODE in (0, 1):
             # in this case, we should either have only one sessid, or the sessid
-            # should not matter (since the return goes to all of them we can just
-            # use the first one as the source)
+            # should not matter (since the return goes to all of them we can
+            # just use the first one as the source)
             sessid = self.get_all_sessions()[0].sessid
-        return cmdhandler.cmdhandler(self.typeclass, raw_string, callertype="player", sessid=sessid)
+        return cmdhandler.cmdhandler(self.typeclass, raw_string,
+                                     callertype="player", sessid=sessid)
 
-    def search(self, ostring, return_character=False, **kwargs):
+    def search(self, ostring, return_puppet=False,
+               return_character=False, **kwargs):
         """
-        This is similar to the ObjectDB search method but will search for Players only. Errors
-        will be echoed, and None returned if no Player is found.
+        This is similar to the ObjectDB search method but will search for
+        Players only. Errors will be echoed, and None returned if no Player
+        is found.
 
-        return_character - will try to return the character the player controls instead of
-                           the Player object itself. If no Character exists (since Player is
-                           OOC), None will be returned.
-        Extra keywords are ignored, but are allowed in call in order to make API more consistent
-                           with objects.models.TypedObject.search.
+        return_character - will try to return the character the player controls
+                           instead of the Player object itself. If no
+                           Character exists (since Player is OOC), None will
+                           be returned.
+        Extra keywords are ignored, but are allowed in call in order to make
+                           API more consistent with objects.models.
+                           TypedObject.search.
         """
+        if return_character:
+            logger.log_depmsg("Player.search's 'return_character' keyword is deprecated. Use the return_puppet keyword instead.")
+            #return_puppet = return_character
         # handle me, self
         if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
             return self

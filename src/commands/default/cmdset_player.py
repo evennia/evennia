@@ -13,6 +13,7 @@ from src.commands.cmdset import CmdSet
 from src.commands.default import help, comms, admin, system
 from src.commands.default import building, player
 
+
 class PlayerCmdSet(CmdSet):
     """
     Implements the player command set.

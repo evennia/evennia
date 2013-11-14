@@ -18,6 +18,7 @@ this change, you have to convert them manually e.g. with the
 """
 from ev import Exit as DefaultExit
 
+
 class Exit(DefaultExit):
     """
     Exits are connectors between rooms. Exits are normal Objects except

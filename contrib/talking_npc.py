@@ -54,8 +54,9 @@ class CmdTalk(default_cmds.MuxCommand):
 
         self.caller.msg("(You walk up and talk to %s.)" % self.obj.key)
 
-        # conversation is a dictionary of keys, each pointing to a dictionary defining
-        # the keyword arguments to the MenuNode constructor.
+        # conversation is a dictionary of keys, each pointing to
+        # a dictionary defining the keyword arguments to the MenuNode
+        # constructor.
         conversation = obj.db.conversation
         if not conversation:
             self.caller.msg("%s says: 'Sorry, I don't have time to talk right now.'" % (self.obj.key))
@@ -67,9 +68,11 @@ class CmdTalk(default_cmds.MuxCommand):
             menu.add(menusystem.MenuNode(key, **kwargs))
         menu.start()
 
+
 class TalkingCmdSet(CmdSet):
     "Stores the talk command."
     key = "talkingcmdset"
+
     def at_cmdset_creation(self):
         "populates the cmdset"
         self.add(CmdTalk())
@@ -79,32 +82,33 @@ class TalkingCmdSet(CmdSet):
 # (This could be in a separate module too)
 #
 
-CONV = {"START":{"text": "Hello there, how can I help you?",
-                 "links":["info1", "info2"],
-                 "linktexts":["Hey, do you know what this 'Evennia' thing is all about?",
-                              "What's your name, little NPC?"],
-                 "keywords":None,
-                 "code":None},
-        "info1":{"text": "Oh, Evennia is where you are right now! Don't you feel the power?",
-                 "links":["info3", "info2", "END"],
-                 "linktexts":["Sure, *I* do, not sure how you do though. You are just an NPC.",
+CONV = {"START": {"text": "Hello there, how can I help you?",
+                  "links": ["info1", "info2"],
+                  "linktexts": ["Hey, do you know what this 'Evennia' thing is all about?",
+                                "What's your name, little NPC?"],
+                  "keywords": None,
+                  "code": None},
+        "info1": {"text": "Oh, Evennia is where you are right now! Don't you feel the power?",
+                  "links": ["info3", "info2", "END"],
+                  "linktexts":["Sure, *I* do, not sure how you do though. You are just an NPC.",
                               "Sure I do. What's yer name, NPC?",
                               "Ok, bye for now then."],
-                 "keywords":None,
-                 "code":None},
-        "info2":{"text":"My name is not really important ... I'm just an NPC after all.",
-                 "links":["info3", "info1"],
-                 "linktexts":["I didn't really want to know it anyhow.",
+                 "keywords": None,
+                 "code": None},
+        "info2": {"text": "My name is not really important ... I'm just an NPC after all.",
+                 "links": ["info3", "info1"],
+                 "linktexts": ["I didn't really want to know it anyhow.",
                               "Okay then, so what's this 'Evennia' thing about?"],
-                 "keywords":None,
-                 "code":None},
-        "info3":{"text":"Well ... I'm sort of busy so, have to go. NPC business. Important stuff. You wouldn't understand.",
-                 "links":["END", "info2"],
-                 "linktexts":["Oookay ... I won't keep you. Bye.",
-                              "Wait, why don't you tell me your name first?"],
-                 "keywords":None,
-                 "code":None},
+                 "keywords": None,
+                 "code": None},
+        "info3": {"text": "Well ... I'm sort of busy so, have to go. NPC business. Important stuff. You wouldn't understand.",
+                 "links": ["END", "info2"],
+                 "linktexts": ["Oookay ... I won't keep you. Bye.",
+                               "Wait, why don't you tell me your name first?"],
+                 "keywords": None,
+                 "code": None},
         }
+
 
 class TalkingNPC(Object):
     """

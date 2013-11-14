@@ -7,15 +7,12 @@ Everything starts at handle_setup()
 """
 
 import django
-from django.core import management
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from src.server.models import ServerConfig
-from src.help.models import HelpEntry
 from src.utils import create
-
-
 from django.utils.translation import ugettext as _
+
 
 def create_config_values():
     """
@@ -23,6 +20,7 @@ def create_config_values():
     """
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
+
 
 def get_god_player():
     """
@@ -32,12 +30,14 @@ def get_god_player():
     try:
         god_player = PlayerDB.objects.get(id=1)
     except PlayerDB.DoesNotExist:
-        txt = "\n\nNo superuser exists yet. The superuser is the 'owner' account on the"
-        txt += "\nEvennia server. Create a new superuser using the command"
+        txt = "\n\nNo superuser exists yet. The superuser is the 'owner'"
+        txt += "\account on the Evennia server. Create a new superuser using"
+        txt += "\nthe command"
         txt += "\n\n  python manage.py createsuperuser"
         txt += "\n\nFollow the prompts, then restart the server."
         raise Exception(txt)
     return god_player
+
 
 def create_objects():
     """
@@ -54,18 +54,23 @@ def create_objects():
     # mud-specific settings for the PlayerDB object.
     player_typeclass = settings.BASE_PLAYER_TYPECLASS
 
-    # run all creation hooks on god_player (we must do so manually since the manage.py command does not)
+    # run all creation hooks on god_player (we must do so manually
+    # since the manage.py command does not)
     god_player.typeclass_path = player_typeclass
     god_player.basetype_setup()
     god_player.at_player_creation()
     god_player.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
-    god_player.permissions.add("Immortals") # this is necessary for quelling to work correctly.
+    # this is necessary for quelling to work correctly.
+    god_player.permissions.add("Immortals")
 
     # Limbo is the default "nowhere" starting room
 
-    # Create the in-game god-character for player #1 and set it to exist in Limbo.
+    # Create the in-game god-character for player #1 and set
+    # it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-    god_character = create.create_object(character_typeclass, key=god_player.username, nohome=True)
+    god_character = create.create_object(character_typeclass,
+                                           key=god_player.username, nohome=True)
+    print "god_character:", character_typeclass, god_character, god_character.cmdset.all()
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
@@ -81,10 +86,13 @@ def create_objects():
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
     limbo_obj.id = 2
     string = " ".join([
-        "Welcome to your new {wEvennia{n-based game. From here you are ready to begin development.",
-        "Visit http://evennia.com if you should need help or would like to participate in community discussions.",
-        "If you are logged in as User #1 you can create a demo/tutorial area with '@batchcommand contrib.tutorial_world.build'.",
-        "Log out and create a new non-admin account at the login screen to play the tutorial properly."])
+        "Welcome to your new {wEvennia{n-based game. From here you are ready",
+        "to begin development. Visit http://evennia.com if you should need",
+        "help or would like to participate in community discussions. If you",
+        "are logged in as User #1 you can create a demo/tutorial area with",
+        "'@batchcommand contrib.tutorial_world.build'. Log out and create",
+        "a new non-admin account at the login screen to play the tutorial",
+        "properly."])
     string = _(string)
     limbo_obj.db.desc = string
     limbo_obj.save()
@@ -95,6 +103,7 @@ def create_objects():
         god_character.location = limbo_obj
     if not god_character.home:
         god_character.home = limbo_obj
+
 
 def create_channels():
     """
@@ -112,20 +121,21 @@ def create_channels():
     key3, aliases, desc, locks = settings.CHANNEL_CONNECTINFO
     cchan = create.create_channel(key3, aliases, desc, locks=locks)
 
-
-    # TODO: postgresql-psycopg2 has a strange error when trying to connect the user
-    # to the default channels. It works fine from inside the game, but not from
-    # the initial startup. We are temporarily bypassing the problem with the following
-    # fix. See Evennia Issue 151.
-    if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASE_ENGINE == "postgresql_psycopg2")
+    # TODO: postgresql-psycopg2 has a strange error when trying to
+    # connect the user to the default channels. It works fine from inside
+    # the game, but not from the initial startup. We are temporarily bypassing
+    # the problem with the following fix. See Evennia Issue 151.
+    if ((".".join(str(i) for i in django.VERSION) < "1.2"
+                    and settings.DATABASE_ENGINE == "postgresql_psycopg2")
         or (hasattr(settings, 'DATABASES')
             and settings.DATABASES.get("default", {}).get('ENGINE', None)
             == 'django.db.backends.postgresql_psycopg2')):
         warning = """
         PostgreSQL-psycopg2 compatability fix:
         The in-game channels %s, %s and %s were created,
-        but the superuser was not yet connected to them. Please use in-game commands to
-        connect Player #1 to those channels when first logging in.
+        but the superuser was not yet connected to them. Please use in
+        game commands to onnect Player #1 to those channels when first
+        logging in.
         """ % (key1, key2, key3)
         print warning
         return
@@ -136,6 +146,7 @@ def create_channels():
     PlayerChannelConnection.objects.create_connection(goduser, pchan)
     PlayerChannelConnection.objects.create_connection(goduser, ichan)
     PlayerChannelConnection.objects.create_connection(goduser, cchan)
+
 
 def create_system_scripts():
     """
@@ -152,10 +163,9 @@ def create_system_scripts():
     script2 = create.create_script(scripts.ValidateScripts)
     # update the channel handler to make sure it's in sync
     script3 = create.create_script(scripts.ValidateChannelHandler)
-    # clear the attribute cache regularly
-    #script4 = create.create_script(scripts.ClearAttributeCache)
-    if not script1 or not script2 or not script3:# or not script4:
+    if not script1 or not script2 or not script3:
         print " Error creating system scripts."
+
 
 def start_game_time():
     """
@@ -168,6 +178,7 @@ def start_game_time():
     from src.utils import gametime
     gametime.init_gametime()
 
+
 def create_admin_media_links():
     """
     This traverses to src/web/media and tries to create a symbolic
@@ -179,7 +190,8 @@ def create_admin_media_links():
     since the django install may be at different locations depending
     on system.
     """
-    import django, os
+    import django
+    import os
 
     if django.get_version() < 1.4:
         dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'media')
@@ -202,6 +214,7 @@ def create_admin_media_links():
     else:
         print " Admin-media files should be copied manually to ADMIN_MEDIA_ROOT."
 
+
 def at_initial_setup():
     """
     Custom hook for users to overload some or all parts of the initial
@@ -220,6 +233,7 @@ def at_initial_setup():
     if mod.__dict__.get("at_initial_setup", None):
         mod.at_initial_setup()
 
+
 def reset_server():
     """
     We end the initialization by resetting the server. This
@@ -230,6 +244,7 @@ def reset_server():
     from src.server.sessionhandler import SESSIONS
     print " Initial setup complete. Restarting Server once."
     SESSIONS.server.shutdown(mode='reset')
+
 
 def handle_setup(last_step):
     """
@@ -242,7 +257,7 @@ def handle_setup(last_step):
         # this means we don't need to handle setup since
         # it already ran sucessfully once.
         return
-    elif last_step == None:
+    elif last_step is None:
         # config doesn't exist yet. First start of server
         last_step = 0
 

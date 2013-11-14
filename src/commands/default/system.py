@@ -5,10 +5,13 @@ System commands
 """
 
 import traceback
-import os, datetime, time
-from time import time as timemeasure
+import os
+import datetime
+import time
 import sys
-import django, twisted
+import django
+import twisted
+from time import time as timemeasure
 
 from django.conf import settings
 from src.server.caches import get_cache_sizes
@@ -29,6 +32,7 @@ _attribute_cache = None
 __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
            "CmdScripts", "CmdObjects", "CmdService", "CmdAbout",
            "CmdTime", "CmdServerLoad")
+
 
 class CmdReload(MuxCommand):
     """
@@ -54,6 +58,7 @@ class CmdReload(MuxCommand):
             reason = "(Reason: %s) " % self.args.rstrip(".")
         SESSIONS.announce_all(" Server restarting %s..." % reason)
         SESSIONS.server.shutdown(mode='reload')
+
 
 class CmdReset(MuxCommand):
     """
@@ -110,6 +115,7 @@ class CmdShutdown(MuxCommand):
         SESSIONS.portal_shutdown()
         SESSIONS.server.shutdown(mode='shutdown')
 
+
 class CmdPy(MuxCommand):
     """
     Execute a snippet of python code
@@ -157,17 +163,16 @@ class CmdPy(MuxCommand):
 
         # import useful variables
         import ev
-        available_vars = {'self':caller,
-                          'me':caller,
-                          'here':hasattr(caller, "location") and caller.location or None,
-                          'ev':ev,
-                          'inherits_from':utils.inherits_from}
+        available_vars = {'self': caller,
+                          'me': caller,
+                          'here': hasattr(caller, "location") and caller.location or None,
+                          'ev': ev,
+                          'inherits_from': utils.inherits_from}
 
         try:
             self.msg(">>> %s" % pycode, raw=True, sessid=self.sessid)
         except TypeError:
             self.msg(">>> %s" % pycode, raw=True)
-
 
         mode = "eval"
         try:
@@ -195,7 +200,7 @@ class CmdPy(MuxCommand):
                 errlist = errlist[4:]
             ret = "\n".join("{n<<< %s" % line for line in errlist if line)
 
-        if ret != None:
+        if ret is not None:
             try:
                 self.msg(ret, sessid=self.sessid)
             except TypeError:
@@ -210,7 +215,16 @@ def format_script_list(scripts):
     if not scripts:
         return "<No scripts>"
 
-    table = prettytable.PrettyTable(["{wid","{wobj","{wkey","{wintval","{wnext","{wrept","{wdb"," {wtypeclass","{wdesc"],align='r')
+    table = prettytable.PrettyTable(["{wid",
+                                     "{wobj",
+                                     "{wkey",
+                                     "{wintval",
+                                     "{wnext",
+                                     "{wrept",
+                                     "{wdb",
+                                     "{wtypeclass",
+                                     "{wdesc"],
+                                     align='r')
     table.align = 'r'
     for script in scripts:
         nextrep = script.time_until_next_repeat()
@@ -322,7 +336,6 @@ class CmdScripts(MuxCommand):
         caller.msg(string)
 
 
-
 class CmdObjects(MuxCommand):
     """
     @objects - Give a summary of object types in database
@@ -357,31 +370,36 @@ class CmdObjects(MuxCommand):
         nother = nobjs - nchars - nrooms - nexits
 
         # total object sum table
-        totaltable = prettytable.PrettyTable(["{wtype","{wcomment","{wcount", "{w%%"])
+        totaltable = prettytable.PrettyTable(["{wtype", "{wcomment", "{wcount", "{w%%"])
         totaltable.align = 'l'
-        totaltable.add_row(["Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars)/nobjs)*100)])
-        totaltable.add_row(["Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms)/nobjs)*100)])
-        totaltable.add_row(["Exits", "(destination!=None)", nexits, "%.2f" % ((float(nexits)/nobjs)*100)])
-        totaltable.add_row(["Other", "", nother, "%.2f" % ((float(nother)/nobjs)*100)])
+        totaltable.add_row(["Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100)])
+        totaltable.add_row(["Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100)])
+        totaltable.add_row(["Exits", "(destination!=None)", nexits, "%.2f" % ((float(nexits) / nobjs) * 100)])
+        totaltable.add_row(["Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100)])
 
         # typeclass table
-        typetable = prettytable.PrettyTable(["{wtypeclass","{wcount", "{w%%"])
+        typetable = prettytable.PrettyTable(["{wtypeclass", "{wcount", "{w%%"])
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
         for path, count in dbtotals.items():
-            typetable.add_row([path, count, "%.2f" % ((float(count)/nobjs)*100)])
+            typetable.add_row([path, count, "%.2f" % ((float(count) / nobjs) * 100)])
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = prettytable.PrettyTable(["{wcreated","{wdbref","{wname","{wtypeclass"])
+        latesttable = prettytable.PrettyTable(["{wcreated",
+                                               "{wdbref",
+                                               "{wname",
+                                               "{wtypeclass"])
         latesttable.align = 'l'
         for obj in objs:
-            latesttable.add_row([utils.datetime_format(obj.date_created), obj.dbref, obj.key, obj.typeclass.path])
+            latesttable.add_row([utils.datetime_format(obj.date_created),
+                                 obj.dbref, obj.key, obj.typeclass.path])
 
         string = "\n{wObject subtype totals (out of %i Objects):{n\n%s" % (nobjs, totaltable)
         string += "\n{wObject typeclass distribution:{n\n%s" % typetable
         string += "\n{wLast %s Objects created:{n\n%s" % (min(nobjs, nlim), latesttable)
         caller.msg(string)
+
 
 class CmdPlayers(MuxCommand):
     """
@@ -397,6 +415,7 @@ class CmdPlayers(MuxCommand):
     key = "@players"
     aliases = ["@listplayers"]
     locks = "cmd:perm(listplayers) or perm(Wizards)"
+
     def func(self):
         "List the players"
 
@@ -413,10 +432,10 @@ class CmdPlayers(MuxCommand):
         typetable = prettytable.PrettyTable(["{wtypeclass", "{wcount", "{w%%"])
         typetable.align = 'l'
         for path, count in dbtotals.items():
-            typetable.add_row([path, count, "%.2f" % ((float(count)/nplayers)*100)])
+            typetable.add_row([path, count, "%.2f" % ((float(count) / nplayers) * 100)])
         # last N table
         plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
-        latesttable = prettytable.PrettyTable(["{wcreated", "{wdbref","{wname","{wtypeclass"])
+        latesttable = prettytable.PrettyTable(["{wcreated", "{wdbref", "{wname", "{wtypeclass"])
         latesttable.align = 'l'
         for ply in plyrs:
             latesttable.add_row([utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.typeclass.path])
@@ -424,6 +443,7 @@ class CmdPlayers(MuxCommand):
         string = "\n{wPlayer typeclass distribution:{n\n%s" % typetable
         string += "\n{wLast %s Players created:{n\n%s" % (min(nplayers, nlim), latesttable)
         caller.msg(string)
+
 
 class CmdService(MuxCommand):
     """
@@ -441,7 +461,8 @@ class CmdService(MuxCommand):
     Service management system. Allows for the listing,
     starting, and stopping of services. If no switches
     are given, services will be listed. Note that to operate on the
-    service you have to supply the full (green or red) name as given in the list.
+    service you have to supply the full (green or red) name as given
+    in the list.
     """
 
     key = "@service"
@@ -520,6 +541,7 @@ class CmdService(MuxCommand):
             caller.msg("Starting service '%s'." % self.args)
             service.startService()
 
+
 class CmdAbout(MuxCommand):
     """
     @about - game engine info
@@ -567,6 +589,7 @@ class CmdAbout(MuxCommand):
                sversion)
         self.caller.msg(string)
 
+
 class CmdTime(MuxCommand):
     """
     @time
@@ -590,6 +613,7 @@ class CmdTime(MuxCommand):
         table.add_row(["Total in-game time (realtime x %g" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(format=False), 2)])
         table.add_row(["Server time stamp", datetime.datetime.now()])
         self.caller.msg(str(table))
+
 
 class CmdServerLoad(MuxCommand):
     """
@@ -648,20 +672,20 @@ class CmdServerLoad(MuxCommand):
         pid = os.getpid()
         rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1024.0  # resident memory
         vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0  # virtual memory
-        pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read()) # percent of resident memory to total
+        pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # percent of resident memory to total
         rusage = resource.getrusage(resource.RUSAGE_SELF)
 
         # load table
         loadtable = prettytable.PrettyTable(["property", "statistic"])
         loadtable.align = 'l'
-        loadtable.add_row(["Server load (1 min)","%g" % loadavg[0]])
-        loadtable.add_row(["Process ID","%g" % pid]),
-        loadtable.add_row(["Bytes per page","%g " % psize])
+        loadtable.add_row(["Server load (1 min)", "%g" % loadavg[0]])
+        loadtable.add_row(["Process ID", "%g" % pid]),
+        loadtable.add_row(["Bytes per page", "%g " % psize])
         loadtable.add_row(["CPU time used (total)", "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime)])
         loadtable.add_row(["CPU time used (user)", "%s (%gs)" % (utils.time_format(rusage.ru_stime), rusage.ru_stime)])
         loadtable.add_row(["Memory usage","%g MB (%g%%)" % (rmem, pmem)])
         loadtable.add_row(["Virtual address space\n {x(resident+swap+caching){n", "%g MB" % vmem])
-        loadtable.add_row(["Page faults","%g hard, %g soft, %g swapouts" % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap)])
+        loadtable.add_row(["Page faults", "%g hard,  %g soft, %g swapouts" % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap)])
         loadtable.add_row(["Disk I/O", "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock)])
         loadtable.add_row(["Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd)])
         loadtable.add_row(["Context switching", "%g vol, %g forced, %g signals" % (rusage.ru_nvcsw, rusage.ru_nivcsw, rusage.ru_nsignals)])
@@ -669,17 +693,24 @@ class CmdServerLoad(MuxCommand):
         string = "{wServer CPU and Memory load:{n\n%s" % loadtable
 
         if not is_pypy:
-            # Cache size measurements are not available on PyPy because it lacks sys.getsizeof
+            # Cache size measurements are not available on PyPy
+            # because it lacks sys.getsizeof
 
             # object cache size
             cachedict = _idmapper.cache_size()
             totcache = cachedict["_total"]
             sorted_cache = sorted([(key, tup[0], tup[1]) for key, tup in cachedict.items() if key !="_total" and tup[0] > 0],
                                     key=lambda tup: tup[2], reverse=True)
-            memtable = prettytable.PrettyTable(["entity name", "number", "cache (MB)", "idmapper %%"])
+            memtable = prettytable.PrettyTable(["entity name",
+                                                "number",
+                                                "cache (MB)",
+                                                "idmapper %%"])
             memtable.align = 'l'
             for tup in sorted_cache:
-                memtable.add_row([tup[0], "%i" % tup [1], "%5.2f" % tup[2], "%.2f" % (float(tup[2]/totcache[1])*100)])
+                memtable.add_row([tup[0],
+                                 "%i" % tup[1],
+                                 "%5.2f" % tup[2],
+                                 "%.2f" % (float(tup[2] / totcache[1]) * 100)])
 
             # get sizes of other caches
             attr_cache_info, field_cache_info, prop_cache_info = get_cache_sizes()

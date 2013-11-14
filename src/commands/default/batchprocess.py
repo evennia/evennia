@@ -95,10 +95,11 @@ def format_header(caller, entry):
     stacklen = len(caller.ndb.batch_stack)
     header = "{w%02i/%02i{G: %s{n" % (ptr, stacklen, header)
     # add extra space to the side for padding.
-    header = "%s%s" % (header, " "*(width - len(header)))
+    header = "%s%s" % (header, " " * (width - len(header)))
     header = header.replace('\n', '\\n')
 
     return header
+
 
 def format_code(entry):
     """
@@ -108,6 +109,7 @@ def format_code(entry):
     for line in entry.split('\n'):
         code += "\n{G>>>{n %s" % line
     return code.strip()
+
 
 def batch_cmd_exec(caller):
     """
@@ -124,6 +126,7 @@ def batch_cmd_exec(caller):
         return False
     return True
 
+
 def batch_code_exec(caller):
     """
     Helper function for executing a single batch-code entry
@@ -135,11 +138,12 @@ def batch_code_exec(caller):
 
     caller.msg(format_header(caller, codedict['code']))
     err = BATCHCODE.code_exec(codedict,
-                              extra_environ={"caller":caller}, debug=debug)
+                              extra_environ={"caller": caller}, debug=debug)
     if err:
         caller.msg(format_code(err))
         return False
     return True
+
 
 def step_pointer(caller, step=1):
     """
@@ -156,7 +160,8 @@ def step_pointer(caller, step=1):
         caller.msg("{RBeginning of batch file.")
     if ptr + step >= nstack:
         caller.msg("{REnd of batch file.")
-    caller.ndb.batch_stackptr = max(0, min(nstack-1, ptr + step))
+    caller.ndb.batch_stackptr = max(0, min(nstack - 1, ptr + step))
+
 
 def show_curr(caller, showall=False):
     """
@@ -186,6 +191,7 @@ def show_curr(caller, showall=False):
             string += "\n{G|{n %s" % line
     caller.msg(string)
 
+
 def purge_processor(caller):
     """
     This purges all effects running
@@ -201,11 +207,12 @@ def purge_processor(caller):
     # clear everything but the default cmdset.
     caller.cmdset.delete(BatchSafeCmdSet)
     caller.cmdset.clear()
-    caller.scripts.validate() # this will purge interactive mode
+    caller.scripts.validate()  # this will purge interactive mode
 
 #------------------------------------------------------------
 # main access commands
 #------------------------------------------------------------
+
 
 class CmdBatchCommands(MuxCommand):
     """
@@ -275,19 +282,25 @@ class CmdBatchCommands(MuxCommand):
             procpool = False
             if "PythonProcPool" in utils.server_services():
                 if utils.uses_database("sqlite3"):
-                   caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
+                    caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
                 else:
-                    procpool=True
+                    procpool = True
 
             if procpool:
                 # run in parallel process
                 def callback(r):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
                     purge_processor(caller)
+
                 def errback(e):
                     caller.msg("  {RError from processor: '%s'" % e)
                     purge_processor(caller)
-                utils.run_async(_PROCPOOL_BATCHCMD_SOURCE, commands=commands, caller=caller, at_return=callback, at_err=errback)
+
+                utils.run_async(_PROCPOOL_BATCHCMD_SOURCE,
+                                commands=commands,
+                                caller=caller,
+                                at_return=callback,
+                                at_err=errback)
             else:
                 # run in-process (might block)
                 for inum in range(len(commands)):
@@ -295,10 +308,12 @@ class CmdBatchCommands(MuxCommand):
                     if not batch_cmd_exec(caller):
                         return
                     step_pointer(caller, 1)
-                # clean out the safety cmdset and clean out all other temporary attrs.
+                # clean out the safety cmdset and clean out all other
+                # temporary attrs.
                 string = "  Batchfile '%s' applied." % python_path
                 caller.msg("{G%s" % string)
                 purge_processor(caller)
+
 
 class CmdBatchCode(MuxCommand):
     """
@@ -352,7 +367,7 @@ class CmdBatchCode(MuxCommand):
 
         debug = False
         if 'debug' in switches:
-            debug  = True
+            debug = True
 
         # Store work data in cache
         caller.ndb.batch_stack = codes
@@ -376,18 +391,23 @@ class CmdBatchCode(MuxCommand):
             procpool = False
             if "PythonProcPool" in utils.server_services():
                 if utils.uses_database("sqlite3"):
-                   caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
+                    caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
                 else:
-                    procpool=True
+                    procpool = True
             if procpool:
                 # run in parallel process
                 def callback(r):
                     caller.msg("  {GBatchfile '%s' applied." % python_path)
                     purge_processor(caller)
+
                 def errback(e):
                     caller.msg("  {RError from processor: '%s'" % e)
                     purge_processor(caller)
-                utils.run_async(_PROCPOOL_BATCHCODE_SOURCE, codes=codes, caller=caller, at_return=callback, at_err=errback)
+                utils.run_async(_PROCPOOL_BATCHCODE_SOURCE,
+                                codes=codes,
+                                caller=caller,
+                                at_return=callback,
+                                at_err=errback)
             else:
                 # un in-process (will block)
                 for inum in range(len(codes)):
@@ -395,7 +415,8 @@ class CmdBatchCode(MuxCommand):
                     if not batch_code_exec(caller):
                         return
                     step_pointer(caller, 1)
-                # clean out the safety cmdset and clean out all other temporary attrs.
+                # clean out the safety cmdset and clean out all other
+                # temporary attrs.
                 string = "  Batchfile '%s' applied." % python_path
                 caller.msg("{G%s" % string)
                 purge_processor(caller)
@@ -422,6 +443,7 @@ class CmdStateAbort(MuxCommand):
         "Exit back to default."
         purge_processor(self.caller)
         self.caller.msg("Exited processor and reset out active cmdset back to the default one.")
+
 
 class CmdStateLL(MuxCommand):
     """
@@ -479,6 +501,7 @@ class CmdStateRR(MuxCommand):
         caller.msg(format_code("File reloaded. Staying on same command."))
         show_curr(caller)
 
+
 class CmdStateRRR(MuxCommand):
     """
     rrr
@@ -500,6 +523,7 @@ class CmdStateRRR(MuxCommand):
         caller.msg(format_code("File reloaded. Restarting from top."))
         show_curr(caller)
 
+
 class CmdStateNN(MuxCommand):
     """
     nn
@@ -519,6 +543,7 @@ class CmdStateNN(MuxCommand):
             step = 1
         step_pointer(caller, step)
         show_curr(caller)
+
 
 class CmdStateNL(MuxCommand):
     """
@@ -541,6 +566,7 @@ class CmdStateNL(MuxCommand):
         step_pointer(caller, step)
         show_curr(caller, showall=True)
 
+
 class CmdStateBB(MuxCommand):
     """
     bb
@@ -562,6 +588,7 @@ class CmdStateBB(MuxCommand):
         step_pointer(caller, step)
         show_curr(caller)
 
+
 class CmdStateBL(MuxCommand):
     """
     bl
@@ -582,6 +609,7 @@ class CmdStateBL(MuxCommand):
             step = -1
         step_pointer(caller, step)
         show_curr(caller, showall=True)
+
 
 class CmdStateSS(MuxCommand):
     """
@@ -611,6 +639,7 @@ class CmdStateSS(MuxCommand):
             step_pointer(caller, 1)
             show_curr(caller)
 
+
 class CmdStateSL(MuxCommand):
     """
     sl [steps]
@@ -638,6 +667,7 @@ class CmdStateSL(MuxCommand):
                 batch_cmd_exec(caller)
             step_pointer(caller, 1)
             show_curr(caller)
+
 
 class CmdStateCC(MuxCommand):
     """
@@ -670,6 +700,7 @@ class CmdStateCC(MuxCommand):
         del caller.ndb.batch_batchmode
         caller.msg(format_code("Finished processing batch file."))
 
+
 class CmdStateJJ(MuxCommand):
     """
     j <command number>
@@ -684,7 +715,7 @@ class CmdStateJJ(MuxCommand):
         caller = self.caller
         arg = self.args
         if arg and arg.isdigit():
-            number = int(self.args)-1
+            number = int(self.args) - 1
         else:
             caller.msg(format_code("You must give a number index."))
             return
@@ -692,6 +723,7 @@ class CmdStateJJ(MuxCommand):
         step = number - ptr
         step_pointer(caller, step)
         show_curr(caller)
+
 
 class CmdStateJL(MuxCommand):
     """
@@ -707,7 +739,7 @@ class CmdStateJL(MuxCommand):
         caller = self.caller
         arg = self.args
         if arg and arg.isdigit():
-            number = int(self.args)-1
+            number = int(self.args) - 1
         else:
             caller.msg(format_code("You must give a number index."))
             return
@@ -715,6 +747,7 @@ class CmdStateJL(MuxCommand):
         step = number - ptr
         step_pointer(caller, step)
         show_curr(caller, showall=True)
+
 
 class CmdStateQQ(MuxCommand):
     """
@@ -729,6 +762,7 @@ class CmdStateQQ(MuxCommand):
     def func(self):
         purge_processor(self.caller)
         self.caller.msg("Aborted interactive batch mode.")
+
 
 class CmdStateHH(MuxCommand):
     "Help command"
@@ -766,7 +800,6 @@ class CmdStateHH(MuxCommand):
         self.caller.msg(string)
 
 
-
 #------------------------------------------------------------
 #
 # Defining the cmdsets for the interactive batchprocessor
@@ -781,11 +814,12 @@ class BatchSafeCmdSet(CmdSet):
     always be available to get out of everything.
     """
     key = "Batch_default"
-    priority = 104 # override other cmdsets.
+    priority = 104  # override other cmdsets.
 
     def at_cmdset_creation(self):
         "Init the cmdset"
         self.add(CmdStateAbort())
+
 
 class BatchInteractiveCmdSet(CmdSet):
     """

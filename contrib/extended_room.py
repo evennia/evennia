@@ -53,13 +53,16 @@ if applicable. An extended @desc command is used to set details.
   CmdExtendedLook - look command supporting room details
   CmdExtendedDesc - @desc command allowing to add seasonal descs and details,
                     as well as listing them
-  CmdGameTime     - A simple "time" command, displaying the current time and season.
+  CmdGameTime     - A simple "time" command, displaying the current
+                    time and season.
 
 
 Installation/testing:
 
-1) Add CmdExtendedLook, CmdExtendedDesc and CmdGameTime to the default cmdset (see wiki how to do this).
-2) @dig a room of type contrib.extended_room.ExtendedRoom (or make it the default room type)
+1) Add CmdExtendedLook, CmdExtendedDesc and CmdGameTime to the default cmdset
+   (see wiki how to do this).
+2) @dig a room of type contrib.extended_room.ExtendedRoom (or make it the
+   default room type)
 3) Use @desc and @detail to customize the room, then play around!
 
 """
@@ -90,16 +93,18 @@ REGEXMAP = {"morning": (RE_MORNING, RE_AFTERNOON, RE_EVENING, RE_NIGHT),
 # beginning of the year (so month 1 is equivalent to January), and that
 # one CAN divive the game's year into four seasons in the first place ...
 MONTHS_PER_YEAR = settings.TIME_MONTH_PER_YEAR
-SEASONAL_BOUNDARIES = (3/12.0, 6/12.0, 9/12.0)
+SEASONAL_BOUNDARIES = (3 / 12.0, 6 / 12.0, 9 / 12.0)
 HOURS_PER_DAY = settings.TIME_HOUR_PER_DAY
-DAY_BOUNDARIES = (0, 6/24.0, 12/24.0, 18/24.0)
+DAY_BOUNDARIES = (0, 6 / 24.0, 12 / 24.0, 18 / 24.0)
+
 
 # implements the Extended Room
 
 class ExtendedRoom(Room):
     """
-    This room implements a more advanced look functionality depending on time. It also
-    allows for "details", together with a slightly modified look command.
+    This room implements a more advanced look functionality depending on
+    time. It also allows for "details", together with a slightly modified
+    look command.
     """
     def at_object_creation(self):
         "Called when room is first created only."
@@ -107,10 +112,12 @@ class ExtendedRoom(Room):
         self.db.summer_desc = ""
         self.db.autumn_desc = ""
         self.db.winter_desc = ""
-        # the general desc is used as a fallback if a given seasonal one is not set
+        # the general desc is used as a fallback if a seasonal one is not set
         self.db.general_desc = ""
-        self.db.raw_desc = "" # will be set dynamically. Can contain raw timeslot codes
-        self.db.desc = "" # this will be set dynamically at first look. Parsed for timeslot codes
+        # will be set dynamically. Can contain raw timeslot codes
+        self.db.raw_desc = ""
+        # this will be set dynamically at first look. Parsed for timeslot codes
+        self.db.desc = ""
         # these will be filled later
         self.ndb.last_season = None
         self.ndb.last_timeslot = None
@@ -122,28 +129,37 @@ class ExtendedRoom(Room):
         Calculate the current time and season ids
         """
         # get the current time as parts of year and parts of day
-        time = gametime.gametime(format=True) # returns a tuple (years,months,weeks,days,hours,minutes,sec)
+        # returns a tuple (years,months,weeks,days,hours,minutes,sec)
+        time = gametime.gametime(format=True)
         month, hour = time[1], time[4]
         season = float(month) / MONTHS_PER_YEAR
         timeslot = float(hour) / HOURS_PER_DAY
 
         # figure out which slots these represent
-        if SEASONAL_BOUNDARIES[0] <= season < SEASONAL_BOUNDARIES[1]: curr_season = "spring"
-        elif SEASONAL_BOUNDARIES[1] <= season < SEASONAL_BOUNDARIES[2]: curr_season = "summer"
-        elif SEASONAL_BOUNDARIES[2] <= season < 1.0 + SEASONAL_BOUNDARIES[0]: curr_season = "autumn"
-        else: curr_season = "winter"
+        if SEASONAL_BOUNDARIES[0] <= season < SEASONAL_BOUNDARIES[1]:
+            curr_season = "spring"
+        elif SEASONAL_BOUNDARIES[1] <= season < SEASONAL_BOUNDARIES[2]:
+            curr_season = "summer"
+        elif SEASONAL_BOUNDARIES[2] <= season < 1.0 + SEASONAL_BOUNDARIES[0]:
+            curr_season = "autumn"
+        else:
+            curr_season = "winter"
 
-        if DAY_BOUNDARIES[0] <= timeslot < DAY_BOUNDARIES[1]: curr_timeslot = "night"
-        elif DAY_BOUNDARIES[1] <= timeslot < DAY_BOUNDARIES[2]: curr_timeslot = "morning"
-        elif DAY_BOUNDARIES[2] <= timeslot < DAY_BOUNDARIES[3]: curr_timeslot = "afternoon"
-        else: curr_timeslot = "evening"
+        if DAY_BOUNDARIES[0] <= timeslot < DAY_BOUNDARIES[1]:
+            curr_timeslot = "night"
+        elif DAY_BOUNDARIES[1] <= timeslot < DAY_BOUNDARIES[2]:
+            curr_timeslot = "morning"
+        elif DAY_BOUNDARIES[2] <= timeslot < DAY_BOUNDARIES[3]:
+            curr_timeslot = "afternoon"
+        else:
+            curr_timeslot = "evening"
 
         return curr_season, curr_timeslot
 
     def replace_timeslots(self, raw_desc, curr_time):
         """
-        Filter so that only time markers <timeslot>...</timeslot> of the correct timeslot
-        remains in the description.
+        Filter so that only time markers <timeslot>...</timeslot> of the
+        correct timeslot remains in the description.
         """
         if raw_desc:
             regextuple = REGEXMAP[curr_time]
@@ -158,8 +174,9 @@ class ExtendedRoom(Room):
         This will attempt to match a "detail" to look for in the room. A detail
         is a way to offer more things to look at in a room without having to
         add new objects. For this to work, we require a custom look command that
-        allows for "look <detail>" - the look command should defer to this method
-        on the current location (if it exists) before giving up on finding the target.
+        allows for "look <detail>" - the look command should defer to this
+        method on the current location (if it exists) before giving up on
+        finding the target.
 
         Details are not season-sensitive, but are parsed for timeslot markers.
         """
@@ -188,10 +205,14 @@ class ExtendedRoom(Room):
 
         if curr_season != last_season:
             # season changed. Load new desc, or a fallback.
-            if curr_season == 'spring': new_raw_desc = self.db.spring_desc
-            elif curr_season == 'summer': new_raw_desc = self.db.summer_desc
-            elif curr_season == 'autumn': new_raw_desc = self.db.autumn_desc
-            else: new_raw_desc = self.db.winter_desc
+            if curr_season == 'spring':
+                new_raw_desc = self.db.spring_desc
+            elif curr_season == 'summer':
+                new_raw_desc = self.db.summer_desc
+            elif curr_season == 'autumn':
+                new_raw_desc = self.db.autumn_desc
+            else:
+                new_raw_desc = self.db.winter_desc
             if new_raw_desc:
                 raw_desc = new_raw_desc
             else:
@@ -207,14 +228,16 @@ class ExtendedRoom(Room):
             update = True
 
         if update:
-            # if anything changed we have to re-parse the raw_desc for time markers
+            # if anything changed we have to re-parse
+            # the raw_desc for time markers
             # and re-save the description again.
             self.db.desc = self.replace_timeslots(self.db.raw_desc, curr_timeslot)
         # run the normal return_appearance method, now that desc is updated.
         return super(ExtendedRoom, self).return_appearance(looker)
 
 
-# Custom Look command supporting Room details. Add this to the Default cmdset to use.
+# Custom Look command supporting Room details. Add this to
+# the Default cmdset to use.
 
 class CmdExtendedLook(default_cmds.CmdLook):
     """
@@ -237,7 +260,8 @@ class CmdExtendedLook(default_cmds.CmdLook):
         if args:
             looking_at_obj = caller.search(args, use_nicks=True, ignore_errors=True)
             if not looking_at_obj:
-                # no object found. Check if there is a matching detail at location.
+                # no object found. Check if there is a matching
+                # detail at location.
                 location = caller.location
                 if location and hasattr(location, "return_detail") and callable(location.return_detail):
                     detail = location.return_detail(args)
@@ -269,7 +293,8 @@ class CmdExtendedLook(default_cmds.CmdLook):
         looking_at_obj.at_desc(looker=caller)
 
 
-# Custom build commands for setting seasonal descriptions and detailing extended rooms.
+# Custom build commands for setting seasonal descriptions
+# and detailing extended rooms.
 
 class CmdExtendedDesc(default_cmds.CmdDesc):
     """
@@ -358,7 +383,10 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                     string += " {wgeneral:{n %s" % location.db.general_desc
                     caller.msg(string)
                     return
-            if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
+            if self.switches and self.switches[0] in ("spring",
+                                                      "summer",
+                                                      "autumn",
+                                                      "winter"):
                 # a seasonal switch was given
                 if self.rhs:
                     caller.msg("Seasonal descs only works with rooms, not objects.")
@@ -367,10 +395,14 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 if not location:
                     caller.msg("No location was found!")
                     return
-                if switch == 'spring': location.db.spring_desc = self.args
-                elif switch == 'summer': location.db.summer_desc = self.args
-                elif switch == 'autumn': location.db.autumn_desc = self.args
-                elif switch == 'winter': location.db.winter_desc = self.args
+                if switch == 'spring':
+                    location.db.spring_desc = self.args
+                elif switch == 'summer':
+                    location.db.summer_desc = self.args
+                elif switch == 'autumn':
+                    location.db.autumn_desc = self.args
+                elif switch == 'winter':
+                    location.db.winter_desc = self.args
                 # clear flag to force an update
                 self.reset_times(location)
                 caller.msg("Seasonal description was set on %s." % location.key)
@@ -384,9 +416,10 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 else:
                     text = self.args
                     obj = location
-                obj.db.desc = self.rhs # this is set as a compatability fallback
+                obj.db.desc = self.rhs # a compatability fallback
                 if utils.inherits_from(obj, ExtendedRoom):
-                    # this is an extendedroom, we need to reset times and set general_desc
+                    # this is an extendedroom, we need to reset
+                    # times and set general_desc
                     obj.db.general_desc = text
                     self.reset_times(obj)
                     caller.msg("General description was set on %s." % obj.key)

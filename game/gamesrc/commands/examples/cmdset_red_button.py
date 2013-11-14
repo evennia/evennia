@@ -16,6 +16,7 @@ from ev import Command, CmdSet
 # Commands defined on the red button
 #------------------------------------------------------------
 
+
 class CmdNudge(Command):
     """
     Try to nudge the button's lid
@@ -27,7 +28,7 @@ class CmdNudge(Command):
     push the lid of the button away.
     """
 
-    key = "nudge lid" # two-word command name!
+    key = "nudge lid"  # two-word command name!
     aliases = ["nudge"]
     locks = "cmd:all()"
 
@@ -43,6 +44,7 @@ class CmdNudge(Command):
         else:
             self.caller.msg("You manage to get a nail under the lid.")
             self.caller.execute_cmd("open lid")
+
 
 class CmdPush(Command):
     """
@@ -82,7 +84,6 @@ class CmdPush(Command):
             self.caller.msg(string)
 
 
-
 class CmdSmashGlass(Command):
     """
     smash glass
@@ -118,7 +119,8 @@ class CmdSmashGlass(Command):
             string += " you should just try to open the lid instead?"
         self.caller.msg(string)
         self.caller.location.msg_contents("%s tries to smash the glass of the button." %
-                                          (self.caller.name), exclude=self.caller)
+                                    (self.caller.name), exclude=self.caller)
+
 
 class CmdOpenLid(Command):
     """
@@ -144,11 +146,12 @@ class CmdOpenLid(Command):
         string += "the lid will soon close again."
         self.caller.msg(string)
         self.caller.location.msg_contents("%s opens the lid of the button." %
-                                          (self.caller.name), exclude=self.caller)
+                                        (self.caller.name), exclude=self.caller)
         # add the relevant cmdsets to button
         self.obj.cmdset.add(LidClosedCmdSet)
         # call object method
         self.obj.open_lid()
+
 
 class CmdCloseLid(Command):
     """
@@ -173,6 +176,7 @@ class CmdCloseLid(Command):
         self.caller.msg("You close the button's lid. It clicks back into place.")
         self.caller.location.msg_contents("%s closes the button's lid." %
                                           (self.caller.name), exclude=self.caller)
+
 
 class CmdBlindLook(Command):
     """
@@ -209,7 +213,8 @@ class CmdBlindLook(Command):
             string += "Until it wears off, all you can do is feel around blindly."
         self.caller.msg(string)
         self.caller.location.msg_contents("%s stumbles around, blinded." %
-                                          (self.caller.name), exclude=self.caller)
+                                    (self.caller.name), exclude=self.caller)
+
 
 class CmdBlindHelp(Command):
     """
@@ -232,7 +237,6 @@ class CmdBlindHelp(Command):
 # Command sets for the red button
 #---------------------------------------------------------------
 
-
 # We next tuck these commands into their respective command sets.
 # (note that we are overdoing the cdmset separation a bit here
 # to show how it works).
@@ -247,11 +251,12 @@ class DefaultCmdSet(CmdSet):
     using obj.cmdset.add_default().
     """
     key = "RedButtonDefault"
-    mergetype = "Union" # this is default, we don't really need to put it here.
+    mergetype = "Union"  # this is default, we don't really need to put it here.
 
     def at_cmdset_creation(self):
         "Init the cmdset"
         self.add(CmdPush())
+
 
 class LidClosedCmdSet(CmdSet):
     """
@@ -274,6 +279,7 @@ class LidClosedCmdSet(CmdSet):
         self.add(CmdSmashGlass())
         self.add(CmdOpenLid())
 
+
 class LidOpenCmdSet(CmdSet):
     """
     This is the opposite of the Closed cmdset.
@@ -288,6 +294,7 @@ class LidOpenCmdSet(CmdSet):
         "setup the cmdset (just one command)"
         self.add(CmdCloseLid())
 
+
 class BlindCmdSet(CmdSet):
     """
     This is the cmdset added to the *player* when
@@ -300,8 +307,8 @@ class BlindCmdSet(CmdSet):
     # we want to stop the player from walking around
     # in this blinded state, so we hide all exits too.
     # (channel commands will still work).
-    no_exits = True # keep player in the same room
-    no_objs = True # don't allow object commands
+    no_exits = True  # keep player in the same room
+    no_objs = True  # don't allow object commands
 
     def at_cmdset_creation(self):
         "Setup the blind cmdset"

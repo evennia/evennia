@@ -15,7 +15,7 @@ except ImportError:
     from django.test import TestCase
 
 from django.conf import settings
-from src.locks import lockhandler, lockfuncs
+from src.locks import lockfuncs
 from src.utils import create
 
 #------------------------------------------------------------

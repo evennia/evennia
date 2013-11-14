@@ -63,7 +63,6 @@ can then implement separate sets for different situations. For
 example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
-import traceback
 from src.utils import logger, utils
 from src.commands.cmdset import CmdSet
 from src.server.models import ServerConfig
@@ -73,10 +72,12 @@ __all__ = ("import_cmdset", "CmdSetHandler")
 
 _CACHED_CMDSETS = {}
 
+
 class _ErrorCmdSet(CmdSet):
     "This is a special cmdset used to report errors"
     key = "_CMDSET_ERROR"
     errmessage = "Error when loading cmdset."
+
 
 def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
@@ -84,12 +85,14 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     instance from a python module, given a python_path. It's usually accessed
     through the cmdsethandler's add() and add_default() methods.
     python_path - This is the full path to the cmdset object.
-    cmdsetobj - the database object/typeclass on which this cmdset is to be assigned
-               (this can be also channels and exits, as well as players but there will
-               always be such an object)
-    emit_to_obj - if given, error is emitted to this object (in addition to logging)
-    no_logging - don't log/send error messages. This can be useful if import_cmdset is just
-                  used to check if this is a valid python path or not.
+    cmdsetobj - the database object/typeclass on which this cmdset is to be
+            assigned (this can be also channels and exits, as well as players
+            but there will always be such an object)
+    emit_to_obj - if given, error is emitted to this object (in addition
+                  to logging)
+    no_logging - don't log/send error messages. This can be useful
+                if import_cmdset is just used to check if this is a
+                valid python path or not.
     function returns None if an error was encountered or path not found.
     """
 
@@ -117,7 +120,8 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
             raise
         except KeyError:
             errstring = _("Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s.")
-            errstring = errstring % {"classname":classname, "modulepath":modulepath}
+            errstring = errstring % {"classname": classname,
+                                     "modulepath": modulepath}
             raise
         except Exception:
             errstring = _("Compile/Run error when loading cmdset '%s'. Error was logged.")
@@ -135,15 +139,17 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
 # classes
 
+
 class CmdSetHandler(object):
     """
-    The CmdSetHandler is always stored on an object, this object is supplied as an argument.
+    The CmdSetHandler is always stored on an object, this object is supplied
+    as an argument.
 
     The 'current' cmdset is the merged set currently active for this object.
     This is the set the game engine will retrieve when determining which
-    commands are available to the object. The cmdset_stack holds a history of all CmdSets
-    to allow the handler to remove/add cmdsets at will. Doing so will re-calculate
-    the 'current' cmdset.
+    commands are available to the object. The cmdset_stack holds a history of
+    all CmdSets to allow the handler to remove/add cmdsets at will. Doing so
+    will re-calculate the 'current' cmdset.
     """
 
     def __init__(self, obj):
@@ -176,10 +182,8 @@ class CmdSetHandler(object):
         mergelist = []
         if len(self.cmdset_stack) > 1:
             # We have more than one cmdset in stack; list them all
-            num = 0
             #print self.cmdset_stack, self.mergetype_stack
             for snum, cmdset in enumerate(self.cmdset_stack):
-                num = snum
                 mergetype = self.mergetype_stack[snum]
                 permstring = "non-perm"
                 if cmdset.permanent:
@@ -196,17 +200,21 @@ class CmdSetHandler(object):
         mergetype = self.mergetype_stack[-1]
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
-            mergetype = _("custom %(mergetype)s on cmdset '%(merged_on)s'") % {"mergetype":mergetype, "merged_on":merged_on}
+            mergetype = _("custom %(mergetype)s on cmdset '%(merged_on)s'") % \
+                          {"mergetype": mergetype, "merged_on":merged_on}
         if mergelist:
             string += _(" <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s") % \
-                    {"mergelist": "+".join(mergelist), "mergetype":mergetype, "prio":self.current.priority, "current":self.current}
+                    {"mergelist": "+".join(mergelist),
+                     "mergetype": mergetype, "prio": self.current.priority,
+                     "current":self.current}
         else:
             permstring = "non-perm"
             if self.current.permanent:
                 permstring = "perm"
             string += _(" <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s") % \
-                     {"key":self.current.key, "mergetype":mergetype, "prio":self.current.priority, "permstring":permstring,
-                                           "keylist":", ".join(cmd.key for cmd in sorted(self.current, key=lambda o:o.key))}
+                     {"key": self.current.key, "mergetype": mergetype,
+                      "prio": self.current.priority, "permstring": permstring,
+                      "keylist": ", ".join(cmd.key for cmd in sorted(self.current, key=lambda o: o.key))}
         return string.strip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
@@ -362,10 +370,12 @@ class CmdSetHandler(object):
         else:
             # try it as a callable
             if callable(cmdset) and hasattr(cmdset, 'path'):
-                delcmdsets = [cset for cset in self.cmdset_stack[1:] if cset.path == cmdset.path]
+                delcmdsets = [cset for cset in self.cmdset_stack[1:]
+                              if cset.path == cmdset.path]
             else:
                 # try it as a path or key
-                delcmdsets = [cset for cset in self.cmdset_stack[1:] if cset.path == cmdset or cset.key == cmdset]
+                delcmdsets = [cset for cset in self.cmdset_stack[1:]
+                              if cset.path == cmdset or cset.key == cmdset]
             storage = []
 
             if any(cset.permanent for cset in delcmdsets):
@@ -387,7 +397,10 @@ class CmdSetHandler(object):
         self.update()
 
     def delete_default(self):
-        "This explicitly deletes the default cmdset. It's the only command that can."
+        """
+        This explicitly deletes the default cmdset. It's the
+        only command that can.
+        """
         if self.cmdset_stack:
             cmdset = self.cmdset_stack[0]
             if cmdset.permanent:
@@ -404,7 +417,8 @@ class CmdSetHandler(object):
 
     def all(self):
         """
-        Returns the list of cmdsets. Mostly useful to check if stack if empty or not.
+        Returns the list of cmdsets. Mostly useful to check
+        if stack if empty or not.
         """
         return self.cmdset_stack
 
@@ -430,13 +444,6 @@ class CmdSetHandler(object):
             return self.cmdset_stack and self.cmdset_stack[0].key == cmdset_key
         else:
             return any([cmdset.key == cmdset_key for cmdset in self.cmdset_stack])
-
-
-    def all(self):
-        """
-        Returns all cmdsets.
-        """
-        return self.cmdset_stack
 
     def reset(self):
         """

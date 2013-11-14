@@ -9,6 +9,7 @@ import re
 from src.locks.lockhandler import LockHandler
 from src.utils.utils import is_iter, fill
 
+
 def _init_command(mcs, **kwargs):
     """
     Helper command.
@@ -17,20 +18,23 @@ def _init_command(mcs, **kwargs):
     Sets up locks to be more forgiving. This is used both by the metaclass
     and (optionally) at instantiation time.
 
-    If kwargs are given, these are set as instance-specific properties on the command.
+    If kwargs are given, these are set as instance-specific properties
+    on the command.
     """
     for i in range(len(kwargs)):
-       # used for dynamic creation of commands
-       key, value = kwargs.popitem()
-       setattr(mcs, key, value)
+        # used for dynamic creation of commands
+        key, value = kwargs.popitem()
+        setattr(mcs, key, value)
 
     mcs.key = mcs.key.lower()
     if mcs.aliases and not is_iter(mcs.aliases):
         try:
-            mcs.aliases = [str(alias).strip().lower() for alias in mcs.aliases.split(',')]
+            mcs.aliases = [str(alias).strip().lower()
+                          for alias in mcs.aliases.split(',')]
         except Exception:
             mcs.aliases = []
-    mcs.aliases = list(set(alias for alias in mcs.aliases if alias and alias != mcs.key))
+    mcs.aliases = list(set(alias for alias in mcs.aliases
+                           if alias and alias != mcs.key))
 
     # optimization - a set is much faster to match against than a list
     mcs._matchset = set([mcs.key] + mcs.aliases)
@@ -84,6 +88,7 @@ class CommandMeta(type):
 #    structure can parse the input string the same way, minimizing
 #    parsing errors.
 
+
 class Command(object):
     """
     Base command
@@ -112,13 +117,16 @@ class Command(object):
     key - identifier for command (e.g. "look")
     aliases - (optional) list of aliases (e.g. ["l", "loo"])
     locks - lock string (default is "cmd:all()")
-    help_category - how to organize this help entry in help system (default is "General")
+    help_category - how to organize this help entry in help system
+                    (default is "General")
     auto_help - defaults to True. Allows for turning off auto-help generation
-    arg_regex - (optional) raw string regex defining how the argument part of the command should look
-                in order to match for this command (e.g. must it be a space between cmdname and arg?)
+    arg_regex - (optional) raw string regex defining how the argument part of
+                the command should look in order to match for this command
+                (e.g. must it be a space between cmdname and arg?)
 
-    (Note that if auto_help is on, this initial string is also used by the system
-    to create the help entry for the command, so it's a good idea to format it similar to this one)
+    (Note that if auto_help is on, this initial string is also used by the
+    system to create the help entry for the command, so it's a good idea to
+    format it similar to this one)
     """
     # Tie our metaclass, for some convenience cleanup
     __metaclass__ = CommandMeta
@@ -127,7 +135,8 @@ class Command(object):
     key = "command"
     # alternative ways to call the command (e.g. 'l', 'glance', 'examine')
     aliases = []
-    # a list of lock definitions on the form cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)
+    # a list of lock definitions on the form
+    #   cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)
     locks = ""
     # used by the help system to group commands in lists.
     help_category = "general"
@@ -136,7 +145,8 @@ class Command(object):
     auto_help = True
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
-    #   sessid - which session-id (if any) is responsible for triggering this command
+    #   sessid - which session-id (if any) is responsible for
+    # triggering this command
     #
 
     def __init__(self, **kwargs):
@@ -206,20 +216,22 @@ class Command(object):
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
-    def msg(self, msg="", to_obj=None, from_obj=None, sessid=None, all_sessions=False, **kwargs):
+    def msg(self, msg="", to_obj=None, from_obj=None,
+            sessid=None, all_sessions=False, **kwargs):
         """
-        This is a shortcut instad of calling msg() directly on an object - it will
-        detect if caller is an Object or a Player and also appends self.sessid
-        automatically.
+        This is a shortcut instad of calling msg() directly on an object - it
+        will detect if caller is an Object or a Player and also appends
+        self.sessid automatically.
 
         msg - text string of message to send
         to_obj - target object of message. Defaults to self.caller
         from_obj - source of message. Defaults to to_obj
         data - optional dictionary of data
-        sessid - supply data only to a unique sessid (normally not used - this is only potentially useful if
-                 to_obj is a Player object different from self.caller or self.caller.player)
-        all_sessions (bool) - default is to send only to the session connected to
-                              the target object
+        sessid - supply data only to a unique sessid (normally not used -
+           this is only potentially useful if to_obj is a Player object
+           different from self.caller or self.caller.player)
+        all_sessions (bool) - default is to send only to the session
+           connected to the target object
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj

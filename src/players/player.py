@@ -41,23 +41,29 @@ class Player(TypeClass):
 
          key (string) - name of player
          name (string)- wrapper for user.username
-         aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
+         aliases (list of strings) - aliases to the object. Will be saved to
+                            database as AliasDB entries but returned as strings.
          dbref (int, read-only) - unique #id-number. Also "id" can be used.
-         dbobj (Player, read-only) - link to database model. dbobj.typeclass points back to this class
-         typeclass (Player, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
+         dbobj (Player, read-only) - link to database model. dbobj.typeclass
+                                     points back to this class
+         typeclass (Player, read-only) - this links back to this class as an
+                          identified only. Use self.swap_typeclass() to switch.
          date_created (string) - time stamp of object creation
          permissions (list of strings) - list of permission strings
 
          user (User, read-only) - django User authorization object
-         obj (Object) - game object controlled by player. 'character' can also be used.
+         obj (Object) - game object controlled by player. 'character' can also
+                        be used.
          sessions (list of Sessions) - sessions connected to this player
          is_superuser (bool, read-only) - if the connected user is a superuser
 
         * Handlers
 
          locks - lock-handler: use locks.add() to add new lock strings
-         db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
-         ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data
+         db - attribute-handler: store/retrieve database attributes on this
+                                 self.db.myattr=val, val=self.db.myattr
+         ndb - non-persistent attribute handler: same as db but does not
+                                     create a database entry when storing data
          scripts - script-handler. Add new scripts to object with scripts.add()
          cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
          nicks - nick-handler. New nicks with nicks.add().
@@ -67,7 +73,9 @@ class Player(TypeClass):
          msg(outgoing_string, from_obj=None, **kwargs)
          swap_character(new_character, delete_old_character=False)
          execute_cmd(raw_string)
-         search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
+         search(ostring, global_search=False, attribute_name=None,
+                         use_nicks=False, location=None,
+                         ignore_errors=False, player=False)
          is_typeclass(typeclass, exact=False)
          swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
          access(accessing_obj, access_type='read', default=False)
@@ -99,15 +107,16 @@ class Player(TypeClass):
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Evennia -> User
-        This is the main route for sending data back to the user from the server.
+        This is the main route for sending data back to the user from
+        the server.
 
         text (string) - text data to send
         from_obj (Object/Player) - source object of message to send
-        sessid - the session id of the session to send to. If not given, return to
-                 all sessions connected to this player. This is usually only
-                 relevant when using msg() directly from a player-command (from
-                 a command on a Character, the character automatically stores and
-                 handles the sessid).
+        sessid - the session id of the session to send to. If not given,
+          return to all sessions connected to this player. This is usually only
+          relevant when using msg() directly from a player-command (from
+          a command on a Character, the character automatically stores and
+          handles the sessid).
         kwargs - extra data to send through protocol
                  """
         self.dbobj.msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
@@ -131,16 +140,18 @@ class Player(TypeClass):
 
         Argument:
         raw_string (string) - raw command input
-        sessid (int) - id of session executing the command. This sets the sessid property on the command
+        sessid (int) - id of session executing the command. This sets the
+                       sessid property on the command
 
         Returns Deferred - this is an asynchronous Twisted object that will
-            not fire until the command has actually finished executing. To overload
-            this one needs to attach callback functions to it, with addCallback(function).
-            This function will be called with an eventual return value from the command
-            execution.
+            not fire until the command has actually finished executing. To
+            overload this one needs to attach callback functions to it, with
+            addCallback(function). This function will be called with an
+            eventual return value from the command execution.
 
-            This return is not used at all by Evennia by default, but might be useful
-            for coders intending to implement some sort of nested command structure.
+            This return is not used at all by Evennia by default, but might
+            be useful for coders intending to implement some sort of nested
+            command structure.
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
@@ -204,11 +215,13 @@ class Player(TypeClass):
 
 
         """
-        self.dbobj.swap_typeclass(new_typeclass, clean_attributes=clean_attributes, no_default=no_default)
+        self.dbobj.swap_typeclass(new_typeclass,
+                    clean_attributes=clean_attributes, no_default=no_default)
 
     def access(self, accessing_obj, access_type='read', default=False):
         """
-        Determines if another object has permission to access this object in whatever way.
+        Determines if another object has permission to access this object
+        in whatever way.
 
           accessing_obj (Object)- object trying to access this one
           access_type (string) - type of access sought
@@ -221,8 +234,8 @@ class Player(TypeClass):
         This explicitly checks the given string against this object's
         'permissions' property without involving any locks.
 
-        permstring (string) - permission string that need to match a permission on the object.
-                              (example: 'Builders')
+        permstring (string) - permission string that need to match a permission
+                              on the object. (example: 'Builders')
         """
         return self.dbobj.check_permstring(permstring)
 
@@ -307,7 +320,8 @@ class Player(TypeClass):
             except Exception:
                 logger.log_trace()
         now = datetime.datetime.now()
-        now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
+        now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month,
+                                             now.day, now.hour, now.minute)
         if _CONNECT_CHANNEL:
             _CONNECT_CHANNEL.tempmsg("[%s, %s]: %s" % (_CONNECT_CHANNEL.key, now, message))
         else:
@@ -361,15 +375,15 @@ class Player(TypeClass):
 
     def at_server_reload(self):
         """
-        This hook is called whenever the server is shutting down for restart/reboot.
-        If you want to, for example, save non-persistent properties across a restart,
-        this is the place to do it.
+        This hook is called whenever the server is shutting down for
+        restart/reboot. If you want to, for example, save non-persistent
+        properties across a restart, this is the place to do it.
         """
         pass
 
     def at_server_shutdown(self):
         """
-        This hook is called whenever the server is shutting down fully (i.e. not for
-        a restart).
+        This hook is called whenever the server is shutting down fully
+        (i.e. not for a restart).
         """
         pass

@@ -6,12 +6,19 @@ be of use when designing your own game.
 
 """
 
-import os, sys, imp, types, math, re
-import textwrap, datetime, random, traceback, inspect
+import os
+import sys
+import imp
+import types
+import math
+import re
+import textwrap
+import datetime
+import random
+import traceback
 from inspect import ismodule
 from collections import defaultdict
 from twisted.internet import threads, defer, reactor
-from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
 try:
@@ -23,6 +30,7 @@ ENCODINGS = settings.ENCODINGS
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
 
 def is_iter(iterable):
     """
@@ -39,9 +47,11 @@ def is_iter(iterable):
     except AttributeError:
         return False
 
+
 def make_iter(obj):
     "Makes sure that the object is always iterable."
     return not hasattr(obj, '__iter__') and [obj] or obj
+
 
 def fill(text, width=78, indent=0):
     """
@@ -69,7 +79,8 @@ def crop(text, width=78, suffix="[...]"):
         return text
     else:
         lsuffix = len(suffix)
-        return "%s%s" % (text[:width-lsuffix], suffix)
+        return "%s%s" % (text[:width - lsuffix], suffix)
+
 
 def dedent(text):
     """
@@ -82,6 +93,7 @@ def dedent(text):
     if not text:
         return ""
     return textwrap.dedent(text)
+
 
 def list_to_string(inlist, endsep="and", addquote=False):
     """
@@ -108,6 +120,7 @@ def list_to_string(inlist, endsep="and", addquote=False):
             return str(inlist[0])
         return ", ".join(str(v) for v in inlist[:-1]) + " %s %s" % (endsep, inlist[-1])
 
+
 def wildcard_to_regexp(instring):
     """
     Converts a player-supplied string that may have wildcards in it to regular
@@ -123,7 +136,7 @@ def wildcard_to_regexp(instring):
         regexp_string += "^"
 
     # Replace any occurances of * or ? with the appropriate groups.
-    regexp_string += instring.replace("*","(.*)").replace("?", "(.{1})")
+    regexp_string += instring.replace("*", "(.*)").replace("?", "(.{1})")
 
     # If there's an asterisk at the end of the string, we can't impose the
     # end of string ($) limiter.
@@ -131,6 +144,7 @@ def wildcard_to_regexp(instring):
         regexp_string += "$"
 
     return regexp_string
+
 
 def time_format(seconds, style=0):
     """
@@ -146,11 +160,11 @@ def time_format(seconds, style=0):
         # We'll just use integer math, no need for decimal precision.
         seconds = int(seconds)
 
-    days     = seconds / 86400
+    days = seconds / 86400
     seconds -= days * 86400
-    hours    = seconds / 3600
+    hours = seconds / 3600
     seconds -= hours * 3600
-    minutes  = seconds / 60
+    minutes = seconds / 60
     seconds -= minutes * 60
 
     if style is 0:
@@ -225,6 +239,7 @@ def time_format(seconds, style=0):
 
     return retval
 
+
 def datetime_format(dtobj):
     """
     Takes a datetime object instance (e.g. from django's DateTimeField)
@@ -250,6 +265,7 @@ def datetime_format(dtobj):
         timestring = "%02i:%02i:%02i" % (hour, minute, second)
     return timestring
 
+
 def host_os_is(osname):
     """
     Check to see if the host OS matches the query.
@@ -257,6 +273,7 @@ def host_os_is(osname):
     if os.name == osname:
         return True
     return False
+
 
 def get_evennia_version():
     """
@@ -267,6 +284,7 @@ def get_evennia_version():
         return "%s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
     except IOError:
         return "Unknown version"
+
 
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
@@ -284,11 +302,13 @@ def pypath_to_realpath(python_path, file_ending='.py'):
         return "%s%s" % (path, file_ending)
     return path
 
+
 def dbref(dbref, reqhash=True):
     """
     Converts/checks if input is a valid dbref.
-    If reqhash is set, only input strings on the form '#N', where N is an integer
-    is accepted. Otherwise strings '#N', 'N' and integers N are all accepted.
+    If reqhash is set, only input strings on the form '#N', where N is an
+    integer is accepted. Otherwise strings '#N', 'N' and integers N are all
+    accepted.
      Output is the integer part.
     """
     if reqhash:
@@ -300,6 +320,7 @@ def dbref(dbref, reqhash=True):
         dbref = dbref.lstrip('#')
         return int(dbref) if dbref.isdigit() else None
     return dbref if isinstance(dbref, int) else None
+
 
 def to_unicode(obj, encoding='utf-8', force_string=False):
     """
@@ -335,6 +356,7 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
         raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
     return obj
 
+
 def to_str(obj, encoding='utf-8', force_string=False):
     """
     This encodes a unicode string back to byte-representation,
@@ -366,6 +388,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
         raise Exception("Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (obj, encoding))
     return obj
 
+
 def validate_email_address(emailaddress):
     """
     Checks if an email address is syntactically correct.
@@ -382,18 +405,18 @@ def validate_email_address(emailaddress):
 
     # Email address must be more than 7 characters in total.
     if len(emailaddress) < 7:
-        return False # Address too short.
+        return False  # Address too short.
 
     # Split up email address into parts.
     try:
         localpart, domainname = emailaddress.rsplit('@', 1)
         host, toplevel = domainname.rsplit('.', 1)
     except ValueError:
-        return False # Address does not have enough parts.
+        return False  # Address does not have enough parts.
 
     # Check for Country code or Generic Domain.
     if len(toplevel) != 2 and toplevel not in domains:
-        return False # Not a domain name.
+        return False  # Not a domain name.
 
     for i in '-_.%+.':
         localpart = localpart.replace(i, "")
@@ -401,9 +424,9 @@ def validate_email_address(emailaddress):
         host = host.replace(i, "")
 
     if localpart.isalnum() and host.isalnum():
-        return True # Email address is fine.
+        return True  # Email address is fine.
     else:
-        return False # Email address has funny characters.
+        return False  # Email address has funny characters.
 
 
 def inherits_from(obj, parent):
@@ -447,6 +470,7 @@ def server_services():
     del SESSIONS
     return server
 
+
 def uses_database(name="sqlite3"):
     """
     Checks if the game is currently using a given database. This is a
@@ -460,13 +484,15 @@ def uses_database(name="sqlite3"):
         engine = settings.DATABASE_ENGINE
     return engine == "django.db.backends.%s" % name
 
+
 def delay(delay=2, retval=None, callback=None):
     """
     Delay the return of a value.
     Inputs:
       delay (int) - the delay in seconds
       retval (any) - this will be returned by this function after a delay
-      callback (func(retval)) - if given, this will be called with retval after delay seconds
+      callback (func(retval)) - if given, this will be called with retval
+                                after delay seconds
     Returns:
       deferred that will fire with to_return after delay seconds
     """
@@ -499,13 +525,14 @@ def clean_object_caches(obj):
         pass
 
     # on-object property cache
-    [_DA(obj, cname) for cname in obj.__dict__.keys() if cname.startswith("_cached_db_")]
+    [_DA(obj, cname) for cname in obj.__dict__.keys()
+                     if cname.startswith("_cached_db_")]
     try:
         hashid = _GA(obj, "hashid")
-        hasid = obj.hashid
         _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
     except AttributeError:
         pass
+
 
 _PPOOL = None
 _PCMD = None
@@ -574,7 +601,6 @@ def run_async(to_execute, *args, **kwargs):
         deferred.addCallback(callback, **callback_kwargs)
     deferred.addErrback(errback, **errback_kwargs)
 
-#
 
 def check_evennia_dependencies():
     """
@@ -631,7 +657,7 @@ def check_evennia_dependencies():
     if settings.IRC_ENABLED:
         try:
             import twisted.words
-            twisted.words # set to avoid debug info about not-used import
+            twisted.words  # set to avoid debug info about not-used import
         except ImportError:
             errstring += "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it."
             errstring += "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others"
@@ -641,6 +667,7 @@ def check_evennia_dependencies():
     if errstring:
         print "%s\n %s\n%s" % ("-"*78, errstring, '-'*78)
     return no_error
+
 
 def has_parent(basepath, obj):
     "Checks if basepath is somewhere in objs parent tree."
@@ -652,17 +679,19 @@ def has_parent(basepath, obj):
         # instance. Not sure if one should defend against this.
         return False
 
+
 def mod_import(module):
     """
     A generic Python module loader.
 
     Args:
-        module - this can be either a Python path (dot-notation like src.objects.models),
-                 an absolute path (e.g. /home/eve/evennia/src/objects.models.py)
+        module - this can be either a Python path (dot-notation like
+                 src.objects.models), an absolute path
+                 (e.g. /home/eve/evennia/src/objects.models.py)
                  or an already import module object (e.g. models)
     Returns:
-        an imported module. If the input argument was already a model, this is returned as-is,
-        otherwise the path is parsed and imported.
+        an imported module. If the input argument was already a model,
+        this is returned as-is, otherwise the path is parsed and imported.
     Error:
         returns None. The error is also logged.
     """
@@ -691,7 +720,7 @@ def mod_import(module):
     if not module:
         return None
 
-    if type(module) == types.ModuleType:
+    if isinstance(module, types.ModuleType):
         # if this is already a module, we are done
         mod = module
     else:
@@ -699,8 +728,9 @@ def mod_import(module):
         try:
             mod = __import__(module, fromlist=["None"])
         except ImportError, ex:
-            # check just where the ImportError happened (it could have been an erroneous
-            # import inside the module as well). This is the trivial way to do it ...
+            # check just where the ImportError happened (it could have been
+            # an erroneous import inside the module as well). This is the
+            # trivial way to do it ...
             if str(ex) != "Import by filename is not supported.":
                 #log_trace("ImportError inside module '%s': '%s'" % (module, str(ex)))
                 raise
@@ -726,29 +756,36 @@ def mod_import(module):
             result[0].close()
     return mod
 
+
 def all_from_module(module):
     """
     Return all global-level variables from a module as a dict
     """
     mod = mod_import(module)
-    return dict((key, val) for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val)))
+    return dict((key, val) for key, val in mod.__dict__.items()
+                            if not (key.startswith("_") or ismodule(val)))
+
 
 def variable_from_module(module, variable=None, default=None):
     """
-    Retrieve a variable or list of variables from a module. The variable(s) must be defined
-    globally in the module. If no variable is given (or a list entry is None), a random variable
-    is extracted from the module.
+    Retrieve a variable or list of variables from a module. The variable(s)
+    must be defined globally in the module. If no variable is given (or a
+    list entry is None), a random variable is extracted from the module.
 
     If module cannot be imported or given variable not found, default
     is returned.
 
     Args:
       module (string or module)- python path, absolute path or a module
-      variable (string or iterable) - single variable name or iterable of variable names to extract
-      default (string) - default value to use if a variable fails to be extracted.
+      variable (string or iterable) - single variable name or iterable of
+                                      variable names to extract
+      default (string) - default value to use if a variable fails
+                         to be extracted.
     Returns:
-      a single value or a list of values depending on the type of 'variable' argument. Errors in lists
-      are replaced by the 'default' argument."""
+      a single value or a list of values depending on the type of
+        'variable' argument. Errors in lists are replaced by the
+        'default' argument.
+    """
 
     if not module:
         return default
@@ -761,11 +798,13 @@ def variable_from_module(module, variable=None, default=None):
             result.append(mod.__dict__.get(var, default))
         else:
             # random selection
-            mvars = [val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))]
+            mvars = [val for key, val in mod.__dict__.items()
+                            if not (key.startswith("_") or ismodule(val))]
             result.append((mvars and random.choice(mvars)) or default)
     if len(result) == 1:
         return result[0]
     return result
+
 
 def string_from_module(module, variable=None, default=None):
     """
@@ -779,6 +818,7 @@ def string_from_module(module, variable=None, default=None):
         return [(isinstance(v, basestring) and v or default) for v in val]
     return default
 
+
 def init_new_player(player):
     """
     Helper method to call all hooks, set flags etc on a newly created
@@ -790,41 +830,50 @@ def init_new_player(player):
     #    player.character.db.FIRST_LOGIN = True
     player.db.FIRST_LOGIN = True
 
+
 def string_similarity(string1, string2):
     """
     This implements a "cosine-similarity" algorithm as described for example in
-       Proceedings of the 22nd International Conference on Computation Linguistics
-       (Coling 2008), pages 593-600, Manchester, August 2008
-    The measure-vectors used is simply a "bag of words" type histogram (but for letters).
+       Proceedings of the 22nd International Conference on Computation
+       Linguistics (Coling 2008), pages 593-600, Manchester, August 2008
+    The measure-vectors used is simply a "bag of words" type histogram
+    (but for letters).
 
-    The function returns a value 0...1 rating how similar the two strings are. The strings can
-    contain multiple words.
+    The function returns a value 0...1 rating how similar the two strings
+    are. The strings can contain multiple words.
     """
     vocabulary = set(list(string1 + string2))
     vec1 = [string1.count(v) for v in vocabulary]
     vec2 = [string2.count(v) for v in vocabulary]
     try:
-        return float(sum(vec1[i]*vec2[i] for i in range(len(vocabulary)))) / \
+        return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / \
                (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
     except ZeroDivisionError:
-        # can happen if empty-string cmdnames appear for some reason. This is a no-match.
+        # can happen if empty-string cmdnames appear for some reason.
+        # This is a no-match.
         return 0
+
 
 def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     """
-    Given a string and a vocabulary, return a match or a list of suggestsion based on
-    string similarity.
+    Given a string and a vocabulary, return a match or a list of suggestsion
+    based on string similarity.
 
     Args:
         string (str)- a string to search for
         vocabulary (iterable) - a list of available strings
-        cutoff (int, 0-1) - limit the similarity matches (higher, the more exact is required)
+        cutoff (int, 0-1) - limit the similarity matches (higher, the more
+                            exact is required)
         maxnum (int) - maximum number of suggestions to return
     Returns:
-        list of suggestions from vocabulary (could be empty if there are no matches)
+        list of suggestions from vocabulary (could be empty if there are
+        no matches)
     """
-    return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg) for sugg in vocabulary],
-                                      key=lambda tup: tup[0], reverse=True) if tup[0] >= cutoff][:maxnum]
+    return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg)
+                                       for sugg in vocabulary],
+                                           key=lambda tup: tup[0], reverse=True)
+                                           if tup[0] >= cutoff][:maxnum]
+
 
 def string_partial_matching(alternatives, inp, ret_index=True):
     """
@@ -837,7 +886,8 @@ def string_partial_matching(alternatives, inp, ret_index=True):
     Input:
         alternatives (list of str) - list of possible strings to match
         inp (str) - search criterion
-        ret_index (bool) - return list of indices (from alternatives array) or strings
+        ret_index (bool) - return list of indices (from alternatives
+                           array) or strings
     Returns:
         list of matching indices or strings, or an empty list
 
@@ -855,7 +905,8 @@ def string_partial_matching(alternatives, inp, ret_index=True):
             # loop over parts, making sure only to visit each part once
             # (this will invalidate input in the wrong word order)
             submatch = [last_index + alt_num for alt_num, alt_word
-                        in enumerate(alt_words[last_index:]) if alt_word.startswith(inp_word)]
+                        in enumerate(alt_words[last_index:])
+                                     if alt_word.startswith(inp_word)]
             if submatch:
                 last_index = min(submatch) + 1
                 score += 1
@@ -870,6 +921,7 @@ def string_partial_matching(alternatives, inp, ret_index=True):
     if matches:
         return matches[max(matches)]
     return []
+
 
 def format_table(table, extra_space=1):
     """
@@ -908,6 +960,7 @@ def format_table(table, extra_space=1):
         ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
                        for icol, col in enumerate(table)])
     return ftable
+
 
 def get_evennia_pids():
     """

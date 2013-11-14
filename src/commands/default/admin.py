@@ -4,7 +4,8 @@ Admin commands
 
 """
 
-import time, re
+import time
+import re
 from django.conf import settings
 from django.contrib.auth.models import User
 from src.server.sessionhandler import SESSIONS
@@ -15,8 +16,8 @@ from src.commands.default.muxcommand import MuxCommand
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 # limit members for API inclusion
-__all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer", "CmdEmit", "CmdNewPassword",
-           "CmdPerm", "CmdWall")
+__all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer",
+           "CmdEmit", "CmdNewPassword", "CmdPerm", "CmdWall")
 
 
 class CmdBoot(MuxCommand):
@@ -98,6 +99,7 @@ class CmdBoot(MuxCommand):
 # regex matching IP addresses with wildcards, eg. 233.122.4.*
 IPREGEX = re.compile(r"[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}")
 
+
 def list_bans(banlist):
     """
     Helper function to display a list of active bans. Input argument
@@ -108,11 +110,12 @@ def list_bans(banlist):
 
     table = prettytable.PrettyTable(["{wid", "{wname/ip", "{wdate", "{wreason"])
     for inum, ban in enumerate(banlist):
-        table.add_row([str(inum+1),
+        table.add_row([str(inum + 1),
                        ban[0] and ban[0] or ban[1],
                        ban[3], ban[4]])
     string = "{wActive bans:{n\n%s" % table
     return string
+
 
 class CmdBan(MuxCommand):
     """
@@ -152,7 +155,7 @@ class CmdBan(MuxCommand):
     key = "@ban"
     aliases = ["@bans"]
     locks = "cmd:perm(ban) or perm(Immortals)"
-    help_category="Admin"
+    help_category = "Admin"
 
     def func(self):
         """
@@ -172,14 +175,15 @@ class CmdBan(MuxCommand):
             banlist = []
 
         if not self.args or (self.switches
-                             and not any(switch in ('ip', 'name') for switch in self.switches)):
+                             and not any(switch in ('ip', 'name')
+                             for switch in self.switches)):
             self.caller.msg(list_bans(banlist))
             return
 
         now = time.ctime()
         reason = ""
         if ':' in self.args:
-            ban, reason = self.args.rsplit(':',1)
+            ban, reason = self.args.rsplit(':', 1)
         else:
             ban = self.args
         ban = ban.lower()
@@ -193,7 +197,7 @@ class CmdBan(MuxCommand):
             typ = "IP"
             ban = ipban[0]
             # replace * with regex form and compile it
-            ipregex = ban.replace('.','\.')
+            ipregex = ban.replace('.', '\.')
             ipregex = ipregex.replace('*', '[0-9]{1,3}')
             #print "regex:",ipregex
             ipregex = re.compile(r"%s" % ipregex)
@@ -202,6 +206,7 @@ class CmdBan(MuxCommand):
         banlist.append(bantup)
         ServerConfig.objects.conf('server_bans', banlist)
         self.caller.msg("%s-Ban {w%s{x was added." % (typ, ban))
+
 
 class CmdUnban(MuxCommand):
     """
@@ -218,7 +223,7 @@ class CmdUnban(MuxCommand):
     """
     key = "@unban"
     locks = "cmd:perm(unban) or perm(Immortals)"
-    help_category="Admin"
+    help_category = "Admin"
 
     def func(self):
         "Implement unbanning"
@@ -241,10 +246,11 @@ class CmdUnban(MuxCommand):
             self.caller.msg("Ban id {w%s{x was not found." % self.args)
         else:
             # all is ok, clear ban
-            ban = banlist[num-1]
-            del banlist[num-1]
+            ban = banlist[num - 1]
+            del banlist[num - 1]
             ServerConfig.objects.conf('server_bans', banlist)
-            self.caller.msg("Cleared ban %s: %s" % (num, " ".join([s for s in ban[:2]])))
+            self.caller.msg("Cleared ban %s: %s" %
+                                    (num, " ".join([s for s in ban[:2]])))
 
 
 class CmdDelPlayer(MuxCommand):
@@ -408,7 +414,7 @@ class CmdEmit(MuxCommand):
             obj = caller.search(objname, global_search=True)
             if not obj:
                 return
-            if rooms_only and not obj.location == None:
+            if rooms_only and not obj.location is None:
                 caller.msg("%s is not a room. Ignored." % objname)
                 continue
             if players_only and not obj.has_player:
@@ -423,7 +429,6 @@ class CmdEmit(MuxCommand):
                     caller.msg("Emitted to %s." % objname)
             else:
                 caller.msg("You are not allowed to emit to %s." % objname)
-
 
 
 class CmdNewPassword(MuxCommand):
@@ -457,7 +462,8 @@ class CmdNewPassword(MuxCommand):
         player.user.save()
         self.msg("%s - new password set to '%s'." % (player.name, self.rhs))
         if player.character != caller:
-            player.msg("%s has changed your password to '%s'." % (caller.name, self.rhs))
+            player.msg("%s has changed your password to '%s'." % (caller.name,
+                                                                  self.rhs))
 
 
 class CmdPerm(MuxCommand):
@@ -497,7 +503,7 @@ class CmdPerm(MuxCommand):
         if playermode:
             obj = caller.search_player(lhs)
         else:
-            obj =  caller.search(lhs, global_search=True)
+            obj = caller.search(lhs, global_search=True)
         if not obj:
             return
 
@@ -511,7 +517,9 @@ class CmdPerm(MuxCommand):
                 string += "<None>"
             else:
                 string += ", ".join(obj.permissions.all())
-                if hasattr(obj, 'player') and hasattr(obj.player, 'is_superuser') and obj.player.is_superuser:
+                if (hasattr(obj, 'player') and
+                    hasattr(obj.player, 'is_superuser') and
+                    obj.player.is_superuser):
                     string += "\n(... but this object is currently controlled by a SUPERUSER! "
                     string += "All access checks are passed automatically.)"
             caller.msg(string)
@@ -539,9 +547,10 @@ class CmdPerm(MuxCommand):
 
             for perm in self.rhslist:
 
-                # don't allow to set a permission higher in the hierarchy than the one the
-                # caller has (to prevent self-escalation)
-                if perm.lower() in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm):
+                # don't allow to set a permission higher in the hierarchy than
+                # the one the caller has (to prevent self-escalation)
+                if (perm.lower() in PERMISSION_HIERARCHY and not
+                        obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm)):
                     caller.msg("You cannot assign a permission higher than the one you have yourself.")
                     return
 

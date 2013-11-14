@@ -50,8 +50,12 @@ if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6
 else:
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:%f"
 
+
 def _TO_DATESTRING(obj):
-    "this will only be called with valid database objects. Returns datestring on correct form."
+    """
+    this will only be called with valid database objects. Returns datestring
+    on correct form.
+    """
     try:
         return _GA(obj, "db_date_created").strftime(_DATESTRING)
     except AttributeError:
@@ -74,6 +78,7 @@ def _init_globals():
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions
 #
 
+
 def _save(method):
     "method decorator that saves data to Attribute"
     def save_wrapper(self, *args, **kwargs):
@@ -82,6 +87,7 @@ def _save(method):
         self._save_tree()
         return ret
     return update_wrapper(save_wrapper, method)
+
 
 class _SaverMutable(object):
     """
@@ -95,6 +101,7 @@ class _SaverMutable(object):
         self._parent = kwargs.pop("parent", None)
         self._db_obj = kwargs.pop("db_obj", None)
         self._data = None
+
     def _save_tree(self):
         "recursively traverse back up the tree, save when we reach the root"
         if self._parent:
@@ -103,6 +110,7 @@ class _SaverMutable(object):
             self._db_obj.value = self
         else:
             logger.log_errmsg("_SaverMutable %s has no root Attribute to save to." % self)
+
     def _convert_mutables(self, data):
         "converts mutables to Saver* variants and assigns .parent property"
         def process_tree(item, parent):
@@ -127,18 +135,24 @@ class _SaverMutable(object):
 
     def __repr__(self):
         return self._data.__repr__()
+
     def __len__(self):
         return self._data.__len__()
+
     def __iter__(self):
         return self._data.__iter__()
+
     def __getitem__(self, key):
         return self._data.__getitem__(key)
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
+
     @_save
     def __delitem__(self, key):
         self._data.__delitem__(key)
+
 
 class _SaverList(_SaverMutable, MutableSequence):
     """
@@ -147,13 +161,16 @@ class _SaverList(_SaverMutable, MutableSequence):
     def __init__(self, *args, **kwargs):
         super(_SaverList, self).__init__(*args, **kwargs)
         self._data = list(*args)
+
     @_save
     def __add__(self, otherlist):
         self._data = self._data.__add__(otherlist)
         return self._data
+
     @_save
     def insert(self, index, value):
         self._data.insert(index, self._convert_mutables(value))
+
 
 class _SaverDict(_SaverMutable, MutableMapping):
     """
@@ -163,6 +180,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
         super(_SaverDict, self).__init__(*args, **kwargs)
         self._data = dict(*args)
 
+
 class _SaverSet(_SaverMutable, MutableSet):
     """
     A set that saves to an Attribute when updated
@@ -170,11 +188,14 @@ class _SaverSet(_SaverMutable, MutableSet):
     def __init__(self, *args, **kwargs):
         super(_SaverSet, self).__init__(*args, **kwargs)
         self._data = set(*args)
+
     def __contains__(self, value):
         return self._data.__contains__(value)
+
     @_save
     def add(self, value):
         self._data.add(self._convert_mutables(value))
+
     @_save
     def discard(self, value):
         self._data.discard(value)
@@ -187,14 +208,18 @@ class _SaverSet(_SaverMutable, MutableSet):
 def pack_dbobj(item):
     """
     Check and convert django database objects to an internal representation.
-    This either returns the original input item or a tuple ("__packed_dbobj__", key, creation_time, id)
+    This either returns the original input item or a tuple
+      ("__packed_dbobj__", key, creation_time, id)
     """
     _init_globals()
-    obj =  hasattr(item, 'dbobj') and item.dbobj or item
+    obj = hasattr(item, 'dbobj') and item.dbobj or item
     natural_key = _FROM_MODEL_MAP[hasattr(obj, "id") and hasattr(obj, "db_date_created") and
                                   hasattr(obj, '__class__') and obj.__class__.__name__.lower()]
-    # build the internal representation as a tuple ("__packed_dbobj__", key, creation_time, id)
-    return natural_key and ('__packed_dbobj__', natural_key, _TO_DATESTRING(obj), _GA(obj, "id")) or item
+    # build the internal representation as a tuple
+    #  ("__packed_dbobj__", key, creation_time, id)
+    return natural_key and ('__packed_dbobj__', natural_key,
+                             _TO_DATESTRING(obj), _GA(obj, "id")) or item
+
 
 def unpack_dbobj(item):
     """
@@ -208,10 +233,14 @@ def unpack_dbobj(item):
         obj = item[3] and _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[3]))
     except ObjectDoesNotExist:
         return None
-    # even if we got back a match, check the sanity of the date (some databases may 're-use' the id)
-    try: dbobj = obj.dbobj
-    except AttributeError: dbobj = obj
+    # even if we got back a match, check the sanity of the date (some
+    # databases may 're-use' the id)
+    try:
+        dbobj = obj.dbobj
+    except AttributeError:
+        dbobj = obj
     return _TO_DATESTRING(dbobj) == item[2] and obj or None
+
 
 #
 # Access methods
@@ -219,10 +248,11 @@ def unpack_dbobj(item):
 
 def to_pickle(data):
     """
-    This prepares data on arbitrary form to be pickled. It handles any nested structure
-    and returns data on a form that is safe to pickle (including having converted any
-    database models to their internal representation). We also convert any Saver*-type
-    objects back to their normal representations, they are not pickle-safe.
+    This prepares data on arbitrary form to be pickled. It handles any nested
+    structure and returns data on a form that is safe to pickle (including
+    having converted any database models to their internal representation).
+    We also convert any Saver*-type objects back to their normal
+    representations, they are not pickle-safe.
     """
     def process_item(item):
         "Recursive processor and identification of data"
@@ -246,20 +276,22 @@ def to_pickle(data):
         return pack_dbobj(item)
     return process_item(data)
 
+
 @transaction.autocommit
 def from_pickle(data, db_obj=None):
     """
     This should be fed a just de-pickled data object. It will be converted back
     to a form that may contain database objects again. Note that if a database
-    object was removed (or changed in-place) in the database, None will be returned.
+    object was removed (or changed in-place) in the database, None will be
+    returned.
 
-    db_obj - this is the model instance (normally an Attribute) that _Saver*-type
-             iterables (_SaverList etc) will save to when they update. It must have a 'value'
-             property that saves assigned data to the database. Skip if not serializing onto
-             a given object.
+    db_obj - this is the model instance (normally an Attribute) that
+             _Saver*-type iterables (_SaverList etc) will save to when they
+             update. It must have a 'value' property that saves assigned data
+             to the database. Skip if not serializing onto a given object.
 
-    If db_obj is given, this function will convert lists, dicts and sets to their
-    _SaverList, _SaverDict and _SaverSet counterparts.
+    If db_obj is given, this function will convert lists, dicts and sets
+    to their _SaverList, _SaverDict and _SaverSet counterparts.
 
     """
     def process_item(item):
@@ -278,7 +310,8 @@ def from_pickle(data, db_obj=None):
             return set(process_item(val) for val in item)
         elif hasattr(item, '__iter__'):
             try:
-                # we try to conserve the iterable class if it accepts an iterator
+                # we try to conserve the iterable class if
+                # it accepts an iterator
                 return item.__class__(process_item(val) for val in item)
             except (AttributeError, TypeError):
                 return [process_item(val) for val in item]
@@ -300,7 +333,8 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(parent=parent)
-            dat._data.update(dict((key, process_tree(val, dat)) for key, val in item.items()))
+            dat._data.update(dict((key, process_tree(val, dat))
+                                   for key, val in item.items()))
             return dat
         elif dtype == set:
             dat = _SaverSet(parent=parent)
@@ -308,7 +342,8 @@ def from_pickle(data, db_obj=None):
             return dat
         elif hasattr(item, '__iter__'):
             try:
-                # we try to conserve the iterable class if it accepts an iterator
+                # we try to conserve the iterable class if it
+                # accepts an iterator
                 return item.__class__(process_tree(val, parent) for val in item)
             except (AttributeError, TypeError):
                 dat = _SaverList(parent=parent)
@@ -326,7 +361,8 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(db_obj=db_obj)
-            dat._data.update((key, process_tree(val, parent=dat)) for key, val in data.items())
+            dat._data.update((key, process_tree(val, parent=dat))
+                              for key, val in data.items())
             return dat
         elif dtype == set:
             dat = _SaverSet(db_obj=db_obj)
@@ -334,17 +370,22 @@ def from_pickle(data, db_obj=None):
             return dat
     return process_item(data)
 
+
 def do_pickle(data):
     "Perform pickle to string"
     return to_str(dumps(data, protocol=PICKLE_PROTOCOL))
+
 
 def do_unpickle(data):
     "Retrieve pickle from pickled string"
     return loads(to_str(data))
 
+
 def dbserialize(data):
     "Serialize to pickled form in one step"
     return do_pickle(to_pickle(data))
+
+
 def dbunserialize(data, db_obj=None):
     "Un-serialize in one step. See from_pickle for help db_obj."
     return do_unpickle(from_pickle(data, db_obj=db_obj))

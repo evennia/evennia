@@ -82,12 +82,14 @@ if os.name == 'nt':
 
 # Functions
 
+
 def set_restart_mode(restart_file, flag="reload"):
     """
     This sets a flag file for the restart mode.
     """
     with open(restart_file, 'w') as f:
         f.write(str(flag))
+
 
 def get_restart_mode(restart_file):
     """
@@ -97,6 +99,7 @@ def get_restart_mode(restart_file):
         with open(restart_file, 'r') as f:
             return f.read()
     return "shutdown"
+
 
 def get_pid(pidfile):
     """
@@ -108,6 +111,7 @@ def get_pid(pidfile):
         with open(pidfile, 'r') as f:
             pid = f.read()
     return pid
+
 
 def cycle_logfile(logfile):
     """
@@ -126,13 +130,13 @@ def cycle_logfile(logfile):
 SERVER = None
 PORTAL = None
 
+
 def start_services(server_argv, portal_argv):
     """
     This calls a threaded loop that launces the Portal and Server
     and then restarts them when they finish.
     """
     global SERVER, PORTAL
-
     processes = Queue.Queue()
 
     def server_waiter(queue):
@@ -141,7 +145,8 @@ def start_services(server_argv, portal_argv):
         except Exception, e:
             print "Server process error: %(e)s" % {'e': e}
             return
-        queue.put(("server_stopped", rc)) # this signals the controller that the program finished
+        # this signals the controller that the program finished
+        queue.put(("server_stopped", rc))
 
     def portal_waiter(queue):
         try:
@@ -149,7 +154,8 @@ def start_services(server_argv, portal_argv):
         except Exception, e:
             print "Portal process error: %(e)s" % {'e': e}
             return
-        queue.put(("portal_stopped", rc)) # this signals the controller that the program finished
+        # this signals the controller that the program finished
+        queue.put(("portal_stopped", rc))
 
     if portal_argv:
         try:
@@ -157,7 +163,8 @@ def start_services(server_argv, portal_argv):
                 # start portal as interactive, reloadable thread
                 PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             else:
-                # normal operation: start portal as a daemon; we don't care to monitor it for restart
+                # normal operation: start portal as a daemon;
+                # we don't care to monitor it for restart
                 PORTAL = Popen(portal_argv)
         except IOError, e:
             print "Portal IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
@@ -178,13 +185,15 @@ def start_services(server_argv, portal_argv):
         message, rc = processes.get()
 
         # restart only if process stopped cleanly
-        if message == "server_stopped" and int(rc) == 0 and get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset"):
+        if (message == "server_stopped" and int(rc) == 0 and
+             get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
             print "Evennia Server stopped. Restarting ..."
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
-        if message == "portal_stopped" and int(rc) == 0 and get_restart_mode(PORTAL_RESTART) == "True":
+        if (message == "portal_stopped" and int(rc) == 0 and
+              get_restart_mode(PORTAL_RESTART) == "True"):
             print "Evennia Portal stopped in interactive mode. Restarting ..."
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             continue
@@ -194,11 +203,12 @@ def start_services(server_argv, portal_argv):
 
 def main():
     """
-    This handles the command line input of the runner (it's most often called by evennia.py)
+    This handles the command line input of the runner
+    (it's most often called by evennia.py)
     """
 
     parser = OptionParser(usage="%prog [options] start",
-                          description="This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism).")
+      description="This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism).")
     parser.add_option('-s', '--noserver', action='store_true',
                       dest='noserver', default=False,
                       help='Do not start Server process')
@@ -267,7 +277,6 @@ def main():
             server_argv.extend(sprof_argv)
             print "\nRunning Evennia Server under cProfile."
 
-
     # Portal
 
     pid = get_pid(PORTAL_PIDFILE)
@@ -291,7 +300,6 @@ def main():
         if options.pprof:
             portal_argv.extend(pprof_argv)
             print "\nRunning Evennia Portal under cProfile."
-
 
     # Windows fixes (Windows don't support pidfiles natively)
     if os.name == 'nt':

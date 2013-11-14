@@ -8,6 +8,7 @@ This is a IMC2 complacent version.
 import re
 from src.utils import ansi
 
+
 class IMCANSIParser(ansi.ANSIParser):
     """
     This parser is per the IMC2 specification.
@@ -16,26 +17,26 @@ class IMCANSIParser(ansi.ANSIParser):
         normal = ansi.ANSI_NORMAL
         hilite = ansi.ANSI_HILITE
         self.ansi_map = [
-            (r'~Z', normal), # Random
-            (r'~x', normal + ansi.ANSI_BLACK),   # Black
-            (r'~D', hilite + ansi.ANSI_BLACK),   # Dark Grey
+            (r'~Z', normal),  # Random
+            (r'~x', normal + ansi.ANSI_BLACK),    # Black
+            (r'~D', hilite + ansi.ANSI_BLACK),    # Dark Grey
             (r'~z', hilite + ansi.ANSI_BLACK),
-            (r'~w', normal + ansi.ANSI_WHITE),   # Grey
-            (r'~W', hilite + ansi.ANSI_WHITE),   # White
-            (r'~g', normal + ansi.ANSI_GREEN),   # Dark Green
-            (r'~G', hilite + ansi.ANSI_GREEN),   # Green
-            (r'~p', normal + ansi.ANSI_MAGENTA), # Dark magenta
+            (r'~w', normal + ansi.ANSI_WHITE),    # Grey
+            (r'~W', hilite + ansi.ANSI_WHITE),    # White
+            (r'~g', normal + ansi.ANSI_GREEN),    # Dark Green
+            (r'~G', hilite + ansi.ANSI_GREEN),    # Green
+            (r'~p', normal + ansi.ANSI_MAGENTA),  # Dark magenta
             (r'~m', normal + ansi.ANSI_MAGENTA),
-            (r'~M', hilite + ansi.ANSI_MAGENTA), # Magenta
+            (r'~M', hilite + ansi.ANSI_MAGENTA),  # Magenta
             (r'~P', hilite + ansi.ANSI_MAGENTA),
-            (r'~c', normal + ansi.ANSI_CYAN),    # Cyan
-            (r'~y', normal + ansi.ANSI_YELLOW),  # Dark Yellow (brown)
-            (r'~Y', hilite + ansi.ANSI_YELLOW),  # Yellow
-            (r'~b', normal + ansi.ANSI_BLUE),    # Dark Blue
-            (r'~B', hilite + ansi.ANSI_BLUE),    # Blue
+            (r'~c', normal + ansi.ANSI_CYAN),     # Cyan
+            (r'~y', normal + ansi.ANSI_YELLOW),   # Dark Yellow (brown)
+            (r'~Y', hilite + ansi.ANSI_YELLOW),   # Yellow
+            (r'~b', normal + ansi.ANSI_BLUE),     # Dark Blue
+            (r'~B', hilite + ansi.ANSI_BLUE),     # Blue
             (r'~C', hilite + ansi.ANSI_BLUE),
-            (r'~r', normal + ansi.ANSI_RED),     # Dark Red
-            (r'~R', hilite + ansi.ANSI_RED),     # Red
+            (r'~r', normal + ansi.ANSI_RED),      # Dark Red
+            (r'~R', hilite + ansi.ANSI_RED),      # Red
 
             ## Formatting
             (r'~L', hilite),                     # Bold/hilite
@@ -49,8 +50,8 @@ class IMCANSIParser(ansi.ANSIParser):
         # prepare matching ansi codes overall
         self.ansi_regex = re.compile("\033\[[0-9;]+m")
 
-
 ANSI_PARSER = IMCANSIParser()
+
 
 def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER):
     """

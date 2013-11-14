@@ -53,7 +53,6 @@ class Comm(TypeClass):
         else:
             return '%s: %s' % (sender_string, message)
 
-
     def format_external(self, msg, senders, emit=False):
         """
         Used for formatting external messages. This is needed as a separate
@@ -70,7 +69,6 @@ class Comm(TypeClass):
             return msg.message
         senders = ', '.join(senders)
         return self.pose_transform(msg, senders)
-
 
     def format_message(self, msg, emit=False):
         """
@@ -169,30 +167,39 @@ class Comm(TypeClass):
                 conn.player.msg(msg.message, from_obj=msg.senders)
             except AttributeError:
                 try:
-                    conn.to_external(msg.message, senders=msg.senders, from_channel=self)
+                    conn.to_external(msg.message,
+                                     senders=msg.senders, from_channel=self)
                 except Exception:
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
-
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
             persistent=True, online=False, emit=False, external=False):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
-        done before calling this method. The optional keywords are not used if persistent is False.
+        done before calling this method. The optional keywords are not used if
+        persistent is False.
 
-        msgobj - a Msg/TempMsg instance or a message string. If one of the former, the remaining
-              keywords will be ignored. If a string, this will either be sent as-is (if persistent=False) or
-              it will be used together with header and senders keywords to create a Msg instance on the fly.
-        senders - an object, player or a list of objects or players. Optional if persistent=False.
-        sender_strings - Name strings of senders. Used for external connections where the sender
-              is not a player or object. When this is defined, external will be assumed.
+        msgobj - a Msg/TempMsg instance or a message string. If one of the
+                 former, the remaining keywords will be ignored. If a string,
+                 this will either be sent as-is (if persistent=False) or it
+                 will be used together with header and senders keywords to
+                 create a Msg instance on the fly.
+        senders - an object, player or a list of objects or players.
+                 Optional if persistent=False.
+        sender_strings - Name strings of senders. Used for external
+                connections where the sender is not a player or object. When
+                this is defined, external will be assumed.
         external - Treat this message agnostic of its sender.
-        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True, a Msg will be created, using
-                header and senders keywords. If False, other keywords will be ignored.
-        online (bool) - If this is set true, only messages people who are online. Otherwise, messages all players
-                connected. This can make things faster, but may not trigger listeners on players that are offline.
-        emit (bool) - Signals to the message formatter that this message is not to be directly associated with a name.
+        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True,
+                a Msg will be created, using header and senders keywords. If
+                False, other keywords will be ignored.
+        online (bool) - If this is set true, only messages people who are
+                online. Otherwise, messages all players connected. This can
+                make things faster, but may not trigger listeners on players
+                that are offline.
+        emit (bool) - Signals to the message formatter that this message is
+                not to be directly associated with a name.
         """
         if senders:
             senders = make_iter(senders)
@@ -209,7 +216,7 @@ class Comm(TypeClass):
                 msgobj = TempMsg()
             msgobj.header = header
             msgobj.message = msg
-            msgobj.channels = [self.dbobj] # add this channel
+            msgobj.channels = [self.dbobj]  # add this channel
 
         if not msgobj.senders:
             msgobj.senders = senders

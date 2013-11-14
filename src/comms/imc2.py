@@ -65,11 +65,14 @@ class Send_IsAlive(Script):
         self.interval = 900
         self.desc = _("Send an IMC2 is-alive packet")
         self.persistent = True
+
     def at_repeat(self):
         IMC2_CLIENT.send_packet(pck.IMC2PacketIsAlive())
+
     def is_valid(self):
         "Is only valid as long as there are channels to update"
-        return any(service for service in SESSIONS.server.services if service.name.startswith("imc2_"))
+        return any(service for service in SESSIONS.server.services
+                    if service.name.startswith("imc2_"))
 
 class Send_Keepalive_Request(Script):
     """
@@ -81,11 +84,14 @@ class Send_Keepalive_Request(Script):
         self.interval = 3500
         self.desc = _("Send an IMC2 keepalive-request packet")
         self.persistent = True
+
     def at_repeat(self):
         IMC2_CLIENT.channel.send_packet(pck.IMC2PacketKeepAliveRequest())
+
     def is_valid(self):
         "Is only valid as long as there are channels to update"
-        return any(service for service in SESSIONS.server.services if service.name.startswith("imc2_"))
+        return any(service for service in SESSIONS.server.services
+                                if service.name.startswith("imc2_"))
 
 class Prune_Inactive_Muds(Script):
     """
@@ -99,13 +105,17 @@ class Prune_Inactive_Muds(Script):
         self.desc = _("Check IMC2 list for inactive games")
         self.persistent = True
         self.inactive_threshold = 3599
+
     def at_repeat(self):
         for name, mudinfo in IMC2_MUDLIST.mud_list.items():
             if time() - mudinfo.last_updated > self.inactive_threshold:
                 del IMC2_MUDLIST.mud_list[name]
+
     def is_valid(self):
         "Is only valid as long as there are channels to update"
-        return any(service for service in SESSIONS.server.services if service.name.startswith("imc2_"))
+        return any(service for service in SESSIONS.server.services
+                    if service.name.startswith("imc2_"))
+
 
 class Sync_Server_Channel_List(Script):
     """
@@ -116,21 +126,25 @@ class Sync_Server_Channel_List(Script):
     """
     def at_script_creation(self):
         self.key = "IMC2_Sync_Server_Channel_List"
-        self.interval = 24 * 3600 # once every day
+        self.interval = 24 * 3600  # once every day
         self.desc = _("Re-sync IMC2 network channel list")
         self.persistent = True
+
     def at_repeat(self):
         checked_networks = []
         network = IMC2_CLIENT.factory.network
         if not network in checked_networks:
             channel.send_packet(pkg.IMC2PacketIceRefresh())
             checked_networks.append(network)
+
     def is_valid(self):
-        return any(service for service in SESSIONS.server.services if service.name.startswith("imc2_"))
+        return any(service for service in SESSIONS.server.services
+                    if service.name.startswith("imc2_"))
+
+
 #
 # IMC2 protocol
 #
-
 class IMC2Protocol(telnet.StatefulTelnetProtocol):
     """
     Provides the abstraction for the IMC2 protocol. Handles connection,
@@ -144,7 +158,6 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
         self.server_name = None
         self.network_name = None
         self.sequence = None
-
 
     def connectionMade(self):
         """
@@ -179,8 +192,10 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
             # This gets incremented with every command.
             self.sequence += 1
         packet.imc2_protocol = self
-        packet_str = utils.to_str(packet.assemble(self.factory.mudname, self.factory.client_pwd, self.factory.server_pwd))
-        if IMC2_DEBUG and not (hasattr(packet, 'packet_type') and packet.packet_type == "is-alive"):
+        packet_str = utils.to_str(packet.assemble(self.factory.mudname,
+                             self.factory.client_pwd, self.factory.server_pwd))
+        if IMC2_DEBUG and not (hasattr(packet, 'packet_type') and
+                                       packet.packet_type == "is-alive"):
             logger.log_infomsg("IMC2: SENT> %s" % packet_str)
             logger.log_infomsg(str(packet))
         self.sendLine(packet_str)
@@ -257,9 +272,9 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
         """
         Handle tells over IMC2 by formatting the text properly
         """
-        return _("{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s") % {"sender":packet.sender,
-                                                                             "origin":packet.origin,
-                                                          "msg":packet.optional_data.get('text', 'ERROR: No text provided.')}
+        return _("{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s") % {"sender": packet.sender,
+                                                        "origin": packet.origin,
+                                                        "msg": packet.optional_data.get('text', 'ERROR: No text provided.')}
 
     def lineReceived(self, line):
         """
@@ -349,6 +364,7 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
                 target = data.get("target", "Unknown")
                 self.send_packet(pck.IMC2PacketWhois(from_obj.id, target))
 
+
 class IMC2Factory(protocol.ClientFactory):
     """
     Creates instances of the IMC2Protocol. Should really only ever
@@ -382,7 +398,9 @@ def build_connection_key(channel, imc2_channel):
     "Build an id hash for the connection"
     if hasattr(channel, "key"):
         channel = channel.key
-    return "imc2_%s:%s(%s)%s<>%s" % (IMC2_NETWORK, IMC2_PORT, IMC2_MUDNAME, imc2_channel, channel)
+    return "imc2_%s:%s(%s)%s<>%s" % (IMC2_NETWORK, IMC2_PORT,
+                                     IMC2_MUDNAME, imc2_channel, channel)
+
 
 def start_scripts(validate=False):
     """
@@ -402,6 +420,7 @@ def start_scripts(validate=False):
     if not search.scripts("IMC2_Sync_Server_Channel_List"):
         create.create_script(Sync_Server_Channel_List)
 
+
 def create_connection(channel, imc2_channel):
     """
     This will create a new IMC2<->channel connection.
@@ -417,7 +436,8 @@ def create_connection(channel, imc2_channel):
 
     old_conns = ExternalChannelConnection.objects.filter(db_external_key=key)
     if old_conns:
-        # this evennia channel is already connected to imc. Check if imc2_channel is different.
+        # this evennia channel is already connected to imc. Check
+        # if imc2_channel is different.
         # connection already exists. We try to only connect a new channel
         old_config = old_conns[0].db_external_config.split(",")
         if imc2_channel in old_config:
@@ -432,9 +452,9 @@ def create_connection(channel, imc2_channel):
         # no old connection found; create a new one.
         config = imc2_channel
         # how the evennia channel will be able to contact this protocol in reverse
-        send_code =   "from src.comms.imc2 import IMC2_CLIENT\n"
-        send_code +=  "data={'channel':from_channel}\n"
-        send_code +=  "IMC2_CLIENT.msg_imc2(message, senders=[self])\n"
+        send_code = "from src.comms.imc2 import IMC2_CLIENT\n"
+        send_code += "data={'channel':from_channel}\n"
+        send_code += "IMC2_CLIENT.msg_imc2(message, senders=[self])\n"
         conn = ExternalChannelConnection(db_channel=channel, db_external_key=key, db_external_send_code=send_code,
                                          db_external_config=config)
         conn.save()
@@ -453,14 +473,21 @@ def delete_connection(channel, imc2_channel):
     conn.delete()
     return True
 
+
 def connect_to_imc2():
     "Create the imc instance and connect to the IMC2 network."
 
     # connect
-    imc = internet.TCPClient(IMC2_NETWORK, int(IMC2_PORT), IMC2Factory(IMC2_NETWORK, IMC2_PORT, IMC2_MUDNAME,
-                                                                       IMC2_CLIENT_PWD, IMC2_SERVER_PWD))
+    imc = internet.TCPClient(IMC2_NETWORK,
+                             int(IMC2_PORT),
+                             IMC2Factory(IMC2_NETWORK,
+                                         IMC2_PORT,
+                                         IMC2_MUDNAME,
+                                         IMC2_CLIENT_PWD,
+                                         IMC2_SERVER_PWD))
     imc.setName("imc2_%s:%s(%s)" % (IMC2_NETWORK, IMC2_PORT, IMC2_MUDNAME))
     SESSIONS.server.services.addService(imc)
+
 
 def connect_all():
     """

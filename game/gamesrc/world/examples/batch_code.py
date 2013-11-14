@@ -17,20 +17,22 @@
 #           automatically be made available for each block.  Observe
 #           that changes to these variables made in one block is not
 #           preserved between blocks!)
-# #CODE (infotext) [objname, objname, ...] - This designates a code block that will be executed like a
-#            stand-alone piece of code together with any #HEADER
-#            defined.
-#            infotext is a describing text about what goes in in this block. It will be
-#            shown by the batchprocessing command.
-#            <objname>s mark the (variable-)names of objects created in the code,
-#            and which may be auto-deleted by the processor if desired (such as when
-#            debugging the script). E.g., if the code contains the command
-#            myobj = create.create_object(...), you could put 'myobj' in the #CODE header
-#            regardless of what the created object is actually called in-game.
-# #INSERT filename - this includes another code batch file. The named file will be loaded and
-#            run at this point. Note that code from the inserted file will NOT share #HEADERs
-#            with the importing file, but will only use the headers in the importing file.
-#            make sure to not create a cyclic import here!
+# #CODE (infotext) [objname, objname, ...] - This designates a code block that
+#            will be executed like a stand-alone piece of code together with
+#            any #HEADER defined.
+#            infotext is a describing text about what goes in in this block.
+#            It will be shown by the batchprocessing command.
+#            <objname>s mark the (variable-)names of objects created in
+#            the code, and which may be auto-deleted by the processor if
+#            desired (such as when debugging the script). E.g., if the code
+#            contains the command myobj = create.create_object(...), you could
+#            put 'myobj' in the #CODE header regardless of what the created
+#            object is actually called in-game.
+# #INSERT filename - this includes another code batch file. The named file will
+#            be loaded and run at this point. Note that code from the inserted
+#            file will NOT share #HEADERs with the importing file, but will
+#            only use the headers in the importing file. Make sure to not
+#            create a cyclic import here!
 
 # The following variable is automatically made available for the script:
 

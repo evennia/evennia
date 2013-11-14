@@ -13,6 +13,7 @@ __all__ = ("CmdHome", "CmdLook", "CmdNick",
 
 AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
+
 class CmdHome(MuxCommand):
     """
     home
@@ -37,6 +38,7 @@ class CmdHome(MuxCommand):
         else:
             caller.move_to(home)
             caller.msg("There's no place like home ...")
+
 
 class CmdLook(MuxCommand):
     """
@@ -126,7 +128,9 @@ class CmdNick(MuxCommand):
         nicks = caller.nicks.get(category="channel")
 
         if 'list' in switches:
-            table = prettytable.PrettyTable(["{wNickType", "{wNickname", "{wTranslates-to"])
+            table = prettytable.PrettyTable(["{wNickType",
+                                             "{wNickname",
+                                             "{wTranslates-to"])
             for nick in nicks:
                 table.add_row([nick.db_category, nick.db_key, nick.db_data])
             string = "{wDefined Nicks:{n\n%s" % table
@@ -170,6 +174,7 @@ class CmdNick(MuxCommand):
                 caller.nicks.add(nick, real, category=switch)
         caller.msg(string)
 
+
 class CmdInventory(MuxCommand):
     """
     inventory
@@ -197,6 +202,7 @@ class CmdInventory(MuxCommand):
                 table.add_row(["{C%s{n" % item.name, item.db.desc and item.db.desc or ""])
             string = "{wYou are carrying:\n%s" % table
         self.caller.msg(string)
+
 
 class CmdGet(MuxCommand):
     """
@@ -327,7 +333,6 @@ class CmdGive(MuxCommand):
         target.msg("%s gives you %s." % (caller.key, to_give.key))
 
 
-
 class CmdSay(MuxCommand):
     """
     say
@@ -364,6 +369,7 @@ class CmdSay(MuxCommand):
                                                speech)
         caller.location.msg_contents(emit_string,
                                      exclude=caller)
+
 
 class CmdPose(MuxCommand):
     """
@@ -407,6 +413,7 @@ class CmdPose(MuxCommand):
             msg = "%s%s" % (self.caller.name, self.args)
             self.caller.location.msg_contents(msg)
 
+
 class CmdAccess(MuxCommand):
     """
     access - show access groups
@@ -441,4 +448,3 @@ class CmdAccess(MuxCommand):
         if hasattr(caller, 'player'):
             string += "\nPlayer {c%s{n: %s" % (caller.player.key, pperms)
         caller.msg(string)
-

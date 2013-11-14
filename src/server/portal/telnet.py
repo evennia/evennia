@@ -9,14 +9,13 @@ sessions etc.
 
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
-from twisted.internet.defer import inlineCallbacks, returnValue
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
-from src.utils.utils import make_iter, is_iter
 
 _RE_N = re.compile(r"\{n$")
+
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -127,7 +126,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def _write(self, data):
         "hook overloading the one used in plain telnet"
-        #print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in data))
+        # print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in data))
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
         #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
@@ -146,7 +145,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         connection. We pass it on to the game engine directly.
         """
         self.data_in(text=string)
-
 
     # Session hooks
 
@@ -172,11 +170,13 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         through the telnet connection.
 
         valid telnet kwargs:
-            raw=True - pass string through without any ansi processing (i.e. include Evennia
-                  ansi markers but do not convert them into ansi tokens)
+            raw=True - pass string through without any ansi
+                  processing (i.e. include Evennia ansi markers but do
+                  not convert them into ansi tokens)
             nomarkup=True - strip all ansi markup
 
-        The telnet ttype negotiation flags, if any, are used if no kwargs are given.
+        The telnet ttype negotiation flags, if any, are used if no kwargs
+        are given.
         """
         try:
             text = utils.to_str(text if text else "", encoding=self.encoding)
@@ -200,6 +200,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # no processing whatsoever
             self.sendLine(text)
         else:
-            # we need to make sure to kill the color at the end in order to match the webclient output.
-            #print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self)
+            # we need to make sure to kill the color at the end in order
+            # to match the webclient output.
+            # print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self)
             self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))

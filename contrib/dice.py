@@ -34,6 +34,7 @@ import re
 from random import randint
 from ev import default_cmds
 
+
 def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False):
     """
     This is a standard dice roller.
@@ -41,18 +42,22 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     Input:
      dicenum - number of dice to roll (the result to be added)
      dicetype - number of sides of the dice to be rolled
-     modifier - tuple (operator, value), where operator is a character string with one of +,-,/ or *. The
-                     entire result of the dice rolls will be modified by this value.
-     conditional - tuple (conditional, value), where conditional is a character string with one of ==,<,>,>=,<= or !=.
+     modifier - tuple (operator, value), where operator is a character string
+                with one of +,-,/ or *. The entire result of the dice rolls will
+                be modified by this value.
+     conditional - tuple (conditional, value), where conditional is a character
+                   string with one of ==,<,>,>=,<= or !=.
      return_tuple - return result as a tuple containing all relevant info
-     return_tuple - (default False) - return a tuple with all individual roll results
+     return_tuple - (default False) - return a tuple with all individual roll
+                    results
     All input numbers are converted to integers.
 
     Returns:
          normally returns the result
          if return_tuple=True, returns a tuple (result, outcome, diff, rolls)
-                In this tuple, outcome and diff will be None if conditional is not set. rolls is itself
-                a tuple holding all the individual rolls in the case of multiple die-rolls.
+                In this tuple, outcome and diff will be None if conditional is
+                not set. rolls is itself a tuple holding all the individual
+                rolls in the case of multiple die-rolls.
 
     Raises:
         TypeError if non-supported modifiers or conditionals are given.
@@ -62,7 +67,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     dicetype = int(dicetype)
 
     # roll all dice, remembering each roll
-    rolls= tuple([randint(1, dicetype) for roll in range(dicenum)])
+    rolls = tuple([randint(1, dicetype) for roll in range(dicenum)])
     result = sum(rolls)
 
     if modifier:
@@ -70,7 +75,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
         mod, modvalue = modifier
         if not mod in ('+', '-', '*', '/'):
             raise TypeError("Non-supported dice modifier: %s" % mod)
-        modvalue = int(modvalue) # for safety
+        modvalue = int(modvalue)  # for safety
         result = eval("%s %s %s" % (result, mod, modvalue))
     outcome, diff = None, None
     if conditional:
@@ -78,18 +83,18 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
         cond, condvalue = conditional
         if not cond in ('>', '<', '>=', '<=', '!=', '=='):
             raise TypeError("Non-supported dice result conditional: %s" % conditional)
-        condvalue = int(condvalue) # for safety
-        outcome = eval("%s %s %s" % (result, cond, condvalue)) # gives True/False
+        condvalue = int(condvalue)  # for safety
+        outcome = eval("%s %s %s" % (result, cond, condvalue))  # True/False
         diff = abs(result - condvalue)
     if return_tuple:
         return (result, outcome, diff, rolls)
     else:
         return result
 
-
 RE_PARTS = re.compile(r"(d|\+|-|/|\*|<|>|<=|>=|!=|==)")
 RE_MOD = re.compile(r"(\+|-|/|\*)")
 RE_COND = re.compile(r"(<|>|<=|>=|!=|==)")
+
 
 class CmdDice(default_cmds.MuxCommand):
     """
@@ -106,14 +111,16 @@ class CmdDice(default_cmds.MuxCommand):
       dice 3d6 + 4
       dice 1d100 - 2 < 50
 
-    This will roll the given number of dice with given sides and modifiers. So e.g. 2d6 + 3
-    means to 'roll a 6-sided die 2 times and add the result, then add 3 to the total'.
+    This will roll the given number of dice with given sides and modifiers.
+    So e.g. 2d6 + 3 means to 'roll a 6-sided die 2 times and add the result,
+    then add 3 to the total'.
     Accepted modifiers are +, -, * and /.
-    A success condition is given as normal Python conditionals (<,>,<=,>=,==,!=).
-    So e.g. 2d6 + 3 > 10 means that the roll will succeed only if the final result is above 8.
-    If a success condition is given, the outcome (pass/fail) will be echoed along with how
-    much it succeeded/failed with. The hidden/secret switches will hide all or parts of the roll
-    from everyone but the person rolling.
+    A success condition is given as normal Python conditionals
+    (<,>,<=,>=,==,!=). So e.g. 2d6 + 3 > 10 means that the roll will succeed
+    only if the final result is above 8. If a success condition is given, the
+    outcome (pass/fail) will be echoed along with how much it succeeded/failed
+    with. The hidden/secret switches will hide all or parts of the roll from
+    everyone but the person rolling.
     """
 
     key = "dice"
@@ -145,9 +152,9 @@ class CmdDice(default_cmds.MuxCommand):
             pass
         elif lparts == 5:
             # either e.g. 1d6 + 3  or something like 1d6 > 3
-            if parts[3] in ('+','-','*','/'):
+            if parts[3] in ('+', '-', '*', '/'):
                 modifier = (parts[3], parts[4])
-            else: #assume it is a conditional
+            else:  # assume it is a conditional
                 conditional = (parts[3], parts[4])
         elif lparts == 7:
             # the whole sequence, e.g. 1d6 + 3 > 5
@@ -159,7 +166,11 @@ class CmdDice(default_cmds.MuxCommand):
             return
         # do the roll
         try:
-            result, outcome, diff, rolls = roll_dice(ndice, nsides, modifier=modifier, conditional=conditional, return_tuple=True)
+            result, outcome, diff, rolls = roll_dice(ndice,
+                                                     nsides,
+                                                     modifier=modifier,
+                                                     conditional=conditional,
+                                                     return_tuple=True)
         except ValueError:
             self.caller.msg("You need to enter valid integer numbers, modifiers and operators. {w%s{n was not understood." % self.args)
             return
@@ -168,7 +179,7 @@ class CmdDice(default_cmds.MuxCommand):
             rolls = ", ".join(str(roll) for roll in rolls[:-1]) + " and " + str(rolls[-1])
         else:
             rolls = rolls[0]
-        if outcome == None:
+        if outcome is None:
             outcomestring = ""
         elif outcome:
             outcomestring = " This is a {gsuccess{n (by %s)." % diff

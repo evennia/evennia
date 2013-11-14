@@ -34,7 +34,7 @@ TELNET_INTERFACES = ['0.0.0.0']
 # full use of OOB, you need to prepare functions to handle the data
 # server-side (see OOB_FUNC_MODULE). TELNET_ENABLED is required for this
 # to work.
-TELNET_OOB_ENABLED = False # OBS - currently not fully implemented - do not use!
+TELNET_OOB_ENABLED = False
 # Start the evennia django+twisted webserver so you can
 # browse the evennia website and the admin interface
 # (Obs - further web configuration can be found below
@@ -85,8 +85,9 @@ LOG_DIR = os.path.join(GAME_DIR, 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
-# Rotate log files when server and/or portal stops. This will keep log file sizes down.
-# Turn off to get ever growing log files and never loose log info.
+# Rotate log files when server and/or portal stops. This will keep log
+# file sizes down. Turn off to get ever growing log files and never
+# loose log info.
 CYCLE_LOGFILES = True
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -114,20 +115,22 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # The game server opens an AMP port so that the portal can
 # communicate with it. This is an internal functionality of Evennia, usually
 # operating between two processes on the same machine. You usually don't need to
-# change this unless you cannot use the default AMP port/host for whatever reason.
+# change this unless you cannot use the default AMP port/host for
+# whatever reason.
 AMP_HOST = 'localhost'
 AMP_PORT = 5000
 AMP_INTERFACE = '127.0.0.1'
 # Caching speeds up all forms of database access, often considerably. There
 # are (currently) only two settings, "local" or None, the latter of which turns
-# off all caching completely. Local caching stores data in the process. It's very
-# fast but will go out of sync if more than one process writes to the database (such
-# as when using procpool or an extensice web precense).
+# off all caching completely. Local caching stores data in the process. It's
+# very fast but will go out of sync if more than one process writes to the
+# database (such as when using procpool or an extensice web precense).
 GAME_CACHE_TYPE = "local"
 # Attributes on objects are cached aggressively for speed. If the number of
-# objects is large (and their attributes are often accessed) this can use up a lot of
-# memory. So every now and then Evennia checks the size of this cache and resets
-# it if it's too big. This variable sets the maximum size (in MB).
+# objects is large (and their attributes are often accessed) this can use up
+# a lot of memory. So every now and then Evennia checks the size of this
+# cache and resets it if it's too big. This variable sets the maximum
+# size (in MB).
 ATTRIBUTE_CACHE_MAXSIZE = 100
 
 ######################################################################
@@ -146,13 +149,13 @@ ATTRIBUTE_CACHE_MAXSIZE = 100
 # HOST - empty string is localhost (unused in sqlite3)
 # PORT - empty string defaults to localhost (unused in sqlite3)
 DATABASES = {
-    'default':{
-        'ENGINE':'django.db.backends.sqlite3',
-        'NAME':os.path.join(GAME_DIR, 'evennia.db3'),
-        'USER':'',
-        'PASSWORD':'',
-        'HOST':'',
-        'PORT':''
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(GAME_DIR, 'evennia.db3'),
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': ''
         }}
 
 ######################################################################
@@ -185,12 +188,14 @@ AT_INITIAL_SETUP_HOOK_MODULE = ""
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
 AT_SERVER_STARTSTOP_MODULE = ""
-# List of one or more module paths to modules containing a function start_plugin_services(application). This module
-# will be called with the main Evennia Server application when the Server is initiated.
+# List of one or more module paths to modules containing a function start_
+# plugin_services(application). This module will be called with the main
+# Evennia Server application when the Server is initiated.
 # It will be called last in the startup sequence.
 SERVER_SERVICES_PLUGIN_MODULES = []
-# List of one or more module paths to modules containing a function start_plugin_services(application). This module
-# will be called with the main Evennia Portal application when the Portal is initiated.
+# List of one or more module paths to modules containing a function
+# start_plugin_services(application). This module will be called with the
+# main Evennia Portal application when the Portal is initiated.
 # It will be called last in the startup sequence.
 PORTAL_SERVICES_PLUGIN_MODULES = []
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
@@ -208,9 +213,9 @@ OOB_PLUGIN_MODULE = "src.server.oob_msdp"
 # Default command sets
 ######################################################################
 # Note that with the exception of the unloggedin set (which is not
-# stored anywhere in the databse), changing these paths will only affect NEW created
-# characters/objects, not those already in play. So if you plan to change
-# this, it's recommended you do it before having created a lot of objects
+# stored anywhere in the databse), changing these paths will only affect
+# NEW created characters/objects, not those already in play. So if you plan to
+# change this, it's recommended you do it before having created a lot of objects
 # (or simply reset the database after the change for simplicity). Remember
 # that you should never edit things in src/. Instead copy out the examples
 # in game/gamesrc/commands/examples up one level and re-point these settings
@@ -236,8 +241,12 @@ SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects", "game.gamesrc.objects.examples", "contrib"]
-SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts", "game.gamesrc.scripts.examples", "contrib"]
+OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects",
+                          "game.gamesrc.objects.examples",
+                          "contrib"]
+SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts",
+                          "game.gamesrc.scripts.examples",
+                          "contrib"]
 PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 COMM_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 
@@ -304,20 +313,31 @@ TIME_MONTH_PER_YEAR = 12
 # Default Player setup and access
 ######################################################################
 
-# Different Multisession modes allow a player (=account) to connect to the game simultaneously
-# with multiple clients (=sessions). In modes 0,1 there is only one character created to the same
-# name as the account at first login. In modes 1,2 no default character will be created and
-# the MAX_NR_CHARACTERS value (below) defines how many characters are allowed.
-#  0 - single session, one player, one character, when a new session is connected, the old one is disconnected
-#  1 - multiple sessions, one player, one character, each session getting the same data
-#  2 - multiple sessions, one player, many characters, each session getting data from different characters
+# Different Multisession modes allow a player (=account) to connect to the
+# game simultaneously with multiple clients (=sessions). In modes 0,1 there is
+# only one character created to the same name as the account at first login.
+# In modes 1,2 no default character will be created and the MAX_NR_CHARACTERS
+# value (below) defines how many characters are allowed.
+#  0 - single session, one player, one character, when a new session is
+#      connected, the old one is disconnected
+#  1 - multiple sessions, one player, one character, each session getting
+#      the same data
+#  2 - multiple sessions, one player, many characters, each session getting
+#      data from different characters
 MULTISESSION_MODE = 0
-# The maximum number of characters allowed for MULTISESSION_MODE 2. This is checked
-# by the default ooc char-creation command. Forced to 1 for MULTISESSION_MODE 0 and 1.
+# The maximum number of characters allowed for MULTISESSION_MODE 2. This is
+# checked
+# by the default ooc char-creation command. Forced to 1 for
+# MULTISESSION_MODE 0 and 1.
 MAX_NR_CHARACTERS = 1
 # The access hiearchy, in climbing order. A higher permission in the
-# hierarchy includes access of all levels below it. Used by the perm()/pperm() lock functions.
-PERMISSION_HIERARCHY = ("Players","PlayerHelpers","Builders", "Wizards", "Immortals")
+# hierarchy includes access of all levels below it. Used by the perm()/pperm()
+# lock functions.
+PERMISSION_HIERARCHY = ("Players",
+                        "PlayerHelpers",
+                        "Builders",
+                        "Wizards",
+                        "Immortals")
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
 
@@ -334,10 +354,10 @@ CHANNEL_PUBLIC = ("Public", ('ooc',), 'Public discussion',
                   "control:perm(Wizards);listen:all();send:all()")
 # General info about the server
 CHANNEL_MUDINFO = ("MUDinfo", '', 'Informative messages',
-                   "control:perm(Immortals);listen:perm(Immortals);send:false()")
+                 "control:perm(Immortals);listen:perm(Immortals);send:false()")
 # Channel showing when new people connecting
 CHANNEL_CONNECTINFO = ("MUDconnections", '', 'Connection log',
-                       "control:perm(Immortals);listen:perm(Wizards);send:false()")
+                    "control:perm(Immortals);listen:perm(Wizards);send:false()")
 
 ######################################################################
 # External Channel connections
@@ -461,7 +481,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware', # 1.4?
+    'django.contrib.messages.middleware.MessageMiddleware',  # 1.4?
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.doc.XViewMiddleware',

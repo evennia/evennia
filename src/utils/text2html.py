@@ -13,6 +13,7 @@ import re
 import cgi
 from ansi import *
 
+
 class TextToHTMLparser(object):
     """
     This class describes a parser for converting from ansi to html.
@@ -36,10 +37,10 @@ class TextToHTMLparser(object):
             ('purple', ANSI_MAGENTA),
             ('cyan', hilite + ANSI_CYAN),
             ('teal', ANSI_CYAN),
-            ('white', hilite + ANSI_WHITE), # pure white
-            ('gray', ANSI_WHITE), #light grey
-            ('dimgray', hilite + ANSI_BLACK), #dark grey
-            ('black', ANSI_BLACK), #pure black
+            ('white', hilite + ANSI_WHITE),  # pure white
+            ('gray', ANSI_WHITE),  # light grey
+            ('dimgray', hilite + ANSI_BLACK),  # dark grey
+            ('black', ANSI_BLACK),  # pure black
     ]
     colorback = [
             ('bgred', hilite + ANSI_BACK_RED),
@@ -61,8 +62,8 @@ class TextToHTMLparser(object):
     ]
 
     # make sure to escape [
-    colorcodes = [(c, code.replace("[",r"\[")) for c, code in colorcodes]
-    colorback = [(c, code.replace("[",r"\[")) for c, code in colorback]
+    colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
+    colorback = [(c, code.replace("[", r"\[")) for c, code in colorback]
     # create stop markers
     fgstop = [("", c.replace("[", r"\[")) for c in (normal, hilite, underline)]
     bgstop = [("", c.replace("[", r"\[")) for c in (normal,)]
@@ -74,7 +75,7 @@ class TextToHTMLparser(object):
     re_bgs = [(cname, re.compile("(?:%s)(.*?)(?=%s)" % (code, bgstop))) for cname, code in colorback]
     re_normal = re.compile(normal.replace("[", r"\["))
     re_hilite = re.compile("(?:%s)(.*)(?=%s)" % (hilite.replace("[", r"\["), fgstop))
-    re_uline = re.compile("(?:%s)(.*?)(?=%s)" % (ANSI_UNDERLINE.replace("[",r"\["), fgstop))
+    re_uline = re.compile("(?:%s)(.*?)(?=%s)" % (ANSI_UNDERLINE.replace("[", r"\["), fgstop))
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space>^[ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
 
     def re_color(self, text):
@@ -126,9 +127,9 @@ class TextToHTMLparser(object):
         if c['lineend']:
             return '<br>'
         elif c['space'] == '\t':
-            return ' '*self.tabstop
+            return ' ' * self.tabstop
         elif c['space']:
-            t = m.group().replace('\t', '&nbsp;'*self.tabstop)
+            t = m.group().replace('\t', '&nbsp;' * self.tabstop)
             t = t.replace(' ', '&nbsp;')
             return t
 
@@ -154,6 +155,7 @@ class TextToHTMLparser(object):
         return result
 
 HTML_PARSER = TextToHTMLparser()
+
 
 #
 # Access function

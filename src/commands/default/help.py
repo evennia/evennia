@@ -18,7 +18,8 @@ from src.commands.default.muxcommand import MuxCommand
 __all__ = ("CmdHelp", "CmdSetHelp")
 
 
-SEP = "{C" + "-"*78 + "{n"
+SEP = "{C" + "-" * 78 + "{n"
+
 
 def format_help_entry(title, help_text, aliases=None, suggested=None):
     """
@@ -38,6 +39,7 @@ def format_help_entry(title, help_text, aliases=None, suggested=None):
     string += "\n" + SEP
     return string
 
+
 def format_help_list(hdict_cmds, hdict_db):
     """
     Output a category-ordered list. The input are the
@@ -56,6 +58,7 @@ def format_help_list(hdict_cmds, hdict_db):
             string += "\n\r  {w%s{n:\n" % (str(category).title())
             string += "{G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "{n"
     return string
+
 
 class CmdHelp(Command):
     """
@@ -129,13 +132,18 @@ class CmdHelp(Command):
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]
         if len(match) == 1:
-            self.msg(format_help_entry(match[0].key, match[0].__doc__, aliases=match[0].aliases, suggested=suggestions))
+            self.msg(format_help_entry(match[0].key,
+                     match[0].__doc__,
+                     aliases=match[0].aliases,
+                     suggested=suggestions))
             return
 
         # try an exact database help entry match
         match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
         if len(match) == 1:
-            self.msg(format_help_entry(match[0].key, match[0].entrytext, suggested=suggestions))
+            self.msg(format_help_entry(match[0].key,
+                     match[0].entrytext,
+                     suggested=suggestions))
             return
 
         # try to see if a category name was entered
@@ -146,6 +154,7 @@ class CmdHelp(Command):
 
         # no exact matches found. Just give suggestions.
         self.msg(format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
+
 
 class CmdSetHelp(MuxCommand):
     """
@@ -169,9 +178,9 @@ class CmdSetHelp(MuxCommand):
       @sethelp/append pickpocketing, ,attr(is_thief) = This steals ...
 
     This command manipulates the help database. A help entry can be created,
-    appended/merged to and deleted. If you don't assign a category, the "General"
-    category will be used. If no lockstring is specified, default is to let everyone read
-    the help file.
+    appended/merged to and deleted. If you don't assign a category, the
+    "General" category will be used. If no lockstring is specified, default
+    is to let everyone read the help file.
 
     """
     key = "@help"

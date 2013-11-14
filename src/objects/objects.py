@@ -25,6 +25,7 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+
 #
 # Base class to inherit from.
 #
@@ -55,41 +56,53 @@ class Object(TypeClass):
 
          key (string) - name of object
          name (string) - same as key
-         aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
+         aliases (list of strings) - aliases to the object. Will be saved to
+                     database as AliasDB entries but returned as strings.
          dbref (int, read-only) - unique #id-number. Also "id" can be used.
-         dbobj (Object, read-only) - link to database model. dbobj.typeclass points back to this class
-         typeclass (Object, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
+         dbobj (Object, read-only) - link to database model. dbobj.typeclass
+                     points back to this class
+         typeclass (Object, read-only) - this links back to this class as an
+                     identified only. Use self.swap_typeclass() to switch.
          date_created (string) - time stamp of object creation
          permissions (list of strings) - list of permission strings
 
-         player (Player) - controlling player (if any, only set together with sessid below)
-         sessid (int, read-only) - session id (if any, only set together with player above)
+         player (Player) - controlling player (if any, only set together with
+                          sessid below)
+         sessid (int, read-only) - session id (if any, only set together with
+                          player above)
          location (Object) - current location. Is None if this is a room
          home (Object) - safety start-location
-         sessions (list of Sessions, read-only) - returns all sessions connected to this object
+         sessions (list of Sessions, read-only) - returns all sessions
+                     connected to this object
          has_player (bool, read-only)- will only return *connected* players
-         contents (list of Objects, read-only) - returns all objects inside this object (including exits)
-         exits (list of Objects, read-only) - returns all exits from this object, if any
+         contents (list of Objects, read-only) - returns all objects inside
+                         this object (including exits)
+         exits (list of Objects, read-only) - returns all exits from this
+                     object, if any
          destination (Object) - only set if this object is an exit.
          is_superuser (bool, read-only) - True/False if this user is a superuser
 
         * Handlers available
 
          locks - lock-handler: use locks.add() to add new lock strings
-         db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
-         ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data
+         db - attribute-handler: store/retrieve database attributes on this
+                                 self.db.myattr=val, val=self.db.myattr
+         ndb - non-persistent attribute handler: same as db but does not
+                                 create a database entry when storing data
          scripts - script-handler. Add new scripts to object with scripts.add()
          cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
          nicks - nick-handler. New nicks with nicks.add().
 
         * Helper methods (see src.objects.objects.py for full headers)
 
-         search(ostring, global_search=False, global_dbref=False, attribute_name=None,
-                use_nicks=True, location=None, ignore_errors=False, player=False)
+         search(ostring, global_search=False, global_dbref=False,
+                attribute_name=None, use_nicks=True, location=None,
+                ignore_errors=False, player=False)
          execute_cmd(raw_string)
          msg(message, **kwargs)
          msg_contents(message, exclude=None, from_obj=None, **kwargs)
-         move_to(destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False)
+         move_to(destination, quiet=False, emit_to_obj=None,
+                 use_destination=True, to_none=False)
          copy(new_key=None)
          delete()
          is_typeclass(typeclass, exact=False)
@@ -99,42 +112,73 @@ class Object(TypeClass):
 
         * Hook methods
 
-         basetype_setup()     - only called once, used for behind-the-scenes setup. Normally not modified.
-         basetype_posthook_setup() - customization in basetype, after the object has been created; Normally not modified.
+         basetype_setup()     - only called once, used for behind-the-scenes
+                                setup. Normally not modified.
+         basetype_posthook_setup() - customization in basetype, after the
+                                 object has been created; Normally not modified.
 
-         at_object_creation() - only called once, when object is first created. Object customizations go here.
-         at_object_delete() - called just before deleting an object. If returning False, deletion is aborted. Note that all objects
-                              inside a deleted object are automatically moved to their <home>, they don't need to be removed here.
+         at_object_creation() - only called once, when object is first created.
+                                Object customizations go here.
+         at_object_delete() - called just before deleting an object. If
+                              returning False, deletion is aborted. Note that
+                              all objects inside a deleted object are
+                              automatically moved to their <home>, they don't
+                              need to be removed here.
 
-         at_init()            - called whenever typeclass is cached from memory, at least once every server restart/reload
-         at_cmdset_get()      - this is called just before the command handler requests a cmdset from this objecth
-         at_pre_puppet(player)- (player-controlled objects only) called just before puppeting
-         at_post_puppet()     - (player-controlled objects only) called just after completing connection player<->object
-         at_pre_unpuppet()    - (player-controlled objects only) called just before un-puppeting
-         at_post_unpuppet(player) - (player-controlled objects only) called just after disconnecting player<->object link
+         at_init()            called whenever typeclass is cached from
+                              memory, at least once every server restart/reload
+         at_cmdset_get()      - this is called just before the command
+                                handler requests a cmdset from this objecth
+         at_pre_puppet(player)- (player-controlled objects only) called just
+                                 before puppeting
+         at_post_puppet()     - (player-controlled objects only) called just
+                                 after completing connection player<->object
+         at_pre_unpuppet()    - (player-controlled objects only) called just
+                                 before un-puppeting
+         at_post_unpuppet(player) (player-controlled objects only) called
+                                  just after disconnecting player<->object link
          at_server_reload()   - called before server is reloaded
          at_server_shutdown() - called just before server is fully shut down
 
-         at_before_move(destination)             - called just before moving object to the destination. If returns False, move is cancelled.
-         announce_move_from(destination)         - called in old location, just before move, if obj.move_to() has quiet=False
-         announce_move_to(source_location)       - called in new location, just after move, if obj.move_to() has quiet=False
-         at_after_move(source_location)          - always called after a move has been successfully performed.
-         at_object_leave(obj, target_location)   - called when an object leaves this object in any fashion
-         at_object_receive(obj, source_location) - called when this object receives another object
+         at_before_move(destination)    called just before moving
+                                        object to the destination. If returns
+                                        False, move is cancelled.
+         announce_move_from(destination)  - called in old location, just before
+                                            move, if obj.move_to() has
+                                            quiet=False
+         announce_move_to(source_location) - called in new location,
+                                             just after move, if obj.move_to()
+                                             has quiet=False
+         at_after_move(source_location)    - always called after a move
+                                             has been successfully performed.
+         at_object_leave(obj, target_location)   - called when an object leaves
+                                                   this object in any fashion
+         at_object_receive(obj, source_location) - called when this object
+                                                   receives another object
 
-         at_before_traverse(traversing_object)                 - (exit-objects only) called just before an object traverses this object
-         at_after_traverse(traversing_object, source_location) - (exit-objects only) called just after a traversal has happened.
-         at_failed_traverse(traversing_object)      - (exit-objects only) called if traversal fails and property err_traverse is not defined.
+         at_before_traverse(traversing_object) - (exit-objects only) called
+                                                  just before an object
+                                                  traverses this object
+         at_after_traverse(traversing_object, source_location) - (exit-objects
+                              only) called just after a traversal has happened.
+         at_failed_traverse(traversing_object)      - (exit-objects only) called
+                    if traversal fails and property err_traverse is not defined.
 
-         at_msg_receive(self, msg, from_obj=None, data=None) - called when a message (via self.msg()) is sent to this obj.
-                                                               If returns false, aborts send.
-         at_msg_send(self, msg, to_obj=None, data=None) - called when this objects sends a message to someone via self.msg().
+         at_msg_receive(self, msg, from_obj=None, data=None) - called when a
+                                 message (via self.msg()) is sent to this obj.
+                                 If returns false, aborts send.
+         at_msg_send(self, msg, to_obj=None, data=None) - called when this
+                             objects sends a message to someone via self.msg().
 
-         return_appearance(looker) - describes this object. Used by "look" command by default
-         at_desc(looker=None)      - called by 'look' whenever the appearance is requested.
-         at_get(getter)            - called after object has been picked up. Does not stop pickup.
+         return_appearance(looker) - describes this object. Used by "look"
+                                     command by default
+         at_desc(looker=None)      - called by 'look' whenever the appearance
+                                     is requested.
+         at_get(getter)            - called after object has been picked up.
+                                     Does not stop pickup.
          at_drop(dropper)          - called when this object has been dropped.
-         at_say(speaker, message)  - by default, called if an object inside this object speaks
+         at_say(speaker, message)  - by default, called if an object inside
+                                     this object speaks
 
          """
         super(Object, self).__init__(dbobj)
@@ -159,30 +203,41 @@ class Object(TypeClass):
 
         Inputs:
 
-        ostring (str): Primary search criterion. Will be matched against object.key (with object.aliases second)
-                       unless the keyword attribute_name specifies otherwise. Special strings:
-                        #<num> - search by unique dbref. This is always a global search.
+        ostring (str): Primary search criterion. Will be matched against
+                      object.key (with object.aliases second)
+                       unless the keyword attribute_name specifies otherwise.
+                       Special strings:
+                        #<num> - search by unique dbref. This is always a
+                                 global search.
                         me,self - self-reference to this object
-                        <num>-<string> - can be used to differentiate between multiple same-named matches
-        global_search (bool): Search all objects globally. This is overruled by "location" keyword.
-        use_nicks (bool): Use nickname-replace (nicktype "object") on the search string
-        typeclass (str or Typeclass): Limit search only to Objects with this typeclass. May be a list of typeclasses
-                    for a broader search.
-        location (Object): Specify a location to search, if different from the self's given location
+                        <num>-<string> - can be used to differentiate between
+                                         multiple same-named matches
+        global_search (bool): Search all objects globally. This is overruled
+                              by "location" keyword.
+        use_nicks (bool): Use nickname-replace (nicktype "object") on the
+                          search string
+        typeclass (str or Typeclass): Limit search only to Objects with this
+                          typeclass. May be a list of typeclasses for a
+                          broader search.
+        location (Object): Specify a location to search, if different from the
+                          self's given location
                    plus its contents. This can also be a list of locations.
-        attribute_name (str): Use this named Attribute to match ostring against, instead of object.key.
-        quiet (bool) - don't display default error messages - return multiple matches as a list and
-                no matches as None. If not set (default), will echo error messages and return None.
-        exact (bool) - if unset (default) - prefers to match to beginning of string rather than not matching
-                                     at all. If set, requires exact mathing of entire string.
+        attribute_name (str): Use this named Attribute to match ostring against,
+                        instead of object.key.
+        quiet (bool) - don't display default error messages - return multiple
+                        matches as a list and no matches as None. If not
+                        set (default), will echo error messages and return None.
+        exact (bool) - if unset (default) - prefers to match to beginning of
+                       string rather than not matching at all. If set,
+                       requires exact mathing of entire string.
 
         Returns:
 
             quiet=False (default):
                 no match or multimatch:
                     auto-echoes errors to self.msg, then returns None
-                    (results are handled by modules set by settings.SEARCH_AT_RESULT
-                     and settings.SEARCH_AT_MULTIMATCH_INPUT)
+                    (results are handled by settings.SEARCH_AT_RESULT
+                                 and settings.SEARCH_AT_MULTIMATCH_INPUT)
                 match:
                     a unique object match
             quiet=True:
@@ -209,16 +264,18 @@ class Object(TypeClass):
 
         Argument:
         raw_string (string) - raw command input
-        sessid (int) - id of session executing the command. This sets the sessid property on the command.
+        sessid (int) - id of session executing the command. This sets the
+                     sessid property on the command.
 
         Returns Deferred - this is an asynchronous Twisted object that will
-            not fire until the command has actually finished executing. To overload
-            this one needs to attach callback functions to it, with addCallback(function).
-            This function will be called with an eventual return value from the command
-            execution.
+            not fire until the command has actually finished executing. To
+            overload this one needs to attach callback functions to it, with
+            addCallback(function). This function will be called with an
+            eventual return value from the command execution.
 
-            This return is not used at all by Evennia by default, but might be useful
-            for coders intending to implement some sort of nested command structure.
+            This return is not used at all by Evennia by default, but might be
+            useful for coders intending to implement some sort of nested
+            command structure.
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
@@ -233,48 +290,59 @@ class Object(TypeClass):
         sessid: optional session target. If sessid=0, the session will
                 default to self.sessid or from_obj.sessid.
         """
-        self.dbobj.msg(text=text, **kwargs)#message, from_obj=from_obj, data=data, sessid=0)
+
+        self.dbobj.msg(text=text, **kwargs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, **kwargs):
         """
         Emits something to all objects inside an object.
 
-        exclude is a list of objects not to send to. See self.msg() for more info.
+        exclude is a list of objects not to send to. See self.msg() for
+                more info.
         """
-        self.dbobj.msg_contents(text, exclude=exclude, from_obj=from_obj, **kwargs)
+        self.dbobj.msg_contents(text, exclude=exclude,
+                                from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False):
         """
         Moves this object to a new location. Note that if <destination> is an
         exit object (i.e. it has "destination"!=None), the move_to will
-        happen to this destination and -not- into the exit object itself, unless
-        use_destination=False. Note that no lock checks are done by this function,
-        such things are assumed to have been handled before calling move_to.
+        happen to this destination and -not- into the exit object itself,
+        unless use_destination=False. Note that no lock checks are done by
+        this function, such things are assumed to have been handled before
+        calling move_to.
 
         destination: (Object) Reference to the object to move to. This
                      can also be an exit object, in which case the destination
                      property is used as destination.
         quiet:  (bool)    If true, don't emit left/arrived messages.
         emit_to_obj: (Object) object to receive error messages
-        use_destination (bool): Default is for objects to use the "destination" property
-                              of destinations as the target to move to. Turning off this
-                              keyword allows objects to move "inside" exit objects.
-        to_none - allow destination to be None. Note that no hooks are run when moving
-                      to a None location. If you want to run hooks, run them manually.
-        Returns True/False depending on if there were problems with the move. This method
-                may also return various error messages to the emit_to_obj.
+        use_destination (bool): Default is for objects to use the "destination"
+                              property of destinations as the target to move to.
+                              Turning off this keyword allows objects to move
+                              "inside" exit objects.
+        to_none - allow destination to be None. Note that no hooks are run
+                  when moving to a None location. If you want to run hooks, run
+                  them manually (and make sure the hooks can handle a None
+                  location).
+        Returns True/False depending on if there were problems with the move.
+               This method may also return various error messages to the
+               emit_to_obj.
 
         """
         return self.dbobj.move_to(destination, quiet=quiet,
-                                  emit_to_obj=emit_to_obj, use_destination=use_destination)
+                                  emit_to_obj=emit_to_obj,
+                                  use_destination=use_destination)
 
     def copy(self, new_key=None):
         """
-        Makes an identical copy of this object. If you want to customize the copy by
-        changing some settings, use ObjectDB.object.copy_object() directly.
+        Makes an identical copy of this object. If you want to customize the
+        copy by changing some settings, use ObjectDB.object.copy_object()
+        directly.
 
-        new_key (string) - new key/name of copied object. If new_key is not specified, the copy will be named
+        new_key (string) - new key/name of copied object. If new_key is not
+                           specified, the copy will be named
                            <old_key>_copy by default.
         Returns: Object (copy of this one)
         """
@@ -292,7 +360,6 @@ class Object(TypeClass):
                  failed.
         """
         return self.dbobj.delete()
-
 
     # methods inherited from the typeclass system
 
@@ -347,18 +414,20 @@ class Object(TypeClass):
 
 
         """
-        return self.dbobj.swap_typeclass(new_typeclass, clean_attributes=clean_attributes, no_default=no_default)
+        return self.dbobj.swap_typeclass(new_typeclass,
+                       clean_attributes=clean_attributes, no_default=no_default)
 
     def access(self, accessing_obj, access_type='read', default=False):
         """
-        Determines if another object has permission to access this object in whatever way.
+        Determines if another object has permission to access this object in
+          whatever way.
 
           accessing_obj (Object)- object trying to access this one
           access_type (string) - type of access sought
           default (bool) - what to return if no lock of access_type was found
 
-        This function will call at_access_success or at_access_failure depending on the
-        outcome of the access check.
+        This function will call at_access_success or at_access_failure
+        depending on the outcome of the access check.
 
         """
         if self.dbobj.access(accessing_obj, access_type=access_type, default=default):
@@ -373,11 +442,11 @@ class Object(TypeClass):
         This explicitly checks the given string against this object's
         'permissions' property without involving any locks.
 
-        permstring (string) - permission string that need to match a permission on the object.
+        permstring (string) - permission string that need to match a
+                              permission on the object.
                               (example: 'Builders')
         """
         return self.dbobj.check_permstring(permstring)
-
 
     def __eq__(self, other):
         """
@@ -387,24 +456,23 @@ class Object(TypeClass):
         parent doesn't work.
         """
         try:
-                return _GA(_GA(self, "dbobj"),"dbid") == _GA(_GA(other,"dbobj"),"dbid")
+                return _GA(_GA(self, "dbobj"), "dbid") == _GA(_GA(other, "dbobj"), "dbid")
         except AttributeError:
            # compare players instead
             try:
-                return _GA(_GA(_GA(self, "dbobj"),"player"),"uid") == _GA(_GA(other, "player"),"uid")
+                return _GA(_GA(_GA(self, "dbobj"), "player"), "uid") == _GA(_GA(other, "player"), "uid")
             except AttributeError:
                 return False
 
     ## hooks called by the game engine
-
 
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
 
-        You normally don't need to change this unless you change some fundamental
-        things like names of permission groups.
+        You normally don't need to change this unless you change some
+        fundamental things like names of permission groups.
         """
         # the default security setup fallback for a generic
         # object. Overload in child for a custom setup. Also creation
@@ -412,22 +480,25 @@ class Object(TypeClass):
         # controller, for example)
 
         dbref = self.dbobj.dbref
-        self.locks.add(";".join(["control:perm(Immortals)",  # edit locks/permissions, delete
-                                 "examine:perm(Builders)",   # examine properties
-                                 "view:all()",               # look at object (visibility)
-                                 "edit:perm(Wizards)",       # edit properties/attributes
-                                 "delete:perm(Wizards)",     # delete object
-                                 "get:all()",                # pick up object
-                                 "call:true()",              # allow to call commands on this object
-                                 "tell:perm(Wizards)",        # allow emits to this object
-                                 "puppet:pid(%s) or perm(Immortals) or pperm(Immortals)" % dbref])) # restricts puppeting of this object
+        self.locks.add(";".join([
+            "control:perm(Immortals)",  # edit locks/permissions, delete
+            "examine:perm(Builders)",   # examine properties
+            "view:all()",               # look at object (visibility)
+            "edit:perm(Wizards)",       # edit properties/attributes
+            "delete:perm(Wizards)",     # delete object
+            "get:all()",                # pick up object
+            "call:true()",              # allow to call commands on this object
+            "tell:perm(Wizards)",        # allow emits to this object
+             # restricts puppeting of this object
+            "puppet:pid(%s) or perm(Immortals) or pperm(Immortals)" % dbref]))
 
     def basetype_posthook_setup(self):
         """
-        Called once, after basetype_setup and at_object_creation. This should generally not be overloaded unless
-        you are redefining how a room/exit/object works. It allows for basetype-like setup
-        after the object is created. An example of this is EXITs, who need to know keys, aliases, locks
-        etc to set up their exit-cmdsets.
+        Called once, after basetype_setup and at_object_creation. This should
+        generally not be overloaded unless you are redefining how a
+        room/exit/object works. It allows for basetype-like setup after the
+        object is created. An example of this is EXITs, who need to know keys,
+        aliases, locks etc to set up their exit-cmdsets.
         """
         pass
 
@@ -436,7 +507,6 @@ class Object(TypeClass):
         Called once, when this object is first created.
         """
         pass
-
 
     def at_object_delete(self):
         """
@@ -502,34 +572,34 @@ class Object(TypeClass):
 
     def at_server_reload(self):
         """
-        This hook is called whenever the server is shutting down for restart/reboot.
-        If you want to, for example, save non-persistent properties across a restart,
-        this is the place to do it.
+        This hook is called whenever the server is shutting down for
+        restart/reboot. If you want to, for example, save non-persistent
+        properties across a restart, this is the place to do it.
         """
         pass
 
     def at_server_shutdown(self):
         """
-        This hook is called whenever the server is shutting down fully (i.e. not for
-        a restart).
+        This hook is called whenever the server is shutting down fully
+        (i.e. not for a restart).
         """
         pass
 
     def at_access_success(self, accessing_obj, access_type):
         """
-        This hook is called whenever accessing_obj succeed a lock check of type access_type
-        on this object, for whatever reason. The return value of this hook is not used,
-        the lock will still pass regardless of what this hook does (use lockstring/funcs to tweak
-        the lock result).
+        This hook is called whenever accessing_obj succeed a lock check of
+        type access_type on this object, for whatever reason. The return value
+        of this hook is not used, the lock will still pass regardless of what
+        this hook does (use lockstring/funcs to tweak the lock result).
         """
         pass
 
     def at_access_failure(self, accessing_obj, access_type):
         """
-        This hook is called whenever accessing_obj fails a lock check of type access_type
-        on this object, for whatever reason. The return value of this hook is not used, the
-        lock will still fail regardless of what this hook does (use lockstring/funcs to tweak the
-        lock result).
+        This hook is called whenever accessing_obj fails a lock check of type
+        access_type on this object, for whatever reason. The return value of
+        this hook is not used, the lock will still fail regardless of what
+        this hook does (use lockstring/funcs to tweak the lock result).
         """
         pass
 
@@ -588,7 +658,6 @@ class Object(TypeClass):
         string = "%s arrives to %s from %s."
         self.location.msg_contents(string % (name, loc_name, src_name), exclude=self)
 
-
     def at_after_move(self, source_location):
         """
         Called after move has completed, regardless of quiet mode or not.
@@ -597,7 +666,6 @@ class Object(TypeClass):
         source_location - where we came from
         """
         pass
-
 
     def at_object_leave(self, moved_obj, target_location):
         """
@@ -630,9 +698,9 @@ class Object(TypeClass):
         """
         This hook is responsible for handling the actual traversal, normally
         by calling traversing_object.move_to(target_location). It is normally
-        only implemented by Exit objects. If it returns False (usually because move_to
-        returned False), at_after_traverse below should not be called and
-        instead at_failed_traverse should be called.
+        only implemented by Exit objects. If it returns False (usually because
+        move_to returned False), at_after_traverse below should not be called
+        and instead at_failed_traverse should be called.
         """
         pass
 
@@ -687,7 +755,6 @@ class Object(TypeClass):
         """
         pass
 
-
     # hooks called by the default cmdset.
 
     def return_appearance(self, pobject):
@@ -698,7 +765,8 @@ class Object(TypeClass):
         if not pobject:
             return
         # get and identify all objects
-        visible = (con for con in self.contents if con != pobject and con.access(pobject, "view"))
+        visible = (con for con in self.contents if con != pobject and
+                                                    con.access(pobject, "view"))
         exits, users, things = [], [], []
         for con in visible:
             key = con.key
@@ -744,6 +812,7 @@ class Object(TypeClass):
         dropper - the object which just dropped this object.
         """
         pass
+
     def at_say(self, speaker, message):
         """
         Called on this object if an object inside this object speaks.
@@ -797,12 +866,13 @@ class Character(Object):
 
     def at_pre_puppet(self, player, sessid=None):
         """
-        This recovers the character again after having been "stoved away" at the unpuppet
+        This recovers the character again after having been "stoved away"
+        at the unpuppet
         """
         if self.db.prelogout_location:
             # try to recover
             self.location = self.db.prelogout_location
-        if self.location == None:
+        if self.location is None:
             # make sure location is never None (home should always exist)
             self.location = self.home
         if self.location:
@@ -824,8 +894,9 @@ class Character(Object):
 
     def at_post_unpuppet(self, player, sessid=None):
         """
-        We stove away the character when the player goes ooc/logs off, otherwise the character object will
-        remain in the room also after the player logged off ("headless", so to say).
+        We stove away the character when the player goes ooc/logs off,
+        otherwise the character object will remain in the room also after the
+        player logged off ("headless", so to say).
         """
         if self.location: # have to check, in case of multiple connections closing
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
@@ -851,6 +922,7 @@ class Room(Object):
         self.locks.add(";".join(["get:false()",
                                  "puppet:false()"])) # would be weird to puppet a room ...
         self.location = None
+
 
 #
 # Base Exit object
@@ -905,7 +977,8 @@ class Exit(Object):
                         # No shorthand error message. Call hook.
                         self.obj.at_failed_traverse(self.caller)
 
-        # create an exit command. We give the properties here, to always trigger metaclass preparations
+        # create an exit command. We give the properties here,
+        # to always trigger metaclass preparations
         cmd = ExitCommand(key=exidbobj.db_key.strip().lower(),
                           aliases=exidbobj.aliases.all(),
                           locks=str(exidbobj.locks),
@@ -944,8 +1017,9 @@ class Exit(Object):
 
     def at_cmdset_get(self):
         """
-        Called when the cmdset is requested from this object, just before the cmdset is
-        actually extracted. If no Exit-cmdset is cached, create it now.
+        Called when the cmdset is requested from this object, just before the
+        cmdset is actually extracted. If no Exit-cmdset is cached, create
+        it now.
         """
 
         if self.ndb.exit_reset or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
@@ -984,8 +1058,9 @@ class Exit(Object):
     def at_failed_traverse(self, traversing_object):
         """
         This is called if an object fails to traverse this object for some
-        reason. It will not be called if the attribute "err_traverse" is defined,
-        that attribute will then be echoed back instead as a convenient shortcut.
+        reason. It will not be called if the attribute "err_traverse" is
+        defined, that attribute will then be echoed back instead as a
+        convenient shortcut.
 
         (See also hooks at_before_traverse and at_after_traverse).
         """

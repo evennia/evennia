@@ -12,6 +12,7 @@ from ev import Command as BaseCommand
 from ev import default_cmds
 from ev import utils
 
+
 class Command(BaseCommand):
     """
     Inherit from this if you want to create your own
@@ -33,7 +34,6 @@ class Command(BaseCommand):
     # auto_help = False      # uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" # optional regex detailing how the part after
                              # the cmdname must look to match this command.
-
 
     # (we don't implement hook method access() here, you don't need to
     #  modify that unless you want to change how the lock system works
@@ -104,8 +104,8 @@ class MuxCommand(default_cmds.MuxCommand):
     cmdhandler at this point, and stored in self.cmdname. The rest is stored
     in self.args.
 
-    The MuxCommand parser breaks self.args into its constituents and stores them in the
-    following variables:
+    The MuxCommand parser breaks self.args into its constituents and stores them
+    in the following variables:
       self.switches = optional list of /switches (without the /)
       self.raw = This is the raw argument input, including switches
       self.args = This is re-defined to be everything *except* the switches

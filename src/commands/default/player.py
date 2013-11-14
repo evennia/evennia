@@ -24,8 +24,9 @@ from src.utils import utils, create, search, prettytable
 
 from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
 # limit symbol import for API
-__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit", "CmdCharCreate",
-           "CmdEncoding", "CmdSessions", "CmdWho", "CmdColorTest", "CmdQuell")
+__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
+           "CmdCharCreate", "CmdEncoding", "CmdSessions", "CmdWho",
+           "CmdColorTest", "CmdQuell")
 
 # force max nr chars to 1 if mode is 0 or 1
 MAX_NR_CHARACTERS = MULTISESSION_MODE < 2 and 1 or MAX_NR_CHARACTERS
@@ -58,7 +59,8 @@ class CmdOOCLook(MuxPlayerCommand):
         "Hook method for when an argument is given."
         player = self.caller
         key = self.args.lower()
-        chars = dict((utils.to_str(char.key.lower()), char) for char in player.db._playable_characters)
+        chars = dict((utils.to_str(char.key.lower()), char)
+                       for char in player.db._playable_characters)
         looktarget = chars.get(key)
         if looktarget:
             self.msg(looktarget.return_appearance(player))
@@ -101,7 +103,7 @@ class CmdOOCLook(MuxPlayerCommand):
                 string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
             else:
                 string += "\n\nAvailable character%s%s:"  % (string_s_ending,
-                                                         MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
+                         MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
 
             for char in characters:
                 csessid = char.sessid
@@ -171,8 +173,10 @@ class CmdCharCreate(MuxPlayerCommand):
         typeclass = settings.BASE_CHARACTER_TYPECLASS
         permissions = settings.PERMISSION_PLAYER_DEFAULT
 
-        new_character = create.create_object(typeclass, key=key, location=default_home,
-                                             home=default_home, permissions=permissions)
+        new_character = create.create_object(typeclass, key=key,
+                                             location=default_home,
+                                             home=default_home,
+                                             permissions=permissions)
         # only allow creator (and immortals) to puppet this char
         new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
                                 (new_character.id, player.id))
@@ -203,7 +207,8 @@ class CmdIC(MuxPlayerCommand):
     """
 
     key = "@ic"
-    locks = "cmd:all()" # must be all() or different puppeted objects won't be able to access it.
+    # lockmust be all() for different puppeted objects to access it.
+    locks = "cmd:all()"
     aliases = "@puppet"
     help_category = "General"
 
@@ -235,7 +240,8 @@ class CmdIC(MuxPlayerCommand):
         if new_character.player:
             # may not puppet an already puppeted character
             if new_character.sessid and new_character.player == player:
-                # as a safeguard we allow "taking over chars from your own sessions.
+                # as a safeguard we allow "taking over chars from
+                # your own sessions.
                 player.msg("{c%s{n{R is now acted from another of your sessions.{n" % (new_character.name), sessid=new_character.sessid)
                 player.unpuppet_object(new_character.sessid)
                 self.msg("Taking over {c%s{n from another of your sessions." % new_character.name)
@@ -251,6 +257,7 @@ class CmdIC(MuxPlayerCommand):
         else:
             self.msg("{rYou cannot become {C%s{n." % new_character.name)
 
+
 class CmdOOC(MuxPlayerCommand):
     """
     go ooc
@@ -264,7 +271,8 @@ class CmdOOC(MuxPlayerCommand):
     """
 
     key = "@ooc"
-    locks = "cmd:all()" # this must be all(), or different puppeted objects won't be able to access it.
+    # lock must be all(), for different puppeted objects to access it.
+    locks = "cmd:all()"
     aliases = "@unpuppet"
     help_category = "General"
 
@@ -311,16 +319,21 @@ class CmdSessions(MuxPlayerCommand):
         player = self.caller
         sessions = player.get_all_sessions()
 
-        table = prettytable.PrettyTable(["{wsessid", "{wprotocol", "{whost", "{wpuppet/character", "{wlocation"])
-        for sess in sorted(sessions, key=lambda x:x.sessid):
+        table = prettytable.PrettyTable(["{wsessid",
+                                         "{wprotocol",
+                                         "{whost",
+                                         "{wpuppet/character",
+                                         "{wlocation"])
+        for sess in sorted(sessions, key=lambda x: x.sessid):
             sessid = sess.sessid
             char = player.get_puppet(sessid)
             table.add_row([str(sessid), str(sess.protocol_key),
-                           type(sess.address)==tuple and sess.address[0] or sess.address,
+                           type(sess.address) == tuple and sess.address[0] or sess.address,
                            char and str(char) or "None",
                            char and str(char.location) or "N/A"])
         string = "{wYour current session(s):{n\n%s" % table
         self.msg(string)
+
 
 class CmdWho(MuxPlayerCommand):
     """
@@ -355,7 +368,13 @@ class CmdWho(MuxPlayerCommand):
 
         nplayers = (SESSIONS.player_count())
         if show_session_data:
-            table = prettytable.PrettyTable(["{wPlayer Name","{wOn for", "{wIdle", "{wRoom", "{wCmds", "{wProtocol", "{wHost"])
+            table = prettytable.PrettyTable(["{wPlayer Name",
+                                             "{wOn for",
+                                             "{wIdle",
+                                             "{wRoom",
+                                             "{wCmds",
+                                             "{wProtocol",
+                                             "{wHost"])
             for session in session_list:
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible
@@ -372,7 +391,8 @@ class CmdWho(MuxPlayerCommand):
         else:
             table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{wIdle"])
             for session in session_list:
-                if not session.logged_in: continue
+                if not session.logged_in:
+                    continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
                 plr_pobject = session.get_puppet()
@@ -397,14 +417,16 @@ class CmdEncoding(MuxPlayerCommand):
       clear - clear your custom encoding
 
 
-    This sets the text encoding for communicating with Evennia. This is mostly an issue only if
-    you want to use non-ASCII characters (i.e. letters/symbols not found in English). If you see
-    that your characters look strange (or you get encoding errors), you should use this command
-    to set the server encoding to be the same used in your client program.
+    This sets the text encoding for communicating with Evennia. This is mostly
+    an issue only if you want to use non-ASCII characters (i.e. letters/symbols
+    not found in English). If you see that your characters look strange (or you
+    get encoding errors), you should use this command to set the server
+    encoding to be the same used in your client program.
 
     Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
 
-    If you don't submit an encoding, the current encoding will be displayed instead.
+    If you don't submit an encoding, the current encoding will be displayed
+    instead.
   """
 
     key = "@encoding"
@@ -444,6 +466,7 @@ class CmdEncoding(MuxPlayerCommand):
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
         self.msg(string.strip())
 
+
 class CmdPassword(MuxPlayerCommand):
     """
     @password - set your password
@@ -463,8 +486,8 @@ class CmdPassword(MuxPlayerCommand):
         if not self.rhs:
             self.msg("Usage: @password <oldpass> = <newpass>")
             return
-        oldpass = self.lhslist[0] # this is already stripped by parse()
-        newpass = self.rhslist[0] #               ''
+        oldpass = self.lhslist[0]  # this is already stripped by parse()
+        newpass = self.rhslist[0]  #               ''
         if not player.check_password(oldpass):
             self.msg("The specified old password isn't correct.")
         elif len(newpass) < 3:
@@ -473,6 +496,7 @@ class CmdPassword(MuxPlayerCommand):
             player.set_password(newpass)
             player.save()
             self.msg("Password changed.")
+
 
 class CmdQuit(MuxPlayerCommand):
     """
@@ -518,10 +542,10 @@ class CmdColorTest(MuxPlayerCommand):
     Usage:
       @color ansi|xterm256
 
-    Print a color map along with in-mud color codes, while testing what is supported in your client.
-    Choices are 16-color ansi (supported in most muds) or the 256-color xterm256 standard.
-    No checking is done to determine your client supports color - if not you will
-    see rubbish appear.
+    Print a color map along with in-mud color codes, while testing what is
+    supported in your client. Choices are 16-color ansi (supported in most
+    muds) or the 256-color xterm256 standard. No checking is done to determine
+    your client supports color - if not you will see rubbish appear.
     """
     key = "@color"
     locks = "cmd:all()"
@@ -552,10 +576,10 @@ class CmdColorTest(MuxPlayerCommand):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s{n" % (code, code.replace("{","{{")) for code, _ in ap.ext_ansi_map[:-1]]
+            col1 = ["%s%s{n" % (code, code.replace("{", "{{")) for code, _ in ap.ext_ansi_map[:-1]]
             hi = "%ch"
             col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
-            col3 = ["%s%s{n" % (hi+code, (hi+code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
+            col3 = ["%s%s{n" % (hi + code, (hi + code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
             table = utils.format_table([col1, col2, col3], extra_space=1)
             string = "ANSI colors:"
             for row in table:
@@ -566,16 +590,16 @@ class CmdColorTest(MuxPlayerCommand):
 
         elif self.args.startswith("x"):
             # show xterm256 table
-            table = [[],[],[],[],[],[],[],[],[],[],[],[]]
+            table = [[], [], [], [], [], [], [], [], [], [], [], []]
             for ir in range(6):
                 for ig in range(6):
                     for ib in range(6):
                         # foreground table
-                        table[ir].append("%%c%i%i%i%s{n" % (ir,ig,ib, "{{%i%i%i" % (ir,ig,ib)))
+                        table[ir].append("%%c%i%i%i%s{n" % (ir, ig, ib, "{{%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir,ig,ib,
-                                                                        5-ir,5-ig,5-ib,
-                                                                        "{{b%i%i%i" % (ir,ig,ib)))
+                        table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir, ig, ib,
+                                                            5 - ir, 5 - ig, 5 - ib,
+                                                        "{{b%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
@@ -585,6 +609,7 @@ class CmdColorTest(MuxPlayerCommand):
         else:
             # malformed input
             self.msg("Usage: @color ansi|xterm256")
+
 
 class CmdQuell(MuxPlayerCommand):
     """
@@ -604,7 +629,7 @@ class CmdQuell(MuxPlayerCommand):
     """
 
     key = "@quell"
-    aliases =["@unquell"]
+    aliases = ["@unquell"]
     locks = "cmd:all()"
     help_category = "General"
 
@@ -613,8 +638,9 @@ class CmdQuell(MuxPlayerCommand):
         if self.sessid:
             char = player.get_puppet(self.sessid)
             if char:
-                # we are already puppeting an object. We need to reset the lock caches
-                # (otherwise the superuser status change won't be visible until repuppet)
+                # we are already puppeting an object. We need to reset
+                # the lock caches (otherwise the superuser status change
+                # won't be visible until repuppet)
                 char.locks.reset()
         player.locks.reset()
 

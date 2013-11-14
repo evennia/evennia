@@ -29,7 +29,8 @@ class HelpEntryAdmin(admin.ModelAdmin):
 
     form = HelpEntryForm
     fieldsets = (
-        (None, {'fields':(('db_key', 'db_help_category'), 'db_entrytext', 'db_lock_storage'),
+        (None, {'fields':(('db_key', 'db_help_category'),
+                           'db_entrytext', 'db_lock_storage'),
                 'description':"Sets a Help entry. Set lock to <i>view:all()</I> unless you want to restrict it."}),)
 
 

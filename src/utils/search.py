@@ -30,7 +30,8 @@ Example: To reach the search method 'get_object_with_player'
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
-__all__ = ("search_object", "search_player", "search_script", "search_message", "search_channel", "search_help_entry")
+__all__ = ("search_object", "search_player", "search_script",
+           "search_message", "search_channel", "search_help_entry")
 
 
 # import objects this way to avoid circular import problems
@@ -54,25 +55,29 @@ HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_c
 #                      candidates=None,
 #                      exact=True):
 #
-#        Search globally or in a list of candidates and return results. The result is always an Object.
-#        Always returns a list.
+#        Search globally or in a list of candidates and return results.
+#        The result is always a list of Objects (or the empty list)
 #
 #        Arguments:
-#        ostring: (str) The string to compare names against. By default (if not attribute_name
-#                  is set), this will search object.key and object.aliases in order. Can also
-#                  be on the form #dbref, which will, if exact=True be matched against primary key.
-#        attribute_name: (str): Use this named ObjectAttribute to match ostring against, instead
-#                  of the defaults.
-#        typeclass (str or TypeClass): restrict matches to objects having this typeclass. This will help
-#                   speed up global searches.
-#        candidates (list obj ObjectDBs): If supplied, search will only be performed among the candidates
-#                  in this list. A common list of candidates is the contents of the current location searched.
-#        exact (bool): Match names/aliases exactly or partially. Partial matching matches the
-#                  beginning of words in the names/aliases, using a matching routine to separate
-#                  multiple matches in names with multiple components (so "bi sw" will match
-#                  "Big sword"). Since this is more expensive than exact matching, it is
-#                  recommended to be used together with the objlist keyword to limit the number
-#                  of possibilities. This value has no meaning if searching for attributes/properties.
+#        ostring: (str) The string to compare names against. By default (if
+#                  not attribute_name is set), this will search object.key
+#                  and object.aliases in order. Can also be on the form #dbref,
+#                  which will, if exact=True be matched against primary key.
+#        attribute_name: (str): Use this named ObjectAttribute to match ostring
+#                        against, instead of the defaults.
+#        typeclass (str or TypeClass): restrict matches to objects having
+#                  this typeclass. This will help speed up global searches.
+#        candidates (list obj ObjectDBs): If supplied, search will only be
+#                  performed among the candidates in this list. A common list
+#                  of candidates is the contents of the current location.
+#        exact (bool): Match names/aliases exactly or partially. Partial
+#                  matching matches the beginning of words in the names/aliases,
+#                  using a matching routine to separate multiple matches in
+#                  names with multiple components (so "bi sw" will match
+#                  "Big sword"). Since this is more expensive than exact
+#                  matching, it is recommended to be used together with
+#                  the objlist keyword to limit the number of possibilities.
+#                  This keyword has no meaning if attribute_name is set.
 #
 #        Returns:
 #        A list of matching objects (or a list with one unique match)

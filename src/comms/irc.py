@@ -16,6 +16,7 @@ from django.utils.translation import ugettext as _
 INFOCHANNEL = ChannelDB.objects.channel_search(settings.CHANNEL_MUDINFO[0])
 IRC_CHANNELS = []
 
+
 def msg_info(message):
     """
     Send info to default info channel
@@ -25,6 +26,7 @@ def msg_info(message):
         INFOCHANNEL[0].msg(message)
     except AttributeError:
         logger.log_infomsg("MUDinfo (irc): %s" % message)
+
 
 class IRC_Bot(irc.IRCClient):
     """
@@ -102,8 +104,10 @@ class IRC_Bot(irc.IRCClient):
         """
         self.msg(utils.to_str(self.factory.channel), utils.to_str(msg))
 
+
 class IRCbotFactory(protocol.ClientFactory):
     protocol = IRC_Bot
+
     def __init__(self, key, channel, network, port, nickname, evennia_channel):
         self.key = key
         self.pretty_key = "%s:%s%s ('%s')" % (network, port, channel, nickname)
@@ -120,21 +124,27 @@ class IRCbotFactory(protocol.ClientFactory):
         else:
             msg_info(_("Lost connection %(key)s. Reason: '%(reason)s'. Reconnecting.") % {"key":self.pretty_key, "reason":reason})
             connector.connect()
+
     def clientConnectionFailed(self, connector, reason):
         msg = _("Could not connect %(key)s Reason: '%(reason)s'") % {"key":self.pretty_key, "reason":reason}
         msg_info(msg)
         logger.log_errmsg(msg)
 
+
 def build_connection_key(channel, irc_network, irc_port, irc_channel, irc_bot_nick):
     "Build an id hash for the connection"
     if hasattr(channel, 'key'):
         channel = channel.key
-    return "irc_%s:%s%s(%s)<>%s" % (irc_network, irc_port, irc_channel, irc_bot_nick, channel)
+    return "irc_%s:%s%s(%s)<>%s" % (irc_network, irc_port,
+                                    irc_channel, irc_bot_nick, channel)
+
 
 def build_service_key(key):
     return "IRCbot:%s" % key
 
-def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick):
+
+def create_connection(channel, irc_network, irc_port,
+                      irc_channel, irc_bot_nick):
     """
     This will create a new IRC<->channel connection.
     """
@@ -144,7 +154,8 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
             logger.log_errmsg(_("Cannot attach IRC<->Evennia: Evennia Channel '%s' not found") % channel)
             return False
         channel = new_channel[0]
-    key = build_connection_key(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
+    key = build_connection_key(channel, irc_network, irc_port,
+                               irc_channel, irc_bot_nick)
 
     old_conns = ExternalChannelConnection.objects.filter(db_external_key=key)
     if old_conns:
@@ -154,7 +165,9 @@ def create_connection(channel, irc_network, irc_port, irc_channel, irc_bot_nick)
     send_code =  "from src.comms.irc import IRC_CHANNELS\n"
     send_code += "matched_ircs = [irc for irc in IRC_CHANNELS if irc.factory.key == '%s']\n" % key
     send_code += "[irc.msg_irc(message, senders=[self]) for irc in matched_ircs]\n"
-    conn = ExternalChannelConnection(db_channel=channel, db_external_key=key, db_external_send_code=send_code,
+    conn = ExternalChannelConnection(db_channel=channel,
+                                     db_external_key=key,
+                                     db_external_send_code=send_code,
                                      db_external_config=config)
     conn.save()
 

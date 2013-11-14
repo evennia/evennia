@@ -14,6 +14,7 @@ the Portal startup process.
 
 """
 
+
 def start_plugin_services(portal):
     """
     This hook is called by Evennia, last in the Portal startup process.

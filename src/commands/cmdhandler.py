@@ -72,20 +72,25 @@ CMD_LOGINSTART = "__unloggedin_look_command"
 
 # custom Exceptions
 
+
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
     pass
+
+
 class ExecSystemCommand(Exception):
     "Run a system command"
     def __init__(self, syscmd, sysarg):
-        self.args = (syscmd, sysarg) # needed by exception error handling
+        self.args = (syscmd, sysarg)  # needed by exception error handling
         self.syscmd = syscmd
         self.sysarg = sysarg
 
 # Helper function
 
+
 @inlineCallbacks
-def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None):
+def get_and_merge_cmdsets(caller, session, player, obj,
+                          callertype, sessid=None):
     """
     Gather all relevant cmdsets and merge them.
 
@@ -124,20 +129,25 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None)
         if location and not obj_cmdset.no_objs:
             # Gather all cmdsets stored on objects in the room and
             # also in the caller's inventory and the location itself
-            local_objlist = yield location.contents_get(exclude=obj.dbobj) + obj.contents + [location]
+            local_objlist = yield (location.contents_get(exclude=obj.dbobj) +
+                                   obj.contents +
+                                   [location])
             for lobj in local_objlist:
                 try:
                     # call hook in case we need to do dynamic changing to cmdset
                     _GA(lobj, "at_cmdset_get")()
                 except Exception:
                     logger.log_trace()
-            # the call-type lock is checked here, it makes sure a player is not seeing e.g. the commands
-            # on a fellow player (which is why the no_superuser_bypass must be True)
-            local_obj_cmdsets = yield [lobj.cmdset.current for lobj in local_objlist
-                                           if (lobj.cmdset.current and lobj.locks.check(caller, 'call', no_superuser_bypass=True))]
+            # the call-type lock is checked here, it makes sure a player
+            # is not seeing e.g. the commands on a fellow player (which is why
+            # the no_superuser_bypass must be True)
+            local_obj_cmdsets = \
+                yield [lobj.cmdset.current for lobj in local_objlist
+                   if (lobj.cmdset.current and
+                   lobj.locks.check(caller, 'call', no_superuser_bypass=True))]
             for cset in local_obj_cmdsets:
-                #This is necessary for object sets, or we won't be able to separate
-                #the command sets from each other in a busy room.
+                #This is necessary for object sets, or we won't be able to
+                # separate the command sets from each other in a busy room.
                 cset.old_duplicates = cset.duplicates
                 cset.duplicates = True
         returnValue(local_obj_cmdsets)
@@ -159,8 +169,8 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None)
         report_to = session
         session_cmdset = yield _get_cmdset(session)
         cmdsets = [session_cmdset]
-        if player: # this automatically implies logged-in
-            player_cmdset =  yield _get_cmdset(player)
+        if player:  # this automatically implies logged-in
+            player_cmdset = yield _get_cmdset(player)
             channel_cmdset = yield _get_channel_cmdsets(player, player_cmdset)
             cmdsets.extend([player_cmdset, channel_cmdset])
             if obj:
@@ -185,21 +195,26 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid=None)
         cmdsets = [obj_cmdset] + local_obj_cmdsets
     else:
         raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
-    #cmdsets = yield [caller_cmdset] + [player_cmdset] + [channel_cmdset] + local_obj_cmdsets
+    #cmdsets = yield [caller_cmdset] + [player_cmdset] +
+    #          [channel_cmdset] + local_obj_cmdsets
 
     # weed out all non-found sets
-    cmdsets = yield [cmdset for cmdset in cmdsets if cmdset and cmdset.key!="Empty"]
+    cmdsets = yield [cmdset for cmdset in cmdsets
+                     if cmdset and cmdset.key != "Empty"]
     # report cmdset errors to user (these should already have been logged)
-    yield [report_to.msg(cmdset.errmessage) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"]
+    yield [report_to.msg(cmdset.errmessage) for cmdset in cmdsets
+           if cmdset.key == "_CMDSET_ERROR"]
 
     if cmdsets:
-        mergehash = tuple([id(cmdset) for cmdset in cmdsets]) # faster to do tuple on list than to build tuple directly
+        # faster to do tuple on list than to build tuple directly
+        mergehash = tuple([id(cmdset) for cmdset in cmdsets])
         if mergehash in _CMDSET_MERGE_CACHE:
             # cached merge exist; use that
             cmdset = _CMDSET_MERGE_CACHE[mergehash]
         else:
-            # we group and merge all same-prio cmdsets separately (this avoids order-dependent
-            # clashes in certain cases, such as when duplicates=True)
+            # we group and merge all same-prio cmdsets separately (this avoids
+            # order-dependent clashes in certain cases, such as
+            # when duplicates=True)
             tempmergers = {}
             for cmdset in cmdsets:
                 prio = cmdset.priority
@@ -241,13 +256,13 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
               if True, the command instance will be returned instead.
     callertype - this is one of "session", "player" or "object", in decending
                  order. So when the Session is the caller, it will merge its
-                 own cmdset into cmdsets from both Player and eventual puppeted Object (and
-                 cmdsets in its room etc). A Player will only include its
-                 own cmdset and the Objects and so on. Merge order is the
-                 same order, so that Object cmdsets are merged in last, giving
-                 them precendence for same-name and same-prio commands.
-    sessid - Relevant if callertype is "player" - the session id will help retrieve the
-             correct cmdsets from puppeted objects.
+                 own cmdset into cmdsets from both Player and eventual puppeted
+                 Object (and cmdsets in its room etc). A Player will only
+                 include its own cmdset and the Objects and so on. Merge order
+                 is the same order, so that Object cmdsets are merged in last,
+                 giving them precendence for same-name and same-prio commands.
+    sessid - Relevant if callertype is "player" - the session id will help
+             retrieve the correct cmdsets from puppeted objects.
 
     Note that this function returns a deferred!
     """
@@ -270,10 +285,11 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
     # we assign the caller with preference 'bottom up'
     caller = obj or player or session
 
-    try: # catch bugs in cmdhandler itself
-        try: # catch special-type commands
+    try:  # catch bugs in cmdhandler itself
+        try:  # catch special-type commands
 
-            cmdset = yield get_and_merge_cmdsets(caller, session, player, obj, callertype, sessid)
+            cmdset = yield get_and_merge_cmdsets(caller, session, player, obj,
+                                                  callertype, sessid)
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
@@ -323,13 +339,14 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                 else:
                     # fallback to default error text
                     sysarg = _("Command '%s' is not available.") % raw_string
-                    suggestions = string_suggestions(raw_string, cmdset.get_all_cmd_keys_and_aliases(caller), cutoff=0.7, maxnum=3)
+                    suggestions = string_suggestions(raw_string,
+                                    cmdset.get_all_cmd_keys_and_aliases(caller),
+                                    cutoff=0.7, maxnum=3)
                     if suggestions:
                         sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
                     else:
                         sysarg += _(" Type \"help\" for help.")
                 raise ExecSystemCommand(syscmd, sysarg)
-
 
             # Check if this is a Channel-cmd match.
             if hasattr(cmd, 'is_channel') and cmd.is_channel:
@@ -380,7 +397,8 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                 for func_part in make_iter(cmd.func_parts):
                     err = yield func_part()
                     # returning anything but a deferred/None will kill the chain
-                    if err: break
+                    if err:
+                        break
 
             # post-command hook
             yield cmd.at_post_cmd()

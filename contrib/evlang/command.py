@@ -15,6 +15,7 @@ from ev import utils
 from ev import default_cmds
 from src.utils import prettytable
 
+
 #------------------------------------------------------------
 # Evlang-related commands
 #
@@ -86,13 +87,17 @@ class CmdCode(default_cmds.MuxCommand):
 
         if not self.rhs:
             if codetype:
-                scripts = [(name, tup[1], utils.crop(tup[0])) for name, tup in evlang_scripts.items() if name==codetype]
-                scripts.extend([(name, "--", "--") for name in evlang_locks if name not in evlang_scripts if name==codetype])
+                scripts = [(name, tup[1], utils.crop(tup[0]))
+                     for name, tup in evlang_scripts.items() if name==codetype]
+                scripts.extend([(name, "--", "--") for name in evlang_locks
+                               if name not in evlang_scripts if name==codetype])
             else:
                 # no type specified. List all scripts/slots on object
                 print evlang_scripts
-                scripts = [(name, tup[1], utils.crop(tup[0])) for name, tup in evlang_scripts.items()]
-                scripts.extend([(name, "--", "--") for name in evlang_locks if name not in evlang_scripts])
+                scripts = [(name, tup[1], utils.crop(tup[0]))
+                                        for name, tup in evlang_scripts.items()]
+                scripts.extend([(name, "--", "--") for name in evlang_locks
+                                                if name not in evlang_scripts])
                 scripts = sorted(scripts, key=lambda p: p[0])
 
             table = prettytable.PrettyTable(["{wtype", "{wcreator", "{wcode"])
@@ -114,7 +119,7 @@ class CmdCode(default_cmds.MuxCommand):
         # we have code access to this type.
         oldcode = None
         if codetype in evlang_scripts:
-           oldcode = str(evlang_scripts[codetype][0])
+            oldcode = str(evlang_scripts[codetype][0])
         # this updates the database right away too
         obj.ndb.evlang.add(codetype, codestring, scripter=caller)
         if oldcode:

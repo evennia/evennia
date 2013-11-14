@@ -18,6 +18,7 @@ this change, you have to convert them manually e.g. with the
 """
 from ev import Player as DefaultPlayer
 
+
 class Player(DefaultPlayer):
     """
     This class describes the actual OOC player (i.e. the user connecting

@@ -59,6 +59,7 @@ ANSI_SPACE = " "
 # Escapes
 ANSI_ESCAPES = ("{{", "%%", "\\\\")
 
+
 class ANSIParser(object):
     """
     A class that parses ansi markup
@@ -75,10 +76,11 @@ class ANSIParser(object):
         # MUX-style mappings %cr %cn etc
 
         self.mux_ansi_map = [
-            # commented out by default; they (especially blink) are potentially annoying
-            (r'%r',  ANSI_RETURN),
-            (r'%t',  ANSI_TAB),
-            (r'%b',  ANSI_SPACE),
+            # commented out by default; they (especially blink) are
+            # potentially annoying
+            (r'%r', ANSI_RETURN),
+            (r'%t', ANSI_TAB),
+            (r'%b', ANSI_SPACE),
             #(r'%cf', ANSI_BLINK),
             #(r'%ci', ANSI_INVERSE),
             (r'%cr', ANSI_RED),
@@ -118,18 +120,18 @@ class ANSIParser(object):
             (r'{M', normal + ANSI_MAGENTA),
             (r'{c', hilite + ANSI_CYAN),
             (r'{C', normal + ANSI_CYAN),
-            (r'{w', hilite + ANSI_WHITE), # pure white
-            (r'{W', normal + ANSI_WHITE), #light grey
-            (r'{x', hilite + ANSI_BLACK), #dark grey
-            (r'{X', normal + ANSI_BLACK), #pure black
-            (r'{n', normal)               #reset
+            (r'{w', hilite + ANSI_WHITE),  # pure white
+            (r'{W', normal + ANSI_WHITE),  # light grey
+            (r'{x', hilite + ANSI_BLACK),  # dark grey
+            (r'{X', normal + ANSI_BLACK),  # pure black
+            (r'{n', normal)                # reset
             ]
 
         # xterm256 {123, %c134,
 
         self.xterm256_map = [
             (r'%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
-            (r'%c(b[0-5]{3})', self.parse_rgb), # %cb123 - background colour
+            (r'%c(b[0-5]{3})', self.parse_rgb),  # %cb123 - background colour
             (r'{([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
             (r'{(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
             ]
@@ -145,7 +147,8 @@ class ANSIParser(object):
         # prepare matching ansi codes overall
         self.ansi_regex = re.compile("\033\[[0-9;]+m")
 
-        # escapes - these double-chars will be replaced with a single instance of each
+        # escapes - these double-chars will be replaced with a single
+        # instance of each
         self.ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
 
     def parse_rgb(self, rgbmatch):
@@ -174,37 +177,61 @@ class ANSIParser(object):
             #print "ANSI convert:", red, green, blue
             # xterm256 not supported, convert the rgb value to ansi instead
             if red == green and red == blue and red < 2:
-                if background: return ANSI_BACK_BLACK
-                elif red >= 1: return ANSI_HILITE + ANSI_BLACK
-                else: return ANSI_NORMAL + ANSI_BLACK
+                if background:
+                    return ANSI_BACK_BLACK
+                elif red >= 1:
+                    return ANSI_HILITE + ANSI_BLACK
+                else:
+                    return ANSI_NORMAL + ANSI_BLACK
             elif red == green and red == blue:
-                if background: return ANSI_BACK_WHITE
-                elif red >= 4: return ANSI_HILITE + ANSI_WHITE
-                else: return ANSI_NORMAL + ANSI_WHITE
+                if background:
+                    return ANSI_BACK_WHITE
+                elif red >= 4:
+                    return ANSI_HILITE + ANSI_WHITE
+                else:
+                    return ANSI_NORMAL + ANSI_WHITE
             elif red > green and red > blue:
-                if background: return ANSI_BACK_RED
-                elif red >= 3: return ANSI_HILITE + ANSI_RED
-                else: return ANSI_NORMAL + ANSI_RED
+                if background:
+                    return ANSI_BACK_RED
+                elif red >= 3:
+                    return ANSI_HILITE + ANSI_RED
+                else:
+                    return ANSI_NORMAL + ANSI_RED
             elif red == green and red > blue:
-                if background: return ANSI_BACK_YELLOW
-                elif red >= 3: return ANSI_HILITE + ANSI_YELLOW
-                else: return ANSI_NORMAL + ANSI_YELLOW
+                if background:
+                    return ANSI_BACK_YELLOW
+                elif red >= 3:
+                    return ANSI_HILITE + ANSI_YELLOW
+                else:
+                    return ANSI_NORMAL + ANSI_YELLOW
             elif red == blue and red > green:
-                if background: return ANSI_BACK_MAGENTA
-                elif red >= 3: return ANSI_HILITE + ANSI_MAGENTA
-                else: return ANSI_NORMAL + ANSI_MAGENTA
+                if background:
+                    return ANSI_BACK_MAGENTA
+                elif red >= 3:
+                    return ANSI_HILITE + ANSI_MAGENTA
+                else:
+                    return ANSI_NORMAL + ANSI_MAGENTA
             elif green > blue:
-                if background: return ANSI_BACK_GREEN
-                elif green >= 3: return ANSI_HILITE + ANSI_GREEN
-                else: return ANSI_NORMAL + ANSI_GREEN
+                if background:
+                    return ANSI_BACK_GREEN
+                elif green >= 3:
+                    return ANSI_HILITE + ANSI_GREEN
+                else:
+                    return ANSI_NORMAL + ANSI_GREEN
             elif green == blue:
-                if background: return ANSI_BACK_CYAN
-                elif green >= 3: return ANSI_HILITE + ANSI_CYAN
-                else: return ANSI_NORMAL + ANSI_CYAN
+                if background:
+                    return ANSI_BACK_CYAN
+                elif green >= 3:
+                    return ANSI_HILITE + ANSI_CYAN
+                else:
+                    return ANSI_NORMAL + ANSI_CYAN
             else:    # mostly blue
-                if background: return ANSI_BACK_BLUE
-                elif blue >= 3: return ANSI_HILITE + ANSI_BLUE
-                else: return ANSI_NORMAL + ANSI_BLUE
+                if background:
+                    return ANSI_BACK_BLUE
+                elif blue >= 3:
+                    return ANSI_HILITE + ANSI_BLUE
+                else:
+                    return ANSI_NORMAL + ANSI_BLUE
 
     def parse_ansi(self, string, strip_ansi=False, xterm256=False):
         """
@@ -227,12 +254,13 @@ class ANSIParser(object):
                 part = sub[0].sub(sub[1], part)
             string += "%s%s" % (part, sep[0].strip())
         if strip_ansi:
-            # remove all ansi codes (including those manually inserted in string)
+            # remove all ansi codes (including those manually
+            # inserted in string)
             string = self.ansi_regex.sub("", string)
         return string
 
-
 ANSI_PARSER = ANSIParser()
+
 
 #
 # Access function
@@ -245,8 +273,9 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False):
     """
     return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256)
 
+
 def raw(string):
     """
     Escapes a string into a form which won't be colorized by the ansi parser.
     """
-    return string.replace('{','{{').replace('%','%%')
+    return string.replace('{', '{{').replace('%', '%%')

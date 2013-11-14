@@ -112,10 +112,10 @@ class BlindedState(Script):
         """
         self.key = "temporary_blinder"
         self.desc = "Temporarily blinds the player for a little while."
-        self.interval = 20 # seconds
-        self.start_delay = True # we don't want it to stop until after 20s.
-        self.repeats = 1 # this will go away after interval seconds.
-        self.persistent = False # we will ditch this if server goes down
+        self.interval = 20  # seconds
+        self.start_delay = True  # we don't want it to stop until after 20s.
+        self.repeats = 1  # this will go away after interval seconds.
+        self.persistent = False  # we will ditch this if server goes down
 
     def at_start(self):
         """
@@ -139,8 +139,8 @@ class BlindedState(Script):
         self.obj.location.msg_contents("%s seems to be recovering their eyesight."
                                        % self.obj.name,
                                        exclude=self.obj)
-        self.obj.cmdset.delete() # this will clear the latest added cmdset,
-                                 # (which is the blinded one).
+        self.obj.cmdset.delete()  # this will clear the latest added cmdset,
+                                  # (which is the blinded one).
 
 
 #
@@ -169,11 +169,11 @@ class CloseLidEvent(Script):
         """
         self.key = "lid_closer"
         self.desc = "Closes lid on a red buttons"
-        self.interval = 20 # seconds
-        self.start_delay = True # we want to pospone the launch.
-        self.repeats = 1 # we only close the lid once
-        self.persistent = True # even if the server crashes in those 20 seconds,
-                               # the lid will still close once the game restarts.
+        self.interval = 20  # seconds
+        self.start_delay = True  # we want to pospone the launch.
+        self.repeats = 1  # we only close the lid once
+        self.persistent = True  # even if the server crashes in those 20 seconds,
+                                # the lid will still close once the game restarts.
 
     def is_valid(self):
         """
@@ -207,9 +207,9 @@ class BlinkButtonEvent(Script):
         """
         self.key = "blink_button"
         self.desc = "Blinks red buttons"
-        self.interval = 35 #seconds
-        self.start_delay = False #blink right away
-        self.persistent = True #keep blinking also after server reboot
+        self.interval = 35  #seconds
+        self.start_delay = False  #blink right away
+        self.persistent = True  #keep blinking also after server reboot
 
     def is_valid(self):
         """
@@ -239,10 +239,10 @@ class DeactivateButtonEvent(Script):
         """
         self.key = "deactivate_button"
         self.desc = "Deactivate red button temporarily"
-        self.interval = 21 #seconds
-        self.start_delay = True # wait with the first repeat for self.interval seconds.
+        self.interval = 21  #seconds
+        self.start_delay = True  # wait with the first repeat for self.interval seconds.
         self.persistent = True
-        self.repeats = 1 # only do this once
+        self.repeats = 1  # only do this once
 
     def at_start(self):
         """

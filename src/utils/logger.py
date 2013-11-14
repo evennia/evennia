@@ -8,6 +8,7 @@ a higher layer module.
 from traceback import format_exc
 from twisted.python import log
 
+
 def log_trace(errmsg=None):
     """
     Log a traceback to the log. This should be called
@@ -27,7 +28,8 @@ def log_trace(errmsg=None):
             for line in errmsg.splitlines():
                 log.msg('[EE] %s' % line)
     except Exception:
-        log.msg('[EE] %s' % errmsg )
+        log.msg('[EE] %s' % errmsg)
+
 
 def log_errmsg(errmsg):
     """
@@ -43,6 +45,7 @@ def log_errmsg(errmsg):
         log.msg('[EE] %s' % line)
     #log.err('ERROR: %s' % (errormsg,))
 
+
 def log_warnmsg(warnmsg):
     """
     Prints/logs any warnings that aren't critical but should be noted.
@@ -57,6 +60,7 @@ def log_warnmsg(warnmsg):
         log.msg('[WW] %s' % line)
     #log.msg('WARNING: %s' % (warnmsg,))
 
+
 def log_infomsg(infomsg):
     """
     Prints any generic debugging/informative info that should appear in the log.
@@ -69,6 +73,7 @@ def log_infomsg(infomsg):
         infomsg = str(e)
     for line in infomsg.splitlines():
         log.msg('[..] %s' % line)
+
 
 def log_depmsg(depmsg):
     """

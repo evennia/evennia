@@ -5,6 +5,7 @@ from django.db import models
 from src.utils import logger, utils
 __all__ = ("HelpEntryManager",)
 
+
 class HelpEntryManager(models.Manager):
     """
     This HelpEntryManager implements methods for searching
@@ -48,7 +49,7 @@ class HelpEntryManager(models.Manager):
         Do a fuzzy match, preferably within the category of the
         current topic.
         """
-        return self.filter(db_key__icontains=topicstring).exclude(db_key__iexact=topicstring)
+        return self.filter(db_key__icontains=topicstr).exclude(db_key__iexact=topicstr)
 
     def find_topics_with_category(self, help_category):
         """
@@ -92,6 +93,7 @@ class HelpEntryManager(models.Manager):
         """
         ostring = ostring.strip().lower()
         if help_category:
-            return self.filter(db_key__iexact=ostring, db_help_category__iexact=help_category)
+            return self.filter(db_key__iexact=ostring,
+                               db_help_category__iexact=help_category)
         else:
             return self.filter(db_key__iexact=ostring)

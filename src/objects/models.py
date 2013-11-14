@@ -18,17 +18,15 @@ import traceback
 from django.db import models
 from django.conf import settings
 
-from src.typeclasses.models import TypedObject, TagHandler, NickHandler, AliasHandler, AttributeHandler
-from src.server.caches import get_prop_cache, set_prop_cache
-
-from src.typeclasses.typeclass import TypeClass
+from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
+                                    AliasHandler, AttributeHandler)
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_str, to_unicode, variable_from_module, inherits_from
+from src.utils.utils import make_iter, to_str, to_unicode, variable_from_module
 
 from django.utils.translation import ugettext as _
 
@@ -45,6 +43,7 @@ _DA = object.__delattr__
 _ME = _("me")
 _SELF = _("self")
 _HERE = _("here")
+
 
 #------------------------------------------------------------
 #
@@ -98,9 +97,10 @@ class ObjectDB(TypedObject):
     # db_key (also 'name' works), db_typeclass_path, db_date_created,
     # db_permissions
     #
-    # These databse fields (including the inherited ones) should normally be set
-    # using their corresponding wrapper properties, named same as the field, but without
-    # the db_* prefix (e.g. the db_key field is set with self.key instead). The wrappers
+    # These databse fields (including the inherited ones) should normally be
+    # managed by their corresponding wrapper properties, named same as the
+    # field, but without the db_* prefix (e.g. the db_key field is set with
+    # self.key instead). The wrappers are created at the metaclass level and
     # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
@@ -112,7 +112,7 @@ class ObjectDB(TypedObject):
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
-    db_location = models.ForeignKey('self', related_name="locations_set",db_index=True,
+    db_location = models.ForeignKey('self', related_name="locations_set", db_index=True,
                                      blank=True, null=True, verbose_name='game location')
     # a safety location, this usually don't change much.
     db_home = models.ForeignKey('self', related_name="homes_set",
@@ -158,13 +158,19 @@ class ObjectDB(TypedObject):
     # seems very sensitive to caching, so leaving it be for now. /Griatch
     #@property
     def __cmdset_storage_get(self):
-        "Getter. Allows for value = self.name. Returns a list of cmdset_storage."
+        """
+        Getter. Allows for value = self.name.
+        Returns a list of cmdset_storage.
+        """
         storage = _GA(self, "db_cmdset_storage")
         # we need to check so storage is not None
-        return [path.strip() for path  in storage.split(',')] if storage else []
+        return [path.strip() for path in storage.split(',')] if storage else []
     #@cmdset_storage.setter
     def __cmdset_storage_set(self, value):
-        "Setter. Allows for self.name = value. Stores as a comma-separated string."
+        """
+        Setter. Allows for self.name = value.
+        Stores as a comma-separated string.
+        """
         _SA(self, "db_cmdset_storage", ",".join(str(val).strip() for val in make_iter(value)))
         _GA(self, "save")()
     #@cmdset_storage.deleter
@@ -236,14 +242,13 @@ class ObjectDB(TypedObject):
                 if exi.destination]
     exits = property(__exits_get)
 
-
     #
     # Main Search method
     #
 
     def search(self, searchdata,
                global_search=False,
-               use_nicks=True, # should this default to off?
+               use_nicks=True,  # should this default to off?
                typeclass=None,
                location=None,
                attribute_name=None,
@@ -259,33 +264,46 @@ class ObjectDB(TypedObject):
 
         Inputs:
 
-        searchdata (str or obj): Primary search criterion. Will be matched against object.key (with object.aliases second)
-                       unless the keyword attribute_name specifies otherwise. Special strings:
-                        #<num> - search by unique dbref. This is always a global search.
+        searchdata (str or obj): Primary search criterion. Will be matched
+                    against object.key (with object.aliases second) unless
+                    the keyword attribute_name specifies otherwise.
+                    Special strings:
+                        #<num> - search by unique dbref. This is always
+                                 a global search.
                         me,self - self-reference to this object
-                        <num>-<string> - can be used to differentiate between multiple same-named matches
-        global_search (bool): Search all objects globally. This is overruled by "location" keyword.
-        use_nicks (bool): Use nickname-replace (nicktype "object") on the search string
-        typeclass (str or Typeclass, or list of either): Limit search only to Objects with this typeclass. May
-                    be a list of typeclasses for a broader search.
-        location (Object): Specify a location to search, if different from the self's given location
-                   plus its contents. This can also be a list of locations.
-        attribute_name (str): Define which property to search. If set, no key+alias search will be performed. This can be used to
-                      search database fields (db_ will be automatically appended), and if that fails, it will try to
-                      return objects having Attributes with this name and value equal to searchdata. A special
-                      use is to search for "key" here if you want to do a key-search without including aliases.
-        quiet (bool) - don't display default error messages - return multiple matches as a list and
-                no matches as None. If not set (default), will echo error messages and return None.
-        exact (bool) - if unset (default) - prefers to match to beginning of string rather than not matching
-                                     at all. If set, requires exact mathing of entire string.
+                        <num>-<string> - can be used to differentiate
+                                         between multiple same-named matches
+        global_search (bool): Search all objects globally. This is overruled
+                              by "location" keyword.
+        use_nicks (bool): Use nickname-replace (nicktype "object") on the
+                          search string
+        typeclass (str or Typeclass, or list of either): Limit search only
+                   to Objects with this typeclass. May be a list of typeclasses
+                   for a broader search.
+        location (Object): Specify a location to search, if different from the
+                     self's given location plus its contents. This can also
+                     be a list of locations.
+        attribute_name (str): Define which property to search. If set, no
+                      key+alias search will be performed. This can be used to
+                      search database fields (db_ will be automatically
+                      appended), and if that fails, it will try to return
+                      objects having Attributes with this name and value
+                      equal to searchdata. A special use is to search for
+                      "key" here if you want to do a key-search without
+                      including aliases.
+        quiet (bool) - don't display default error messages - return multiple
+                      matches as a list and no matches as None. If not
+                      set (default), will echo error messages and return None.
+        exact (bool) - if unset (default) - prefers to match to beginning of
+                      string rather than not matching at all. If set, requires
+                      exact mathing of entire string.
 
         Returns:
-
             quiet=False (default):
                 no match or multimatch:
-                    auto-echoes errors to self.msg, then returns None
-                    (results are handled by modules set by settings.SEARCH_AT_RESULT
-                     and settings.SEARCH_AT_MULTIMATCH_INPUT)
+                auto-echoes errors to self.msg, then returns None
+                    (results are handled by settings.SEARCH_AT_RESULT
+                               and settings.SEARCH_AT_MULTIMATCH_INPUT)
                 match:
                     a unique object match
             quiet=True:
@@ -315,8 +333,10 @@ class ObjectDB(TypedObject):
                     break
 
         candidates=None
-        if global_search or (is_string and searchdata.startswith("#") and len(searchdata) > 1 and searchdata[1:].isdigit()):
-            # only allow exact matching if searching the entire database or unique #dbrefs
+        if(global_search or (is_string and searchdata.startswith("#") and
+                    len(searchdata) > 1 and searchdata[1:].isdigit())):
+            # only allow exact matching if searching the entire database
+            # or unique #dbrefs
             exact = True
         elif location:
             # location(s) were given
@@ -324,13 +344,15 @@ class ObjectDB(TypedObject):
             for obj in make_iter(location):
                 candidates.extend([o.dbobj for o in obj.contents])
         else:
-            # local search. Candidates are self.contents, self.location and self.location.contents
+            # local search. Candidates are self.contents, self.location
+            # and self.location.contents
             location = self.location
             candidates = self.contents
             if location:
                 candidates = candidates + [location] + location.contents
             else:
-                candidates.append(self) # normally we are included in location.contents
+                # normally we are included in location.contents
+                candidates.append(self)
             # db manager expects database objects
             candidates = [obj.dbobj for obj in candidates]
 
@@ -360,23 +382,24 @@ class ObjectDB(TypedObject):
 
     def execute_cmd(self, raw_string, sessid=None):
         """
-        Do something as this object. This method is a copy of the execute_cmd method on the
-        session. This is never called normally, it's only used when wanting specifically to
-        let an object be the caller of a command. It makes use of nicks of eventual connected
-        players as well.
+        Do something as this object. This method is a copy of the execute_
+        cmd method on the session. This is never called normally, it's only
+        used when wanting specifically to let an object be the caller of a
+        command. It makes use of nicks of eventual connected players as well.
 
         Argument:
         raw_string (string) - raw command input
         sessid (int) - optional session id to return results to
 
         Returns Deferred - this is an asynchronous Twisted object that will
-            not fire until the command has actually finished executing. To overload
-            this one needs to attach callback functions to it, with addCallback(function).
-            This function will be called with an eventual return value from the command
-            execution.
+            not fire until the command has actually finished executing. To
+            overload this one needs to attach callback functions to it, with
+            addCallback(function). This function will be called with an
+            eventual return value from the command execution.
 
-            This return is not used at all by Evennia by default, but might be useful
-            for coders intending to implement some sort of nested command structure.
+            This return is not used at all by Evennia by default, but might
+            be useful for coders intending to implement some sort of nested
+            command structure.
         """
         # nick replacement - we require full-word matching.
 
@@ -384,7 +407,8 @@ class ObjectDB(TypedObject):
         raw_string = to_unicode(raw_string)
 
         raw_list = raw_string.split(None)
-        raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
+        raw_list = [" ".join(raw_list[:i + 1]) for i in range(len(raw_list))
+                                                        if raw_list[:i + 1]]
         # fetch the nick data efficiently
         nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
         if self.has_player:
@@ -416,7 +440,6 @@ class ObjectDB(TypedObject):
 
         if "data" in kwargs:
             # deprecation warning
-            from src.utils import logger
             logger.log_depmsg("ObjectDB.msg(): 'data'-dict keyword is deprecated. Use **kwargs instead.")
             data = kwargs.pop("data")
             if isinstance(data, dict):
@@ -437,7 +460,8 @@ class ObjectDB(TypedObject):
         """
         Emits something to all objects inside an object.
 
-        exclude is a list of objects not to send to. See self.msg() for more info.
+        exclude is a list of objects not to send to. See self.msg() for
+                more info.
         """
         contents = _GA(self, "contents")
         if exclude:
@@ -454,22 +478,27 @@ class ObjectDB(TypedObject):
         Moves this object to a new location. Note that if <destination> is an
         exit object (i.e. it has "destination"!=None), the move_to will
         happen to this destination and -not- into the exit object itself, unless
-        use_destination=False. Note that no lock checks are done by this function,
-        such things are assumed to have been handled before calling move_to.
+        use_destination=False. Note that no lock checks are done by this
+        function, such things are assumed to have been handled before calling
+        move_to.
 
         destination: (Object) Reference to the object to move to. This
                      can also be an exit object, in which case the destination
                      property is used as destination.
         quiet:  (bool)    If true, don't emit left/arrived messages.
         emit_to_obj: (Object) object to receive error messages
-        use_destination (bool): Default is for objects to use the "destination" property
-                              of destinations as the target to move to. Turning off this
-                              keyword allows objects to move "inside" exit objects.
-        to_none - allow destination to be None. Note that no hooks are run when moving
-                      to a None location. If you want to run hooks, run them manually.
+        use_destination (bool): Default is for objects to use the "destination"
+                             property of destinations as the target to move to.
+                             Turning off this keyword allows objects to move
+                             "inside" exit objects.
+        to_none - allow destination to be None. Note that no hooks are run when
+                     moving to a None location. If you want to run hooks,
+                     run them manually (and make sure they can manage None
+                     locations).
 
-        Returns True/False depending on if there were problems with the move. This method
-                may also return various error messages to the emit_to_obj.
+        Returns True/False depending on if there were problems with the move.
+                This method may also return various error messages to the
+                emit_to_obj.
         """
         def logerr(string=""):
             trc = traceback.format_exc()
@@ -633,11 +662,13 @@ class ObjectDB(TypedObject):
 
     def copy(self, new_key=None):
         """
-        Makes an identical copy of this object. If you want to customize the copy by
-        changing some settings, use ObjectDB.object.copy_object() directly.
+        Makes an identical copy of this object. If you want to customize the
+        copy by changing some settings, use ObjectDB.object.copy_object()
+        directly.
 
-        new_key (string) - new key/name of copied object. If new_key is not specified, the copy will be named
-                           <old_key>_copy by default.
+        new_key (string) - new key/name of copied object. If new_key is not
+                            specified, the copy will be named <old_key>_copy
+                            by default.
         Returns: Object (copy of this one)
         """
         def find_clone_key():
@@ -650,7 +681,8 @@ class ObjectDB(TypedObject):
             key = _GA(self, "key")
             num = 1
             for obj in (obj for obj in self.location.contents
-                        if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
+                        if obj.key.startswith(key) and
+                            obj.key.lstrip(key).isdigit()):
                 num += 1
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
@@ -705,7 +737,7 @@ class ObjectDB(TypedObject):
         _GA(self, "clear_exits")()
         # Clear out any non-exit objects located within the object
         _GA(self, "clear_contents")()
-        old_loc = _GA(self, "location")
+        #old_loc = _GA(self, "location")
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         # clear object's old  location's content cache of this object

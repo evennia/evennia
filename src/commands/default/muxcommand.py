@@ -74,8 +74,8 @@ class MuxCommand(Command):
 
         The 'name[ with several words]' part is already dealt with by the
         cmdhandler at this point, and stored in self.cmdname (we don't use
-        it here). The rest of the command is stored in self.args, which can start
-        with the switch indicator /.
+        it here). The rest of the command is stored in self.args, which can
+        start with the switch indicator /.
 
         This parser breaks self.args into its constituents and stores them in the
         following variables:

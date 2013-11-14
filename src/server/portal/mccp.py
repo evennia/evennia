@@ -20,11 +20,13 @@ import zlib
 MCCP = chr(86)
 FLUSH = zlib.Z_SYNC_FLUSH
 
+
 def mccp_compress(protocol, data):
     "Handles zlib compression, if applicable"
     if hasattr(protocol, 'zlib'):
         return protocol.zlib.compress(data) + protocol.zlib.flush(FLUSH)
     return data
+
 
 class Mccp(object):
     """

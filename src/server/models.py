@@ -18,6 +18,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import logger, utils
 from src.server.manager import ServerConfigManager
 
+
 #------------------------------------------------------------
 #
 # ServerConfig
@@ -61,11 +62,13 @@ class ServerConfig(SharedMemoryModel):
     def __key_get(self):
         "Getter. Allows for value = self.key"
         return self.db_key
+
     #@key.setter
     def __key_set(self, value):
         "Setter. Allows for self.key = value"
         self.db_key = value
         self.save()
+
     #@key.deleter
     def __key_del(self):
         "Deleter. Allows for del self.key. Deletes entry."
@@ -77,6 +80,7 @@ class ServerConfig(SharedMemoryModel):
     def __value_get(self):
         "Getter. Allows for value = self.value"
         return pickle.loads(str(self.db_value))
+
     #@value.setter
     def __value_set(self, value):
         "Setter. Allows for self.value = value"
@@ -86,6 +90,7 @@ class ServerConfig(SharedMemoryModel):
             return
         self.db_value = pickle.dumps(value)
         self.save()
+
     #@value.deleter
     def __value_del(self):
         "Deleter. Allows for del self.value. Deletes entry."

@@ -46,7 +46,8 @@ from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import CMD_LOGINSTART
 
 # limit symbol import for API
-__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate", "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
+__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
+           "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
 
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 CONNECTION_SCREEN = ""
@@ -56,6 +57,7 @@ except Exception:
     pass
 if not CONNECTION_SCREEN:
     CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
+
 
 class CmdUnconnectedConnect(MuxCommand):
     """
@@ -68,7 +70,7 @@ class CmdUnconnectedConnect(MuxCommand):
     """
     key = "connect"
     aliases = ["conn", "con", "co"]
-    locks = "cmd:all()" # not really needed
+    locks = "cmd:all()"  # not really needed
 
     def func(self):
         """
@@ -104,7 +106,7 @@ class CmdUnconnectedConnect(MuxCommand):
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0]==player.name for tup in bans)
+        if bans and (any(tup[0] == player.name for tup in bans)
                      or
                      any(tup[2].match(session.address[0]) for tup in bans if tup[2])):
             # this is a banned IP or name!
@@ -160,7 +162,7 @@ class CmdUnconnectedCreate(MuxCommand):
         else:
             playername, email, password = self.arglist
 
-        playername = playername.replace('"', '') # remove "
+        playername = playername.replace('"', '')  # remove "
         playername = playername.replace("'", "")
         self.playerinfo = (playername, email, password)
 
@@ -214,17 +216,20 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
             try:
-                new_character = create.create_player(playername, email, password,
+                new_character = create.create_player(playername,
+                                                     email,
+                                                     password,
                                                      permissions=permissions,
                                                      character_typeclass=typeclass,
                                                      character_location=default_home,
                                                      character_home=default_home)
-            except Exception, e:
+            except Exception:
                 session.msg("There was an error creating the default Character/Player:\n%s\n If this problem persists, contact an admin.")
                 return
             new_player = new_character.player
 
-            # This needs to be called so the engine knows this player is logging in for the first time.
+            # This needs to be called so the engine knows this player is
+            # logging in for the first time.
             # (so it knows to call the right hooks during login later)
             utils.init_new_player(new_player)
 
@@ -236,10 +241,10 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
 
-            # allow only the character itself and the player to puppet this character (and Immortals).
+            # allow only the character itself and the player to puppet
+            # this character (and Immortals).
             new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
                                     (new_character.id, new_player.id))
-
 
             # set a default description
             new_character.db.desc = "This is a Player."
@@ -250,11 +255,13 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             session.msg(string % (playername, email, email))
 
         except Exception:
-            # We are in the middle between logged in and -not, so we have to handle tracebacks
-            # ourselves at this point. If we don't, we won't see any errors at all.
+            # We are in the middle between logged in and -not, so we have to
+            # handle tracebacks ourselves at this point. If we don't, we won't
+            # see any errors at all.
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             session.msg(string % (traceback.format_exc()))
             logger.log_errmsg(traceback.format_exc())
+
 
 class CmdUnconnectedQuit(MuxCommand):
     """
@@ -272,6 +279,7 @@ class CmdUnconnectedQuit(MuxCommand):
         session.msg("Good bye! Disconnecting ...")
         session.session_disconnect()
 
+
 class CmdUnconnectedLook(MuxCommand):
     """
     This is an unconnected version of the look command for simplicity.
@@ -286,6 +294,7 @@ class CmdUnconnectedLook(MuxCommand):
     def func(self):
         "Show the connect screen."
         self.caller.msg(CONNECTION_SCREEN)
+
 
 class CmdUnconnectedHelp(MuxCommand):
     """
@@ -327,6 +336,7 @@ To login to the system, you need to do one of the following:
 You can use the {wlook{n command if you want to see the connect screen again.
 """
         self.caller.msg(string)
+
 
 # command set for the mux-like login
 

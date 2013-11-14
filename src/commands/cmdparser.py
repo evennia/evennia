@@ -51,10 +51,10 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     for cmd in cmdset:
         try:
             matches.extend([create_match(cmdname, raw_string, cmd)
-                            for cmdname in [cmd.key] + cmd.aliases
-                             if cmdname and l_raw_string.startswith(cmdname.lower())
-                              and (not cmd.arg_regex or
-                                 cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
+                      for cmdname in [cmd.key] + cmd.aliases
+                        if cmdname and l_raw_string.startswith(cmdname.lower())
+                           and (not cmd.arg_regex or
+                             cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
         except Exception:
             log_trace("cmdhandler error. raw_input:%s" % raw_string)
 
@@ -67,7 +67,8 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             if mindex.isdigit():
                 mindex = int(mindex) - 1
                 # feed result back to parser iteratively
-                return cmdparser(new_raw_string, cmdset, caller, match_index=mindex)
+                return cmdparser(new_raw_string, cmdset,
+                                 caller, match_index=mindex)
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, 'cmd')]
@@ -75,7 +76,8 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     if len(matches) > 1:
         # See if it helps to analyze the match with preserved case but only if
         # it leaves at least one match.
-        trimmed = [match for match in matches if raw_string.startswith(match[0])]
+        trimmed = [match for match in matches
+                     if raw_string.startswith(match[0])]
         if trimmed:
             matches = trimmed
 
@@ -94,14 +96,12 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         matches = matches[-quality.count(quality[-1]):]
 
     if len(matches) > 1 and match_index != None and 0 <= match_index < len(matches):
-        # We couldn't separate match by quality, but we have an index argument to
-        # tell us which match to use.
+        # We couldn't separate match by quality, but we have an
+        # index argument to tell us which match to use.
         matches = [matches[match_index]]
 
     # no matter what we have at this point, we have to return it.
     return matches
-
-
 
 #------------------------------------------------------------
 # Search parsers and support methods
@@ -118,7 +118,6 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 # The the replacing modules must have the same inputs and outputs as
 # those in this module.
 #
-
 def at_search_result(msg_obj, ostring, results, global_search=False,
                      nofound_string=None, multimatch_string=None):
     """
@@ -176,7 +175,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
                 invtext = _(" (carried)")
             if show_dbref:
                 dbreftext = "(#%i)" % result.dbid
-            string += "\n %i-%s%s%s" % (num+1, result.name,
+            string += "\n %i-%s%s%s" % (num + 1, result.name,
                                         dbreftext, invtext)
         results = None
     else:
@@ -186,6 +185,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
     if string:
         msg_obj.msg(string.strip())
     return results
+
 
 def at_multimatch_input(ostring):
     """
@@ -231,9 +231,9 @@ def at_multimatch_input(ostring):
     if not '-' in ostring:
         return (None, ostring)
     try:
-        index  = ostring.find('-')
-        number = int(ostring[:index])-1
-        return (number, ostring[index+1:])
+        index = ostring.find('-')
+        number = int(ostring[:index]) - 1
+        return (number, ostring[index + 1:])
     except ValueError:
         #not a number; this is not an identifier.
         return (None, ostring)
@@ -256,13 +256,15 @@ def at_multimatch_cmd(caller, matches):
         else:
             is_channel = ""
         if cmd.is_exit and cmd.destination:
-            is_exit =  _(" (exit to %s)") % cmd.destination
+            is_exit = (" (exit to %s)") % cmd.destination
         else:
             is_exit = ""
 
         id1 = ""
         id2 = ""
-        if not (is_channel or is_exit) and (hasattr(cmd, 'obj') and cmd.obj != caller) and hasattr(cmd.obj, "key"):
+        if (not (is_channel or is_exit) and
+            (hasattr(cmd, 'obj') and cmd.obj != caller) and
+             hasattr(cmd.obj, "key")):
             # the command is defined on some other object
             id1 = "%s-%s" % (num + 1, cmdname)
             id2 = " (%s)" % (cmd.obj.key)

@@ -4,16 +4,16 @@
 #
 
 from django import forms
-from django.db import models
+#from django.db import models
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.admin import widgets
+#from django.contrib.admin import widgets
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from src.players.models import PlayerDB
-from src.typeclasses.models import Attribute
-from src.utils import logger, create
+#from src.typeclasses.models import Attribute
+from src.utils import create
 
 
 # handle the custom User editor
@@ -109,6 +109,7 @@ class PlayerForm(forms.ModelForm):
                                         required=False,
                                         help_text="python path to player cmdset class (set in settings.CMDSET_PLAYER by default)")
 
+
 class PlayerInline(admin.StackedInline):
     "Inline creation of Player"
     model = PlayerDB
@@ -127,6 +128,7 @@ class PlayerInline(admin.StackedInline):
     extra = 1
     max_num = 1
 
+
 class PlayerDBAdmin(BaseUserAdmin):
     "This is the main creation screen for Users/players"
 
@@ -136,16 +138,16 @@ class PlayerDBAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password', 'email')}),
         ('Website profile', {'fields': ('first_name', 'last_name'),
-                           'description':"<i>These are not used in the default system.</i>"}),
+                           'description': "<i>These are not used in the default system.</i>"}),
         ('Website dates', {'fields': ('last_login', 'date_joined'),
-                             'description':'<i>Relevant only to the website.</i>'}),
-        ('Website Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions','groups'),
+                             'description': '<i>Relevant only to the website.</i>'}),
+        ('Website Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                 'user_permissions', 'groups'),
                                  'description': "<i>These are permissions/permission groups for accessing the admin site. They are unrelated to in-game access rights.</i>"}),
         ('Game Options', {'fields': ('db_typeclass_path', 'db_cmdset_storage', 'db_lock_storage'),
                           'description': '<i>These are attributes that are more relevant to gameplay.</i>'}))
         #('Game Options', {'fields': ('db_typeclass_path', 'db_cmdset_storage', 'db_permissions', 'db_lock_storage'),
         #                  'description': '<i>These are attributes that are more relevant to gameplay.</i>'}))
-
 
     add_fieldsets = (
         (None,
@@ -162,7 +164,7 @@ class PlayerDBAdmin(BaseUserAdmin):
             #uname, passwd, email = str(request.POST.get(u"username")), \
             #        str(request.POST.get(u"password1")), str(request.POST.get(u"email"))
             typeclass = str(request.POST.get(u"playerdb_set-0-db_typeclass_path"))
-            create.create_player("","","",
+            create.create_player("", "", "",
                                  user=userobj,
                                  typeclass=typeclass,
                                  player_dbobj=userobj)

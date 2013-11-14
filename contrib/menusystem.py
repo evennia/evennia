@@ -65,6 +65,7 @@ class CmdMenuNode(Command):
         else:
             self.caller.msg("{rThis option is not available.{n")
 
+
 class CmdMenuLook(default_cmds.CmdLook):
     """
     ooc look
@@ -92,6 +93,7 @@ class CmdMenuLook(default_cmds.CmdLook):
         # otherwise we use normal look
         super(CmdMenuLook, self).func()
 
+
 class CmdMenuHelp(default_cmds.CmdHelp):
     """
     help
@@ -118,6 +120,7 @@ class CmdMenuHelp(default_cmds.CmdHelp):
         # otherwise we use normal help
         super(CmdMenuHelp, self).func()
 
+
 class MenuCmdSet(CmdSet):
     """
     Cmdset for the menu. Will replace all other commands.
@@ -129,9 +132,11 @@ class MenuCmdSet(CmdSet):
     key = "menucmdset"
     priority = 1
     mergetype = "Replace"
+
     def at_cmdset_creation(self):
         "populate cmdset"
         pass
+
 
 #
 # Menu Node system
@@ -153,7 +158,8 @@ class MenuTree(object):
     'START' and 'END' respectively.
 
     """
-    def __init__(self, caller, nodes=None, startnode="START", endnode="END", exec_end="look"):
+    def __init__(self, caller, nodes=None,
+                 startnode="START", endnode="END", exec_end="look"):
         """
         We specify startnode/endnode so that the system knows where to
         enter and where to exit the menu tree. If nodes is given, it
@@ -194,7 +200,7 @@ class MenuTree(object):
             # if we was given the END node key, we clean up immediately.
             self.caller.cmdset.delete("menucmdset")
             del self.caller.db._menu_data
-            if self.exec_end != None:
+            if self.exec_end is not None:
                 self.caller.execute_cmd(self.exec_end)
             return
         # not exiting, look for a valid code.
@@ -205,13 +211,14 @@ class MenuTree(object):
                 # node. self.caller is available at this point.
                 try:
                     exec(node.code)
-                except Exception, e:
+                except Exception:
                     self.caller.msg("{rCode could not be executed for node %s. Continuing anyway.{n" % key)
             # clean old menu cmdset and replace with the new one
             self.caller.cmdset.delete("menucmdset")
             self.caller.cmdset.add(node.cmdset)
             # set the menu flag data for the default commands
-            self.caller.db._menu_data = {"help":node.helptext, "look":str(node.text)}
+            self.caller.db._menu_data = {"help": node.helptext,
+                                         "look": str(node.text)}
             # display the node
             self.caller.msg(node.text)
         else:
@@ -226,27 +233,39 @@ class MenuNode(object):
 
     """
     def __init__(self, key, text="", links=None, linktexts=None,
-                 keywords=None, cols=1, helptext=None, selectcmds=None, code="", nodefaultcmds=False, separator=""):
+                 keywords=None, cols=1, helptext=None,
+                 selectcmds=None, code="", nodefaultcmds=False, separator=""):
         """
         key       - the unique identifier of this node.
-        text      - is the text that will be displayed at top when viewing this node.
-        links     - a list of keys for unique menunodes this is connected to. The actual keys will not be
-                    printed - keywords will be used (or a number)
-        linktexts - an optional list of texts to describe the links. Must match link list if defined. Entries can be None
-                    to not generate any extra text for a particular link.
-        keywords  - an optional list of unique keys for choosing links. Must match links list. If not given, index numbers
-                    will be used. Also individual list entries can be None and will be replaed by indices.
-                    If CMD_NOMATCH or CMD_NOENTRY, no text will be generated to indicate the option exists.
+        text      - is the text that will be displayed at top when viewing this
+                    node.
+        links     - a list of keys for unique menunodes this is connected to.
+                    The actual keys will not printed - keywords will be used
+                    (or a number)
+        linktexts - an optional list of texts to describe the links. Must
+                    match link list if defined. Entries can be None to not
+                    generate any extra text for a particular link.
+        keywords  - an optional list of unique keys for choosing links. Must
+                    match links list. If not given, index numbers will be used.
+                    Also individual list entries can be None and will be replaed
+                    by indices. If CMD_NOMATCH or CMD_NOENTRY, no text will be
+                    generated to indicate the option exists.
         cols      - how many columns to use for displaying options.
-        helptext  - if defined, this is shown when using the help command instead of the normal help index.
-        selectcmds- a list of custom cmdclasses for handling each option. Must match links list, but some entries
-                    may be set to None to use default menu cmds. The given command's key will be used for the menu
-                    list entry unless it's CMD_NOMATCH or CMD_NOENTRY, in which case no text will be generated. These
-                    commands have access to self.menutree and so can be used to select nodes.
-        code      - functional code. This will be executed just before this node is loaded (i.e.
-                    as soon after it's been selected from another node). self.caller is available
-                    to call from this code block, as well as ev.
-        nodefaultcmds - if true, don't offer the default help and look commands in the node
+        helptext  - if defined, this is shown when using the help command
+                    instead of the normal help index.
+        selectcmds- a list of custom cmdclasses for handling each option.
+                    Must match links list, but some entries may be set to None
+                    to use default menu cmds. The given command's key will be
+                    used for the menu list entry unless it's CMD_NOMATCH or
+                    CMD_NOENTRY, in which case no text will be generated. These
+                    commands have access to self.menutree and so can be used to
+                    select nodes.
+        code      - functional code. This will be executed just before this
+                    node is loaded (i.e. as soon after it's been selected from
+                    another node). self.caller is available to call from this
+                    code block, as well as ev.
+        nodefaultcmds - if true, don't offer the default help and look commands
+                    in the node
         separator - this string will be put on the line between menu nodes5B.
         """
         self.key = key
@@ -311,13 +330,14 @@ class MenuNode(object):
                 break
         ftable = utils.format_table(cols)
         for row in ftable:
-            string +="\n" + "".join(row)
+            string += "\n" + "".join(row)
         # store text
         self.text = self.separator + "\n" + string.rstrip()
 
     def init(self, menutree):
         """
-        Called by menu tree. Initializes the commands needed by the menutree structure.
+        Called by menu tree. Initializes the commands needed by
+        the menutree structure.
         """
         # Create the relevant cmdset
         self.cmdset = MenuCmdSet()
@@ -362,7 +382,8 @@ def prompt_yesno(caller, question="", yescode="", nocode="", default="N"):
     cmdyes = CmdMenuNode()
     cmdyes.key = "yes"
     cmdyes.aliases = ["y"]
-    # this will be executed in the context of the yes command (so self.caller will be available)
+    # this will be executed in the context of the yes command (so
+    # self.caller will be available)
     cmdyes.code = yescode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
 
     cmdno = CmdMenuNode()
@@ -387,8 +408,8 @@ def prompt_yesno(caller, question="", yescode="", nocode="", default="N"):
     yesnocmdset.add(defaultcmd)
 
     # assinging menu data flags to caller.
-    caller.db._menu_data = {"help":"Please select Yes or No.",
-                            "look":"Please select Yes or No."}
+    caller.db._menu_data = {"help": "Please select Yes or No.",
+                            "look": "Please select Yes or No."}
     # assign cmdset and ask question
     caller.cmdset.add(yesnocmdset)
     if default == "Y":
@@ -397,6 +418,7 @@ def prompt_yesno(caller, question="", yescode="", nocode="", default="N"):
         prompt = "Y/[N]"
     prompt = "%s %s: " % (question, prompt)
     caller.msg(prompt)
+
 
 #
 # Menu command test
@@ -419,6 +441,7 @@ class CmdMenuTest(Command):
     key = "menu"
     locks = "cmd:all()"
     help_category = "Menu"
+
     def func(self):
         "Testing the menu system"
 

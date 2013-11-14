@@ -6,6 +6,7 @@
 from django.contrib import admin
 from src.server.models import ServerConfig
 
+
 class ServerConfigAdmin(admin.ModelAdmin):
     "Custom admin for server configs"
     list_display = ('db_key', 'db_value')

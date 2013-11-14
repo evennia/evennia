@@ -15,7 +15,7 @@ import urlparse
 from urllib import quote as urlquote
 from twisted.web import resource, http
 from twisted.internet import reactor
-from twisted.application import service, internet
+from twisted.application import internet
 from twisted.web.proxy import ReverseProxyResource
 from twisted.web.server import NOT_DONE_YET
 
@@ -23,6 +23,7 @@ from twisted.web.wsgi import WSGIResource
 from django.core.handlers.wsgi import WSGIHandler
 
 from settings import UPSTREAM_IPS
+
 
 #
 # X-Forwarded-For Handler
@@ -40,12 +41,13 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
         proxy_chain = req.getHeader('X-FORWARDED-FOR')
         if proxy_chain and client_ip in UPSTREAM_IPS:
             forwarded = proxy_chain.split(', ', 1)[CLIENT]
-            self.transport.client = (forwarded, port) 
+            self.transport.client = (forwarded, port)
 
 
 # Monkey-patch Twisted to handle X-Forwarded-For.
 
 http.HTTPFactory.protocol = HTTPChannelWithXForwardedFor
+
 
 class EvenniaReverseProxyResource(ReverseProxyResource):
     def getChild(self, path, request):
@@ -57,7 +59,6 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         return EvenniaReverseProxyResource(
             self.host, self.port, self.path + '/' + urlquote(path, safe=""),
             self.reactor)
-
 
     def render(self, request):
         """
@@ -77,6 +78,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         return NOT_DONE_YET
 
+
 #
 # Website server resource
 #
@@ -92,7 +94,7 @@ class DjangoWebRoot(resource.Resource):
         Setup the django+twisted resource
         """
         resource.Resource.__init__(self)
-        self.wsgi_resource = WSGIResource(reactor, pool , WSGIHandler())
+        self.wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
 
     def getChild(self, path, request):
         """
@@ -102,6 +104,8 @@ class DjangoWebRoot(resource.Resource):
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
         return self.wsgi_resource
+
+
 #
 # Threaded Webserver
 #
@@ -114,14 +118,16 @@ class WSGIWebServer(internet.TCPServer):
 
     call with WSGIWebServer(threadpool, port, wsgi_resource)
     """
-    def __init__(self, pool, *args, **kwargs ):
+    def __init__(self, pool, *args, **kwargs):
         "This just stores the threadpool"
         self.pool = pool
         internet.TCPServer.__init__(self, *args, **kwargs)
+
     def startService(self):
         "Start the pool after the service"
         internet.TCPServer.startService(self)
         self.pool.start()
+
     def stopService(self):
         "Safely stop the pool after service stop."
         internet.TCPServer.stopService(self)

@@ -168,6 +168,7 @@ class IMC2Packet(object):
                  self._get_optional_data_string())
         return packet.strip()
 
+
 class IMC2PacketAuthPlaintext(object):
     """
     IMC2 plain-text authentication packet. Auth packets are strangely
@@ -190,13 +191,15 @@ class IMC2PacketAuthPlaintext(object):
         """
         return 'PW %s %s version=2 autosetup %s\n' %(mudname, client_pwd, server_pwd)
 
+
 class IMC2PacketKeepAliveRequest(IMC2Packet):
     """
     Description:
     This packet is sent by a MUD to trigger is-alive packets from other MUDs.
     This packet is usually followed by the sending MUD's own is-alive packet.
     It is used in the filling of a client's MUD list, thus any MUD that doesn't
-    respond with an is-alive isn't marked as online on the sending MUD's mudlist.
+    respond with an is-alive isn't marked as online on the sending MUD's
+    mudlist.
 
     Data:
     (none)
@@ -213,6 +216,7 @@ class IMC2PacketKeepAliveRequest(IMC2Packet):
         self.packet_type = 'keepalive-request'
         self.target = '*'
         self.destination = '*'
+
 
 class IMC2PacketIsAlive(IMC2Packet):
     """
@@ -259,6 +263,7 @@ class IMC2PacketIsAlive(IMC2Packet):
                               'host': 'test.com',
                               'port': '5555'}
 
+
 class IMC2PacketIceRefresh(IMC2Packet):
     """
     Description:
@@ -279,6 +284,7 @@ class IMC2PacketIceRefresh(IMC2Packet):
         self.target = 'IMC'
         self.destination = '$'
 
+
 class IMC2PacketIceUpdate(IMC2Packet):
     """
     Description:
@@ -293,7 +299,7 @@ class IMC2PacketIceUpdate(IMC2Packet):
     The Name@MUD of the channel's owner
 
     operators=<string>
-    A space-seperated list of the Channel's operators, in the format of Person@MUD
+    A space-seperated list of the Channel's operators, (format: Person@MUD)
 
     policy=<string>
     The policy is either "open" or "private" with no quotes.
@@ -320,6 +326,7 @@ class IMC2PacketIceUpdate(IMC2Packet):
     ICE@Hub1 1234567890 Hub1!Hub2 ice-update *@YourMUD channel=Hub1:secretchat owner=Imm@SomeMUD operators=Other@SomeMUD policy=private invited="SpecialDude@OtherMUD CoolDude@WeirdMUD" level=Mort localname=schat
     """
     pass
+
 
 class IMC2PacketIceMsgRelayed(IMC2Packet):
     """
@@ -354,6 +361,7 @@ class IMC2PacketIceMsgRelayed(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketIceMsgPrivate(IMC2Packet):
     """
     Description:
@@ -383,6 +391,7 @@ class IMC2PacketIceMsgPrivate(IMC2Packet):
     You@YourMUD 1234567890 YourMUD ice-msg-p IMC@Hub1 channel=Hub1:secret text="You@YourMUD grins evilly." emote=2 echo=1
     """
     pass
+
 
 class IMC2PacketIceMsgBroadcasted(IMC2Packet):
     """
@@ -424,7 +433,8 @@ class IMC2PacketIceMsgBroadcasted(IMC2Packet):
     def __init__(self, server, channel, pobject, message):
         """
         Args:
-          server: (String) Server name the channel resides on (obs - this is e.g. Server01, not the full network name!)
+          server: (String) Server name the channel resides on (obs - this is
+                           e.g. Server01, not the full network name!)
           channel: (String) Name of the IMC2 channel.
           pobject: (Object) Object sending the message.
           message: (String) Message to send.
@@ -438,6 +448,7 @@ class IMC2PacketIceMsgBroadcasted(IMC2Packet):
                               'text': message,
                               'emote': 0,
                               'echo': 1}
+
 
 class IMC2PacketUserCache(IMC2Packet):
     """
@@ -455,6 +466,7 @@ class IMC2PacketUserCache(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketUserCacheRequest(IMC2Packet):
     """
     Description:
@@ -468,6 +480,7 @@ class IMC2PacketUserCacheRequest(IMC2Packet):
     *@YourMUD 1234567890 YourMUD user-cache-request *@SomeMUD user=Dude@SomeMUD
     """
     pass
+
 
 class IMC2PacketUserCacheReply(IMC2Packet):
     """
@@ -486,6 +499,7 @@ class IMC2PacketUserCacheReply(IMC2Packet):
     *@someMUD 1234567890 SomeMUD!Hub2!Hub1 user-cache-reply *@YourMUD user=Dude@SomeMUD gender=0
     """
     pass
+
 
 class IMC2PacketTell(IMC2Packet):
     """
@@ -521,6 +535,7 @@ class IMC2PacketTell(IMC2Packet):
                                                           self.route, self.target, self.destination,
                                                           self.optional_data.get("text","NO TEXT GIVEN"))
 
+
 class IMC2PacketEmote(IMC2Packet):
     """
     Description:
@@ -540,9 +555,11 @@ class IMC2PacketEmote(IMC2Packet):
     This is the message to be sent to the users.
 
     Examples:
-    ICE@Hub1 1234567890 Hub1 emote *@* channel=15 level=-1 text="the channel called hub1:test has been destroyed by You@YourMUD."
+    ICE@Hub1 1234567890 Hub1 emote *@* channel=15 level=-1 text="the
+                    channel called hub1:test has been destroyed by You@YourMUD."
     """
     pass
+
 
 class IMC2PacketRemoteAdmin(IMC2Packet):
     """
@@ -569,6 +586,7 @@ class IMC2PacketRemoteAdmin(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketIceCmd(IMC2Packet):
     """
     Description:
@@ -591,6 +609,7 @@ class IMC2PacketIceCmd(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketDestroy(IMC2Packet):
     """
     Description:
@@ -601,6 +620,7 @@ class IMC2PacketDestroy(IMC2Packet):
     channel=<string>  The server:channel being destroyed.
     """
     pass
+
 
 class IMC2PacketWho(IMC2Packet):
     """
@@ -622,6 +642,7 @@ class IMC2PacketWho(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketWhoReply(IMC2Packet):
     """
     Description:
@@ -642,6 +663,7 @@ class IMC2PacketWhoReply(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketWhois(IMC2Packet):
     """
     Description:
@@ -655,11 +677,13 @@ class IMC2PacketWhois(IMC2Packet):
     """
     def __init__(self, pobject_id, whois_target):
         super(IMC2PacketWhois, self).__init__()
-        self.sender = pobject_id  # Use the dbref, it's easier to trace back for the whois-reply.
+        # Use the dbref, it's easier to trace back for the whois-reply.
+        self.sender = pobject_id
         self.packet_type = 'whois'
         self.target = whois_target
         self.destination = '*'
         self.optional_data = {'level': '5'}
+
 
 class IMC2PacketWhoisReply(IMC2Packet):
     """
@@ -676,6 +700,7 @@ class IMC2PacketWhoisReply(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketBeep(IMC2Packet):
     """
     Description:
@@ -686,6 +711,7 @@ class IMC2PacketBeep(IMC2Packet):
     You@YourMUD 1234567890 YourMUD beep dude@somemud
     """
     pass
+
 
 class IMC2PacketIceChanWho(IMC2Packet):
     """
@@ -708,6 +734,7 @@ class IMC2PacketIceChanWho(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketIceChanWhoReply(IMC2Packet):
     """
     Description:
@@ -728,6 +755,7 @@ class IMC2PacketIceChanWhoReply(IMC2Packet):
     """
     pass
 
+
 class IMC2PacketLaston(IMC2Packet):
     """
     Description:
@@ -741,6 +769,7 @@ class IMC2PacketLaston(IMC2Packet):
     Example: User@MUD 1234567890 MUD imc-laston SERVER username=somenamehere
     """
     pass
+
 
 class IMC2PacketCloseNotify(IMC2Packet):
     """

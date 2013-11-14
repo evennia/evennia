@@ -33,6 +33,7 @@ from src.commands.default.muxcommand import MuxCommand
 # Command called when there is no input at line
 # (i.e. an lone return key)
 
+
 class SystemNoInput(MuxCommand):
     """
     This is called when there is no input given
@@ -44,11 +45,11 @@ class SystemNoInput(MuxCommand):
         "Do nothing."
         pass
 
+
 #
 # Command called when there was no match to the
 # command name
 #
-
 class SystemNoMatch(MuxCommand):
     """
     No command was found matching the given input.
@@ -61,6 +62,7 @@ class SystemNoMatch(MuxCommand):
         This is given the failed raw string as input.
         """
         self.caller.msg("Huh?")
+
 
 #
 # Command called when there were mulitple matches to the command.
@@ -100,7 +102,7 @@ class SystemMultimatch(MuxCommand):
                 is_channel = ""
             is_exit = hasattr(cmd, "is_exit") and cmd.is_exit
             if is_exit and cmd.destination:
-                is_exit =  " (exit to %s)" % cmd.destination
+                is_exit = " (exit to %s)" % cmd.destination
             else:
                 is_exit = ""
 
@@ -123,6 +125,7 @@ class SystemMultimatch(MuxCommand):
         """
         string = self.format_multimatches(self.caller, self.matches)
         self.caller.msg(string)
+
 
 # Command called when the command given at the command line
 # was identified as a channel name, like there existing a

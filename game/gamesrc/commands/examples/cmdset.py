@@ -32,6 +32,7 @@ from ev import default_cmds
 #from contrib import misc_commands
 #from contrib import chargen
 
+
 class ExampleCmdSet(CmdSet):
     """
     Implements an empty, example cmdset.
@@ -44,7 +45,8 @@ class ExampleCmdSet(CmdSet):
         This is the only method defined in a cmdset, called during
         its creation. It should populate the set with command instances.
 
-        As and example we just add the empty base Command object. It prints some info.
+        As and example we just add the empty base Command object.
+        It prints some info.
         """
         self.add(Command())
 
@@ -75,6 +77,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         #self.add(lineeditor.CmdEditor())
         #self.add(misc_commands.CmdQuell())
 
+
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """
     This is an example of how to overload the command set of the
@@ -98,6 +101,7 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
+
 
 class PlayerCmdSet(default_cmds.PlayerCmdSet):
     """

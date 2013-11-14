@@ -26,7 +26,7 @@ from twisted.python import components
 from django.conf import settings
 from src.server import session
 from src.players.models import PlayerDB
-from src.utils import ansi, utils, logger
+from src.utils import ansi, utils
 
 ENCODINGS = settings.ENCODINGS
 
@@ -34,6 +34,7 @@ CTRL_C = '\x03'
 CTRL_D = '\x04'
 CTRL_BACKSLASH = '\x1c'
 CTRL_L = '\x0c'
+
 
 class SshProtocol(Manhole, session.Session):
     """
@@ -47,7 +48,8 @@ class SshProtocol(Manhole, session.Session):
         login automatically.
         """
         self.authenticated_player = starttuple[0]
-        self.cfactory = starttuple[1] # obs may not be called self.factory, it gets overwritten!
+        # obs must not be called self.factory, that gets overwritten!
+        self.cfactory = starttuple[1]
 
     def terminalSize(self, width, height):
         """
@@ -95,7 +97,6 @@ class SshProtocol(Manhole, session.Session):
         self.terminal.write("KeyboardInterrupt")
         self.terminal.nextLine()
 
-
     def handle_EOF(self):
         """
         Handles EOF generally used to exit.
@@ -105,7 +106,6 @@ class SshProtocol(Manhole, session.Session):
         else:
             self.handle_QUIT()
 
-
     def handle_FF(self):
         """
         Handle a 'form feed' byte - generally used to request a screen
@@ -114,13 +114,11 @@ class SshProtocol(Manhole, session.Session):
         self.terminal.eraseDisplay()
         self.terminal.cursorHome()
 
-
     def handle_QUIT(self):
         """
         Quit, end, and lose the connection.
         """
         self.terminal.loseConnection()
-
 
     def connectionLost(self, reason=None):
         """
@@ -140,9 +138,7 @@ class SshProtocol(Manhole, session.Session):
         """
         return self.terminal.transport.getPeer()
 
-
     def lineReceived(self, string):
-
         """
         Communication Player -> Evennia. Any line return indicates a
         command for the purpose of the MUD.  So we take the user input
@@ -159,9 +155,9 @@ class SshProtocol(Manhole, session.Session):
 
         """
         for line in string.split('\n'):
-            self.terminal.write(line) #this is the telnet-specific method for sending
+            #this is the telnet-specific method for sending
+            self.terminal.write(line)
             self.terminal.nextLine()
-
 
     # session-general method hooks
 
@@ -175,7 +171,8 @@ class SshProtocol(Manhole, session.Session):
 
     def data_out(self, text=None, **kwargs):
         """
-        Data Evennia -> Player access hook. 'data' argument is a dict parsed for string settings.
+        Data Evennia -> Player access hook. 'data' argument is a dict
+        parsed for string settings.
 
         ssh flags:
             raw=True - leave all ansi markup and tokens unparsed
@@ -190,9 +187,9 @@ class SshProtocol(Manhole, session.Session):
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)
         if raw:
-            self.lineSend(string)
+            self.lineSend(text)
         else:
-            self.lineSend(ansi.parse_ansi(string.strip("{r") + "{r", strip_ansi=nomarkup))
+            self.lineSend(ansi.parse_ansi(text.strip("{r") + "{r", strip_ansi=nomarkup))
 
 
 class ExtraInfoAuthServer(SSHUserAuthServer):
@@ -208,6 +205,7 @@ class ExtraInfoAuthServer(SSHUserAuthServer):
         c.transport = self.transport
         return self.portal.login(c, None, IConchUser).addErrback(
                                                         self._ebPassword)
+
 
 class PlayerDBPasswordChecker(object):
     """
@@ -232,6 +230,7 @@ class PlayerDBPasswordChecker(object):
             res = (player, self.factory)
         return defer.succeed(res)
 
+
 class PassAvatarIdTerminalRealm(TerminalRealm):
     """
     Returns an avatar that passes the avatarId through to the
@@ -244,13 +243,12 @@ class PassAvatarIdTerminalRealm(TerminalRealm):
         sess = self.sessionFactory(comp)
 
         sess.transportFactory = self.transportFactory
-        sess.chainedProtocolFactory = lambda : self.chainedProtocolFactory(avatarId)
+        sess.chainedProtocolFactory = lambda: self.chainedProtocolFactory(avatarId)
 
         comp.setComponent(iconch.IConchUser, user)
         comp.setComponent(iconch.ISession, sess)
 
         return user
-
 
 
 class TerminalSessionTransport_getPeer:

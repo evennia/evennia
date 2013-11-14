@@ -43,9 +43,11 @@ _channelhandler = None
 
 
 # limit symbol import from API
-__all__ = ("create_object", "create_script", "create_help_entry", "create_message", "create_channel", "create_player")
+__all__ = ("create_object", "create_script", "create_help_entry",
+           "create_message", "create_channel", "create_player")
 
 _GA = object.__getattribute__
+
 
 #
 # Game Object creation
@@ -105,7 +107,8 @@ def create_object(typeclass, key=None, location=None,
     new_object = new_db_object.typeclass
 
     if not _GA(new_object, "is_typeclass")(typeclass, exact=True):
-        # this will fail if we gave a typeclass as input and it still gave us a default
+        # this will fail if we gave a typeclass as input and it still
+        # gave us a default
         SharedMemoryModel.delete(new_db_object)
         if report_to:
             _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_object.key, typeclass,
@@ -122,14 +125,14 @@ def create_object(typeclass, key=None, location=None,
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom
     # things on its database object.
-    new_object.basetype_setup() # setup the basics of Exits, Characters etc.
+    new_object.basetype_setup()  # setup the basics of Exits, Characters etc.
     new_object.at_object_creation()
 
     # custom-given perms/locks overwrite hooks
     if permissions:
         new_object.permissions.add(permissions)
     if locks:
-         new_object.locks.add(locks)
+        new_object.locks.add(locks)
     if aliases:
         new_object.aliases.add(aliases)
 
@@ -137,7 +140,7 @@ def create_object(typeclass, key=None, location=None,
     if home:
         new_object.home = home
     else:
-        new_object.home =  settings.CHARACTER_DEFAULT_HOME if not nohome else None
+        new_object.home = settings.CHARACTER_DEFAULT_HOME if not nohome else None
 
     if location:
         new_object.move_to(location, quiet=True)
@@ -153,6 +156,7 @@ def create_object(typeclass, key=None, location=None,
 
 #alias for create_object
 object = create_object
+
 
 #
 # Script creation
@@ -218,7 +222,8 @@ def create_script(typeclass, key=None, obj=None, locks=None,
     new_script = new_db_script.typeclass
 
     if not _GA(new_db_script, "is_typeclass")(typeclass, exact=True):
-        # this will fail if we gave a typeclass as input and it still gave us a default
+        # this will fail if we gave a typeclass as input and it still
+        # gave us a default
         SharedMemoryModel.delete(new_db_script)
         if report_to:
             _GA(report_to, "msg")("Error creating %s (%s): %s" % (new_db_script.key, typeclass,
@@ -243,13 +248,13 @@ def create_script(typeclass, key=None, obj=None, locks=None,
         new_script.key = key
     if locks:
         new_script.locks.add(locks)
-    if interval != None:
+    if interval is not None:
         new_script.interval = interval
-    if start_delay != None:
+    if start_delay is not None:
         new_script.start_delay = start_delay
-    if repeats != None:
+    if repeats is not None:
         new_script.repeats = repeats
-    if persistent != None:
+    if persistent is not None:
         new_script.persistent = persistent
 
     # a new created script should usually be started.
@@ -260,6 +265,7 @@ def create_script(typeclass, key=None, obj=None, locks=None,
     return new_script
 #alias
 script = create_script
+
 
 #
 # Help entry creation
@@ -295,6 +301,7 @@ def create_help_entry(key, entrytext, category="General", locks=None):
         return None
 # alias
 help_entry = create_help_entry
+
 
 #
 # Comm system methods
@@ -343,6 +350,7 @@ def create_message(senderobj, message, channels=None,
     return new_message
 message = create_message
 
+
 def create_channel(key, aliases=None, desc=None,
                    locks=None, keep_log=True,
                    typeclass=None):
@@ -388,6 +396,7 @@ def create_channel(key, aliases=None, desc=None,
     return new_channel
 
 channel = create_channel
+
 
 #
 # Player creation methods
@@ -456,7 +465,8 @@ def create_player(key, email, password,
         new_player = new_db_player.typeclass
 
         if not _GA(new_db_player, "is_typeclass")(typeclass, exact=True):
-            # this will fail if we gave a typeclass as input and it still gave us a default
+            # this will fail if we gave a typeclass as input
+            # and it still gave us a default
             SharedMemoryModel.delete(new_db_player)
             if report_to:
                 _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_player.key, typeclass,
@@ -465,7 +475,7 @@ def create_player(key, email, password,
             else:
                 raise Exception(_GA(new_db_player, "typeclass_last_errmsg"))
 
-        new_player.basetype_setup() # setup the basic locks and cmdset
+        new_player.basetype_setup()  # setup the basic locks and cmdset
         # call hook method (may override default permissions)
         new_player.at_player_creation()
 

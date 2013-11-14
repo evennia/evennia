@@ -24,8 +24,8 @@ TIMEFACTOR = settings.TIME_FACTOR
 # Common real-life time measures, in seconds.
 # You should not change these.
 
-REAL_TICK = max(1.0, settings.TIME_TICK) #Smallest time unit (min 1s)
-REAL_MIN = 60.0 # seconds per minute in real world
+REAL_TICK = max(1.0, settings.TIME_TICK)  # Smallest time unit (min 1s)
+REAL_MIN = 60.0  # seconds per minute in real world
 
 # Game-time units, in real-life seconds. These are supplied as
 # a convenient measure for determining the current in-game time,
@@ -40,6 +40,7 @@ WEEK = DAY * settings.TIME_DAY_PER_WEEK
 MONTH = WEEK * settings.TIME_WEEK_PER_MONTH
 YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
 
+
 class GameTime(Script):
     """
     This sets up an script that keeps track of the
@@ -51,12 +52,12 @@ class GameTime(Script):
         """
         self.key = "sys_game_time"
         self.desc = "Keeps track of the game time"
-        self.interval = REAL_MIN # update every minute
+        self.interval = REAL_MIN  # update every minute
         self.persistent = True
         self.start_delay = True
-        self.attributes.add("game_time", 0.0) #IC time
-        self.attributes.add("run_time", 0.0) #OOC time
-        self.attributes.add("up_time", 0.0) #OOC time
+        self.attributes.add("game_time", 0.0)  # IC time
+        self.attributes.add("run_time", 0.0)  # OOC time
+        self.attributes.add("up_time", 0.0)  # OOC time
 
     def at_repeat(self):
         """
@@ -77,6 +78,7 @@ class GameTime(Script):
         """
         self.attributes.add("up_time", 0.0)
 
+
 # Access routines
 
 def gametime_format(seconds):
@@ -94,26 +96,28 @@ def gametime_format(seconds):
     # do this or we cancel the already counted
     # timefactor in the timer script...
     sec = int(seconds * TIMEFACTOR)
-    years, sec = sec/YEAR, sec % YEAR
-    months, sec = sec/MONTH, sec % MONTH
-    weeks, sec = sec/WEEK, sec % WEEK
-    days, sec = sec/DAY, sec % DAY
-    hours, sec = sec/HOUR, sec % HOUR
-    minutes, sec = sec/MIN, sec % MIN
+    years, sec = sec / YEAR, sec % YEAR
+    months, sec = sec / MONTH, sec % MONTH
+    weeks, sec = sec / WEEK, sec % WEEK
+    days, sec = sec / DAY, sec % DAY
+    hours, sec = sec / HOUR, sec % HOUR
+    minutes, sec = sec / MIN, sec % MIN
     return (years, months, weeks, days, hours, minutes, sec)
+
 
 def realtime_format(seconds):
     """
     As gametime format, but with real time units
     """
     sec = int(seconds)
-    years, sec = sec/29030400, sec % 29030400
-    months, sec = sec/2419200, sec % 2419200
-    weeks, sec = sec/604800, sec % 604800
-    days, sec = sec/86400, sec % 86400
-    hours, sec = sec/3600, sec % 3600
-    minutes, sec = sec/60, sec % 60
+    years, sec = sec / 29030400, sec % 29030400
+    months, sec = sec / 2419200, sec % 2419200
+    weeks, sec = sec / 604800, sec % 604800
+    days, sec = sec / 86400, sec % 86400
+    hours, sec = sec / 3600, sec % 3600
+    minutes, sec = sec / 60, sec % 60
     return (years, months, weeks, days, hours, minutes, sec)
+
 
 def gametime(format=False):
     """
@@ -136,6 +140,7 @@ def gametime(format=False):
         return gametime_format(game_time)
     return game_time
 
+
 def runtime(format=False):
     """
     Get the total actual time the server has been running (minus downtimes)
@@ -150,6 +155,7 @@ def runtime(format=False):
     if format:
         return realtime_format(run_time)
     return run_time
+
 
 def uptime(format=False):
     """
@@ -170,31 +176,33 @@ def uptime(format=False):
 def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
                          weeks=0, months=0, yrs=0):
     """
-    This method helps to figure out the real-world time it will take until a in-game time
-    has passed. E.g. if an event should take place a month later in-game, you will be able
-    to find the number of real-world seconds this corresponds to (hint: Interval events deal
-    with real life seconds).
+    This method helps to figure out the real-world time it will take until an
+    in-game time has passed. E.g. if an event should take place a month later
+    in-game, you will be able to find the number of real-world seconds this
+    corresponds to (hint: Interval events deal with real life seconds).
 
     Example:
-     gametime_to_realtime(days=2) -> number of seconds in real life from now after which
-                                     2 in-game days will have passed.
+     gametime_to_realtime(days=2) -> number of seconds in real life from
+                                now after which 2 in-game days will have passed.
     """
-    real_time = secs/TIMEFACTOR + mins*MIN + hrs*HOUR + \
-           days*DAY + weeks*WEEK + months*MONTH + yrs*YEAR
+    real_time = secs / TIMEFACTOR + mins * MIN + hrs * HOUR + \
+           days * DAY + weeks * WEEK + months * MONTH + yrs * YEAR
     return real_time
+
 
 def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
                          weeks=0, months=0, yrs=0):
     """
-    This method calculates how large an in-game time a real-world time interval would
-    correspond to. This is usually a lot less interesting than the other way around.
+    This method calculates how large an in-game time a real-world time
+    interval would correspond to. This is usually a lot less interesting
+    than the other way around.
 
      Example:
       realtime_to_gametime(days=2) -> number of game-world seconds
                                       corresponding to 2 real days.
     """
-    game_time = TIMEFACTOR * (secs + mins*60 + hrs*3600 + days*86400 + \
-                         weeks*604800 + months*2419200 + yrs*29030400)
+    game_time = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
+                         weeks * 604800 + months * 2419200 + yrs * 29030400)
     return game_time
 
 

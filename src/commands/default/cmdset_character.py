@@ -1,13 +1,14 @@
 """
 This module ties together all the commands default Character objects have
-available (i.e. IC commands). Note that some commands, such as communication-commands are
-instead put on the player level, in the Player cmdset. Player commands remain
-available also to Characters.
+available (i.e. IC commands). Note that some commands, such as
+communication-commands are instead put on the player level, in the
+Player cmdset. Player commands remain available also to Characters.
 """
 from src.commands.cmdset import CmdSet
 from src.commands.default import general, help, admin, system
 from src.commands.default import building
 from src.commands.default import batchprocess
+
 
 class CharacterCmdSet(CmdSet):
     """

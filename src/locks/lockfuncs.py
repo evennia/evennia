@@ -86,6 +86,7 @@ from src.utils import utils
 
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
+
 def _to_player(accessing_obj):
     "Helper function. Makes sure an accessing object is a player object"
     if utils.inherits_from(accessing_obj, "src.objects.objects.Object"):
@@ -99,13 +100,20 @@ def _to_player(accessing_obj):
 def true(*args, **kwargs):
     "Always returns True."
     return True
+
+
 def all(*args, **kwargs):
     return True
+
+
 def false(*args, **kwargs):
     "Always returns False"
     return False
+
+
 def none(*args, **kwargs):
     return False
+
 
 def self(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -172,7 +180,8 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
             else:
                 return hpos_target <= hpos_player
         elif not is_quell and perm in perms_player:
-            # if we get here, check player perms first, otherwise continue as normal
+            # if we get here, check player perms first, otherwise
+            # continue as normal
             return True
 
     if perm in perms_object:
@@ -185,6 +194,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
                    if hperm in perms_object and hpos_target < hpos)
     return False
 
+
 def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Only allow objects with a permission *higher* in the permission
@@ -193,7 +203,8 @@ def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
     this function has no meaning and returns False.
     """
     kwargs["_greater_than"] = True
-    return perm(accessing_obj,accessed_obj, *args, **kwargs)
+    return perm(accessing_obj, accessed_obj, *args, **kwargs)
+
 
 def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -209,6 +220,7 @@ def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return perm(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
 
+
 def pperm_above(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Only allow Player objects with a permission *higher* in the permission
@@ -217,6 +229,7 @@ def pperm_above(accessing_obj, accessed_obj, *args, **kwargs):
     this function has no meaning and returns False.
     """
     return perm_above(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+
 
 def dbref(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -238,15 +251,18 @@ def dbref(accessing_obj, accessed_obj, *args, **kwargs):
         return dbref == accessing_obj.dbid
     return False
 
+
 def pdbref(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Same as dbref, but making sure accessing_obj is a player.
     """
     return dbref(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
 
+
 def id(accessing_obj, accessed_obj, *args, **kwargs):
     "Alias to dbref"
     return dbref(accessing_obj, accessed_obj, *args, **kwargs)
+
 
 def pid(accessing_obj, accessed_obj, *args, **kwargs):
     "Alias to dbref, for Players"
@@ -261,6 +277,7 @@ CF_MAPPING = {'eq': lambda val1, val2: val1 == val2 or int(val1) == int(val2),
               'le': lambda val1, val2: int(val1) <= int(val2),
               'ne': lambda val1, val2: int(val1) != int(val2),
               'default': lambda val1, val2: False}
+
 
 def attr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -297,21 +314,25 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
         try:
             return CF_MAPPING.get(typ, 'default')(val1, val2)
         except Exception:
-            # this might happen if we try to compare two things that cannot be compared
+            # this might happen if we try to compare two things
+            # that cannot be compared
             return False
 
     # first, look for normal properties on the object trying to gain access
     if hasattr(accessing_obj, attrname):
         if value:
             return valcompare(str(getattr(accessing_obj, attrname)), value, compare)
-        return bool(getattr(accessing_obj, attrname)) # will return Fail on False value etc
+        # will return Fail on False value etc
+        return bool(getattr(accessing_obj, attrname))
     # check attributes, if they exist
     if (hasattr(accessing_obj, 'attributes') and accessing_obj.attributes.has(attrname)):
         if value:
             return (hasattr(accessing_obj, 'attributes')
                     and valcompare(accessing_obj.attributes.get(attrname), value, compare))
-        return bool(accessing_obj.attributes.get(attrname)) # fails on False/None values
+        # fails on False/None values
+        return bool(accessing_obj.attributes.get(attrname))
     return False
+
 
 def objattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -327,6 +348,7 @@ def objattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
     if hasattr(accessing_obj, "obj"):
         return attr(accessing_obj.obj, accessed_obj, *args, **kwargs)
+
 
 def locattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -350,6 +372,7 @@ def attr_eq(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return attr(accessing_obj, accessed_obj, *args, **kwargs)
 
+
 def attr_gt(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -357,7 +380,9 @@ def attr_gt(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute > the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare':'gt'})
+    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'gt'})
+
+
 def attr_ge(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -365,7 +390,9 @@ def attr_ge(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute >= the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare':'ge'})
+    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ge'})
+
+
 def attr_lt(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -373,7 +400,9 @@ def attr_lt(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute < the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare':'lt'})
+    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'lt'})
+
+
 def attr_le(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -381,7 +410,9 @@ def attr_le(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute <= the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare':'le'})
+    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'le'})
+
+
 def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -389,18 +420,22 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute != the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare':'ne'})
+    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ne'})
+
 
 def holds(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
-      holds()          # checks if accessed_obj or accessed_obj.obj is held by accessing_obj
-      holds(key/dbref) # checks if accessing_obj holds an object with given key/dbref
-      holds(attrname, value) # checks if accessing_obj holds an object with the given attrname and value
+      holds()            checks if accessed_obj or accessed_obj.obj
+                         is held by accessing_obj
+      holds(key/dbref)   checks if accessing_obj holds an object
+                          with given key/dbref
+      holds(attrname, value)   checks if accessing_obj holds an
+                               object with the given attrname and value
 
     This is passed if accessed_obj is carried by accessing_obj (that is,
-    accessed_obj.location == accessing_obj), or if accessing_obj itself holds an
-    object matching the given key.
+    accessed_obj.location == accessing_obj), or if accessing_obj itself holds
+    an object matching the given key.
     """
     try:
         # commands and scripts don't have contents, so we are usually looking
@@ -412,6 +447,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             contents = accessing_obj.obj.contents
         except AttributeError:
             return False
+
     def check_holds(objid):
         # helper function. Compares both dbrefs and keys/aliases.
         objid = str(objid)
@@ -449,9 +485,11 @@ def superuser(*args, **kwargs):
     """
     return False
 
+
 def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
     """
-    Only returns true if the Evennia settings exists, alternatively has a certain value.
+    Only returns true if the Evennia settings exists, alternatively has
+    a certain value.
 
     Usage:
       serversetting(IRC_ENABLED)

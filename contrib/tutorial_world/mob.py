@@ -14,6 +14,7 @@ from contrib.tutorial_world import scripts as tut_scripts
 
 BASE_CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
+
 #------------------------------------------------------------
 #
 # Mob - mobile object
@@ -52,15 +53,18 @@ class Mob(tut_objects.TutorialObject):
     def update_irregular(self):
         "Called at irregular intervals. Moves the mob."
         if self.roam_mode:
-            exits = [ex for ex in self.location.exits if ex.access(self, "traverse")]
+            exits = [ex for ex in self.location.exits
+                                    if ex.access(self, "traverse")]
             if exits:
                 # Try to make it so the mob doesn't backtrack.
-                new_exits = [ex for ex in exits if ex.destination != self.db.last_location]
+                new_exits = [ex for ex in exits
+                                     if ex.destination != self.db.last_location]
                 if new_exits:
                     exits = new_exits
                 self.db.last_location = self.location
-                # execute_cmd() allows the mob to respect exit and exit-command locks,
-                # but may pose a problem if there is more than one exit with the same name.
+                # execute_cmd() allows the mob to respect exit and
+                # exit-command locks, but may pose a problem if there is more
+                # than one exit with the same name.
                 # - see Enemy example for another way to move
                 self.execute_cmd("%s" % exits[random.randint(0, len(exits) - 1)].key)
 
@@ -100,7 +104,8 @@ class AttackTimer(Script):
         "Called every self.interval seconds."
         if self.obj.db.inactive:
             return
-        #print "attack timer: at_repeat", self.dbobj.id, self.ndb.twisted_task, id(self.ndb.twisted_task)
+        #print "attack timer: at_repeat", self.dbobj.id, self.ndb.twisted_task,
+        # id(self.ndb.twisted_task)
         if self.obj.db.roam_mode:
             self.obj.roam()
             #return
@@ -119,10 +124,12 @@ class AttackTimer(Script):
             if (time.time() - self.obj.db.dead_at) > self.obj.db.dead_timer:
                 self.obj.reset()
 
+
 class Enemy(Mob):
     """
-    This is a ghostly enemy with health (hit points). Their chance to hit, damage etc is
-    determined by the weapon they are wielding, same as characters.
+    This is a ghostly enemy with health (hit points). Their chance to hit,
+    damage etc is determined by the weapon they are wielding, same as
+    characters.
 
     An enemy can be in four modes:
        roam (inherited from Mob) - where it just moves around randomly
@@ -133,12 +140,16 @@ class Enemy(Mob):
     Upon creation, the following attributes describe the enemy's actions
       desc - description
       full_health - integer number > 0
-      defeat_location - unique name or #dbref to the location the player is taken when defeated. If not given, will remain in room.
-      defeat_text - text to show player when they are defeated (just before being whisped away to defeat_location)
-      defeat_text_room - text to show other players in room when a player is defeated
+      defeat_location - unique name or #dbref to the location the player is
+                        taken when defeated. If not given, will remain in room.
+      defeat_text - text to show player when they are defeated (just before
+                    being whisped away to defeat_location)
+      defeat_text_room - text to show other players in room when a player
+                         is defeated
       win_text - text to show player when defeating the enemy
       win_text_room - text to show room when a player defeates the enemy
-      respawn_text - text to echo to room when the mob is reset/respawn in that room.
+      respawn_text - text to echo to room when the mob is reset/respawn in
+                     that room.
 
     """
     def at_object_creation(self):
@@ -157,7 +168,8 @@ class Enemy(Mob):
         self.db.health = 20
         self.db.dead_at = time.time()
         self.db.dead_timer = 100 # how long to stay dead
-        self.db.inactive = True # this is used during creation to make sure the mob doesn't move away
+        # this is used during creation to make sure the mob doesn't move away
+        self.db.inactive = True
         # store the last player to hit
         self.db.last_attacker = None
         # where to take defeated enemies
@@ -185,10 +197,12 @@ class Enemy(Mob):
 
         elif random.random() < 0.2:
             # no players to attack, move about randomly.
-            exits = [ex.destination for ex in self.location.exits if ex.access(self, "traverse")]
+            exits = [ex.destination for ex in self.location.exits
+                                                if ex.access(self, "traverse")]
             if exits:
                 # Try to make it so the mob doesn't backtrack.
-                new_exits = [ex for ex in exits if ex.destination != self.db.last_location]
+                new_exits = [ex for ex in exits
+                                    if ex.destination != self.db.last_location]
                 if new_exits:
                     exits = new_exits
                 self.db.last_location = self.location
@@ -224,7 +238,8 @@ class Enemy(Mob):
 
             # analyze result.
             if target.db.health <= 0:
-                # we reduced enemy to 0 health. Whisp them off to the prison room.
+                # we reduced enemy to 0 health. Whisp them off to
+                # the prison room.
                 tloc = search_object(self.db.defeat_location)
                 tstring = self.db.defeat_text
                 if not tstring:
@@ -235,7 +250,8 @@ class Enemy(Mob):
                 if tloc:
                     if not ostring:
                         ostring = "\n%s envelops the fallen ... and then their body is suddenly gone!" % self.key
-                        # silently move the player to defeat location (we need to call hook manually)
+                        # silently move the player to defeat location
+                        # (we need to call hook manually)
                     target.location = tloc[0]
                     tloc[0].at_object_receive(target, self.location)
                 elif not ostring:
@@ -246,7 +262,8 @@ class Enemy(Mob):
                 self.roam_mode = False
                 self.pursue_mode = True
         else:
-            # no players found, this could mean they have fled. Switch to pursue mode.
+            # no players found, this could mean they have fled.
+            # Switch to pursue mode.
             self.battle_mode = False
             self.roam_mode = False
             self.pursue_mode = True
@@ -259,20 +276,24 @@ class Enemy(Mob):
         last_attacker = self.db.last_attacker
         players = [obj for obj in self.location.contents if utils.inherits_from(obj, BASE_CHARACTER_TYPECLASS) and not obj.is_superuser]
         if players:
-            # we found players in the room. Maybe we caught up with some, or some walked in on us
-            # before we had time to pursue them. Switch to battle mode.
+            # we found players in the room. Maybe we caught up with some,
+            # or some walked in on us before we had time to pursue them.
+            # Switch to battle mode.
             self.battle_mode = True
             self.roam_mode = False
             self.pursue_mode = False
         else:
             # find all possible destinations.
-            destinations = [ex.destination for ex in self.location.exits if ex.access(self, "traverse")]
-            # find all players in the possible destinations. OBS-we cannot just use the player's
-            # current position to move the Enemy; this might have changed when the move is performed,
-            # causing the enemy to teleport out of bounds.
+            destinations = [ex.destination for ex in self.location.exits
+                                                if ex.access(self, "traverse")]
+            # find all players in the possible destinations. OBS-we cannot
+            # just use the player's current position to move the Enemy; this
+            # might have changed when the move is performed, causing the enemy
+            # to teleport out of bounds.
             players = {}
             for dest in destinations:
-                for obj in [o for o in dest.contents if utils.inherits_from(o, BASE_CHARACTER_TYPECLASS)]:
+                for obj in [o for o in dest.contents
+                           if utils.inherits_from(o, BASE_CHARACTER_TYPECLASS)]:
                     players[obj] = dest
             if players:
                 # we found targets. Move to intercept.
@@ -335,7 +356,8 @@ class Enemy(Mob):
                     string += "You fear it's only a matter of time before it materializes somewhere again."
                 self.location.msg_contents(string, exclude=[attacker])
 
-                # put enemy in dead mode and hide it from view. AttackTimer will bring it back later.
+                # put mob in dead mode and hide it from view.
+                # AttackTimer will bring it back later.
                 self.db.dead_at = time.time()
                 self.db.roam_mode = False
                 self.db.pursue_mode = False
@@ -347,7 +369,9 @@ class Enemy(Mob):
         return False
 
     def reset(self):
-        "If the mob was 'dead', respawn it to its home position and reset all modes and damage."
+        """
+        If the mob was 'dead', respawn it to its home position and reset
+        all modes and damage."""
         if self.db.dead_mode:
             self.db.health = self.db.full_health
             self.db.roam_mode = True

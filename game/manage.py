@@ -31,8 +31,10 @@ if not os.path.exists('settings.py'):
     # basic stuff.
 
     # make random secret_key.
-    import random, string
-    secret_key = list((string.letters + string.digits + string.punctuation).replace("\\","").replace("'",'"'))
+    import random
+    import string
+    secret_key = list((string.letters +
+        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
     random.shuffle(secret_key)
     secret_key = "".join(secret_key[:40])
 

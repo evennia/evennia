@@ -98,19 +98,25 @@ _LOGGER = None
 
 # specifically forbidden symbols
 _EV_UNALLOWED_SYMBOLS = ["attr", "attributes", "delete"]
-try: _EV_UNALLOWED_SYMBOLS.expand(settings.EVLANG_UNALLOWED_SYMBOLS)
-except AttributeError: pass
+try:
+    _EV_UNALLOWED_SYMBOLS.expand(settings.EVLANG_UNALLOWED_SYMBOLS)
+except AttributeError:
+    pass
 
 # safe methods (including self in args) to make available on
 # the evl object
 _EV_SAFE_METHODS = {}
-try: _EV_SAFE_METHODS.update(settings.EVLANG_SAFE_METHODS)
-except AttributeError: pass
+try:
+    _EV_SAFE_METHODS.update(settings.EVLANG_SAFE_METHODS)
+except AttributeError:
+    pass
 
 # symbols to make available directly in code
 _EV_SAFE_CONTEXT = {"testvar": "This is a safe var!"}
-try: _EV_SAFE_CONTEXT.update(settings.EVLANG_SAFE_CONTEXT)
-except AttributeError: pass
+try:
+    _EV_SAFE_CONTEXT.update(settings.EVLANG_SAFE_CONTEXT)
+except AttributeError:
+    pass
 
 
 #------------------------------------------------------------
@@ -146,8 +152,9 @@ class Evl(object):
         """
         # must do it this way since __dict__ is restricted
         members = [mtup for mtup in inspect.getmembers(Evl, predicate=inspect.ismethod)
-                   if not mtup[0].startswith("_")]
-        string = "\n".join(["{w%s{n\n %s" % (mtup[0], mtup[1].func_doc.strip()) for mtup in members])
+                                        if not mtup[0].startswith("_")]
+        string = "\n".join(["{w%s{n\n %s" % (mtup[0], mtup[1].func_doc.strip())
+                                                        for mtup in members])
         return string
 
     def msg(self, string, obj=None):
@@ -200,18 +207,24 @@ class Evl(object):
             errobj = kwargs["errobj"]
             del kwargs["errobj"]
         # set up some callbacks for delayed execution
+
         def errback(f, errobj):
+            "error callback"
             if errobj:
-                try: f = f.getErrorMessage()
-                except: pass
+                try:
+                    f = f.getErrorMessage()
+                except:
+                    pass
                 errobj.msg("EVLANG delay error: " + str(f))
+
         def runfunc(func, *args, **kwargs):
+            "threaded callback"
             threads.deferToThread(func, *args, **kwargs).addErrback(errback, errobj)
         # get things going
         if seconds <= 120:
             task.deferLater(reactor, seconds, runfunc, function, *args, **kwargs).addErrback(errback, errobj)
         else:
-            raise EvlangError("delay() can only delay for a maximum of 120 seconds (got %ss)." % seconds )
+            raise EvlangError("delay() can only delay for a maximum of 120 seconds (got %ss)." % seconds)
         return True
 
     def attr(self, obj, attrname=None, value=None, delete=False):
@@ -244,6 +257,7 @@ class EvlangError(Exception):
     "Error for evlang handler"
     pass
 
+
 class Evlang(object):
     """
     This is a handler for launching limited execution Python scripts.
@@ -265,17 +279,23 @@ class Evlang(object):
     assumed to be granted.
 
     """
-    def __init__(self, obj=None, scripts=None, storage_attr="evlang_scripts", safe_context=None, safe_timeout=2):
+    def __init__(self, obj=None, scripts=None, storage_attr="evlang_scripts",
+                 safe_context=None, safe_timeout=2):
         """
         Setup of the Evlang handler.
 
         Input:
-          obj - a reference to the object this handler is defined on. If not set, handler will operate stand-alone.
-          scripts = dictionary {scriptname, (codestring, callerobj), ...} where callerobj can be None.
-          evlang_storage_attr - if obj is given, will look for a dictionary {scriptname, (codestring, callerobj)...}
-                                stored in this given attribute name on that object.
-          safe_funcs - dictionary of {funcname:funcobj, ...} to make available for the execution environment
-          safe_timeout - the time we let a script run. If it exceeds this time, it will be blocked from running again.
+          obj - a reference to the object this handler is defined on. If not
+                set, handler will operate stand-alone.
+          scripts = dictionary {scriptname, (codestring, callerobj), ...}
+                    where callerobj can be Noneevlang_storage_attr - if obj
+                    is given, will look for a dictionary
+                      {scriptname, (codestring, callerobj)...}
+                    stored in this given attribute name on that object.
+          safe_funcs - dictionary of {funcname:funcobj, ...} to make available
+                       for the execution environment
+          safe_timeout - the time we let a script run. If it exceeds this
+                         time, it will be blocked from running again.
 
         """
         self.obj = obj
@@ -286,7 +306,7 @@ class Evlang(object):
             self.evlang_scripts.update(scripts)
         if self.obj:
             self.evlang_scripts.update(obj.attributes.get(storage_attr))
-        self.safe_context = _EV_SAFE_CONTEXT # set by default + settings
+        self.safe_context = _EV_SAFE_CONTEXT  # set by default + settings
         if safe_context:
             self.safe_context.update(safe_context)
         self.timedout_codestrings = []
@@ -322,12 +342,16 @@ class Evlang(object):
             _LOGGER.log_errmsg("EVLANG time exceeded: caller: %s, scripter: %s, code: %s" % (caller, scripter, codestring))
             if not self.msg(err, scripter, caller):
                 raise EvlangError(err)
+
         def errback(f):
             "We need an empty errback, to catch the traceback of defer.cancel()"
             pass
         return task.deferLater(reactor, timeout, alarm, codestring).addErrback(errback)
+
     def stop_timer(self, _, deferred):
-        "Callback for stopping a previously started timer. Cancels the given deferred."
+        """Callback for stopping a previously started timer.
+        Cancels the given deferred.
+        """
         deferred.cancel()
 
     @inlineCallbacks
@@ -337,7 +361,8 @@ class Evlang(object):
 
         codestring - the actual code to execute.
         scripter - the creator of the script. Preferentially sees error messages
-        caller - the object triggering the script - sees error messages if no scripter is given
+        caller - the object triggering the script - sees error messages if
+        no scripter is given
         """
 
         # catching previously detected long-running code
@@ -391,7 +416,6 @@ class Evlang(object):
         # execute code
         self.run(codestring, caller, scripter)
 
-
     def add(self, scriptname, codestring, scripter=None):
         """
         Add a new script to the handler. This will also save the
@@ -401,7 +425,8 @@ class Evlang(object):
         self.evlang_scripts[scriptname] = (codestring, scripter)
         if self.obj:
             # save to database
-            self.obj.attributes.add(self.evlang_storage_attr, self.evlang_scripts)
+            self.obj.attributes.add(self.evlang_storage_attr,
+                                    self.evlang_scripts)
 
     def delete(self, scriptname):
         """
@@ -411,7 +436,8 @@ class Evlang(object):
             del self.evlang_scripts[scriptname]
         if self.obj:
             # update change to database
-            self.obj.attributes.add(self.evlang_storage_attr, self.evlang_scripts)
+            self.obj.attributes.add(self.evlang_storage_attr,
+                                    self.evlang_scripts)
 
 
 #----------------------------------------------------------------------
@@ -435,8 +461,6 @@ class Evlang(object):
 #     there is no way to cancel the thread anyway). while is an easy way
 #     to create an infinite loop.
 #----------------------------------------------------------------------
-
-
 
 #----------------------------------------------------------------------
 # Module globals.
@@ -555,25 +579,31 @@ UNALLOWED_BUILTINS = set([
 # in with new unsafe things
 SAFE_BUILTINS = set([
      'False', 'None', 'True', 'abs', 'all', 'any', 'apply', 'basestring',
-     'bin', 'bool', 'buffer', 'bytearray', 'bytes', 'callable', 'chr', 'classmethod',
+     'bin', 'bool', 'buffer', 'bytearray', 'bytes', 'callable', 'chr',
+     'classmethod',
      'cmp', 'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter',
      'float', 'format', 'frozenset', 'hash', 'hex', 'id', 'int',
-     'isinstance', 'issubclass', 'iter', 'len', 'list', 'long', 'map', 'max', 'min',
-     'next', 'object', 'oct', 'ord', 'pow', 'print', 'property', 'range', 'reduce',
-     'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'staticmethod', 'str',
-     'sum', 'tuple', 'unichr', 'unicode', 'xrange', 'zip' ])
+     'isinstance', 'issubclass', 'iter', 'len', 'list', 'long', 'map',
+     'max', 'min',
+     'next', 'object', 'oct', 'ord', 'pow', 'print', 'property', 'range',
+     'reduce',
+     'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'staticmethod',
+     'str',
+     'sum', 'tuple', 'unichr', 'unicode', 'xrange', 'zip'])
 
 for ast_name in UNALLOWED_AST_NODES:
     assert(is_valid_ast_node(ast_name))
 for name in UNALLOWED_BUILTINS:
     assert(is_valid_builtin(name))
+
+
 def _cross_match_whitelist():
     "check the whitelist's completeness"
     available = ALL_BUILTINS - UNALLOWED_BUILTINS
     diff = available.difference(SAFE_BUILTINS)
-    assert not diff, diff # check so everything not disallowed is in safe
+    assert not diff, diff  # check so everything not disallowed is in safe
     diff = SAFE_BUILTINS.difference(available)
-    assert not diff, diff # check so everything everything in safe is in not-disallowed
+    assert not diff, diff  # check so everything in safe is in not-disallowed
 _cross_match_whitelist()
 
 def is_unallowed_ast_node(kind):
@@ -595,6 +625,7 @@ UNALLOWED_ATTR = [
     'f_exc_type', 'f_exc_value', 'f_globals', 'f_locals']
 UNALLOWED_ATTR.extend(_EV_UNALLOWED_SYMBOLS)
 
+
 def is_unallowed_attr(name):
     return (name[:2] == '__' and name[-2:] == '__') or \
            (name in UNALLOWED_ATTR)
@@ -614,18 +645,25 @@ class LimitedExecError(object):
     """
     def __init__(self, errmsg, lineno):
         self.errmsg, self.lineno = errmsg, lineno
+
     def __str__(self):
         return "line %d : %s" % (self.lineno, self.errmsg)
+
 
 class LimitedExecASTNodeError(LimitedExecError):
     "Expression/statement in AST evaluates to a restricted AST node type."
     pass
+
+
 class LimitedExecBuiltinError(LimitedExecError):
     "Expression/statement in tried to access a restricted builtin."
     pass
+
+
 class LimitedExecAttrError(LimitedExecError):
     "Expression/statement in tried to access a restricted attribute."
     pass
+
 
 class LimitedExecVisitor(object):
     """
@@ -672,7 +710,8 @@ class LimitedExecVisitor(object):
     def visit(self, node, *args):
         "Recursively validate node and all of its children."
         fn = getattr(self, 'visit' + classname(node))
-        if DEBUG: self.trace(node)
+        if DEBUG:
+            self.trace(node)
         fn(node, *args)
         for child in node.getChildNodes():
             self.visit(child, *args)
@@ -682,10 +721,10 @@ class LimitedExecVisitor(object):
         name = node.getChildren()[0]
         lineno = get_node_lineno(node)
         if is_unallowed_builtin(name):
-            self.errors.append(LimitedExecBuiltinError( \
+            self.errors.append(LimitedExecBuiltinError(
                 "access to builtin '%s' is denied" % name, lineno))
         elif is_unallowed_attr(name):
-            self.errors.append(LimitedExecAttrError( \
+            self.errors.append(LimitedExecAttrError(
                 "access to attribute '%s' is denied" % name, lineno))
 
     def visitGetattr(self, node, *args):
@@ -696,10 +735,10 @@ class LimitedExecVisitor(object):
         except Exception:
             name = ""
         lineno = get_node_lineno(node)
-        if attrname == 'attr' and name =='evl':
+        if attrname == 'attr' and name == 'evl':
             pass
         elif is_unallowed_attr(attrname):
-            self.errors.append(LimitedExecAttrError( \
+            self.errors.append(LimitedExecAttrError(
                 "access to attribute '%s' is denied" % attrname, lineno))
 
     def visitAssName(self, node, *args):
@@ -710,8 +749,8 @@ class LimitedExecVisitor(object):
     def visitPower(self, node, *args):
         "Make sure power-of operations don't get too big"
         if node.left.value > 1000000 or node.right.value > 10:
-           lineno = get_node_lineno(node)
-           self.errors.append(LimitedExecAttrError( \
+            lineno = get_node_lineno(node)
+            self.errors.append(LimitedExecAttrError(
               "power law solution too big - restricted", lineno))
 
     def ok(self, node, *args):
@@ -721,7 +760,7 @@ class LimitedExecVisitor(object):
     def fail(self, node, *args):
         "Default callback for unallowed AST nodes."
         lineno = get_node_lineno(node)
-        self.errors.append(LimitedExecASTNodeError( \
+        self.errors.append(LimitedExecASTNodeError(
             "execution of '%s' statements is denied" % classname(node),
             lineno))
 
@@ -732,6 +771,7 @@ class LimitedExecVisitor(object):
             if attr[:2] != '__':
                 print ' ' * 4, "%-15.15s" % attr, getattr(node, attr)
 
+
 #----------------------------------------------------------------------
 # Safe 'eval' replacement.
 #----------------------------------------------------------------------
@@ -739,6 +779,7 @@ class LimitedExecVisitor(object):
 class LimitedExecException(Exception):
     "Base class for all safe-eval related errors."
     pass
+
 
 class LimitedExecCodeException(LimitedExecException):
     """
@@ -754,6 +795,7 @@ class LimitedExecCodeException(LimitedExecException):
     def __str__(self):
         return '\n'.join([str(err) for err in self.errors])
 
+
 class LimitedExecContextException(LimitedExecException):
     """
     Exception class for reporting unallowed objects found in the dict
@@ -768,6 +810,7 @@ class LimitedExecContextException(LimitedExecException):
         self.keys, self.errors = keys, errors
     def __str__(self):
         return '\n'.join([str(err) for err in self.errors])
+
 
 class LimitedExecTimeoutException(LimitedExecException):
     """
@@ -798,6 +841,7 @@ def validate_context(context):
         raise LimitedExecContextException(ctx_errkeys, ctx_errors)
     return True
 
+
 def validate_code(codestring):
     "validate a code string"
     # prepare the code tree for checking
@@ -808,6 +852,7 @@ def validate_code(codestring):
     if not checker.walk(astnode):
         raise LimitedExecCodeException(codestring, checker.errors)
     return True
+
 
 def limited_exec(code, context = {}, timeout_secs=2, retobj=None, procpool_async=None):
     """
@@ -824,8 +869,8 @@ def limited_exec(code, context = {}, timeout_secs=2, retobj=None, procpool_async
     retobj - only used if procpool_async is also given. Defines an Object
              (which must define a msg() method), for receiving returns from
              the execution.
-    procpool_async - a run_async function alternative to the one in src.utils.utils.
-                     this must accept the keywords
+    procpool_async - a run_async function alternative to the one in
+                     src.utils.utils. This must accept the keywords
                         proc_timeout (will be set to timeout_secs
                         at_return - a callback
                         at_err - an errback
@@ -842,7 +887,10 @@ def limited_exec(code, context = {}, timeout_secs=2, retobj=None, procpool_async
             if retobj:
                 callback = lambda r: retobj.msg(r)
                 errback = lambda e: retobj.msg(e)
-                procpool_async(code, *context, proc_timeout=timeout_secs, at_return=callback, at_err=errback)
+                procpool_async(code, *context,
+                               proc_timeout=timeout_secs,
+                               at_return=callback,
+                               at_err=errback)
             else:
                 procpool_async(code, *context, proc_timeout=timeout_secs)
         else:
@@ -864,41 +912,41 @@ class TestLimitedExec(unittest.TestCase):
 
     def test_getattr(self):
         # attempt to get arround direct attr access
-        self.assertRaises(LimitedExecException, \
+        self.assertRaises(LimitedExecException,
             limited_exec, "getattr(int, '__abs__')")
 
     def test_func_globals(self):
         # attempt to access global enviroment where fun was defined
-        self.assertRaises(LimitedExecException, \
+        self.assertRaises(LimitedExecException,
             limited_exec, "def x(): pass; print x.func_globals")
 
     def test_lowlevel(self):
         # lowlevel tricks to access 'object'
-        self.assertRaises(LimitedExecException, \
+        self.assertRaises(LimitedExecException,
             limited_exec, "().__class__.mro()[1].__subclasses__()")
 
     def test_timeout_ok(self):
         # attempt to exectute 'slow' code which finishes within timelimit
         def test(): time.sleep(2)
-        env = {'test':test}
-        limited_exec("test()", env, timeout_secs = 5)
+        env = {'test': test}
+        limited_exec("test()", env, timeout_secs=5)
 
     def test_timeout_exceed(self):
         # attempt to exectute code which never teminates
-        self.assertRaises(LimitedExecException, \
+        self.assertRaises(LimitedExecException,
             limited_exec, "while 1: pass")
 
     def test_invalid_context(self):
         # can't pass an enviroment with modules or builtins
-        env = {'f' : __builtins__.open, 'g' : time}
-        self.assertRaises(LimitedExecException, \
+        env = {'f': __builtins__.open, 'g': time}
+        self.assertRaises(LimitedExecException,
             limited_exec, "print 1", env)
 
     def test_callback(self):
         # modify local variable via callback
         self.value = 0
         def test(): self.value = 1
-        env = {'test':test}
+        env = {'test': test}
         limited_exec("test()", env)
         self.assertEqual(self.value, 1)
 

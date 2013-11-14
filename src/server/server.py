@@ -32,12 +32,11 @@ from src.server.sessionhandler import SESSIONS
 
 # setting up server-side field cache
 
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save
 from src.server.caches import field_pre_save
 #pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
 post_save.connect(field_pre_save, dispatch_uid="fieldcache")
 
-from src.typeclasses.models import TypedObject
 #from src.server.caches import post_attr_update
 #from django.db.models.signals import m2m_changed
 
@@ -104,7 +103,7 @@ class Evennia(object):
 
         # create a store of services
         self.services = service.IServiceCollection(application)
-        self.amp_protocol = None # set by amp factory
+        self.amp_protocol = None  # set by amp factory
         self.sessions = SESSIONS
         self.sessions.server = self
 
@@ -121,7 +120,8 @@ class Evennia(object):
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _reactor_stopping=True)
+        reactor.addSystemEventTrigger('before', 'shutdown',
+                                          self.shutdown, _reactor_stopping=True)
 
         self.game_running = True
 
@@ -146,38 +146,48 @@ class Evennia(object):
 
     def update_defaults(self):
         """
-        We make sure to store the most important object defaults here, so we can catch if they
-        change and update them on-objects automatically. This allows for changing default cmdset locations
-        and default typeclasses in the settings file and have them auto-update all already existing
-        objects.
+        We make sure to store the most important object defaults here, so
+        we can catch if they change and update them on-objects automatically.
+        This allows for changing default cmdset locations and default
+        typeclasses in the settings file and have them auto-update all
+        already existing objects.
         """
         # setting names
-        settings_names = ("CMDSET_CHARACTER", "CMDSET_PLAYER", "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
-                          "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS", "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS")
+        settings_names = ("CMDSET_CHARACTER", "CMDSET_PLAYER",
+                          "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
+                          "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS",
+                          "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS")
         # get previous and current settings so they can be compared
         settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],
                                [settings.__getattr__(name) for name in settings_names])
         mismatches = [i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]]
-        if len(mismatches): # can't use any() since mismatches may be [0] which reads as False for any()
-            # we have a changed default. Import relevant objects and run the update
+        if len(mismatches):  # can't use any() since mismatches may be [0] which reads as False for any()
+            # we have a changed default. Import relevant objects and
+            # run the update
             from src.objects.models import ObjectDB
             #from src.players.models import PlayerDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
                 print " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr)
-                if i == 0: [obj.__setattr__("cmdset_storage", curr) for obj in ObjectDB.objects.filter(db_cmdset_storage__exact=prev)]
-                if i == 1: [ply.__setattr__("cmdset_storage", curr) for ply in PlayerDB.objects.filter(db_cmdset_storage__exact=prev)]
-                if i == 2: [ply.__setattr__("typeclass_path", curr) for ply in PlayerDB.objects.filter(db_typeclass_path__exact=prev)]
-                if i in (3,4,5,6): [obj.__setattr__("typeclass_path",curr)
-                                    for obj in ObjectDB.objects.filter(db_typeclass_path__exact=prev)]
-                if i == 7: [scr.__setattr__("typeclass_path", curr) for scr in ScriptDB.objects.filter(db_typeclass_path__exact=prev)]
+                if i == 0:
+                    [obj.__setattr__("cmdset_storage", curr) for obj in ObjectDB.objects.filter(db_cmdset_storage__exact=prev)]
+                if i == 1:
+                    [ply.__setattr__("cmdset_storage", curr) for ply in PlayerDB.objects.filter(db_cmdset_storage__exact=prev)]
+                if i == 2:
+                    [ply.__setattr__("typeclass_path", curr) for ply in PlayerDB.objects.filter(db_typeclass_path__exact=prev)]
+                if i in (3, 4, 5, 6):
+                    [obj.__setattr__("typeclass_path", curr) for obj in ObjectDB.objects.filter(db_typeclass_path__exact=prev)]
+                if i == 7:
+                    [scr.__setattr__("typeclass_path", curr) for scr in ScriptDB.objects.filter(db_typeclass_path__exact=prev)]
                 # store the new default and clean caches
                 ServerConfig.objects.conf(settings_names[i], curr)
                 ObjectDB.flush_instance_cache()
                 PlayerDB.flush_instance_cache()
                 ScriptDB.flush_instance_cache()
-        # if this is the first start we might not have a "previous" setup saved. Store it now.
-        [ServerConfig.objects.conf(settings_names[i], tup[1]) for i, tup in enumerate(settings_compare) if not tup[0]]
+        # if this is the first start we might not have a "previous"
+        # setup saved. Store it now.
+        [ServerConfig.objects.conf(settings_names[i], tup[1])
+                        for i, tup in enumerate(settings_compare) if not tup[0]]
 
     def run_initial_setup(self):
         """
@@ -191,7 +201,7 @@ class Evennia(object):
             # i.e. this is an empty DB that needs populating.
             print ' Server started for the first time. Setting defaults.'
             initial_setup.handle_setup(0)
-            print '-'*50
+            print '-' * 50
         elif int(last_initial_setup_step) >= 0:
             # a positive value means the setup crashed on one of its
             # modules and setup will resume from this step, retrying
@@ -200,7 +210,7 @@ class Evennia(object):
             print ' Resuming initial setup from step %(last)s.' % \
                 {'last': last_initial_setup_step}
             initial_setup.handle_setup(int(last_initial_setup_step))
-            print '-'*50
+            print '-' * 50
 
     def run_init_hooks(self):
         """
@@ -244,7 +254,7 @@ class Evennia(object):
         Either way, the active restart setting (Restart=True/False) is
         returned so the server knows which more it's in.
         """
-        if mode == None:
+        if mode is None:
             with open(SERVER_RESTART, 'r') as f:
                 # mode is either shutdown, reset or reload
                 mode = f.read()
@@ -259,16 +269,20 @@ class Evennia(object):
         Shuts down the server from inside it.
 
         mode - sets the server restart mode.
-               'reload' - server restarts, no "persistent" scripts are stopped, at_reload hooks called.
-               'reset' - server restarts, non-persistent scripts stopped, at_shutdown hooks called.
+               'reload' - server restarts, no "persistent" scripts
+                          are stopped, at_reload hooks called.
+               'reset' - server restarts, non-persistent scripts stopped,
+                         at_shutdown hooks called.
                'shutdown' - like reset, but server will not auto-restart.
                None - keep currently set flag from flag file.
-        _reactor_stopping - this is set if server is stopped by a kill command OR this method was already called
-                  once - in both cases the reactor is dead/stopping already.
+        _reactor_stopping - this is set if server is stopped by a kill
+                            command OR this method was already called
+                             once - in both cases the reactor is
+                             dead/stopping already.
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
-            # this means we have already passed through this method once; we don't need
-            # to run the shutdown procedure again.
+            # this means we have already passed through this method
+            # once; we don't need to run the shutdown procedure again.
             defer.returnValue(None)
 
         mode = self.set_restart_mode(mode)
@@ -280,9 +294,12 @@ class Evennia(object):
 
         if mode == 'reload':
             # call restart hooks
-            yield [(o.typeclass, o.at_server_reload()) for o in ObjectDB.get_all_cached_instances()]
-            yield [(p.typeclass, p.at_server_reload()) for p in PlayerDB.get_all_cached_instances()]
-            yield [(s.typeclass, s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
+            yield [(o.typeclass, o.at_server_reload())
+                                   for o in ObjectDB.get_all_cached_instances()]
+            yield [(p.typeclass, p.at_server_reload())
+                                   for p in PlayerDB.get_all_cached_instances()]
+            yield [(s.typeclass, s.pause(), s.at_server_reload())
+                                   for s in ScriptDB.get_all_cached_instances()]
             yield self.sessions.all_sessions_portal_sync()
             ServerConfig.objects.conf("server_restart_mode", "reload")
 
@@ -294,14 +311,20 @@ class Evennia(object):
 
         else:
             if mode == 'reset':
-                # don't unset the is_connected flag on reset, otherwise same as shutdown
-                yield [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
-            else: # shutdown
-                yield [_SA(p, "is_connected", False) for p in PlayerDB.get_all_cached_instances()]
-                yield [(o.typeclass, o.at_server_shutdown()) for o in ObjectDB.get_all_cached_instances()]
+                # don't unset the is_connected flag on reset, otherwise
+                # same as shutdown
+                yield [(o.typeclass, o.at_server_shutdown())
+                                   for o in ObjectDB.get_all_cached_instances()]
+            else:  # shutdown
+                yield [_SA(p, "is_connected", False)
+                                   for p in PlayerDB.get_all_cached_instances()]
+                yield [(o.typeclass, o.at_server_shutdown())
+                                   for o in ObjectDB.get_all_cached_instances()]
 
-            yield [(p.typeclass, p.unpuppet_all(), p.at_server_shutdown()) for p in PlayerDB.get_all_cached_instances()]
-            yield [(s.typeclass, s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
+            yield [(p.typeclass, p.unpuppet_all(), p.at_server_shutdown())
+                                   for p in PlayerDB.get_all_cached_instances()]
+            yield [(s.typeclass, s.at_server_shutdown())
+                                   for s in ScriptDB.get_all_cached_instances()]
             yield ObjectDB.objects.clear_all_sessids()
             ServerConfig.objects.conf("server_restart_mode", "reset")
 
@@ -310,12 +333,14 @@ class Evennia(object):
 
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
-        # if _reactor_stopping is true, reactor does not need to be stopped again.
+        # if _reactor_stopping is true, reactor does not need to
+        # be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
         if not _reactor_stopping:
-            # this will also send a reactor.stop signal, so we set a flag to avoid loops.
+            # this will also send a reactor.stop signal, so we set a
+            # flag to avoid loops.
             self.shutdown_complete = True
             reactor.callLater(0, reactor.stop)
 
@@ -415,7 +440,7 @@ for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols
     plugin_module.start_plugin_services(EVENNIA)
 
-print '-' * 50 # end of terminal output
+print '-' * 50  # end of terminal output
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)

@@ -3,6 +3,7 @@ Custom manager for ServerConfig objects.
 """
 from django.db import models
 
+
 class ServerConfigManager(models.Manager):
     """
     This ServerConfigManager implements methods for searching
@@ -24,16 +25,16 @@ class ServerConfigManager(models.Manager):
         """
         if not key:
             return self.all()
-        elif delete == True:
+        elif delete is True:
             for conf in self.filter(db_key=key):
                 conf.delete()
-        elif value != None:
+        elif value is not None:
             conf = self.filter(db_key=key)
             if conf:
                 conf = conf[0]
             else:
                 conf = self.model(db_key=key)
-            conf.value = value # this will pickle
+            conf.value = value  # this will pickle
         else:
             conf = self.filter(db_key=key)
             if not conf:
@@ -42,7 +43,8 @@ class ServerConfigManager(models.Manager):
 
     def get_mysql_db_version(self):
         """
-        This is a helper method for getting the version string of a mysql database.
+        This is a helper method for getting the version string
+        of a mysql database.
         """
         from django.db import connection
         conn = connection.cursor()

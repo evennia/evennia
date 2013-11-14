@@ -8,13 +8,14 @@ from django.conf import settings
 from src.utils.utils import to_str
 _GA = object.__getattribute__
 _SA = object.__setattr__
-_NA = lambda o: (None, "N/A") # not implemented
+_NA = lambda o: (None, "N/A")  # not implemented
 
-# mapper for which properties may be requested/sent to the client and how to do so.
-# Each entry should define a function that returns two values - the name of the
-# propertye being returned (a string) and the value. If tracking database fields,
-# make sure to enter the full database field name (e.g. db_key rather than just key)
-# since the db_ prefix is used by trackers to know which tracking mechanism to activate.
+# mapper for which properties may be requested/sent to the client and how
+# to do so. Each entry should define a function that returns two values - the
+# name of the property being returned (a string) and the value. If tracking
+# database fields, make sure to enter the full database field name (e.g.
+# db_key rather than just key) since the db_ prefix is used by trackers
+# to know which tracking mechanism to activate.
 
 OOB_SENDABLE = {
    ## General
@@ -97,12 +98,15 @@ class TrackerBase(object):
     """
     def __init__(self, oobhandler, *args, **kwargs):
         self.oobhandler = oobhandler
+
     def update(self, *args, **kwargs):
         "Called by tracked objects"
         pass
+
     def at_remove(self, *args, **kwargs):
         "Called when tracker is removed"
         pass
+
 
 class OOBFieldTracker(TrackerBase):
     """
@@ -127,7 +131,9 @@ class OOBFieldTracker(TrackerBase):
             new_value = new_value.key
         except AttributeError:
             new_value = to_str(new_value, force_string=True)
-        self.oobhandler.msg(self.sessid, "report", self.fieldname, new_value, *args, **kwargs)
+        self.oobhandler.msg(self.sessid, "report", self.fieldname,
+                                                    new_value, *args, **kwargs)
+
 
 class OOBAttributeTracker(TrackerBase):
     """
@@ -136,13 +142,13 @@ class OOBAttributeTracker(TrackerBase):
     we instead store the name of the attribute to return.
     """
     def __init__(self, oobhandler, fieldname, sessid, attrname, *args, **kwargs):
-       """
-       attrname - name of attribute to track
-       sessid - sessid of session to report to
-       """
-       self.oobhandler = oobhandler
-       self.attrname = attrname
-       self.sessid = sessid
+        """
+        attrname - name of attribute to track
+        sessid - sessid of session to report to
+        """
+        self.oobhandler = oobhandler
+        self.attrname = attrname
+        self.sessid = sessid
 
     def update(self, new_value, *args, **kwargs):
         "Called by cache when attribute's db_value field updates"
@@ -151,6 +157,7 @@ class OOBAttributeTracker(TrackerBase):
         except AttributeError:
             new_value = to_str(new_value, force_string=True)
         self.oobhandler.msg(self.sessid, "report", self.attrname, new_value, *args, **kwargs)
+
 
 #------------------------------------------------------------
 # OOB commands
@@ -173,31 +180,51 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     occurs already at the execution stage (such as the oob function
     not being recognized or having the wrong args etc).
     """
-    session.msg(oob=("send", {"ERROR":errmsg}))
+    session.msg(oob=("send", {"ERROR": errmsg}))
+
 
 def LIST(oobhandler, session, mode, *args, **kwargs):
     """
     List available properties. Mode is the type of information
     desired:
-        "COMMANDS"               Request an array of commands supported by the server.
-        "LISTS"                  Request an array of lists supported by the server.
-        "CONFIGURABLE_VARIABLES" Request an array of variables the client can configure.
-        "REPORTABLE_VARIABLES"   Request an array of variables the server will report.
-        "REPORTED_VARIABLES"     Request an array of variables currently being reported.
-        "SENDABLE_VARIABLES"     Request an array of variables the server will send.
+        "COMMANDS"               Request an array of commands supported
+                                 by the server.
+        "LISTS"                  Request an array of lists supported
+                                 by the server.
+        "CONFIGURABLE_VARIABLES" Request an array of variables the client
+                                 can configure.
+        "REPORTABLE_VARIABLES"   Request an array of variables the server
+                                 will report.
+        "REPORTED_VARIABLES"     Request an array of variables currently
+                                 being reported.
+        "SENDABLE_VARIABLES"     Request an array of variables the server
+                                 will send.
     """
     mode = mode.upper()
-    # the first return argument is treated by the msdp protocol as the name of the msdp array to return
+    # the first return argument is treated by the msdp protocol as the
+    # name of the msdp array to return
     if mode == "COMMANDS":
-        session.msg(oob=("list", ("COMMANDS", "LIST", "REPORT", "UNREPORT", "SEND"))) # RESET
+        session.msg(oob=("list", ("COMMANDS",
+                                  "LIST",
+                                  "REPORT",
+                                  "UNREPORT",
+                                  # "RESET",
+                                  "SEND")))
     elif mode == "LISTS":
-        session.msg(oob=("list", ("LISTS", "REPORTABLE_VARIABLES","REPORTED_VARIABLES", "SENDABLE_VARIABLES"))) #CONFIGURABLE_VARIABLES
+        session.msg(oob=("list", ("LISTS",
+                                  "REPORTABLE_VARIABLES",
+                                  "REPORTED_VARIABLES",
+                                  # "CONFIGURABLE_VARIABLES",
+                                  "SENDABLE_VARIABLES")))
     elif mode == "REPORTABLE_VARIABLES":
-        session.msg(oob=("list", ("REPORTABLE_VARIABLES",) + tuple(key for key in OOB_REPORTABLE.keys())))
+        session.msg(oob=("list", ("REPORTABLE_VARIABLES",) +
+                                  tuple(key for key in OOB_REPORTABLE.keys())))
     elif mode == "REPORTED_VARIABLES":
-        session.msg(oob=("list", ("REPORTED_VARIABLES",) + tuple(oobhandler.get_all_tracked(session))))
+        session.msg(oob=("list", ("REPORTED_VARIABLES",) +
+                                    tuple(oobhandler.get_all_tracked(session))))
     elif mode == "SENDABLE_VARIABLES":
-        session.msg(oob=("list", ("SENDABLE_VARIABLES",) + tuple(key for key in OOB_REPORTABLE.keys())))
+        session.msg(oob=("list", ("SENDABLE_VARIABLES",) +
+                                  tuple(key for key in OOB_REPORTABLE.keys())))
     #elif mode == "CONFIGURABLE_VARIABLES":
     #    pass
     else:
@@ -221,6 +248,7 @@ def send(oobhandler, session, *args, **kwargs):
     # return result
     session.msg(oob=("send", ret))
 
+
 def report(oobhandler, session, *args, **kwargs):
     """
     This creates a tracker instance to track the data given in *args.
@@ -232,9 +260,12 @@ def report(oobhandler, session, *args, **kwargs):
             key, val = OOB_REPORTABLE.get(name, _NA)(obj)
             if key:
                 if key.startswith("db_"):
-                    oobhandler.track_field(obj, session.sessid, key, OOBFieldTracker)
-                else: # assume attribute
-                    oobhandler.track_attribute(obj, session.sessid, key, OOBAttributeTracker)
+                    oobhandler.track_field(obj, session.sessid,
+                                           key, OOBFieldTracker)
+                else:  # assume attribute
+                    oobhandler.track_attribute(obj, session.sessid,
+                                               key, OOBAttributeTracker)
+
 
 def unreport(oobhandler, session, vartype="prop", *args, **kwargs):
     """
@@ -248,6 +279,6 @@ def unreport(oobhandler, session, vartype="prop", *args, **kwargs):
             if key:
                 if key.startswith("db_"):
                     oobhandler.untrack_field(obj, session.sessid, key)
-                else: # assume attribute
+                else:  # assume attribute
                     oobhandler.untrack_attribute(obj, session.sessid, key)
 

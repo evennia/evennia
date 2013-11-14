@@ -20,18 +20,18 @@ import time
 from hashlib import md5
 
 from twisted.web import server, resource
-from twisted.internet import defer, reactor
 
 from django.utils import simplejson
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings
-from src.utils import utils, logger, ansi
+from src.utils import utils, logger
 from src.utils.text2html import parse_html
 from src.server import session
 
 SERVERNAME = settings.SERVERNAME
 ENCODINGS = settings.ENCODINGS
+
 
 # defining a simple json encoder for returning
 # django data to the client. Might need to
@@ -43,6 +43,8 @@ class LazyEncoder(simplejson.JSONEncoder):
         if isinstance(obj, Promise):
             return force_unicode(obj)
         return super(LazyEncoder, self).default(obj)
+
+
 def jsonify(obj):
     return utils.to_str(simplejson.dumps(obj, ensure_ascii=False, cls=LazyEncoder))
 
@@ -84,23 +86,23 @@ class WebClient(resource.Resource):
         request = self.requests.get(suid)
         if request:
             # we have a request waiting. Return immediately.
-            request.write(jsonify({'msg':string, 'data':data}))
+            request.write(jsonify({'msg': string, 'data': data}))
             request.finish()
             del self.requests[suid]
         else:
             # no waiting request. Store data in buffer
             dataentries = self.databuffer.get(suid, [])
-            dataentries.append(jsonify({'msg':string, 'data':data}))
+            dataentries.append(jsonify({'msg': string, 'data': data}))
             self.databuffer[suid] = dataentries
 
     def client_disconnect(self, suid):
         """
         Disconnect session with given suid.
         """
-        if self.requests.has_key(suid):
+        if suid in self.requests:
             self.requests[suid].finish()
             del self.requests[suid]
-        if self.databuffer.has_key(suid):
+        if suid in self.databuffer:
             del self.databuffer[suid]
 
     def mode_init(self, request):
@@ -108,7 +110,8 @@ class WebClient(resource.Resource):
         This is called by render_POST when the client
         requests an init mode operation (at startup)
         """
-        #csess = request.getSession() # obs, this is a cookie, not an evennia session!
+        #csess = request.getSession() # obs, this is a cookie, not
+                                      # an evennia session!
         #csees.expireCallbacks.append(lambda : )
         suid = request.args.get('suid', ['0'])[0]
 
@@ -124,7 +127,7 @@ class WebClient(resource.Resource):
             sess.init_session("webclient", remote_addr, self.sessionhandler)
             sess.suid = suid
             sess.sessionhandler.connect(sess)
-        return jsonify({'msg':host_string, 'suid':suid})
+        return jsonify({'msg': host_string, 'suid': suid})
 
     def mode_input(self, request):
         """
@@ -158,8 +161,8 @@ class WebClient(resource.Resource):
         if dataentries:
             return dataentries.pop(0)
         request.notifyFinish().addErrback(self._responseFailed, suid, request)
-        if self.requests.has_key(suid):
-            self.requests[suid].finish() # Clear any stale request.
+        if suid in self.requests:
+            self.requests[suid].finish()  # Clear any stale request.
         self.requests[suid] = request
         return server.NOT_DONE_YET
 
@@ -206,6 +209,7 @@ class WebClient(resource.Resource):
             # this should not happen if client sends valid data.
             return ''
 
+
 #
 # A session type handling communication over the
 # web client interface.
@@ -241,7 +245,8 @@ class WebClientSession(session.Session):
             if raw:
                 self.client.lineSend(self.suid, text)
             else:
-                self.client.lineSend(self.suid, parse_html(text, strip_ansi=nomarkup))
+                self.client.lineSend(self.suid,
+                                     parse_html(text, strip_ansi=nomarkup))
             return
         except Exception:
             logger.log_trace()

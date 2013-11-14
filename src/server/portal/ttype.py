@@ -12,12 +12,12 @@ under the 'TTYPE' key.
 """
 
 # telnet option codes
-TTYPE =  chr(24)
+TTYPE = chr(24)
 IS = chr(0)
 SEND = chr(1)
 
 # terminal capabilities and their codes
-MTTS = [(128,'PROXY'),
+MTTS = [(128, 'PROXY'),
         (64, 'SCREEN READER'),
         (32, 'OSC COLOR PALETTE'),
         (16, 'MOUSE TRACKING'),
@@ -27,14 +27,15 @@ MTTS = [(128,'PROXY'),
         (1, 'ANSI')]
 # some clients sends erroneous strings instead
 # of capability numbers. We try to convert back.
-MTTS_invert = {"PROXY":128,
-               "SCREEN COLOR PALETTE":64,
+MTTS_invert = {"PROXY": 128,
+               "SCREEN COLOR PALETTE": 64,
                "OSC COLOR PALETTE": 32,
                "MOUSE TRACKING": 16,
                "256 COLORS": 8,
                "UTF-8": 4,
                "VT100": 2,
                "ANSI": 1}
+
 
 class Ttype(object):
     """
@@ -51,7 +52,7 @@ class Ttype(object):
         """
         self.ttype_step = 0
         self.protocol = protocol
-        self.protocol.protocol_flags['TTYPE'] = {"init_done":False}
+        self.protocol.protocol_flags['TTYPE'] = {"init_done": False}
         # setup protocol to handle ttype initialization and negotiation
         self.protocol.negotiationMap[TTYPE] = self.do_ttype
         # ask if client will ttype, connect callback if it does.
@@ -61,7 +62,7 @@ class Ttype(object):
         """
         Callback if ttype is not supported by client.
         """
-        self.protocol.protocol_flags['TTYPE'] = {"init_done":True}
+        self.protocol.protocol_flags['TTYPE'] = {"init_done": True}
 
     def do_ttype(self, option):
         """
@@ -95,9 +96,9 @@ class Ttype(object):
                 try:
                     option = int(option.strip('MTTS '))
                 except ValueError:
-                    # it seems some clients don't send MTTS according to protocol
-                    # specification, but instead just sends the data as plain
-                    # strings. We try to convert back.
+                    # it seems some clients don't send MTTS according to
+                    # protocol specification, but instead just sends
+                    # the data as plain strings. We try to convert back.
                     option = MTTS_invert.get(option.strip('MTTS ').upper())
                     if not option:
                         # no conversion possible. Give up.

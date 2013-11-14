@@ -67,14 +67,14 @@ Here, the lock-function perm() will be called with the string
 'Builders' (accessing_obj and accessed_obj are added automatically,
 you only need to add the args/kwargs, if any).
 
-If we wanted to make sure the accessing object was BOTH a Builders and a GoodGuy, we
-could use AND:
+If we wanted to make sure the accessing object was BOTH a Builders and a
+GoodGuy, we could use AND:
 
   'edit:perm(Builders) AND perm(GoodGuy)'
 
-To allow EITHER Builders and GoodGuys, we replace AND with OR. perm() is just one example,
-the lock function can do anything and compare any properties of the calling object to
-decide if the lock is passed or not.
+To allow EITHER Builders and GoodGuys, we replace AND with OR. perm() is just
+one example, the lock function can do anything and compare any properties of
+the calling object to decide if the lock is passed or not.
 
   'lift:attrib(very_strong) AND NOT attrib(bad_back)'
 
@@ -89,7 +89,8 @@ object would do something like this:
   if not target_obj.lockhandler.has_perm(caller, 'edit'):
       caller.msg("Sorry, you cannot edit that.")
 
-All objects also has a shortcut called 'access' that is recommended to use instead:
+All objects also has a shortcut called 'access' that is recommended to
+use instead:
 
   if not target_obj.access(caller, 'edit'):
       caller.msg("Sorry, you cannot edit that.")
@@ -104,12 +105,14 @@ to any other identifier you can use.
 
 """
 
-import re, inspect
+import re
+import inspect
 from django.conf import settings
 from src.utils import logger, utils
 from django.utils.translation import ugettext as _
 
 __all__ = ("LockHandler", "LockException")
+
 
 #
 # Exception class
@@ -118,6 +121,7 @@ __all__ = ("LockHandler", "LockException")
 class LockException(Exception):
     "raised during an error in a lock."
     pass
+
 
 #
 # Cached lock functions
@@ -186,15 +190,16 @@ class LockHandler(object):
         """
         Helper function. This is normally only called when the
         lockstring is cached and does preliminary checking.  locks are
-        stored as a string 'atype:[NOT] lock()[[ AND|OR [NOT] lock()[...]];atype...
+        stored as a string
+               'atype:[NOT] lock()[[ AND|OR [NOT] lock()[...]];atype...
 
         """
         locks = {}
         if not storage_lockstring:
             return locks
         duplicates = 0
-        elist = [] # errors
-        wlist = [] # warnings
+        elist = []  # errors
+        wlist = []  # warnings
         for raw_lockstring in storage_lockstring.split(';'):
             lock_funcs = []
             try:
@@ -234,7 +239,8 @@ class LockHandler(object):
                                  {"access_type":access_type, "source":locks[access_type][2], "goal":raw_lockstring}))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
         if wlist and self.log_obj:
-            # a warning text was set, it's not an error, so only report if log_obj is available.
+            # a warning text was set, it's not an error, so only report
+            # if log_obj is available.
             self._log_error("\n".join(wlist))
         if elist:
             # an error text was set, raise exception.
@@ -252,10 +258,12 @@ class LockHandler(object):
 
     def cache_lock_bypass(self, obj):
         """
-        We cache superuser bypass checks here for efficiency. This needs to be re-run when a player is assigned to a character.
-        We need to grant access to superusers. We need to check both directly on the object (players), through obj.player and using the
-        get_player method (this sits on serversessions, in some rare cases where a check is done
-        before the login process has yet been fully finalized)
+        We cache superuser bypass checks here for efficiency. This needs to
+        be re-run when a player is assigned to a character.
+        We need to grant access to superusers. We need to check both directly
+        on the object (players), through obj.player and using the get_player()
+        method (this sits on serversessions, in some rare cases where a
+        check is done before the login process has yet been fully finalized)
         """
         self.lock_bypass = hasattr(obj, "is_superuser") and obj.is_superuser
 
@@ -308,7 +316,7 @@ class LockHandler(object):
     def get(self, access_type=None):
         "get the full lockstring or the lockstring of a particular access type."
         if access_type:
-            return self.locks.get(access_type, ["","",""])[2]
+            return self.locks.get(access_type, ["", "", ""])[2]
         return str(self)
 
     def delete(self, access_type):
@@ -342,7 +350,7 @@ class LockHandler(object):
         access_type - the type of access wanted
         default - if no suitable lock type is found, use this
         no_superuser_bypass - don't use this unless you really, really need to,
-                              it makes supersusers susceptible to the lock check.
+                             it makes supersusers susceptible to the lock check.
 
         A lock is executed in the follwoing way:
 
@@ -403,8 +411,10 @@ class LockHandler(object):
         locks = self._parse_lockstring(lockstring)
         for access_type in locks:
             evalstring, func_tup, raw_string = locks[access_type]
-            true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
+            true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1],**tup[2])
+                                      for tup in func_tup)
             return eval(evalstring % true_false)
+
 
 def _test():
     # testing

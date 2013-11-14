@@ -4,10 +4,11 @@ The managers for the custom Player object and permissions.
 
 import datetime
 from django.contrib.auth.models import UserManager
-from functools import update_wrapper
+#from functools import update_wrapper
 from src.typeclasses.managers import returns_typeclass_list, returns_typeclass, TypedObjectManager
-from src.utils import logger
+#from src.utils import logger
 __all__ = ("PlayerManager",)
+
 
 #
 # Player Manager
@@ -118,8 +119,8 @@ class PlayerManager(TypedObjectManager, UserManager):
 
     def swap_character(self, player, new_character, delete_old_character=False):
         """
-        This disconnects a player from the current character (if any) and connects
-        to a new character object.
+        This disconnects a player from the current character (if any) and
+        connects to a new character object.
 
         """
 

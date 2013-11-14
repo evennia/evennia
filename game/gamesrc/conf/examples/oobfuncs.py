@@ -18,10 +18,11 @@
 
 """
 
+
 def testoob(character, *args, **kwargs):
     "Simple test function"
-    print "Called testoob: %s" % val
-    return "testoob did stuff to the input string '%s'!" % val
+    print "Called testoob: %s" % args
+    return "testoob did stuff to the input string '%s'!" % args
 
 
 # MSDP_MAP is a standard suggestions for making it easy to create generic guis.
@@ -62,7 +63,7 @@ MSDP_REPORTABLE = {
 
     # Combat
     "OPPONENT_HEALTH": "opponent_health",
-    "OPPONENT_HEALTH_MAX":"opponent_health_max",
+    "OPPONENT_HEALTH_MAX": "opponent_health_max",
     "OPPONENT_LEVEL": "opponent_level",
     "OPPONENT_NAME": "opponent_name",
 

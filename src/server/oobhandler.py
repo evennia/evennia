@@ -5,14 +5,16 @@ The OOBHandler is called directly by out-of-band protocols. It supplies three
 pieces of functionality:
 
     function execution - the oob protocol can execute a function directly on
-                         the server. Only functions specified in settings.OOB_PLUGIN_MODULE.OOB_FUNCS
-                         are valid for this use.
-    repeat func execution - the oob protocol can request a given function be executed repeatedly
-                            at a regular interval.
-    tracking - the oob protocol can request Evennia to track changes to fields on
-               objects, as well as changes in Attributes. This is done by dynamically adding
-               tracker-objects on entities. The behaviour of those objects can be customized
-               via settings.OOB_PLUGIN_MODULE
+                         the server. Only functions specified in
+                         settings.OOB_PLUGIN_MODULE.OOB_FUNCS are valid
+                         for this use.
+    repeat func execution - the oob protocol can request a given function be
+                            executed repeatedly at a regular interval.
+    tracking - the oob protocol can request Evennia to track changes to
+               fields on objects, as well as changes in Attributes. This is
+               done by dynamically adding tracker-objects on entities. The
+               behaviour of those objects can be customized via
+               settings.OOB_PLUGIN_MODULE
 
 oob functions have the following call signature:
     function(caller, *args, **kwargs)
@@ -30,7 +32,7 @@ from src.scripts.scripts import Script
 from src.utils.create import create_script
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from src.utils import logger
-from src.utils.utils import all_from_module, to_str, is_iter, make_iter
+from src.utils.utils import all_from_module
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
@@ -50,14 +52,18 @@ class TrackerHandler(object):
     """
     def __init__(self, obj):
         """
-        This is initiated and stored on the object as a property _trackerhandler.
+        This is initiated and stored on the object as a
+        property _trackerhandler.
         """
-        try: obj = obj.dbobj
-        except AttributeError: pass
+        try:
+            obj = obj.dbobj
+        except AttributeError:
+            pass
         self.obj = obj
         self.ntrackers = 0
         # initiate store only with valid on-object fieldnames
-        self.tracktargets = dict((key, {}) for key in _GA(_GA(self.obj, "_meta"), "get_all_field_names")())
+        self.tracktargets = dict((key, {})
+                for key in _GA(_GA(self.obj, "_meta"), "get_all_field_names")())
 
     def add(self, fieldname, tracker):
         """
@@ -95,18 +101,22 @@ class TrackerHandler(object):
             except Exception:
                 logger.log_trace()
 
+
 class TrackerBase(object):
     """
     Base class for OOB Tracker objects.
     """
     def __init__(self, *args, **kwargs):
         pass
+
     def update(self, *args, **kwargs):
         "Called by tracked objects"
         pass
+
     def at_remove(self, *args, **kwargs):
         "Called when tracker is removed"
         pass
+
 
 class _RepeaterScript(Script):
     """
@@ -117,7 +127,7 @@ class _RepeaterScript(Script):
         "Called when script is initialized"
         self.key = "oob_func"
         self.desc = "OOB functionality script"
-        self.persistent = False #oob scripts should always be non-persistent
+        self.persistent = False  # oob scripts should always be non-persistent
         self.ndb.subscriptions = {}
 
     def at_repeat(self):
@@ -142,11 +152,12 @@ class _RepeaterScript(Script):
         """
         self.ndb.subscriptions.pop(store_key, None)
 
+
 class _RepeaterPool(object):
     """
-    This maintains a pool of _RepeaterScript scripts, ordered one per interval. It
-    will automatically cull itself once a given interval's script has no more
-    subscriptions.
+    This maintains a pool of _RepeaterScript scripts, ordered one per
+    interval. It will automatically cull itself once a given interval's
+    script has no more subscriptions.
 
     This is used and accessed from oobhandler.repeat/unrepeat
     """
@@ -160,9 +171,11 @@ class _RepeaterPool(object):
         """
         if interval not in self.scripts:
             # if no existing interval exists, create new script to fill the gap
-            new_tracker = create_script(_RepeaterScript, key="oob_repeater_%is" % interval, interval=interval)
+            new_tracker = create_script(_RepeaterScript,
+                           key="oob_repeater_%is" % interval, interval=interval)
             self.scripts[interval] = new_tracker
-        self.scripts[interval].subscribe(store_key, sessid, func_key, interval, *args, **kwargs)
+        self.scripts[interval].subscribe(store_key, sessid, func_key,
+                                                      interval, *args, **kwargs)
 
     def remove(self, store_key, interval):
         """
@@ -176,8 +189,8 @@ class _RepeaterPool(object):
 
     def stop(self):
         """
-        Stop all scripts in pool. This is done at server reload since restoring the pool
-        will automatically re-populate the pool.
+        Stop all scripts in pool. This is done at server reload since
+        restoring the pool will automatically re-populate the pool.
         """
         for script in self.scripts.values():
             script.stop()
@@ -188,8 +201,8 @@ class _RepeaterPool(object):
 class OOBHandler(object):
     """
     The OOBHandler maintains all dynamic on-object oob hooks. It will store the
-    creation instructions and and re-apply them at a server reload (but not after
-    a server shutdown)
+    creation instructions and and re-apply them at a server reload (but
+    not after a server shutdown)
     """
     def __init__(self):
         """
@@ -207,10 +220,12 @@ class OOBHandler(object):
         """
         if self.oob_tracker_storage:
             #print "saved tracker_storage:", self.oob_tracker_storage
-            ServerConfig.objects.conf(key="oob_tracker_storage", value=dbserialize(self.oob_tracker_storage))
+            ServerConfig.objects.conf(key="oob_tracker_storage",
+                                    value=dbserialize(self.oob_tracker_storage))
         if  self.oob_repeat_storage:
             #print "saved repeat_storage:", self.oob_repeat_storage
-            ServerConfig.objects.conf(key="oob_repeat_storage", value=dbserialize(self.oob_repeat_storage))
+            ServerConfig.objects.conf(key="oob_repeat_storage",
+                                     value=dbserialize(self.oob_repeat_storage))
         self.oob_tracker_pool.stop()
 
     def restore(self):
@@ -242,12 +257,14 @@ class OOBHandler(object):
         Create an OOB obj of class _oob_MAPPING[tracker_key] on obj. args,
         kwargs will be used to initialize the OOB hook  before adding
         it to obj.
-        If property_key is not given, but the OOB has a class property property_name, this
-        will be used as the property name when assigning the OOB to
-        obj, otherwise tracker_key is used as the property name.
+        If property_key is not given, but the OOB has a class property
+        property_name, this will be used as the property name when assigning
+        the OOB to obj, otherwise tracker_key is used as the property name.
         """
-        try: obj = obj.dbobj
-        except AttributeError: pass
+        try:
+            obj = obj.dbobj
+        except AttributeError:
+            pass
 
         if not "_trackerhandler" in _GA(obj, "__dict__"):
             # assign trackerhandler to object
@@ -266,8 +283,10 @@ class OOBHandler(object):
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
         """
-        try: obj = obj.dbobj
-        except AttributeError: pass
+        try:
+            obj = obj.dbobj
+        except AttributeError:
+            pass
 
         try:
             # call at_delete hook
@@ -278,7 +297,7 @@ class OOBHandler(object):
         store_key = (pack_dbobj(obj), sessid, fieldname)
         self.oob_tracker_storage.pop(store_key, None)
 
-    def get_all_tracked(session):
+    def get_all_tracked(self, session):
         """
         Get the names of all variables this session is tracking.
         """
@@ -304,12 +323,14 @@ class OOBHandler(object):
     def track_attribute(self, obj, sessid, attr_name, trackerclass):
         """
         Shortcut wrapper method for specifically tracking the changes of an
-        Attribute on an object. Will create a tracker on the Attribute Object and
-        name in a way the Attribute expects.
+        Attribute on an object. Will create a tracker on the Attribute
+        Object and name in a way the Attribute expects.
         """
         # get the attribute object if we can
-        try: obj = obj.dbobj
-        except AttributeError: pass
+        try:
+            obj = obj.dbobj
+        except AttributeError:
+            pass
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
             self.track(attrobj, sessid, "db_value", trackerclass, attr_name)
@@ -318,8 +339,10 @@ class OOBHandler(object):
         """
         Shortcut for deactivating tracking for a given attribute.
         """
-        try: obj = obj.dbobj
-        except AttributeError: pass
+        try:
+            obj = obj.dbobj
+        except AttributeError:
+            pass
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
             self.untrack(attrobj, sessid, attr_name, trackerclass)
@@ -335,7 +358,7 @@ class OOBHandler(object):
         try:
             obj = obj.dbobj
         except AttributeError:
-            passj
+            pass
         store_obj = pack_dbobj(obj)
         store_key = (store_obj, sessid, func_key, interval)
         # prepare to store
@@ -363,7 +386,6 @@ class OOBHandler(object):
 
     # access method - called from session.msg()
 
-
     def execute_cmd(self, session, func_key, *args, **kwargs):
         """
         Retrieve oobfunc from OOB_FUNCS and execute it immediately
@@ -371,7 +393,7 @@ class OOBHandler(object):
         """
         try:
             #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
-            oobfunc = _OOB_FUNCS[func_key] # raise traceback if not found
+            oobfunc = _OOB_FUNCS[func_key]  # raise traceback if not found
             oobfunc(self, session, *args, **kwargs)
         except KeyError,e:
             errmsg = "OOB Error: function '%s' not recognized: %s" % (func_key, e)

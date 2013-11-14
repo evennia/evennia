@@ -23,9 +23,9 @@ update() on the channelhandler. Or use Channel.objects.delete() which
 does this for you.
 
 """
-from src.comms.models import ChannelDB, Msg
+from src.comms.models import ChannelDB
 from src.commands import cmdset, command
-from src.utils import utils
+
 
 class ChannelCommand(command.Command):
     """
@@ -51,7 +51,8 @@ class ChannelCommand(command.Command):
         """
         Simple parser
         """
-        channelname, msg = self.args.split(":", 1) # cmdhandler sends channame:msg here.
+        # cmdhandler sends channame:msg here.
+        channelname, msg = self.args.split(":", 1)
         self.args = (channelname.strip(), msg.strip())
 
     def func(self):
@@ -128,7 +129,7 @@ class ChannelHandler(object):
                              help_category="Channel names",
                              obj=channel,
                              is_channel=True)
-        cmd.__doc__= self._format_help(channel)
+        cmd.__doc__ = self._format_help(channel)
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
 

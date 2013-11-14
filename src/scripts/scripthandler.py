@@ -38,10 +38,13 @@ class ScriptHandler(object):
                 interval = script.interval
                 if script.repeats:
                     repeats = script.repeats
-                try: next_repeat = script.time_until_next_repeat()
-                except: next_repeat = "?"
+                try:
+                    next_repeat = script.time_until_next_repeat()
+                except:
+                    next_repeat = "?"
             string += _("\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s") % \
-              {"key":script.key, "next_repeat":next_repeat, "interval":interval,"repeats":repeats,"desc":script.desc}
+              {"key": script.key, "next_repeat": next_repeat,
+               "interval": interval, "repeats": repeats, "desc": script.desc}
         return string.strip()
 
     def add(self, scriptclass, key=None, autostart=True):
@@ -51,10 +54,12 @@ class ScriptHandler(object):
         scriptclass - either a class object
              inheriting from Script, an instantiated script object
              or a python path to such a class object.
-        key - optional identifier for the script (often set in script definition)
+        key - optional identifier for the script (often set in script
+              definition)
         autostart - start the script upon adding it
         """
-        script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=autostart)
+        script = create.create_script(scriptclass, key=key, obj=self.obj,
+                                      autostart=autostart)
         if not script:
             logger.log_errmsg("Script %s could not be created and/or started." % scriptclass)
             return False

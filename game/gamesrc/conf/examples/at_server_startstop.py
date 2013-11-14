@@ -26,12 +26,14 @@ at_server_cold_stop()
 
 """
 
+
 def at_server_start():
     """
     This is called every time the server starts up, regardless of
     how it was shut down.
     """
     pass
+
 
 def at_server_stop():
     """
@@ -40,11 +42,13 @@ def at_server_stop():
     """
     pass
 
+
 def at_server_reload_start():
     """
     This is called only when server starts back up after a reload.
     """
     pass
+
 
 def at_server_reload_stop():
     """
@@ -52,12 +56,14 @@ def at_server_reload_stop():
     """
     pass
 
+
 def at_server_cold_start():
     """
     This is called only when the server starts "cold", i.e. after a
     shutdown or a reset.
     """
     pass
+
 
 def at_server_cold_stop():
     """

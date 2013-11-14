@@ -22,9 +22,9 @@ class BodyFunctions(Script):
     def at_script_creation(self):
         self.key = "bodyfunction"
         self.desc = "Adds various timed events to a character."
-        self.interval = 20 # seconds
+        self.interval = 20  # seconds
         #self.repeats = 5  # repeat only a certain number of times
-        self.start_delay = True # wait self.interval until first call
+        self.start_delay = True  # wait self.interval until first call
         #self.persistent = True
 
     def at_repeat(self):

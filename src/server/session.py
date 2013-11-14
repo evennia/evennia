@@ -6,6 +6,7 @@ on Portal and Server side) should inherit from this class.
 
 import time
 
+
 #------------------------------------------------------------
 # Server Session
 #------------------------------------------------------------
@@ -18,23 +19,24 @@ class Session(object):
     Each connection will see two session instances created:
 
      1) A Portal session. This is customized for the respective connection
-        protocols that Evennia supports, like Telnet, SSH etc. The Portal session
-        must call init_session() as part of its initialization. The respective
-        hook methods should be connected to the methods unique for the respective
-        protocol so that there is a unified interface to Evennia.
-     2) A Server session. This is the same for all connected players, regardless
-        of how they connect.
+        protocols that Evennia supports, like Telnet, SSH etc. The Portal
+        session must call init_session() as part of its initialization. The
+        respective hook methods should be connected to the methods unique
+        for the respective protocol so that there is a unified interface
+        to Evennia.
+     2) A Server session. This is the same for all connected players,
+        regardless of how they connect.
 
-    The Portal and Server have their own respective sessionhandlers. These are synced
-    whenever new connections happen or the Server restarts etc, which means much of the
-    same information must be stored in both places e.g. the portal can re-sync with the
-    server when the server reboots.
+    The Portal and Server have their own respective sessionhandlers. These
+    are synced whenever new connections happen or the Server restarts etc,
+    which means much of the same information must be stored in both places
+    e.g. the portal can re-sync with the server when the server reboots.
 
     """
 
     # names of attributes that should be affected by syncing.
-    _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid', 'uname',
-                      'logged_in', 'puid', 'encoding',
+    _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid',
+                      'uname', 'logged_in', 'puid', 'encoding',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
                       'protocol_flags', 'server_data', "cmdset_storage_string")
 
@@ -55,7 +57,7 @@ class Session(object):
         self.suid = None
 
         # unique id for this session
-        self.sessid = 0 # no sessid yet
+        self.sessid = 0  # no sessid yet
         # database id for the user connected to this session
         self.uid = None
         # user name, for easier tracking of sessions
@@ -84,7 +86,8 @@ class Session(object):
         """
         Return all data relevant to sync the session
         """
-        return dict((key, value) for key, value in self.__dict__.items() if key in self._attrs_to_sync)
+        return dict((key, value) for key, value in self.__dict__.items()
+                                                  if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
         """
@@ -124,4 +127,3 @@ class Session(object):
         hook for protocols to send incoming data to the engine.
         """
         pass
-

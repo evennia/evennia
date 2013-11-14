@@ -12,11 +12,10 @@ game world, policy info, rules and similar.
 from django.db import models
 from src.utils.idmapper.models import SharedMemoryModel
 from src.help.manager import HelpEntryManager
-from src.utils import ansi
 from src.typeclasses.models import Tag, TagHandler
 from src.locks.lockhandler import LockHandler
-from src.utils.utils import is_iter
 __all__ = ("HelpEntry",)
+
 
 #------------------------------------------------------------
 #

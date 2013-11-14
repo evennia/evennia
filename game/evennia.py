@@ -10,7 +10,8 @@ menu. Run the script with the -h flag to see usage information.
 
 """
 import os
-import sys, signal
+import sys
+import signal
 from optparse import OptionParser
 from subprocess import Popen
 
@@ -132,7 +133,7 @@ from django.db import DatabaseError
 from src.players.models import PlayerDB
 try:
     superuser = PlayerDB.objects.get(id=1)
-except DatabaseError,e:
+except DatabaseError, e:
     print """
     Your database does not seem to be set up correctly.
     (error was '%s')
@@ -186,7 +187,7 @@ if os.name == 'nt':
             os.path.join(os.path.dirname(twistd.__file__),
                          os.pardir, os.pardir, os.pardir, os.pardir,
                          'scripts', 'twistd.py'))
-        bat_file = open('twistd.bat','w')
+        bat_file = open('twistd.bat', 'w')
         bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
         bat_file.close()
         print """
@@ -221,6 +222,7 @@ def get_pid(pidfile):
         pid = f.read()
     return pid
 
+
 def del_pid(pidfile):
     """
     The pidfile should normally be removed after a process has finished, but
@@ -228,6 +230,7 @@ def del_pid(pidfile):
     """
     if os.path.exists(pidfile):
         os.remove(pidfile)
+
 
 def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart="reload"):
     """
@@ -254,6 +257,7 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
         print "Evennia:", succmsg
         return
     print "Evennia:", errmsg
+
 
 def run_menu():
     """
@@ -285,7 +289,7 @@ def run_menu():
         errmsg = "The %s does not seem to be running."
         if inp < 5:
             if inp == 1:
-                pass # default operation
+                pass  # default operation
             elif inp == 2:
                 cmdstr.extend(['--iserver'])
             elif inp == 3:
@@ -344,8 +348,9 @@ def handle_args(options, mode, service):
             if inter:
                 cmdstr.append('--iportal')
             cmdstr.append('--noserver')
-        else: # all
-            # for convenience we don't start logging of portal, only of server with this command.
+        else:  # all
+            # for convenience we don't start logging of
+            # portal, only of server with this command.
             if inter:
                 cmdstr.extend(['--iserver'])
         return cmdstr
@@ -429,7 +434,9 @@ def main():
     parser = OptionParser(usage="%prog [-i] [menu|start|reload|stop [server|portal|all]]",
                           description="""This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Interactive mode sets the service to log to stdout, in the foreground. Note that when launching 'all' services with the \"--interactive\" flag, both services will be started, but only Server will actually be started in interactive mode, simply because this is the most commonly useful setup. To activate interactive mode also for Portal, use the menu or launch the two services explicitly as two separate calls to this program.""")
 
-    parser.add_option('-i', '--interactive', action='store_true', dest='interactive', default=False, help="Start given processes in interactive mode.")
+    parser.add_option('-i', '--interactive', action='store_true',
+                      dest='interactive', default=False,
+                      help="Start given processes in interactive mode.")
 
     options, args = parser.parse_args()
 

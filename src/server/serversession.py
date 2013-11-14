@@ -10,7 +10,7 @@ are stored on the Portal side)
 import time
 from datetime import datetime
 from django.conf import settings
-from src.scripts.models import ScriptDB
+#from src.scripts.models import ScriptDB
 from src.comms.models import ChannelDB
 from src.utils import logger, utils
 from src.utils.utils import make_iter, to_str
@@ -53,7 +53,8 @@ class ServerSession(Session):
         self.cmdset = cmdsethandler.CmdSetHandler(self)
 
     def __cmdset_storage_get(self):
-        return [path.strip() for path  in self.cmdset_storage_string.split(',')]
+        return [path.strip() for path in self.cmdset_storage_string.split(',')]
+
     def __cmdset_storage_set(self, value):
         self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
@@ -61,8 +62,8 @@ class ServerSession(Session):
     def at_sync(self):
         """
         This is called whenever a session has been resynced with the portal.
-        At this point all relevant attributes have already been set and self.player
-        been assigned (if applicable).
+        At this point all relevant attributes have already been set and
+        self.player been assigned (if applicable).
 
         Since this is often called after a server restart we need to set up
         the session as it was.
@@ -78,7 +79,8 @@ class ServerSession(Session):
         self.cmdset.update(init_mode=True)
 
         if self.puid:
-            # reconnect puppet (puid is only set if we are coming back from a server reload)
+            # reconnect puppet (puid is only set if we are coming
+            # back from a server reload)
             obj = _ObjectDB.objects.get(id=self.puid)
             self.player.puppet_object(self.sessid, obj, normal_mode=False)
 
@@ -139,7 +141,8 @@ class ServerSession(Session):
 
     def get_puppet_or_player(self):
         """
-        Returns session if not logged in; puppet if one exists, otherwise return the player.
+        Returns session if not logged in; puppet if one exists,
+        otherwise return the player.
         """
         if self.logged_in:
             return self.puppet if self.puppet else self.player
@@ -192,7 +195,8 @@ class ServerSession(Session):
                     # merge, give prio to the lowest level (puppet)
                     nicks = list(puppet.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))) + list(nicks)
                 raw_list = text.split(None)
-                raw_list = [" ".join(raw_list[:i+1]) for i in range(len(raw_list)) if raw_list[:i+1]]
+                raw_list = [" ".join(raw_list[:i + 1])
+                              for i in range(len(raw_list)) if raw_list[:i + 1]]
                 for nick in nicks:
                     if nick.db_key in raw_list:
                         text = text.replace(nick.db_key, nick.db_strvalue, 1)
@@ -209,7 +213,7 @@ class ServerSession(Session):
                 if funcname:
                     _OOB_HANDLER.execute_cmd(self, funcname, *args, **kwargs)
 
-    execute_cmd = data_in # alias
+    execute_cmd = data_in  # alias
 
     def data_out(self, text=None, **kwargs):
         """
@@ -255,7 +259,6 @@ class ServerSession(Session):
         "alias for at_data_out"
         self.data_out(text=text, **kwargs)
 
-
     # Dummy API hooks for use during non-loggedin operation
 
     def at_cmdset_get(self):
@@ -282,6 +285,7 @@ class ServerSession(Session):
                 def all(self):
                     return [val for val in self.__dict__.keys()
                             if not val.startswith['_']]
+
                 def __getattribute__(self, key):
                     # return None if no matching attribute was found.
                     try:
@@ -290,12 +294,14 @@ class ServerSession(Session):
                         return None
             self._ndb_holder = NdbHolder()
             return self._ndb_holder
+
     #@ndb.setter
     def ndb_set(self, value):
         "Stop accidentally replacing the db object"
         string = "Cannot assign directly to ndb object! "
         string = "Use ndb.attr=value instead."
         raise Exception(string)
+
     #@ndb.deleter
     def ndb_del(self):
         "Stop accidental deletion."

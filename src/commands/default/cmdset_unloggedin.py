@@ -6,6 +6,7 @@ of the state instance in this module.
 from src.commands.cmdset import CmdSet
 from src.commands.default import unloggedin
 
+
 class UnloggedinCmdSet(CmdSet):
     """
     Sets up the unlogged cmdset.

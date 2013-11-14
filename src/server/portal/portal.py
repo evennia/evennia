@@ -83,7 +83,7 @@ class Portal(object):
 
         # create a store of services
         self.services = service.IServiceCollection(application)
-        self.amp_protocol = None # set by amp factory
+        self.amp_protocol = None  # set by amp factory
         self.sessions = PORTAL_SESSIONS
         self.sessions.portal = self
 
@@ -99,7 +99,7 @@ class Portal(object):
         be restarted or is shutting down. Valid modes are True/False and None.
         If mode is None, no change will be done to the flag file.
         """
-        if mode == None:
+        if mode is None:
             return
         f = open(PORTAL_RESTART, 'w')
         print "writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART}
@@ -211,17 +211,20 @@ if SSL_ENABLED:
             factory = protocol.ServerFactory()
             factory.sessionhandler = PORTAL_SESSIONS
             factory.protocol = ssl.SSLProtocol
-            ssl_service = internet.SSLServer(port, factory, ssl.getSSLContext(), interface=interface)
+            ssl_service = internet.SSLServer(port,
+                                             factory,
+                                             ssl.getSSLContext(),
+                                             interface=interface)
             ssl_service.setName('EvenniaSSL%s' % pstring)
             PORTAL.services.addService(ssl_service)
 
             print "  ssl%s: %s" % (ifacestr, port)
 
 
-
 if SSH_ENABLED:
 
-    # Start SSH game connections. Will create a keypair in evennia/game if necessary.
+    # Start SSH game connections. Will create a keypair in
+    # evennia/game if necessary.
 
     from src.server.portal import ssh
 
@@ -234,9 +237,9 @@ if SSH_ENABLED:
             ifacestr = "-%s" % interface
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = ssh.makeFactory({'protocolFactory':ssh.SshProtocol,
-                                       'protocolArgs':(),
-                                       'sessions':PORTAL_SESSIONS})
+            factory = ssh.makeFactory({'protocolFactory': ssh.SshProtocol,
+                                       'protocolArgs': (),
+                                       'sessions': PORTAL_SESSIONS})
             ssh_service = internet.TCPServer(port, factory, interface=interface)
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
@@ -246,8 +249,6 @@ if SSH_ENABLED:
 if WEBSERVER_ENABLED:
 
     # Start a reverse proxy to relay data to the Server-side webserver
-
-    from twisted.web import proxy
 
     for interface in WEBSERVER_INTERFACES:
         if ":" in interface:
@@ -269,7 +270,9 @@ if WEBSERVER_ENABLED:
                 webclientstr = "/client"
 
             web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
-            proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
+            proxy_service = internet.TCPServer(proxyport,
+                                               web_root,
+                                               interface=interface)
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
             print "  webproxy%s%s:%s (<-> %s)" % (webclientstr, ifacestr, proxyport, serverport)
@@ -278,7 +281,7 @@ for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     plugin_module.start_plugin_services(PORTAL)
 
-print '-' * 50 # end of terminal output
+print '-' * 50  # end of terminal output
 
 if os.name == 'nt':
     # Windows only: Set PID file manually

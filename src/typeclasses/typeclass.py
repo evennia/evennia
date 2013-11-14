@@ -29,6 +29,7 @@ PROTECTED = ('id', 'dbobj', 'db', 'ndb', 'objects', 'typeclass', 'db_player',
              'attr', 'save', 'delete', 'db_model_name','attribute_class',
              'typeclass_paths')
 
+
 # If this is true, all non-protected property assignments
 # are directly stored to a database attribute
 
@@ -48,6 +49,7 @@ class MetaTypeClass(type):
 
     def __str__(cls):
         return "%s" % cls.__name__
+
 
 class TypeClass(object):
     """
@@ -70,8 +72,10 @@ class TypeClass(object):
     def __init__(self, dbobj):
         """
         Initialize the object class. There are two ways to call this class.
-        o = object_class(dbobj) : this is used to initialize dbobj with the class name
-        o = dbobj.object_class(dbobj) : this is used when dbobj.object_class is already set.
+        o = object_class(dbobj) : this is used to initialize dbobj with the
+                                  class name
+        o = dbobj.object_class(dbobj) : this is used when dbobj.object_class
+                                        is already set.
 
         """
         # typecheck of dbobj - we can't allow it to be added here
@@ -145,11 +149,10 @@ class TypeClass(object):
         except AttributeError:
             return id(self) == id(other)
 
-
     def __delattr__(self, propname):
         """
-        Transparently deletes data from the typeclass or dbobj by first searching on the typeclass,
-        secondly on the dbobj.db.
+        Transparently deletes data from the typeclass or dbobj by first
+        searching on the typeclass, secondly on the dbobj.db.
         Will not allow deletion of properties stored directly on dbobj.
         """
         if propname in PROTECTED:
@@ -166,7 +169,7 @@ class TypeClass(object):
                 dbobj = _GA(self, 'dbobj')
             except AttributeError:
                 log_trace("This is probably due to an unsafe reload.")
-                return # ignore delete
+                return  # ignore delete
             try:
                 dbobj.del_attribute(propname, raise_exception=True)
             except AttributeError:
@@ -178,5 +181,6 @@ class TypeClass(object):
     def __str__(self):
         "represent the object"
         return self.key
+
     def __unicode__(self):
         return u"%s" % self.key

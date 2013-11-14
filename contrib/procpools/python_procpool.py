@@ -36,6 +36,7 @@ from src.utils.utils import clean_object_caches, to_str
 from src.utils import logger
 from src import PROC_MODIFIED_OBJS
 
+
 #
 # Multiprocess command for communication Server<->Client, relaying
 # data for remote Python execution
@@ -63,6 +64,7 @@ class ExecuteCode(amp.Command):
     errors = [(Exception, 'EXCEPTION')]
     response = [('response', amp.String()),
                 ('recached', amp.String())]
+
 
 #
 # Multiprocess AMP client-side factory, for executing remote Python code
@@ -118,8 +120,7 @@ class PythonProcPoolChild(AMPChild):
                     return ""
         _return = Ret()
 
-
-        available_vars = {'_return':_return}
+        available_vars = {'_return': _return}
         if environment:
             # load environment
             try:
@@ -141,7 +142,8 @@ class PythonProcPoolChild(AMPChild):
         # get the list of affected objects to recache
         objs = list(set(PROC_MODIFIED_OBJS))
         # we need to include the locations too, to update their content caches
-        objs = objs + list(set([o.location for o in objs if hasattr(o, "location") and o.location]))
+        objs = objs + list(set([o.location for o in objs
+                                if hasattr(o, "location") and o.location]))
         #print "objs:", objs
         #print "to_pickle", to_pickle(objs, emptypickle=False, do_pickle=False)
         if objs not in (None, [], ()):
@@ -156,12 +158,14 @@ class PythonProcPoolChild(AMPChild):
 
 
 #
-# Procpool run_async - Server-side access function for executing code in another process
+# Procpool run_async - Server-side access function for executing
+# code in another process
 #
 
 _PPOOL = None
 _SESSIONS = None
 _PROC_ERR = "A process has ended with a probable error condition: process ended by signal 9."
+
 
 def run_async(to_execute, *args, **kwargs):
     """
@@ -227,9 +231,9 @@ def run_async(to_execute, *args, **kwargs):
     Use this function with restrain and only for features/commands
     that you know has no influence on the cause-and-effect order of your
     game (commands given after the async function might be executed before
-    it has finished). Accessing the same property from different threads/processes
-    can lead to unpredicted behaviour if you are not careful (this is called a
-    "race condition").
+    it has finished). Accessing the same property from different
+    threads/processes can lead to unpredicted behaviour if you are not
+    careful (this is called a "race condition").
 
     Also note that some databases, notably sqlite3, don't support access from
     multiple threads simultaneously, so if you do heavy database access from
@@ -243,7 +247,7 @@ def run_async(to_execute, *args, **kwargs):
     # get the procpool name, if set in kwargs
     procpool_name = kwargs.get("procpool_name", "PythonProcPool")
 
-    if _PPOOL == None:
+    if _PPOOL is None:
         # Try to load process Pool
         from src.server.sessionhandler import SESSIONS as _SESSIONS
         try:
@@ -260,8 +264,10 @@ def run_async(to_execute, *args, **kwargs):
             reca = ret["recached"] and from_pickle(do_unpickle(ret["recached"]))
             # recache all indicated objects
             [clean_object_caches(obj) for obj in reca]
-            if f: return f(rval, *args, **kwargs)
-            else: return rval
+            if f:
+                return f(rval, *args, **kwargs)
+            else:
+                return rval
         return func
     def convert_err(f):
         def func(err, *args, **kwargs):
@@ -287,18 +293,22 @@ def run_async(to_execute, *args, **kwargs):
         # process pool is running
         if isinstance(to_execute, basestring):
             # run source code in process pool
-            cmdargs = {"_timeout":use_timeout}
+            cmdargs = {"_timeout": use_timeout}
             cmdargs["source"] = to_str(to_execute)
-            if kwargs: cmdargs["environment"] = do_pickle(to_pickle(kwargs))
-            else: cmdargs["environment"] = ""
+            if kwargs:
+                cmdargs["environment"] = do_pickle(to_pickle(kwargs))
+            else:
+                cmdargs["environment"] = ""
             # defer to process pool
             deferred = _PPOOL.doWork(ExecuteCode, **cmdargs)
         elif callable(to_execute):
             # execute callable in process
             callname = to_execute.__name__
-            cmdargs = {"_timeout":use_timeout}
+            cmdargs = {"_timeout": use_timeout}
             cmdargs["source"] = "_return(%s(*args,**kwargs))" % callname
-            cmdargs["environment"] = do_pickle(to_pickle({callname:to_execute, "args":args, "kwargs":kwargs}))
+            cmdargs["environment"] = do_pickle(to_pickle({callname: to_execute,
+                                                         "args": args,
+                                                         "kwargs": kwargs}))
             deferred = _PPOOL.doWork(ExecuteCode, **cmdargs)
         else:
             raise RuntimeError("'%s' could not be handled by the process pool" % to_execute)

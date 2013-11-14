@@ -9,44 +9,43 @@ from django.contrib import admin
 from src.typeclasses.models import Attribute, Tag
 from src.objects.models import ObjectDB
 
+
 class AttributeInline(admin.TabularInline):
-    # This class is currently not used, because PickleField objects are not editable.
-    # It's here for us to ponder making a way that allows them to be edited.
+    # This class is currently not used, because PickleField objects are
+    # not editable. It's here for us to ponder making a way that allows
+    # them to be edited.
     model = Attribute
     fields = ('db_key', 'db_value')
     extra = 0
+
 
 class TagInline(admin.TabularInline):
     model = ObjectDB.db_tags.through
     raw_id_fields = ('tag',)
     extra = 0
 
+
 class TagAdmin(admin.ModelAdmin):
     fields = ('db_key', 'db_category', 'db_data')
+
 
 class ObjectCreateForm(forms.ModelForm):
     "This form details the look of the fields"
     class Meta:
         model = ObjectDB
     db_key = forms.CharField(label="Name/Key",
-                             widget=forms.TextInput(attrs={'size':'78'}),
+                             widget=forms.TextInput(attrs={'size': '78'}),
                              help_text="Main identifier, like 'apple', 'strong guy', 'Elizabeth' etc. If creating a Character, check so the name is unique among characters!",)
     db_typeclass_path = forms.CharField(label="Typeclass",
                                         initial=settings.BASE_OBJECT_TYPECLASS,
-                                        widget=forms.TextInput(attrs={'size':'78'}),
+                                        widget=forms.TextInput(attrs={'size': '78'}),
                                         help_text="This defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass. If you are creating a Character you should use the typeclass defined by settings.BASE_CHARACTER_TYPECLASS or one derived from that.")
-    #db_permissions = forms.CharField(label="Permissions",
-    #                                 initial=settings.PERMISSION_PLAYER_DEFAULT,
-    #                                 required=False,
-    #                                 widget=forms.TextInput(attrs={'size':'78'}),
-    #                                 help_text="a comma-separated list of text strings checked by certain locks. They are mainly of use for Character objects. Character permissions overload permissions defined on a controlling Player. Most objects normally don't have any permissions defined.")
     db_cmdset_storage = forms.CharField(label="CmdSet",
                                         initial="",
                                         required=False,
-                                        widget=forms.TextInput(attrs={'size':'78'}),
+                                        widget=forms.TextInput(attrs={'size': '78'}),
                                         help_text="Most non-character objects don't need a cmdset and can leave this field blank.")
     raw_id_fields = ('db_destination', 'db_location', 'db_home')
-
 
 
 class ObjectEditForm(ObjectCreateForm):
@@ -91,9 +90,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
     #deactivated temporarily, they cause empty objects to be created in admin
     inlines = [TagInline]
 
-
     # Custom modification to give two different forms wether adding or not.
-
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
@@ -101,6 +98,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
                            ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )
+
     #add_fieldsets = (
     #    (None, {
     #            'fields': (('db_key','db_typeclass_path'), 'db_permissions',

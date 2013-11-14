@@ -18,7 +18,7 @@ from django.utils.unittest import TestCase
 from src.server.serversession import ServerSession
 from src.objects.objects import Object, Character
 from src.players.player import Player
-from src.utils import create, utils, ansi
+from src.utils import create, ansi
 from src.server.sessionhandler import SESSIONS
 
 from django.db.models.signals import pre_save
@@ -33,16 +33,20 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)
 # Command testing
 # ------------------------------------------------------------
 
+
 def dummy(self, *args, **kwargs):
     pass
 
 SESSIONS.data_out = dummy
 SESSIONS.disconnect = dummy
 
+
 class TestObjectClass(Object):
     def msg(self, text="", **kwargs):
         "test message"
         pass
+
+
 class TestCharacterClass(Character):
     def msg(self, text="", **kwargs):
         "test message"
@@ -52,16 +56,20 @@ class TestCharacterClass(Character):
             if not self.ndb.stored_msg:
                 self.ndb.stored_msg = []
             self.ndb.stored_msg.append(text)
+
+
 class TestPlayerClass(Player):
     def msg(self, text="", **kwargs):
         "test message"
         if not self.ndb.stored_msg:
             self.ndb.stored_msg = []
         self.ndb.stored_msg.append(text)
+
     def _get_superuser(self):
         "test with superuser flag"
         return self.ndb.is_superuser
     is_superuser = property(_get_superuser)
+
 
 class CommandTest(TestCase):
     """
@@ -92,6 +100,7 @@ class CommandTest(TestCase):
         session.sessid = self.CID
         SESSIONS.portal_connect(session.get_sync_data())
         SESSIONS.login(SESSIONS.session_from_sessid(self.CID), self.player, testmode=True)
+
 
     def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None):
         """
@@ -141,6 +150,7 @@ class CommandTest(TestCase):
 from src.commands.default import general
 class TestGeneral(CommandTest):
     CID = 1
+
     def test_cmds(self):
         self.call(general.CmdLook(), "here", "Room1\n room_desc")
         self.call(general.CmdHome(), "", "You are already home")
@@ -158,6 +168,7 @@ class TestGeneral(CommandTest):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")
 
+
 from src.commands.default import help
 from src.commands.default.cmdset_character import CharacterCmdSet
 class TestHelp(CommandTest):
@@ -166,6 +177,7 @@ class TestHelp(CommandTest):
         self.call(help.CmdHelp(), "", "Command help entries", cmdset=CharacterCmdSet())
         self.call(help.CmdSetHelp(), "testhelp, General = This is a test", "Topic 'testhelp' was successfully created.")
         self.call(help.CmdHelp(), "testhelp", "Help topic for testhelp", cmdset=CharacterCmdSet())
+
 
 from src.commands.default import system
 class TestSystem(CommandTest):
@@ -179,6 +191,7 @@ class TestSystem(CommandTest):
         self.call(system.CmdAbout(), "", None)
         self.call(system.CmdServerLoad(), "", "Server CPU and Memory load:")
 
+
 from src.commands.default import admin
 class TestAdmin(CommandTest):
     CID = 4
@@ -189,6 +202,7 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdWall(), "Test", "Announcing to all connected players ...")
         self.call(admin.CmdPerm(), "Char4b = Builders","Permission 'Builders' given to Char4b.")
         self.call(admin.CmdBan(), "Char4", "NameBan char4 was added.")
+
 
 from src.commands.default import player
 class TestPlayer(CommandTest):
@@ -208,6 +222,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdColorTest(), "ansi", "ANSI colors:", caller=self.player)
         self.call(player.CmdCharCreate(), "Test1=Test char","Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
         self.call(player.CmdQuell(), "", "Quelling Player permissions (immortals). Use @unquell to get them back.", caller=self.player)
+
 
 from src.commands.default import building
 class TestBuilding(CommandTest):
@@ -239,6 +254,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScript(), "Obj6 = src.scripts.scripts.Script", "Script src.scripts.scripts.Script successfully added")
         self.call(building.CmdTeleport(), "TestRoom1", "TestRoom1\nExits: back|Teleported to TestRoom1.")
 
+
 from src.commands.default import comms
 class TestComms(CommandTest):
     CID = 7
@@ -256,6 +272,7 @@ class TestComms(CommandTest):
         self.call(comms.CmdPage(), "TestPlayer7b = Test", "You paged TestPlayer7b with: 'Test'.")
         self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]") # noone else connected to boot
         self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' was destroyed.")
+
 
 from src.commands.default import batchprocess
 class TestBatchProcess(CommandTest):

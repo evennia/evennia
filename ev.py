@@ -2,53 +2,63 @@
 
 Central API for the Evennia MUD/MUX/MU* creation system.
 
-This is basically a set of shortcuts for accessing things in src/ with less boiler plate.
-Import this from your code, use it with @py from in-game or explore it interactively from
-a python shell.
+This is basically a set of shortcuts for accessing things in src/ with less
+boiler plate. Import this from your code, use it with @py from in-game or
+explore it interactively from a python shell.
 
 Notes:
 
- 0) Use ev.help(), ev.managers.help(), ev.default_cmds.help() and syscmdkeys.help() to
-    view the API structure and explore which variables/methods are available.
+ 0) Use ev.help(), ev.managers.help(), ev.default_cmds.help() and
+     syscmdkeys.help() to view the API structure and explore which
+     variables/methods are available.
 
- 1) You should import things explicitly from the root of this module - you can not use
-    dot-notation to import deeper. Hence, to access a default command, you can do
+ 1) You should import things explicitly from the root of this module - you
+    can not use ot-notation to import deeper. Hence, to access a default c
+    ommand, you can do
        import ev
        ev.default_cmds.CmdLook
      or
        from ev import default_cmds
        default_cmds.CmdLook
-    But trying to import CmdLook directly with "from ev.default_cmds import CmdLook" will
-    not work since default_cmds is a property on the "ev" module, not a module of its own.
+    But trying to import CmdLook directly with
+      from ev.default_cmds import CmdLook
+    will not work since default_cmds is a property on the "ev" module,
+    not a module of its own.
 
- 2) "managers" is a container object that contains shortcuts to initiated versions of Evennia's django
-    database managers (e.g. managers.objects is an alias for ObjectDB.objects). These allow
-    for exploring the database in various ways. To use in code, do 'from ev import managers', then
-    access the managers on the managers object. Please note that the evennia-specific methods in
-    managers return typeclasses (or lists of typeclasses), whereas the default django ones (filter etc)
-    return database objects. You can convert between the two easily via dbobj.typeclass and
-    typeclass.dbobj, but it's worth to remember this difference.
+ 2) "managers" is a container object that contains shortcuts to initiated
+    versions of Evennia's django database managers (e.g. managers.objects
+    is an alias for ObjectDB.objects). These allow for exploring the database
+    in various ways. To use in code, do 'from ev import managers', then access
+    the managers on the managers object. Please note that the evennia-specific
+    methods inmanagers return typeclasses (or lists of typeclasses), whereas
+    the default django ones (filter etc) return database objects. You can
+    convert between the two easily via dbobj.typeclass and typeclass.dbobj,
+    but it's worth to remember this difference.
 
- 3) "syscmdkeys" is a container object holding the names of system commands. Import with
-    'from ev import syscmdkeys', then access the variables on the syscmdkeys object.
+ 3) "syscmdkeys" is a container object holding the names of system commands.
+     Import with 'from ev import syscmdkeys', then access the variables on
+     the syscmdkeys object.
 
- 4) You -have- to use the create_* functions (shortcuts to src.utils.create) to create new
-    Typeclassed game entities (Objects, Scripts or Players). Just initializing e.g. the Player class will
-    -not- set up Typeclasses correctly and will lead to errors. Other types of database objects
-    can be created normally, but there are conveniant create_* functions for those too, making
-    some more error checking.
+ 4) You -have- to use the create_* functions (shortcuts to src.utils.create)
+    to create new ypeclassed game entities (Objects, Scripts, Channels or
+    Players). Just initializing e.g. the Player class will -not- set up
+    Typeclasses correctly and will lead to errors. Other types of database
+    objects can be created normally, but there are conveniant create_*
+    functions for those too, making some more error checking.
 
- 5) "settings" links to Evennia's game/settings file. "settings_full" shows all of django's available
-    settings. Note that this is for viewing only - you cannot *change* settings from here in a meaningful
-    way but have to update game/settings.py and restart the server.
+ 5) "settings" links to Evennia's game/settings file. "settings_full" shows
+    all of django's available settings. Note that this is for viewing only -
+    you cannot *change* settings from here in a meaningful way but have to
+    update game/settings.py and restart the server.
 
- 6) The API accesses all relevant and most-neeeded functions/classes from src/ but might not
-    always include all helper-functions referenced from each such entity. To get to those, access
-    the modules in src/ directly. You can always do this anyway, if you do not want to go through
-    this API.
+ 6) The API accesses all relevant and most-neeeded functions/classes from
+    src/ but might not always include all helper-functions referenced from
+    each such entity. To get to those, access the modules in src/ directly.
+    You can always do this anyway, if you do not want to go through this API.
 """
 
-import sys, os
+import sys
+import os
 
 ######################################################################
 # set Evennia version in __version__ property
@@ -147,6 +157,7 @@ from src.utils import utils
 from src.utils import gametime
 from src.utils import ansi
 
+
 ######################################################################
 # API containers and helper functions
 ######################################################################
@@ -166,6 +177,7 @@ def help(header=False):
         names = [var for var in ev.__dict__ if not var.startswith('_')]
         return ", ".join(names)
 
+
 class _EvContainer(object):
     """
     Parent for other containers
@@ -175,7 +187,8 @@ class _EvContainer(object):
         "Returns list of contents"
         names = [name for name in self.__class__.__dict__ if not name.startswith('_')]
         names += [name for name in self.__dict__ if not name.startswith('_')]
-        return self.__doc__ + "-"*60 + "\n" + ", ".join(names)
+        return self.__doc__ + "-" * 60 + "\n" + ", ".join(names)
+
 
 class DBmanagers(_EvContainer):
     """
@@ -213,6 +226,7 @@ class DBmanagers(_EvContainer):
 managers = DBmanagers()
 del DBmanagers
 
+
 class DefaultCmds(_EvContainer):
     """
     This container holds direct shortcuts to all default commands in Evennia.
@@ -235,7 +249,9 @@ class DefaultCmds(_EvContainer):
             cmdlist = utils.variable_from_module(module, module.__all__)
             self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
-        from src.commands.default import admin, batchprocess, building, comms, general, player, help, system, unloggedin
+        from src.commands.default import (admin, batchprocess,
+                                          building, comms, general,
+                                          player, help, system, unloggedin)
         add_cmds(admin)
         add_cmds(building)
         add_cmds(batchprocess)
@@ -248,6 +264,7 @@ class DefaultCmds(_EvContainer):
         add_cmds(unloggedin)
 default_cmds = DefaultCmds()
 del DefaultCmds
+
 
 class SystemCmds(_EvContainer):
     """

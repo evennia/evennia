@@ -19,6 +19,7 @@ this change, you have to convert them manually e.g. with the
 
 from ev import Room as DefaultRoom
 
+
 class Room(DefaultRoom):
     """
     Rooms are like any Object, except their location is None

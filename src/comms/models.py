@@ -30,11 +30,13 @@ from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import is_iter, to_str, crop, make_iter
 
-__all__ = ("Msg", "TempMsg", "ChannelDB", "PlayerChannelConnection", "ExternalChannelConnection")
+__all__ = ("Msg", "TempMsg", "ChannelDB",
+            "PlayerChannelConnection", "ExternalChannelConnection")
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
 
 #------------------------------------------------------------
 #
@@ -66,9 +68,9 @@ class Msg(SharedMemoryModel):
     # These databse fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
-    # Sender is either a player, an object or an external sender, like an IRC channel
-    # normally there is only one, but if co-modification of a message is allowed, there
-    # may be more than one "author"
+    # Sender is either a player, an object or an external sender, like
+    # an IRC channel; normally there is only one, but if co-modification of
+    # a message is allowed, there may be more than one "author"
     db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set', null=True, verbose_name='sender(player)', db_index=True)
     db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set', null=True, verbose_name='sender(object)', db_index=True)
     db_sender_external = models.CharField('external sender', max_length=255, null=True, db_index=True,
@@ -80,8 +82,8 @@ class Msg(SharedMemoryModel):
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set', null=True, help_text="object receivers")
     db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set', null=True, help_text="channel recievers")
 
-    # header could be used for meta-info about the message if your system needs it, or as a separate
-    # store for the mail subject line maybe.
+    # header could be used for meta-info about the message if your system needs
+    # it, or as a separate store for the mail subject line maybe.
     db_header = models.TextField('header', null=True, blank=True)
     # the message body itself
     db_message = models.TextField('messsage')
@@ -124,6 +126,7 @@ class Msg(SharedMemoryModel):
                 list(self.db_sender_players.all()) +
                 list(self.db_sender_objects.all()) +
                 self.extra_senders]
+
     #@sender.setter
     def __senders_set(self, value):
         "Setter. Allows for self.sender = value"
@@ -143,6 +146,7 @@ class Msg(SharedMemoryModel):
             else:
                 raise ValueError(obj)
             self.save()
+
     #@sender.deleter
     def __senders_del(self):
         "Deleter. Clears all senders"
@@ -173,12 +177,19 @@ class Msg(SharedMemoryModel):
     # receivers property
     #@property
     def __receivers_get(self):
-        "Getter. Allows for value = self.receivers. Returns three lists of receivers: players, objects and channels."
+        """
+        Getter. Allows for value = self.receivers.
+        Returns three lists of receivers: players, objects and channels.
+        """
         return [hasattr(o, "typeclass") and o.typeclass or o for o in
                 list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())]
+
     #@receivers.setter
     def __receivers_set(self, value):
-        "Setter. Allows for self.receivers = value. This appends a new receiver to the message."
+        """
+        Setter. Allows for self.receivers = value.
+        This appends a new receiver to the message.
+        """
         for val in (v for v in make_iter(value) if v):
             obj, typ = identify_object(val)
             if typ == 'player':
@@ -190,6 +201,7 @@ class Msg(SharedMemoryModel):
             else:
                 raise ValueError
             self.save()
+
     #@receivers.deleter
     def __receivers_del(self):
         "Deleter. Clears all receivers"
@@ -215,11 +227,15 @@ class Msg(SharedMemoryModel):
     def __channels_get(self):
         "Getter. Allows for value = self.channels. Returns a list of channels."
         return self.db_receivers_channels.all()
+
     #@channels.setter
     def __channels_set(self, value):
-        "Setter. Allows for self.channels = value. Requires a channel to be added."
+        """
+        Setter. Allows for self.channels = value.
+        Requires a channel to be added."""
         for val in (v.dbobj for v in make_iter(value) if v):
             self.db_receivers_channels.add(val)
+
     #@channels.deleter
     def __channels_del(self):
         "Deleter. Allows for del self.channels"
@@ -228,8 +244,12 @@ class Msg(SharedMemoryModel):
     channels = property(__channels_get, __channels_set, __channels_del)
 
     def __hide_from_get(self):
-        "Getter. Allows for value = self.hide_from. Returns 3 lists of players, objects and channels"
+        """
+        Getter. Allows for value = self.hide_from.
+        Returns 3 lists of players, objects and channels
+        """
         return self.db_hide_from_players.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
+
     #@hide_from_sender.setter
     def __hide_from_set(self, value):
         "Setter. Allows for self.hide_from = value. Will append to hiders"
@@ -243,6 +263,7 @@ class Msg(SharedMemoryModel):
         else:
             raise ValueError
         self.save()
+
     #@hide_from_sender.deleter
     def __hide_from_del(self):
         "Deleter. Allows for del self.hide_from_senders"
@@ -275,7 +296,6 @@ class TempMsg(object):
     temporary messages that will not be stored.
     It mimics the "real" Msg object, but don't require
     sender to be given.
-
     """
     def __init__(self, senders=None, receivers=None, channels=None, message="", header="", type="", lockstring="", hide_from=None):
         self.senders = senders and make_iter(senders) or []
@@ -301,7 +321,7 @@ class TempMsg(object):
             try:
                 self.senders.remove(o)
             except ValueError:
-                pass # nothing to remove
+                pass  # nothing to remove
 
     def remove_receiver(self, obj):
         "Remove a sender or a list of senders"
@@ -309,11 +329,13 @@ class TempMsg(object):
             try:
                 self.senders.remove(o)
             except ValueError:
-                pass # nothing to remove
+                pass  # nothing to remove
 
     def access(self, accessing_obj, access_type='read', default=False):
         "checks lock access"
-        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+        return self.locks.check(accessing_obj,
+                                access_type=access_type, default=default)
+
 
 #------------------------------------------------------------
 #
@@ -346,7 +368,6 @@ class ChannelDB(TypedObject):
         _SA(self, "tags", TagHandler(self, category_prefix="comm_"))
         _SA(self, "aliases", AliasHandler(self, category_prefix="comm_"))
         _SA(self, "attributes", AttributeHandler(self))
-
 
     class Meta:
         "Define Django meta options"
@@ -415,6 +436,7 @@ class ChannelDB(TypedObject):
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
+
 class PlayerChannelConnection(SharedMemoryModel):
     """
     This connects a player object to a particular comm channel.
@@ -435,11 +457,13 @@ class PlayerChannelConnection(SharedMemoryModel):
     def player_get(self):
         "Getter. Allows for value = self.player"
         return self.db_player
+
     #@player.setter
     def player_set(self, value):
         "Setter. Allows for self.player = value"
         self.db_player = value
         self.save()
+
     #@player.deleter
     def player_del(self):
         "Deleter. Allows for del self.player. Deletes connection."
@@ -451,11 +475,13 @@ class PlayerChannelConnection(SharedMemoryModel):
     def channel_get(self):
         "Getter. Allows for value = self.channel"
         return self.db_channel.typeclass
+
     #@channel.setter
     def channel_set(self, value):
         "Setter. Allows for self.channel = value"
         self.db_channel = value.dbobj
         self.save()
+
     #@channel.deleter
     def channel_del(self):
         "Deleter. Allows for del self.channel. Deletes connection."
@@ -507,10 +533,12 @@ class ExternalChannelConnection(SharedMemoryModel):
         "Getter. Allows for value = self.channel"
         return self.db_channel
     #@channel.setter
+
     def channel_set(self, value):
         "Setter. Allows for self.channel = value"
         self.db_channel = value
         self.save()
+
     #@channel.deleter
     def channel_del(self):
         "Deleter. Allows for del self.channel. Deletes connection."
@@ -522,11 +550,13 @@ class ExternalChannelConnection(SharedMemoryModel):
     def external_key_get(self):
         "Getter. Allows for value = self.external_key"
         return self.db_external_key
+
     #@external_key.setter
     def external_key_set(self, value):
         "Setter. Allows for self.external_key = value"
         self.db_external_key = value
         self.save()
+
     #@external_key.deleter
     def external_key_del(self):
         "Deleter. Allows for del self.external_key. Deletes connection."
@@ -538,11 +568,13 @@ class ExternalChannelConnection(SharedMemoryModel):
     def external_send_code_get(self):
         "Getter. Allows for value = self.external_send_code"
         return self.db_external_send_code
+
     #@external_send_code.setter
     def external_send_code_set(self, value):
         "Setter. Allows for self.external_send_code = value"
         self.db_external_send_code = value
         self.save()
+
     #@external_send_code.deleter
     def external_send_code_del(self):
         "Deleter. Allows for del self.external_send_code. Deletes connection."
@@ -555,11 +587,13 @@ class ExternalChannelConnection(SharedMemoryModel):
     def external_config_get(self):
         "Getter. Allows for value = self.external_config"
         return self.db_external_config
+
     #@external_config.setter
     def external_config_set(self, value):
         "Setter. Allows for self.external_config = value"
         self.db_external_config = value
         self.save()
+
     #@external_config.deleter
     def external_config_del(self):
         "Deleter. Allows for del self.external_config. Deletes connection."
@@ -572,11 +606,13 @@ class ExternalChannelConnection(SharedMemoryModel):
     def is_enabled_get(self):
         "Getter. Allows for value = self.is_enabled"
         return self.db_is_enabled
+
     #@is_enabled.setter
     def is_enabled_set(self, value):
         "Setter. Allows for self.is_enabled = value"
         self.db_is_enabled = value
         self.save()
+
     #@is_enabled.deleter
     def is_enabled_del(self):
         "Deleter. Allows for del self.is_enabled. Deletes connection."
@@ -589,8 +625,8 @@ class ExternalChannelConnection(SharedMemoryModel):
 
     def to_channel(self, message, *args, **kwargs):
         "Send external -> channel"
-        if 'from_obj' in kwargs and kwargs.pop('from_obj'):
-            from_obj = self.external_key
+        #if 'from_obj' in kwargs and kwargs.pop('from_obj'):
+        #    from_obj = self.external_key
         self.channel.msg(message, senders=[self], *args, **kwargs)
 
     def to_external(self, message, senders=None, from_channel=None):
@@ -599,12 +635,13 @@ class ExternalChannelConnection(SharedMemoryModel):
         # make sure we are not echoing back our own message to ourselves
         # (this would result in a nasty infinite loop)
         #print senders
-        if self in make_iter(senders):#.external_key:
+        if self in make_iter(senders):  #.external_key:
             return
 
         try:
             # we execute the code snippet that should make it possible for the
-            # connection to contact the protocol correctly (as set by the protocol).
+            # connection to contact the protocol correctly (as set by the
+            # protocol).
             # Note that the code block has access to the variables here, such
             # as message, from_obj and from_channel.
             exec(to_str(self.external_send_code))

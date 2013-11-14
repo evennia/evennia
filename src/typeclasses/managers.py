@@ -13,6 +13,7 @@ from src.utils.dbserialize import to_pickle
 __all__ = ("AttributeManager", "TypedObjectManager")
 _GA = object.__getattribute__
 
+
 # Managers
 
 def _attr_pickled(method):
@@ -29,24 +30,30 @@ def _attr_pickled(method):
         return method(self, *args, **kwargs)
     return update_wrapper(wrapper, method)
 
+
 class AttributeManager(models.Manager):
     "Manager for handling Attributes."
     @_attr_pickled
     def get(self, *args, **kwargs):
         return super(AttributeManager, self).get(*args, **kwargs)
     @_attr_pickled
+
     def filter(self,*args, **kwargs):
         return super(AttributeManager, self).filter(*args, **kwargs)
     @_attr_pickled
+
     def exclude(self,*args, **kwargs):
         return super(AttributeManager, self).exclude(*args, **kwargs)
     @_attr_pickled
+
     def values(self,*args, **kwargs):
         return super(AttributeManager, self).values(*args, **kwargs)
     @_attr_pickled
+
     def values_list(self,*args, **kwargs):
         return super(AttributeManager, self).values_list(*args, **kwargs)
     @_attr_pickled
+
     def exists(self,*args, **kwargs):
         return super(AttributeManager, self).exists(*args, **kwargs)
 
@@ -113,11 +120,11 @@ class TagManager(models.Manager):
          search_key (string) - the tag identifier
          category (string) - the tag category
 
-        Returns a single Tag (or None) if both key and category is given, otherwise
-        it will return a list.
+        Returns a single Tag (or None) if both key and category is given,
+        otherwise it will return a list.
         """
-        key_cands = Q(db_key__iexact=key.lower().strip()) if key!=None else Q()
-        cat_cands = Q(db_category__iexact=category.lower().strip()) if category!=None else Q()
+        key_cands = Q(db_key__iexact=key.lower().strip()) if key is not None else Q()
+        cat_cands = Q(db_category__iexact=category.lower().strip()) if category is not None else Q()
         tags = self.filter(key_cands & cat_cands)
         if key and category:
             return tags[0] if tags else None
@@ -132,8 +139,8 @@ class TagManager(models.Manager):
          key (string) - the tag identifier
          category (string) - the tag category
         """
-        key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if search_key!=None else Q()
-        cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category!=None else Q()
+        key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if key is not None else Q()
+        cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category is not None else Q()
         return objclass.objects.filter(key_cands & cat_cands)
 
     def create_tag(self, key=None, category=None, data=None):
@@ -144,18 +151,20 @@ class TagManager(models.Manager):
         data on a tag (it is not part of what makes the tag unique).
 
         """
-        data = str(data) if data!=None else None
+        data = str(data) if data is not None else None
 
         tag = self.get_tag(key=key, category=category)
-        if tag and data != None:
+        if tag and data is not None:
             tag.db_data = data
             tag.save()
         elif not tag:
-            tag = self.create(db_key=key.lower().strip() if key!=None else None,
-                              db_category=category.lower().strip() if category and key!=None else None,
-                              db_data=str(data) if data!=None else None)
+            tag = self.create(db_key=key.lower().strip() if key is not None else None,
+                              db_category=category.lower().strip()
+                              if category and key is not None else None,
+                              db_data=str(data) if data is not None else None)
             tag.save()
         return make_iter(tag)[0]
+
 
 #
 # helper functions for the TypedObjectManager.
@@ -171,8 +180,10 @@ def returns_typeclass_list(method):
         "decorator. Returns a list."
         self.__doc__ = method.__doc__
         matches = make_iter(method(self, *args, **kwargs))
-        return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj for dbobj in make_iter(matches)]
+        return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
+                                               for dbobj in make_iter(matches)]
     return update_wrapper(func, method)
+
 
 def returns_typeclass(method):
     """
@@ -184,7 +195,7 @@ def returns_typeclass(method):
         matches = method(self, *args, **kwargs)
         dbobj = matches and make_iter(matches)[0] or None
         if dbobj:
-           return (hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
+            return (hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
         return None
     return update_wrapper(func, method)
 
@@ -240,9 +251,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         given boundaries.
         """
         retval = super(TypedObjectManager, self).all()
-        if min_dbref != None:
+        if min_dbref is not None:
             retval = retval.filter(id__gte=self.dbref(min_dbref, reqhash=False))
-        if max_dbref != None:
+        if max_dbref is not None:
             retval = retval.filter(id__lte=self.dbref(max_dbref, reqhash=False))
         return retval
 

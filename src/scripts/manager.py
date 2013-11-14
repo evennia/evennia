@@ -10,6 +10,7 @@ __all__ = ("ScriptManager",)
 
 VALIDATE_ITERATION = 0
 
+
 class ScriptManager(TypedObjectManager):
     """
     This Scriptmanager implements methods for searching
@@ -82,8 +83,8 @@ class ScriptManager(TypedObjectManager):
     def remove_non_persistent(self, obj=None):
         """
         This cleans up the script database of all non-persistent
-        scripts, or only those on obj. It is called every time the server restarts
-        and
+        scripts, or only those on obj. It is called every time the server
+        restarts.
         """
         if obj:
             to_stop = self.filter(db_obj=obj, db_persistent=False, db_is_active=True)
@@ -211,10 +212,11 @@ class ScriptManager(TypedObjectManager):
         Make an identical copy of the original_script
         """
         typeclass = original_script.typeclass_path
-        new_key = new_key if new_key!=None else original_script.key
-        new_obj = new_obj if new_obj!=None else original_script.obj
-        new_locks = new_locks if new_locks!=None else original_script.db_lock_storage
+        new_key = new_key if new_key is not None else original_script.key
+        new_obj = new_obj if new_obj is not None else original_script.obj
+        new_locks = new_locks if new_locks is not None else original_script.db_lock_storage
 
         from src.utils import create
-        new_script = create.create_script(typeclass, key=new_key, obj=new_obj, locks=new_locks, autostart=True)
+        new_script = create.create_script(typeclass, key=new_key, obj=new_obj,
+                                          locks=new_locks, autostart=True)
         return new_script

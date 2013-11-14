@@ -21,6 +21,7 @@ _ATTR = None
 
 _AT_MULTIMATCH_INPUT = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
 
+
 class ObjectManager(TypedObjectManager):
     """
     This ObjectManager implementes methods for searching
@@ -43,7 +44,8 @@ class ObjectManager(TypedObjectManager):
     get_objs_with_db_property_match
     get_objs_with_key_or_alias
     get_contents
-    object_search (interface to many of the above methods, equivalent to ev.search_object)
+    object_search (interface to many of the above methods,
+                   equivalent to ev.search_object)
     copy_object
 
     """
@@ -93,8 +95,8 @@ class ObjectManager(TypedObjectManager):
     @returns_typeclass_list
     def get_objs_with_attr(self, attribute_name, candidates=None):
         """
-        Returns all objects having the given attribute_name defined at all. Location
-        should be a valid location object.
+        Returns all objects having the given attribute_name defined at all.
+        Location should be a valid location object.
         """
         cand_restriction = candidates != None and Q(objattribute__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         return list(self.filter(cand_restriction & Q(objattribute__db_key=attribute_name)))
@@ -178,10 +180,11 @@ class ObjectManager(TypedObjectManager):
         return self.filter(db_location=location).exclude(exclude_restriction)
 
     @returns_typeclass_list
-    def get_objs_with_key_or_alias(self, ostring, exact=True, candidates=None, typeclasses=None):
+    def get_objs_with_key_or_alias(self, ostring, exact=True,
+                                         candidates=None, typeclasses=None):
         """
-        Returns objects based on key or alias match. Will also do fuzzy matching based on
-        the utils.string_partial_matching function.
+        Returns objects based on key or alias match. Will also do fuzzy
+        matching based on the utils.string_partial_matching function.
         candidates - list of candidate objects to restrict on
         typeclasses - list of typeclass path strings to restrict on
         """
@@ -191,7 +194,8 @@ class ObjectManager(TypedObjectManager):
             else:
                 return []
         if is_iter(candidates) and not len(candidates):
-            # if candidates is an empty iterable there can be no matches. Exit early.
+            # if candidates is an empty iterable there can be no matches
+            # Exit early.
             return []
 
         # build query objects
@@ -231,33 +235,42 @@ class ObjectManager(TypedObjectManager):
                       candidates=None,
                       exact=True):
         """
-        Search as an object globally or in a list of candidates and return results. The result is always an Object.
-        Always returns a list.
+        Search as an object globally or in a list of candidates and return
+        results. The result is always an Object. Always returns a list.
 
         Arguments:
-        searchdata: (str or obj) The entity to match for. This is usually a key string but may also be an object itself.
-                  By default (if not attribute_name is set), this will search object.key and object.aliases in order. Can also
-                  be on the form #dbref, which will, if exact=True be matched against primary key.
-        attribute_name: (str): Use this named ObjectAttribute to match searchdata against, instead
-                  of the defaults. If this is the name of a database field (with or without the db_ prefix), that
-                  will be matched too.
-        typeclass (str or TypeClass): restrict matches to objects having this typeclass. This will help
-                   speed up global searches.
-        candidates (list obj ObjectDBs): If supplied, search will only be performed among the candidates
-                  in this list. A common list of candidates is the contents of the current location searched.
-        exact (bool): Match names/aliases exactly or partially. Partial matching matches the
-                  beginning of words in the names/aliases, using a matching routine to separate
-                  multiple matches in names with multiple components (so "bi sw" will match
-                  "Big sword"). Since this is more expensive than exact matching, it is
-                  recommended to be used together with the objlist keyword to limit the number
-                  of possibilities. This value has no meaning if searching for attributes/properties.
+        searchdata: (str or obj) The entity to match for. This is usually a
+                  key string but may also be an object itself. By default (if
+                  not attribute_name is set), this will search object.key and
+                  object.aliases in order. Can also be on the form #dbref,
+                  which will, if exact=True be matched against primary key.
+        attribute_name: (str): Use this named ObjectAttribute to match
+                  searchdata against, instead of the defaults. If this is
+                  the name of a database field (with or without the db_ prefix),
+                  that will be matched too.
+        typeclass (str or TypeClass): restrict matches to objects having this
+                  typeclass. This will help speed up global searches.
+        candidates (list obj ObjectDBs): If supplied, search will only be
+                  performed among the candidates in this list. A common list
+                  of candidates is the contents of the current location
+                  searched.
+        exact (bool): Match names/aliases exactly or partially. Partial
+                  matching matches the beginning of words in the names/aliases,
+                  using a matching routine to separate multiple matches in
+                  names with multiple components (so "bi sw" will match
+                  "Big sword"). Since this is more expensive than exact
+                  matching, it is recommended to be used together with the
+                  objlist keyword to limit the number of possibilities. This
+                  value has no meaning if searching for attributes/properties.
 
         Returns:
         A list of matching objects (or a list with one unique match)
-
         """
         def _searcher(searchdata, candidates, typeclass, exact=False):
-            "Helper method for searching objects. typeclass is only used for global searching (no candidates)"
+            """
+            Helper method for searching objects. typeclass is only used
+            for global searching (no candidates)
+            """
             if attribute_name:
                 # attribute/property search (always exact).
                 matches = self.get_objs_with_db_property_value(attribute_name, searchdata, candidates=candidates, typeclasses=typeclass)
@@ -285,10 +298,11 @@ class ObjectManager(TypedObjectManager):
             # Convenience check to make sure candidates are really dbobjs
             candidates = [cand.dbobj for cand in make_iter(candidates) if cand]
             if typeclass:
-                candidates = [cand for cand in candidates if _GA(cand, "db_typeclass_path") in typeclass]
+                candidates = [cand for cand in candidates
+                                if _GA(cand, "db_typeclass_path") in typeclass]
 
         dbref = not attribute_name and exact and self.dbref(searchdata)
-        if dbref != None:
+        if dbref is not None:
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
@@ -299,17 +313,19 @@ class ObjectManager(TypedObjectManager):
 
         # Search through all possibilities.
         match_number = None
-        # always run first check exact - we don't want partial matches if on the form of 1-keyword etc.
+        # always run first check exact - we don't want partial matches
+        # if on the form of 1-keyword etc.
         matches = _searcher(searchdata, candidates, typeclass, exact=True)
         if not matches:
-            # no matches found - check if we are dealing with N-keyword query - if so, strip it.
+            # no matches found - check if we are dealing with N-keyword
+            # query - if so, strip it.
             match_number, searchdata = _AT_MULTIMATCH_INPUT(searchdata)
             # run search again, with the exactness set by call
-            if match_number != None or not exact:
+            if match_number is not None or not exact:
                 matches = _searcher(searchdata, candidates, typeclass, exact=exact)
 
         # deal with result
-        if len(matches) > 1 and match_number != None:
+        if len(matches) > 1 and match_number is not None:
             # multiple matches, but a number was given to separate them
             try:
                 matches = [matches[match_number]]
@@ -324,11 +340,12 @@ class ObjectManager(TypedObjectManager):
 
     def copy_object(self, original_object, new_key=None,
                     new_location=None, new_home=None,
-                    new_permissions=None, new_locks=None, new_aliases=None, new_destination=None):
+                    new_permissions=None, new_locks=None,
+                    new_aliases=None, new_destination=None):
         """
-        Create and return a new object as a copy of the original object. All will
-        be identical to the original except for the arguments given specifically
-        to this method.
+        Create and return a new object as a copy of the original object. All
+        will be identical to the original except for the arguments given
+        specifically to this method.
 
         original_object (obj) - the object to make a copy from
         new_key (str) - name the copy differently from the original.
@@ -358,9 +375,14 @@ class ObjectManager(TypedObjectManager):
         # create new object
         from src.utils import create
         from src.scripts.models import ScriptDB
-        new_object = create.create_object(typeclass_path, key=new_key, location=new_location,
-                                          home=new_home, permissions=new_permissions,
-                                          locks=new_locks, aliases=new_aliases, destination=new_destination)
+        new_object = create.create_object(typeclass_path,
+                                          key=new_key,
+                                          location=new_location,
+                                          home=new_home,
+                                          permissions=new_permissions,
+                                          locks=new_locks,
+                                          aliases=new_aliases,
+                                          destination=new_destination)
         if not new_object:
             return None
 
@@ -380,7 +402,6 @@ class ObjectManager(TypedObjectManager):
             ScriptDB.objects.copy_script(script, new_obj=new_object.dbobj)
 
         return new_object
-
 
     def clear_all_sessids(self):
         """

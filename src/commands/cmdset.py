@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 from src.utils.utils import inherits_from, is_iter
 __all__ = ("CmdSet",)
 
+
 class _CmdSetMeta(type):
     """
     This metaclass makes some minor on-the-fly convenience fixes to
@@ -38,15 +39,18 @@ class _CmdSetMeta(type):
 
         super(_CmdSetMeta, mcs).__init__(*args, **kwargs)
 
+
 class CmdSet(object):
     """
     This class describes a unique cmdset that understands priorities. CmdSets
     can be merged and made to perform various set operations on each other.
-    CmdSets have priorities that affect which of their ingoing commands gets used.
+    CmdSets have priorities that affect which of their ingoing commands
+    gets used.
 
         In the examples, cmdset A always have higher priority than cmdset B.
 
-        key - the name of the cmdset. This can be used on its own for game operations
+        key - the name of the cmdset. This can be used on its own for game
+        operations
 
         mergetype (partly from Set theory):
 
@@ -80,8 +84,9 @@ class CmdSet(object):
         priority- All cmdsets are always merged in pairs of two so that
                   the higher set's mergetype is applied to the
                   lower-priority cmdset. Default commands have priority 0,
-                  high-priority ones like Exits and Channels have 10 and 9. Priorities
-                  can be negative as well to give default commands preference.
+                  high-priority ones like Exits and Channels have 10 and 9.
+                  Priorities can be negative as well to give default
+                  commands preference.
 
         duplicates - determines what happens when two sets of equal
                      priority merge. Default has the first of them in the
@@ -130,16 +135,17 @@ class CmdSet(object):
     permanent = False
     errmessage = ""
     # pre-store properties to duplicate straight off
-    to_duplicate = ("key", "cmdsetobj", "no_exits", "no_objs", "no_channels", "permanent",
-                    "mergetype", "priority", "duplicates", "errmessage")
+    to_duplicate = ("key", "cmdsetobj", "no_exits", "no_objs",
+                    "no_channels", "permanent", "mergetype",
+                    "priority", "duplicates", "errmessage")
 
     def __init__(self, cmdsetobj=None, key=None):
         """
         Creates a new CmdSet instance.
 
         cmdsetobj - this is the database object to which this particular
-             instance of cmdset is related. It is often a player but may also be a
-             regular object.
+             instance of cmdset is related. It is often a character but
+             may also be a regular object.
         """
         if key:
             self.key = key
@@ -161,7 +167,8 @@ class CmdSet(object):
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if not cmd in cmdset_a])
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b
+                                      if not cmd in cmdset_a])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -206,7 +213,8 @@ class CmdSet(object):
         cmdset = CmdSet()
         for key, val in ((key, getattr(self, key)) for key in self.to_duplicate):
             if val != getattr(cmdset, key):
-                # only copy if different from default; avoid turning class-vars into instance vars
+                # only copy if different from default; avoid turning
+                # class-vars into instance vars
                 setattr(cmdset, key, val)
         cmdset.key_mergetypes = self.key_mergetypes.copy()
         return cmdset
@@ -230,10 +238,11 @@ class CmdSet(object):
     def __contains__(self, othercmd):
         """
         Returns True if this cmdset contains the given command (as defined
-        by command name and aliases). This allows for things like 'if cmd in cmdset'
+        by command name and aliases). This allows for things
+        like 'if cmd in cmdset'
         """
         ret = self._contains_cache.get(othercmd)
-        if ret == None:
+        if ret is None:
             ret = othercmd in self.commands
             self._contains_cache[othercmd] = ret
         return ret
@@ -264,7 +273,8 @@ class CmdSet(object):
             # A higher or equal priority than B
 
             # preserve system __commands
-            sys_commands = sys_commands_a + [cmd for cmd in sys_commands_b if cmd not in sys_commands_a]
+            sys_commands = sys_commands_a + [cmd for cmd in sys_commands_b
+                                             if cmd not in sys_commands_a]
 
             mergetype = self.key_mergetypes.get(cmdset_b.key, self.mergetype)
             if mergetype == "Intersect":
@@ -286,7 +296,8 @@ class CmdSet(object):
             # B higher priority than A
 
             # preserver system __commands
-            sys_commands = sys_commands_b + [cmd for cmd in sys_commands_a if cmd not in sys_commands_b]
+            sys_commands = sys_commands_b + [cmd for cmd in sys_commands_a
+                                             if cmd not in sys_commands_b]
 
             mergetype = cmdset_b.key_mergetypes.get(self.key, cmdset_b.mergetype)
             if mergetype == "Intersect":
@@ -295,7 +306,7 @@ class CmdSet(object):
                 cmdset_c = self._replace(cmdset_b, self)
             elif mergetype == "Remove":
                 cmdset_c = self._remove(self, cmdset_b)
-            else: # Union
+            else:  # Union
                 cmdset_c = self._union(cmdset_b, self)
             cmdset_c.no_channels = cmdset_b.no_channels
             cmdset_c.no_exits = cmdset_b.no_exits
@@ -311,9 +322,7 @@ class CmdSet(object):
 
         # return the system commands to the cmdset
         cmdset_c.add(sys_commands)
-
         return cmdset_c
-
 
     def add(self, cmd):
         """
@@ -338,9 +347,12 @@ class CmdSet(object):
             try:
                 cmd = self._instantiate(cmd)
             except RuntimeError:
-                string = "Adding cmdset %(cmd)s to %(class)s lead to an infinite loop. When adding a cmdset to another, "
-                string += "make sure they are not themself cyclically added to the new cmdset somewhere in the chain."
-                raise RuntimeError(_(string) % {"cmd":cmd, "class":self.__class__})
+                string = "Adding cmdset %(cmd)s to %(class)s lead to an "
+                string += "infinite loop. When adding a cmdset to another, "
+                string += "make sure they are not themself cyclically added to "
+                string += "the new cmdset somewhere in the chain."
+                raise RuntimeError(_(string) % {"cmd": cmd,
+                                                "class": self.__class__})
             cmds = cmd.commands
         elif is_iter(cmd):
             cmds = [self._instantiate(c) for c in cmd]
@@ -354,7 +366,7 @@ class CmdSet(object):
                 cmd.obj = self.cmdsetobj
             try:
                 ic = commands.index(cmd)
-                commands[ic] = cmd # replace
+                commands[ic] = cmd  # replace
             except ValueError:
                 commands.append(cmd)
             # extra run to make sure to avoid doublets
@@ -365,10 +377,9 @@ class CmdSet(object):
             if cmd.key.startswith("__"):
                 try:
                     ic = system_commands.index(cmd)
-                    system_commands[ic] = cmd # replace
+                    system_commands[ic] = cmd  # replace
                 except ValueError:
                     system_commands.append(cmd)
-
 
     def remove(self, cmd):
         """
@@ -431,7 +442,8 @@ class CmdSet(object):
         """
         names = []
         if caller:
-            [names.extend(cmd._keyaliases) for cmd in self.commands if cmd.access(caller)]
+            [names.extend(cmd._keyaliases) for cmd in self.commands
+                           if cmd.access(caller)]
         else:
             [names.extend(cmd._keyaliases) for cmd in self.commands]
         return names

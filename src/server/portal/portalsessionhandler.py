@@ -4,6 +4,7 @@ Sessionhandler for portal sessions
 import time
 from src.server.sessionhandler import SessionHandler, PCONN, PDISCONN
 
+
 #------------------------------------------------------------
 # Portal-SessionHandler class
 #------------------------------------------------------------
@@ -39,8 +40,8 @@ class PortalSessionHandler(SessionHandler):
 
     def connect(self, session):
         """
-        Called by protocol at first connect. This adds a not-yet authenticated session
-        using an ever-increasing counter for sessid.
+        Called by protocol at first connect. This adds a not-yet
+        authenticated session using an ever-increasing counter for sessid.
         """
         self.latest_sessid += 1
         sessid = self.latest_sessid
@@ -48,13 +49,15 @@ class PortalSessionHandler(SessionHandler):
         sessdata = session.get_sync_data()
         self.sessions[sessid] = session
         # sync with server-side
-        if self.portal.amp_protocol: # this is a timing issue
+        if self.portal.amp_protocol:  # this is a timing issue
             self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PCONN,
                                                          data=sessdata)
+
     def disconnect(self, session):
         """
-        Called from portal side when the connection is closed from the portal side.
+        Called from portal side when the connection is closed
+        from the portal side.
         """
         sessid = session.sessid
         if sessid in self.sessions:
@@ -86,18 +89,22 @@ class PortalSessionHandler(SessionHandler):
         self.sessions = {}
 
     def server_logged_in(self, sessid, data):
-        "The server tells us that the session has been authenticated. Updated it."
+        """
+        The server tells us that the session has been
+        authenticated. Updated it.
+        """
         sess = self.get_session(sessid)
         sess.load_sync_data(data)
 
     def server_session_sync(self, serversessions):
         """
-        Server wants to save data to the portal, maybe because it's about to shut down.
-        We don't overwrite any sessions here, just update them in-place and remove
-        any that are out of sync (which should normally not be the case)
+        Server wants to save data to the portal, maybe because it's about
+        to shut down. We don't overwrite any sessions here, just update
+        them in-place and remove any that are out of sync (which should
+        normally not be the case)
 
-        serversessions - dictionary {sessid:{property:value},...} describing the properties
-                         to sync on all sessions
+        serversessions - dictionary {sessid:{property:value},...} describing
+                         the properties to sync on all sessions
         """
         to_save = [sessid for sessid in serversessions if sessid in self.sessions]
         to_delete = [sessid for sessid in self.sessions if sessid not in to_save]
@@ -131,13 +138,13 @@ class PortalSessionHandler(SessionHandler):
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)
+
     def announce_all(self, message):
         """
         Send message to all connection sessions
         """
         for session in self.sessions.values():
             session.data_out(message)
-
 
     def data_out(self, sessid, text=None, **kwargs):
         """

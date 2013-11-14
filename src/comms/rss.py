@@ -21,6 +21,7 @@ RETAG = re.compile(r'<[^>]*?>')
 # holds rss readers they can be shut down at will.
 RSS_READERS = {}
 
+
 def msg_info(message):
     """
     Send info to default info channel
@@ -37,6 +38,7 @@ if RSS_ENABLED:
     except ImportError:
         raise ImportError("RSS requires python-feedparser to be installed. Install or set RSS_ENABLED=False.")
 
+
 class RSSReader(object):
     """
     Reader script used to connect to each individual RSS feed
@@ -50,7 +52,7 @@ class RSSReader(object):
         self.key = key
         self.url = url
         self.interval = interval
-        self.entries = {} # stored feeds
+        self.entries = {}  # stored feeds
         self.task = None
         # first we do is to load the feed so we don't resend
         # old entries whenever the reader starts.
@@ -63,7 +65,8 @@ class RSSReader(object):
         feed = feedparser.parse(self.url)
         new = []
         for entry in (e for e in feed['entries'] if e['id'] not in self.entries):
-            txt = "[RSS] %s: %s" % (RETAG.sub("", entry['title']), entry['link'].replace('\n','').encode('utf-8'))
+            txt = "[RSS] %s: %s" % (RETAG.sub("", entry['title']),
+                                    entry['link'].replace('\n','').encode('utf-8'))
             self.entries[entry['id']] = txt
             new.append(txt)
         return new
@@ -92,11 +95,13 @@ class RSSReader(object):
         self.task.start(self.interval, now=False)
         RSS_READERS[self.key] = self
 
+
 def build_connection_key(channel, url):
     "This is used to id the connection"
     if hasattr(channel, 'key'):
         channel = channel.key
     return "rss_%s>%s" % (url, channel)
+
 
 def create_connection(channel, url, interval):
     """
@@ -113,12 +118,16 @@ def create_connection(channel, url, interval):
     if old_conns:
         return False
     config = "%s|%i" % (url, interval)
-    # There is no sendback from evennia to the rss, so we need not define any sendback code.
-    conn = ExternalChannelConnection(db_channel=channel, db_external_key=key, db_external_config=config)
+    # There is no sendback from evennia to the rss, so we need not define
+    # any sendback code.
+    conn = ExternalChannelConnection(db_channel=channel,
+                                     db_external_key=key,
+                                     db_external_config=config)
     conn.save()
 
     connect_to_rss(conn)
     return True
+
 
 def delete_connection(channel, url):
     """
@@ -135,6 +144,7 @@ def delete_connection(channel, url):
         reader.task.stop()
     return True
 
+
 def connect_to_rss(connection):
     """
     Create the parser instance and connect to RSS feed and channel
@@ -144,6 +154,7 @@ def connect_to_rss(connection):
     url, interval = [utils.to_str(conf) for conf in connection.external_config.split('|')]
     # Create reader (this starts the running task and stores a reference in RSS_TASKS)
     RSSReader(key, url, int(interval))
+
 
 def connect_all():
     """
