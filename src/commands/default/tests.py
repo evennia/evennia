@@ -86,6 +86,7 @@ class CommandTest(TestCase):
         self.obj1 = create.create_object(TestObjectClass, key="Obj%i" % self.CID, location=self.room1, home=self.room1)
         self.obj2 = create.create_object(TestObjectClass, key="Obj%ib" % self.CID, location=self.room1, home=self.room1)
         self.char1 = create.create_object(TestCharacterClass, key="Char%i" % self.CID, location=self.room1, home=self.room1)
+        self.char1.permissions.add("Immortals")
         self.char2 = create.create_object(TestCharacterClass, key="Char%ib" % self.CID, location=self.room1, home=self.room1)
         self.char1.player = self.player
         self.char2.player = self.player2
@@ -221,7 +222,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdSessions(), "", "Your current session(s):", caller=self.player)
         self.call(player.CmdColorTest(), "ansi", "ANSI colors:", caller=self.player)
         self.call(player.CmdCharCreate(), "Test1=Test char","Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
-        self.call(player.CmdQuell(), "", "Quelling Player permissions (immortals). Use @unquell to get them back.", caller=self.player)
+        self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
 
 
 from src.commands.default import building
@@ -229,6 +230,7 @@ class TestBuilding(CommandTest):
     CID = 6
     def test_cmds(self):
         self.call(building.CmdCreate(), "/drop TestObj1", "You create a new Object: TestObj1.")
+        self.call(building.CmdExamine(), "TestObj1", "Name/key: TestObj1")
         self.call(building.CmdSetObjAlias(), "TestObj1 = TestObj1b","Alias(es) for 'TestObj1' set to testobj1b.")
         self.call(building.CmdCopy(), "TestObj1 = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied TestObj1 to 'TestObj3' (aliases: ['TestObj3b']")
         self.call(building.CmdSetAttribute(), "Obj6/test1=\"value1\"", "Created attribute Obj6/test1 = \"value1\"")
@@ -249,7 +251,6 @@ class TestBuilding(CommandTest):
         self.call(building.CmdTypeclass(), "Obj6 = src.objects.objects.Exit",
                 "Obj6 changed typeclass from src.commands.default.tests.TestObjectClass to src.objects.objects.Exit")
         self.call(building.CmdLock(), "Obj6 = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj6.")
-        self.call(building.CmdExamine(), "Obj6", "Name/key: Obj6")
         self.call(building.CmdFind(), "TestRoom1", "One Match")
         self.call(building.CmdScript(), "Obj6 = src.scripts.scripts.Script", "Script src.scripts.scripts.Script successfully added")
         self.call(building.CmdTeleport(), "TestRoom1", "TestRoom1\nExits: back|Teleported to TestRoom1.")
