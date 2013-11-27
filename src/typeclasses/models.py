@@ -41,6 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
+from src.server.caches import get_attr_cache, set_attr_cache
 
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
@@ -116,8 +117,6 @@ class Attribute(SharedMemoryModel):
         "Initializes the parent first -important!"
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.locks = LockHandler(self)
-        self.no_cache = True
-        self.cached_value = None
 
     class Meta:
         "Define Django meta options"
@@ -137,21 +136,16 @@ class Attribute(SharedMemoryModel):
         """
         Getter. Allows for value = self.value.
         We cannot cache here since it makes certain cases (such
-        as storing a dbobj which is then deleted elswhere) out-of-sync.
+        as storing a dbobj which is then deleted elsewhere) out-of-sync.
         The overhead of unpickling seems hard to avoid.
         """
         return from_pickle(self.db_value, db_obj=self)
-        #if self.no_cache:
-        #    # re-create data from database and cache it
-        #    value = from_pickle(self.db_value, db_obj=self)
-        #    self.cached_value = value
-        #    self.no_cache = False
-        #return self.cached_value
 
     #@value.setter
     def __value_set(self, new_value):
         """
-        Setter. Allows for self.value = value. We make sure to cache everything.
+        Setter. Allows for self.value = value. We cannot cache here,
+        see self.__value_get.
         """
         self.db_value = to_pickle(new_value)
         self.save()
@@ -160,15 +154,6 @@ class Attribute(SharedMemoryModel):
         except AttributeError:
             pass
         return
-        #to_store = to_pickle(new_value)
-        #self.cached_value = from_pickle(to_store, db_obj=self)
-        #self.no_cache = False
-        #self.db_value = to_store
-        #self.save()
-        #try:
-        #    self._track_db_value_change.update(self.cached_value)
-        #except AttributeError:
-        #    pass
 
     #@value.deleter
     def __value_del(self):
@@ -223,8 +208,11 @@ class AttributeHandler(object):
         self._cache = None
 
     def _recache(self):
-        self._cache = dict(("%s_%s" % (to_str(attr.db_key).lower(), to_str(attr.db_category, force_string=True).lower()), attr)
-                            for attr in _GA(self.obj, self._m2m_fieldname).all())
+        self._cache = dict(("%s_%s" % (to_str(attr.db_key).lower(),
+                                       to_str(attr.db_category,
+                                       force_string=True).lower()), attr)
+                        for attr in _GA(self.obj, self._m2m_fieldname).all())
+        set_attr_cache(self.obj, self._cache) # currently only for testing
 
     def has(self, key, category=None):
         """
@@ -368,16 +356,6 @@ class AttributeHandler(object):
             self._recache()
         catkey = "_%s" % to_str(category, force_string=True).lower()
         return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
-
-        #if category==None:
-        #    all_attrs = _GA(self.obj, self._m2m_fieldname).all()
-        #else:
-        #    all_attrs = _GA(self.obj, self._m2m_fieldname).filter(db_category=category)
-        #if accessing_obj:
-        #    return [attr for attr in all_attrs if attr.access(accessing_obj, self._attrread, default=default_access)]
-        #else:
-        #    return list(all_attrs)
-
 
 class NickHandler(AttributeHandler):
     """

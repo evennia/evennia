@@ -108,11 +108,11 @@ DEFAULT_NCLIENTS = 1
 # line. All launched clients will be called upon to possibly do an
 # action with this frequency.
 DEFAULT_TIMESTEP = 2
+# chance of a client performing an action, per timestep. This helps to
+# spread out usage randomly, like it would be in reality.
+CHANCE_OF_ACTION = 0.05
 # Port to use, if not specified on command line
 DEFAULT_PORT = settings.TELNET_PORTS[0]
-# chance of an action happening, per timestep. This helps to
-# spread out usage randomly, like it would be in reality.
-CHANCE_OF_ACTION = 0.1
 
 
 #------------------------------------------------------------

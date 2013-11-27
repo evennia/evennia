@@ -19,6 +19,7 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
 # imports needed on both server and portal side
 import os
 from collections import defaultdict
+from textwrap import wrap
 try:
     import cPickle as pickle
 except ImportError:
@@ -40,7 +41,7 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server sessigon sync
 
 MAXLEN = 65535  # max allowed data length in AMP protocol
-
+_MSGBUFFER = defaultdict(list)
 
 def get_restart_mode(restart_file):
     """
@@ -136,10 +137,11 @@ class MsgPortal2Server(amp.Command):
     """
     Message portal -> server
     """
+    key = "MsgPortal2Server"
     arguments = [('sessid', amp.Integer()),
-                 ('msg', amp.String()),
                  ('ipart', amp.Integer()),
                  ('nparts', amp.Integer()),
+                 ('msg', amp.String()),
                  ('data', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
@@ -149,10 +151,11 @@ class MsgServer2Portal(amp.Command):
     """
     Message server -> portal
     """
+    key = "MsgServer2Portal"
     arguments = [('sessid', amp.Integer()),
-                 ('msg', amp.String()),
                  ('ipart', amp.Integer()),
                  ('nparts', amp.Integer()),
+                 ('msg', amp.String()),
                  ('data', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
@@ -166,7 +169,10 @@ class ServerAdmin(amp.Command):
      operations on the server, such as when a new
      session connects or resyncs
     """
+    key = "ServerAdmin"
     arguments = [('sessid', amp.Integer()),
+                 ('ipart', amp.Integer()),
+                 ('nparts', amp.Integer()),
                  ('operation', amp.String()),
                  ('data', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
@@ -180,7 +186,10 @@ class PortalAdmin(amp.Command):
     Sent when the server needs to perform admin
      operations on the portal.
     """
+    key = "PortalAdmin"
     arguments = [('sessid', amp.Integer()),
+                 ('ipart', amp.Integer()),
+                 ('nparts', amp.Integer()),
                  ('operation', amp.String()),
                  ('data', amp.String())]
     errors = [(Exception, 'EXCEPTION')]
@@ -194,6 +203,7 @@ class FunctionCall(amp.Command):
     Sent when either process needs to call an
     arbitrary function in the other.
     """
+    key = "FunctionCall"
     arguments = [('module', amp.String()),
                  ('function', amp.String()),
                  ('args', amp.String()),
@@ -209,7 +219,6 @@ loads = lambda data: pickle.loads(to_str(data))
 
 # multipart message store
 
-MSGBUFFER = defaultdict(list)
 
 
 #------------------------------------------------------------
@@ -254,44 +263,116 @@ class AMPProtocol(amp.AMP):
         print "AMP Error for %(info)s: %(e)s" % {'info': info,
                                                  'e': e.getErrorMessage()}
 
-    def send_split_msg(self, sessid, msg, data, command):
+    def safe_send(self, command, sessid, **kwargs):
         """
-        This helper method splits the sending of a msg into multiple parts
-        with a maxlength of MAXLEN. This is to avoid repetition in the two
-        msg-sending commands. When calling this, the maximum length has
-        already been exceeded.
-        Inputs:
-            msg - string
-            data - data dictionary
-            command - one of MsgPortal2Server or MsgServer2Portal commands
+        This helper method splits the sending of a message into
+        multiple parts with a maxlength of MAXLEN. This is to avoid
+        repetition in two sending commands. when calling this the
+        maximum length has already been exceeded.  The max-length will
+        be checked for all kwargs and these will be used as argument
+        to the command. The command type must have keywords ipart and
+        nparts to track the parts and put them back together on the
+        other side.
+
+        Returns a deferred or a list of such
         """
-        # split the strings into acceptable chunks
-        datastr = dumps(data)
-        nmsg, ndata = len(msg), len(datastr)
-        if nmsg > MAXLEN or ndata > MAXLEN:
-            msglist = [msg[i:i + MAXLEN] for i in range(0, len(msg), MAXLEN)]
-            datalist = [datastr[i:i + MAXLEN]
-                            for i in range(0, len(datastr), MAXLEN)]
-        nmsglist, ndatalist = len(msglist), len(datalist)
-        if ndatalist < nmsglist:
-            datalist.extend("" for i in range(nmsglist - ndatalist))
-        if nmsglist < ndatalist:
-            msglist.extend("" for i in range(ndatalist - nmsglist))
-        # we have split the msg/data into right-size chunks. Now we
-        # send it in sequence
-        return [self.callRemote(command,
-                        sessid=sessid,
-                        msg=to_str(msg),
-                        ipart=icall,
-                        nparts=nmsglist,
-                        data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
-                for icall, (msg, data) in enumerate(zip(msglist, datalist))]
+        to_send = [(key, [string[i:i+MAXLEN] for i in range(0, len(string), MAXLEN)])
+                          for key, string in kwargs.items()]
+        nparts_max = max(len(part[1]) for part in to_send)
+        if nparts_max == 1:
+            # first try to send directly
+            return self.callRemote(command,
+                                   sessid=sessid,
+                                   ipart=0,
+                                   nparts=1,
+                                   **kwargs).addErrback(self.errback, command.key)
+        else:
+            # one or more parts were too long for MAXLEN.
+            #print "TooLong triggered!"
+            deferreds = []
+            for ipart in range(nparts_max):
+                part_kwargs = {}
+                for key, str_part in to_send:
+                    try:
+                        part_kwargs[key] = str_part[ipart]
+                    except IndexError:
+                        # means this kwarg needed fewer splits
+                        part_kwargs[key] = ""
+                # send this part
+                #print "amp safe sending:", ipart, nparts_max, str_part
+                deferreds.append(self.callRemote(
+                                 command,
+                                 sessid=sessid,
+                                 ipart=ipart,
+                                 nparts=nparts_max,
+                                 **part_kwargs).addErrback(self.errback, command.key))
+            return deferreds
+
+    def safe_recv(self, command, sessid, ipart, nparts, **kwargs):
+        """
+        Safely decode potentially split data coming over the wire. No
+        decoding or parsing is done here, only merging of data split
+        with safe_send().
+        If the data stream is not yet complete, this method will return
+        None, otherwise it will return a dictionary of the (possibly
+        merged) properties.
+        """
+        global _MSGBUFFER
+        if nparts == 1:
+            # the most common case
+            return kwargs
+        else:
+            # part of a multi-part send
+            hashid = "%s_%s" % (command.key, sessid)
+            #print "amp safe receive:", ipart, nparts-1, kwargs
+            if ipart < nparts-1:
+                # not yet complete
+                _MSGBUFFER[hashid].append(kwargs)
+                return
+            else:
+                # all parts in place, put them back together
+                buf = _MSGBUFFER.pop(hashid) + [kwargs]
+                recv_kwargs = dict((key, "".join(kw[key] for kw in buf)) for key in kwargs)
+                return recv_kwargs
+
+#    def send_split_msg(self, sessid, msg, data, command):
+#        """
+#        This helper method splits the sending of a msg into multiple parts
+#        with a maxlength of MAXLEN. This is to avoid repetition in the two
+#        msg-sending commands. When calling this, the maximum length has
+#        already been exceeded.
+#        Inputs:
+#            msg - string
+#            data - data dictionary
+#            command - one of MsgPortal2Server or MsgServer2Portal commands
+#        """
+#        # split the strings into acceptable chunks
+#        datastr = dumps(data)
+#        nmsg, ndata = len(msg), len(datastr)
+#        if nmsg > MAXLEN or ndata > MAXLEN:
+#            msglist = [msg[i:i + MAXLEN] for i in range(0, len(msg), MAXLEN)]
+#            datalist = [datastr[i:i + MAXLEN]
+#                            for i in range(0, len(datastr), MAXLEN)]
+#        nmsglist, ndatalist = len(msglist), len(datalist)
+#        if ndatalist < nmsglist:
+#            datalist.extend("" for i in range(nmsglist - ndatalist))
+#        if nmsglist < ndatalist:
+#            msglist.extend("" for i in range(ndatalist - nmsglist))
+#        # we have split the msg/data into right-size chunks. Now we
+#        # send it in sequence
+#        return [self.callRemote(command,
+#                        sessid=sessid,
+#                        msg=to_str(msg),
+#                        ipart=icall,
+#                        nparts=nmsglist,
+#                        data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
+#                for icall, (msg, data) in enumerate(zip(msglist, datalist))]
 
     # Message definition + helper methods to call/create each message type
 
     # Portal -> Server Msg
 
-    def amp_msg_portal2server(self, sessid, msg, ipart, nparts, data):
+    def amp_msg_portal2server(self, sessid, ipart, nparts, msg, data):
         """
         Relays message to server. This method is executed on the Server.
 
@@ -300,20 +381,27 @@ class AMPProtocol(amp.AMP):
         and wait for the remaining parts to arrive before continuing.
         """
         #print "msg portal -> server (server side):", sessid, msg, data
-        global MSGBUFFER
-        if nparts > 1:
-            # a multipart message
-            if len(MSGBUFFER[sessid]) != nparts:
-                # we don't have all parts yet. Wait.
-                return {}
-            else:
-                # we have all parts. Put it all together in the right order.
-                msg = "".join(t[1] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-                data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-                del MSGBUFFER[sessid]
-        # call session hook with the data
-        self.factory.server.sessions.data_in(sessid, text=msg, **loads(data))
+        ret = self.safe_recv(MsgPortal2Server, sessid, ipart, nparts,
+                                                        text=msg, data=data)
+        if ret is not None:
+            self.factory.server.sessions.data_in(sessid,
+                                                 text=ret["text"],
+                                                 **loads(ret["data"]))
         return {}
+#        global MSGBUFFER
+#        if nparts > 1:
+#            # a multipart message
+#            if len(MSGBUFFER[sessid]) != nparts:
+#                # we don't have all parts yet. Wait.
+#                return {}
+#            else:
+#                # we have all parts. Put it all together in the right order.
+#                msg = "".join(t[1] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
+#                data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
+#                del MSGBUFFER[sessid]
+#        # call session hook with the data
+#        self.factory.server.sessions.data_in(sessid, text=msg, **loads(data))
+#        return {}
     MsgPortal2Server.responder(amp_msg_portal2server)
 
     def call_remote_MsgPortal2Server(self, sessid, msg, data=""):
@@ -321,40 +409,50 @@ class AMPProtocol(amp.AMP):
         Access method called by the Portal and executed on the Portal.
         """
         #print "msg portal->server (portal side):", sessid, msg, data
-        try:
-            return self.callRemote(MsgPortal2Server,
-                            sessid=sessid,
-                            msg=to_str(msg) if msg is not None else "",
-                            ipart=0,
-                            nparts=1,
-                            data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
-        except amp.TooLong:
-            # the msg (or data) was too long for AMP to send.
-            # We need to send in blocks.
-            return self.send_split_msg(sessid, msg, data, MsgPortal2Server)
+        return self.safe_send(MsgPortal2Server, sessid,
+                              msg=to_str(msg) if msg is not None else "",
+                              data=dumps(data))
+#        try:
+#            return self.callRemote(MsgPortal2Server,
+#                            sessid=sessid,
+#                            msg=to_str(msg) if msg is not None else "",
+#                            ipart=0,
+#                            nparts=1,
+#                            data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
+#        except amp.TooLong:
+#            # the msg (or data) was too long for AMP to send.
+#            # We need to send in blocks.
+#            return self.send_split_msg(sessid, msg, data, MsgPortal2Server)
 
     # Server -> Portal message
 
-    def amp_msg_server2portal(self, sessid, msg, ipart, nparts, data):
+    def amp_msg_server2portal(self, sessid, ipart, nparts, msg, data):
         """
         Relays message to Portal. This method is executed on the Portal.
         """
         #print "msg server->portal (portal side):", sessid, msg
-        global MSGBUFFER
-        if nparts > 1:
-            # a multipart message
-            MSGBUFFER[sessid].append((ipart, msg, data))
-            if len(MSGBUFFER[sessid]) != nparts:
-                # we don't have all parts yet. Wait.
-                return {}
-            else:
-                # we have all parts. Put it all together in the right order.
-                msg = "".join(t[1] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-                data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-                del MSGBUFFER[sessid]
-        # call session hook with the data
-        self.factory.portal.sessions.data_out(sessid, text=msg, **loads(data))
+        ret = self.safe_recv(MsgServer2Portal, sessid,
+                             ipart, nparts, text=msg, data=data)
+        if ret is not None:
+            self.factory.portal.sessions.data_out(sessid,
+                                                  text=ret["text"],
+                                                  **loads(ret["data"]))
         return {}
+#        global MSGBUFFER
+#        if nparts > 1:
+#            # a multipart message
+#            MSGBUFFER[sessid].append((ipart, msg, data))
+#            if len(MSGBUFFER[sessid]) != nparts:
+#                # we don't have all parts yet. Wait.
+#                return {}
+#            else:
+#                # we have all parts. Put it all together in the right order.
+#                msg = "".join(t[1] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
+#                data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
+#                del MSGBUFFER[sessid]
+#        # call session hook with the data
+#        self.factory.portal.sessions.data_out(sessid, text=msg, **loads(data))
+#        return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
     def call_remote_MsgServer2Portal(self, sessid, msg, data=""):
@@ -362,47 +460,56 @@ class AMPProtocol(amp.AMP):
         Access method called by the Server and executed on the Server.
         """
         #print "msg server->portal (server side):", sessid, msg, data
-        try:
-            return self.callRemote(MsgServer2Portal,
-                            sessid=sessid,
-                            msg=to_str(msg) if msg is not None else "",
-                            ipart=0,
-                            nparts=1,
-                            data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
-        except amp.TooLong:
-            # the msg (or data) was too long for AMP to send.
-            # We need to send in blocks.
-            return self.send_split_msg(sessid, msg, data, MsgServer2Portal)
+        return self.safe_send(MsgServer2Portal, sessid,
+                              msg=to_str(msg) if msg is not None else "",
+                              data=dumps(data))
+
+#        try:
+#            return self.callRemote(MsgServer2Portal,
+#                            sessid=sessid,
+#                            msg=to_str(msg) if msg is not None else "",
+#                            ipart=0,
+#                            nparts=1,
+#                            data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
+#        except amp.TooLong:
+#            # the msg (or data) was too long for AMP to send.
+#            # We need to send in blocks.
+#            return self.send_split_msg(sessid, msg, data, MsgServer2Portal)
 
     # Server administration from the Portal side
-    def amp_server_admin(self, sessid, operation, data):
+    def amp_server_admin(self, sessid, ipart, nparts, operation, data):
         """
         This allows the portal to perform admin
         operations on the server.  This is executed on the Server.
 
         """
-        data = loads(data)
-        server_sessionhandler = self.factory.server.sessions
+        ret = self.safe_recv(ServerAdmin, sessid, ipart, nparts,
+                             operation=operation, data=data)
 
-        #print "serveradmin (server side):", sessid, ord(operation), data
+        if ret is not None:
+            data = loads(ret["data"])
+            operation = ret["operation"]
+            server_sessionhandler = self.factory.server.sessions
 
-        if operation == PCONN:  # portal_session_connect
-            # create a new session and sync it
-            server_sessionhandler.portal_connect(data)
+            #print "serveradmin (server side):", sessid, ord(operation), data
 
-        elif operation == PDISCONN:  # portal_session_disconnect
-            # session closed from portal side
-            self.factory.server.sessions.portal_disconnect(sessid)
+            if operation == PCONN:  # portal_session_connect
+                # create a new session and sync it
+                server_sessionhandler.portal_connect(data)
 
-        elif operation == PSYNC:  # portal_session_sync
-            # force a resync of sessions when portal reconnects to server
-            # (e.g. after a server reboot) the data kwarg contains a dict
-            # {sessid: {arg1:val1,...}} representing the attributes
-            # to sync for each session.
-            server_sessionhandler.portal_session_sync(data)
-        else:
-            raise Exception("operation %(op)s not recognized." % {'op': operation})
+            elif operation == PDISCONN:  # portal_session_disconnect
+                # session closed from portal side
+                self.factory.server.sessions.portal_disconnect(sessid)
 
+            elif operation == PSYNC:  # portal_session_sync
+                # force a resync of sessions when portal reconnects to
+                # server (e.g. after a server reboot) the data kwarg
+                # contains a dict {sessid: {arg1:val1,...}}
+                # representing the attributes to sync for each
+                # session.
+                server_sessionhandler.portal_session_sync(data)
+            else:
+                raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
     ServerAdmin.responder(amp_server_admin)
 
@@ -412,47 +519,50 @@ class AMPProtocol(amp.AMP):
         """
         #print "serveradmin (portal side):", sessid, ord(operation), data
         data = dumps(data)
-
-        return self.callRemote(ServerAdmin,
-                        sessid=sessid,
-                        operation=operation,
-                        data=data).addErrback(self.errback, "ServerAdmin")
+        return self.safe_send(ServerAdmin, sessid, operation=operation, data=data)
+#        return self.callRemote(ServerAdmin,
+#                        sessid=sessid,
+#                        operation=operation,
+#                        data=data).addErrback(self.errback, "ServerAdmin")
 
     # Portal administraton from the Server side
 
-    def amp_portal_admin(self, sessid, operation, data):
+    def amp_portal_admin(self, sessid, ipart, nparts, operation, data):
         """
         This allows the server to perform admin
         operations on the portal. This is executed on the Portal.
         """
-        data = loads(data)
-        portal_sessionhandler = self.factory.portal.sessions
-
         #print "portaladmin (portal side):", sessid, ord(operation), data
-        if operation == SLOGIN:  # server_session_login
-            # a session has authenticated; sync it.
-            portal_sessionhandler.server_logged_in(sessid, data)
+        ret = self.safe_recv(PortalAdmin, sessid, ipart, nparts,
+                             operation=operation, data=data)
+        if ret is not None:
+            data = loads(data)
+            portal_sessionhandler = self.factory.portal.sessions
 
-        elif operation == SDISCONN:  # server_session_disconnect
-            # the server is ordering to disconnect the session
-            portal_sessionhandler.server_disconnect(sessid, reason=data)
+            if operation == SLOGIN:  # server_session_login
+                # a session has authenticated; sync it.
+                portal_sessionhandler.server_logged_in(sessid, data)
 
-        elif operation == SDISCONNALL:  # server_session_disconnect_all
-            # server orders all sessions to disconnect
-            portal_sessionhandler.server_disconnect_all(reason=data)
+            elif operation == SDISCONN:  # server_session_disconnect
+                # the server is ordering to disconnect the session
+                portal_sessionhandler.server_disconnect(sessid, reason=data)
 
-        elif operation == SSHUTD:  # server_shutdown
-            # the server orders the portal to shut down
-            self.factory.portal.shutdown(restart=False)
+            elif operation == SDISCONNALL:  # server_session_disconnect_all
+                # server orders all sessions to disconnect
+                portal_sessionhandler.server_disconnect_all(reason=data)
 
-        elif operation == SSYNC:  # server_session_sync
-            # server wants to save session data to the portal, maybe because
-            # it's about to shut down.
-            portal_sessionhandler.server_session_sync(data)
-            # set a flag in case we are about to shut down soon
-            self.factory.server_restart_mode = True
-        else:
-            raise Exception("operation %(op)s not recognized." % {'op': operation})
+            elif operation == SSHUTD:  # server_shutdown
+                # the server orders the portal to shut down
+                self.factory.portal.shutdown(restart=False)
+
+            elif operation == SSYNC:  # server_session_sync
+                # server wants to save session data to the portal,
+                # maybe because it's about to shut down.
+                portal_sessionhandler.server_session_sync(data)
+                # set a flag in case we are about to shut down soon
+                self.factory.server_restart_mode = True
+            else:
+                raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
     PortalAdmin.responder(amp_portal_admin)
 
@@ -460,12 +570,12 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the server side.
         """
+        self.safe_send(PortalAdmin, sessid, operation=operation, data=dumps(data))
         #print "portaladmin (server side):", sessid, ord(operation), data
-        return self.callRemote(PortalAdmin,
-                        sessid=sessid,
-                        operation=operation,
-                        data=dumps(data)).addErrback(self.errback, "PortalAdmin")
-
+#        return self.callRemote(PortalAdmin,
+#                               sessid=sessid,
+#                               operation=operation,
+#                               data=dumps(data)).addErrback(self.errback, "PortalAdmin")
     # Extra functions
 
     def amp_function_call(self, module, function, args, **kwargs):

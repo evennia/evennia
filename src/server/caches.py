@@ -79,11 +79,6 @@ def hashid(obj, suffix=""):
 # Cache callback handlers
 #------------------------------------------------------------
 
-#------------------------------------------------------------
-# Field cache - makes sure to cache all database fields when
-# they are saved, no matter from where.
-#------------------------------------------------------------
-
 # callback to field pre_save signal (connected in src.server.server)
 def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
     """
@@ -135,6 +130,21 @@ def field_post_save(sender, instance=None, update_fields=None, raw=False, **kwar
         if trackerhandler:
             trackerhandler.update(fieldname, _GA(instance, fieldname))
 
+#------------------------------------------------------------
+# Attribute lookup cache
+#------------------------------------------------------------
+
+def get_attr_cache(obj):
+    "Retrieve lookup cache"
+    hid = hashid(obj)
+    return _ATTR_CACHE.get(hid, None)
+
+
+def set_attr_cache(obj, store):
+    "Set lookup cache"
+    global _ATTR_CACHE
+    hid = hashid(obj)
+    _ATTR_CACHE[hid] = store
 
 #------------------------------------------------------------
 # Property cache - this is a generic cache for properties stored on models.
@@ -176,10 +186,8 @@ def get_cache_sizes():
     global _ATTR_CACHE, _PROP_CACHE
     attr_n = len(_ATTR_CACHE)
     attr_mb = sum(getsizeof(obj) for obj in _ATTR_CACHE) / 1024.0
-    field_n = 0  # sum(len(dic) for dic in _FIELD_CACHE.values())
-    field_mb = 0  # sum(sum([getsizeof(obj) for obj in dic.values()]) for dic in _FIELD_CACHE.values()) / 1024.0
     prop_n = sum(len(dic) for dic in _PROP_CACHE.values())
     prop_mb = sum(sum([getsizeof(obj) for obj in dic.values()]) for dic in _PROP_CACHE.values()) / 1024.0
-    return (attr_n, attr_mb), (field_n, field_mb), (prop_n, prop_mb)
+    return (attr_n, attr_mb), (prop_n, prop_mb)
 
 

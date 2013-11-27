@@ -173,7 +173,7 @@ class Comm(TypeClass):
                     logger.log_trace("Cannot send msg to connection '%s'" % conn)
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
-            persistent=True, online=False, emit=False, external=False):
+            persistent=False, online=False, emit=False, external=False):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
@@ -191,9 +191,9 @@ class Comm(TypeClass):
                 connections where the sender is not a player or object. When
                 this is defined, external will be assumed.
         external - Treat this message agnostic of its sender.
-        persistent (bool) - ignored if msgobj is a Msg or TempMsg. If True,
-                a Msg will be created, using header and senders keywords. If
-                False, other keywords will be ignored.
+        persistent (default False) - ignored if msgobj is a Msg or TempMsg.
+                If True, a Msg will be created, using header and senders
+                keywords. If False, other keywords will be ignored.
         online (bool) - If this is set true, only messages people who are
                 online. Otherwise, messages all players connected. This can
                 make things faster, but may not trigger listeners on players

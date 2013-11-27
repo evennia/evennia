@@ -651,6 +651,9 @@ def check_evennia_dependencies():
         sversion = south.__version__
         if sversion < south_min:
             errstring += "\n WARNING: South version %s found. Evennia recommends version %s or higher." % (sversion, south_min)
+        if sversion == "0.8.3":
+            errstring += "\n ERROR: South version %s found. This has a known bug and will not work. Please upgrade." % sversion
+            no_error = False
     except ImportError:
         pass
     # IRC support
