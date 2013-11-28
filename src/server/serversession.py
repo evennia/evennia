@@ -22,10 +22,9 @@ _GA = object.__getattribute__
 _ObjectDB = None
 _OOB_HANDLER = None
 
-# load optional out-of-band function module
-OOB_PLUGIN_MODULE = settings.OOB_PLUGIN_MODULE
-if OOB_PLUGIN_MODULE:
-    OOB_PLUGIN_MODULE = utils.mod_import(settings.OOB_PLUGIN_MODULE)
+# load optional out-of-band function module (this acts as a verification)
+OOB_PLUGIN_MODULES = [utils.mod_import(mod)
+                      for mod in make_iter(settings.OOB_PLUGIN_MODULES) if mod]
 
 # i18n
 from django.utils.translation import ugettext as _
