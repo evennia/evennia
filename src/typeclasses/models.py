@@ -505,21 +505,21 @@ class TagHandler(object):
         "Add a new tag to the handler. Tag is a string or a list of strings."
         for tagstr in make_iter(tag):
             tagstr = tagstr.strip().lower() if tagstr is not None else None
-            category = "%s%s" % (self.prefix, category.strip().lower() if category is not None else "")
+            categ = "%s%s" % (self.prefix, category.strip().lower() if category is not None else "")
             data = str(data) if data is not None else None
             # this will only create tag if no matches existed beforehand (it
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
-            tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data)
+            tagobj = Tag.objects.create_tag(key=tagstr, category=categ, data=data)
             _GA(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:
                 self._recache()
-            self._cache[tagstr] = True
+            self._cache[tagstr] = tagobj
 
-    def get(self, key, category="", return_obj=False):
+    def get(self, key, category="", return_data=False):
         """
-        Get the data field for the given tag or list of tags. If
-        return_obj=True, return the matching Tag objects instead.
+        Get the tag for the given key or list of tags. If
+        return_data=True, return the matching Tag objects instead.
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -528,11 +528,11 @@ class TagHandler(object):
                              if category is not None else "")
         ret = [val for val in (self._cache.get(keystr.strip().lower())
                  for keystr in make_iter(key)) if val]
-        ret = ret if return_obj else [to_str(tag.db_data) for tag in ret if tag]
+        ret = [to_str(tag.db_data) for tag in ret] if return_data else ret
         return ret[0] if len(ret) == 1 else ret
 
     def remove(self, tag, category=None):
-        "Remove a tag from the handler"
+        "Remove a tag from the handler, where tag is the key of the tag to remove"
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         for tag in make_iter(tag):

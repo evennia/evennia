@@ -1654,6 +1654,8 @@ class CmdExamine(ObjManipCommand):
             elif not perms:
                 perms = ["<None>"]
             string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))
+            if obj.player.attributes.has("_quell"):
+                string += " {r(quelled){n"
         string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass.typename,
                                                 obj.typeclass_path)
         if hasattr(obj, "location"):
@@ -1685,11 +1687,13 @@ class CmdExamine(ObjManipCommand):
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
             # list the current cmdsets
             all_cmdsets = (obj.cmdset.all() +
-                           (hasattr(obj, "player") and
+                           (hasattr(obj, "player") and obj.player and
                             obj.player and obj.player.cmdset.all() or []))
-            all_cmdsets += (hasattr(obj, "sessid") and
-                           hasattr(obj, "player") and
-                           obj.player.get_session(obj.sessid).cmdset.all())
+            try:
+                # we have to protect this since many objects don't have player/sessions.
+                all_cmdsets += obj.player.get_session(obj.sessid).cmdset.all()
+            except (TypeError, AttributeError):
+                pass
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
             string += "\n{wStored Cmdset(s){n:\n %s" % ("\n ".join("%s [%s] (prio %s)" % \
                                       (cmdset.path, cmdset.key, cmdset.priority)

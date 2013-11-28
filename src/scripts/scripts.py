@@ -154,9 +154,10 @@ class ScriptClass(TypeClass):
         if obj:
             # check so the scripted object is valid and initalized
             try:
-                object.__getattribute__(obj, 'cmdset')
+                object.__getattribute__(obj.dbobj, 'cmdset')
             except AttributeError:
                 # this means the object is not initialized.
+                logger.log_trace()
                 self.dbobj.is_active = False
                 return 0
 
