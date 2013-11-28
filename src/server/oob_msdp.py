@@ -3,6 +3,32 @@ Out-of-band default plugin commands available for OOB handler. This
 follows the standards defined by the MSDP out-of-band protocol
 (http://tintin.sourceforge.net/msdp/)
 
+This module is pointed to by settings.OOB_PLUGIN_MODULES. All functions
+(not classes) defined globally in this module will be made available
+to the oob mechanism.
+
+    function execution - the oob protocol can execute a function directly on
+                         the server. The available functions must be defined
+                         as global functions via settings.OOB_PLUGIN_MODULES.
+    repeat func execution - the oob protocol can request a given function be
+                            executed repeatedly at a regular interval. This
+                            uses an internal script pool.
+    tracking - the oob protocol can request Evennia to track changes to
+               fields on objects, as well as changes in Attributes. This is
+               done by dynamically adding tracker-objects on entities. The
+               behaviour of those objects can be customized via
+               settings.OOB_PLUGIN_MODULES.
+
+What goes into the OOB_PLUGIN_MODULES is a list of modules with input
+for the OOB system.
+
+oob functions have the following call signature:
+    function(caller, session, *args, **kwargs)
+
+oob trackers should build upon the OOBTracker class in this module
+    module and implement a minimum of the same functionality.
+
+a global function oob_error will be used as optional error management.
 """
 from django.conf import settings
 from src.utils.utils import to_str
@@ -10,12 +36,12 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _NA = lambda o: (None, "N/A")  # not implemented
 
-# mapper for which properties may be requested/sent to the client and how
-# to do so. Each entry should define a function that returns two values - the
-# name of the property being returned (a string) and the value. If tracking
-# database fields, make sure to enter the full database field name (e.g.
-# db_key rather than just key) since the db_ prefix is used by trackers
-# to know which tracking mechanism to activate.
+# default properties defined by the MSDP protocol. These are
+# used by the SEND oob function below. Each entry should point
+# to a function that takes the relevant object as input and
+# returns the data it is responsible for. Most of these
+# are commented out, but kept for reference for each
+# game to implement.
 
 OOB_SENDABLE = {
    ## General
@@ -131,6 +157,7 @@ class OOBFieldTracker(TrackerBase):
             new_value = new_value.key
         except AttributeError:
             new_value = to_str(new_value, force_string=True)
+        # this is a wrapper call for sending oob data back to session
         self.oobhandler.msg(self.sessid, "report", self.fieldname,
                                                     new_value, *args, **kwargs)
 
@@ -156,6 +183,7 @@ class OOBAttributeTracker(TrackerBase):
             new_value = new_value.dbobj
         except AttributeError:
             new_value = to_str(new_value, force_string=True)
+        # this is a wrapper call for sending oob data back to session
         self.oobhandler.msg(self.sessid, "report", self.attrname, new_value, *args, **kwargs)
 
 
@@ -183,7 +211,7 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     session.msg(oob=("send", {"ERROR": errmsg}))
 
 
-def LIST(oobhandler, session, mode, *args, **kwargs):
+def list(oobhandler, session, mode, *args, **kwargs):
     """
     List available properties. Mode is the type of information
     desired:

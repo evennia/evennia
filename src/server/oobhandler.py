@@ -5,22 +5,27 @@ The OOBHandler is called directly by out-of-band protocols. It supplies three
 pieces of functionality:
 
     function execution - the oob protocol can execute a function directly on
-                         the server. Only functions specified in
-                         settings.OOB_PLUGIN_MODULE.OOB_FUNCS are valid
-                         for this use.
+                         the server. The available functions must be defined
+                         as global functions via settings.OOB_PLUGIN_MODULES.
     repeat func execution - the oob protocol can request a given function be
-                            executed repeatedly at a regular interval.
+                            executed repeatedly at a regular interval. This
+                            uses an internal script pool.
     tracking - the oob protocol can request Evennia to track changes to
                fields on objects, as well as changes in Attributes. This is
                done by dynamically adding tracker-objects on entities. The
                behaviour of those objects can be customized via
-               settings.OOB_PLUGIN_MODULE
+               settings.OOB_PLUGIN_MODULES.
+
+What goes into the OOB_PLUGIN_MODULES is a list of modules with input
+for the OOB system.
 
 oob functions have the following call signature:
     function(caller, *args, **kwargs)
 
 oob trackers should inherit from the OOBTracker class in this
     module and implement a minimum of the same functionality.
+
+a global function oob_error will be used as optional error management.
 
 """
 
@@ -32,14 +37,16 @@ from src.scripts.scripts import Script
 from src.utils.create import create_script
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from src.utils import logger
-from src.utils.utils import all_from_module
+from src.utils.utils import all_from_module, make_iter
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
 _DA = object.__delattr__
 
 # load from plugin module
-_OOB_FUNCS = dict((key.lower(), func) for key, func in all_from_module(settings.OOB_PLUGIN_MODULE).items() if isfunction(func))
+_OOB_FUNCS = {}
+for mod in make_iter(settings.OOB_PLUGIN_MODULES):
+    _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod) if isfunction(func)))
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 
 
