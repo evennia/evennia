@@ -46,7 +46,7 @@ _DA = object.__delattr__
 # load from plugin module
 _OOB_FUNCS = {}
 for mod in make_iter(settings.OOB_PLUGIN_MODULES):
-    _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod) if isfunction(func)))
+    _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod).items() if isfunction(func)))
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 
 
