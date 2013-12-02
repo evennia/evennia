@@ -610,38 +610,45 @@ def check_evennia_dependencies():
     """
     # defining the requirements
     python_min = '2.6'
+    nt_python_min = '2.7'
     twisted_min = '11.0'
     django_min = '1.5'
+    django_rec = '1.6'
     south_min = '0.8'
-    nt_stop_python_min = '2.7'
 
     errstring = ""
     no_error = True
 
     # Python
-    pversion = ".".join([str(num) for num in sys.version_info if type(num) == int])
+    pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
     if pversion < python_min:
         errstring += "\n WARNING: Python %s used. Evennia recommends version %s or higher (but not 3.x)." % (pversion, python_min)
-    if os.name == 'nt' and pversion < nt_stop_python_min:
-        errstring += "\n WARNING: Python %s used. Windows requires Python %s or higher in order to" % (pversion, nt_stop_python_min)
-        errstring += " restart/stop the server from the command line."
-        errstring += "\n          (You need to restart/stop from inside the game.)"
+    if os.name == 'nt' and pversion < nt_python_min:
+        errstring += "\n WARNING: Python %s used. Windows requires v%s or higher in order to" % (pversion, nt_stop_python_min)
+        errstring += "\n          restart/stop the server from the command line (Under v%s you" % pversion
+        errstring += "\n          may only restart/stop from inside the game.)"
     # Twisted
     try:
         import twisted
         tversion = twisted.version.short()
         if tversion < twisted_min:
-            errstring += "\n WARNING: Twisted %s found. Evennia recommends version %s or higher." % (twisted.version.short(), twisted_min)
+            errstring += "\n WARNING: Twisted %s found. Evennia recommends v%s or higher." % (twisted.version.short(), twisted_min)
     except ImportError:
         errstring += "\n ERROR: Twisted does not seem to be installed."
         no_error = False
     # Django
     try:
         import django
-        dversion = ".".join([str(num) for num in django.VERSION if type(num) == int])
+        dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
+        dversion_main = ".".join(dversion.split(".")[:2]) # only the main version (1.5, not 1.5.4.0)
         if dversion < django_min:
-            errstring += "\n ERROR: Django version %s found. Evennia requires version %s or higher." % (dversion, django_min)
+            errstring += "\n ERROR: Django %s found. Evennia requires version %s or higher." % (dversion, django_min)
             no_error = False
+        elif django_min <= dversion < django_rec:
+            errstring += "\n NOTE: Django %s found. This will work, but v%s is recommended for production." % (dversion, django_rec)
+        elif django_rec < dversion_main:
+            errstring += "\n NOTE: Django %s found. This is newer than Evennia's recommended version. It will"
+            errstring += "\n       probably work, but may be new enough not to be fully tested yet. Report any issues."
     except ImportError:
         errstring += "\n ERROR: Django does not seem to be installed."
         no_error = False
@@ -650,12 +657,13 @@ def check_evennia_dependencies():
         import south
         sversion = south.__version__
         if sversion < south_min:
-            errstring += "\n WARNING: South version %s found. Evennia recommends version %s or higher." % (sversion, south_min)
+            errstring += "\n WARNING: South %s found. Evennia recommends version %s or higher." % (sversion, south_min)
         if sversion == "0.8.3":
-            errstring += "\n ERROR: South version %s found. This has a known bug and will not work. Please upgrade." % sversion
+            errstring += "\n ERROR: South %s found. This has a known bug and will not work. Please upgrade." % sversion
             no_error = False
     except ImportError:
-        pass
+        errstring += "\n ERROR: South (django-south) does not seem to be installed."
+        no_error = False
     # IRC support
     if settings.IRC_ENABLED:
         try:
@@ -668,7 +676,8 @@ def check_evennia_dependencies():
             no_error = False
     errstring = errstring.strip()
     if errstring:
-        print "%s\n %s\n%s" % ("-"*78, errstring, '-'*78)
+        mlen = max(len(line) for line in errstring.split("\n"))
+        print "%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen)
     return no_error
 
 
