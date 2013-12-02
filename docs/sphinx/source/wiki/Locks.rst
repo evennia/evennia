@@ -221,6 +221,25 @@ Some useful default lockfuncs (see ``src/locks/lockfuncs.py`` for more):
    ``id/dbref`` but always looks for permissions and dbrefs of
    *Players*, not on Characters.
 
+Checking simple strings
+-----------------------
+
+Sometimes you don't really need to look up a certain lock, you just want
+to check a lockstring. A common use is inside Commands, in order to
+check if a user has a certain permission. The lockhandler has a method
+``check_lockstring(accessing_obj, lockstring, bypass_superuser=False)``
+that allows this.
+
+::
+
+     # inside command definition
+     if not self.caller.locks.check_lockstring(self.caller, "dummy:perm(Wizards)"):
+         self.caller.msg("You must be Wizard or higher to do this!"
+         return
+
+Note here that the ``access_type`` can be left to a dummy value since
+this method does not actually do a Lock lookup.
+
 Default locks
 -------------
 

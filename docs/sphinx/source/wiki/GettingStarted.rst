@@ -17,14 +17,15 @@ Quick start
 For you who are extremely impatient, here's the gist of getting a
 vanilla Evennia install running.
 
-#. *Get the pre-requisites (Python, Django, Twisted and Mercurial)*.
+#. *Get the pre-requisites (Python, Django, Twisted, South and
+   Mercurial)*.
 #. *Start a command terminal/dos prompt and change directory to where
    you want to have your 'evennia' folder appear*.
 #. ``hg clone https://code.google.com/p/evennia/ evennia``
 #. *Change directory to evennia/game*.
 #. ``python manage.py``
 #. ``python manage.py syncdb``
-#. ``python manage.py migrate`` (only if using South)
+#. ``python manage.py migrate``
 #. ``python evennia.py -i start``
 
 Evennia should now be running and you can connect to it by pointing a
@@ -40,7 +41,7 @@ As far as operating systems go, any system with Python support should
 work.
 
 -  Linux/Unix
--  Windows (2000, XP, Vista, Win7)
+-  Windows (2000, XP, Vista, Win7, Win8)
 -  Mac OSX (>=10.5 recommended)
 
 If you run into problems, or have success running Evennia on another
@@ -55,19 +56,19 @@ Evennia:
       `ActivePython <http://www.activestate.com/activepython/downloads>`_
       instead.
 
--  **`Twisted <http://twistedmatrix.com>`_** (v10.0+)
+-  **`Twisted <http://twistedmatrix.com>`_** (v11.0+)
 
    -  `ZopeInterface <http://www.zope.org/Products/ZopeInterface>`_
       (v3.0+) - usually included in Twisted packages
    -  Windows users might also need
       `pywin32 <http://sourceforge.net/projects/pywin32>`_.
 
--  **`Django <http://www.djangoproject.com>`_** (v1.4+)
+-  **`Django <http://www.djangoproject.com>`_** (v1.5+)
 
    -  `PIL <http://www.pythonware.com/products/pil>`_ (Python Image
       Library) - often distributed with Django.
 
--  **`South <http://south.aeracode.org/>`_** (v0.7+)
+-  **`South <http://south.aeracode.org/>`_** (v0.8+)
 
    -  South is used to track and apply changes to the database's
       structure.
@@ -145,22 +146,14 @@ Optional:
       problems compiling the ``PIL`` library on Mac, it's however not
       strictly required in order to use Django (it's used for images).
 
-      \_Note (June 2012): Some versions of MacOSX does not seem to have
-      a locale setting out of the box, and this causes a traceback
-      during database creation. This is a known upstream bug in Django
-      1.4, described
-      `here <http://code.google.com/p/evennia/wiki/Quirks#Known_upstream_bugs>`_.
-      In the bug comments is also described how to add the locale and
-      circumvent this bug for now. This affects also Unix/Linux systems,
-      but those usually have the locale set out of the box.
-
-**Windows** users should first and foremost recognize that the Evennia
-server is run from the command line, something which some might not be
-familiar with (based on the questions we have received). In the Windows
-launch menu, just start *All Programs -> Accessories -> command prompt*
-and you will get the Windows command line interface. There are plenty of
-online tutorials on using the Windows command line, one example is found
-`here <http://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/>`_.
+      **Windows** users should first and foremost recognize that the
+      Evennia server is run from the command line, something which some
+      might not be familiar with (based on the questions we have
+      received). In the Windows launch menu, just start \_All Programs
+      -> Accessories -> command prompt and you will get the Windows
+      command line interface. There are plenty of online tutorials on
+      using the Windows command line, one example is found
+      `here <http://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/>`_.
 
 Windows users may want to install
 `ActivePython <http://www.activestate.com/activepython/downloads>`_
@@ -169,11 +162,12 @@ one won't let you download any packages without paying for a "Business"
 license). If ActivePython is installed, you can use
 `pypm <http://docs.activestate.com/activepython/2.6/pypm.html>`_ in the
 same manner as ``easy_install``/``pip`` above. This *greatly* simplifies
-getting started on Windows - that platform defaults to missing many of
-the sane developer tools that Linux users take for granted.
+getting started on Windows - this platform defaults to lacking sane
+developer tools and package management.
 
 After installing ActivePython you may need to restart the terminal/DOS
-window to make the pypm command available on the command line:
+window to make the pypm command available on the command line. Then
+write:
 
 ::
 
@@ -260,24 +254,19 @@ with the standard tables and values:
 
      python manage.py syncdb
 
-You should be asked for a superuser username, email, and password. Make
-**sure** you create a superuser here when asked, this becomes your login
-name for the superuser account ``#1`` in game. After this you will see a
-lot of spammy install messages. If all goes well, you're ready to
-continue to the next step. If not, look at the error messages and
-double-check your ``settings.py`` file.
+You will see a lot of spammy install messages. If all goes well, you're
+ready to continue to the next step. If not, look at the error messages
+and double-check your ``settings.py`` file.
 
-If you installed ``South`` for database schema migrations, you will then
-need to do this:
+Next you migrate the database to the current revision:
 
 ::
 
      python manage.py migrate
 
-This will migrate the server to the latest version. If you don't use
-``South``, migrations will not be used and your server will already be
-at the latest version (but your existing database might have to be
-manually edited to match eventual future schema changes that we do).
+This can take a while. When we make changes to the database schema in
+the future (we announce this on the homepage) you just need to re-run
+this command to have your existing database converted for you.
 
 Step 3: Starting and Stopping the Server
 ----------------------------------------
@@ -289,10 +278,18 @@ and execute ``evennia.py`` like this:
 
      python evennia.py -i start
 
-This starts the server and portal. The ``-i`` flag means that the server
-starts in *interactive mode*, as a foreground process. You will see
-debug/log messages directly in the terminal window instead of logging
-them to a file.
+(The ``-i`` flag means that the server starts in *interactive mode*, as
+a foreground process. You will see debug/log messages directly in the
+terminal window instead of logging them to a file.)
+
+You should be asked to create a superuser. Make **sure** you create a
+superuser here when asked, this becomes your login name for the
+superuser (owner) account in game. It will ask for email address and
+password. The email address does not have to be an existing one.
+
+After entering the superuser information, the server and portal will
+start for the first time. Evennia will quickly run some first-time
+configurations, restart once and then be running.
 
 To stop Evennia, do:
 

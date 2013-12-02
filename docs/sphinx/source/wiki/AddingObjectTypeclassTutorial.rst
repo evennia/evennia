@@ -66,16 +66,19 @@ that characters should not have the ability to pick up.
 That's it. Below is a ``Heavy`` Typeclass that you could try. Note that
 the `lock <Locks.html>`_ and `Attribute <Attribute.html>`_ here set in
 the typeclass could just as well have been set using commands in-game,
-so this is a *very* simple example.
+so this is a *very* simple example. We also add a custom
+[Commands#Command\_Sets Command set] to it.
 
 ::
 
     # file game/gamesrc/objects/heavy.py
     from ev import Object
+    # let's assume we defined our own cmdset earlier
+    from game.gamesrc.commands.mycmdsets import HeavySet 
 
     class Heavy(Object):
        "Heavy object"
-       at_object_creation(self):
+       def at_object_creation(self):
            "Called whenever a new object is created"
            # lock the object down by default
            self.locks.add("get:false()")
@@ -84,6 +87,8 @@ so this is a *very* simple example.
            # this, you'd have to look at the code of the 'get' command to
            # find out).
            self.db.get_err_msg = "This is too heavy for you to pick up."
+           # expand the default cmdset with your own custom set (defined elsewhere)
+           self.cmdset.add(HeavySet)
 
 Change Default Rooms, Exits, Character Typeclass
 ------------------------------------------------

@@ -17,6 +17,7 @@ Installation and Early Life
 Customizing the server
 ----------------------
 
+-  `Changing the Settings <SettingsDefault.html>`_
 -  `Change Evennia's language <Internationalization.html>`_
 -  `Apache webserver configuration <ApacheConfig.html>`_ (optional)
 -  `Changing text encodings used by the server <TextEncodings.html>`_
@@ -34,4 +35,5 @@ Working with Evennia
 
 -  `Setting up your work environment with version
    control <VersionControl.html>`_
+-  `First steps coding with Evennia <FirstStepsCoding.html>`_
 

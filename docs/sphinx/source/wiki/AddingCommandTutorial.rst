@@ -20,9 +20,9 @@ new additional commands of your own.
    but in this example we assume you don't.
 #. Edit ``game/settings.py``, adding the following line:
 
-    ``CMDSET_DEFAULT="game.gamesrc.commands.cmdset.DefaultCmdSet"``
+    ``CMDSET_CHARACTER="game.gamesrc.commands.cmdset.CharacterCmdSet"``
 
-Evennia will now look for default commands in the ``DefaultCmdSet``
+Evennia will now look for default commands in the ``CharacterCmdSet``
 class of your newly copied module. You only need to do this once.
 
 Creating a custom command
@@ -45,6 +45,7 @@ Creating a custom command
 
     # file game/gamesrc/commands/command.py
     #[...]
+    from ev import default_cmds
     class CmdEcho(default_cmds.MuxCommand):
         """
         Simple command example
@@ -65,30 +66,30 @@ Creating a custom command
             else:
                 self.caller.msg("You gave the string: '%s'" % self.args)        
 
-Adding the Command to a Cmdset
-------------------------------
+Adding the Command to a default Cmdset
+--------------------------------------
 
 The command is not available to use until it is part of a Command Set.
 In this example we will go the easiest route and add it to the default
-command set we already prepared.
+Character command set we already prepared.
 
 #. Edit your recently copied ``game/gamesrc/commands/cmdset.py``
 #. In this copied module you will find the ``DefaultCmdSet`` class
    already imported and prepared for you. Import your new command module
    here with ``from game.gamesrc.commands.command import CmdEcho``.
-#. Add a line ``self.add(CmdEcho())`` to ``DefaultCmdSet``, in the
+#. Add a line ``self.add(CmdEcho())`` to ``CharacterCmdSet``, in the
    ``at_cmdset_creation`` method (the template tells you where). This is
    approximately how it should look at this point:
 
 ::
 
-    # file gamesrc/commands/examples/cmdset.py
+    # file gamesrc/commands/cmdset.py
     #[...]
     from game.gamesrc.commands.command import CmdEcho
     #[...]
-    class DefaultCmdSet(default_cmds.DefaultCmdSet):
+    class CharacterCmdSet(default_cmds.CharacterCmdSet):
         
-        key = DefaultMUX
+        key = DefaultCharacter
 
         def at_cmdset_creation(self):
 
@@ -115,3 +116,73 @@ old one - it will overload the default one. Just remember that you must
 
 See `Commands <Commands.html>`_ for many more details and possibilities
 when defining Commands and using Cmdsets in various ways.
+
+Adding the command to specific object types
+-------------------------------------------
+
+You do not *have* to expand the ``CharacterCmdSet``, it's just the
+easiest example. The cmdset system is very generic. You can create your
+own cmdsets and add them to objects as you please (just how to control
+how they merge with the existing set is described in detail in the
+[Commands#Command\_Sets Command Set documentation]).
+
+::
+
+    # file gamesrc/commands/cmdset.py
+    #[...]
+    from game.gamesrc.commands.command import CmdEcho
+    #[...]
+    class MyCmdSet(default_cmds.CmdSet):
+        
+        key = MyCmdSet
+
+        def at_cmdset_creation(self):     
+            self.add(CmdEcho())
+
+Now you just need to add this to an object. To test things (as
+superuser) you can do
+
+::
+
+     @py self.cmdset.add("cmdset.MyCmdSet")
+
+This will add the cmdset (and the echo command) to yourself so you can
+test it. This is not permanent though, if you do a ``@reload`` the
+merger will be gone. You *can* add the ``permanent=True`` keyword to the
+``cmdset.add`` call. This will however only make the new merged cmdset
+permanent on that single object, not on other objects of that type,
+which is usually what you want.
+
+To make sure all new created objects get your new merged set, put the
+``cmdset.add`` call in your custom `Typeclass <Typeclasses.html>`_'
+``at_object_creation`` method:
+
+::
+
+    from ev import Object
+    class MyObject(Object):
+        
+        def at_object_creation(self):
+            "called when the object is first created"
+            self.cmdset.add("cmdset.MyCmdSet")
+           
+
+All new objects of this typeclass will now start with this cmdset.
+
+*Note:* An important caveat with this is that ``at_object_creation`` is
+only called *once*, when the object is first created. This means that if
+you already have existing objects in your databases using that
+typeclass, they will not have been initiated the same way. There are
+many ways to update them; since it's a one-time update you can usually
+just simply loop through them. As superuser, try the following:
+
+::
+
+     @py [obj.cmdset.add("cmdset.MyCmdSet") for obj in 
+          ev.managers.typeclass_search("game.gamesrc.objects.objects.mytypeclass.MyTypeClass"]
+
+This goes through all objects in your database having the right
+typeclass, adding the new cmdset to each. The good news is that you only
+have to do this if you want to post-add cmdsets. If you just want to add
+a new command, you can just add that command to the cmdset's
+``at_cmdset_creation`` and @reload.

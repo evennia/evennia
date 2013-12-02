@@ -55,10 +55,15 @@ For testing, we choose the *Freenode* network, ``irc.freenode.net``. We
 will connect to a test channel, let's call it *#myevennia-test* (an IRC
 channel always begins with ``#``). It's best if you pick an obscure
 channel name that didn't exist previously - if it didn't exist it will
-be created for you. *Don't* connect to ``#evennia``, that is Evennia's
-official chat channel!
+be created for you. *Don't* connect to ``#evennia`` for testing and
+debugging, that is Evennia's official chat channel!
 
-A *port* needed depends on the network. For Freenode this is ``6667``.
+(By the way, you *are* welcome to connect your game to ``#evennia`` once
+you have everything working - it can be a good way to get help and
+ideas. But if you do, please do so with an in-game channel open only to
+your game admins and developers).
+
+The *port* needed depends on the network. For Freenode this is ``6667``.
 
 What will happen is that your Evennia server will connect to this IRC
 channel as a normal user. This "user" (or "bot") needs a name, which you

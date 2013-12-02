@@ -39,7 +39,7 @@ To temporarily step down from your superuser position you can use the
 
 ::
 
-     @quell
+    > @quell
 
 This will make you start using the permission of your current
 `Character <Objects.html>`_ instead of your superuser level. If you
@@ -64,19 +64,18 @@ rather short name, let's is give a few aliases.
 
 ::
 
-    > @name box = very large box;box;very;bo;crate
+    > @name box = very large box;box;very;crate
 
 We now actually renamed the box to *very large box* (and this is what we
-will see when looking at the room), but we will also recognize it by any
-of the other names we give - like *crate* or simply *box* as before. We
+will see when looking at it), but we will also recognize it by any of
+the other names we give - like *crate* or simply *box* as before. We
 could have given these aliases directly after the name in the
 ``@create`` command, this is true for all creation commands - you can
 always tag on a list of ;-separated aliases to the name of your new
 object. If you had wanted to not change the name itself, but to only add
 aliases, you could have used the ``@alias`` command.
 
-We are currently carrying the box, which you can see if you give the
-command ``inventory`` (or ``i``). Let's drop it.
+We are currently carrying the box. Let's drop it.
 
 ::
 
@@ -118,8 +117,7 @@ box was dropped in the room, then try this:
 Locks are a rather `big topic <Locks.html>`_, but for now that will do
 what we want. This will lock the box so noone can lift it. The exception
 is superusers, they override all locks and will pick it up anyway. Make
-sure you are using your builder account and not the superuser account
-and try to get the box now:
+sure you are quelling your superuser powers and try to get the box now:
 
 ::
 
@@ -134,7 +132,7 @@ attributes using the ``@set`` command:
 
 ::
 
-    > @set box/get_err_msg = The box is way too heavy for you to lift. 
+    > @set box/get_err_msg = It's way too heavy for you to lift. 
 
 Try to get it now and you should see a nicer error message echoed back
 to you.
@@ -178,7 +176,7 @@ Pushing your buttons
 
 If we get back to the box we made, there is only so much fun you can do
 with it at this point. It's just a dumb generic object. If you renamed
-it ``carpet`` and changed its description noone would be the wiser.
+it to ``stone`` and changed its description noone would be the wiser.
 However, with the combined use of custom
 `Typeclasses <Typeclasses.html>`_, `Scripts <Scripts.html>`_ and
 object-based `Commands <Commands.html>`_, you could expand it and other
@@ -201,7 +199,7 @@ Python except Evennia defaults to looking in ``game/gamesrc/objects/``
 so you don't have to write the full path every time. There you go - one
 red button.
 
-The RedButton is an example object intended to show off many of
+The RedButton is an example object intended to show off a few of
 Evennia's features. You will find that the `Scripts <Scripts.html>`_ and
 `Commands <Commands.html>`_ controlling it are scattered in
 ``examples``-folders all across ``game/gamesrc/``.
@@ -210,8 +208,8 @@ If you wait for a while (make sure you dropped it!) the button will
 blink invitingly. Why don't you try to push it ...? Surely a big red
 button is meant to be pushed. You know you want to.
 
-Creating a room called 'house'
-------------------------------
+Making yourself a house
+-----------------------
 
 The main command for shaping the game world is ``@dig``. For example, if
 you are standing in Limbo you can dig a route to your new house location
@@ -240,8 +238,7 @@ This will create a new room "cliff" with an exit "southwest" leading
 there and a path "northeast" leading back from the cliff to your current
 location.
 
-You can create exits from anywhere at any time using the ``@open``
-command:
+You can create new exits from where you are using the ``@open`` command:
 
 ::
 
@@ -251,9 +248,9 @@ This opens an exit ``north`` to the previously created room ``house``.
 
 If you have many rooms named ``house`` you will get a list of matches
 and have to select which one you want to link to. You can also give its
-database ref number, which is unique to every object. This can be found
-with the ``examine`` command or by looking at the latest constructions
-with ``@objects``.
+database (#dbref) number, which is unique to every object. This can be
+found with the ``examine`` command or by looking at the latest
+constructions with ``@objects``.
 
 Follow the north exit to your 'house' or ``@teleport`` to it:
 
@@ -276,37 +273,46 @@ To manually open an exit back to Limbo (if you didn't do so with the
 
 (or give limbo's dbref which is #2)
 
-Finding and manipulating existing objects
------------------------------------------
+Reshuffling the world
+---------------------
 
-To re-point an exit at another room or object, you can use
-
-::
-
-    > @link <room name> = <new_target name>
-
-To find something, use
+You can find things using the ``@find`` command. Assuming you are back
+at ``Limbo``, let's teleport the *large box to our house*.
 
 ::
 
-    > @find <name>
+    > @teleport box = house
+    very large box is leaving Limbo, heading for house.
+    Teleported very large box -> house.
 
-This will return a list of dbrefs that have a similar name.
-
-To teleport something somewhere, one uses
-
-::
-
-    > @teleport <object> = <destination>
-
-To destroy something existing, use
+We can still find the box by using @find:
 
 ::
 
-    > @destroy <object>
+    > @find box
+    One Match(#1-#8):
+       very large box(#8) - src.objects.objects.Object
+
+Knowing the #dbref of the box (#8 in this example), you can grab the box
+and get it back here without actually yourself going to ``house`` first:
+
+::
+
+    > @teleport #8 = here
+
+(You can usually use ``here`` to refer to your current location. To
+refer to yourself you can use ``self`` or ``me``). The box should now be
+back in Limbo with you.
+
+We are getting tired of the box. Let's destroy it.
+
+::
+
+    > @destroy box
 
 You can destroy many objects in one go by giving a comma-separated list
-of objects to the command.
+of objects (or their #dbrefs, if they are not in the same location) to
+the command.
 
 Adding a help entry
 -------------------
@@ -322,16 +328,27 @@ command.
 Adding a World
 --------------
 
-Evennia comes with a tutorial world for you to build. To build this you
-need to log back in as *superuser*. Place yourself in Limbo and do:
+After this brief introduction to building you may be ready to see a more
+fleshed-out example. Evennia comes with a tutorial world for you to
+explore.
+
+First you need to switch back to *superuser* by using the ``@unquell``
+command. Next, place yourself in ``Limbo`` and run the following
+command:
 
 ::
 
-     @batchcommand contrib.tutorial_world.build
+    > @batchcommand contrib.tutorial_world.build
 
-This will take a while, but you will see a lot of messages as the world
-is built for you. You will end up with a new exit from Limbo named
-*tutorial*. See more info about the tutorial world
-`here <TutorialWorldIntroduction.html>`_. Read
-``contrib/tutorial_world/build.ev`` to see exactly how it's built, step
-by step.
+This will take a while (be patient and don't re-run the command). You
+will see all the commands used to build the world scroll by as the world
+is built for you.
+
+You will end up with a new exit from Limbo named *tutorial*. Apart from
+being a little solo-adventure in its own right, the tutorial world is a
+good source for learning Evennia building (and coding).
+
+Read
+`contrib/tutorial\_world/build.ev <https://code.google.com/p/evennia/source/browse/contrib/tutorial_world/build.ev>`_
+to see exactly how it's built, step by step. See also more info about
+the tutorial world `here <TutorialWorldIntroduction.html>`_.

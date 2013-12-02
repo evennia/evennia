@@ -78,8 +78,8 @@ Coding with nicks
 
 Nicks are are stored as the ``Nick`` database model and are referred
 from the normal Evennia `object <Objects.html>`_ through the ``nicks``
-property. `` nicks`` is a special handler that offers effective error
-checking, searches and conversion.
+property - this is known as the NickHandler. The NickHandler offers
+effective error checking, searches and conversion.
 
 ::
 
@@ -87,16 +87,16 @@ checking, searches and conversion.
       object.nicks.add("greetjack", "tell Jack = Hello pal!")
 
     # An object nick:  
-      object.nicks.add("rose", "The red flower", nick_type="object")
+      obj.nicks.add("rose", "The red flower", nick_type="object")
 
     # An player nick:
-      object.nicks("tom", "Tommy Hill", nick_type="player")
+      obj.nicks.add("tom", "Tommy Hill", nick_type="player")
 
     # My own custom nick type (handled by my own game code somehow):
-      object.nicks.add("hood", "The hooded man", nick_type="my_identsystem")
+      obj.nicks.add("hood", "The hooded man", nick_type="my_identsystem")
 
     # get back the translated nick:
-     full_name = object.nicks.get("rose", nick_type="object")
+     full_name = obj.nicks.get("rose", nick_type="object")
 
     # delete a previous set nick
       object.nicks.del("rose", nick_type="object")

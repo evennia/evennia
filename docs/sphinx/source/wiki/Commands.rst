@@ -255,7 +255,8 @@ Command Sets
 All commands in Evennia are always grouped together into *Command Sets*
 (CmdSets). A particular ``Command`` class definition can be part of any
 number of different CmdSets. CmdSets can be stored either on game
-`Objects <Objects.html>`_ or on `Players <Players.html>`_.
+`Sessions <Sessions.html>`_, `Objects <Objects.html>`_ or on
+`Players <Players.html>`_.
 
 When a user issues a command, it is matched against the contents of all
 cmdsets available to the user at the moment,
@@ -270,19 +271,18 @@ in this order:
    exits)
 -  The channel commandset
 -  The cmdset defined on the Player object controlling the character
-   (OOC cmdset)
 
 The default ``CmdSet`` shipping with Evennia is automatically added to
 all new characters and contains commands such as ``look``, ``drop``,
 ``@dig`` etc. You can find it defined in
-``src/commands/default/cmdset_default.py``, but it is also referenced by
-importing ``ev.default_cmds`` and accessing its property
-``DefaultCmdset``. Players have an Out-of-character cmdset called
-``cmdset_ooc`` that can also be found from the same place. There is
-finally an "unloggedin" cmdset that is used before the Player has
+``src/commands/default/cmdset_character.py``, but it is also referenced
+by importing ``ev.default_cmds`` and accessing its property
+``CharacterCmdset``. Players have a cmdset called ``PlayerCmdSet`` that
+can also be found from the same place. There is finally an "unloggedin"
+cmdset, "UnloggedinCmdSet", that is used before the Player has
 authenticated to the game. The path to these three standard command sets
-are defined in settings, as ``CMDSET_UNLOGGEDIN``, ``CMDSET_DEFAULT``
-and ``CMDSET_OOC``. You can create any number of command sets besides
+are defined in settings, as ``CMDSET_UNLOGGEDIN``, ``CMDSET_CHARACTER``
+and ``CMDSET_PLAYER``. You can create any number of command sets besides
 those to fit your needs.
 
 A CmdSet is, as most things in Evennia, defined as a Python class
@@ -350,314 +350,26 @@ for a different way of approaching it. Generally you can customize which
 command sets are added to your objects by using ``self.cmdset.add()`` or
 ``self.cmdset.add_default()``.
 
-Adding and merging command sets
--------------------------------
+Properties on command sets
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-*Note: This is an advanced topic. It's useful to know about, but you
-might want to skip it if this is your first time learning about
-commands.*
+There are a few extra flags one can set on CmdSets in order to modify
+how they work. All are optional and will be set to defaults otherwise.
+Since many of these relate to *merging* cmdsets you might want to read
+up on [Commands#Adding\_and\_merging\_command\_sets next section] for
+some of these to make sense.
 
-CmdSets have the special ability that they can be *merged* together into
-new sets. This would happen if you, for example, did
-``object.cmdset.add(MyCmdSet)`` on an object that already had a command
-set defined on it. The two sets will be evaluated and a temporary,
-*merged set* will be created out of the commands in both sets. Only the
-commands in this merged set is from that point available to use. Which
-of the ingoing commands end up in the merged set is defined by the
-*merge rule* and the relative *priorities* of the two sets. Removing the
-latest added set will restore things back to the way it was before the
-addition.
+-  ``key`` (string) - an identifier for the cmdset. This is optional but
+   should be unique; it is used for display in lists but also to
+   identify special merging behaviours using the
+   ``key_mergetype' dictionary below.  * ``\ mergetype\ `` (string) - one of "_Union_", "_Intersect_", "_Replace_" or "_Remove_".  * ``\ priority\ `` (int) - Higher priority sets will take priority during merging. Evennia default sets have priorities between ``\ 0\ `` and ``\ 9\ ``, where ``\ 0\ `` are most commands and ``\ 8\ `` or ``\ 9\ `` are used for special things like channel-commands and exit-commands.  * ``\ key\_mergetype\ `` (dict) - a dict of ``\ key:mergetype\ `` pairs. This allows this cmdset to merge differently with certain named cmdsets. If the cmdset to merge with has a ``\ key\ `` matching an entry in ``\ key\_mergetype\ ``, it will not be merged according to the setting in ``\ mergetype\ `` but according to the mode in this dict.   * ``\ duplicates\ `` (bool, default False) - when merging same-priority cmdsets containing same-key commands, the cmdset being merged "onto" the old one will take precedence. The result will be unique commands. If this flag is set the merged set can have multiple commands with the same key. This will usually lead to multi-match errors for the player. This is is useful e.g. for on-object cmdsets (example: There is a ``\ red
+   button\ `` and a ``\ green
+   button\ `` in the room. Both have a ``\ press
+   button\ `` command, in cmdsets with the same priority. This flag makes sure that just writing ``\ press
+   button\ `` will force the Player to define just which object's command was intended).   * ``\ no\_objs\ `` this is a flag for the cmdhandler that builds the set of commands available at every moment. It tells the handler not to include cmdsets from objects around the player (nor from rooms) when building the merged set. Exit commands will still be included.  * ``\ no\_exits\ `` - this is a flag for the cmdhandler that builds the set of commands available at every moment. It tells the handler not to include cmdsets from exits.  * ``\ is\_exit\ `` (bool) - this marks the cmdset as being used for an in-game exit. This allows the cmdhandler to easily disregard this cmdset when other cmdsets have their ``\ no\_exits\ `` flag set. It is set directly by the Exit object as part of initializing its cmdset.  * ``\ no\_channels\ `` (bool) - this is a flag for the cmdhandler that builds the set of commands available at every moment. It tells the handler not to include cmdsets from available in-game channels.  * ``\ is\_channel\ `` (bool)- this marks the cmdset as being used for an in-game exit. It allows the cmdhandler to easily disregard this cmdset when other cmdsets have their ``\ no\_channels\ `` flag set. It is set directly by the Channel object as part of initializing its cmdset.  == Default command sets ==   Evennia comes with four default cmdsets, used at different parts of the game. You can freely add more and/or expand on these as you see fit.    * _DefaultUnloggedin_ (``\ src.commands.default.cmdset\_unloggedin.UnloggedinCmdSet\ ``) - this cmdset holds the commands used before you have authenticated to the server, such as the login screen, connect, create character and so on.   * _DefaultSession_ (``\ src.commands.default.cmdset\_session.SessionCmdSet\ `` - this is stored on the [Session] once authenticated. This command set holds no commands by default. It is meant to hold session-specific OOC things, such as character-creation systems.   * _DefaultPlayer_ (``\ src.commands.default.cmdset\_player.PlayerCmdSet\ ``) - this is stored on the [Player] and contains account-centric OOC commands, such as the commands for sending text to channels or admin commands for staff.   * _DefaultCharacter_ (``\ src.commands.default.cmdset\_character.CharacterCmdSet\ ``) - this is finally stored on Character objects and holds all IC commands available to that Character. This is the biggest cmdset. For it to be available to the player, the Character must be puppeted.   Except for the unloggedin cmdset, cmdsets stored on these various levels dre merged "downward" in the connection hierarchy. So when merging (with the same priority), Session cmdsets are merged first, followed by Player and finally Character (so Character command overrule Player commands which overrule Session commands as it were). See the next section for details about merge rules.   ==Adding and merging command sets ==  _Note: This is an advanced topic. It's useful to know about, but you might want to skip it if this is your first time learning about commands._  !CmdSets have the special ability that they can be _merged_ together into new sets. This would happen if you, for example, did ``\ object.cmdset.add(MyCmdSet)\ `` on an object that already had a command set defined on it. The two sets will be evaluated and a temporary, _merged set_ will be created out of the commands in both sets. Only the commands in this merged set is from that point available to use. Which of the ingoing commands end up in the merged set is defined by the _merge rule_ and the relative _priorities_ of the two sets. Removing the latest added set will restore things back to the way it was before the addition.  !CmdSets are non-destructively stored in a stack inside the cmdset handler on the object. This stack is parsed to create the "combined" cmdset active at the moment. The very first cmdset in this stack is called the _Default cmdset_ and is protected from accidental deletion. Running ``\ obj.cmdset.delete()\ `` will never delete the default set. Instead one should add new cmdsets on top of the default to "hide" it, as described below.  Use the special ``\ obj.cmdset.delete\_default()\ `` only if you really know what you are doing.   !CmdSet merging is an advanced feature useful for implementing powerful game effects. Imagine for example a player entering a dark room. You don't want the player to be able to find everything in the room at a glance - maybe you even want them to have a hard time to find stuff in their backpack! You can then define a different !CmdSet with commands that override the normal ones. While they are in the dark room, maybe the ``\ look\ `` and ``\ inv\ `` commands now just tell the player they cannot see anything! Another example would be to offer special combat commands only when the player is in combat. Or when being on a boat. Or when having taken the super power-up. All this can be done on the fly by merging command sets.   === Merge rules ===  To understand how sets merge, we need to define a little lingo. Let's call the first command set *A* and the second *B*. We will merge *A* onto *B*, so in code terms the command would be ``\ object.cdmset.add(A)\ ``, where we assume *B* was already the active cmdset on ``\ object\ `` since earlier.  We let the *A* set have higher priority than *B*. A priority is simply an integer number. Default is 0, Evennia's in-built high-prio commands (intended to overrule others) have values of 9 or 10.  Both sets contain a number of commands named by numbers, like ``\ A1,
+   A2\ `` for set *A* and ``\ B1, B2, B3,
+   B4\ `` for *B*. So for that example both sets contain commands with the same keys 1 and 2, whereas commands 3 and 4 are unique to *B*. To describe a merge between these sets, we would write {{{A1,A2 + B1,B2,B3,B4 = ?}}} where ``?\ `` is a list of commands that depend on which merge type *A* has, and which relative priorities the two sets have. By convention, we read this statement as "New command set *A* is merged onto the old command set *B* to form *?*".  Below are the available merge types and how they work. Names are partly borrowed from [http://en.wikipedia.org/wiki/Set_theory Set theory].  *Union* (default) - The two cmdsets are merged so that as many commands as possible from each cmdset ends up in the merged cmdset. Same-key commands are merged by priority.  {{{ # Union A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4 }}}  *Intersect* - Only commands found in _both_ cmdsets (i.e. which have the same keys) end up in the merged cmdset, with the higher-priority cmdset replacing the lower one's commands.   {{{ # Intersect  A1,A3,A5 + B1,B2,B4,B5 = A1,A5 }}} *Replace* -   The commands of the higher-prio cmdset completely replaces the lower-priority cmdset's commands, regardless of if same-key commands exist or not.  {{{ # Replace A1,A3 + B1,B2,B4,B5 = A1,A3 }}} *Remove* - The high-priority command sets removes same-key commands from the lower-priority cmdset. They are not replaced with anything, so this is a sort of filter that prunes the low-prio set using the high-prio one as a template.  {{{ # Remove A1,A3 + B1,B2,B3,B4,B5 = B2,B4,B5 }}}  Besides ``\ priority\ `` and ``\ mergetype\ ``, a command set also takes a few other variables to control how they merge:            * _duplicates_ (bool) - determines what happens when two sets of equal      priority merge. Default is that the new set in the merger  (i.e. *A* above) automatically takes precedence. But if _duplicates_ is true, the result will be a merger with more than one of each name match.  This will usually lead to the player                      receiving a multiple-match error higher up the road,                      but can be good for things like cmdsets on non-player                     objects in a room, to allow the system to warn that                      more than one 'ball' in the room has the same 'kick'                      command defined on it, so it may offer a chance to                     select which ball to kick ...  Allowing duplicates                      only makes sense for _Union_ and _Intersect_, the setting                     is ignored for the other mergetypes.     * _key_mergetypes_ (dict) - allows the cmdset to define a unique                  mergetype for particular cmdsets, identified by their cmdset-key.  Format is ``\ {CmdSetkey:mergetype}``. Priorities still apply.                 Example: ``\ {'Myevilcmdset','Replace'}\ `` which would make                  sure for this set to always use 'Replace' on                 ``\ Myevilcmdset\ `` only, no matter what _mergetype_ is set to.  More advanced cmdset example:  {{{ class MyCmdSet(CmdSet):      key = "MyCmdSet"     priority = 4     mergetype = "Replace"     key_mergetypes = {'MyOtherCmdSet':'Union'}        def at_cmdset_creation(self):         """         The only thing this method should need         to do is to add commands to the set.                                                 """              self.add(mycommands.MyCommand1())         self.add(mycommands.MyCommand2())         self.add(mycommands.MyCommand3())        }}}  == System commands ==  _Note: This is an advanced topic. Skip it if this is your first time learning about commands._  There are several command-situations that are exceptional in the eyes of the server. What happens if the player enters an empty string? What if the 'command' given is infact the name of a channel the user wants  to send a message to? Or if there are multiple command possibilities?  Such 'special cases' are handled by what's called  _system commands_. A system command is defined in the same way as other commands, except that their name (key) must be set to one reserved by the engine (the names are defined at the top of ``\ src/commands/cmdhandler.py\ ``). You can find (unused) implementations of the system commands in ``\ src/commands/default/system\_commands.py\ ``. Since these are not  (by default) included in any ``\ CmdSet\ `` they are not actually used, they are  just there for show. When the special situation occurs, Evennia will look through all valid ``\ CmdSet\ ``s for your custom system command. Only after that will it resort to its own, hard-coded implementation.   Here are the exceptional situations that triggers system commands. You can find the command keys they use as properties on ``\ ev.syscmdkeys\ ``  * No input (``\ syscmdkeys.CMD\_NOINPUT\ ``) - the player just pressed return without any input. Default is to do nothing, but it can be useful to do something here for certain implementations such as line editors that interpret non-commands as text input (an empty line in the editing buffer).  * Command not found (``\ syscmdkeys.CMD\_NOMATCH\ ``) - No matching command was found. Default is to display the "Huh?" error message.  * Several matching commands where found (``\ syscmdkeys.CMD\_MULTIMATCH\ ``) - Default is to show a list of matches.  * User is not allowed to execute the command (``\ syscmdkeys.CMD\_NOPERM\ ``) - Default is to display the "Huh?" error message.  * Channel (``\ syscmdkeys.CMD\_CHANNEL\ ``) - This is a [Communications Channel] name of a channel you are subscribing to - Default is to relay the command's argument to that channel. Such commands are created by the Comm system on the fly depending on your subscriptions.  * New session connection ('syscmdkeys.CMD_LOGINSTART'). This command name should be put in the ``\ settings.CMDSET\_UNLOGGEDIN\ ``. Whenever a new connection is established, this command is always called on the server (default is to show the login screen).  Below is an example of redefining what happens when the player don't give any input (e.g. just presses return). Of course the new system command must be added to a cmdset as well before it will work.  {{{ from ev import syscmdkeys, Command  class MyNoInputCommand(Command):     "Usage: Just press return, I dare you"     key = syscmdkeys.CMD_NOINPUT     def func(self):         self.caller.msg("Don't just press return like that, talk to me!") }}}  == Dynamic Commands ==  _Note: This is an advanced topic._  Normally Commands are created as fixed classes and used without modification. There are however situations when the exact key, alias or other properties is not possible (or impractical) to pre-code ([Commands#Exits Exits] is an example of this).   To create a dynamic command use the following call: {{{  cmd = MyCommand(key="newname", aliases=["test", "test2"], locks="cmd:all()", ...) }}} _All_ keyword arguments you give to the Command constructor will be stored as a property on the command object. This will overload eventual existing properties defined on the parent class.  Normally you would define your class as normal and only overload things like ``\ key\ `` and ``\ aliases\ `` at run-time. But you could in principle also send method objects as keyword arguments in order to make your command completely customized at run-time.   == Exits ==  _Note: This is an advanced topic._  Exits are examples of the use of a [Commands#Dynamic_Commands Dynamic Command].  The functionality of [Objects Exit] objects in Evennia is not hard-coded in the engine. Instead Exits are normal [Typeclasses typeclassed] objects that auto-creates a [Commands#CmdSets CmdSet] on themselves when they load. This cmdset has a single dynamically created Command with the same properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit, this dynamic exit-command is triggered and (after access checks) moves the Character to the exit's destination.  Whereas you could customize the Exit object and its command to achieve completely different behaviour, you will usually be fine just using the appropriate ``\ traverse\_\ **`` hooks on the Exit object. But if you are interested in really changing how things work under the hood, check out ``\ src.objects.objects\ `` for how the ``\ Exit\ `` typeclass is set up.     == How commands actually work ==  _Note: This is an advanced topic mainly of interest to server developers._  Any time the user sends text to Evennia, the server tries to figure out if the text entered corresponds to a known command. This is how the command handler sequence looks for a logged-in user:    # A user (the _caller_) enters a string of text and presses enter.   * If input is an empty string, resend command as ``\ CMD\_NOINPUT\ ``. If no such command is found in cmdset, ignore.    * If command.key matches ``\ settings.IDLE\_COMMAND\ ``, update timers but don't do anything more.   # Evennia's _commandhandler_ gathers the !CmdSets available to _caller_ at the time:   * The caller's own currently active !CmdSet.   * The active !CmdSets of eventual objects in the same location (if any). This includes commands on [Objects#Exits Exits].    * Sets of dynamically created _System commands_ representing available [Communications Channels].   * !CmdSet defined on the _caller.player_ (OOC cmdset).  # All !CmdSets _of the same priority_ are merged together in groups. Grouping avoids order-dependent issues of merging multiple same-prio sets onto lower ones.  # All the grouped !CmdSets are _merged_ in reverse priority into one combined !CmdSet according to each set's merge rules.   # Evennia's _command parser_ takes the merged cmdset and matches each of its commands (using its key and aliases) against the beginning of the string entered by _caller_. This produces a set of candidates.   # The _cmd parser_ next rates the matches by how many characters they have and how many percent matches the respective known command. Only if candidates cannot be separated will it return multiple matches.    * If multiple matches were returned, resend as ``\ CMD\_MULTIMATCH\ ``. If no such command is found in cmdset, return hard-coded list of matches.   * If no match was found, resend as ``\ CMD\_NOMATCH\ ``. If no such command is found in cmdset, give hard-coded error message.   # If a single command was found by the parser, the correct command class is plucked out of storage and instantiated.   # It is checked that the caller actually has access to the command by validating the _lockstring_ of the command. If not, it is not considered as a suitable match it is resent as ``\ CMD\_NOPERM\ `` is created. If no such command is found in cmdset, use hard-coded error message.   # If the new command is tagged as a channel-command, resend as ``\ CMD\_CHANNEL\ ``. If no such command is found in cmdset, use hard-coded implementation.   # Assign several useful variables to the command instance.  # Call ``\ at\_pre\_command()\ `` on the command instance.  # Call ``\ parse()\ `` on the command instance. This is is fed the remainder of the string, after the name of the command. It's intended to pre-parse the string int a form useful for the ``\ func()\ `` method.  # Call ``\ func()\ `` on the command instance. This is the functional body of the command, actually doing useful things.   # Call ``\ at\_post\_command()\ `` on the command instance.   ==Assorted notes==  The return value of ``\ Command.func()\ `` is a Twisted [http://twistedmatrix.com/documents/current/core/howto/defer.html deferred]. Evennia does not use this return value at all by default. If you do, you must thus do so asynchronously, using callbacks.  {{{  # in command class func()  def callback(ret, caller):     caller.msg("Returned is %s" % ret)  deferred = self.execute_command("longrunning")  deferred.addCallback(callback, self.caller) }}} This is probably not relevant to any but the most advanced/exotic designs (one might use it to create a "nested" command structure for example).  The ``\ save\_for\_next\ ````
+   class variable can be used to implement state-persistent commands.
+   For example it can make a command operate on "it", where it is
+   determined by what the previous command operated on.**
 
-CmdSets are non-destructively stored in a stack inside the cmdset
-handler on the object. This stack is parsed to create the "combined"
-cmdset active at the moment. The very first cmdset in this stack is
-called the *Default cmdset* and is protected from accidental deletion.
-Running ``obj.cmdset.delete()`` will never delete the default set.
-Instead one should add new cmdsets on top of the default to "hide" it,
-as described below. Use the special ``obj.cmdset.delete_default()`` only
-if you really know what you are doing.
-
-CmdSet merging is an advanced feature useful for implementing powerful
-game effects. Imagine for example a player entering a dark room. You
-don't want the player to be able to find everything in the room at a
-glance - maybe you even want them to have a hard time to find stuff in
-their backpack! You can then define a different CmdSet with commands
-that override the normal ones. While they are in the dark room, maybe
-the ``look`` and ``inv`` commands now just tell the player they cannot
-see anything! Another example would be to offer special combat commands
-only when the player is in combat. Or when being on a boat. Or when
-having taken the super power-up. All this can be done on the fly by
-merging command sets.
-
-Merge rules
-~~~~~~~~~~~
-
-To understand how sets merge, we need to define a little lingo. Let's
-call the first command set **A** and the second **B**. We will merge
-**A** onto **B**, so in code terms the command would be
-``object.cdmset.add(A)``, where we assume **B** was already the active
-cmdset on ``object`` since earlier.
-
-We let the **A** set have higher priority than **B**. A priority is
-simply an integer number. Default is 0, Evennia's in-built high-prio
-commands (intended to overrule others) have values of 9 or 10.
-
-Both sets contain a number of commands named by numbers, like ``A1, A2``
-for set **A** and ``B1, B2, B3, B4`` for **B**. So for that example both
-sets contain commands with the same keys 1 and 2, whereas commands 3 and
-4 are unique to **B**. To describe a merge between these sets, we would
-write ``A1,A2 + B1,B2,B3,B4 = ?`` where ``?`` is a list of commands that
-depend on which merge type **A** has, and which relative priorities the
-two sets have. By convention, we read this statement as "New command set
-**A** is merged onto the old command set **B** to form **?**".
-
-Below are the available merge types and how they work. Names are partly
-borrowed from `Set theory <http://en.wikipedia.org/wiki/Set_theory>`_.
-
-**Union** (default) - The two cmdsets are merged so that as many
-commands as possible from each cmdset ends up in the merged cmdset.
-Same-key commands are merged by priority.
-
-::
-
-    # Union
-    A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4
-
-**Intersect** - Only commands found in *both* cmdsets (i.e. which have
-the same keys) end up in the merged cmdset, with the higher-priority
-cmdset replacing the lower one's commands.
-
-::
-
-    # Intersect 
-    A1,A3,A5 + B1,B2,B4,B5 = A1,A5
-
-**Replace** - The commands of the higher-prio cmdset completely replaces
-the lower-priority cmdset's commands, regardless of if same-key commands
-exist or not.
-
-::
-
-    # Replace
-    A1,A3 + B1,B2,B4,B5 = A1,A3
-
-**Remove** - The high-priority command sets removes same-key commands
-from the lower-priority cmdset. They are not replaced with anything, so
-this is a sort of filter that prunes the low-prio set using the
-high-prio one as a template.
-
-::
-
-    # Remove
-    A1,A3 + B1,B2,B3,B4,B5 = B2,B4,B5
-
-Besides ``priority`` and ``mergetype``, a command set also takes a few
-other variables to control how they merge:
-
--  *allow\_duplicates* (bool) - determines what happens when two sets of
-   equal priority merge. Default is that the new set in the merger (i.e.
-   **A** above) automatically takes precedence. But if
-   *allow\_duplicates* is true, the result will be a merger with more
-   than one of each name match. This will usually lead to the player
-   receiving a multiple-match error higher up the road, but can be good
-   for things like cmdsets on non-player objects in a room, to allow the
-   system to warn that more than one 'ball' in the room has the same
-   'kick' command defined on it, so it may offer a chance to select
-   which ball to kick ... Allowing duplicates only makes sense for
-   *Union* and *Intersect*, the setting is ignored for the other
-   mergetypes.
--  *key\_mergetype* (dict) - allows the cmdset to define a unique
-   mergetype for particular cmdsets, identified by their cmdset-key.
-   Format is ``{CmdSetkey:mergetype}``. Priorities still apply. Example:
-   ``{'Myevilcmdset','Replace'}`` which would make sure for this set to
-   always use 'Replace' on ``Myevilcmdset`` only, no matter what
-   *mergetype* is set to.
-
-More advanced cmdset example:
-
-::
-
-    class MyCmdSet(CmdSet):
-
-        key = "MyCmdSet"
-        priority = 4
-        mergetype = "Replace"
-        key_mergetype = {'MyOtherCmdSet':'Union'}  
-
-        def at_cmdset_creation(self):
-            """
-            The only thing this method should need
-            to do is to add commands to the set.                                        
-            """     
-            self.add(mycommands.MyCommand1())
-            self.add(mycommands.MyCommand2())
-            self.add(mycommands.MyCommand3())       
-
-System commands
----------------
-
-*Note: This is an advanced topic. Skip it if this is your first time
-learning about commands.*
-
-There are several command-situations that are exceptional in the eyes of
-the server. What happens if the player enters an empty string? What if
-the 'command' given is infact the name of a channel the user wants to
-send a message to? Or if there are multiple command possibilities?
-
-Such 'special cases' are handled by what's called *system commands*. A
-system command is defined in the same way as other commands, except that
-their name (key) must be set to one reserved by the engine (the names
-are defined at the top of ``src/commands/cmdhandler.py``). You can find
-(unused) implementations of the system commands in
-``src/commands/default/system_commands.py``. Since these are not (by
-default) included in any ``CmdSet`` they are not actually used, they are
-just there for show. When the special situation occurs, Evennia will
-look through all valid ``CmdSet``\ s for your custom system command.
-Only after that will it resort to its own, hard-coded implementation.
-
-Here are the exceptional situations that triggers system commands. You
-can find the command keys they use as properties on ``ev.syscmdkeys``
-
--  No input (``syscmdkeys.CMD_NOINPUT``) - the player just pressed
-   return without any input. Default is to do nothing, but it can be
-   useful to do something here for certain implementations such as line
-   editors that interpret non-commands as text input (an empty line in
-   the editing buffer).
--  Command not found (``syscmdkeys.CMD_NOMATCH``) - No matching command
-   was found. Default is to display the "Huh?" error message.
--  Several matching commands where found (``syscmdkeys.CMD_MULTIMATCH``)
-   - Default is to show a list of matches.
--  User is not allowed to execute the command
-   (``syscmdkeys.CMD_NOPERM``) - Default is to display the "Huh?" error
-   message.
--  Channel (``syscmdkeys.CMD_CHANNEL``) - This is a
-   `Channel <Communications.html>`_ name of a channel you are
-   subscribing to - Default is to relay the command's argument to that
-   channel. Such commands are created by the Comm system on the fly
-   depending on your subscriptions.
--  New session connection ('syscmdkeys.CMD\_LOGINSTART'). This command
-   name should be put in the ``settings.CMDSET_UNLOGGEDIN``. Whenever a
-   new connection is established, this command is always called on the
-   server (default is to show the login screen).
-
-Below is an example of redefining what happens when the player don't
-give any input (e.g. just presses return). Of course the new system
-command must be added to a cmdset as well before it will work.
-
-::
-
-    from ev import syscmdkeys, Command
-
-    class MyNoInputCommand(Command):
-        "Usage: Just press return, I dare you"
-        key = syscmdkeys.CMD_NOINPUT
-        def func(self):
-            self.caller.msg("Don't just press return like that, talk to me!")
-
-Exits
------
-
-*Note: This is an advanced topic.*
-
-The functionality of `Exit <Objects.html>`_ objects in Evennia is not
-hard-coded in the engine. Instead Exits are normal typeclassed objects
-that auto-creates a ``CmdSet`` on themselves when they are loaded. This
-cmdset has a single command with the same name (and aliases) as the Exit
-object itself. So what happens when a Player enters the name of the Exit
-on the command line is simply that the command handler, in the process
-of searching all available commands, also picks up the command from the
-Exit object(s) in the same room. Having found the matching command, it
-executes it. The command then makes sure to do all checks and eventually
-move the Player across the exit as appropriate. This allows exits to be
-extremely flexible - the functionality can be customized just like one
-would edit any other command.
-
-Admittedly, you will usually be fine just using the appropriate
-``traverse_*`` hooks. But if you are interested in really changing how
-things work under the hood, check out ``src.objects.objects`` for how
-the default ``Exit`` typeclass is set up.
-
-How commands actually work
---------------------------
-
-*Note: This is an advanced topic mainly of interest to server
-developers.*
-
-Any time the user sends text to Evennia, the server tries to figure out
-if the text entered corresponds to a known command. This is how the
-command handler sequence looks for a logged-in user:
-
-#. A user (the *caller*) enters a string of text and presses enter.
-
-   -  If input is an empty string, resend command as ``CMD_NOINPUT``. If
-      no such command is found in cmdset, ignore.
-   -  If command.key matches ``settings.IDLE_COMMAND``, update timers
-      but don't do anything more.
-
-#. Evennia's *commandhandler* gathers the CmdSets available to *caller*
-   at the time:
-
-   -  The caller's own currently active CmdSet.
-   -  The active CmdSets of eventual objects in the same location (if
-      any). This includes commands on [Objects#Exits Exits].
-   -  Sets of dynamically created *System commands* representing
-      available `Channels <Communications.html>`_.
-   -  CmdSet defined on the *caller.player* (OOC cmdset).
-
-#. All the CmdSets are *merged* into one combined CmdSet according to
-   each set's merge rules.
-#. Evennia's *command parser* takes the merged cmdset and matches each
-   of its commands (using its key and aliases) against the beginning of
-   the string entered by *caller*. This produces a set of candidates.
-#. The *cmd parser* next rates the matches by how many characters they
-   have and how many percent matches the respective known command. Only
-   if candidates cannot be separated will it return multiple matches.
-
-   -  If multiple matches were returned, resend as ``CMD_MULTIMATCH``.
-      If no such command is found in cmdset, return hard-coded list of
-      matches.
-   -  If no match was found, resend as ``CMD_NOMATCH``. If no such
-      command is found in cmdset, give hard-coded error message.
-
-#. If a single command was found by the parser, the correct command
-   class is plucked out of storage and instantiated.
-#. It is checked that the caller actually has access to the command by
-   validating the *lockstring* of the command. If not, it is not
-   considered as a suitable match it is resent as ``CMD_NOPERM`` is
-   created. If no such command is found in cmdset, use hard-coded error
-   message.
-#. If the new command is tagged as a channel-command, resend as
-   ``CMD_CHANNEL``. If no such command is found in cmdset, use
-   hard-coded implementation.
-#. Assign several useful variables to the command instance.
-#. Call ``at_pre_command()`` on the command instance.
-#. Call ``parse()`` on the command instance. This is is fed the
-   remainder of the string, after the name of the command. It's intended
-   to pre-parse the string int a form useful for the ``func()`` method.
-#. Call ``func()`` on the command instance. This is the functional body
-   of the command, actually doing useful things.
-#. Call ``at_post_command()`` on the command instance.
-
-Assorted notes
---------------
-
-The return value of ``Command.func()`` is a Twisted
-`deferred <http://twistedmatrix.com/documents/current/core/howto/defer.html>`_.
-Evennia does not use this return value at all by default. If you do, you
-must thus do so asychronously, using callbacks.
-
-::
-
-     # in command class func()
-     def callback(ret, caller):
-        caller.msg("Returned is %s" % ret)
-     deferred = self.execute_command("longrunning")
-     deferred.addCallback(callback, self.caller)
-
-This is probably not relevant to any but the most advanced/exotic
-designs (one might use it to create a "nested" command structure for
-example).
-
-The ``save_for_next`` class variable can be used to implement
-state-persistent commands. For example it can make a command operate on
-"it", where it is determined by what the previous command operated on.

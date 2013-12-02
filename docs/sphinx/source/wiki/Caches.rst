@@ -60,8 +60,8 @@ clean the idmapper cache, the safest way is therefore a soft-reload of
 the server (via e.g. the ``@reload`` command).
 
 Most developers will not need to care with the idmapper cache - it just
-makes models work intuitively. It is visible mostly in that all database
-models in Evennia inherits from
+makes models work intuitively. It is visible mostly in that many
+database models in Evennia inherit from
 ``src.utils.idmapper.models.SharedMemoryModel``.
 
 On-object variable cache
@@ -94,24 +94,6 @@ for ``db_key``, not ``key``. Only the former is known by django, the
 latter will give an invalid-field error. If you use Evennia's own search
 methods you don't need to worry about this, they look for the right
 things behind the scenes for you.
-
-Mutable variable caches
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Some object properties may appear mutable - that is, they return lists.
-One such example is the ``permissions`` property. This is however not
-actually a list - it's just a handler that *returns* and *accepts*
-lists. ``db_permissions`` is actually stored as a comma-separated
-string. The uptake of this is that you cannot do list operations on the
-handler. So ``obj.permissions.append('Immortals')`` will not work.
-Rather, you will have to do such operations on what is returned. Like
-this:
-
-::
-
-    perms = obj.permissions # this returns a list!
-    perms.append("Immortals")
-    obj.permissions = perms  # overwrites with new list
 
 Content cache
 ~~~~~~~~~~~~~
@@ -162,6 +144,8 @@ as fast as accessing any normal python property - this removes the
 necessity for subsequent database look-ups in order to retrieve
 attributes. Both ``db`` and ``ndn`` work the same way in this regard.
 
-Apart from the lookup, each Attribute object itself caches the values
-stored in it. Again this means that (after the first time) accessing an
-attribute is equivalent to accessing any normal Python property.
+Due to the possibility of storing objects in Attributes, the system
+cannot cache the value of data stored in the Attribute (this would allow
+for the system not detecting a stored Object being deleted elsewhere -
+it would still be accessible from the Attribute). So having to re-access
+such objects every load does incur a minor speed penalty.

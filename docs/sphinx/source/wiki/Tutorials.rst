@@ -18,6 +18,9 @@ Coding basics
 More details about coding with Evennia is found in the `Developer
 Central <DeveloperCentral.html>`_.
 
+-  `First Steps Coding with Evennia <FirstStepsCoding.html>`_ - this is
+   partly duplicated in the following two tutorials using different
+   words.
 -  `Tutorial: Adding a new default
    command <AddingCommandTutorial.html>`_
 -  `Tutorial: Adding new Object typeclasses and

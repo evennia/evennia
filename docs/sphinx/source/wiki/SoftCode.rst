@@ -81,6 +81,72 @@ MUSH parsers have jumped light years ahead of where they were even seven
 or eight years ago, they can still stutter under the weight of the more
 complex systems if not designed properly.
 
+To further illustrate the lack of readability for building larger
+systems in softcode, here is another example, PennMush softcode this
+time, for implementing an "+info" command (it allows you to store pages
+of extra character info that is later confirmed by admins and can be
+viewed by other players):
+
+::
+
+    &INC`SET u(ifo)=@include u(ifo)/INC`TARGET;@include  \
+    u(ifo)/INC`FILENAME;@assert strlen(%q<filename>)=@nspemit \
+    %#=announce(INFO)%BERROR: Info file name empty.;@switch/inline \
+    gt(strlen(setr(attr,u(u(ifo)/FUN`FINDFILE,%q<target>,%q<filename>))),0)=1,{@assert \
+    or(isadmin(%#),strmatch(%q<target>,%#))=@nspemit \
+    %#=announce(INFO)%BERROR: You may not change another's Info \
+    files.;@switch/inline \
+    or(getstat(%q<target>/%q<attr>`FLAGS,Hidden),getstat(%q<target>/%q<attr>`FLAGS,Approved))=1,{@assert \
+    isadmin(%#)=@nspemit %#=announce(INFO)%BERROR: That Info File may not \
+    be changed by you.}},0,{@break gt(strlen(%q<filename>),18)=@nspemit \
+    %#=ERROR: Info names are limited to 18 characters or less.;@break \
+    regmatchi(%q<filename>,\\|)=@nspemit %#=ERROR: Pipe symbols are not \
+    allowed in info names.;@break regmatchi(%q<filename>,\/)=@nspemit \
+    %#=ERROR: Slashes symbols are not allowed in info names.;@assert \
+    strlen(%1)=ERROR: Text field empty. To delete an +info file, use \
+    +info/delete.};&[strfirstof(%q<attr>,setr(attr,D`INFOFILE`[nextslot(%q<target>,D`INFOFILE)]))] \
+    %q<target>=%q<filename>;&%q<attr>`CONTENTS %q<target>=%1;th \
+    setstat(%q<target>/%q<attr>`FLAGS,SetBy,%#);th \
+    setstat(%q<target>/%q<attr>`FLAGS,SetOn,secs());@switch/inline \
+    strmatch(%#,%q<target>)=1,{@nspemit %#=announce(INFO)%BYou set your \
+    %q<filename> Info File},{@nspemit %#=announce(INFO)%BYou set \
+    [name(%q<target>)]'s %q<filename> Info File!;@nspemit \
+    %q<target>=announce(INFO)%B%n set your %q<filename> Info File!}
+
+(Note that the softcode is actually all one line, it was split to be
+viewable on this wiki). Below is the rough Evennia equivalent
+functionality as an Evennia command method, written by the same softcode
+author after a week of learning Evennia:
+
+::
+
+    def switch_set(self,target,files,rhs,isadmin):
+        if self.caller is not target and not isadmin:
+            self.caller.msg("ERROR: You may not set that person's files.")
+            return
+        if not self.rhs:
+            self.caller.msg("ERROR: No info file contents entered to set.")
+            return
+        for info in files:
+            if not re.match('^[\w-]+$', info.lower().strip()):
+                self.caller.msg("ERROR: File '" + info + \
+                 "' could not be set: may only use alphanumeric characters, -, and spaces in info names.")
+            elif self.files.get(info.lower().strip(),{}).get("approved",None) is True:
+                self.caller.msg("ERROR: File '" + info.strip() + "' could not be set: file is approved.")
+            else:
+                self.files[info.lower().strip()] = {"contents":rhs, "setby":self.caller,
+                                                    "seton":"timestamp", "displayname":info.strip()}
+                if target is self.caller:
+                    self.caller.msg("Info File '" + info.strip() + "' set!")
+                else:
+                    self.caller.msg("Info File '" + info.strip() + "' set!")
+                    target.caller.msg(self.caller.key + " set your '" + info.strip() + "' info file!")
+                target.db.infofiles = dict(self.files)
+        return
+
+The details of the implementation are unimportant, the difference in
+readability is the main point here.
+
 Changing Times
 --------------
 

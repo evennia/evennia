@@ -58,6 +58,12 @@ do this once):
 
 Once you have an online clone and a local copy of it:
 
+#. Make sure that you have edited Mercurial's config file (``hgrc``) and
+   under the header ``[ui]`` added the line
+   ``username=Yourname <your email>``. This is important for proper
+   crediting and eventual conversions. See the first point of the
+   `Mercurial
+   Quickstart <http://mercurial.selenic.com/wiki/QuickStart>`_.
 #. Code away on your computer, fixing bugs or whatnot (you can be
    offline for this). Commit your code to your local clone as you work,
    as often as you like. There are some suggestions for setting up a

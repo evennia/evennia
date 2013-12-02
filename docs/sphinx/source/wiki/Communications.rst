@@ -7,7 +7,9 @@ system. Stock evennia implements a 'MUX-like' system of channels, but
 there is nothing stopping you from changing things to better suit your
 taste.
 
-Comms rely on two main database objects - ``Msg`` and ``Channel``.
+Comms rely on two main database objects - ``Msg`` and ``Channel``. There
+is also the ``TempMsg`` which mimics the API of a ``Msg`` but has no
+connection to the database.
 
 Msg
 ---
@@ -67,10 +69,15 @@ next section).
 Channels
 --------
 
+Channels are `Typeclassed <Typeclass.html>`_ entities, which mean they
+can be easily extended and their functionality modified. To change which
+channel typeclass Evennia uses, change
+settings.BASE\_CHANNEL\_TYPECLASS.
+
 Channels act as generic distributors of messages. Think of them as
 "switch boards" redistributing ``Msg`` objects. Internally they hold a
-list of "listening" objects and any ``Msg`` sent to the channel will be
-distributed out to all channel listeners. Channels have
+list of "listening" objects and any ``Msg`` (or ``TempMsg`` sent to the
+channel will be distributed out to all channel listeners. Channels have
 `Locks <Locks.html>`_ to limit who may listen and/or send messages
 through them.
 
@@ -92,11 +99,12 @@ methods of channels:
 
      channel.msg(msgobj, header=None, senders=None, persistent=True)
 
-The argument ``msgobj`` can be a previously constructed ``Msg`` or
-``TempMsg`` - in that case all the following keywords are ignored. If
-``msgobj`` is a string, the other keywords are used for creating a new
-``Msg`` or ``TempMsg`` on the fly, depending on if ``persistent`` is set
-or not.
+The argument ``msgobj`` can be either a string, a previously constructed
+``Msg`` or a ``TempMsg`` - in the latter cases all the following
+keywords are ignored. If ``msgobj`` is a string, the other keywords are
+used for creating a new ``Msg`` or ``TempMsg`` on the fly, depending on
+if ``persistent`` is set or not. Default is to use ``TempMsg`` for
+channel communication (i.e. not save everything to the database).
 
 ::
 
@@ -108,18 +116,13 @@ or not.
     # use the Msg object directly, no other keywords are needed
     mychan.msg(mymsg)
 
-    # create a Msg automatically behind the scenes
+    # Send a non-persistent message to a channel
     mychan.msg("Hello!", senders=[sender])
 
-    # send a non-persistent TempMsg (note that the senders 
-    # keyword can also be used without a list if there is
-    # only one sender)
-    mychan.msg("Hello!", senders=sender, persistent=False)
-
-    # this is a shortcut that always sends a non-persistent TempMsg
-    # also if a full Msg was supplied to it (it also creates TempMsgs
-    # on the fly if given a string).
-    mychan.tempmsg(mymsg)
+    # send a message to list, save it to the database 
+    # (note how the senders keyword can also be used 
+    # without a list if there is only one sender)
+    mychan.msg("Hello!", senders=sender, persistent=True)
 
 On a more advanced note, when a player enters something like
 ``ooc Hello!`` (where ``ooc`` is the name/alias of a channel), this is

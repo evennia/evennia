@@ -13,21 +13,21 @@ The commands that make up the default [Commands#Command\_Sets command
 set] are divided into three sub-sets after which objects they are
 defined on.
 
--  An *OOC Command* is a command in the OOCCmdset, available only on
-   Players, not on Objects/Characters. Since Players control Characters,
-   the OOC and default cmdset are normally merged together and the
-   difference is not noticeable. Use e.g. the ``@ooc`` command to
-   disconnect from the current character and see only the OOC cmdset.
-   Same-keyed command on the Character has higher priority than its OOC
-   equivalent, allowing to overload the OOC commands on a per-Character
-   basis.
+-  A *Player Command* is a command in the PlayerCmdset, available only
+   on Players, not on Objects/Characters. Since Players control
+   Characters, the Player and Character cmdsets are normally merged
+   together and the difference is not noticeable. Use e.g. the ``@ooc``
+   command to disconnect from the current character and see only the
+   Player cmdset. Same-keyed command on the Character has higher
+   priority than its Player equivalent, allowing to overload the OOC
+   commands on a per-Character basis.
 -  An *Unloggedin Command* sits in UnloggedinCmdset. They are specific
    to the login screen, before the session (User) has authenticated.
 -  All other commands are *On-Character* commands, commands defined in
-   DefaultCmdset and available in the game.
+   CharacterCmdset and available in the game.
 
 The full set of available commands (all three sub-sets above) currently
-contains 85 commands in 6 categories. More information about how
+contains 92 commands in 6 categories. More information about how
 commands work can be found in the `Command <Commands.html>`_
 documentation.
 
@@ -108,8 +108,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/adm
         supplied it will be echoed to the user unless /quiet is set.
         
 
-@delplayer (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~~
+@delplayer (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@delplayer``
 -  ``aliases`` = ``<None>``
@@ -137,7 +137,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/adm
 ~~~~~
 
 -  ``key`` = ``@emit``
--  ``aliases`` = ``@pemit, @remit``
+-  ``aliases`` = ``@remit, @pemit``
 -  `locks <Locks.html>`_ = ``cmd:perm(emit) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Admin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -214,8 +214,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/adm
 
         
 
-@userpassword (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@userpassword (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@userpassword``
 -  ``aliases`` = ``<None>``
@@ -226,7 +226,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/adm
 
 ::
 
-        @setpassword
+        @userpassword
 
         Usage:
           @userpassword <user obj> = <new password>
@@ -319,7 +319,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~~~~~~~
 
 -  ``key`` = ``@batchcommands``
--  ``aliases`` = ``@batchcommand, @batchcmd``
+-  ``aliases`` = ``@batchcmd, @batchcommand``
 -  `locks <Locks.html>`_ = ``cmd:perm(batchcommands) or superuser()``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -384,8 +384,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
                   removing any changes that might have been made to the original
                   since it was first created.
 
-        Create one or more copies of an object. If you don't supply any targets, one exact copy
-        of the original object will be created with the name *_copy.
+        Create one or more copies of an object. If you don't supply any targets,
+        one exact copt of the original object will be created with the name *_copy.
         
 
 @cpattr
@@ -417,8 +417,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
           copies the coolness attribute (defined on yourself), to attributes
           on Anna and Tom.
 
-        Copy the attribute one object to one or more attributes on another object. If
-        you don't supply a source object, yourself is used.
+        Copy the attribute one object to one or more attributes on another object.
+        If you don't supply a source object, yourself is used.
         
 
 @create
@@ -439,8 +439,9 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
           @create[/drop] objname[;alias;alias...][:typeclass], objname...
 
         switch:
-           drop - automatically drop the new object into your current location (this is not echoed)
-                  this also sets the new object's home to the current location rather than to you.
+           drop - automatically drop the new object into your current
+                  location (this is not echoed). This also sets the new
+                  object's home to the current location rather than to you.
 
         Creates one or more new objects. If typeclass is given, the object
         is created as a child of this typeclass. The typeclass script is
@@ -452,36 +453,6 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 
            @create button;red : examples.red_button.RedButton
 
-        
-
-@debug
-~~~~~~
-
--  ``key`` = ``@debug``
--  ``aliases`` = ``<None>``
--  `locks <Locks.html>`_ = ``cmd:perm(debug) or perm(Builders)``
--  `help\_category <HelpSystem.html>`_ = ``Building``
--  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
-   (``__doc__ string``) =
-
-::
-
-        Debug game entities
-
-        Usage:
-          @debug[/switch] <path to code>
-
-        Switches:
-          obj - debug an object
-          script - debug a script
-
-        Examples:
-          @debug/script game.gamesrc.scripts.myscript.MyScript
-          @debug/script myscript.MyScript
-          @debug/obj examples.red_button.RedButton
-
-        This command helps when debugging the codes of objects and scripts.
-        It creates the given object and runs tests on its hooks.
         
 
 @desc
@@ -510,7 +481,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~~~~
 
 -  ``key`` = ``@destroy``
--  ``aliases`` = ``@delete, @del``
+-  ``aliases`` = ``@del, @delete``
 -  `locks <Locks.html>`_ = ``cmd:perm(destroy) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -524,8 +495,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
            @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
 
         switches:
-           override - The @destroy command will usually avoid accidentally destroying
-                      player objects. This switch overrides this safety.
+           override - The @destroy command will usually avoid accidentally
+                      destroying player objects. This switch overrides this safety.
         examples:
            @destroy house, roof, door, 44-78
            @destroy 5-10, flower, 45
@@ -561,16 +532,18 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
            @dig house:myrooms.MyHouseTypeclass
            @dig sheer cliff;cliff;sheer = climb up, climb down
 
-        This command is a convenient way to build rooms quickly; it creates the new room and you can optionally
-        set up exits back and forth between your current room and the new one. You can add as many aliases as you
-        like to the name of the room and the exits in question; an example would be 'north;no;n'.
+        This command is a convenient way to build rooms quickly; it creates the
+        new room and you can optionally set up exits back and forth between your
+        current room and the new one. You can add as many aliases as you
+        like to the name of the room and the exits in question; an example
+        would be 'north;no;n'.
         
 
 @examine
 ~~~~~~~~
 
 -  ``key`` = ``@examine``
--  ``aliases`` = ``@ex, ex, exam, examine``
+-  ``aliases`` = ``examine, @ex, ex, exam``
 -  `locks <Locks.html>`_ = ``cmd:perm(examine) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -586,7 +559,35 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 
         Switch:
           player - examine a Player (same as adding *)
-          raw - don't parse escape codes for data.
+
+        The examine command shows detailed game info about an
+        object and optionally a specific attribute on it.
+        If object is not specified, the current location is examined.
+
+        Append a * before the search string to examine a player.
+
+        
+
+@examine (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ``key`` = ``@examine``
+-  ``aliases`` = ``examine, @ex, ex, exam``
+-  `locks <Locks.html>`_ = ``cmd:perm(examine) or perm(Builders)``
+-  `help\_category <HelpSystem.html>`_ = ``Building``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        examine - detailed info on objects
+
+        Usage:
+          examine [<object>[/attrname]]
+          examine [*<player>[/attrname]]
+
+        Switch:
+          player - examine a Player (same as adding *)
 
         The examine command shows detailed game info about an
         object and optionally a specific attribute on it.
@@ -600,7 +601,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@find``
--  ``aliases`` = ``find, @search, search, @locate, locate``
+-  ``aliases`` = ``locate, @locate, search, @search, find``
 -  `locks <Locks.html>`_ = ``cmd:perm(find) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -621,7 +622,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
         Searches the database for an object of a particular name or dbref.
         Use *playername to search for a player. The switches allows for
         limiting object matches to certain game entities. Dbrefmin and dbrefmax
-        limits matches to within the given dbrefs, or above/below if only one is given.
+        limits matches to within the given dbrefs, or above/below if only
+        one is given.
         
 
 @help
@@ -656,9 +658,9 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
           @sethelp/append pickpocketing, ,attr(is_thief) = This steals ...
 
         This command manipulates the help database. A help entry can be created,
-        appended/merged to and deleted. If you don't assign a category, the "General"
-        category will be used. If no lockstring is specified, default is to let everyone read
-        the help file.
+        appended/merged to and deleted. If you don't assign a category, the
+        "General" category will be used. If no lockstring is specified, default
+        is to let everyone read the help file.
 
         
 
@@ -666,7 +668,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 ~~~~~
 
 -  ``key`` = ``@home``
--  ``aliases`` = ``<None>``
+-  ``aliases`` = ``@sethome``
 -  `locks <Locks.html>`_ = ``cmd:perm(@home) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -713,15 +715,16 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
         If <object> is an exit, set its destination to <target>. Two-way operation
         instead sets the destination to the *locations* of the respective given
         arguments.
-        The second form (a lone =) sets the destination to None (same as the @unlink command)
-        and the third form (without =) just shows the currently set destination.
+        The second form (a lone =) sets the destination to None (same as
+        the @unlink command) and the third form (without =) just shows the
+        currently set destination.
         
 
 @lock
 ~~~~~
 
 -  ``key`` = ``@lock``
--  ``aliases`` = ``@locks, lock, locks``
+-  ``aliases`` = ``lock, @locks, locks``
 -  `locks <Locks.html>`_ = ``cmd: perm(@locks) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``Building``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -782,8 +785,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
         Switches:
           copy - Don't delete the original after moving.
 
-        Move an attribute from one object to one or more attributes on another object. If
-        you don't supply a source object, yourself is used.
+        Move an attribute from one object to one or more attributes on another
+        object. If you don't supply a source object, yourself is used.
         
 
 @name
@@ -856,9 +859,10 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
         If no script path/key is given, lists all scripts active on the given
         object.
         Script path can be given from the base location for scripts as given in
-        settings. If adding a new script, it will be started automatically (no /start
-        switch is needed). Using the /start or /stop switches on an object without
-        specifying a script key/path will start/stop ALL scripts on the object.
+        settings. If adding a new script, it will be started automatically
+        (no /start switch is needed). Using the /start or /stop switches on an
+        object without specifying a script key/path will start/stop ALL scripts on
+        the object.
         
 
 @set
@@ -879,6 +883,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
           @set <obj>/<attr> = <value>
           @set <obj>/<attr> =
           @set <obj>/<attr>
+          @set *<player>/attr = <value>
 
         Sets attributes on objects. The second form clears
         a previously set attribute while the last form
@@ -889,13 +894,44 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
         numbers. You can however also set Python primities such as lists,
         dictionaries and tuples on objects (this might be important for
         the functionality of certain custom objects).  This is indicated
-        by you starting your value with one of {c'{n, {c"{n, {c({n, {c[{n  or {c{ {n.
+        by you starting your value with one of {c'{n, {c"{n, {c({n, {c[{n
+        or {c{ {n.
         Note that you should leave a space after starting a dictionary ('{ ')
         so as to not confuse the dictionary start with a colour code like \{g.
         Remember that if you use Python primitives like this, you must
         write proper Python syntax too - notably you must include quotes
         around your strings or you will get an error.
 
+        
+
+@tag
+~~~~
+
+-  ``key`` = ``@tag``
+-  ``aliases`` = ``<None>``
+-  `locks <Locks.html>`_ = ``cmd:perm(tag) or perm(Builders)``
+-  `help\_category <HelpSystem.html>`_ = ``Building``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        handles tagging
+
+        Usage:
+          @tag[/del] <obj> [= <tag>[:<category>]]
+          @tag/search <tag>
+
+        Switches:
+          search - return all objects
+          del - remove the given tag. If no tag is specified,
+                clear all tags.
+
+        Manipulates and lists tags on objects. Tags allow for quick
+        grouping of and searching for objects.  If only <obj> is given,
+        list all tags on the object.  If /search is used, list objects
+        with the given tag.
+        The category can be used for grouping tags themselves.
         
 
 @tel
@@ -910,19 +946,29 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/bui
 
 ::
 
-        teleport
+        teleport object to another location
 
         Usage:
-          @tel/switch [<object> =] <location>
+          @tel/switch [<object> =] <target location>
+
+        Examples:
+          @tel Limbo
+          @tel/quiet box Limbo
+          @tel/tonone box
 
         Switches:
           quiet  - don't echo leave/arrive messages to the source/target
                    locations for the move.
           intoexit - if target is an exit, teleport INTO
                      the exit object instead of to its destination
+          tonone - if set, teleport the object to a None-location. If this
+                   switch is set, <target location> is ignored.
+                   Note that the only way to retrieve
+                   an object from a None location is by direct #dbref
+                   reference.
 
-        Teleports an object or yourself somewhere.
-        
+        Teleports an object somewhere. If no object is given, you yourself
+        is teleported to the target location.     
 
 @tunnel
 ~~~~~~~
@@ -1055,8 +1101,8 @@ Comms
 `Link to Python
 module <https://code.google.com/p/evennia/source/browse/src/commands/default/comms.py>`_
 
-@cboot (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+@cboot (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@cboot``
 -  ``aliases`` = ``<None>``
@@ -1079,8 +1125,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 
         
 
-@ccreate (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~
+@ccreate (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@ccreate``
 -  ``aliases`` = ``channelcreate``
@@ -1099,8 +1145,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
         Creates a new channel owned by you.
         
 
-@cdesc (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+@cdesc (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@cdesc``
 -  ``aliases`` = ``<None>``
@@ -1120,8 +1166,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
         channel lists.
         
 
-@cdestroy (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@cdestroy (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@cdestroy``
 -  ``aliases`` = ``<None>``
@@ -1140,8 +1186,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
         Destroys a channel that you control.
         
 
-@cemit (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+@cemit (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@cemit``
 -  ``aliases`` = ``@cmsg``
@@ -1168,12 +1214,12 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 
         
 
-@channels (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@channels (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@channels``
 -  ``aliases`` =
-   ``@clist, channels, comlist, chanlist, channellist, all channels``
+   ``comlist, channellist, all channels, channels, @clist, chanlist``
 -  `locks <Locks.html>`_ = ``cmd: not pperm(channel_banned)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1188,15 +1234,16 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
           @clist
           comlist
 
-        Lists all channels available to you, wether you listen to them or not.
-        Use 'comlist" to only view your current channel subscriptions.
+        Lists all channels available to you, whether you listen to them or not.
+        Use 'comlist' to only view your current channel subscriptions.
+        Use addcom/delcom to join and leave channels
         
 
-@cset (OOC command)
-~~~~~~~~~~~~~~~~~~~
+@clock (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
--  ``key`` = ``@cset``
--  ``aliases`` = ``@cclock``
+-  ``key`` = ``@clock``
+-  ``aliases`` = ``<None>``
 -  `locks <Locks.html>`_ = ``cmd:not pperm(channel_banned)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1204,17 +1251,17 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 
 ::
 
-        @cset - changes channel access restrictions
+        @clock - changes channel access restrictions
 
         Usage:
-          @cset <channel> [= <lockstring>]
+          @clock <channel> [= <lockstring>]
 
         Changes the lock access restrictions of a channel. If no
         lockstring was given, view the current lock definitions.
         
 
-@cwho (OOC command)
-~~~~~~~~~~~~~~~~~~~
+@cwho (Player command)
+~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@cwho``
 -  ``aliases`` = ``<None>``
@@ -1233,8 +1280,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
         List who is connected to a given channel you have access to.
         
 
-@imc2chan (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@imc2chan (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@imc2chan``
 -  ``aliases`` = ``<None>``
@@ -1266,11 +1313,11 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
 
         
 
-@imcinfo (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~
+@imcinfo (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@imcinfo``
--  ``aliases`` = ``@imcchanlist, @imclist, @imcwhois``
+-  ``aliases`` = ``@imcchanlist, @imcwhois, @imclist``
 -  `locks <Locks.html>`_ =
    ``cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
@@ -1296,8 +1343,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
         Shows lists of games or channels on the IMC2 network.
         
 
-@irc2chan (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@irc2chan (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@irc2chan``
 -  ``aliases`` = ``<None>``
@@ -1315,22 +1362,24 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
           @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
 
         Switches:
-          /disconnect - this will delete the bot and remove the irc connection to the channel.
+          /disconnect - this will delete the bot and remove the irc connection
+                        to the channel.
           /remove     -                                 "
           /list       - show all irc<->evennia mappings
 
         Example:
           @irc2chan myircchan = irc.dalnet.net 6667 myevennia-channel evennia-bot
 
-        This creates an IRC bot that connects to a given IRC network and channel. It will
-        relay everything said in the evennia channel to the IRC channel and vice versa. The
-        bot will automatically connect at server start, so this comman need only be given once.
-        The /disconnect switch will permanently delete the bot. To only temporarily deactivate it,
-        use the @services command instead.
+        This creates an IRC bot that connects to a given IRC network and channel.
+        It will relay everything said in the evennia channel to the IRC channel and
+        vice versa. The bot will automatically connect at server start, so this
+        comman need only be given once. The /disconnect switch will permanently
+        delete the bot. To only temporarily deactivate it, use the  {w@services{n
+        command instead.
         
 
-@rss2chan (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@rss2chan (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@rss2chan``
 -  ``aliases`` = ``<None>``
@@ -1348,23 +1397,25 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/com
           @rss2chan[/switches] <evennia_channel> = <rss_url>
 
         Switches:
-          /disconnect - this will stop the feed and remove the connection to the channel.
+          /disconnect - this will stop the feed and remove the connection to the
+                        channel.
           /remove     -                                 "
           /list       - show all rss->evennia mappings
 
         Example:
           @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
 
-        This creates an RSS reader  that connects to a given RSS feed url. Updates will be
-        echoed as a title and news link to the given channel. The rate of updating is set
-        with the RSS_UPDATE_INTERVAL variable in settings (default is every 10 minutes).
+        This creates an RSS reader  that connects to a given RSS feed url. Updates
+        will be echoed as a title and news link to the given channel. The rate of
+        updating is set with the RSS_UPDATE_INTERVAL variable in settings (default
+        is every 10 minutes).
 
-        When disconnecting you need to supply both the channel and url again so as to identify
-        the connection uniquely.
+        When disconnecting you need to supply both the channel and url again so as
+        to identify the connection uniquely.
         
 
-addcom (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+addcom (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``addcom``
 -  ``aliases`` = ``aliaschan, chanalias``
@@ -1386,8 +1437,8 @@ addcom (OOC command)
         aliases to an already joined channel.
         
 
-allcom (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+allcom (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``allcom``
 -  ``aliases`` = ``<None>``
@@ -1410,8 +1461,8 @@ allcom (OOC command)
         Without argument, works like comlist.
         
 
-delcom (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+delcom (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``delcom``
 -  ``aliases`` = ``delaliaschan, delchanalias``
@@ -1432,11 +1483,11 @@ delcom (OOC command)
         unsubscribe.
         
 
-imctell (OOC command)
-~~~~~~~~~~~~~~~~~~~~~
+imctell (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``imctell``
--  ``aliases`` = ``imcpage, imc2tell, imc2page``
+-  ``aliases`` = ``imc2tell, imc2page, imcpage``
 -  `locks <Locks.html>`_ = ``cmd: serversetting(IMC2_ENABLED)``
 -  `help\_category <HelpSystem.html>`_ = ``Comms``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1454,8 +1505,8 @@ imctell (OOC command)
         over IMC2.
         
 
-page (OOC command)
-~~~~~~~~~~~~~~~~~~
+page (Player command)
+~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``page``
 -  ``aliases`` = ``tell``
@@ -1487,8 +1538,54 @@ General
 `Link to Python
 module <https://code.google.com/p/evennia/source/browse/src/commands/default/general.py>`_
 
-@encoding (OOC command)
+@charcreate (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ``key`` = ``@charcreate``
+-  ``aliases`` = ``<None>``
+-  `locks <Locks.html>`_ = ``cmd:all()``
+-  `help\_category <HelpSystem.html>`_ = ``General``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        Create a character
+
+        Usage:
+          @charcreate <charname> [= desc]
+
+        Create a new character, optionally giving it a description. You
+        may use upper-case letters in the name - you will nevertheless
+        always be able to access your character using lower-case letters
+        if you want.
+        
+
+@color (Player command)
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ``key`` = ``@color``
+-  ``aliases`` = ``<None>``
+-  `locks <Locks.html>`_ = ``cmd:all()``
+-  `help\_category <HelpSystem.html>`_ = ``General``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        testing colors
+
+        Usage:
+          @color ansi|xterm256
+
+        Print a color map along with in-mud color codes, while testing what is
+        supported in your client. Choices are 16-color ansi (supported in most
+        muds) or the 256-color xterm256 standard. No checking is done to determine
+        your client supports color - if not you will see rubbish appear.
+        
+
+@encoding (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@encoding``
 -  ``aliases`` = ``@encode``
@@ -1508,18 +1605,20 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/gen
           clear - clear your custom encoding
 
 
-        This sets the text encoding for communicating with Evennia. This is mostly an issue only if
-        you want to use non-ASCII characters (i.e. letters/symbols not found in English). If you see
-        that your characters look strange (or you get encoding errors), you should use this command
-        to set the server encoding to be the same used in your client program.
+        This sets the text encoding for communicating with Evennia. This is mostly
+        an issue only if you want to use non-ASCII characters (i.e. letters/symbols
+        not found in English). If you see that your characters look strange (or you
+        get encoding errors), you should use this command to set the server
+        encoding to be the same used in your client program.
 
         Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
 
-        If you don't submit an encoding, the current encoding will be displayed instead.
-        
+        If you don't submit an encoding, the current encoding will be displayed
+        instead.
+      
 
-@ic (OOC command)
-~~~~~~~~~~~~~~~~~
+@ic (Player command)
+~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@ic``
 -  ``aliases`` = ``@puppet``
@@ -1538,13 +1637,16 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/gen
         Go in-character (IC) as a given Character.
 
         This will attempt to "become" a different object assuming you have
-        the right to do so.  You cannot become an object that is already
-        controlled by another player. In principle <character> can be
-        any in-game object as long as you have access right to puppet it.
+        the right to do so. Note that it's the PLAYER character that puppets
+        characters/objects and which needs to have the correct permission!
+
+        You cannot become an object that is already controlled by another
+        player. In principle <character> can be any in-game object as long
+        as you the player have access right to puppet it.
         
 
-@ooc (OOC command)
-~~~~~~~~~~~~~~~~~~
+@ooc (Player command)
+~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@ooc``
 -  ``aliases`` = ``@unpuppet``
@@ -1555,7 +1657,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/gen
 
 ::
 
-        @ooc - go ooc
+        go ooc
 
         Usage:
           @ooc
@@ -1565,8 +1667,8 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/gen
         This will leave your current character and put you in a incorporeal OOC state.
         
 
-@password (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@password (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@password``
 -  ``aliases`` = ``<None>``
@@ -1585,8 +1687,57 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/gen
         Changes your password. Make sure to pick a safe one.
         
 
-@quit (OOC command)
-~~~~~~~~~~~~~~~~~~~
+@players
+~~~~~~~~
+
+-  ``key`` = ``@players``
+-  ``aliases`` = ``@listplayers``
+-  `locks <Locks.html>`_ = ``cmd:perm(listplayers) or perm(Wizards)``
+-  `help\_category <HelpSystem.html>`_ = ``General``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        @players - give a summary of all registed Players
+
+        Usage:
+          @players [nr]
+
+        Lists statistics about the Players registered with the game.
+        It will list the <nr> amount of latest registered players
+        If not given, <nr> defaults to 10.
+        
+
+@quell (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ``key`` = ``@quell``
+-  ``aliases`` = ``@unquell``
+-  `locks <Locks.html>`_ = ``cmd:all()``
+-  `help\_category <HelpSystem.html>`_ = ``General``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        Quelling permissions
+
+        Usage:
+          quell
+          unquell
+
+        Normally the permission level of the Player is used when puppeting a
+        Character/Object to determine access. This command will switch the lock
+        system to make use of the puppeted Object's permissions instead. This is
+        useful mainly for testing.
+        Hierarchical permission quelling only work downwards, thus a Player cannot
+        use a higher-permission Character to escalate their permission level.
+        Use the unquell command to revert back to normal operation.
+        
+
+@quit (Player command)
+~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@quit``
 -  ``aliases`` = ``<None>``
@@ -1602,14 +1753,18 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/gen
         Usage:
           @quit
 
-        Gracefully disconnect from the game.
+        Switch:
+          all - disconnect all connected sessions
+
+        Gracefully disconnect your current session from the
+        game. Use the /all switch to disconnect from all sessions.
         
 
 access
 ~~~~~~
 
 -  ``key`` = ``access``
--  ``aliases`` = ``groups, hierarchy``
+-  ``aliases`` = ``hierarchy, groups``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1668,6 +1823,27 @@ get
         your inventory.
         
 
+give
+~~~~
+
+-  ``key`` = ``give``
+-  ``aliases`` = ``<None>``
+-  `locks <Locks.html>`_ = ``cmd:all()``
+-  `help\_category <HelpSystem.html>`_ = ``General``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        give away things
+
+        Usage:
+          give <inventory obj> = <target>
+
+        Gives an items from your inventory to another character,
+        placing it in their inventory.
+        
+
 help
 ~~~~
 
@@ -1691,8 +1867,8 @@ help
         topics related to the game.
         
 
-help (OOC command)
-~~~~~~~~~~~~~~~~~~
+help (Player command)
+~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``help``
 -  ``aliases`` = ``<None>``
@@ -1738,7 +1914,7 @@ inventory
 ~~~~~~~~~
 
 -  ``key`` = ``inventory``
--  ``aliases`` = ``inv, i``
+-  ``aliases`` = ``i, inv``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1777,8 +1953,8 @@ look
         Observes your location or objects in your vicinity.
         
 
-look (OOC command)
-~~~~~~~~~~~~~~~~~~
+look (Player command)
+~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``look``
 -  ``aliases`` = ``l, ls``
@@ -1794,18 +1970,14 @@ look (OOC command)
         Usage:
           look
 
-        This is an OOC version of the look command. Since a
-        Player doesn't have an in-game existence, there is no
-        concept of location or "self". If we are controlling
-        a character, pass control over to normal look.
-
+        Look in the ooc state.
         
 
 nick
 ~~~~
 
 -  ``key`` = ``nick``
--  ``aliases`` = ``nickname, nicks, @nick, alias``
+-  ``aliases`` = ``@nick, nicks, nickname, alias``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``General``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1890,8 +2062,8 @@ say
         Talk to those in your current location.
         
 
-who
-~~~
+who (Player command)
+~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``who``
 -  ``aliases`` = ``doing``
@@ -1942,7 +2114,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 ~~~~~~~~
 
 -  ``key`` = ``@objects``
--  ``aliases`` = ``@listobjects, @listobjs, @stats, @db``
+-  ``aliases`` = ``@listobjects, @stats, @db, @listobjs``
 -  `locks <Locks.html>`_ = ``cmd:perm(listobjects) or perm(Builders)``
 -  `help\_category <HelpSystem.html>`_ = ``System``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -1950,7 +2122,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 
 ::
 
-        Give a summary of object types in database
+        @objects - Give a summary of object types in database
 
         Usage:
           @objects [<nr>]
@@ -1977,6 +2149,9 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
         Usage:
           @py <cmd>
 
+        Switch:
+          time - output an approximate execution time for <cmd>
+
         Separate multiple commands by ';'.  A few variables are made
         available for convenience in order to offer access to the system
         (you can import more at execution time).
@@ -1987,13 +2162,54 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
           ev                         : the evennia API
           inherits_from(obj, parent) : check object inheritance
 
+        You can explore The evennia API from inside the game by calling
+        ev.help(), ev.managers.help() etc.
+
         {rNote: In the wrong hands this command is a severe security risk.
         It should only be accessible by trusted server admins/superusers.{n
 
         
 
-@reload (OOC command)
-~~~~~~~~~~~~~~~~~~~~~
+@py (Player command)
+~~~~~~~~~~~~~~~~~~~~
+
+-  ``key`` = ``@py``
+-  ``aliases`` = ``!``
+-  `locks <Locks.html>`_ = ``cmd:perm(py) or perm(Immortals)``
+-  `help\_category <HelpSystem.html>`_ = ``System``
+-  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
+   (``__doc__ string``) =
+
+::
+
+        Execute a snippet of python code
+
+        Usage:
+          @py <cmd>
+
+        Switch:
+          time - output an approximate execution time for <cmd>
+
+        Separate multiple commands by ';'.  A few variables are made
+        available for convenience in order to offer access to the system
+        (you can import more at execution time).
+
+        Available variables in @py environment:
+          self, me                   : caller
+          here                       : caller.location
+          ev                         : the evennia API
+          inherits_from(obj, parent) : check object inheritance
+
+        You can explore The evennia API from inside the game by calling
+        ev.help(), ev.managers.help() etc.
+
+        {rNote: In the wrong hands this command is a severe security risk.
+        It should only be accessible by trusted server admins/superusers.{n
+
+        
+
+@reload (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@reload``
 -  ``aliases`` = ``<None>``
@@ -2007,15 +2223,15 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
         Reload the system
 
         Usage:
-          @reload
+          @reload [reason]
 
         This restarts the server. The Portal is not
         affected. Non-persistent scripts will survive a @reload (use
         @reset to purge) and at_reload() hooks will be called.
         
 
-@reset (OOC command)
-~~~~~~~~~~~~~~~~~~~~
+@reset (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@reset``
 -  ``aliases`` = ``@reboot``
@@ -2041,7 +2257,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 ~~~~~~~~
 
 -  ``key`` = ``@scripts``
--  ``aliases`` = ``@globalscript, @listscripts``
+-  ``aliases`` = ``@listscripts, @globalscript``
 -  `locks <Locks.html>`_ = ``cmd:perm(listscripts) or perm(Wizards)``
 -  `help\_category <HelpSystem.html>`_ = ``System``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2127,16 +2343,19 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
 
         Switches:
           list   - shows all available services (default)
-          start  - activates a service
-          stop   - stops a service
+          start  - activates or reactivate a service
+          stop   - stops/inactivate a service (can often be restarted)
+          delete - tries to permanently remove a service
 
         Service management system. Allows for the listing,
         starting, and stopping of services. If no switches
-        are given, services will be listed.
+        are given, services will be listed. Note that to operate on the
+        service you have to supply the full (green or red) name as given
+        in the list.
         
 
-@shutdown (OOC command)
-~~~~~~~~~~~~~~~~~~~~~~~
+@shutdown (Player command)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``@shutdown``
 -  ``aliases`` = ``<None>``
@@ -2172,7 +2391,7 @@ module <https://code.google.com/p/evennia/source/browse/src/commands/default/sys
         Usage:
           @time
 
-        Server local time.
+        Server time statistics.
         
 
 Unloggedin
@@ -2203,7 +2422,7 @@ connect (Unloggedin command)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``connect``
--  ``aliases`` = ``conn, con, co``
+-  ``aliases`` = ``co, conn, con``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``Unloggedin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2214,16 +2433,19 @@ connect (Unloggedin command)
         Connect to the game.
 
         Usage (at login screen):
-          connect <email> <password>
+          connect playername password
+          connect "player name" "pass word"
 
         Use the create command to first create an account before logging in.
+
+        If you have spaces in your name, enclose it in quotes.
         
 
 create (Unloggedin command)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``key`` = ``create``
--  ``aliases`` = ``cre, cr``
+-  ``aliases`` = ``cr, cre``
 -  `locks <Locks.html>`_ = ``cmd:all()``
 -  `help\_category <HelpSystem.html>`_ = ``Unloggedin``
 -  [`HelpSystem <HelpSystem.html>`_\ #Auto-help\_system Auto-help]
@@ -2234,10 +2456,12 @@ create (Unloggedin command)
         Create a new account.
 
         Usage (at login screen):
-          create "playername" <email> <password>
+          create <playername> <password>
+          create "player name" "pass word"
 
         This creates a new player account.
 
+        If you have spaces in your name, enclose it in quotes.
         
 
 help (Unloggedin command)

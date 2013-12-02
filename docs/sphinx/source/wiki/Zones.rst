@@ -30,8 +30,36 @@ should be easy to retrieve.
 
 Many MUD codebases hardcode zones as part of the engine and database.
 Evennia does no such distinction due to the fact that rooms themselves
-are meant to be customized to any level anyway. Below is just *one*
-example of how one could add zone-like functionality to a game.
+are meant to be customized to any level anyway. Below are two
+suggestions for how zones could be implemented.
+
+Zones using Tags
+~~~~~~~~~~~~~~~~
+
+*OBS: Placeholder - this section is NOT fully supported by the code at
+the moment!*
+
+All objects in Evennia can hold any number of `tags <Tag.html>`_. Tags
+are short labels that you attach to objects. They make it very easy to
+retrieve groups of objects. An object can have any number of different
+tags. So let's attach the relevant tag to our forest:
+
+::
+
+     forestobj.tags.add("magicalforest", category="zone")
+
+You could add this manually, or automatically during creation somehow
+(you'd need to modify your @dig command for this, most likely).
+
+Henceforth you can then easily retrieve only objects with a given tag:
+
+::
+
+     import ev
+     rooms = ev.managers.Tags.get_objs_with_tag("magicalforest", category="zone") # (error here)
+
+Zones using Aliases
+~~~~~~~~~~~~~~~~~~~
 
 All objects have a *key* property, stored in the database. This is the
 primary name of the object. But it can also have any number of *Aliases*
@@ -41,8 +69,8 @@ alias "door". Aliases are actually separate database entities and are as
 such very fast to search for in the database, about as fast as searching
 for the object's primary key in fact.
 
-This makes Aliases prime candiates for implementing zones. All you need
-to do is to come up with a consistent aliasing scheme. Here's one
+This makes Aliases another candidate for implementing zones. All you
+need to do is to come up with a consistent aliasing scheme. Here's one
 suggestion:
 
 ::
@@ -130,12 +158,12 @@ zone in the typeclass rather than enforce the ``@dig`` command to do it:
      class MagicalForestRoom(Room)
          def at_object_creation(self):
              ...
-             self.aliases = "#magicforest|%s" % self.key  
+             self.aliases.add("#magicforest|%s" % self.key)  
              ...
      class NormalForestRoom(Room)
          def at_object_creation(self):
              ...
-             self.aliases = "#normalforest|%s" % self.key
+             self.aliases.add("#normalforest|%s" % self.key)
              ...
 
 Of course, an alternative way to implement zones themselves is to have

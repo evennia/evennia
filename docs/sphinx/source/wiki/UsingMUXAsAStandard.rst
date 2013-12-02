@@ -27,23 +27,76 @@ unlimited power to extend the game leveraging the full power of a mature
 high level programming language. You can find a more elaborate
 discussion about our take on MUX SoftCode `here <SoftCode.html>`_.
 
+Documentation policy
+--------------------
+
+All the commands in the default command sets have their doc-strings
+formatted on a similar form:
+
+::
+
+      """
+      Short header
+
+      Usage:
+        key[/switches, if any] <mandatory args> [<optional args or types>]
+
+      Switches:
+        switch1    - description
+        switch2    - description
+
+      Examples:
+        usage example and output
+
+      Longer documentation detailing the command.
+
+      """
+
+The ``Switches`` and ``Examples`` headers can be skipped if not needed.
+Here is the ``nick`` command as an example:
+
+::
+
+      """
+      Define a personal alias/nick
+
+        Usage:
+          nick[/switches] <nickname> = [<string>]
+          alias             ''
+
+        Switches:
+          object   - alias an object
+          player   - alias a player
+          clearall - clear all your aliases
+          list     - show all defined aliases (also "nicks" works)
+
+        Examples:
+          nick hi = say Hello, I'm Sarah!
+          nick/object tom = the tall man
+
+        A 'nick' is a personal shortcut you create for your own use [...]
+
+        """
+
+For commands that *require arguments*, the policy is for it to return a
+``Usage`` string if the command is entered without any arguments. So for
+such commands, the Command body should contain something to the effect
+of
+
+::
+
+      if not self.args:
+          self.caller.msg("Usage: nick[/switches] <nickname> = [<string>]")
+          return
+
 WWMD - What Would MUX Do?
 -------------------------
 
-Our policy for implementing the default commands is as follows - we tend
-to look at MUX2's implementation before contriving one of our own. This
-comes with a caveat though - there are many cases where this is
-impossible without sacrificing the usability and utility of the
-codebase. In those cases, differences in implementation as well as
-command syntax is to be expected. Evennia is *not* MUX - we handle all
-underlying systems very differently and don't use
-`SoftCode <SoftCode.html>`_. The WWMD policy is only applied to the
-default commands, not to any other programming paradigms in the
-codebase.
-
-If you are an Evennia codebase developer, consider activating
-``IMPORT_MUX_HELP`` in your ``settings.py`` file. This will import a
-copy of the MUX2 help database and might come in handy when it comes to
-adding/implementing new default commands. If you must deviate from
-MUX2's implementation of something, make sure to document it extensively
-in the command's docstring.
+Our original policy for implementing the default commands was to look at
+MUX2's implementation and base our command syntax on that. This means
+that many default commands have roughly similar syntax and switches as
+MUX commands. There are however many differences between the systems and
+readability and usability has taken priority (frankly, the MUX syntax is
+outright arcane in places). So the default command sets can be
+considered to implement a "MUX-like" dialect - whereas the overall feel
+is familiar, the details may differ considerably.

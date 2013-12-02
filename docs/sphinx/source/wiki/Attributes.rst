@@ -62,18 +62,83 @@ will for example delete an ``Attribute``:
 
     del rose.db.has_thorns
 
-Both ``db`` and ``ndb`` defaults to offering an ``all`` property on
+Both ``db`` and ``ndb`` defaults to offering an ``all()`` method on
 themselves. This returns all associated attributes or non-persistent
 properties.
 
 ::
 
-     list_of_all_rose_attributes = rose.db.all
-     list_of_all_rose_ndb_attrs = rose.ndb.all
+     list_of_all_rose_attributes = rose.db.all()
+     list_of_all_rose_ndb_attrs = rose.ndb.all()
 
 If you use ``all`` as the name of an attribute, this will be used
 instead. Later deleting your custom ``all`` will return the default
 behaviour.
+
+Properties of Attributes
+------------------------
+
+An Attribute object is stored in the database. It has the following
+properties:
+
+-  ``key`` - the name of the Attribute. When doing e.g.
+   ``obj.db.attrname = value``, this property is set to ``attrname``.
+-  ``value`` - this is the value of the Attribute. This value can be
+   anything which can be pickled - objects, lists, numbers or what have
+   you (see
+   [Attributes#What\_types\_of\_data\_can\_I\_save\_in\_an\_Attribute
+   this section] for more info). In the example
+   ``obj.db.attrname = value``, the ``value`` is stored here.
+-  ``category`` - this is an optional property that is set to None for
+   most Attributes. Setting this allows to use Attributes for different
+   functionality. This is usually not needed unless you want to use
+   Attributes for very different functionality (`Nicks <Nicks.html>`_ is
+   an example of using Attributes in this way). To modify this property
+   you need to use the [Attributes#The\_Attribute\_Handler Attribute
+   Handler].
+-  ``strvalue`` - this is a separate value field that only accepts
+   strings. This severaly limits the data possible to store, but allows
+   for easier database lookups. This property is usually not used except
+   when re-using Attributes for some other purpose
+   (`Nicks <Nicks.html>`_ use it). It is only accessible via the
+   [Attributes#The\_Attribute\_Handler Attribute Handler].
+
+Non-database attributes have no equivalence to category nor strvalue.
+
+The Attribute Handler
+---------------------
+
+The Attribute handler is what is used under the hood to manage the
+Attributes on an object. It is accessible as ``obj.attributes``. For
+most operations, the ``db`` or ``ndb`` wrappers are enough. But
+sometimes you won't know the attribute name beforehand or you need to
+manipulate your Attributes in more detail. The Attribute handler has the
+following methods (the argument lists are mostly shortened; you can see
+the full call signatures in ``src.typeclasses.models``):
+
+-  ``attributes.has(...)`` - this checks if the object has an Attribute
+   with this key. This is equivalent to doing ``obj.db.key``.
+-  ``get(...)`` - this retrieves the given Attribute. Normally the
+   ``value`` property of the Attribute is returned, but the method takes
+   keywords for returning the Attribute object itself. By supplying an
+   ``accessing_object`` oto the call one can also make sure to check
+   permissions before modifying anything.
+-  ``add(...)`` - this adds a new Attribute to the object. An optional
+   `lockstring <Locks.html>`_ can be supplied here to restrict future
+   access and also the call itself may be checked against locks.
+-  ``remove(...)`` - Remove the given Attribute. This can optionally be
+   made to check for permission before performing the deletion.
+-  ``clear(...)`` - removes all Attributes from object.
+-  ``all(...)`` - returns all Attributes (of the given category)
+   attached to this object.
+
+See [Attributes#Locking\_and\_checking\_Attributes this section] for
+more about locking down Attribute access and editing.
+
+There is an equivalent ``nattribute`` handler for managing non-database
+Attributes. This has the same methods but is much simpler since it does
+not concern itself with category nor strvalue. It also offers no concept
+of access control.
 
 Persistent vs non-persistent
 ----------------------------
@@ -248,15 +313,15 @@ are specified `here <Locks.html>`_. The relevant lock types are
 -  *attrread* - limits who may read the value of the Attribute
 -  *attredit* - limits who may set/change this Attribute
 
-You cannot use e.g. ``obj.db.attrname`` handler to modify Attribute
-objects (such as setting a lock on them - you will only get the
-Attribute *value* that way, not the actual Attribute *object*. You get
-the latter with ``get_attribute_obj`` (see next section) which allows
-you to set the lock something like this:
+You cannot use the ``db`` handler to modify Attribute object (such as
+setting a lock on them) - The ``db`` handler will return the Attribute's
+*value*, not the Attribute object itself. Instead you use
+``get_attribute_obj`` (see next section) which allows you to set the
+lock something like this:
 
 ::
 
-     obj.get_attribute_obj.locks.add("attread:all();attredit:perm(Wizards)")
+     obj.attributes.get("myattr", return_obj=True).locks.add("attread:all();attredit:perm(Wizards)")
 
 A lock is no good if nothing checks it -- and by default Evennia does
 not check locks on Attributes. You have to add a check to your
@@ -266,60 +331,12 @@ commands/code wherever it fits (such as before setting an Attribute).
 
     # in some command code where we want to limit
     # setting of a given attribute name on an object
-    attr = obj.get_attribute_obj(attrname, default=None)
-    if not (attr and attr.locks.check(caller, 'attredit', default=True)):
+    attr = obj.attributes.get(attrname, return_obj=True, accessing_obj=caller, default=None, default_access=False)
+    if not attr: 
         caller.msg("You cannot edit that Attribute!")
         return
     # edit the Attribute here
 
-Note that in this example this lock check will default to ``True`` if no
-lock was defined on the Attribute (which is the normal case). You can
-set this to False if you know all your Attributes always check access in
-all situations. If you want some special control over what the default
-Attribute access is (such as allowing everyone to view, but never
-allowing anyone to edit unless explicitly allowing it with a lock), you
-can use the ``secure_attr`` method on Typeclassed objects like this:
-
-::
-
-    obj.secure_attr(caller, attrname, value=None, 
-                            delete=False,
-                            default_access_read=True,  
-                            default_access_edit=False,
-                            default_access_create=True)
-
-The secure\_attr will try to retrieve the attribute value of an existing
-Attribute if the ``value`` keyword is not set and create/set/delete it
-otherwise. The *default\_access* keywords specify what should be the
-default policy for each operation if no appropriate lock string is set
-on the Attribute.
-
-Other ways to access Attributes
--------------------------------
-
-Normally ``db`` is all you need. But there there are also several other
-ways to access information about Attributes, some of which cannot be
-replicated by ``db``. These are available on all Typeclassed objects:
-
--  ``has_attribute(attrname)`` - checks if the object has an attribute
-   with the given name. This is equivalent to doing ``obj.db.attrname``.
--  ``set_attribute(attrname, value)`` - equivalent to
-   ``obj.db.attrname = value``.
--  ``get_attribute(attrname)`` - returns the attribute value. Equivalent
-   to ``obj.db.attrname``.
--  ``get_attribute_raise(attrname)`` - returns the attribute value, but
-   instead of returning ``None`` if no such attribute is found, this
-   method raises ``AttributeError``.
--  ``get_attribute_obj(attrname)`` - returns the attribute *object*
-   itself rather than the value stored in it.
--  ``del_attribute(attrname)`` - equivalent to ``del obj.db.attrname``.
-   Quietly fails if ``attrname`` is not found.
--  ``del_attribute_raise(attrname)`` - deletes attribute, raising
-   ``AttributeError`` if no matching Attribute is found.
--  ``get_all_attributes`` - equivalent to ``obj.db.all``
--  ``attr(attrname, value=None, delete=False)`` - this is a convenience
-   function for getting, setting and deleting Attributes. It's
-   recommended to use ``db`` instead.
--  ``secure_attr(...)`` - lock-checking version of ``attr``. See example
-   in previous section.
-
+The same keywords are available to use with ``obj.attributes.set()`` and
+``obj.attributes.remove()``, those will check for the *attredit* lock
+type.

@@ -26,6 +26,7 @@ General Evennia development information
 -  `Setting up a Mercurial environment for
    coding <VersionControl.html>`_
 -  `Planning your own Evennia game <GamePlanning.html>`_
+-  `First steps coding Evennia <FirstStepsCoding.html>`_
 
 Evennia Component Documentation
 -------------------------------
@@ -34,21 +35,25 @@ Evennia Component Documentation
 
 -  `Directory Overview <DirectoryOverview.html>`_
 -  `Portal and Server <PortalAndServer.html>`_
+-  `Session <Session.html>`_
 -  `Commands <Commands.html>`_
 -  `Typeclass system <Typeclasses.html>`_
 
    -  `Objects <Objects.html>`_
    -  `Scripts <Scripts.html>`_
    -  `Players <Players.html>`_
+   -  [Communications#Channels Channels]
    -  `Attributes <Attributes.html>`_
 
 -  `Locks and Permissions <Locks.html>`_
 -  `Communications <Communications.html>`_
 -  `Help System <HelpSystem.html>`_
 -  `Nicks <Nicks.html>`_
+-  `Tags <Tags.html>`_
 -  `Sessions and Protocols <SessionProtocols.html>`_
 -  `Caches <Caches.html>`_
 -  `Web features <WebFeatures.html>`_
+-  `Out-of-band communication <OOB.html>`_
 -  `Configuration and module plugins <ServerConf.html>`_
 
 Programming Evennia
@@ -59,6 +64,7 @@ Programming Evennia
 -  `Useful coding utilities <CodingUtils.html>`_
 -  `Running and writing unit tests for Evennia <UnitTesting.html>`_
 -  `Running processes asynchronously <AsyncProcess.html>`_
+-  `Expanding Evennia with new database models <NewModels.html>`_
 
 Work in Progress - Developer brainstorms and whitepages
 -------------------------------------------------------
@@ -70,6 +76,5 @@ the road.*
 -  `Basic game system implementation <WorkshopDefaultGame.html>`_
    (inactive)
 -  `Rtclient protocol <Workshop.html>`_ (deprecated)
--  `Summary of changes <EvenniaDevel.html>`_ of latest version vs old
-   Evennia (implemented in aug2010)
+-  `Change log <EvenniaDevel.html>`_ of big Evennia updates over time
 

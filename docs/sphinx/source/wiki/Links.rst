@@ -40,6 +40,10 @@ Third-party Evennia links
 -  `Latitude <https://github.com/dbenoy/latitude>`_ (MUCK under
    development, using Evennia)
 
+-  `notimetoplay
+   post <http://notimetoplay.org/2013/08/29/evennia-a-mud-building-toolkit/>`_
+   about Evennia
+
 General mud/game development ideas and discussions
 --------------------------------------------------
 
@@ -77,7 +81,26 @@ General mud/game development ideas and discussions
    discussion about rule systems and game balance that could be
    applicable also for MUDs.
 
-x
+Litterature
+-----------
+
+-  Richard Bartle *Designing Virtual Worlds* (`amazon
+   page <http://www.amazon.com/Designing-Virtual-Worlds-Richard-Bartle/dp/0131018167>`_)
+   - Essential reading for the design of any persistent game world,
+   written by the co-creator of the original game *MUD*. Discusses
+   basically everything you need to think about and more.
+-  Richard Cantillon *An Essay on Economic Theory* (`free
+   pdf <http://mises.org/books/essay_on_economic_theory_cantillon.pdf>`_)
+   - A very good English translation of *Essai sur la Nature du Commerce
+   en GÃ©nÃ©ral*, one of the foundations of modern economic theory.
+   Written in 1730 but the translation is annotated and is very easy to
+   follow for a modern reader. Required reading if you think of
+   implementing a sane game economic system.
+-  David M. Beazley *Python Essential Reference (4th ed)* (`amazon
+   page <http://www.amazon.com/Python-Essential-Reference-David-Beazley/dp/0672329786/>`_)
+   - Our recommended book on Python; it not only efficiently summarizes
+   the language but is also an excellent reference to the standard
+   library for more experienced Python coders.
 
 Frameworks
 ----------

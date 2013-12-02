@@ -1,3 +1,6 @@
+*This tutorial requires that you first well understand how
+`Commands <Commands.html>`_ work.*
+
 Cooldowns
 =========
 

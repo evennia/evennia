@@ -143,10 +143,10 @@ find longer descriptions of these in ``src/scripts/scripts.py``.
    situations such as reloads. This is also useful for using scripts as
    state managers. If the method returns ``False``, the script is
    stopped and cleanly removed.
--  ``at_start()`` - this is called when the script first starts. For
-   persistent scripts this is at least once ever server startup. Note
-   that this will *always* be called right away, also if ``start_delay``
-   is ``True``.
+-  ``at_start()`` - this is called when the script starts or is
+   unpaused. For persistent scripts this is at least once ever server
+   startup. Note that this will *always* be called right away, also if
+   ``start_delay`` is ``True``.
 -  ``at_repeat()`` - this is called every ``interval`` seconds, or not
    at all. It is called right away at startup, unless ``start_delay`` is
    ``True``, in which case the system will wait ``interval`` seconds
@@ -173,10 +173,10 @@ possible to also invoke manually)
    resumed. This is called automatically when the server reloads. No
    hooks are called - as far as the script knows, it never stopped -
    this is a suspension of the script, not a change of state.
--  ``unpause()`` - resumes a previously paused script. Timers etc are
-   restored to what they were before pause. The server unpauses all
-   paused scripts after a server reload. No hooks are called - as far as
-   the script is concerned, it never stopped running.
+-  ``unpause()`` - resumes a previously paused script. The at\_start()
+   hook will be called to allow it to reclaim its internal state. Timers
+   etc are restored to what they were before pause. The server unpauses
+   all paused scripts after a server reload.
 -  ``time_until_next_repeat()`` - for timed scripts, this returns the
    time in seconds until it next fires. Returns ``None`` if
    ``interval==0``.

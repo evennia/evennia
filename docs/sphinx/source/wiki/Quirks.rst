@@ -4,7 +4,7 @@ Evennia Quirks
 This is a list of various problems or stumbling blocks that people often
 ask about or report when using (or trying to use) Evennia. These are
 common stumbling blocks, non-intuitive behaviour and common newbie
-mistakes when working with Evennia. They are not bugs.
+mistakes when working with Evennia. They are not Evennia bugs.
 
 Actual Evennia bugs should be reported in
 `Issues <https://code.google.com/p/evennia/issues/list>`_.
@@ -48,9 +48,10 @@ Web admin to create new Player
 ------------------------------
 
 If you use the default login system and is trying to use the Web admin
-to create a new Player account, you need to thread carefully. The
-default login system *requires* the Player object to already have a
-connected Character object - there is no character creation screen by
+to create a new Player account, you need to consider which
+MULTIPLAYER\_MODE you are in. If you are in MULTIPLAYER\_MODE 0 or 1,
+the login system expects each Player to also have a Character object
+named the same as the Player - there is no character creation screen by
 default. If using the normal mud login screen, a Character with the same
 name is automatically created and connected to your Player. From the web
 interface you must do this manually.
@@ -61,13 +62,6 @@ everything up for you. Otherwise you need to manually set the "player"
 property on the Character and the "character" property on the Player to
 point to each other. You must also set the lockstring of the Character
 to allow the Player to "puppet" this particular character.
-
-The default login system is very simple and intended for you to easily
-get into the game. The more advanced login system in ``contrib/`` along
-with the example character-creation system does not require such an
-initial coupling (i.e. you can create the coupling in-game). For your
-initial experiments, it's easist to create your characters from the
-normal MUD connection screen instead.
 
 Mutable attributes and their connection to the database
 -------------------------------------------------------
@@ -117,22 +111,4 @@ appreciate getting more input and help.
 Known upstream bugs
 ===================
 
-These are known bugs in in the libraries Evennia uses, i.e. things out
-of our control.
-
-Error during manage.py syncdb
------------------------------
-
-This error can be seen using Django 1.4 without a *locale* set. It
-causes a traceback during the ``manage.py syncdb`` phase, just when
-trying to create the superuser.
-
-::
-
-    TypeError: decode() argument 1 must be string, not None
-
-This opaque error means no locale could be found. Not properly handling
-this is a bug in Django 1.4 reported
-`here <https://code.djangoproject.com/ticket/16017>`_. You resolve it by
-setting your locale (this is a good thing to have in any case). See the
-comments to that bug report for how to do this.
+There are no known upstream bugs at this time.

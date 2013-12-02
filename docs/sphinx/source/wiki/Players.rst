@@ -1,11 +1,11 @@
 Players
 =======
 
-All gamers (real people) that opens a game *Session* on Evennia are
-doing so through an object called *Player*. The Player object has no
-in-game representation, it represents the account the gamer has on the
-game. In order to actually get on the game the Player must *puppet* an
-`Object <Objects.html>`_ (normally a Character).
+All *gamers* (real people) that opens a game `Session <Session.html>`_
+on Evennia are doing so through an object called *Player*. The Player
+object has no in-game representation, it represents the account the
+gamer has on the game. In order to actually get on the game the Player
+must *puppet* an `Object <Objects.html>`_ (normally a Character).
 
 Just how this works depends on the configuration option
 ``MULTISESSION_MODE``. There are three multisession modes, described in
@@ -25,7 +25,7 @@ or some of the other protocols Evennia supports.
    client is doing exactly the same thing as doing so in any other
    connected client. All sessions will see the same output and e.g.
    giving the @quit command will kill all sessions.
--  In mode 2 (right) eeach Player can hold any number of sessions and
+-  In mode 2 (right) each Player can hold any number of sessions and
    they are kept separate from one another. This allows a single player
    to puppet any number of Characters and Objects.
 
@@ -39,19 +39,18 @@ characters as well as configuration options. Players are
 `CmdSet <Commands.html>`_ defaulting to the set defined by
 ``settings.CMDSET_PLAYER``.
 
-If you are logged in into default Evennia under any multisession mode,
-you can use the ``@ooc`` command to leave your current
-`Character <Objects.html>`_ and go into OOC mode. You are quite limited
-in this mode, basically it works like a simple chat program. It acts as
-a staging area for switching between Characters (if your game supports
-that) or as a safety mode if your Character gets deleted. . Use ``@ic``
-attempt to puppet a Character.
+Logged into default Evennia, you can use the ``@ooc`` command to leave
+your current `Character <Objects.html>`_ and go into OOC mode. You are
+quite limited in this mode, basically it works like a simple chat
+program. It acts as a staging area for switching between Characters (if
+your game supports that) or as a safety mode if your Character gets
+deleted. Use ``@ic`` to attempt to puppet a Character.
 
 Note that the Player object can and often do have a different set of
 [Locks#Permissions Permissions] from the Character they control.
-Normally you should put your permissions on the Player level - only if
-your Player does not have a given permission will the permissions on the
-Character be checked.
+Normally you should put your permissions on the Player level - this will
+overrule permissions set on the Character level (unless ``@quell``-ing
+is used).
 
 How to create your own Player types
 -----------------------------------

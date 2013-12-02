@@ -188,6 +188,7 @@ or features missing, file a bug report or send us a message.
       players/
       scripts/
       server/
+        portal/
       typeclasses/
       utils/
       web/
@@ -277,10 +278,10 @@ connection timeouts) are also defined here.
 ~~~~~~~~~~~~~~~
 
 This directory is the heart of Evennia. It holds the server process
-itself (started from ``game/evennia.py``), the portal and all `sessions
-and protocols <SessionProtocols.html>`_ that allow users to connect to
-the game. It also knows how to store dynamic server info in the
-database.
+itself (started from ``game/evennia.py``). Its subfolder ``portal/``
+holds the portal and all `sessions and
+protocols <SessionProtocols.html>`_ that allow users to connect to the
+game.
 
 \`src/typeclasses/\`
 ~~~~~~~~~~~~~~~~~~~~

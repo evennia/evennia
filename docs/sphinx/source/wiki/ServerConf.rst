@@ -43,11 +43,11 @@ code. The only way to change an Evennia setting is to edit
 \`game/gamesrc/conf\` directory
 -------------------------------
 
-The ``game/gamesrc/conf/`` directory contains module templates for
-customizing Evennia. Common for all these is that you should *copy* the
-template up one level (to ``game/gamesrc/conf/``) and edit the copy, not
-the original. You then need to change your settings file to point the
-right variable at your new module. Each template header describes
+The ``game/gamesrc/conf/examples/`` directory contains module templates
+for customizing Evennia. Common for all these is that you should *copy*
+the template up one level (to ``game/gamesrc/conf/``) and edit the copy,
+not the original. You then need to change your settings file to point
+the right variable at your new module. Each template header describes
 exactly how to use it and which settings variable needs to be changed
 for Evennia to be able to locate it.
 
