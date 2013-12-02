@@ -5,7 +5,7 @@ Building and world design commands
 """
 from django.conf import settings
 from src.objects.models import ObjectDB
-from src.utils import create, utils
+from src.utils import create, utils, search
 from src.utils.ansi import raw
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
@@ -17,7 +17,7 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
-           "CmdScript")
+           "CmdScript", "CmdTag")
 
 try:
     # used by @set
@@ -2098,3 +2098,95 @@ class CmdScript(MuxCommand):
                             string = "Script started successfully."
                             break
         caller.msg(string.strip())
+
+
+class CmdTag(MuxCommand):
+    """
+    handles tagging
+
+    Usage:
+      @tag[/del] <obj> [= <tag>[:<category>]]
+      @tag/search <tag>
+
+    Switches:
+      search - return all objects
+      del - remove the given tag. If no tag is specified,
+            clear all tags.
+
+    Manipulates and lists tags on objects. Tags allow for quick
+    grouping of and searching for objects.  If only <obj> is given,
+    list all tags on the object.  If /search is used, list objects
+    with the given tag.
+    The category can be used for grouping tags themselves.
+    """
+
+    key = "@tag"
+    locks = "cmd:perm(tag) or perm(Builders)"
+    help_category = "Building"
+
+    def func(self):
+        "Implement the @tag functionality"
+
+        if not self.args:
+            self.caller.msg("Usage: @tag[/switches] [<tag>|<obj>[=<tag>[<category>]]")
+            return
+        if "search" in self.switches:
+            # search by tag
+            objs = search.search_tag(self.args)
+            nobjs = len(objs)
+            if nobjs > 0:
+                string = "Found %i object%s with tag '%s':\n %s" % (nobjs,
+                                                                   "s" if nobjs > 1 else "",
+                                                                   self.args,
+                                                                   ", ".join(o.key for o in objs))
+            else:
+                string = "No objects found with tag %s." % self.args
+            self.caller.msg(string)
+            return
+        if "del" in self.switches:
+            # remove one or all tags
+            obj = self.caller.search(self.lhs, global_search=True)
+            if not obj:
+                return
+            if self.rhs:
+                # remove individual tag
+                tag = self.rhs
+                category = None
+                if ":" in tag:
+                    tag, category = [part.strip() for part in tag.split(":", 1)]
+                obj.tags.remove(tag, category=category)
+                string = "Removed tag '%s' from %s (if it existed)" % (tag, obj)
+            else:
+                # no tag specified, clear all tags
+                obj.tags.clear()
+                string = "Cleared all tags from from %s." % obj
+            self.caller.msg(string)
+            return
+        # no search/deletion
+        if self.rhs:
+            # = is found, so we are on the form obj = tag
+            obj = self.caller.search(self.lhs, global_search=True)
+            if not obj:
+                return
+            tag = self.rhs
+            category = None
+            if ":" in tag:
+                tag, category = [part.strip() for part in tag.split(":", 1)]
+            # create the tag
+            obj.tags.add(tag, category=category)
+            string = "Added tag '%s' to %s." % (tag, obj)
+            self.caller.msg(string)
+        else:
+            # no = found - list tags on object
+            obj = self.caller.search(self.args, global_search=True)
+            if not obj:
+                return
+            tags = obj.tags.all()
+            ntags = len(tags)
+            if ntags:
+                string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "",
+                                              obj,
+                                              ", ".join("'%s'" % tag for tag in obj.tags.all()))
+            else:
+                string = "No tags attached to %s." % obj
+            self.caller.msg(string)

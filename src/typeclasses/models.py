@@ -551,7 +551,8 @@ class TagHandler(object):
 
     def clear(self):
         "Remove all tags from the handler"
-        _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).clear()
+        for tag in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix):
+            _GA(self.obj, self._m2m_fieldname).remove(tag)
         self._recache()
 
     def all(self):

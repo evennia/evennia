@@ -12,7 +12,7 @@ from src.utils.dbserialize import to_pickle
 
 __all__ = ("AttributeManager", "TypedObjectManager")
 _GA = object.__getattribute__
-
+_ObjectDB = None
 
 # Managers
 
@@ -131,14 +131,19 @@ class TagManager(models.Manager):
         else:
             return list(tags)
 
-    def get_objs_with_tag(self, objclass, key=None, category=None):
+    def get_objs_with_tag(self, key=None, category=None, objclass=None):
         """
         Search and return all objects of objclass that has tags matching
         the given search criteria.
-         objclass (dbmodel) - the object class to search
          key (string) - the tag identifier
          category (string) - the tag category
+         objclass (dbmodel) - the object class to search. If not given, use ObjectDB.
         """
+        global _ObjectDB
+        if not objclass:
+            if not _ObjectDB:
+                from src.objects.models import ObjectDB as _ObjectDB
+            objclass = _ObjectDB
         key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if key is not None else Q()
         cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category is not None else Q()
         return objclass.objects.filter(key_cands & cat_cands)
