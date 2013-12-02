@@ -70,7 +70,6 @@ def create_objects():
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
     god_character = create.create_object(character_typeclass,
                                            key=god_player.username, nohome=True)
-    print "god_character:", character_typeclass, god_character, god_character.cmdset.all()
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
