@@ -2132,15 +2132,22 @@ class CmdTag(MuxCommand):
             return
         if "search" in self.switches:
             # search by tag
-            objs = search.search_tag(self.args)
+            tag = self.args
+            category = None
+            if ":" in tag:
+                tag, category = [part.strip() for part in tag.split(":", 1)]
+                category = "object_%s" % category
+            objs = search.search_tag(tag, category=category)
             nobjs = len(objs)
             if nobjs > 0:
-                string = "Found %i object%s with tag '%s':\n %s" % (nobjs,
-                                                                   "s" if nobjs > 1 else "",
-                                                                   self.args,
-                                                                   ", ".join(o.key for o in objs))
+                string = "Found %i object%s with tag '%s'%s:\n %s" % (nobjs,
+                                                       "s" if nobjs > 1 else "",
+                                                       tag,
+                                                       " (category: %s)" % category if category else "",
+                                                       ", ".join("%s(#%i)" % (o.key, o.dbid) for o in objs))
             else:
-                string = "No objects found with tag %s." % self.args
+                string = "No objects found with tag '%s%s'." % (tag,
+                                                        " (category: %s)" % category if category else "")
             self.caller.msg(string)
             return
         if "del" in self.switches:
@@ -2155,7 +2162,9 @@ class CmdTag(MuxCommand):
                 if ":" in tag:
                     tag, category = [part.strip() for part in tag.split(":", 1)]
                 obj.tags.remove(tag, category=category)
-                string = "Removed tag '%s' from %s (if it existed)" % (tag, obj)
+                string = "Removed tag '%s'%s from %s (if it existed)" % (tag,
+                                                    " (category: %s)" % category if category else "",
+                                                    obj)
             else:
                 # no tag specified, clear all tags
                 obj.tags.clear()
@@ -2174,19 +2183,22 @@ class CmdTag(MuxCommand):
                 tag, category = [part.strip() for part in tag.split(":", 1)]
             # create the tag
             obj.tags.add(tag, category=category)
-            string = "Added tag '%s' to %s." % (tag, obj)
+            string = "Added tag '%s'%s to %s." % (tag,
+                                                  " (category: %s)" % category if category else "",
+                                                  obj)
             self.caller.msg(string)
         else:
             # no = found - list tags on object
             obj = self.caller.search(self.args, global_search=True)
             if not obj:
                 return
-            tags = obj.tags.all()
+            tags = obj.db_tags.all()
             ntags = len(tags)
+            categories = [tag.db_category.split("_", 1)[1] for tag in tags]
+            categories = [" (category: %s)" % cater if cater else "" for cater in categories]
             if ntags:
-                string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "",
-                                              obj,
-                                              ", ".join("'%s'" % tag for tag in obj.tags.all()))
+                string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "", obj,
+                                        ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
             else:
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)

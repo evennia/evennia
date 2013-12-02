@@ -555,10 +555,15 @@ class TagHandler(object):
             _GA(self.obj, self._m2m_fieldname).remove(tag)
         self._recache()
 
-    def all(self):
+    def all(self, category=None):
         "Get all tags in this handler"
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
+        if category:
+            category = "%s%s" % (self.prefix, category.strip().lower()
+                                 if category is not None else "")
+            return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(
+                                          db_category=category).values_list("db_key") if p[0]]
         return self._cache.keys()
         #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
