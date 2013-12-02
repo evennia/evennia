@@ -31,7 +31,8 @@ from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
 __all__ = ("search_object", "search_player", "search_script",
-           "search_message", "search_channel", "search_help_entry")
+           "search_message", "search_channel", "search_help_entry",
+           "search_tag")
 
 
 # import objects this way to avoid circular import problems
@@ -41,6 +42,7 @@ ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_
 Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
 Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
 HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
+Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
 
 #
 # Search objects as a character
@@ -175,3 +177,29 @@ search_help_entry = HelpEntry.objects.search_help
 search_help_entries = search_help_entry
 help_entry_search = search_help_entry
 help_entries = search_help_entries
+
+
+# Locate Tags
+#    def get_objs_with_tag(self, objclass, key=None, category=None):
+#        """
+#        Search and return all objects of objclass that has tags matching
+#        the given search criteria.
+#         objclass (dbmodel) - the object class to search
+#         key (string) - the tag identifier
+#         category (string) - the tag category
+#        """
+# Note that this returns the object attached to the tag, not the tag itself
+# (this is usually what you want)
+search_tag = Tag.objects.get_objs_with_tag
+
+#        """
+#        Search and return all tags matching any combination of
+#        the search criteria.
+#         search_key (string) - the tag identifier
+#         category (string) - the tag category
+#
+#        Returns a single Tag (or None) if both key and category is given,
+#        otherwise it will return a list.
+#        """
+# This returns the tag object itself
+search_tag_object = Tag.objects.get_tag

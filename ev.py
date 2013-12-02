@@ -227,7 +227,7 @@ class DBmanagers(_EvContainer):
     tags = Tag.objects
     # remove these so they are not visible as properties
     del HelpEntry, PlayerDB, ScriptDB, Msg, ChannelDB, PlayerChannelConnection,
-    del ExternalChannelConnection, ObjectDB, ServerConfig, Tags, Attributes
+    del ExternalChannelConnection, ObjectDB, ServerConfig, Tag, Attribute
 
 managers = DBmanagers()
 del DBmanagers
