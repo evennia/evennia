@@ -144,6 +144,7 @@ from src.scripts.scripts import Script
 
 # comms
 from src.comms.models import Msg, ChannelDB, PlayerChannelConnection, ExternalChannelConnection
+from src.comms.comms import Channel
 
 # objects
 from src.objects.objects import Object, Character, Room, Exit
@@ -210,8 +211,10 @@ class DBmanagers(_EvContainer):
     from src.comms.models import Msg, ChannelDB, PlayerChannelConnection, ExternalChannelConnection
     from src.objects.models import ObjectDB
     from src.server.models import ServerConfig
+    from src.typeclasses.models import Tag, Attribute
 
-    helpentry = HelpEntry.objects
+    # create container's properties
+    helpentries = HelpEntry.objects
     players = PlayerDB.objects
     scripts = ScriptDB.objects
     msgs = Msg.objects
@@ -220,8 +223,11 @@ class DBmanagers(_EvContainer):
     externalconnections = ExternalChannelConnection.objects
     objects = ObjectDB.objects
     serverconfigs = ServerConfig.objects
+    attributes = Attribute.objects
+    tags = Tag.objects
+    # remove these so they are not visible as properties
     del HelpEntry, PlayerDB, ScriptDB, Msg, ChannelDB, PlayerChannelConnection,
-    del ExternalChannelConnection, ObjectDB, ServerConfig
+    del ExternalChannelConnection, ObjectDB, ServerConfig, Tags, Attributes
 
 managers = DBmanagers()
 del DBmanagers
