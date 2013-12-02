@@ -1874,15 +1874,16 @@ class CmdFind(MuxCommand):
             nresults = results.count()
             if not nresults:
                 # no matches on the keys. Try aliases instead.
-                results = ObjectDB.db_aliases.filter(db_key=searchstring)
+                results = ObjectDB.objects.filter(db_tags__db_key__iexact=searchstring, db_tags__db_category__iexact="object_alias")
+                #results = ObjectDB.db_aliases.filter(db_key=searchstring)
                 if "room" in switches:
-                    results = results.filter(db_obj__db_location__isnull=True)
+                    results = results.filter(db_location__isnull=True)
                 if "exit" in switches:
-                    results = results.filter(db_obj__db_destination__isnull=False)
+                    results = results.filter(db_destination__isnull=False)
                 if "char" in switches:
-                    results = results.filter(db_obj__db_typeclass_path=CHAR_TYPECLASS)
+                    results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
                 # we have to parse alias -> real object here
-                results = [result.db_obj for result in results]
+                results = [result.dbobj for result in results]
                 nresults = len(results)
 
             restrictions = ""
