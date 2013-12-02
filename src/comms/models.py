@@ -360,8 +360,8 @@ class ChannelDB(TypedObject):
     # Database manager
     objects = managers.ChannelManager()
 
-    _typeclass_paths = settings.COMM_TYPECLASS_PATHS
-    _default_typeclass_path = settings.BASE_COMM_TYPECLASS or "src.comms.comms.Comm"
+    _typeclass_paths = settings.CHANNEL_TYPECLASS_PATHS
+    _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "src.comms.comms.Channel"
 
     def __init__(self, *args, **kwargs):
         TypedObject.__init__(self, *args, **kwargs)

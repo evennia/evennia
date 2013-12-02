@@ -156,7 +156,8 @@ class Evennia(object):
         settings_names = ("CMDSET_CHARACTER", "CMDSET_PLAYER",
                           "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
                           "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS",
-                          "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS")
+                          "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS",
+                          "BASE_CHANNEL_TYPECLASS")
         # get previous and current settings so they can be compared
         settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],
                                [settings.__getattr__(name) for name in settings_names])
@@ -165,6 +166,7 @@ class Evennia(object):
             # we have a changed default. Import relevant objects and
             # run the update
             from src.objects.models import ObjectDB
+            from src.comms.models import ChannelDB
             #from src.players.models import PlayerDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
@@ -179,11 +181,14 @@ class Evennia(object):
                     [obj.__setattr__("typeclass_path", curr) for obj in ObjectDB.objects.filter(db_typeclass_path__exact=prev)]
                 if i == 7:
                     [scr.__setattr__("typeclass_path", curr) for scr in ScriptDB.objects.filter(db_typeclass_path__exact=prev)]
+                if i == 8:
+                    [scr.__setattr__("typeclass_path", curr) for scr in ChannelDB.objects.filter(db_typeclass_path__exact=prev)]
                 # store the new default and clean caches
                 ServerConfig.objects.conf(settings_names[i], curr)
                 ObjectDB.flush_instance_cache()
                 PlayerDB.flush_instance_cache()
                 ScriptDB.flush_instance_cache()
+                ChannelDB.flush_instance_cache()
         # if this is the first start we might not have a "previous"
         # setup saved. Store it now.
         [ServerConfig.objects.conf(settings_names[i], tup[1])

@@ -373,7 +373,7 @@ def create_channel(key, aliases=None, desc=None,
     if not _channelhandler:
         from src.comms import channelhandler as _channelhandler
     if not typeclass:
-        typeclass = settings.BASE_COMM_TYPECLASS
+        typeclass = settings.BASE_CHANNEL_TYPECLASS
     try:
         new_channel = _ChannelDB(typeclass=typeclass, db_key=key)
         new_channel.save()

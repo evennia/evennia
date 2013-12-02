@@ -9,13 +9,13 @@ from src.utils import logger
 from src.utils.utils import make_iter
 
 
-class Comm(TypeClass):
+class Channel(TypeClass):
     """
     This is the base class for all Comms. Inherit from this to create different
     types of communication channels.
     """
     def __init__(self, dbobj):
-        super(Comm, self).__init__(dbobj)
+        super(Channel, self).__init__(dbobj)
 
     def channel_prefix(self, msg=None, emit=False):
         """

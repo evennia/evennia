@@ -409,9 +409,16 @@ def error_check_python_modules():
     # cmdsets
 
     deprstring = "settings.%s should be renamed to %s. If defaults are used, their path/classname must be updated (see src/settings_default.py)."
-    if hasattr(settings, "CMDSET_DEFAULT"): raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
-    if hasattr(settings, "CMDSET_OOC"): raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
-    if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple): raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
+    if hasattr(settings, "CMDSET_DEFAULT"):
+        raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
+    if hasattr(settings, "CMDSET_OOC"):
+        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
+    if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
+        raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
+    if hasattr(settings, "BASE_COMM_TYPECLASS"):
+        raise DeprecationWarning(depstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
+    if hasattr(settings, "COMM_TYPECLASS_PATHS"):
+        raise DeprecationWarning(depstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
 
     from src.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
