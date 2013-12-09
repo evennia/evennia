@@ -1,4 +1,5 @@
 """
+import sys
 
 Building and world design commands
 
@@ -2138,7 +2139,7 @@ class CmdTag(MuxCommand):
             if ":" in tag:
                 tag, category = [part.strip() for part in tag.split(":", 1)]
                 search_category = "object_%s" % category
-            print "tag search:", tag, search_category
+            #print "tag search:", tag, search_category
             objs = search.search_tag(tag, category=search_category)
             nobjs = len(objs)
             if nobjs > 0:

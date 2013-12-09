@@ -25,7 +25,7 @@ class BodyFunctions(Script):
         self.interval = 20  # seconds
         #self.repeats = 5  # repeat only a certain number of times
         self.start_delay = True  # wait self.interval until first call
-        self.persistent = True
+        #self.persistent = True
 
     def at_repeat(self):
         """
