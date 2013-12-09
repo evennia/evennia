@@ -493,7 +493,7 @@ class TagHandler(object):
         using the category <category_prefix><tag_category>
         """
         self.obj = obj
-        self.prefix = "%s%s" % (category_prefix.strip().lower()
+        self.prefix = "%s%s" % (category_prefix.strip(" _").lower()
                                 if category_prefix else "", self._base_category)
         self._cache = None
 
@@ -555,8 +555,14 @@ class TagHandler(object):
             _GA(self.obj, self._m2m_fieldname).remove(tag)
         self._recache()
 
-    def all(self, category=None):
-        "Get all tags in this handler"
+    def all(self, category=None, return_key_and_category=False):
+        """
+        Get all tags in this handler.
+        If category is given, return only Tags with this category.  If
+        return_keys_and_categories is set, return a list of tuples [(key, category), ...]
+        where the category is stripped of the category prefix (this is ignored
+        if category keyword is given).
+        """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         if category:
@@ -564,7 +570,12 @@ class TagHandler(object):
                                  if category is not None else "")
             return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(
                                           db_category=category).values_list("db_key") if p[0]]
-        return self._cache.keys()
+        elif return_key_and_category:
+            # return tuple (key, category)
+            return [(to_str(p.db_key), to_str(p.db_category).lstrip(self.prefix)) for p in self._cache.values()]
+        else:
+            return self._cache.keys()
+
         #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):

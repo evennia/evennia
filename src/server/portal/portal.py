@@ -8,12 +8,12 @@ by game/evennia.py).
 
 """
 
+import sys
+import os
 if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
                 os.path.dirname(os.path.abspath(__file__))))))
-import sys
-import os
 from src.server.webserver import EvenniaReverseProxyResource
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor

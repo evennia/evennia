@@ -2134,10 +2134,12 @@ class CmdTag(MuxCommand):
             # search by tag
             tag = self.args
             category = None
+            search_category = None
             if ":" in tag:
                 tag, category = [part.strip() for part in tag.split(":", 1)]
-                category = "object_%s" % category
-            objs = search.search_tag(tag, category=category)
+                search_category = "object_%s" % category
+            print "tag search:", tag, search_category
+            objs = search.search_tag(tag, category=search_category)
             nobjs = len(objs)
             if nobjs > 0:
                 string = "Found %i object%s with tag '%s'%s:\n %s" % (nobjs,
@@ -2192,10 +2194,10 @@ class CmdTag(MuxCommand):
             obj = self.caller.search(self.args, global_search=True)
             if not obj:
                 return
-            tags = obj.db_tags.all()
-            ntags = len(tags)
-            categories = [tag.db_category.split("_", 1)[1] for tag in tags]
-            categories = [" (category: %s)" % cater if cater else "" for cater in categories]
+            tagtuples = obj.tags.all(return_key_and_category=True)
+            ntags = len(tagtuples)
+            tags = [tup[0] for tup in tagtuples]
+            categories = [" (category: %s)" % tup[1] if tup[1] else "" for tup in tagtuples]
             if ntags:
                 string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "", obj,
                                         ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
