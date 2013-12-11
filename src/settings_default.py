@@ -26,7 +26,7 @@ TELNET_ENABLED = True
 # A list of ports the Evennia telnet server listens on
 # Can be one or many.
 TELNET_PORTS = [4000]
-# Interface addresses to listen to. If 0.0.0.0, listen to all.
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 TELNET_INTERFACES = ['0.0.0.0']
 # OOB (out-of-band) telnet communication allows Evennia to communicate
 # special commands and data with enabled Telnet clients. This is used
@@ -50,7 +50,7 @@ ALLOWED_HOSTS = ["*"]
 # the internal ports the proxy uses to forward data to the Server-side
 # webserver (these should not be publicly open)
 WEBSERVER_PORTS = [(8000, 5001)]
-# Interface addresses to listen to. If 0.0.0.0, listen to all.
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
 # like NginX.
@@ -66,13 +66,13 @@ WEBCLIENT_ENABLED = True
 SSH_ENABLED = False
 # Ports to use for SSH
 SSH_PORTS = [8022]
-# Interface addresses to listen to. If 0.0.0.0, listen to all.
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSH_INTERFACES = ['0.0.0.0']
 # Actiave SSL protocol (SecureSocketLibrary)
 SSL_ENABLED = False
 # Ports to use for SSL
 SSL_PORTS = [4001]
-# Interface addresses to listen to. If 0.0.0.0, listen to all.
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ['0.0.0.0']
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -175,11 +175,8 @@ if TELNET_ENABLED:
     from src.server.portal import telnet
 
     for interface in TELNET_INTERFACES:
-        if ":" in interface:
-            print "  iPv6 interfaces not yet supported"
-            continue
         ifacestr = ""
-        if interface != '0.0.0.0' or len(TELNET_INTERFACES) > 1:
+        if interface not in ('0.0.0.0', '::') or len(TELNET_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for port in TELNET_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
@@ -199,11 +196,8 @@ if SSL_ENABLED:
     from src.server.portal import ssl
 
     for interface in SSL_INTERFACES:
-        if ":" in interface:
-            print "  iPv6 interfaces not yet supported"
-            continue
         ifacestr = ""
-        if interface != '0.0.0.0' or len(SSL_INTERFACES) > 1:
+        if interface not in ('0.0.0.0', '::') or len(SSL_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
@@ -228,11 +222,8 @@ if SSH_ENABLED:
     from src.server.portal import ssh
 
     for interface in SSH_INTERFACES:
-        if ":" in interface:
-            print "  iPv6 interfaces not yet supported"
-            continue
         ifacestr = ""
-        if interface != '0.0.0.0' or len(SSH_INTERFACES) > 1:
+        if interface not in ('0.0.0.0', '::') or len(SSH_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
@@ -250,11 +241,8 @@ if WEBSERVER_ENABLED:
     # Start a reverse proxy to relay data to the Server-side webserver
 
     for interface in WEBSERVER_INTERFACES:
-        if ":" in interface:
-            print "  iPv6 interfaces not yet supported"
-            continue
         ifacestr = ""
-        if interface != '0.0.0.0' or len(WEBSERVER_INTERFACES) > 1:
+        if interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for proxyport, serverport in WEBSERVER_PORTS:
             pstring = "%s:%s<->%s" % (ifacestr, proxyport, serverport)
