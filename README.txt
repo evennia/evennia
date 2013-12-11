@@ -27,9 +27,21 @@ See the INSTALL file for help on setting up and running Evennia.
 Current Status
 --------------
 
+Nov 2013:
+Moved the internal webserver with the Server and added support for
+out-of-band protocols (MSDP initially). This large development push
+also meant fixes and cleanups of the way attributes were handled.
+Tags were added, along with proper handlers for permissions, nicks
+and aliases.
+
+May 2013:
+Made players able to control more than one Character at the same
+time, through the MULTISESSION_MODE=2 addition. This lead to a lot
+of internal changes for the server.
+
 Oct 2012:
 Changed Evennia from the Modified Artistic 1.0 license to the more
-standard and permissive BSD license. Lots of updates and bug fixes as 
+standard and permissive BSD license. Lots of updates and bug fixes as
 more people start to use it in new ways. Lots of new caching and
 speed-ups.
 
