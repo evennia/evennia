@@ -156,6 +156,8 @@ class ObjectManager(TypedObjectManager):
         if isinstance(property_name, basestring):
             if not property_name.startswith('db_'):
                 property_name = "db_%s" % property_name
+        if hasattr(property_value, 'dbobj'):
+            property_value = property_value.dbobj
         querykwargs = {property_name:property_value}
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
