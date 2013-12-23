@@ -98,8 +98,8 @@ class ObjectManager(TypedObjectManager):
         Returns all objects having the given attribute_name defined at all.
         Location should be a valid location object.
         """
-        cand_restriction = candidates != None and Q(objattribute__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
-        return list(self.filter(cand_restriction & Q(objattribute__db_key=attribute_name)))
+        cand_restriction = candidates != None and Q(db_attributes__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        return list(self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)))
 
     @returns_typeclass_list
     def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None, typeclasses=None):
