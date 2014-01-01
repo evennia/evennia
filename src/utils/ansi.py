@@ -285,6 +285,21 @@ def group(lst, n):
             yield tuple(val)
 
 
+def _spacing_preflight(func):
+    def _spacing_preflight(self, width, fillchar=None):
+        if fillchar is None:
+            fillchar = " "
+        if (len(fillchar) != 1) or (not isinstance(fillchar, str)):
+            raise TypeError("must be char, not %s" % type(fillchar))
+        if not isinstance(width, int):
+            raise TypeError("integer argument expected, got %s" % type(width))
+        difference = width - len(self)
+        if difference <= 0:
+            return self
+        return func(self, width, fillchar, difference)
+    return _spacing_preflight
+
+
 class ANSIString(str):
     """
     String-like object that is aware of ANSI codes.
@@ -293,14 +308,22 @@ class ANSIString(str):
     understanding of what the codes mean in order to eliminate
     redundant characters, but a proper parser would have to be written for
     that.
+
+    Take note of the instructions at the bottom of the module, which modify
+    this class.
     """
 
     def __new__(cls, *args, **kwargs):
         string = args[0]
         args = args[1:]
         parser = kwargs.get('parser', ANSI_PARSER)
-        string = parser.parse_ansi(string)
+        decoded = kwargs.get('decoded', False)
+        if not decoded:
+            string = parser.parse_ansi(string)
         return super(ANSIString, cls).__new__(ANSIString, string, *args)
+
+    def __repr__(self):
+        return "ANSIString(%s, decode=False)" % repr(self.raw_string)
 
     def __init__(self, *args, **kwargs):
         self.parser = kwargs.pop('parser', ANSI_PARSER)
@@ -308,11 +331,6 @@ class ANSIString(str):
         self.raw_string = super(ANSIString, self).__str__()
         self.clean_string = self.parser.parse_ansi(
             self.raw_string, strip_ansi=True)
-        for func_name in [
-            'count', 'startswith', 'endswith', 'find', 'index', 'isalnum',
-            'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper',
-            'rfind', 'rindex']:
-            setattr(self, func_name, _query_super(func_name))
         self._code_indexes, self._char_indexes = self._get_indexes()
 
     def __len__(self):
@@ -339,7 +357,7 @@ class ANSIString(str):
                 string += self.raw_string[i]
             except IndexError:
                 pass
-        return ANSIString(string)
+        return ANSIString(string, decoded=True)
 
     def __getitem__(self, item):
         if isinstance(item, slice):
@@ -351,7 +369,7 @@ class ANSIString(str):
         for index in range(0, item + 1):
             if index in self._code_indexes:
                 result += self.raw_string[index]
-        return ANSIString(result + clean)
+        return ANSIString(result + clean, decoded=True)
 
     def _get_indexes(self):
         matches = [
@@ -387,8 +405,56 @@ class ANSIString(str):
             char_indexes.append(end_index)
         return code_indexes, char_indexes
 
+    @_spacing_preflight
+    def center(self, width, fillchar, difference):
+        remainder = difference % 2
+        difference /= 2
+        spacing = difference * fillchar
+        result = spacing + self + spacing + (remainder * fillchar)
+        return result
+
+    @_spacing_preflight
+    def ljust(self, width, fillchar, difference):
+        return self + (difference * fillchar)
+
+    @_spacing_preflight
+    def rjust(self, width, fillchar, difference):
+        return (difference * fillchar) + self
+
 
 def _query_super(func_name):
+    """
+    Have the string class handle this with the cleaned string instead of
+    ANSIString.
+    """
     def query_func(self, *args, **kwargs):
-        getattr(self.raw_string, func_name)(self, *args, **kwargs)
+        return getattr(self.raw_string, func_name)(*args, **kwargs)
     return query_func
+
+
+def _on_raw(func_name):
+    """
+    Like query_super, but makes the operation run on the raw string.
+    """
+    def on_raw_func(self, *args, **kwargs):
+        args = list(args)
+        string = args.pop(0)
+        if hasattr(string, 'raw_string'):
+            args.insert(0, string.raw_string)
+        else:
+            args.insert(0, string)
+        result = _query_super(func_name)(self, *args, **kwargs)
+        if isinstance(result, str):
+            return ANSIString(result, decoded=True)
+    return on_raw_func
+
+
+for func_name in [
+    'count', 'startswith', 'endswith', 'find', 'index', 'isalnum',
+    'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper',
+    'rfind', 'rindex']:
+    setattr(ANSIString, func_name, _query_super(func_name))
+for func_name in [
+    '__mul__', '__mod__', '__add__', '__radd__', 'expandtabs',
+    '__rmul__']:
+    setattr(ANSIString, func_name, _on_raw(func_name))
