@@ -300,7 +300,7 @@ def _spacing_preflight(func):
     return _spacing_preflight
 
 
-class ANSIString(str):
+class ANSIString(unicode):
     """
     String-like object that is aware of ANSI codes.
 
@@ -314,6 +314,12 @@ class ANSIString(str):
     """
 
     def __new__(cls, *args, **kwargs):
+        """
+        When creating a new ANSIString, you may use a custom parser that has
+        the same attributes as the standard one, and you may declare the
+        string to be handled as already decoded. It is important not to double
+        decode strings, as escapes can only be respected once.
+        """
         string = args[0]
         args = args[1:]
         parser = kwargs.get('parser', ANSI_PARSER)
@@ -323,12 +329,12 @@ class ANSIString(str):
         return super(ANSIString, cls).__new__(ANSIString, string, *args)
 
     def __repr__(self):
-        return "ANSIString(%s, decode=False)" % repr(self.raw_string)
+        return "ANSIString(%s, decoded=True)" % repr(self.raw_string)
 
     def __init__(self, *args, **kwargs):
         self.parser = kwargs.pop('parser', ANSI_PARSER)
         super(ANSIString, self).__init__(*args, **kwargs)
-        self.raw_string = super(ANSIString, self).__str__()
+        self.raw_string = unicode(self)
         self.clean_string = self.parser.parse_ansi(
             self.raw_string, strip_ansi=True)
         self._code_indexes, self._char_indexes = self._get_indexes()
@@ -438,23 +444,49 @@ def _on_raw(func_name):
     """
     def on_raw_func(self, *args, **kwargs):
         args = list(args)
-        string = args.pop(0)
-        if hasattr(string, 'raw_string'):
-            args.insert(0, string.raw_string)
-        else:
-            args.insert(0, string)
+        try:
+            string = args.pop(0)
+            if hasattr(string, 'raw_string'):
+                args.insert(0, string.raw_string)
+            else:
+                args.insert(0, string)
+        except IndexError:
+            pass
         result = _query_super(func_name)(self, *args, **kwargs)
-        if isinstance(result, str):
+        if isinstance(result, unicode):
             return ANSIString(result, decoded=True)
+        return result
     return on_raw_func
 
 
+def _transform(func_name):
+    """
+    Some string functions, like those manipulating capital letters,
+    return a string the same length as the original. This function
+    allows us to do the same, replacing all the non-coded characters
+    with the resulting string.
+    """
+    def transform_func(self, *args, **kwargs):
+        replacement_string = _query_super(func_name)(*args, **kwargs)
+        to_string = []
+        for index in range(0, len(self.raw_string)):
+            if index in self._code_indexes:
+                to_string.append(self.raw_string[index])
+            elif index in self._char_indexes:
+                to_string.append(replacement_string[index])
+            return ANSIString(''.join(to_string), decoded=True)
+    return transform_func
+
+
 for func_name in [
-    'count', 'startswith', 'endswith', 'find', 'index', 'isalnum',
-    'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper',
-    'rfind', 'rindex']:
+        'count', 'startswith', 'endswith', 'find', 'index', 'isalnum',
+        'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper',
+        'rfind', 'rindex']:
     setattr(ANSIString, func_name, _query_super(func_name))
 for func_name in [
-    '__mul__', '__mod__', '__add__', '__radd__', 'expandtabs',
-    '__rmul__']:
+        '__mul__', '__mod__', '__add__', '__radd__', 'expandtabs',
+        '__rmul__', 'join', 'decode']:
     setattr(ANSIString, func_name, _on_raw(func_name))
+for func_name in [
+        'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
+    setattr(ANSIString, func_name, _transform(func_name))
