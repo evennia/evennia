@@ -37,7 +37,7 @@ REAL_MIN = 60.0  # seconds per minute in real world
 # of course mean whatever units of time are used in the game.
 
 TICK = REAL_TICK * TIMEFACTOR
-MIN = REAL_MIN * TIMEFACTOR
+MIN = settings.TIME_SEC_PER_MIN
 HOUR = MIN * settings.TIME_MIN_PER_HOUR
 DAY = HOUR * settings.TIME_HOUR_PER_DAY
 WEEK = DAY * settings.TIME_DAY_PER_WEEK
@@ -86,6 +86,34 @@ class GameTime(Script):
 
 # Access routines
 
+def format(seconds, divisors, modify_seconds=True):
+    """
+    Takes a list of divisors by which to divide the seconds, also passed
+    in, by. The result of each division will be returned in the order it
+    was performed, starting from the beginning of the divisors list.
+
+    The default behavior is to, after first dividing the number of seconds
+    by the divisor, mod the seconds by the divisor and, at the very end,
+    return the left over seconds by appending to the list. When passed a
+    list of divisors such as [31536000, 2628000, 604800, 86400, 3600, 60]
+    this results in the years, months, weeks, days, hours, minutes, and
+    seconds that have passed, according to ths seconds value passed in,
+    being returned via tuple.
+
+    If modify_seconds=False then the order the divisors are passed in
+    have no meaning other than placement in the results set and there is
+    no remainder to append to the end of the results.
+    """
+    results = []
+    for divisor in divisors:
+        results.append(seconds / divisor)
+        if modify_seconds:
+            seconds = seconds % divisor
+    if modify_seconds:
+        results.append(seconds)
+    return tuple(results)
+
+
 def gametime_format(seconds):
     """
     Converts the count in seconds into an integer tuple of the form
@@ -97,31 +125,14 @@ def gametime_format(seconds):
     below) since the admin might for example decide to change how many
     hours a 'day' is in their game etc.
     """
-    # have to re-multiply in the TIMEFACTOR
-    # do this or we cancel the already counted
-    # timefactor in the timer script...
-    sec = int(seconds * TIMEFACTOR)
-    years, sec = sec / YEAR, sec % YEAR
-    months, sec = sec / MONTH, sec % MONTH
-    weeks, sec = sec / WEEK, sec % WEEK
-    days, sec = sec / DAY, sec % DAY
-    hours, sec = sec / HOUR, sec % HOUR
-    minutes, sec = sec / MIN, sec % MIN
-    return (years, months, weeks, days, hours, minutes, sec)
+    return format(seconds, [YEAR, MONTH, WEEK, DAY, HOUR, MIN])
 
 
 def realtime_format(seconds):
     """
     As gametime format, but with real time units
     """
-    sec = int(seconds)
-    years, sec = sec / 29030400, sec % 29030400
-    months, sec = sec / 2419200, sec % 2419200
-    weeks, sec = sec / 604800, sec % 604800
-    days, sec = sec / 86400, sec % 86400
-    hours, sec = sec / 3600, sec % 3600
-    minutes, sec = sec / 60, sec % 60
-    return (years, months, weeks, days, hours, minutes, sec)
+    return format(seconds, [31536000, 2628000, 604800, 86400, 3600, 60])
 
 
 def gametime(format=False):
@@ -190,8 +201,8 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
      gametime_to_realtime(days=2) -> number of seconds in real life from
                                 now after which 2 in-game days will have passed.
     """
-    real_time = secs / TIMEFACTOR + mins * MIN + hrs * HOUR + \
-           days * DAY + weeks * WEEK + months * MONTH + yrs * YEAR
+    real_time = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
+        months * MONTH + yrs * YEAR) / TIMEFACTOR
     return real_time
 
 

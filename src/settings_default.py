@@ -302,6 +302,7 @@ TIME_FACTOR = 2.0
 # The tick is the smallest unit of time in the game. Smallest value is 1s.
 TIME_TICK = 1.0
 # These measures might or might not make sense to your game world.
+TIME_SEC_PER_MIN = 60
 TIME_MIN_PER_HOUR = 60
 TIME_HOUR_PER_DAY = 24
 TIME_DAY_PER_WEEK = 7
