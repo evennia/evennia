@@ -307,7 +307,8 @@ TIME_HOUR_PER_DAY = 24
 TIME_DAY_PER_WEEK = 7
 TIME_WEEK_PER_MONTH = 4
 TIME_MONTH_PER_YEAR = 12
-
+# How often the game time is updated
+TIME_UPDATE_INTERVAL = 60
 
 ######################################################################
 # Default Player setup and access

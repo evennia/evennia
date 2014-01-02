@@ -21,6 +21,10 @@ GAME_TIME_SCRIPT = "sys_game_time"
 
 TIMEFACTOR = settings.TIME_FACTOR
 
+# How often this script runs and updates the game time
+
+UPDATE_INTERVAL = settings.TIME_UPDATE_INTERVAL
+
 # Common real-life time measures, in seconds.
 # You should not change these.
 
@@ -52,7 +56,7 @@ class GameTime(Script):
         """
         self.key = "sys_game_time"
         self.desc = "Keeps track of the game time"
-        self.interval = REAL_MIN  # update every minute
+        self.interval = UPDATE_INTERVAL
         self.persistent = True
         self.start_delay = True
         self.attributes.add("game_time", 0.0)  # IC time
@@ -67,9 +71,9 @@ class GameTime(Script):
         game_time = float(self.attributes.get("game_time"))
         run_time = float(self.attributes.get("run_time"))
         up_time = float(self.attributes.get("up_time"))
-        self.attributes.add("game_time", game_time + MIN)
-        self.attributes.add("run_time", run_time + REAL_MIN)
-        self.attributes.add("up_time", up_time + REAL_MIN)
+        self.attributes.add("game_time", game_time + UPDATE_INTERVAL * TIMEFACTOR)
+        self.attributes.add("run_time", run_time + UPDATE_INTERVAL)
+        self.attributes.add("up_time", up_time + UPDATE_INTERVAL)
 
     def at_start(self):
         """
@@ -77,6 +81,7 @@ class GameTime(Script):
         We reset the up time.
         """
         self.attributes.add("up_time", 0.0)
+        self.interval = UPDATE_INTERVAL
 
 
 # Access routines
