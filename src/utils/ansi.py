@@ -286,7 +286,7 @@ def group(lst, n):
 
 
 def _spacing_preflight(func):
-    def _spacing_preflight(self, width, fillchar=None):
+    def wrapped(self, width, fillchar=None):
         if fillchar is None:
             fillchar = " "
         if (len(fillchar) != 1) or (not isinstance(fillchar, str)):
@@ -297,7 +297,7 @@ def _spacing_preflight(func):
         if difference <= 0:
             return self
         return func(self, width, fillchar, difference)
-    return _spacing_preflight
+    return wrapped
 
 
 class ANSIString(unicode):
@@ -442,7 +442,7 @@ def _on_raw(func_name):
     """
     Like query_super, but makes the operation run on the raw string.
     """
-    def on_raw_func(self, *args, **kwargs):
+    def wrapped(self, *args, **kwargs):
         args = list(args)
         try:
             string = args.pop(0)
@@ -456,7 +456,7 @@ def _on_raw(func_name):
         if isinstance(result, unicode):
             return ANSIString(result, decoded=True)
         return result
-    return on_raw_func
+    return wrapped
 
 
 def _transform(func_name):
@@ -466,7 +466,7 @@ def _transform(func_name):
     allows us to do the same, replacing all the non-coded characters
     with the resulting string.
     """
-    def transform_func(self, *args, **kwargs):
+    def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(*args, **kwargs)
         to_string = []
         for index in range(0, len(self.raw_string)):
@@ -475,7 +475,7 @@ def _transform(func_name):
             elif index in self._char_indexes:
                 to_string.append(replacement_string[index])
             return ANSIString(''.join(to_string), decoded=True)
-    return transform_func
+    return wrapped
 
 
 for func_name in [
@@ -485,7 +485,7 @@ for func_name in [
     setattr(ANSIString, func_name, _query_super(func_name))
 for func_name in [
         '__mul__', '__mod__', '__add__', '__radd__', 'expandtabs',
-        '__rmul__', 'join', 'decode']:
+        '__rmul__', 'join', 'decode', 'replace', 'format']:
     setattr(ANSIString, func_name, _on_raw(func_name))
 for func_name in [
         'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
