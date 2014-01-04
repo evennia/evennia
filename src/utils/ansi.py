@@ -70,87 +70,6 @@ class ANSIParser(object):
     an extra { for Merc-style codes
     """
 
-    def __init__(self):
-        "Sets the mappings"
-
-        # MUX-style mappings %cr %cn etc
-
-        self.mux_ansi_map = [
-            # commented out by default; they (especially blink) are
-            # potentially annoying
-            (r'%r', ANSI_RETURN),
-            (r'%t', ANSI_TAB),
-            (r'%b', ANSI_SPACE),
-            #(r'%cf', ANSI_BLINK),
-            #(r'%ci', ANSI_INVERSE),
-            (r'%cr', ANSI_RED),
-            (r'%cR', ANSI_BACK_RED),
-            (r'%cg', ANSI_GREEN),
-            (r'%cG', ANSI_BACK_GREEN),
-            (r'%cy', ANSI_YELLOW),
-            (r'%cY', ANSI_BACK_YELLOW),
-            (r'%cb', ANSI_BLUE),
-            (r'%cB', ANSI_BACK_BLUE),
-            (r'%cm', ANSI_MAGENTA),
-            (r'%cM', ANSI_BACK_MAGENTA),
-            (r'%cc', ANSI_CYAN),
-            (r'%cC', ANSI_BACK_CYAN),
-            (r'%cw', ANSI_WHITE),
-            (r'%cW', ANSI_BACK_WHITE),
-            (r'%cx', ANSI_BLACK),
-            (r'%cX', ANSI_BACK_BLACK),
-            (r'%ch', ANSI_HILITE),
-            (r'%cn', ANSI_NORMAL),
-            ]
-
-        # Expanded mapping {r {n etc
-
-        hilite = ANSI_HILITE
-        normal = ANSI_NORMAL
-        self.ext_ansi_map = [
-            (r'{r', hilite + ANSI_RED),
-            (r'{R', normal + ANSI_RED),
-            (r'{g', hilite + ANSI_GREEN),
-            (r'{G', normal + ANSI_GREEN),
-            (r'{y', hilite + ANSI_YELLOW),
-            (r'{Y', normal + ANSI_YELLOW),
-            (r'{b', hilite + ANSI_BLUE),
-            (r'{B', normal + ANSI_BLUE),
-            (r'{m', hilite + ANSI_MAGENTA),
-            (r'{M', normal + ANSI_MAGENTA),
-            (r'{c', hilite + ANSI_CYAN),
-            (r'{C', normal + ANSI_CYAN),
-            (r'{w', hilite + ANSI_WHITE),  # pure white
-            (r'{W', normal + ANSI_WHITE),  # light grey
-            (r'{x', hilite + ANSI_BLACK),  # dark grey
-            (r'{X', normal + ANSI_BLACK),  # pure black
-            (r'{n', normal)                # reset
-            ]
-
-        # xterm256 {123, %c134,
-
-        self.xterm256_map = [
-            (r'%c([0-5]{3})', self.parse_rgb),  # %c123 - foreground colour
-            (r'%c(b[0-5]{3})', self.parse_rgb),  # %cb123 - background colour
-            (r'{([0-5]{3})', self.parse_rgb),   # {123 - foreground colour
-            (r'{(b[0-5]{3})', self.parse_rgb)   # {b123 - background colour
-            ]
-
-        # obs - order matters here, we want to do the xterms first since
-        # they collide with some of the other mappings otherwise.
-        self.ansi_map = self.xterm256_map + self.mux_ansi_map + self.ext_ansi_map
-
-        # prepare regex matching
-        self.ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
-                         for sub in self.ansi_map]
-
-        # prepare matching ansi codes overall
-        self.ansi_regex = re.compile("\033\[[0-9;]+m")
-
-        # escapes - these double-chars will be replaced with a single
-        # instance of each
-        self.ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
-
     def parse_rgb(self, rgbmatch):
         """
         This is a replacer method called by re.sub with the matched
@@ -172,7 +91,7 @@ class ANSIParser(object):
         if self.do_xterm256:
             colval = 16 + (red * 36) + (green * 6) + blue
             #print "RGB colours:", red, green, blue
-            return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval/100, (colval%100)/10, colval%10)
+            return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval/100, (colval % 100)/10, colval%10)
         else:
             #print "ANSI convert:", red, green, blue
             # xterm256 not supported, convert the rgb value to ansi instead
@@ -259,6 +178,84 @@ class ANSIParser(object):
             string = self.ansi_regex.sub("", string)
         return string
 
+    # MUX-style mappings %cr %cn etc
+
+    mux_ansi_map = [
+        # commented out by default; they (especially blink) are
+        # potentially annoying
+        (r'%r', ANSI_RETURN),
+        (r'%t', ANSI_TAB),
+        (r'%b', ANSI_SPACE),
+        #(r'%cf', ANSI_BLINK),
+        #(r'%ci', ANSI_INVERSE),
+        (r'%cr', ANSI_RED),
+        (r'%cR', ANSI_BACK_RED),
+        (r'%cg', ANSI_GREEN),
+        (r'%cG', ANSI_BACK_GREEN),
+        (r'%cy', ANSI_YELLOW),
+        (r'%cY', ANSI_BACK_YELLOW),
+        (r'%cb', ANSI_BLUE),
+        (r'%cB', ANSI_BACK_BLUE),
+        (r'%cm', ANSI_MAGENTA),
+        (r'%cM', ANSI_BACK_MAGENTA),
+        (r'%cc', ANSI_CYAN),
+        (r'%cC', ANSI_BACK_CYAN),
+        (r'%cw', ANSI_WHITE),
+        (r'%cW', ANSI_BACK_WHITE),
+        (r'%cx', ANSI_BLACK),
+        (r'%cX', ANSI_BACK_BLACK),
+        (r'%ch', ANSI_HILITE),
+        (r'%cn', ANSI_NORMAL),
+        ]
+
+    # Expanded mapping {r {n etc
+
+    hilite = ANSI_HILITE
+    normal = ANSI_NORMAL
+    ext_ansi_map = [
+        (r'{r', hilite + ANSI_RED),
+        (r'{R', normal + ANSI_RED),
+        (r'{g', hilite + ANSI_GREEN),
+        (r'{G', normal + ANSI_GREEN),
+        (r'{y', hilite + ANSI_YELLOW),
+        (r'{Y', normal + ANSI_YELLOW),
+        (r'{b', hilite + ANSI_BLUE),
+        (r'{B', normal + ANSI_BLUE),
+        (r'{m', hilite + ANSI_MAGENTA),
+        (r'{M', normal + ANSI_MAGENTA),
+        (r'{c', hilite + ANSI_CYAN),
+        (r'{C', normal + ANSI_CYAN),
+        (r'{w', hilite + ANSI_WHITE),  # pure white
+        (r'{W', normal + ANSI_WHITE),  # light grey
+        (r'{x', hilite + ANSI_BLACK),  # dark grey
+        (r'{X', normal + ANSI_BLACK),  # pure black
+        (r'{n', normal)                # reset
+        ]
+
+    # xterm256 {123, %c134,
+
+    xterm256_map = [
+        (r'%([0-5]{3})', parse_rgb),  # %123 - foreground colour
+        (r'%(-[0-5]{3})', parse_rgb),  # %-123 - background colour
+        (r'{([0-5]{3})', parse_rgb),   # {123 - foreground colour
+        (r'{(-[0-5]{3})', parse_rgb)   # {-123 - background colour
+        ]
+
+    # obs - order matters here, we want to do the xterms first since
+    # they collide with some of the other mappings otherwise.
+    ansi_map = xterm256_map + mux_ansi_map + ext_ansi_map
+
+    # prepare regex matching
+    ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
+                     for sub in ansi_map]
+
+    # prepare matching ansi codes overall
+    ansi_regex = re.compile("\033\[[0-9;]+m")
+
+    # escapes - these double-chars will be replaced with a single
+    # instance of each
+    ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
+
 ANSI_PARSER = ANSIParser()
 
 
@@ -279,3 +276,223 @@ def raw(string):
     Escapes a string into a form which won't be colorized by the ansi parser.
     """
     return string.replace('{', '{{').replace('%', '%%')
+
+
+def group(lst, n):
+    for i in range(0, len(lst), n):
+        val = lst[i:i+n]
+        if len(val) == n:
+            yield tuple(val)
+
+
+def _spacing_preflight(func):
+    def wrapped(self, width, fillchar=None):
+        if fillchar is None:
+            fillchar = " "
+        if (len(fillchar) != 1) or (not isinstance(fillchar, str)):
+            raise TypeError("must be char, not %s" % type(fillchar))
+        if not isinstance(width, int):
+            raise TypeError("integer argument expected, got %s" % type(width))
+        difference = width - len(self)
+        if difference <= 0:
+            return self
+        return func(self, width, fillchar, difference)
+    return wrapped
+
+
+
+# ----------------------------------------------------------------------
+# OBS - work in progress, do not use!
+# ----------------------------------------------------------------------
+
+class ANSIString(unicode):
+    """
+    String-like object that is aware of ANSI codes.
+
+    This isn't especially efficient, as it doesn't really have an
+    understanding of what the codes mean in order to eliminate
+    redundant characters, but a proper parser would have to be written for
+    that.
+
+    Take note of the instructions at the bottom of the module, which modify
+    this class.
+    """
+
+    def __new__(cls, *args, **kwargs):
+        """
+        When creating a new ANSIString, you may use a custom parser that has
+        the same attributes as the standard one, and you may declare the
+        string to be handled as already decoded. It is important not to double
+        decode strings, as escapes can only be respected once.
+        """
+        string = args[0] if args else ""
+        args = args[1:] if args else ()
+        parser = kwargs.pop('parser', ANSI_PARSER)
+        decoded = kwargs.pop('decoded', False)
+        if not decoded:
+            string = parser.parse_ansi(string)
+        # assign needed methods
+        for func_name in [
+                'count', 'startswith', 'endswith', 'find', 'index', 'isalnum',
+                'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper',
+                'rfind', 'rindex']:
+            setattr(cls, func_name, _query_super(func_name))
+        for func_name in [
+                '__mul__', '__mod__', '__add__', '__radd__', 'expandtabs',
+                '__rmul__', 'join', 'decode', 'replace', 'format']:
+            setattr(cls, func_name, _on_raw(func_name))
+        for func_name in [
+                'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
+            setattr(cls, func_name, _transform(func_name))
+        return super(ANSIString, cls).__new__(ANSIString, string, *args, **kwargs)
+
+    def __repr__(self):
+        return "ANSIString(%s, decoded=True)" % repr(self.raw_string)
+
+    def __init__(self, *args, **kwargs):
+        self.parser = kwargs.pop('parser', ANSI_PARSER)
+        super(ANSIString, self).__init__(*args, **kwargs)
+        self.raw_string = unicode(self)
+        self.clean_string = self.parser.parse_ansi(
+            self.raw_string, strip_ansi=True)
+        self._code_indexes, self._char_indexes = self._get_indexes()
+
+    def __len__(self):
+        return len(self.clean_string)
+
+    def __getslice__(self, i, j):
+        return self.__getitem__(slice(i, j))
+
+    def _slice(self, item):
+        slice_indexes = self._char_indexes[item]
+        if not slice_indexes:
+            return ANSIString('')
+        try:
+            string = self[item.start].raw_string
+        except IndexError:
+            return ANSIString('')
+        last_mark = slice_indexes[0]
+        for i in slice_indexes[1:]:
+            for index in range(last_mark, i):
+                if index in self._code_indexes:
+                    string += self.raw_string[index]
+            last_mark = i
+            try:
+                string += self.raw_string[i]
+            except IndexError:
+                pass
+        return ANSIString(string, decoded=True)
+
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            return self._slice(item)
+        item = self._char_indexes[item]
+        clean = self.raw_string[item]
+
+        result = ''
+        for index in range(0, item + 1):
+            if index in self._code_indexes:
+                result += self.raw_string[index]
+        return ANSIString(result + clean, decoded=True)
+
+    def _get_indexes(self):
+        matches = [
+            (match.start(), match.end())
+            for match in self.parser.ansi_regex.finditer(self.raw_string)]
+        code_indexes = []
+        # These are all the indexes which hold code characters.
+        for start, end in matches:
+            code_indexes.extend(range(start, end))
+
+        flat_ranges = []
+        # We need to get the ones between them, but the code might start at
+        # the beginning, and there might be codes at the end.
+        for tup in matches:
+            flat_ranges.extend(tup)
+        # Is the beginning of the string a code character?
+        if flat_ranges[0] == 0:
+            flat_ranges.pop(0)
+        else:
+            flat_ranges.insert(0, 0)
+        # How about the end?
+        end_index = (len(self.raw_string) - 1)
+        if flat_ranges[-1] == end_index:
+            flat_ranges.pop()
+        else:
+            flat_ranges.append(end_index)
+        char_indexes = []
+        for start, end in list(group(flat_ranges, 2)):
+            char_indexes.extend(range(start, end))
+        # The end character will be left off if it's a normal character. Fix
+        # that here.
+        if end_index in flat_ranges:
+            char_indexes.append(end_index)
+        return code_indexes, char_indexes
+
+    @_spacing_preflight
+    def center(self, width, fillchar, difference):
+        remainder = difference % 2
+        difference /= 2
+        spacing = difference * fillchar
+        result = spacing + self + spacing + (remainder * fillchar)
+        return result
+
+    @_spacing_preflight
+    def ljust(self, width, fillchar, difference):
+        return self + (difference * fillchar)
+
+    @_spacing_preflight
+    def rjust(self, width, fillchar, difference):
+        return (difference * fillchar) + self
+
+
+def _query_super(func_name):
+    """
+    Have the string class handle this with the cleaned string instead of
+    ANSIString.
+    """
+    def query_func(self, *args, **kwargs):
+        return getattr(self.raw_string, func_name)(*args, **kwargs)
+    return query_func
+
+
+def _on_raw(func_name):
+    """
+    Like query_super, but makes the operation run on the raw string.
+    """
+    def wrapped(self, *args, **kwargs):
+        args = list(args)
+        try:
+            string = args.pop(0)
+            if hasattr(string, 'raw_string'):
+                args.insert(0, string.raw_string)
+            else:
+                args.insert(0, string)
+        except IndexError:
+            pass
+        result = _query_super(func_name)(self, *args, **kwargs)
+        if isinstance(result, unicode):
+            return ANSIString(result, decoded=True)
+        return result
+    return wrapped
+
+
+def _transform(func_name):
+    """
+    Some string functions, like those manipulating capital letters,
+    return a string the same length as the original. This function
+    allows us to do the same, replacing all the non-coded characters
+    with the resulting string.
+    """
+    def wrapped(self, *args, **kwargs):
+        replacement_string = _query_super(func_name)(*args, **kwargs)
+        to_string = []
+        for index in range(0, len(self.raw_string)):
+            if index in self._code_indexes:
+                to_string.append(self.raw_string[index])
+            elif index in self._char_indexes:
+                to_string.append(replacement_string[index])
+            return ANSIString(''.join(to_string), decoded=True)
+    return wrapped
+
+

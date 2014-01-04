@@ -282,7 +282,7 @@ class CmdDelPlayer(MuxCommand):
             caller = caller.player
 
         if not args:
-            self.msg("Usage: @delplayer[/delobj] <player/user name or #id> [: reason]")
+            self.msg("Usage: @delplayer <player/user name or #id> [: reason]")
             return
 
         reason = ""
@@ -291,66 +291,36 @@ class CmdDelPlayer(MuxCommand):
 
         # We use player_search since we want to be sure to find also players
         # that lack characters.
-        players = caller.search_player(args, quiet=True)
+        players = search.player_search(args)
 
         if not players:
-            # try to find a user instead of a Player
-            try:
-                user = User.objects.get(id=args)
-            except Exception:
-                try:
-                    user = User.objects.get(username__iexact=args)
-                except Exception:
-                    string = "No Player nor User found matching '%s'." % args
-                    self.msg(string)
-                    return
+            self.msg('Could not find a player by that name.')
+            return
 
-            if user and not user.access(caller, 'delete'):
-                string = "You don't have the permissions to delete this player."
-                self.msg(string)
-                return
+        if len(players) > 1:
+            string = "There were multiple matches:"
+            for player in players:
+                string += "\n %s %s" % (player.id, player.key)
+            return
 
-            string = ""
-            name = user.username
-            user.delete()
-            if user:
-                name = user.name
-                user.delete()
-                string = "Player %s was deleted." % name
-            else:
-                string += "The User %s was deleted. It had no Player associated with it." % name
+        # one single match
+
+        player = players.pop()
+
+        if not player.access(caller, 'delete'):
+            string = "You don't have the permissions to delete that player."
             self.msg(string)
             return
 
-        elif utils.is_iter(players):
-            string = "There were multiple matches:"
-            for user in players:
-                string += "\n %s %s" % (user.id, user.key)
-            return
-        else:
-            # one single match
-
-            user = players
-            user = user.user
-
-            if not user.access(caller, 'delete'):
-                string = "You don't have the permissions to delete that player."
-                self.msg(string)
-                return
-
-            uname = user.username
-            # boot the player then delete
-            self.msg("Informing and disconnecting player ...")
-            string = "\nYour account '%s' is being *permanently* deleted.\n" %  uname
-            if reason:
-                string += " Reason given:\n  '%s'" % reason
-            user.unpuppet_all()
-            for session in SESSIONS.sessions_from_player(user):
-                user.msg(string, sessid=session.sessid)
-                user.disconnect_session_from_player(session.sessid)
-            user.delete()
-            user.delete()
-            self.msg("Player %s was successfully deleted." % uname)
+        uname = player.username
+        # boot the player then delete
+        self.msg("Informing and disconnecting player ...")
+        string = "\nYour account '%s' is being *permanently* deleted.\n" % uname
+        if reason:
+            string += " Reason given:\n  '%s'" % reason
+        player.msg(string)
+        player.delete()
+        self.msg("Player %s was successfully deleted." % uname)
 
 
 class CmdEmit(MuxCommand):

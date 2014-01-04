@@ -98,8 +98,8 @@ class ObjectManager(TypedObjectManager):
         Returns all objects having the given attribute_name defined at all.
         Location should be a valid location object.
         """
-        cand_restriction = candidates != None and Q(objattribute__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
-        return list(self.filter(cand_restriction & Q(objattribute__db_key=attribute_name)))
+        cand_restriction = candidates != None and Q(db_attributes__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
+        return list(self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)))
 
     @returns_typeclass_list
     def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None, typeclasses=None):
@@ -156,6 +156,8 @@ class ObjectManager(TypedObjectManager):
         if isinstance(property_name, basestring):
             if not property_name.startswith('db_'):
                 property_name = "db_%s" % property_name
+        if hasattr(property_value, 'dbobj'):
+            property_value = property_value.dbobj
         querykwargs = {property_name:property_value}
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
@@ -197,7 +199,6 @@ class ObjectManager(TypedObjectManager):
             # if candidates is an empty iterable there can be no matches
             # Exit early.
             return []
-
         # build query objects
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
         cand_restriction = candidates != None and Q(pk__in=make_iter(candidates_id)) or Q()
@@ -205,7 +206,7 @@ class ObjectManager(TypedObjectManager):
         if exact:
             # exact match - do direct search
             return self.filter(cand_restriction & type_restriction & (Q(db_key__iexact=ostring) |
-                               Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_category__iexact="object_alias"))).distinct()
+                               Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_category__iexact="objectalias"))).distinct()
         elif candidates:
             # fuzzy with candidates
             key_candidates = self.filter(cand_restriction & type_restriction)
@@ -219,7 +220,8 @@ class ObjectManager(TypedObjectManager):
         if index_matches:
             return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]
         else:
-            alias_candidates = self.filter(id__in=candidates_id, db_tags__db_category__iexact="object_alias")
+            alias_candidates = self.filter(id__in=candidates_id, db_tags__db_category__iexact="objectalias")
+            print alias_candidates
             alias_strings = alias_candidates.values_list("db_key", flat=True)
             index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
             if index_matches:
