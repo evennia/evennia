@@ -1685,7 +1685,7 @@ class CmdExamine(ObjManipCommand):
 
         string += "\n{wLocks{n:%s" % locks_string
 
-        if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "Empty"):
+        if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # list the current cmdsets
             all_cmdsets = (obj.cmdset.all() +
                            (hasattr(obj, "player") and obj.player and

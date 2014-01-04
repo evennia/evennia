@@ -200,7 +200,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 
     # weed out all non-found sets
     cmdsets = yield [cmdset for cmdset in cmdsets
-                     if cmdset and cmdset.key != "Empty"]
+                     if cmdset and cmdset.key != "_EMPTY_CMDSET"]
     # report cmdset errors to user (these should already have been logged)
     yield [report_to.msg(cmdset.errmessage) for cmdset in cmdsets
            if cmdset.key == "_CMDSET_ERROR"]
@@ -218,6 +218,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
             tempmergers = {}
             for cmdset in cmdsets:
                 prio = cmdset.priority
+                #print cmdset.key, prio
                 if prio in tempmergers:
                     # merge same-prio cmdset together separately
                     tempmergers[prio] = yield cmdset + tempmergers[prio]

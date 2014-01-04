@@ -78,6 +78,11 @@ class _ErrorCmdSet(CmdSet):
     key = "_CMDSET_ERROR"
     errmessage = "Error when loading cmdset."
 
+class _EmptyCmdSet(CmdSet):
+    "This cmdset represents an empty cmdset"
+    key = "_EMPTY_CMDSET"
+    priority = -100
+    mergetype = "Union"
 
 def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
@@ -166,7 +171,7 @@ class CmdSetHandler(object):
         # this holds the "merged" current command set
         self.current = None
         # this holds a history of CommandSets
-        self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
+        self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
         # this tracks which mergetypes are actually in play in the stack
         self.mergetype_stack = ["Union"]
 
@@ -244,7 +249,7 @@ class CmdSetHandler(object):
                 self.cmdset_stack = []
                 for pos, path in enumerate(storage):
                     if pos == 0 and not path:
-                        self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
+                        self.cmdset_stack = [EmptyCmdSet(cmdsetobj=self.obj)]
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
@@ -410,9 +415,9 @@ class CmdSetHandler(object):
                 else:
                     storage = [""]
                 self.cmdset_storage = storage
-            self.cmdset_stack[0] = CmdSet(cmdsetobj=self.obj, key="Empty")
+            self.cmdset_stack[0] = EmptyCmdSet(cmdsetobj=self.obj)
         else:
-            self.cmdset_stack = [CmdSet(cmdsetobj=self.obj, key="Empty")]
+            self.cmdset_stack = [EmptyCmdSet(cmdsetobj=self.obj)]
         self.update()
 
     def all(self):
@@ -453,7 +458,7 @@ class CmdSetHandler(object):
         new_cmdset_stack = []
         new_mergetype_stack = []
         for cmdset in self.cmdset_stack:
-            if cmdset.key == "Empty":
+            if cmdset.key == "_EMPTY_CMDSET":
                 new_cmdset_stack.append(cmdset)
                 new_mergetype_stack.append("Union")
             else:
