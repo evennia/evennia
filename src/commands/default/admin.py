@@ -469,6 +469,7 @@ class CmdPerm(MuxCommand):
             return
 
         playermode = 'player' in self.switches or lhs.startswith('*')
+        lhs = lhs.lstrip("*")
 
         if playermode:
             obj = caller.search_player(lhs)
@@ -528,8 +529,9 @@ class CmdPerm(MuxCommand):
                     cstring += "\nPermission '%s' is already defined on %s." % (rhs, obj.name)
                 else:
                     obj.permissions.add(perm)
-                    cstring += "\nPermission '%s' given to %s." % (rhs, obj.name)
-                    tstring += "\n%s gives you the permission '%s'." % (caller.name, rhs)
+                    plystring = "the Player" if playermode else "the Object/Character"
+                    cstring += "\nPermission '%s' given to %s (%s)." % (rhs, obj.name, plystring)
+                    tstring += "\n%s gives you (%s, %s) the permission '%s'." % (caller.name, obj.name, plystring, rhs)
         caller.msg(cstring.strip())
         if tstring:
             obj.msg(tstring.strip())
