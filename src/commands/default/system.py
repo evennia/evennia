@@ -215,7 +215,7 @@ def format_script_list(scripts):
     if not scripts:
         return "<No scripts>"
 
-    table = prettytable.PrettyTable(["{wid",
+    table = prettytable.PrettyTable(["{wdbref",
                                      "{wobj",
                                      "{wkey",
                                      "{wintval",
@@ -245,7 +245,7 @@ class CmdScripts(MuxCommand):
     Operate and list global scripts, list all scrips.
 
     Usage:
-      @scripts[/switches] [<obj or scriptid or script.path>]
+      @scripts[/switches] [#dbref, key, script.path or <obj>]
 
     Switches:
       start - start a script (must supply a script path)
@@ -256,7 +256,7 @@ class CmdScripts(MuxCommand):
     If no switches are given, this command just views all active
     scripts. The argument can be either an object, at which point it
     will be searched for all scripts defined on it, or an script name
-    or dbref. For using the /stop switch, a unique script dbref is
+    or #dbref. For using the /stop switch, a unique script #dbref is
     required since whole classes of scripts often have the same name.
 
     Use @script for managing commands on objects.
@@ -287,7 +287,7 @@ class CmdScripts(MuxCommand):
             scripts = ScriptDB.objects.get_all_scripts(key=args)
             if not scripts:
                 # try to find an object instead.
-                objects = ObjectDB.objects.object_search(args, caller=caller)
+                objects = ObjectDB.objects.object_search(args)
                 if objects:
                     scripts = []
                     for obj in objects:
@@ -608,9 +608,9 @@ class CmdTime(MuxCommand):
         "Show server time data in a table."
         table = prettytable.PrettyTable(["{wserver time statistic","{wtime"])
         table.align = 'l'
-        table.add_row(["Current server uptime", utils.time_format(time.time() - SESSIONS.server.start_time, 3)])
-        table.add_row(["Total server running time", utils.time_format(gametime.runtime(format=False), 2)])
-        table.add_row(["Total in-game time (realtime x %g" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(format=False), 2)])
+        table.add_row(["Current server uptime", utils.time_format(gametime.uptime(), 3)])
+        table.add_row(["Total server running time", utils.time_format(gametime.runtime(), 2)])
+        table.add_row(["Total in-game time (realtime x %g" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(), 2)])
         table.add_row(["Server time stamp", datetime.datetime.now()])
         self.caller.msg(str(table))
 

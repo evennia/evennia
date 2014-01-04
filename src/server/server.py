@@ -336,6 +336,10 @@ class Evennia(object):
             if SERVER_STARTSTOP_MODULE:
                 SERVER_STARTSTOP_MODULE.at_server_cold_stop()
 
+        # stopping time
+        from src.utils import gametime
+        gametime.save()
+
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
         # if _reactor_stopping is true, reactor does not need to

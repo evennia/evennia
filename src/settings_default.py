@@ -293,14 +293,12 @@ BASE_BATCHPROCESS_PATHS = ['game.gamesrc.world', 'contrib']
 
 # You don't actually have to use this, but it affects the routines in
 # src.utils.gametime.py and allows for a convenient measure to
-# determine the current in-game time. You can of course read "week",
-# "month" etc as your own in-game time units as desired.
+# determine the current in-game time. You can of course interpret
+# "week", "month" etc as your own in-game time units as desired.
 
 #The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
-# The tick is the smallest unit of time in the game. Smallest value is 1s.
-TIME_TICK = 1.0
 # These measures might or might not make sense to your game world.
 TIME_SEC_PER_MIN = 60
 TIME_MIN_PER_HOUR = 60
@@ -308,8 +306,6 @@ TIME_HOUR_PER_DAY = 24
 TIME_DAY_PER_WEEK = 7
 TIME_WEEK_PER_MONTH = 4
 TIME_MONTH_PER_YEAR = 12
-# How often the game time is updated
-TIME_UPDATE_INTERVAL = 60
 
 ######################################################################
 # Default Player setup and access

@@ -65,8 +65,8 @@ class ScriptManager(TypedObjectManager):
             if dbref or dbref == 0:
                 script = self.dbref_search(dbref)
             if not script:
-                scripts = self.filter(db_key=key)
-            return scripts
+                script = self.filter(db_key=key)
+            return script
         return self.all()
 
     def delete_script(self, dbref):
