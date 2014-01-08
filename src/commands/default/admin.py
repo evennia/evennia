@@ -369,6 +369,7 @@ class CmdEmit(MuxCommand):
         # we check which command was used to force the switches
         if self.cmdstring == '@remit':
             rooms_only = True
+            send_to_contents = True
         elif self.cmdstring == '@pemit':
             players_only = True
 
@@ -394,9 +395,9 @@ class CmdEmit(MuxCommand):
                 obj.msg(message)
                 if send_to_contents and hasattr(obj, "msg_contents"):
                     obj.msg_contents(message)
-                    caller.msg("Emitted to %s and its contents." % objname)
+                    caller.msg("Emitted to %s and contents:\n%s" % (objname, message))
                 else:
-                    caller.msg("Emitted to %s." % objname)
+                    caller.msg("Emitted to %s:\n%s" % (objname, message))
             else:
                 caller.msg("You are not allowed to emit to %s." % objname)
 
