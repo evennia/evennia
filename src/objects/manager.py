@@ -366,7 +366,7 @@ class ObjectManager(TypedObjectManager):
         if not new_home:
             new_home = original_object.home
         if not new_aliases:
-            new_aliases = original_object.aliases
+            new_aliases = original_object.aliases.all()
         if not new_locks:
             new_locks = original_object.db_lock_storage
         if not new_permissions:
