@@ -494,7 +494,10 @@ def delay(delay=2, retval=None, callback=None):
       callback (func(retval)) - if given, this will be called with retval
                                 after delay seconds
     Returns:
-      deferred that will fire with to_return after delay seconds
+      deferred that will fire with callback after delay seconds. Note that
+      if delay() is used in the commandhandler callback chain, the callback
+      chain can be defined directly in the command body and don't need to be
+      specified here.
     """
     d = defer.Deferred()
     callb = callback or d.callback

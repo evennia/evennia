@@ -249,7 +249,7 @@ class CmdSetHandler(object):
                 self.cmdset_stack = []
                 for pos, path in enumerate(storage):
                     if pos == 0 and not path:
-                        self.cmdset_stack = [EmptyCmdSet(cmdsetobj=self.obj)]
+                        self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
@@ -415,9 +415,9 @@ class CmdSetHandler(object):
                 else:
                     storage = [""]
                 self.cmdset_storage = storage
-            self.cmdset_stack[0] = EmptyCmdSet(cmdsetobj=self.obj)
+            self.cmdset_stack[0] = _EmptyCmdSet(cmdsetobj=self.obj)
         else:
-            self.cmdset_stack = [EmptyCmdSet(cmdsetobj=self.obj)]
+            self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
         self.update()
 
     def all(self):
