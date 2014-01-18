@@ -51,7 +51,7 @@ _GA = object.__getattribute__
 
 # Helper function
 
-def handle_dbref(inp, objclass=None, raise_errors=True):
+def handle_dbref(inp, objclass, raise_errors=True):
     """
     Convert a #dbid to a valid object of objclass. objclass
     should be a valid object class to filter against (objclass.filter ...)
@@ -70,7 +70,7 @@ def handle_dbref(inp, objclass=None, raise_errors=True):
     # if we get to this point, inp is an integer dbref
     try:
         return objclass.objects.get(id=inp)
-    except _GA(objclass, "DoesNotExist"):
+    except Exception:
         if raise_errors:
             raise
         return inp
@@ -177,7 +177,7 @@ def create_object(typeclass=None, key=None, location=None,
         # we shouldn't need to handle dbref here (home handler should fix it), but some have
         # reported issues here (issue 446).
         try:
-            new_object.home = handle_dbref(settings.CHARACTER_DEFAULT_HOME) if not nohome else None
+            new_object.home = handle_dbref(settings.CHARACTER_DEFAULT_HOME, _ObjectDB) if not nohome else None
         except _ObjectDB.DoesNotExist:
             raise _ObjectDB.DoesNotExist("CHARACTER_DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
                                          settings.CHARACTER_DEFAULT_HOME)
