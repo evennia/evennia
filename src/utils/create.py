@@ -49,7 +49,7 @@ __all__ = ("create_object", "create_script", "create_help_entry",
 
 _GA = object.__getattribute__
 
-# Helper functions
+# Helper function
 
 def handle_dbref(inp, objclass=None, raise_errors=True):
     """
@@ -174,7 +174,13 @@ def create_object(typeclass=None, key=None, location=None,
     if home:
         new_object.home = home
     else:
-        new_object.home = settings.CHARACTER_DEFAULT_HOME if not nohome else None
+        # we shouldn't need to handle dbref here (home handler should fix it), but some have
+        # reported issues here (issue 446).
+        try:
+            new_object.home = handle_dbref(settings.CHARACTER_DEFAULT_HOME) if not nohome else None
+        except _ObjectDB.DoesNotExist:
+            raise _ObjectDB.DoesNotExist("CHARACTER_DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
+                                         settings.CHARACTER_DEFAULT_HOME)
 
     if location:
         new_object.move_to(location, quiet=True)
