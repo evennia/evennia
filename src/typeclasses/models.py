@@ -173,14 +173,17 @@ class Attribute(SharedMemoryModel):
     def __unicode__(self):
         return u"%s(%s)" % (_GA(self, "db_key"), _GA(self, "id"))
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
         Determines if another object has permission to access.
         accessing_obj - object trying to access this one
         access_type - type of access sought
         default - what to return if no lock of access_type was found
+        **kwargs - passed to at_access hook along with result.
         """
-        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+        result = self.locks.check(accessing_obj, access_type=access_type, default=default)
+        self.at_access(result, **kwargs)
+        return result
 
     def at_set(self, new_value):
         """
@@ -1060,19 +1063,21 @@ class TypedObject(SharedMemoryModel):
     # Lock / permission methods
     #
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
         Determines if another object has permission to access.
         accessing_obj - object trying to access this one
         access_type - type of access sought
         default - what to return if no lock of access_type was found
+        **kwargs - this is ignored, but is there to make the api consistent with the
+                   object-typeclass method access, which use it to feed to its hook methods.
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
     def check_permstring(self, permstring):
         """
         This explicitly checks if we hold particular permission without
-        involving any locks.
+        involving any locks. It does -not- trigger the at_access hook.
         """
         if hasattr(self, "player"):
             if self.player and self.player.is_superuser:

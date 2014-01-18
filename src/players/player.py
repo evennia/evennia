@@ -90,6 +90,7 @@ class Player(TypeClass):
            usually handled on the character level:
 
          at_init()
+         at_access()
          at_cmdset_get()
          at_first_login()
          at_post_login(sessid=None)
@@ -213,12 +214,11 @@ class Player(TypeClass):
         Returns:
           boolean True/False depending on if the swap worked or not.
 
-
         """
         self.dbobj.swap_typeclass(new_typeclass,
                     clean_attributes=clean_attributes, no_default=no_default)
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
         Determines if another object has permission to access this object
         in whatever way.
@@ -226,8 +226,11 @@ class Player(TypeClass):
           accessing_obj (Object)- object trying to access this one
           access_type (string) - type of access sought
           default (bool) - what to return if no lock of access_type was found
+          **kwargs - passed to the at_access hook along with the result.
         """
-        return self.dbobj.access(accessing_obj, access_type=access_type, default=default)
+        result = self.dbobj.access(accessing_obj, access_type=access_type, default=default)
+        self.at_access(result, accessing_obj, access_type, **kwargs)
+        return result
 
     def check_permstring(self, permstring):
         """
@@ -236,6 +239,7 @@ class Player(TypeClass):
 
         permstring (string) - permission string that need to match a permission
                               on the object. (example: 'Builders')
+        Note that this method does -not- call the at_access hook.
         """
         return self.dbobj.check_permstring(permstring)
 
@@ -287,6 +291,16 @@ class Player(TypeClass):
     # ones instead, unless you are implementing a multi-character game
     # and have some things that should be done regardless of which
     # character is currently connected to this player.
+
+    def at_access(self, result, accessing_obj, access_type, **kwargs):
+        """
+        This is called with the result of an access call, along with
+        any kwargs used for that call. The return of this method does
+        not affect the result of the lock check. It can be used e.g. to
+        customize error messages in a central location or other effects
+        based on the access result.
+        """
+        pass
 
     def at_cmdset_get(self):
         """

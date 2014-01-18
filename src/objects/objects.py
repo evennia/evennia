@@ -18,6 +18,7 @@ they control by simply linking to a new object's user property.
 from django.conf import settings
 from src.typeclasses.typeclass import TypeClass
 from src.commands import cmdset, command
+from src.utils.logger import log_depmsg
 
 __all__ = ("Object", "Character", "Room", "Exit")
 
@@ -155,7 +156,11 @@ class Object(TypeClass):
                                                    this object in any fashion
          at_object_receive(obj, source_location) - called when this object
                                                    receives another object
-
+         at_access(result, **kwargs) - this is called with the result of an
+                                       access call, along with any kwargs used
+                                       for that call. The return of this
+                                       method does not affect the result of the
+                                       lock check.
          at_before_traverse(traversing_object) - (exit-objects only) called
                                                   just before an object
                                                   traverses this object
@@ -417,7 +422,7 @@ class Object(TypeClass):
         return self.dbobj.swap_typeclass(new_typeclass,
                        clean_attributes=clean_attributes, no_default=no_default)
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
         Determines if another object has permission to access this object in
           whatever way.
@@ -425,15 +430,19 @@ class Object(TypeClass):
           accessing_obj (Object)- object trying to access this one
           access_type (string) - type of access sought
           default (bool) - what to return if no lock of access_type was found
-
-        This function will call at_access_success or at_access_failure
-        depending on the outcome of the access check.
-
+          **kwargs - passed to at_access hook along with result,accessing_obj and access_type
         """
-        if self.dbobj.access(accessing_obj, access_type=access_type, default=default):
+        result = self.dbobj.access(accessing_obj, access_type=access_type, default=default)
+        self.at_access(result, accessing_obj, access_type, **kwargs)
+        return result
+
+        # OBS: DEPRECATED!
+        if result:
+            log_depmsg("at_access_success is deprecated. Use at_access(result,**kwargs) instead.")
             self.at_access_success(accessing_obj, access_type)
             return True
         else:
+            log_depmsg("at_access_failure is deprecated. Use at_access(result,**kwargs) instead.")
             self.at_access_failure(accessing_obj, access_type)
             return False
 
@@ -526,6 +535,7 @@ class Object(TypeClass):
         """
         pass
 
+
     def at_cmdset_get(self):
         """
         Called just before cmdsets on this object are requested by the
@@ -585,8 +595,20 @@ class Object(TypeClass):
         """
         pass
 
+    def at_access(self, result, accessing_obj, access_type, **kwargs):
+        """
+        This is called with the result of an access call, along with
+        any kwargs used for that call. The return of this method does
+        not affect the result of the lock check. It can be used e.g. to
+        customize error messages in a central location or other effects
+        based on the access result.
+        """
+        pass
+
     def at_access_success(self, accessing_obj, access_type):
         """
+        OBS: DEPRECATED. Use at_access instead
+
         This hook is called whenever accessing_obj succeed a lock check of
         type access_type on this object, for whatever reason. The return value
         of this hook is not used, the lock will still pass regardless of what
@@ -596,6 +618,8 @@ class Object(TypeClass):
 
     def at_access_failure(self, accessing_obj, access_type):
         """
+        OBS: DEPRECATED. Use at_access instead
+
         This hook is called whenever accessing_obj fails a lock check of type
         access_type on this object, for whatever reason. The return value of
         this hook is not used, the lock will still fail regardless of what

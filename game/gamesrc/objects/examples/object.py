@@ -122,10 +122,9 @@ class Object(DefaultObject):
      at_server_reload()   - called before server is reloaded
      at_server_shutdown() - called just before server is fully shut down
 
-     at_access_success(accessing_obj, access_type) - called if an lock access
-                            check succeeded on this object
-     at_access_failure(accessing_obj, access_type) - called if an lock access
-                            check failed on this object
+     at_access(result, accessing_obj, access_type) - called with the result
+                            of a lock access check on this object. Return value
+                            does not affect check result.
 
      at_before_move(destination)             - called just before moving object
                         to the destination. If returns False, move is cancelled.
