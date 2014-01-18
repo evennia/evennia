@@ -438,11 +438,9 @@ class Object(TypeClass):
 
         # OBS: DEPRECATED!
         if result:
-            log_depmsg("at_access_success is deprecated. Use at_access(result,**kwargs) instead.")
             self.at_access_success(accessing_obj, access_type)
             return True
         else:
-            log_depmsg("at_access_failure is deprecated. Use at_access(result,**kwargs) instead.")
             self.at_access_failure(accessing_obj, access_type)
             return False
 
@@ -614,6 +612,7 @@ class Object(TypeClass):
         of this hook is not used, the lock will still pass regardless of what
         this hook does (use lockstring/funcs to tweak the lock result).
         """
+        log_depmsg("at_access_success is deprecated. Use at_access(result,**kwargs) instead.")
         pass
 
     def at_access_failure(self, accessing_obj, access_type):
@@ -625,6 +624,7 @@ class Object(TypeClass):
         this hook is not used, the lock will still fail regardless of what
         this hook does (use lockstring/funcs to tweak the lock result).
         """
+        log_depmsg("at_access_failure is deprecated. Use at_access(result,**kwargs) instead.")
         pass
 
     # hooks called when moving the object
