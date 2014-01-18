@@ -49,12 +49,37 @@ __all__ = ("create_object", "create_script", "create_help_entry",
 
 _GA = object.__getattribute__
 
+# Helper functions
+
+def handle_dbref(inp, objclass=None, raise_errors=True):
+    """
+    Convert a #dbid to a valid object of objclass. objclass
+    should be a valid object class to filter against (objclass.filter ...)
+    If not raise_errors is set, this will swallow errors of non-existing
+    objects.
+    """
+    if not (isinstance(inp, basestring) and inp.startswith("#")):
+        return inp
+    inp = inp.lstrip('#')
+    try:
+        if int(inp) < 0:
+            return None
+    except ValueError:
+        return None
+
+    # if we get to this point, inp is an integer dbref
+    try:
+        return objclass.objects.get(id=inp)
+    except _GA(objclass, "DoesNotExist"):
+        if raise_errors:
+            raise
+        return inp
 
 #
 # Game Object creation
 #
 
-def create_object(typeclass, key=None, location=None,
+def create_object(typeclass=None, key=None, location=None,
                   home=None, permissions=None, locks=None,
                   aliases=None, destination=None, report_to=None, nohome=False):
     """
@@ -81,6 +106,8 @@ def create_object(typeclass, key=None, location=None,
     if not _ObjectDB:
         from src.objects.models import ObjectDB as _ObjectDB
 
+    # input validation
+
     if not typeclass:
         typeclass = settings.BASE_OBJECT_TYPECLASS
     elif isinstance(typeclass, _ObjectDB):
@@ -89,6 +116,12 @@ def create_object(typeclass, key=None, location=None,
     elif isinstance(typeclass, _Object) or utils.inherits_from(typeclass, _Object):
         # this is already an object typeclass, extract its path
         typeclass = typeclass.path
+
+    # handle eventual #dbref input
+    location = handle_dbref(location, _ObjectDB)
+    home = handle_dbref(home, _ObjectDB)
+    destination = handle_dbref(destination, _ObjectDB)
+    report_to = handle_dbref(report_to, _ObjectDB)
 
     # create new database object
     new_db_object = _ObjectDB()
@@ -454,6 +487,10 @@ def create_player(key, email, password,
         email = "dummy@dummy.com"
     if _PlayerDB.objects.filter(username__iexact=key):
         raise ValueError("A Player with this name already exists.")
+
+    # this handles a given dbref-relocate to a player.
+    report_to = handle_dbref(report_to, _PlayerDB)
+
     try:
 
         # create the correct Player object
