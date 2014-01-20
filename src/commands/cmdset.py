@@ -153,6 +153,10 @@ class CmdSet(object):
         self.system_commands = []
         self.actual_mergetype = self.mergetype
         self.cmdsetobj = cmdsetobj
+        # this is set only on merged sets, in cmdhandler.py, in order to
+        # track, list and debug mergers correctly.
+        self.merged_from = []
+
         # initialize system
         self.at_cmdset_creation()
         self._contains_cache = {}

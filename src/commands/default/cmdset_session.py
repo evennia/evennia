@@ -9,7 +9,7 @@ class SessionCmdSet(CmdSet):
     Sets up the unlogged cmdset.
     """
     key = "DefaultSession"
-    priority = 0
+    priority = -7
 
     def at_cmdset_creation(self):
         "Populate the cmdset"

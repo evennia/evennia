@@ -229,11 +229,14 @@ def get_and_merge_cmdsets(caller, session, player, obj,
             cmdsets = yield sorted(tempmergers.values(), key=lambda x: x.priority)
 
             # Merge all command sets into one, beginning with the lowest-prio one
-            cmdset = cmdsets.pop(0)
-            for merging_cmdset in cmdsets:
+            cmdset = cmdsets[0]
+            for merging_cmdset in cmdsets[1:]:
                 #print "<%s(%s,%s)> onto <%s(%s,%s)>" % (merging_cmdset.key, merging_cmdset.priority, merging_cmdset.mergetype,
                 #                                        cmdset.key, cmdset.priority, cmdset.mergetype)
                 cmdset = yield merging_cmdset + cmdset
+            # store the full sets for diagnosis
+            cmdset.merged_from = cmdsets
+            # cache
             _CMDSET_MERGE_CACHE[mergehash] = cmdset
     else:
         cmdset = None

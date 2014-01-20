@@ -44,7 +44,6 @@ class ChannelCommand(command.Command):
     is_channel = True
     key = "general"
     help_category = "Channel Names"
-    locks = "cmd:all()"
     obj = None
 
     def parse(self):
@@ -129,7 +128,6 @@ class ChannelHandler(object):
                              help_category="Channel names",
                              obj=channel,
                              is_channel=True)
-        cmd.__doc__ = self._format_help(channel)
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
 
