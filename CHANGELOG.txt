@@ -1,31 +1,6 @@
 
------------------------------------
- Evennia README
- (http://evennia.com)
- Beta hg (mercurial) version
------------------------------------
-
-
-About Evennia
--------------
-
-Evennia is a MUD/MUX/MU* development system and server that aims to
-provide a functional bare-bones codebase for developers. Some of our main
-features are:
-
- * Coded and extended using normal Python modules.
- * Reload code without players logging off
- * Database handling and network connectivity are abstracted away
- * Extensive web integration due to our use of Django.
- * Server runs game website and ajax web-browser mud client out of the box.
- * Supports a slew of different connection protocols with Twisted.
- * Extremely extendable to almost any sort of text-based multiplayer game
-
-See the INSTALL file for help on setting up and running Evennia.
-
-
-Current Status
---------------
+Changelog
+---------
 
 Nov 2013:
 Moved the internal webserver with the Server and added support for
