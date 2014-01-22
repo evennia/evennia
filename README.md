@@ -26,4 +26,4 @@ The codebase is currently in **Beta**. While development continues, Evennia is a
 More Information
 ----------------
 
-To learn how to get your hands on the code base, the Getting started page is the way to go. Otherwise you could browse the [Documentation wiki](https://github.com/evennia/evennia/wiki) or why not come join the [Evennia Community](http://www.evennia.com). Welcome! 
+To learn how to get your hands on the code base, the [Getting started](https://github.com/evennia/evennia/wiki/Getting-Started) page is the way to go. Otherwise you could browse the [Documentation wiki](https://github.com/evennia/evennia/wiki) or why not come join the [Evennia Community](http://www.evennia.com). Welcome! 
