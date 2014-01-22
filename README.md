@@ -1,10 +1,12 @@
-= Evennia MUD/MU\* Creation System
+Evennia MUD/MU\* Creation System
+================================
 
 *Evennia* is an open-source Python-based MUD/MU\* server/codebase using modern technologies. Evennia allows creators to design and flesh out text-based massively-multiplayer online games with great freedom.
 
 http://www.evennia.com is the main hub tracking all things Evennia. The documentation wiki is found [here](https://github.com/evennia/evennia/wiki).
 
-== Features and Philosophy
+Features and Philosophy
+-----------------------
 
 Evennia aims to supply a bare-bones MU\* codebase that allows vast flexibility for game designers while taking care of all the gritty networking and database-handling behind the scenes. Evennia offers an easy API for handling persistent objects, time-dependent scripting and all the other low-level features needed to create a MU\*. The idea is to allow the mud-coder to concentrate solely on designing the parts and systems of the mud that makes it uniquely fit their ideas.
 
@@ -16,10 +18,12 @@ Whereas Evennia is intended to be customized to almost any level you like, we do
 
 If this piqued your interest, there is also a [lengthier introduction](https://github.com/evennia/evennia/wiki/Evennia-Introduction) to Evennia to read.
 
-== Current Status
+Current Status
+--------------
 
 The codebase is currently in **Beta**. While development continues, Evennia is already stable enough to be suitable for prototyping and development of your own games.
 
-== More Information
+More Information
+----------------
 
 To learn how to get your hands on the code base, the Getting started page is the way to go. Otherwise you could browse the [Documentation wiki](https://github.com/evennia/evennia/wiki) or why not come join the [Evennia Community](http://www.evennia.com). Welcome! 
