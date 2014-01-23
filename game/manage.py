@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #------------------------------------------------------------
 try:
     f = open(os.pardir + os.sep + 'VERSION.txt', 'r''')
-    VERSION = "%s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
+    VERSION = "%s" % f.read().strip()
     f.close()
 except IOError:
     VERSION = "Unknown version"
