@@ -597,15 +597,15 @@ class CmdColorTest(MuxPlayerCommand):
                         # foreground table
                         table[ir].append("{%i%i%i%s{n" % (ir, ig, ib, "{{%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("{-%i%i%i{%i%i%i%s{n" % (ir, ig, ib,
+                        table[6+ir].append("{[%i%i%i{%i%i%i%s{n" % (ir, ig, ib,
                                                             5 - ir, 5 - ig, 5 - ib,
-                                                        "{{-%i%i%i" % (ir, ig, ib)))
+                                                        "{{[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
                 string += "\n" + "".join(row)
             self.msg(string)
-            self.msg("(e.g. %%c123 and %%cb123 also work)")
+            self.msg("(e.g. %%123 and %%[123 also work)")
         else:
             # malformed input
             self.msg("Usage: @color ansi|xterm256")

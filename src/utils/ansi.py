@@ -95,7 +95,7 @@ class ANSIParser(object):
             return ""
         rgbtag = rgbmatch.groups()[0]
 
-        background = rgbtag[0] == '-'
+        background = rgbtag[0] == '['
         if background:
             red, green, blue = int(rgbtag[1]), int(rgbtag[2]), int(rgbtag[3])
         else:
@@ -254,9 +254,9 @@ class ANSIParser(object):
 
     xterm256_map = [
         (r'%([0-5]{3})', parse_rgb),  # %123 - foreground colour
-        (r'%(-[0-5]{3})', parse_rgb),  # %-123 - background colour
+        (r'%(\[[0-5]{3})', parse_rgb),  # %-123 - background colour
         (r'{([0-5]{3})', parse_rgb),   # {123 - foreground colour
-        (r'{(-[0-5]{3})', parse_rgb)   # {-123 - background colour
+        (r'{(\[[0-5]{3})', parse_rgb)   # {-123 - background colour
         ]
 
     # obs - order matters here, we want to do the xterms first since
