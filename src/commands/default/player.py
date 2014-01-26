@@ -595,11 +595,11 @@ class CmdColorTest(MuxPlayerCommand):
                 for ig in range(6):
                     for ib in range(6):
                         # foreground table
-                        table[ir].append("%%c%i%i%i%s{n" % (ir, ig, ib, "{{%i%i%i" % (ir, ig, ib)))
+                        table[ir].append("{%i%i%i%s{n" % (ir, ig, ib, "{{%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("%%cb%i%i%i%%c%i%i%i%s{n" % (ir, ig, ib,
+                        table[6+ir].append("{-%i%i%i{%i%i%i%s{n" % (ir, ig, ib,
                                                             5 - ir, 5 - ig, 5 - ib,
-                                                        "{{b%i%i%i" % (ir, ig, ib)))
+                                                        "{{-%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
