@@ -201,6 +201,8 @@ class ANSIParser(object):
     mux_ansi_map = [
         # commented out by default; they (especially blink) are
         # potentially annoying
+        (r'%cn', ANSI_NORMAL),
+        (r'%ch', ANSI_HILITE),
         (r'%r', ANSI_RETURN),
         (r'%t', ANSI_TAB),
         (r'%b', ANSI_SPACE),
@@ -221,33 +223,48 @@ class ANSIParser(object):
         (r'%cw', ANSI_WHITE),
         (r'%cW', ANSI_BACK_WHITE),
         (r'%cx', ANSI_BLACK),
-        (r'%cX', ANSI_BACK_BLACK),
-        (r'%ch', ANSI_HILITE),
-        (r'%cn', ANSI_NORMAL),
+        (r'%cX', ANSI_BACK_BLACK)
         ]
 
     # Expanded mapping {r {n etc
 
     hilite = ANSI_HILITE
     normal = ANSI_NORMAL
+
     ext_ansi_map = [
+        (r'{n', normal),                # reset
+        (r'{/', ANSI_RETURN),          # line break
+        (r'{-', ANSI_TAB),             # tab
+        (r'{_', ANSI_SPACE),           # space
+        (r'{\*', ANSI_INVERSE),        # invert
+        (r'{\^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
+
         (r'{r', hilite + ANSI_RED),
-        (r'{R', normal + ANSI_RED),
         (r'{g', hilite + ANSI_GREEN),
-        (r'{G', normal + ANSI_GREEN),
         (r'{y', hilite + ANSI_YELLOW),
-        (r'{Y', normal + ANSI_YELLOW),
         (r'{b', hilite + ANSI_BLUE),
-        (r'{B', normal + ANSI_BLUE),
         (r'{m', hilite + ANSI_MAGENTA),
-        (r'{M', normal + ANSI_MAGENTA),
         (r'{c', hilite + ANSI_CYAN),
-        (r'{C', normal + ANSI_CYAN),
         (r'{w', hilite + ANSI_WHITE),  # pure white
-        (r'{W', normal + ANSI_WHITE),  # light grey
         (r'{x', hilite + ANSI_BLACK),  # dark grey
+
+        (r'{R', normal + ANSI_RED),
+        (r'{G', normal + ANSI_GREEN),
+        (r'{Y', normal + ANSI_YELLOW),
+        (r'{B', normal + ANSI_BLUE),
+        (r'{M', normal + ANSI_MAGENTA),
+        (r'{C', normal + ANSI_CYAN),
+        (r'{W', normal + ANSI_WHITE),  # light grey
         (r'{X', normal + ANSI_BLACK),  # pure black
-        (r'{n', normal)                # reset
+
+        (r'{\[r', ANSI_BACK_RED),
+        (r'{\[g', ANSI_BACK_GREEN),
+        (r'{\[y', ANSI_BACK_YELLOW),
+        (r'{\[b', ANSI_BACK_BLUE),
+        (r'{\[m', ANSI_BACK_MAGENTA),
+        (r'{\[c', ANSI_BACK_CYAN),
+        (r'{\[w', ANSI_BACK_WHITE),    # light grey background
+        (r'{\[x', ANSI_BACK_BLACK)     # pure black background
         ]
 
     # xterm256 {123, %c134,
