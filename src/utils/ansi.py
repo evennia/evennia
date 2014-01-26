@@ -360,6 +360,12 @@ class ANSIString(unicode):
     def __len__(self):
         return len(self.clean_string)
 
+    def __radd__(self, other):
+        if not isinstance(other, basestring):
+            return NotImplemented
+        return ANSIString(self.raw_string + getattr(
+            other, 'raw_string', other), decoded=True)
+
     def __getslice__(self, i, j):
         return self.__getitem__(slice(i, j))
 
@@ -511,7 +517,7 @@ def _on_raw(func_name):
         except IndexError:
             pass
         result = _query_super(func_name)(self, *args, **kwargs)
-        if isinstance(result, unicode):
+        if isinstance(result, basestring):
             return ANSIString(result, decoded=True)
         return result
     return wrapped
@@ -542,8 +548,8 @@ for func_name in [
         'rfind', 'rindex']:
     setattr(ANSIString, func_name, _query_super(func_name))
 for func_name in [
-        '__mul__', '__mod__', '__add__', 'expandtabs',
-        '__rmul__', 'join', 'decode', 'replace', 'format']:
+        '__mul__', '__mod__', '__add__', 'expandtabs', '__rmul__', 'join',
+        'decode', 'replace', 'format']:
     setattr(ANSIString, func_name, _on_raw(func_name))
 for func_name in [
         'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
