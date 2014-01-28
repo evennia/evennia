@@ -380,8 +380,8 @@ class ANSIString(unicode):
     def __radd__(self, other):
         if not isinstance(other, basestring):
             return NotImplemented
-        return ANSIString(self.raw_string + getattr(
-            other, 'raw_string', other), decoded=True)
+        return ANSIString(getattr(
+            other, 'raw_string', other), decoded=True + self.raw_string)
 
     def __getslice__(self, i, j):
         return self.__getitem__(slice(i, j))
