@@ -377,11 +377,17 @@ class ANSIString(unicode):
     def __len__(self):
         return len(self.clean_string)
 
+    def __add__(self, other):
+        if not isinstance(other, basestring):
+            return NotImplemented
+        return ANSIString(self.raw_string + getattr(
+            other, 'raw_string', other), decoded=True)
+
     def __radd__(self, other):
         if not isinstance(other, basestring):
             return NotImplemented
         return ANSIString(getattr(
-            other, 'raw_string', other), decoded=True + self.raw_string)
+            other, 'raw_string', other) + self.raw_string, decoded=True)
 
     def __getslice__(self, i, j):
         return self.__getitem__(slice(i, j))
@@ -565,7 +571,7 @@ for func_name in [
         'rfind', 'rindex']:
     setattr(ANSIString, func_name, _query_super(func_name))
 for func_name in [
-        '__mul__', '__mod__', '__add__', 'expandtabs', '__rmul__', 'join',
+        '__mul__', '__mod__', 'expandtabs', '__rmul__', 'join',
         'decode', 'replace', 'format']:
     setattr(ANSIString, func_name, _on_raw(func_name))
 for func_name in [
