@@ -542,12 +542,14 @@ class CmdColorTest(MuxPlayerCommand):
     Usage:
       @color ansi|xterm256
 
-    Print a color map along with in-mud color codes, while testing what is
-    supported in your client. Choices are 16-color ansi (supported in most
-    muds) or the 256-color xterm256 standard. No checking is done to determine
-    your client supports color - if not you will see rubbish appear.
+    Prints a color map along with in-mud color codes to use to produce
+    them.  It also tests what is supported in your client. Choices are
+    16-color ansi (supported in most muds) or the 256-color xterm256
+    standard. No checking is done to determine your client supports
+    color - if not you will see rubbish appear.
     """
     key = "@color"
+    aliases = "color"
     locks = "cmd:all()"
     help_category = "General"
 
@@ -576,17 +578,21 @@ class CmdColorTest(MuxPlayerCommand):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s{n" % (code, code.replace("{", "{{")) for code, _ in ap.ext_ansi_map[:-1]]
-            hi = "%ch"
-            col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
-            col3 = ["%s%s{n" % (hi + code, (hi + code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
-            table = utils.format_table([col1, col2, col3], extra_space=1)
+            col1 = ["%s%s{n" % (code, code.replace("{", "{{")) for code, _ in ap.ext_ansi_map[6:14]]
+            col2 = ["%s%s{n" % (code, code.replace("{", "{{")) for code, _ in ap.ext_ansi_map[14:22]]
+            col3 = ["%s%s{n" % (code.replace("\\",""), code.replace("{", "{{").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
+            col2.extend(["" for i in range(len(col1)-len(col2))])
+            #hi = "%ch"
+            #col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[6:]]
+            #col3 = ["%s%s{n" % (hi + code, (hi + code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
+            table = utils.format_table([col1, col2, col3])
             string = "ANSI colors:"
             for row in table:
-                string += "\n" + "".join(row)
+                string += "\n " + " ".join(row)
             #print string
             self.msg(string)
-            self.msg("({{X and %%cx are black-on-black\n %%r - return, %%t - tab, %%b - space)")
+            self.msg("{{X : black. {{\ : return, {{- : tab, {{_ : space, {{* : invert")
+            self.msg("To combine background and foreground, add background marker last, e.g. {{r{{[b.")
 
         elif self.args.startswith("x"):
             # show xterm256 table
@@ -605,7 +611,7 @@ class CmdColorTest(MuxPlayerCommand):
             for row in table:
                 string += "\n" + "".join(row)
             self.msg(string)
-            self.msg("(e.g. %%123 and %%[123 also work)")
+            #self.msg("(e.g. %%123 and %%[123 also work)")
         else:
             # malformed input
             self.msg("Usage: @color ansi|xterm256")

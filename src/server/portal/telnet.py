@@ -170,10 +170,18 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         through the telnet connection.
 
         valid telnet kwargs:
+            oob=<string> - supply an Out-of-Band instruction.
+            xterm256=True/False - enforce xterm256 setting. If not
+                                  given, ttype result is used. If
+                                  client does not suport xterm256, the
+                                  ansi fallback will be used
+            ansi=True/False - enforce ansi setting. If not given,
+                              ttype result is used.
+            nomarkup=True - strip all ansi markup (this is the same as
+                            xterm256=False, ansi=False)
             raw=True - pass string through without any ansi
-                  processing (i.e. include Evennia ansi markers but do
-                  not convert them into ansi tokens)
-            nomarkup=True - strip all ansi markup
+                       processing (i.e. include Evennia ansi markers but do
+                       not convert them into ansi tokens)
 
         The telnet ttype negotiation flags, if any, are used if no kwargs
         are given.
@@ -192,10 +200,15 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                     #print "msdp_string:", msdp_string
                     self.msdp.data_out(msdp_string)
 
+        # parse **kwargs, falling back to ttype if nothing is given explicitly
         ttype = self.protocol_flags.get('TTYPE', {})
+        xterm256 = kwargs.get("xterm256", ttype and ttype.get('256 COLORS', False))
+        useansi = kwargs.get("ansi", ttype and ttype.get('ANSI', False))
         raw = kwargs.get("raw", False)
-        nomarkup = not (ttype or ttype.get('256 COLORS') or ttype.get('ANSI') or not ttype.get("init_done"))
-        nomarkup = kwargs.get("nomarkup", nomarkup)
+        nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi) or not ttype.get("init_done"))
+
+        #print "telnet kwargs=%s, message=%s" % (kwargs, text)
+        #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
         if raw:
             # no processing whatsoever
             self.sendLine(text)
@@ -203,4 +216,4 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
             # print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self)
-            self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=ttype.get('256 COLORS')))
+            self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256))
