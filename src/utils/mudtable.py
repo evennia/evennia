@@ -56,7 +56,7 @@ and then added the extra column and row, the result would be
 When adding new rows/columns their data can have its
 own alignments (left/center/right, top/center/bottom).
 
-Contrary to prettytable, Evtable does not allow
+Contrary to prettytable, Mudtable does not allow
 for importing from files.
 
 It is intended to be used with ANSIString for supporting
@@ -89,6 +89,7 @@ class Cell(object):
                     to this size.
             height - desired height of cell. it will pad
                     to this size
+
             pad_left - number of extra pad characters on the left
             pad_right - extra pad characters on the right
             pad_top - extra pad lines top (will pad with vpad_char)
@@ -119,12 +120,19 @@ class Cell(object):
             corner_top_right
             corner_bottom_left
             corner_bottom_right
+
+            enforce_size - if true, the width/height of the
+                           cell is strictly enforced and
+                           extra text will be cropped rather
+                           than the cell growing vertically.
         """
 
         self.pad_left = int(kwargs.get("pad_left", 1))
         self.pad_right = int(kwargs.get("pad_right", 1))
         self.pad_top = int( kwargs.get("pad_top", 0))
         self.pad_bottom = int(kwargs.get("pad_bottom", 0))
+
+        self.enforce_size = kwargs.get("enforce_size", False)
 
         # avoid multi-char pad_chars messing up counting
         pad_char = kwargs.get("pad_char", " ")
@@ -200,6 +208,18 @@ class Cell(object):
                 adjusted_data.extend(wrap(line, width=width, drop_whitespace=False))
             else:
                 adjusted_data.append(line)
+        if self.enforce_size:
+            # don't allow too high cells
+            excess = len(adjusted_data) - self.height
+            if excess > 0:
+                # too many lines. Crop and mark last line with ...
+                adjusted_data = adjusted_data[:-excess]
+                if len(adjusted_data[-1]) > 3:
+                    adjusted_data[-1] = adjusted_data[-1][:-2] + ".."
+            elif excess < 0:
+                # too few lines. Fill to height.
+                adjusted_data.extend(["" for i in range(excess)])
+
         return adjusted_data
 
     def _center(self, text, width, pad_char):
