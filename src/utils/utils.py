@@ -614,10 +614,11 @@ def check_evennia_dependencies():
     # defining the requirements
     python_min = '2.6'
     nt_python_min = '2.7'
+    nt_stop_python_min = "2.6"
     twisted_min = '11.0'
     django_min = '1.5'
     django_rec = '1.6'
-    south_min = '0.8'
+    south_min = '0.8.4'
 
     errstring = ""
     no_error = True
@@ -661,8 +662,8 @@ def check_evennia_dependencies():
         sversion = south.__version__
         if sversion < south_min:
             errstring += "\n WARNING: South %s found. Evennia recommends version %s or higher." % (sversion, south_min)
-        if sversion == "0.8.3":
-            errstring += "\n ERROR: South %s found. This has a known bug and will not work. Please upgrade." % sversion
+        if sversion in ("0.8.2", "0.8.3"):
+            errstring += "\n ERROR: South %s found. This has known issues. Please upgrade." % sversion
             no_error = False
     except ImportError:
         errstring += "\n ERROR: South (django-south) does not seem to be installed."
