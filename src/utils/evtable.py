@@ -9,7 +9,7 @@ by prettytable but shares no code.
 Example usage:
 
     table = Table("Heading1", "Heading2", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-    table.add_collumn("This is long data", "This is even longer data")
+    table.add_column("This is long data", "This is even longer data")
     table.add_row("This is a single row")
     print table
 
@@ -32,7 +32,7 @@ make the table symmetric.
 
 Tables can be restricted to a given width.
 If we created the above table with the width=50 keyword to Table()
-and then added the extra collumn and row, the result would be
+and then added the extra column and row, the result would be
 
 +-----------+------------+-----------+-----------+
 | Heading1  |  Heading2  |           |           |
@@ -52,7 +52,7 @@ and then added the extra collumn and row, the result would be
 |    row    |            |           |           |
 +-----------+------------+-----------+-----------+
 
-When adding new rows/collumns their data can have its
+When adding new rows/columns their data can have its
 own alignments (left/center/right, top/center/bottom).
 
 Contrary to prettytable, Evtable does not allow
@@ -355,26 +355,26 @@ class EvTable(object):
             headers for the table
 
          Keywords:
-            table - list of collumns (list of lists) for seeding
+            table - list of columns (list of lists) for seeding
                     the table. If not given, the table will start
                     out empty
             border - None, or one of
                     "table" - only a border around the whole table
-                    "tablecols" - table and collumn borders
+                    "tablecols" - table and column borders
                     "header" - only border under header
-                    "cols" - only borders between collumns
+                    "cols" - only borders between columns
                     "rows" - only borders between rows
                     "cells" - border around all cells
             width - fixed width of table. If not set, width is
-                    set by the total width of each collumn.
+                    set by the total width of each column.
                     This will resize individual columns to fit.
 
             See also Cell class for kwargs to apply to each
             individual data cell in the table.
 
         """
-        # table itself is a 2D grid - a list of collumns
-        # x is the collumn position, y the row
+        # table itself is a 2D grid - a list of columns
+        # x is the column position, y the row
         self.table = kwargs.pop("table", [])
 
         # header is a list of texts. We merge it to the table's top
@@ -532,12 +532,12 @@ class EvTable(object):
         """
         Balance the table. This means to make sure
         all cells on the same row have the same height,
-        that all collumns have the same number of rows
+        that all columns have the same number of rows
         and that the table fits within the given width.
         """
 
         # we make all modifications on a working copy of the
-        # actual table. This allows us to add collumns/rows
+        # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
 
@@ -559,12 +559,12 @@ class EvTable(object):
         # add borders - these add to the width/height, so we must do this before calculating width/height
         self._borders()
 
-        # equalize widths within each collumn
+        # equalize widths within each column
         cwidths = [max(cell.get_width() for cell in col) for col in self.worktable]
 
         # width of worktable
         if self.width:
-            # adjust widths of collumns to fit in worktable width
+            # adjust widths of columns to fit in worktable width
             cwidth = self.width // ncols
             rest = self.width % ncols
             # get the width of each col, spreading the rest among the first cols
@@ -589,7 +589,7 @@ class EvTable(object):
 
     def _generate_lines(self):
         """
-        Generates lines across all collumns
+        Generates lines across all columns
         (each cell may contain multiple lines)
         Before calling, the table must be
         balanced.
@@ -612,27 +612,27 @@ class EvTable(object):
         self.header = True
         self.add_row(ypos=0, *args, **kwargs)
 
-    def add_collumn(self, *args, **kwargs):
+    def add_column(self, *args, **kwargs):
         """
-        Add a collumn to table. If there are more
-        rows in new collumn than there are rows in the
+        Add a column to table. If there are more
+        rows in new column than there are rows in the
         current table, the table will expand with
-        empty rows in the other collumns. If too few,
-        the new collumn with get new empty rows. All
+        empty rows in the other columns. If too few,
+        the new column with get new empty rows. All
         filling rows are added to the end.
         keyword-
-            header - the header text for the collumn
+            header - the header text for the column
             xpos - index position in table before which
-                   to input new collumn. If not given,
-                   collumn will be added to the end. Uses
-                   Python indexing (so first collumn is xpos=0)
+                   to input new column. If not given,
+                   column will be added to the end. Uses
+                   Python indexing (so first column is xpos=0)
         See Cell class for other keyword arguments
         """
         # this will replace default options with new ones without changing default
         options = dict(self.options.items() + kwargs.items())
 
         xpos = kwargs.get("xpos", None)
-        collumn = [Cell(data, **options) for data in args]
+        column = [Cell(data, **options) for data in args]
         htable = self.nrows
         excess = self.ncols - htable
 
@@ -641,23 +641,23 @@ class EvTable(object):
             for col in self.table:
                 col.extend([Cell("", **options) for i in range(excess)])
         elif excess < 0:
-            # we need to add new rows to new collumn
-            collumn.extend([Cell("", **options) for i in range(abs(excess))])
+            # we need to add new rows to new column
+            column.extend([Cell("", **options) for i in range(abs(excess))])
 
         header = kwargs.get("header", None)
         if header:
-            collumn.insert(0, Cell(unicode(header), **options))
+            column.insert(0, Cell(unicode(header), **options))
             self.header = True
         elif self.header:
             # we have a header already. Offset
-            collumn.insert(0, Cell("", **options))
+            column.insert(0, Cell("", **options))
         if xpos is None or xpos > len(self.table) - 1:
             # add to the end
-            self.table.append(collumn)
+            self.table.append(column)
         else:
-            # insert collumn
+            # insert column
             xpos = min(len(self.table)-1, max(0, int(xpos)))
-            self.table.insert(xpos, collumn)
+            self.table.insert(xpos, column)
         self._balance()
 
     def add_row(self, *args, **kwargs):
@@ -665,7 +665,7 @@ class EvTable(object):
         Add a row to table (not a header). If there are
         more cells in the given row than there are cells
         in the current table the table will be expanded
-        with empty collumns to match. These will be added
+        with empty columns to match. These will be added
         to the end of the table. In the same way, adding
         a line with too few cells will lead to the last
         ones getting padded.
@@ -685,7 +685,7 @@ class EvTable(object):
         excess = len(row) - len(self.table)
 
         if excess > 0:
-            # we need to add new empty collumns to table
+            # we need to add new empty columns to table
             self.table.extend([[Cell("", **options) for i in range(htable)] for k in range(excess)])
         elif excess < 0:
             # we need to add more cells to row
