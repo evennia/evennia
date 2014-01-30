@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 """
 
-Evtable
+Mudtable
 
 This is an advanced ASCII table creator. It was inspired
 by prettytable but shares no code.
