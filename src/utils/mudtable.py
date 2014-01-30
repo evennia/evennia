@@ -315,6 +315,18 @@ class Cell(object):
         "Get width of cell, including padding"
         return len(self.formatted[0]) if self.formatted else 0
 
+    def replace_data(self, data, **kwargs):
+        """
+        Replace cell data. This causes a full reformat of the cell.
+
+        kwargs - like when creating the cell anew.
+        """
+        self.data = self._split_lines(unicode(data))
+        #self.data = self._split_lines(ANSIString(unicode(data)))
+        self.raw_width = max(len(line) for line in self.data)
+        self.raw_height = len(self.data)
+        self.reformat(**kwargs)
+
     def reformat(self, **kwargs):
         """
         Reformat the Cell with new options
