@@ -53,7 +53,7 @@ and then added the extra collumn and row, the result would be
 +-----------+------------+-----------+-----------+
 
 When adding new rows/collumns their data can have its
-own allignments (left/center/right, top/center/bottom).
+own alignments (left/center/right, top/center/bottom).
 
 Contrary to prettytable, Evtable does not allow
 for importing from files.
@@ -99,8 +99,8 @@ class Cell(object):
             fill_char - character used for horizontal fill (default " ")
             vfill_char - character used for vertical fill (default " ")
 
-            allign - "l", "r" or  "c", default is centered
-            vallign - "t", "b" or "c", default is centered
+            align - "l", "r" or  "c", default is centered
+            valign - "t", "b" or "c", default is centered
 
             border_left - left border width
             border_right - right border width
@@ -151,9 +151,9 @@ class Cell(object):
         self.corner_bottom_left = kwargs.get("corner_bottom_left", self.corner)
         self.corner_bottom_right = kwargs.get("corner_bottom_right", self.corner)
 
-        # allignments
-        self.allign = kwargs.get("allign", "c")
-        self.vallign = kwargs.get("vallign", "c")
+        # alignments
+        self.align = kwargs.get("align", "c")
+        self.valign = kwargs.get("valign", "c")
 
         self.data = self._split_lines(unicode(data))
         #self.data = self._split_lines(ANSIString(unicode(data)))
@@ -181,7 +181,7 @@ class Cell(object):
 
     def _reformat(self):
         "Apply formatting"
-        return self._border(self._pad(self._vallign(self._allign(self._fit_width(self.data)))))
+        return self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
 
     def _split_lines(self, text):
         "Simply split by linebreak"
@@ -219,19 +219,19 @@ class Cell(object):
             side = (excess // 2) * pad_char
             return side + text + side
 
-    def _allign(self, data):
+    def _align(self, data):
         "Align list of rows of cell"
-        allign = self.allign
-        if allign == "l":
+        align = self.align
+        if align == "l":
             return [line.ljust(self.width, self.fill_char) for line in data]
-        elif allign == "r":
+        elif align == "r":
             return [line.rjust(self.width, self.fill_char) for line in data]
         else:
             return [self._center(line, self.width, self.fill_char) for line in data]
 
-    def _vallign(self, data):
-        "Allign cell vertically"
-        vallign = self.vallign
+    def _valign(self, data):
+        "align cell vertically"
+        valign = self.valign
         height = self.height
         cheight = len(data)
         excess = height - cheight
@@ -240,9 +240,9 @@ class Cell(object):
         if excess <= 0:
             return data
         # only care if we need to add new lines
-        if vallign == 't':
+        if valign == 't':
             return data + [padline for i in range(excess)]
-        elif vallign == 'b':
+        elif valign == 'b':
             return [padline for i in range(excess)] + data
         else: # center
             narrowside = [padline  for i in range(excess // 2)]
@@ -330,7 +330,7 @@ class Cell(object):
 
     def get(self):
         """
-        Get data, padded and alligned in the form of a list of lines.
+        Get data, padded and aligned in the form of a list of lines.
         """
         return self.formatted
 
@@ -570,7 +570,7 @@ class EvTable(object):
             # get the width of each col, spreading the rest among the first cols
             cwidths = [cwidth + 1 if icol < rest else cwidth for icol, width in enumerate(cwidths)]
 
-        # reformat worktable (for width allign)
+        # reformat worktable (for width align)
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
                 cell.reformat(width=cwidths[ix], **self.options)
@@ -578,7 +578,7 @@ class EvTable(object):
         # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
         cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
 
-        # reformat table (for vertical allign)
+        # reformat table (for vertical align)
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
                 cell.reformat(height=cheights[iy], **self.options)
