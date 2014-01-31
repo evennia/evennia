@@ -7,7 +7,7 @@ database-connection tied to itself through a property.
 The instances of all the different object types are all tied to their
 own database object stored in the 'dbobj' property.  All attribute
 get/set operations are channeled transparently to the database object
-as desired. You should normally nevfer have to worry about the database
+as desired. You should normally never have to worry about the database
 abstraction, just do everything on the TypeClass object.
 
 That an object is controlled by a player/user is just defined by its
