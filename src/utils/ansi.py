@@ -370,8 +370,8 @@ class ANSIString(unicode):
         self.parser = kwargs.pop('parser', ANSI_PARSER)
         super(ANSIString, self).__init__(*args, **kwargs)
         self.raw_string = unicode(self)
-        self.clean_string = self.parser.parse_ansi(
-            self.raw_string, strip_ansi=True)
+        self.clean_string = unicode(self.parser.parse_ansi(
+            self.raw_string, strip_ansi=True))
         self._code_indexes, self._char_indexes = self._get_indexes()
 
     def __len__(self):
@@ -554,14 +554,14 @@ def _transform(func_name):
     with the resulting string.
     """
     def wrapped(self, *args, **kwargs):
-        replacement_string = _query_super(func_name)(*args, **kwargs)
+        replacement_string = _query_super(func_name)(self, *args, **kwargs)
         to_string = []
         for index in range(0, len(self.raw_string)):
             if index in self._code_indexes:
                 to_string.append(self.raw_string[index])
             elif index in self._char_indexes:
                 to_string.append(replacement_string[index])
-            return ANSIString(''.join(to_string), decoded=True)
+        return ANSIString(''.join(to_string), decoded=True)
     return wrapped
 
 
