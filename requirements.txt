@@ -3,5 +3,5 @@
 
 django >= 1.5
 twisted >= 11.0
-pil
+pillow
 south >= 0.8.4
