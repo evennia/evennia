@@ -1,8 +1,7 @@
-
 # Evennia dependencies. If using pip, this file can be used to install
 # dependencies directly, using 'pip install -r requirements.txt'.
 
 django >= 1.5
 twisted >= 11.0
 pil
-south >= 0.8
+south >= 0.8.4
