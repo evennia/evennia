@@ -289,9 +289,6 @@ class CmdOOC(MuxPlayerCommand):
             return
 
         player.db._last_puppet = old_char
-        # save location as if we were disconnecting from the game entirely.
-        if old_char.location:
-            old_char.location.msg_contents("%s has left the game." % old_char.key, exclude=[old_char])
 
         # disconnect
         if player.unpuppet_object(sessid):
