@@ -1,9 +1,11 @@
-
 Changelog
 ---------
 
+Jan 2014:
+Moved EVennia project from Google Code to github.com/evennia/evennia.
+
 Nov 2013:
-Moved the internal webserver with the Server and added support for
+Moved the internal webserver into the Server and added support for
 out-of-band protocols (MSDP initially). This large development push
 also meant fixes and cleanups of the way attributes were handled.
 Tags were added, along with proper handlers for permissions, nicks
