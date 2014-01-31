@@ -356,6 +356,8 @@ class ANSIString(unicode):
         decode strings, as escapes can only be respected once.
         """
         string = args[0]
+        if not isinstance(string, basestring):
+            string = str(string)
         args = args[1:]
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, 'raw_string')
