@@ -93,16 +93,17 @@ appreciate all help!  Visit either of the following resources:
   http://evennia.com
 
 * Evennia manual (wiki)
-  http://code.google.com/p/evennia/wiki/Index
-
+  https://github.com/evennia/evennia/wiki
+  
 * Evennia Code Page (See INSTALL text for installation)
-  http://code.google.com/p/evennia/source/checkout
+  https://github.com/evennia/evennia
 
 * Bug tracker
-  http://code.google.com/p/evennia/issues/list
+  https://github.com/evennia/evennia/issues
 
 * IRC channel
-  visit channel #evennia on the Freenode IRC network
+  visit channel #evennia on irc.freenode.com
+  or online client: http://tinyurl.com/evchat
 
 
 Directory structure
@@ -129,17 +130,17 @@ of Evennia's functionality. Import ev into a python interpreter
 The game/ folder is where you develop your game. The root
 of this directory contains the settings file and the executables
 to start the server. Under game/gamesrc you will create the
-modules that will define your game.
+modules that defines your game.
 
 src/ contains the Evennia library. As a normal user you should
-not edit anything in this folder - you will run into mercurial
+not edit anything in this folder - you will run into conflicts
 conflicts as we update things from our end. If you see code
 you like (such as that of a default command), copy&paste it
-into a new module in game/gamesrc/ instead. If you find that
-src/ doesn't support a functionality you need, issue a Feature
-request or a bug report appropriately.
-If you do add functionality or fix bugs in src yourself, please
-consider contributing it to Evennia main to help us improve!
+into a new module in game/gamesrc/. If you find that src/ doesn't 
+support a functionality you need, issue a Feature
+request or a bug report appropriately. If you do add functionality 
+or fix bugs in src/ yourself, please consider contributing it to 
+Evennia's main repo to help us improve!
 
 contrib/ contains optional code snippets. These are potentially useful
 but are deemed to be too game-specific to be part of the server itself.
