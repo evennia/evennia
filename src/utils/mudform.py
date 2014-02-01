@@ -65,6 +65,13 @@ import copy
 from src.utils.mudtable import Cell, MudTable
 from src.utils.utils import all_from_module
 
+# non-valid form-identifying characters (which can thus be
+# used as separators between forms without being detected
+# as an identifier). These should be listed in regex form.
+
+INVALID_FORMCHARS = r"\s\-\|\*\#\<\>\~\^"
+
+
 class MudForm(object):
     """
     This object is instantiated with a text file and parses
@@ -118,8 +125,8 @@ class MudForm(object):
         table_coords = {}
 
         # Locate the identifier tags and the horizontal end coords for all forms
-        re_cellchar = re.compile(r"%s+([^%s])%s+" % (cellchar, cellchar, cellchar))
-        re_tablechar = re.compile(r"%s+([^%s])%s+" % (tablechar, tablechar, tablechar))
+        re_cellchar =  re.compile(r"%s+([^%s%s])%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar))
+        re_tablechar = re.compile(r"%s+([^%s%s|])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar))
         for iy, line in enumerate(form):
             # find cells
             ix0 = 0
@@ -137,6 +144,7 @@ class MudForm(object):
                 match = re_tablechar.search(line, ix0)
                 if match:
                     # get the width of the rectangle directly from the match
+                    print "table.match:", match.group(), match.group(1)
                     table_coords[match.group(1)] = [iy, match.start(), match.end()]
                     ix0 = match.end()
                 else:

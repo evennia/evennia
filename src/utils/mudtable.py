@@ -146,7 +146,7 @@ class Cell(object):
         """
 
         padwidth = kwargs.get("pad_width", None)
-        padwidth = int(padwidth) if padwidth else None
+        padwidth = int(padwidth) if padwidth is not None else None
         self.pad_left = int(kwargs.get("pad_left", padwidth if padwidth is not None else 1))
         self.pad_right = int(kwargs.get("pad_right", padwidth if padwidth is not None else 1))
         self.pad_top = int( kwargs.get("pad_top", padwidth if padwidth is not None else 0))
@@ -380,7 +380,7 @@ class Cell(object):
         # keywords that require manipulation
 
         padwidth = kwargs.get("pad_width", None)
-        padwidth = int(padwidth) if padwidth else None
+        padwidth = int(padwidth) if padwidth is not None else None
         self.pad_left = int(kwargs.get("pad_left", padwidth if padwidth is not None else self.pad_left))
         self.pad_right = int(kwargs.get("pad_right", padwidth if padwidth is not None else self.pad_right))
         self.pad_top = int( kwargs.get("pad_top", padwidth if padwidth is not None else self.pad_top))
@@ -468,6 +468,8 @@ class MudTable(object):
             header - True/False - turn off header being treated
                     as a header (like extra underlining)
 
+            pad_width - how much empty space to pad your cells with
+                        (default is 1)
             border - None, or one of
                     "table" - only a border around the whole table
                     "tablecols" - table and column borders
@@ -746,6 +748,7 @@ class MudTable(object):
                 # get minimum possible cell heights for each collumn
                 cheights_min = [max(cell.get_min_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
                 chmin = sum(cheights_min)
+                #print "cheights_min:", cheights_min
 
                 if chmin > self.height:
                     # we cannot shrink any more
@@ -759,15 +762,21 @@ class MudTable(object):
                 even = self.height % 2 == 0
                 for i in range(excess):
                     # expand the cells with the most rows first
-                    ci = cheights.index(max(cheights))
+                    if 0 <= i < nrowmax and nrowmax > 1:
+                        # avoid adding to header first round (looks bad on very small tables)
+                        ci = cheights[1:].index(max(cheights[1:])) + 1
+                    else:
+                        ci = cheights.index(max(cheights))
                     cheights_min[ci] += 1
                     if ci == 0 and self.header:
+                        # it doesn't look very good if header expands too fast
                         cheights[ci] -= 2 if even else 3
                     cheights[ci] -= 2 if even else 1
                 cheights = cheights_min
 
                 # we must tell cells to crop instead of expanding
             options["enforce_size"] = True
+        #print "cheights2:", cheights
 
         # reformat table (for vertical align)
         for ix, col in enumerate(self.worktable):
