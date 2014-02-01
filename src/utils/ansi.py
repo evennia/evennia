@@ -358,12 +358,11 @@ class ANSIString(unicode):
         string = args[0]
         if not isinstance(string, basestring):
             string = str(string)
-        args = args[1:]
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, 'raw_string')
         if not decoded:
             string = parser.parse_ansi(string)
-        return super(ANSIString, cls).__new__(ANSIString, string, *args)
+        return super(ANSIString, cls).__new__(ANSIString, string, 'utf-8')
 
     def __repr__(self):
         return "ANSIString(%s, decoded=True)" % repr(self.raw_string)
@@ -373,7 +372,7 @@ class ANSIString(unicode):
         super(ANSIString, self).__init__(*args, **kwargs)
         self.raw_string = unicode(self)
         self.clean_string = unicode(self.parser.parse_ansi(
-            self.raw_string, strip_ansi=True))
+            self.raw_string, strip_ansi=True), 'utf-8')
         self._code_indexes, self._char_indexes = self._get_indexes()
 
     def __len__(self):
