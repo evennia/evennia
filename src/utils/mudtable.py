@@ -64,14 +64,6 @@ contents being cropped. Each cell can only shrink
 to a minimum width and height of 1.
 
 
-
-
-
-
-
-Contrary to prettytable, Mudtable does not allow
-for importing from files.
-
 It is intended to be used with ANSIString for supporting
 ANSI-coloured string types.
 
@@ -329,7 +321,8 @@ class Cell(object):
         left = self.border_left_char * self.border_left
         right = self.border_right_char * self.border_right
 
-        cwidth = self.width + self.pad_left + self.pad_right + (self.border_left-1) + (self.border_right-1)
+        cwidth = self.width + self.pad_left + self.pad_right + \
+                 max(0,self.border_left-1) + max(0, self.border_right-1)
 
         vfill = self.corner_top_left if left else ""
         vfill += cwidth * self.border_top_char
@@ -355,7 +348,6 @@ class Cell(object):
         Get the minimum possible width of cell, including at least one
         character-width for data.
         """
-        print "min width:",  self.pad_left, self.pad_right, self.border_left, self.border_right, 1
         return self.pad_left + self.pad_right + self.border_left + self.border_right + 1
 
     def get_height(self):
@@ -490,7 +482,7 @@ class MudTable(object):
             corner_char - character to use in corners when border is
                           active.
             header_line_char - characters to use for underlining
-                                    the header row (default is '=')
+                                    the header row (default is '~')
                                     Requires border to be active.
 
             width - fixed width of table. If not set, width is
@@ -534,8 +526,8 @@ class MudTable(object):
         # header border underling etc. We only allow this if a header
         # was actually set
         self.header = kwargs.pop("header", self.header) if self.header else False
-        hchar = kwargs.pop("header_line_char", "=")
-        self.header_line_char = hchar[0] if hchar else "="
+        hchar = kwargs.pop("header_line_char", "~")
+        self.header_line_char = hchar[0] if hchar else "~"
 
         border = kwargs.pop("border", None)
         if not border in (None, "none", "table", "tablecols",
@@ -787,6 +779,7 @@ class MudTable(object):
         # calculate actual table width/height in characters
         self.cwidth = sum(cwidths)
         self.cheight = sum(cheights)
+        print "actual table width, height:", self.cwidth, self.cheight, self.width, self.height
 
     def _generate_lines(self):
         """
