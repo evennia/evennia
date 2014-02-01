@@ -101,7 +101,7 @@ This produces the following result:
 |   |**|*  | Herbalism  |14         |990/1400    |
 |   |* |   | Smithing   |9          |205/900     |
 |          |                                     |
- ------------------------------------------------
+ `----------------------------------------------´
 
 The marked forms have been replaced with Cells of text and with
 EvTables. The form can be updated by simply re-applying form.map()
@@ -120,7 +120,6 @@ form will raise an error.
 
 import re
 import copy
-from src.utils.ansi import ANSIString
 from src.utils.evtable import Cell, EvTable
 from src.utils.utils import all_from_module, to_str, to_unicode
 
@@ -371,7 +370,7 @@ class EvForm(object):
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        self.raw_form = ANSIString(datadict.get("FORM", "")).split("\n")
+        self.raw_form = to_unicode(datadict.get("FORM", "")).split("\n")
         # strip first line
         self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
 
