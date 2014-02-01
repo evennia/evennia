@@ -790,7 +790,7 @@ class MudTable(object):
         # calculate actual table width/height in characters
         self.cwidth = sum(cwidths)
         self.cheight = sum(cheights)
-        print "actual table width, height:", self.cwidth, self.cheight, self.width, self.height
+        #print "actual table width, height:", self.cwidth, self.cheight, self.width, self.height
 
     def _generate_lines(self):
         """

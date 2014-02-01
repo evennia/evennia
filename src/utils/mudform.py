@@ -15,78 +15,149 @@ object when displaying the form.
 
 Example of input file testform.py:
 
-
-CELLCHAR = "x"
+FORMCHAR = "x"
 TABLECHAR = "c"
+
 FORM = '''
- .-------------------------------------.
-/                                       \
-| Name: xxx1xxxx   Player: xxxxx2xxxxx  |
-|                                       |
->~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<
-| Desc: xxxxxxxxxxx   Str:x4x  Dex:x5x  |
-|       xxxxx3xxxxx   Int:x6x  Sta:x7x  |
-|       xxxxxxxxxxx   Luc:x8x  Mag:x9x  |
-|                                       |
->~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<
-|                                       |
-| Skills:                               |
-| ccccccccccccccccccccccccccccccccccccc |
-| ccccccccccccccccccccccccccccccccccccc |
-| ccccccccccccccccccccccccccccccccccccc |
-|                                       |
-`--------------------------------------´
+.------------------------------------------------.
+|                                                |
+|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
+|        xxxxxxxxxxx                             |
+|                                                |
+ >----------------------------------------------<
+|                                                |
+| Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |
+|        xxxxx3xxxxx    INT: x6x    STA: x7x     |
+|        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |
+|                                                |
+ >----------------------------------------------<
+|          |                                     |
+| cccccccc | ccccccccccccccccccccccccccccccccccc |
+| cccccccc | ccccccccccccccccccccccccccccccccccc |
+| cccAcccc | ccccccccccccccccccccccccccccccccccc |
+| cccccccc | ccccccccccccccccccccccccccccccccccc |
+| cccccccc | cccccccccccccccccBccccccccccccccccc |
+|          |                                     |
+`-----------------------------------------------´
 '''
 
-The first line of the FORM string is ignored.
+The first line of the FORM string is ignored. The forms and table
+markers must mark out complete, unbroken rectangles, each containing
+one embedded single-character identifier (so the smallest element
+possible is a 3-character wide form). The identifier can be any
+character except for the FORM_CHAR and TABLE_CHAR and some of the
+common ascii-art elements, like space, _ | * etc (see
+INVALID_FORMCHARS in this module). Form Rectangles can have any size,
+but must be separated from each other by at least one other
+character's width.
 
 Use as follows:
 
-    MudForm("path/to/testform.py")
+    import mudform
 
+    # create a new form from the template
+    form = mudform.MudForm("path/to/testform.py")
 
-By marking out rectangles, this area gets reserved for the Cell.
-Embedded inside each area must be a one-character identifier to tag
-the area (so the smallest form size is 3 characters including the
-marker). This marker is any character except the designated formchar
-("x" in this case). Rectangles can have any size, but must be
-separated from each other by at least one other character's width.
+    # add data to each tagged form cell
+    form.map(cells={1: "Tom the Bouncer",
+                    2: "Griatch",
+                    3: "A sturdy fellow",
+                    4: 12,
+                    5: 10,
+                    6:  5,
+                    7: 18,
+                    8: 10,
+                    9:  3})
+    # create the MudTables
+    tableA = mudform.MudTable("HP","MV","MP",
+                               table=[["**"], ["*****"], ["***"]],
+                               border="incols")
+    tableB = mudform.MudTable("Skill", "Value", "Exp",
+                               table=[["Shooting", "Herbalism", "Smithing"],
+                                      [12,14,9],["550/1200", "990/1400", "205/900"]],
+                               border="incols")
+    # add the tables to the proper ids in the form
+    form.map(tables={"A": tableA,
+                     "B": tableB}
+    print form
 
-Parsing this file will result in a CharMap object. This is
-primed with a dictionary of {<tag>:function} where the function
-is responsible for producing a string for each form location. The
-Cell in each location will enforce the size given by the template
-and will crop too-long text.
+This produces the following result:
+
+.------------------------------------------------.
+|                                                |
+|  Name: Tom the        Player: Griatch          |
+|        Bouncer                                 |
+|                                                |
+>----------------------------------------------<
+|                                                |
+| Desc:  A sturdy       STR: 12     DEX: 10      |
+|        fellow         INT: 5      STA: 18      |
+|                       LUC: 10     MAG: 3       |
+|                                                |
+>----------------------------------------------<
+|          |                                     |
+| HP|MV|MP | Skill      |Value      |Exp         |
+| ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
+| **|**|** | Shooting   |12         |550/1200    |
+|   |**|*  | Herbalism  |14         |990/1400    |
+|   |* |   | Smithing   |9          |205/900     |
+|          |                                     |
+ ------------------------------------------------
+
+The marked forms have been replaced with Cells of text and with
+MudTables. The form can be updated by simply re-applying form.map()
+with the updated data.
+
+When working with the template ascii file, you can use form.reload()
+to re-read the template and re-apply all existing mappings.
+
+Each component is restrained to the width and height specified by the
+template, so it will resize to fit (or crop text if the area is too
+small for it. If you try to fit a table into an area it cannot fit
+into (when including its borders and at least one line of text), the
+form will raise an error.
 
 """
 
 import re
 import copy
 from src.utils.mudtable import Cell, MudTable
-from src.utils.utils import all_from_module
+from src.utils.utils import all_from_module, to_str, to_unicode
 
 # non-valid form-identifying characters (which can thus be
 # used as separators between forms without being detected
 # as an identifier). These should be listed in regex form.
 
-INVALID_FORMCHARS = r"\s\-\|\*\#\<\>\~\^"
-
+INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 
 class MudForm(object):
     """
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
     mapping so as to populate the fields with fixed-width
-    Cell objects for displaying
-    """
-    def __init__(self, filename, cells=None, tables=None, **kwargs):
-        """
-        Read the template file and parse it for formfields
+    Cell or Tablets.
 
-        kwargs:
-            <identifier> - text for fill into form
+
+    """
+    def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
+        """
+        Initiate the form
+
+        keywords:
+            filename - path to template file
+            form - dictionary of {"CELLCHAR":char,
+                                  "TABLECHAR":char,
+                                  "FORM":templatestring}
+                    if this is given, filename is not read.
+            cells - a dictionary mapping of {id:text}
+            tables -  dictionary mapping of {id:MudTable}
+
+        other kwargs are fed as options to the Cells and MudTablets
+        (see mudtablet.Cell and mudtablet.MudTablet for more info).
+
         """
         self.filename = filename
+        self.input_form_dict = form
 
         self.cells_mapping =  dict((str(key), value) for key, value in cells.items()) if cells  else {}
         self.tables_mapping = dict((str(key), value) for key, value in tables.items()) if tables else {}
@@ -144,12 +215,11 @@ class MudForm(object):
                 match = re_tablechar.search(line, ix0)
                 if match:
                     # get the width of the rectangle directly from the match
-                    print "table.match:", match.group(), match.group(1)
                     table_coords[match.group(1)] = [iy, match.start(), match.end()]
                     ix0 = match.end()
                 else:
                     break
-        print "table_coords:", table_coords
+        #print "table_coords:", table_coords
 
         # get rectangles and assign Cells
         for key, (iy, leftix, rightix) in cell_coords.items():
@@ -222,15 +292,13 @@ class MudForm(object):
 
             # we have all the coordinates we need. Create Table.
             table = self.tables_mapping.get(key, None)
-            #if key == "1":
-            print "creating table '%s' (%s):" % (key, data)
-            print "iy=%s, iyup=%s, iydown=%s, leftix=%s, rightix=%s, width=%s, height=%s" % (iy, iyup, iydown, leftix, rightix, width, height)
+            #print "creating table '%s' (%s):" % (key, data)
+            #print "iy=%s, iyup=%s, iydown=%s, leftix=%s, rightix=%s, width=%s, height=%s" % (iy, iyup, iydown, leftix, rightix, width, height)
 
             options = { "pad_left":0, "pad_right":0, "pad_top":0, "pad_bottom":0,
                         "align":"l", "valign":"t", "enforce_size":True}
             options.update(custom_options)
-            #if key=="4":
-            print "options:", options
+            #print "options:", options
 
             if table:
                 table.reformat(width=width, height=height, **options)
@@ -258,22 +326,26 @@ class MudForm(object):
         """
         Add mapping for form.
 
-        keywords:
-            <identifier> - text
+        cells - a dictionary of {identifier:celltext}
+        tables - a dictionary of {identifier:table}
+
+        kwargs will be forwarded to tables/cells. See
+        mudtable.Cell and mudtable.MudTable for info.
+
         """
         # clean kwargs (these cannot be overridden)
         kwargs.pop("enforce_size", None)
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        new_cells =  dict((str(key), value) for key, value in cells.items()) if cells  else {}
-        new_tables = dict((str(key), value) for key, value in tables.items()) if tables else {}
+        new_cells =  dict((to_str(key), value) for key, value in cells.items()) if cells  else {}
+        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
 
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)
         self.reload()
 
-    def reload(self, filename=None, **kwargs):
+    def reload(self, filename=None, form=None, **kwargs):
         """
         Creates the form from a stored file name
         """
@@ -282,19 +354,23 @@ class MudForm(object):
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        if filename:
+        if form or self.input_form_dict:
+            datadict = form if form else self.input_form_dict
+            self.input_form_dict = datadict
+        elif filename or self.filename:
+            filename = filename if filename else self.filename
+            datadict = all_from_module(filename)
             self.filename = filename
-        filename = self.filename
+        else:
+            datadict = {}
 
-        datadict = all_from_module(filename)
-
-        cellchar = datadict.get("CELLCHAR", "x")
-        self.cellchar = cellchar[0] if len(cellchar) > 1 else cellchar
+        cellchar = to_str(datadict.get("FORMCHAR", "x"))
+        self.cellchar = to_str(cellchar[0] if len(cellchar) > 1 else cellchar)
         tablechar = datadict.get("TABLECHAR", "c")
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        self.raw_form = datadict.get("FORM", "").split("\n")
+        self.raw_form = to_unicode(datadict.get("FORM", "")).split("\n")
         # strip first line
         self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
 
@@ -306,6 +382,6 @@ class MudForm(object):
 
     def __str__(self):
         "Prints the form"
-        return "\n".join(self.form)
+        return "\n".join([to_str(line) for line in self.form])
 
 
