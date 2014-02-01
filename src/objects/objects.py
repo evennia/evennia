@@ -259,7 +259,7 @@ class Object(TypeClass):
                location=location,
                attribute_name=attribute_name,
                quiet=quiet,
-               exact=False)
+               exact=exact)
 
     def execute_cmd(self, raw_string, sessid=None):
         """
