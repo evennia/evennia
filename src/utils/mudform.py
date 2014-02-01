@@ -130,6 +130,7 @@ from src.utils.utils import all_from_module, to_str, to_unicode
 
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 
+
 class MudForm(object):
     """
     This object is instantiated with a text file and parses
