@@ -1,7 +1,6 @@
 # coding=utf-8
 """
-Evform - a way to create advanced ascii forms
-
+Mudform - a way to create advanced ascii forms
 
 This is intended for creating advanced ascii game forms, such as a
 large pretty character sheet or info document.
@@ -68,11 +67,11 @@ Use as follows:
                     7: 18,
                     8: 10,
                     9:  3})
-    # create the MudTables
-    tableA = mudform.MudTable("HP","MV","MP",
+    # create the EvTables
+    tableA = mudform.EvTable("HP","MV","MP",
                                table=[["**"], ["*****"], ["***"]],
                                border="incols")
-    tableB = mudform.MudTable("Skill", "Value", "Exp",
+    tableB = mudform.EvTable("Skill", "Value", "Exp",
                                table=[["Shooting", "Herbalism", "Smithing"],
                                       [12,14,9],["550/1200", "990/1400", "205/900"]],
                                border="incols")
@@ -102,10 +101,10 @@ This produces the following result:
 |   |**|*  | Herbalism  |14         |990/1400    |
 |   |* |   | Smithing   |9          |205/900     |
 |          |                                     |
- ------------------------------------------------
+ `----------------------------------------------´
 
 The marked forms have been replaced with Cells of text and with
-MudTables. The form can be updated by simply re-applying form.map()
+EvTables. The form can be updated by simply re-applying form.map()
 with the updated data.
 
 When working with the template ascii file, you can use form.reload()
@@ -121,7 +120,7 @@ form will raise an error.
 
 import re
 import copy
-from src.utils.mudtable import Cell, MudTable
+from src.utils.evtable import Cell, EvTable
 from src.utils.utils import all_from_module, to_str, to_unicode
 
 # non-valid form-identifying characters (which can thus be
@@ -131,7 +130,7 @@ from src.utils.utils import all_from_module, to_str, to_unicode
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 
 
-class MudForm(object):
+class EvForm(object):
     """
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
@@ -151,10 +150,10 @@ class MudForm(object):
                                   "FORM":templatestring}
                     if this is given, filename is not read.
             cells - a dictionary mapping of {id:text}
-            tables -  dictionary mapping of {id:MudTable}
+            tables -  dictionary mapping of {id:EvTable}
 
-        other kwargs are fed as options to the Cells and MudTablets
-        (see mudtablet.Cell and mudtablet.MudTablet for more info).
+        other kwargs are fed as options to the Cells and EvTables
+        (see evtablet.Cell and evtable.EvTable for more info).
 
         """
         self.filename = filename
@@ -304,7 +303,7 @@ class MudForm(object):
             if table:
                 table.reformat(width=width, height=height, **options)
             else:
-                table = MudTable(width=width, height=height, **options)
+                table = EvTable(width=width, height=height, **options)
             mapping[key] = (iyup, leftix, width, height, table)
 
         return mapping
@@ -331,7 +330,7 @@ class MudForm(object):
         tables - a dictionary of {identifier:table}
 
         kwargs will be forwarded to tables/cells. See
-        mudtable.Cell and mudtable.MudTable for info.
+        evtable.Cell and evtable.EvTable for info.
 
         """
         # clean kwargs (these cannot be overridden)
