@@ -15,6 +15,7 @@ user.
 """
 import re
 from src.utils import utils
+from src.utils.utils import to_str
 
 # ANSI definitions
 
@@ -355,7 +356,7 @@ class ANSIString(unicode):
         string to be handled as already decoded. It is important not to double
         decode strings, as escapes can only be respected once.
         """
-        string = args[0]
+        string = to_str(args[0], force_string=True)
         if not isinstance(string, basestring):
             string = str(string)
         parser = kwargs.get('parser', ANSI_PARSER)

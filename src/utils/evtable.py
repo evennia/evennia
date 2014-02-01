@@ -1,7 +1,7 @@
 # coding=utf-8
 """
 
-Mudtable
+EvTable
 
 This is an advanced ASCII table creator. It was inspired
 by prettytable but shares no code.
@@ -9,7 +9,7 @@ by prettytable but shares no code.
 
 Example usage:
 
-    table = MudTable("Heading1", "Heading2", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
+    table = EvTable("Heading1", "Heading2", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
     table.add_column("This is long data", "This is even longer data")
     table.add_row("This is a single row")
     print table
@@ -78,7 +78,7 @@ def make_iter(obj):
     return not hasattr(obj, '__iter__') and [obj] or obj
 
 
-# Cell class (see further down for the MudTable itself)
+# Cell class (see further down for the EvTable itself)
 
 class Cell(object):
     """
@@ -446,9 +446,9 @@ class Cell(object):
         return "\n".join(self.formatted)
 
 
-# Main Mudtable class
+# Main Evtable class
 
-class MudTable(object):
+class EvTable(object):
     """
     Table class.
 
