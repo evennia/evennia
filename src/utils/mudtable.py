@@ -529,8 +529,10 @@ class MudTable(object):
         hchar = kwargs.pop("header_line_char", "~")
         self.header_line_char = hchar[0] if hchar else "~"
 
-        border = kwargs.pop("border", None)
-        if not border in (None, "none", "table", "tablecols",
+        border = kwargs.pop("border", "none")
+        if border is None:
+            border = "none"
+        if not border in ("none", "table", "tablecols",
                           "header", "incols", "cols", "rows", "cells"):
             raise Exception("Unsupported border type: '%s'" % border)
         self.border = border
