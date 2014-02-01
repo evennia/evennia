@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 """
 
 Mudtable
@@ -32,29 +32,42 @@ As seen, the table will automatically expand with empty cells to
 make the table symmetric.
 
 Tables can be restricted to a given width.
-If we created the above table with the width=50 keyword to MudTable()
-and then added the extra column and row, the result would be
 
+table.reformat(width=50, align="l")
+
+(We could just have added these keywords to the table
+creation call) yields the following result:
 +-----------+------------+-----------+-----------+
-| Heading1  |  Heading2  |           |           |
+| Heading1  | Heading2   |           |           |
 +===========+============+===========+===========+
-|     1     |      4     |     7     | This is   |
+| 1         | 4          | 7         | This is   |
 |           |            |           | long data |
 +-----------+------------+-----------+-----------+
 |           |            |           | This is   |
-|     2     |      5     |     8     |   even    |
-|           |            |           |  longer   |
-|           |            |           |   data    |
+| 2         | 5          | 8         | even      |
+|           |            |           | longer    |
+|           |            |           | data      |
 +-----------+------------+-----------+-----------+
-|     3     |      6     |     9     |           |
+| 3         | 6          | 9         |           |
 +-----------+------------+-----------+-----------+
 | This is a |            |           |           |
 |  single   |            |           |           |
-|    row    |            |           |           |
+| row       |            |           |           |
 +-----------+------------+-----------+-----------+
 
 When adding new rows/columns their data can have its
 own alignments (left/center/right, top/center/bottom).
+
+If the height is restricted, cells will be restricted
+from expanding vertically. This will lead to text
+contents being cropped. Each cell can only shrink
+to a minimum width and height of 1.
+
+
+
+
+
+
 
 Contrary to prettytable, Mudtable does not allow
 for importing from files.
@@ -64,7 +77,7 @@ ANSI-coloured string types.
 
 """
 from textwrap import wrap
-from copy import deepcopy
+from copy import deepcopy, copy
 
 #from src.utils.ansi import ANSIString
 
@@ -89,34 +102,47 @@ class Cell(object):
                     to this size.
             height - desired height of cell. it will pad
                     to this size
-
+            pad_width - general padding width. This can be overruled
+                       by individual settings below
             pad_left - number of extra pad characters on the left
             pad_right - extra pad characters on the right
             pad_top - extra pad lines top (will pad with vpad_char)
             pad_bottom - extra pad lines bottom (will pad with vpad_char)
-            pad_char - pad character to use both for extra horizontal
-                      padding
+
+            pad_char - pad character to use for padding. This is overruled
+                       by individual settings below (default " ")
+            hpad_char - pad character to use both for extra horizontal
+                      padding (default " ")
             vpad_char - pad character to use for extra vertical padding
                        and for vertical fill (default " ")
-            fill_char - character used for horizontal fill (default " ")
+
+            fill_char - character used to filling (expanding cells to
+                        desired size). This can be overruled by individual
+                        settings below.
+            hfill_char - character used for horizontal fill (default " ")
             vfill_char - character used for vertical fill (default " ")
 
             align - "l", "r" or  "c", default is centered
             valign - "t", "b" or "c", default is centered
 
+            border_width -general border width. This is overruled
+                        - by individual settings below.
             border_left - left border width
             border_right - right border width
             border_top - top border width
             border_bottom - bottom border width
+
+            border_char - this will use a single border char for all borders.
+                          overruled by individual settings below
             border_left_char - char used for left border
-            border_right_char
-            border_top_char
-            border_bottom_char
-            cornerchar - character used when two borders cross.
-                          (default is "")
-            corner_top_left - if this is given, it replaces the
-                            cornerchar in the upper left
-                            corner
+            border_right_char - char used for right border
+            border_top_char   - char used for top border
+            border_bottom_char - char user for bottom border
+
+            corner_char - character used when two borders cross.
+                          (default is ""). This is overruled by
+                          individual settings below.
+            corner_top_left
             corner_top_right
             corner_bottom_left
             corner_bottom_right
@@ -127,38 +153,48 @@ class Cell(object):
                            than the cell growing vertically.
         """
 
-        self.pad_left = int(kwargs.get("pad_left", 1))
-        self.pad_right = int(kwargs.get("pad_right", 1))
-        self.pad_top = int( kwargs.get("pad_top", 0))
-        self.pad_bottom = int(kwargs.get("pad_bottom", 0))
+        padwidth = kwargs.get("pad_width", None)
+        padwidth = int(padwidth) if padwidth else None
+        self.pad_left = int(kwargs.get("pad_left", padwidth if padwidth is not None else 1))
+        self.pad_right = int(kwargs.get("pad_right", padwidth if padwidth is not None else 1))
+        self.pad_top = int( kwargs.get("pad_top", padwidth if padwidth is not None else 0))
+        self.pad_bottom = int(kwargs.get("pad_bottom", padwidth if padwidth is not None else 0))
 
         self.enforce_size = kwargs.get("enforce_size", False)
 
         # avoid multi-char pad_chars messing up counting
         pad_char = kwargs.get("pad_char", " ")
-        self.pad_char = pad_char[0] if pad_char else " "
-        vpad_char = kwargs.get("vpad_char", " ")
-        self.vpad_char = vpad_char[0] if vpad_char else " "
+        pad_char = pad_char[0] if pad_char else " "
+        hpad_char = kwargs.get("hpad_char", pad_char)
+        self.hpad_char = hpad_char[0] if hpad_char else pad_char
+        vpad_char = kwargs.get("vpad_char", pad_char)
+        self.vpad_char = vpad_char[0] if vpad_char else pad_char
+
         fill_char = kwargs.get("fill_char", " ")
-        self.fill_char = fill_char[0] if fill_char else " "
-        vfill_char = kwargs.get("vfill_char", " ")
+        fill_char = fill_char[0] if fill_char else " "
+        hfill_char = kwargs.get("hfill_char", fill_char)
+        self.hfill_char = hfill_char[0] if hfill_char else " "
+        vfill_char = kwargs.get("vfill_char", fill_char)
         self.vfill_char = vfill_char[0] if vfill_char else " "
 
         # borders and corners
-        self.border_left = kwargs.get("border_left", 0)
-        self.border_right = kwargs.get("border_right", 0)
-        self.border_top = kwargs.get("border_top", 0)
-        self.border_bottom = kwargs.get("border_bottom", 0)
-        self.border_left_char = kwargs.get("border_left_char", "|")
-        self.border_right_char = kwargs.get("border_right_char", "|")
-        self.border_top_char = kwargs.get("border_topchar", "-")
-        self.border_bottom_char = kwargs.get("border_bottom_char", "-")
+        borderwidth = kwargs.get("border_width", 0)
+        self.border_left = kwargs.get("border_left", borderwidth)
+        self.border_right = kwargs.get("border_right", borderwidth)
+        self.border_top = kwargs.get("border_top", borderwidth)
+        self.border_bottom = kwargs.get("border_bottom", borderwidth)
 
-        self.corner = kwargs.get("corner", "+")
-        self.corner_top_left = kwargs.get("corner_top_left", self.corner)
-        self.corner_top_right = kwargs.get("corner_top_right", self.corner)
-        self.corner_bottom_left = kwargs.get("corner_bottom_left", self.corner)
-        self.corner_bottom_right = kwargs.get("corner_bottom_right", self.corner)
+        borderchar = kwargs.get("border_char", None)
+        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else "|")
+        self.border_right_char = kwargs.get("border_right_char", borderchar if borderchar else "|")
+        self.border_top_char = kwargs.get("border_topchar", borderchar if borderchar else "-")
+        self.border_bottom_char = kwargs.get("border_bottom_char", borderchar if borderchar else "-")
+
+        corner = kwargs.get("corner_char", "+")
+        self.corner_top_left = kwargs.get("corner_top_left", corner)
+        self.corner_top_right = kwargs.get("corner_top_right", corner)
+        self.corner_bottom_left = kwargs.get("corner_bottom_left", corner)
+        self.corner_bottom_right = kwargs.get("corner_bottom_right", corner)
 
         # alignments
         self.align = kwargs.get("align", "c")
@@ -244,11 +280,11 @@ class Cell(object):
         "Align list of rows of cell"
         align = self.align
         if align == "l":
-            return [line.ljust(self.width, self.fill_char) for line in data]
+            return [line.ljust(self.width, self.hfill_char) for line in data]
         elif align == "r":
-            return [line.rjust(self.width, self.fill_char) for line in data]
+            return [line.rjust(self.width, self.hfill_char) for line in data]
         else:
-            return [self._center(line, self.width, self.fill_char) for line in data]
+            return [self._center(line, self.width, self.hfill_char) for line in data]
 
     def _valign(self, data):
         "align cell vertically"
@@ -280,8 +316,8 @@ class Cell(object):
 
     def _pad(self, data):
         "Pad data with extra characters on all sides"
-        left = self.pad_char * self.pad_left
-        right = self.pad_char * self.pad_right
+        left = self.hpad_char * self.pad_left
+        right = self.hpad_char * self.pad_right
         vfill = (self.width + self.pad_left + self.pad_right) * self.vpad_char
         top = [vfill for i in range(self.pad_top)]
         bottom = [vfill for i in range(self.pad_bottom)]
@@ -293,7 +329,7 @@ class Cell(object):
         left = self.border_left_char * self.border_left
         right = self.border_right_char * self.border_right
 
-        cwidth = self.width + self.pad_left + self.pad_right
+        cwidth = self.width + self.pad_left + self.pad_right + (self.border_left-1) + (self.border_right-1)
 
         vfill = self.corner_top_left if left else ""
         vfill += cwidth * self.border_top_char
@@ -307,12 +343,27 @@ class Cell(object):
 
         return top + [left + line + right for line in data] + bottom
 
+    def get_min_height(self):
+        """
+        Get the minimum possible height of cell, including at least
+        one line for data.
+        """
+        return self.pad_top + self.pad_bottom + self.border_bottom + self.border_top + 1
+
+    def get_min_width(self):
+        """
+        Get the minimum possible width of cell, including at least one
+        character-width for data.
+        """
+        print "min width:",  self.pad_left, self.pad_right, self.border_left, self.border_right, 1
+        return self.pad_left + self.pad_right + self.border_left + self.border_right + 1
+
     def get_height(self):
-        "Get height of cell, including padding"
+        "Get natural height of cell, including padding"
         return len(self.formatted)
 
     def get_width(self):
-        "Get width of cell, including padding"
+        "Get natural width of cell, including padding"
         return len(self.formatted[0]) if self.formatted else 0
 
     def replace_data(self, data, **kwargs):
@@ -333,7 +384,51 @@ class Cell(object):
         kwargs:
             as the class __init__
         """
-        # keywords that require manipulations
+
+        # keywords that require manipulation
+
+        padwidth = kwargs.get("pad_width", None)
+        padwidth = int(padwidth) if padwidth else None
+        self.pad_left = int(kwargs.get("pad_left", padwidth if padwidth is not None else self.pad_left))
+        self.pad_right = int(kwargs.get("pad_right", padwidth if padwidth is not None else self.pad_right))
+        self.pad_top = int( kwargs.get("pad_top", padwidth if padwidth is not None else self.pad_top))
+        self.pad_bottom = int(kwargs.get("pad_bottom", padwidth if padwidth is not None else self.pad_bottom))
+
+        padchar = kwargs.pop("pad_char", None)
+        hpad_char = kwargs.pop("hpad_char", padchar)
+        self.hpad_char = hpad_char[0] if hpad_char else self.hpad_char
+        vpad_char = kwargs.pop("vpad_char", padchar)
+        self.vpad_char = vpad_char[0] if vpad_char else self.vpad_char
+
+        fillchar = kwargs.pop("fill_char", None)
+        hfill_char = kwargs.pop("hfill_char", fillchar)
+        self.hfill_char = hfill_char[0] if hfill_char else self.hfill_char
+        vfill_char = kwargs.pop("vfill_char", fillchar)
+        self.vfill_char = vfill_char[0] if vfill_char else self.vfill_char
+
+        borderwidth = kwargs.get("border_width", None)
+        self.border_left = kwargs.pop("border_left", borderwidth if borderwidth is not None else self.border_left)
+        self.border_right = kwargs.get("border_right", borderwidth if borderwidth is not None else self.border_right)
+        self.border_top = kwargs.get("border_top", borderwidth if borderwidth is not None else self.border_top)
+        self.border_bottom = kwargs.get("border_bottom", borderwidth if borderwidth is not None else self.border_bottom)
+
+        borderchar = kwargs.get("border_char", None)
+        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else self.border_left_char)
+        self.border_right_char = kwargs.get("border_right_char", borderchar if borderchar else self.border_right_char)
+        self.border_top_char = kwargs.get("border_topchar", borderchar if borderchar else self.border_top_char)
+        self.border_bottom_char = kwargs.get("border_bottom_char", borderchar if borderchar else self.border_bottom_char)
+
+        corner = kwargs.get("corner_char", None)
+        self.corner_top_left = kwargs.get("corner_top_left", corner if corner is not None else self.corner_top_left)
+        self.corner_top_right = kwargs.get("corner_top_right", corner if corner is not None else self.corner_top_right)
+        self.corner_bottom_left = kwargs.get("corner_bottom_left", corner if corner is not None else self.corner_bottom_left)
+        self.corner_bottom_right = kwargs.get("corner_bottom_right", corner if corner is not None else self.corner_bottom_right)
+
+        # fill all other properties
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+        # Handle sizes
         if "width" in kwargs:
             width = kwargs.pop("width")
             self.width = width - self.pad_left - self.pad_right - self.border_left - self.border_right
@@ -345,20 +440,7 @@ class Cell(object):
             if self.height <= 0:
                 raise Exception("Cell height too small, no room for data.")
 
-        pad_char = kwargs.pop("padchar", None)
-        self.pad_char = pad_char[0] if pad_char else self.pad_char
-        vpad_char = kwargs.pop("vpadchar", None)
-        self.vpad_char = vpad_char[0] if vpad_char else self.vpad_char
-        fill_char = kwargs.pop("fillchar", None)
-        self.fill_char = fill_char[0] if fill_char else self.fill_char
-        vfill_char = kwargs.pop("vfillchar", None)
-        self.vfill_char = vfill_char[0] if vfill_char else self.vfill_char
-
-        # fill all other properties
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-        # reformat (this is with padding)
+        # reformat (to new sizes, padding, header and borders)
         self.formatted = self._reformat()
 
     def get(self):
@@ -391,19 +473,41 @@ class MudTable(object):
             table - list of columns (list of lists) for seeding
                     the table. If not given, the table will start
                     out empty
+            header - True/False - turn off header being treated
+                    as a header (like extra underlining)
+
             border - None, or one of
                     "table" - only a border around the whole table
                     "tablecols" - table and column borders
                     "header" - only border under header
-                    "cols" - only borders between columns
+                    "cols" - only vertical borders
+                    "incols" - vertical borders, no outer edges
                     "rows" - only borders between rows
                     "cells" - border around all cells
+            border_width - width of table borders, if border is active.
+                          Note that widths wider than 1 may give artifacts in the
+                          corners. Default is 1.
+            corner_char - character to use in corners when border is
+                          active.
+            header_line_char - characters to use for underlining
+                                    the header row (default is '=')
+                                    Requires border to be active.
+
             width - fixed width of table. If not set, width is
                     set by the total width of each column.
-                    This will resize individual columns to fit.
+                    This will resize individual columns in
+                    the vertical direction to fit.
+            height - fixed height of table. Defaults to unset.
+                     Width is still given precedence. If
+                     height is given, table cells will crop
+                     text rather than expand vertically.
+            evenwidth - (default True). Used with the width keyword.
+                     Adjusts collumns to have as even width as
+                     possible. This often looks best also for
+                     mixed-length tables.
 
-            See also Cell class for kwargs to apply to each
-            individual data cell in the table.
+            See Cell class for further kwargs. These will be passed
+            to each cell in the table.
 
         """
         # table itself is a 2D grid - a list of columns
@@ -426,14 +530,26 @@ class MudTable(object):
                     self.table[ix].insert(0, heading)
             else:
                 self.table = [[heading] for heading in header]
+        # even though we inserted the header, we can still turn off
+        # header border underling etc. We only allow this if a header
+        # was actually set
+        self.header = kwargs.pop("header", self.header) if self.header else False
+        hchar = kwargs.pop("header_line_char", "=")
+        self.header_line_char = hchar[0] if hchar else "="
 
         border = kwargs.pop("border", None)
-        if not border in (None, "table", "tablecols", "header", "cols", "rows", "cells"):
+        if not border in (None, "none", "table", "tablecols",
+                          "header", "incols", "cols", "rows", "cells"):
             raise Exception("Unsupported border type: '%s'" % border)
         self.border = border
 
+        # border settings are passed into Cell as well (so kwargs.get and not pop)
+        self.border_width = kwargs.get("border_width", 1)
+        self.corner_char = kwargs.get("corner_char", "+")
+
         self.width = kwargs.pop("width", None)
-        self.horizontal = kwargs.pop("horizontal", False)
+        self.height = kwargs.pop("height", None)
+        self.evenwidth = kwargs.pop("evenwidth", True)
         # size in cell cols/rows
         self.ncols = 0
         self.nrows = 0
@@ -480,42 +596,36 @@ class MudTable(object):
             "add vertical border along left table edge"
             if ix == 0:
                 ret["border_left"] = bwidth
-                ret["border_left_char"] = vchar
             return ret
 
         def top_edge(ret):
             "add border along top table edge"
             if iy == 0:
                 ret["border_top"] = bwidth
-                ret["border_top_char"] = hchar
             return ret
 
         def right_edge(ret):
             "add vertical border along right table edge"
             if ix == nx:# and 0 < iy < ny:
                 ret["border_right"] = bwidth
-                ret["border_right_char"] = vchar
             return ret
 
         def bottom_edge(ret):
             "add border along bottom table edge"
             if iy == ny:
                 ret["border_bottom"] = bwidth
-                ret["border_bottom_char"] = hchar
             return ret
 
         def cols(ret):
             "Adding vertical borders inside the table"
             if 0 <= ix < nx:
                 ret["border_right"] = bwidth
-                ret["border_right_char"] = vchar
             return ret
 
         def rows(ret):
             "Adding horizontal borders inside the table"
             if 0 <= iy < ny:
                 ret["border_bottom"] = bwidth
-                ret["border_bottom_char"] = hchar
             return ret
 
         def head(ret):
@@ -531,22 +641,22 @@ class MudTable(object):
         border = self.border
         header = self.header
 
-        bwidth = 1
-        headchar = "="
-        cchar = "+"
-        vchar = "|"
-        hchar = "-"
+        bwidth = self.border_width
+        headchar = self.header_line_char
+        cchar = self.corner_char
+
+        # use the helper functions to define various
+        # table "styles"
 
         if border in ("table", "tablecols","cells"):
             ret = bottom_edge(right_edge(top_edge(left_edge(corners(ret)))))
-            headchar = "-"
         if border in ("cols", "tablecols", "cells"):
             ret = cols(right_edge(left_edge(ret)))
-            headchar = "-"
+        if border in ("incols"):
+            ret = cols(ret)
         if border in ("rows", "cells"):
-            headchar = "="
             ret = rows(bottom_edge(top_edge(ret)))
-        if header:
+        if header and not border in ("none", None):
             ret = head(ret)
 
         return ret
@@ -573,6 +683,7 @@ class MudTable(object):
         # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
+        options = copy(self.options)
 
         # balance number of rows
         ncols = len(self.worktable)
@@ -586,35 +697,92 @@ class MudTable(object):
         self.ncols = ncols
         self.nrows = nrowmax
 
-        # equalize heights for each row
-        cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
-
         # add borders - these add to the width/height, so we must do this before calculating width/height
         self._borders()
 
         # equalize widths within each column
         cwidths = [max(cell.get_width() for cell in col) for col in self.worktable]
 
-        # width of worktable
         if self.width:
-            # adjust widths of columns to fit in worktable width
-            cwidth = self.width // ncols
-            rest = self.width % ncols
-            # get the width of each col, spreading the rest among the first cols
-            cwidths = [cwidth + 1 if icol < rest else cwidth for icol, width in enumerate(cwidths)]
+            # we set a table width. Horizontal cells will be evenly distributed and
+            # expand vertically as needed (unless self.height is set, see below)
+
+            if ncols:
+                # get minimum possible cell widths for each row
+                cwidths_min = [max(cell.get_min_width() for cell in col) for col in self.worktable]
+                cwmin = sum(cwidths_min)
+
+                if cwmin > self.width:
+                    # we cannot shrink any more
+                    raise Exception("Cannot shrink table width to %s. Minimum size is %s." % (self.width, cwmin))
+
+                excess = self.width - cwmin
+                if self.evenwidth:
+                    # make each collumn of equal width
+                    for i in range(excess):
+                        # flood-fill the minimum table starting with the smallest collumns
+                        ci = cwidths_min.index(min(cwidths_min))
+                        cwidths_min[ci] += 1
+                    cwidths = cwidths_min
+                else:
+                    # make each collumn expand more proportional to their data size
+                    for i in range(excess):
+                        # fill wider collumns first
+                        ci = cwidths.index(max(cwidths))
+                        cwidths_min[ci] += 1
+                        cwidths[ci] -= 3
+                    cwidths = cwidths_min
 
         # reformat worktable (for width align)
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
-                cell.reformat(width=cwidths[ix], **self.options)
+                try:
+                    cell.reformat(width=cwidths[ix], **options)
+                except Exception, e:
+                    msg = "ix=%s, iy=%s, width=%s: %s" % (ix, iy, cwidths[ix], e.message)
+                    raise Exception ("Error in horizontal allign:\n %s" % msg)
 
         # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
         cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
 
+        if self.height:
+            # if we are fixing the table height, it means cells must crop text instead of resizing.
+            if nrowmax:
+
+                # get minimum possible cell heights for each collumn
+                cheights_min = [max(cell.get_min_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
+                chmin = sum(cheights_min)
+
+                if chmin > self.height:
+                    # we cannot shrink any more
+                    raise Exception("Cannot shrink table height to %s. Minimum size is %s." % (self.height, chmin))
+
+                # now we add all the extra height up to the desired table-height.
+                # We do this so that the tallest cells gets expanded first (and
+                # thus avoid getting cropped)
+
+                excess = self.height - chmin
+                even = self.height % 2 == 0
+                for i in range(excess):
+                    # expand the cells with the most rows first
+                    ci = cheights.index(max(cheights))
+                    cheights_min[ci] += 1
+                    if ci == 0 and self.header:
+                        cheights[ci] -= 2 if even else 3
+                    cheights[ci] -= 2 if even else 1
+                cheights = cheights_min
+
+                # we must tell cells to crop instead of expanding
+            options["enforce_size"] = True
+
         # reformat table (for vertical align)
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
-                cell.reformat(height=cheights[iy], **self.options)
+                try:
+                    cell.reformat(height=cheights[iy], **options)
+                except Exception, e:
+                    msg = "ix=%s, iy=%s, height=%s: %s" % (ix, iy, cheights[iy], e.message)
+                    raise Exception ("Error in vertical allign:\n %s" % msg)
 
         # calculate actual table width/height in characters
         self.cwidth = sum(cwidths)
@@ -631,7 +799,6 @@ class MudTable(object):
             cell_row = [col[iy] for col in self.worktable]
             # this produces a list of lists, each of equal length
             cell_data = [cell.get() for cell in cell_row]
-            print [len(lines) for lines in cell_data]
             cell_height = min(len(lines) for lines in cell_data)
             for iline in range(cell_height):
                 yield "".join(celldata[iline] for celldata in cell_data)
@@ -734,6 +901,32 @@ class MudTable(object):
             for icol, col in enumerate(self.table):
                 col.insert(ypos, row[icol])
         self._balance()
+
+    def reformat(self, **kwargs):
+        """
+        Force a re-shape of the entire table
+        """
+        self.width = kwargs.pop("width", self.width)
+        self.height = kwargs.pop("height", self.height)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+        hchar = kwargs.pop("header_line_char", self.header_line_char)
+
+        # border settings are also passed on into Cells (so kwargs.get, not kwargs.pop)
+        self.header_line_char = hchar[0] if hchar else self.header_line_char
+        self.border_width = kwargs.get("border_width", self.border_width)
+        self.corner_char = kwargs.get("corner_char", self.corner_char)
+        self.header_line_char = kwargs.get("header_line_char", self.header_line_char)
+
+        self.options.update(kwargs)
+        self._balance()
+
+    def get(self):
+        """
+        Return lines of table as a list
+        """
+        return [line for line in self._generate_lines()]
 
     def __str__(self):
         "print table"
