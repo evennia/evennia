@@ -6,7 +6,10 @@ These commands go in the PlayerCmdset and are accessible also
 when puppeting a Character (although with lower priority)
 
 These commands use the MuxCommandOOC parent that makes sure
-to setup caller correctly. The self.character can be used to
+to setup caller correctly. They use self.player to make sure
+to always use the player object rather than self.caller (which
+change depending on the level you are calling from)
+The property self.character can be used to
 access the character when these commands are triggered with
 a connected character (such as the case of the @ooc command), it
 is None if we are OOC.
@@ -35,6 +38,10 @@ BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 PERMISSION_HIERARCHY = settings.PERMISSION_HIERARCHY
 PERMISSION_HIERARCHY_LOWER = [perm.lower() for perm in PERMISSION_HIERARCHY]
 
+# Obs - these are all intended to be stored on the Player, and as such,
+# use self.player instead of self.caller, just to be sure. Also self.msg()
+# is used to make sure returns go to the right session
+
 class CmdOOCLook(MuxPlayerCommand):
     """
     ooc look
@@ -57,7 +64,7 @@ class CmdOOCLook(MuxPlayerCommand):
 
     def look_target(self):
         "Hook method for when an argument is given."
-        player = self.caller
+        player = self.player
         key = self.args.lower()
         chars = dict((utils.to_str(char.key.lower()), char)
                        for char in player.db._playable_characters)
@@ -71,7 +78,7 @@ class CmdOOCLook(MuxPlayerCommand):
     def no_look_target(self):
         "Hook method for default look without a specified target"
         # caller is always a player at this point.
-        player = self.caller
+        player = self.player
         sessid = self.sessid
         # get all our characters and sessions
         characters = player.db._playable_characters
@@ -155,7 +162,7 @@ class CmdCharCreate(MuxPlayerCommand):
 
     def func(self):
         "create the new character"
-        player = self.caller
+        player = self.player
         if not self.args:
             self.msg("Usage: @charcreate <charname> [= description]")
             return
@@ -216,7 +223,7 @@ class CmdIC(MuxPlayerCommand):
         """
         Main puppet method
         """
-        player = self.caller
+        player = self.player
         sessid = self.sessid
 
         new_character = None
@@ -279,7 +286,7 @@ class CmdOOC(MuxPlayerCommand):
     def func(self):
         "Implement function"
 
-        player = self.caller
+        player = self.player
         sessid = self.sessid
 
         old_char = player.get_puppet(sessid)
@@ -313,7 +320,7 @@ class CmdSessions(MuxPlayerCommand):
 
     def func(self):
         "Implement function"
-        player = self.caller
+        player = self.player
         sessions = player.get_all_sessions()
 
         table = prettytable.PrettyTable(["{wsessid",
@@ -353,7 +360,7 @@ class CmdWho(MuxPlayerCommand):
         Get all connected players by polling session.
         """
 
-        player = self.caller
+        player = self.player
         session_list = SESSIONS.get_sessions()
 
         session_list = sorted(session_list, key=lambda o: o.player.key)
@@ -434,7 +441,7 @@ class CmdEncoding(MuxPlayerCommand):
         """
         Sets the encoding.
         """
-        player = self.caller
+        player = self.player
 
         if 'clear' in self.switches:
             # remove customization
@@ -479,7 +486,7 @@ class CmdPassword(MuxPlayerCommand):
     def func(self):
         "hook function."
 
-        player = self.caller
+        player = self.player
         if not self.rhs:
             self.msg("Usage: @password <oldpass> = <newpass>")
             return
@@ -513,7 +520,7 @@ class CmdQuit(MuxPlayerCommand):
 
     def func(self):
         "hook function"
-        player = self.caller
+        player = self.player
 
         if 'all' in self.switches:
             player.msg("{RQuitting{n all sessions. Hope to see you soon again.", sessid=self.sessid)
@@ -649,7 +656,7 @@ class CmdQuell(MuxPlayerCommand):
 
     def func(self):
         "Perform the command"
-        player = self.caller
+        player = self.player
         permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions.all()))
         if self.cmdstring == '@unquell':
             if not player.attributes.get('_quell'):
