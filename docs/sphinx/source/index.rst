@@ -20,7 +20,7 @@ intervals.
    :titlesonly:
    :maxdepth: 1
  
-   Enter Manual <wiki/Index> 
+   Enter Manual <index.html> 
    How to give and get help <wiki/HowToGetAndGiveHelp>
    Links <wiki/Links>
    Alphabetical Page index <contents> 
