@@ -43,22 +43,24 @@ EVENNIA DOCUMENTATION
 
        doxygen config.dox
  
-      This will create the auto-docs in a folder 'doxygen/html'. 
+      This will create the auto-docs in a folder 'html'. 
 
    -  Start your web browser and point it to 
       
-       <evenniadir>/docs/doxygen/html/index.html 
+       <evenniadir>/docs/html/index.html 
 
    -  If you prefer a pdf version for printing, use LaTeX by
       activating the relevant section in config.dox. Run the 
       doxygen command again as above and a new folder 'latex' 
-      will be created with the latex sources. With the latex
-      processing system installed, then run 
+      will be created with the latex sources. You need the 
+      LaTeX processing system installed, then enter the new
+      latex/ folder and run
       
         make 
      
-      in the newly created folder to create the pdf. Be warned
-      however that the pdf docs are >340 pages long!
+      This will create the pdf. Be warned however that the pdf 
+      docs are many hundreds of pages and the automatic formatting
+      of doxygen is not always succeeding.
    
    -  Doxyfile is allows for plenty of configuration to get the 
       docs to look the way you want. You can also output to other 
