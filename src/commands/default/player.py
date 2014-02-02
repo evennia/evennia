@@ -99,7 +99,7 @@ class CmdOOCLook(MuxPlayerCommand):
 
         if is_su or len(characters) < MAX_NR_CHARACTERS:
             if not characters:
-                string += "\n\n You don't have any character yet. See {whelp @charcreate{n for creating one."
+                string += "\n\n You don't have any characters yet. See {whelp @charcreate{n for creating one."
             else:
                 string += "\n {w@charcreate <name> [=description]{n - create new character"
 

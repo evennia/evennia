@@ -36,6 +36,7 @@ from ev import managers
 from ev import utils, logger, create_player
 from ev import Command, CmdSet
 from ev import syscmdkeys
+from src.server.models import ServerConfig
 
 from contrib.menusystem import MenuNode, MenuTree
 
@@ -118,27 +119,27 @@ class CmdPasswordSelect(Command):
             self.menutree.goto("node1a")
             return
         player = self.menutree.player
-        if not player.user.check_password(self.args):
+        if not player.check_password(self.args):
             self.caller.msg("{rIncorrect password.{n")
             self.menutree.goto("node1b")
             return
 
         # before going on, check eventual bans
-        bans = managers.serverconfigs.conf("server_bans")
-        if bans and (any(tup[0] == player.name for tup in bans)
+        bans = ServerConfig.objects.conf("server_bans")
+        if bans and (any(tup[0]==player.name.lower() for tup in bans)
                      or
-                     any(tup[2].match(player.sessions[0].address[0])
-                                                   for tup in bans if tup[2])):
+                     any(tup[2].match(self.caller.address) for tup in bans if tup[2])):
             # this is a banned IP or name!
             string = "{rYou have been banned and cannot continue from here."
             string += "\nIf you feel this ban is in error, please email an admin.{x"
             self.caller.msg(string)
-            self.caller.session_disconnect()
+            self.caller.sessionhandler.disconnect(self.caller, "Good bye! Disconnecting...")
             return
 
         # we are ok, log us in.
         self.caller.msg("{gWelcome %s! Logging in ...{n" % player.key)
-        self.caller.session_login(player)
+        #self.caller.session_login(player)
+        self.caller.sessionhandler.login(self.caller, player)
 
         # abort menu, do cleanup.
         self.menutree.goto("END")
@@ -221,8 +222,7 @@ class CmdPasswordCreate(Command):
             typeclass = settings.BASE_PLAYER_TYPECLASS
             new_player = create_player(playername, None, password,
                                        typeclass=typeclass,
-                                       permissions=permissions,
-                                       create_character=False)
+                                       permissions=permissions)
             if not new_player:
                 self.msg("There was an error creating the Player. This error was logged. Contact an admin.")
                 self.menutree.goto("START")
@@ -292,8 +292,7 @@ class CmdUnloggedinQuit(Command):
     def func(self):
         "Simply close the connection."
         self.menutree.goto("END")
-        self.caller.msg("Good bye! Disconnecting ...")
-        self.caller.session_disconnect()
+        self.caller.sessionhandler.disconnect(self.caller, "Good bye! Disconnecting...")
 
 
 # The login menu tree, using the commands above
@@ -356,7 +355,6 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command..
     """
     key = CMD_LOGINSTART
-    aliases = ["look", "l"]
     locks = "cmd:all()"
 
     def func(self):

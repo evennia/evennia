@@ -63,6 +63,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
         TypeError if non-supported modifiers or conditionals are given.
 
     """
+    dicelimit = 0 # This is the maximum number of dice that can be used in a single roll.
     dicenum = int(dicenum)
     dicetype = int(dicetype)
 
@@ -146,6 +147,14 @@ class CmdDice(default_cmds.MuxCommand):
         if lparts < 3 or parts[1] != 'd':
             self.caller.msg("You must specify the die roll(s) as <nr>d<sides>. So 2d6 means rolling a 6-sided die 2 times.")
             return
+
+        # Limit the number of dice and sides a character can roll to prevent server slow down and crashes
+        ndicelimit = 10000 # Maximum number of dice
+        nsidelimit = 100000000000 # Maximum number of sides
+        if int(parts[0]) > ndicelimit or int(parts[2]) > nsidelimit:
+            self.caller.msg("The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit))
+            return
+
         ndice, nsides = parts[0], parts[2]
         if lparts == 3:
             # just something like 1d6
