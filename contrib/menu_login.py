@@ -355,7 +355,6 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command..
     """
     key = CMD_LOGINSTART
-#    aliases = ["dook", "d"]
     locks = "cmd:all()"
 
     def func(self):
