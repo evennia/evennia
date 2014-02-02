@@ -7,7 +7,7 @@ FORMCHAR = "x"
 TABLECHAR = "c"
 
 FORM = """
-{c.------------------------------------------------.
+.------------------------------------------------.
 |                                                |
 |  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
 |        xxxxxxxxxxx                             |

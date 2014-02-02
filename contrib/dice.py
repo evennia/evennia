@@ -150,7 +150,7 @@ class CmdDice(default_cmds.MuxCommand):
 
         # Limit the number of dice and sides a character can roll to prevent server slow down and crashes
         ndicelimit = 10000 # Maximum number of dice
-        nsidelimit = 100000000000 # Maximum number of sides
+        nsidelimit = 10000 # Maximum number of sides
         if int(parts[0]) > ndicelimit or int(parts[2]) > nsidelimit:
             self.caller.msg("The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit))
             return
