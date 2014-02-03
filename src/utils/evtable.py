@@ -6,6 +6,10 @@ EvTable
 This is an advanced ASCII table creator. It was inspired
 by prettytable but shares no code.
 
+WARNING: UNDER DEVELOPMENT. Evtable does currently NOT support
+colour ANSI markers in the table. Non-colour tables should 
+work fully (so make issues if they don't). 
+
 
 Example usage:
 
