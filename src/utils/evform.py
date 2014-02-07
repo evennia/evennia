@@ -2,6 +2,11 @@
 """
 Mudform - a way to create advanced ascii forms
 
+WARNING: UNDER DEVELOPMENT. Evform does currently NOT support
+colour ANSI markers in the table. Non-colour forms should 
+work fully (so make issues if they don't). 
+
+
 This is intended for creating advanced ascii game forms, such as a
 large pretty character sheet or info document.
 
