@@ -80,8 +80,8 @@ class CmdOOCLook(MuxPlayerCommand):
         # caller is always a player at this point.
         player = self.player
         sessid = self.sessid
-        # get all our characters and sessions
-        characters = player.db._playable_characters
+        # get all our characters and sessions (clean removed ones)
+        characters = [character for character in player.db._playable_characters if character]
         sessions = player.get_all_sessions()
         is_su = player.is_superuser
 
