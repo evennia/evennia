@@ -714,6 +714,19 @@ class ObjectDB(TypedObject):
 
         self.delete_iter += 1
 
+        # If this is a character, delete it from the player's playable characters list 
+        if _GA(self, 'locks').get("puppet"):
+            # Extract Player id
+            try:
+                pid = _GA(self, "locks").get("puppet")
+                pid = pid[pid.find("pid(")+4:]
+                pid = int(pid[:pid.find(")")])
+            except ValueError:
+                return False
+            players = PlayerDB.objects
+            player = players.get_id(pid)
+            player.db._playable_characters.remove(self)
+
         # See if we need to kick the player off.
 
         for session in _GA(self, "sessions"):
