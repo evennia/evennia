@@ -21,7 +21,6 @@ from django.conf import settings
 from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
                                     AliasHandler, AttributeHandler)
 from src.objects.manager import ObjectManager
-from ev import managers
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
@@ -724,7 +723,8 @@ class ObjectDB(TypedObject):
                 pid = int(pid[:pid.find(")")])
             except ValueError:
                 return False
-            player = managers.players.get_id(pid)
+            players = PlayerDB.objects
+            player = players.get_id(pid)
             player.db._playable_characters.remove(self)
 
         # See if we need to kick the player off.
