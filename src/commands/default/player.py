@@ -82,6 +82,11 @@ class CmdOOCLook(MuxPlayerCommand):
         sessid = self.sessid
         # get all our characters and sessions
         characters = player.db._playable_characters
+        if None in characters:
+            # clean up list if character object was deleted in between
+            characters = [character for character in characters if character]
+            player.db._playable_characters = characters
+
         sessions = player.get_all_sessions()
         is_su = player.is_superuser
 
