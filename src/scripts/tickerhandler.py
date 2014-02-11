@@ -1,11 +1,54 @@
 """
-Tickerhandler
+TickerHandler
 
 This implements an efficient Ticker which uses a subscription
-model to 'tick' subscribed objects at regular intervals. All
-that is required is that the subscribing objects has a
-method "at_tick".
+model to 'tick' subscribed objects at regular intervals.
+
+The ticker mechanism is used by importing and accessing
+the instantiated TICKER_HANDLER instance in this module. This
+instance is run by the server; it will save its status across
+server reloads and be started automaticall on boot.
+
+Example:
+
+    from src.scripts.tickerhandler import TICKER_HANDLER
+
+    # tick myobj every 15 seconds
+    TICKER_HANDLER.add(myobj, 15)
+
+The handler will by default try to call a hook "at_tick()"
+on the subscribing object. The hook's name can be changed
+if the "hook_key" keyword is given to the add() method (only
+one such alternate name per interval though). The
+handler will transparently set up and add new timers behind
+the scenes to tick at given intervals, using a TickerPool.
+
+To remove:
+
+    TICKER_HANDLER.remove(myobj, 15)
+
+The interval must be given since a single object can be subcribed
+to many different tickers at the same time.
+
+
+The TickerHandler's functionality can be overloaded by modifying the
+Ticker class and then changing TickerPool and TickerHandler to use the
+custom classes
+
+class MyTicker(Ticker):
+    # [doing custom stuff]
+
+class MyTickerPool(TickerPool):
+    ticker_class = MyTicker
+class MyTickerHandler(TickerHandler):
+    ticker_pool_class = MyTickerPool
+
+If one wants to duplicate TICKER_HANDLER's auto-saving feature in
+a  custom handler one can make a custom AT_STARTSTOP_MODULE entry to
+call the handler's save() and restore() methods when the server reboots.
+
 """
+from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import LoopingCall
 from src.server.models import ServerConfig
 from src.utils.logger import log_trace
@@ -18,24 +61,38 @@ _SA = object.__setattr__
 class Ticker(object):
     """
     Represents a repeatedly running task that calls
-    hooks repeatedly.
+    hooks repeatedly. Overload _callback to change the
+    way it operates.
     """
+
+    @inlineCallbacks
+    def _callback(self):
+        """
+        This will be called repeatedly every self.interval seconds.
+        self.subscriptions contain tuples of (obj, args, kwargs) for
+        each subscribing object.
+
+        If overloading, this callback is expected to handle all
+        subscriptions when it is triggered. It should not return
+        anything and should not traceback on poorly designed hooks.
+        The callback should ideally work under @inlineCallbacks so it can yield
+        appropriately.
+        """
+        for key, (obj, args, kwargs) in self.subscriptions.items():
+            hook_key = yield kwargs.get("hook_key", "at_tick")
+            try:
+                yield _GA(obj, hook_key)(*args, **kwargs)
+            except Exception:
+                log_trace()
+
     def __init__(self, interval):
         """
         Set up the ticker
         """
-        def callback(self):
-            "This should be fed _Task as argument"
-            for key, (obj, args, kwargs) in self.subscriptions.items():
-                hook_key = kwargs.get("hook_key", "at_tick")
-                try:
-                    _GA(obj, hook_key)(*args, **kwargs)
-                except Exception:
-                    log_trace()
-
         self.interval = interval
         self.subscriptions = {}
-        self.task = LoopingCall(callback, self)
+        # set up a twisted asynchronous repeat call
+        self.task = LoopingCall(self._callback)
 
     def validate(self):
         """
@@ -73,6 +130,7 @@ class Ticker(object):
         """
         self.subscriptions = {}
         self.validate()
+
 
 class TickerPool(object):
     """

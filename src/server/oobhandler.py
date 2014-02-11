@@ -30,6 +30,8 @@ a global function oob_error will be used as optional error management.
 """
 
 from inspect import isfunction
+from twisted.internet.defer import inlineCallbacks
+from twisted.internet.task import LoopingCall
 from django.conf import settings
 from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
@@ -203,25 +205,27 @@ class TrackerBase(object):
 #        for script in self.scripts.values():
 #            script.stop()
 
-from twisted.internet.task import LoopingCall
 
 class OOBTicker(Ticker):
     """
     Version of Ticker that calls OOB_FUNC rather than trying to call
     a hook method.
     """
-    def __init__(self, interval):
-        def callback(self, oobhandler, sessions):
-            for key, (_, args, kwargs) in self.subscriptions.items():
-                session = sessions.session_from_sessid(kwargs.get("sessid"))
-                try:
-                    oobhandler.execute_cmd(session, kwargs.get("func_key"), *args, **kwargs)
-                except Exception:
-                    logger.log_trace()
+    @inlineCallbacks
+    def _callback(self, oobhandler, sessions):
+        "See original for more info"
+        for key, (_, args, kwargs) in self.subscriptions.items():
+            session = sessions.session_from_sessid(kwargs.get("sessid"))
+            try:
+                oobhandler.execute_cmd(session, kwargs.get("func_key"), *args, **kwargs)
+            except Exception:
+                logger.log_trace()
 
+    def __init__(self, interval):
+        "Sets up the Ticker"
         self.interval = interval
         self.subscriptions = {}
-        self.task = LoopingCall(callback, self, OOB_HANDLER, SESSIONS)
+        self.task = LoopingCall(self._callback, OOB_HANDLER, SESSIONS)
 
 class OOBTickerPool(TickerPool):
     ticker_class = OOBTicker
