@@ -237,6 +237,9 @@ class Evennia(object):
             from src.server.oobhandler import OOB_HANDLER
             OOB_HANDLER.restore()
 
+        from src.scripts.tickerhandler import TICKER_HANDLER
+        TICKER_HANDLER.restore()
+
         if SERVER_STARTSTOP_MODULE:
             # call correct server hook based on start file value
             if mode in ('True', 'reload'):
