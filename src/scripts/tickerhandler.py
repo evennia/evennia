@@ -9,35 +9,34 @@ method "at_tick".
 from twisted.internet.task import LoopingCall
 from src.server.models import ServerConfig
 from src.utils.logger import log_trace
-from src.utils.utils import to_str
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
-class _Ticker(object):
+class Ticker(object):
     """
     Represents a repeatedly running task that calls
     hooks repeatedly.
     """
-    def __init__(self, interval, hook_key="at_tick"):
+    def __init__(self, interval):
         """
         Set up the ticker
         """
         def callback(self):
             "This should be fed _Task as argument"
-            hook_key = self.hook_key
-            for key, obj in self.subscriptions.items():
+            for key, (obj, args, kwargs) in self.subscriptions.items():
+                hook_key = kwargs.get("hook_key", "at_tick")
                 try:
-                    _GA(obj, hook_key)()
+                    _GA(obj, hook_key)(*args, **kwargs)
                 except Exception:
                     log_trace()
 
         self.interval = interval
-        self.hook_key = hook_key
         self.subscriptions = {}
         self.task = LoopingCall(callback, self)
+
 
     def validate(self):
         """
@@ -55,11 +54,11 @@ class _Ticker(object):
         elif subs:
             self.task.start(self.interval, now=False)
 
-    def add(self, store_key, obj):
+    def add(self, store_key, obj, *args, **kwargs):
         """
         Sign up a subscriber to this ticker
         """
-        self.subscriptions[store_key] = obj
+        self.subscriptions[store_key] = (obj, args, kwargs)
         self.validate()
 
     def remove(self, store_key):
@@ -76,22 +75,22 @@ class _Ticker(object):
         self.subscriptions = {}
         self.validate()
 
-class _TickerPool(object):
+class TickerPool(object):
     """
     This maintains a pool of Twisted LoopingCall tasks
     for calling subscribed objects at given times.
     """
-    def __init__(self, hook_key="at_tick"):
+    def __init__(self):
         "Initialize the pool"
         self.tickers = {}
 
-    def add(self, store_key, obj, interval, hook_key="at_tick"):
+    def add(self, store_key, obj, interval, *args, **kwargs):
         """
         Add new ticker subscriber
         """
         if interval not in self.tickers:
-            self.tickers[interval] = _Ticker(interval, hook_key=hook_key)
-        self.tickers[interval].add(store_key, obj)
+            self.tickers[interval] = Ticker(interval)
+        self.tickers[interval].add(store_key, obj, *args, **kwargs)
 
     def remove(self, store_key, interval):
         """
@@ -119,14 +118,15 @@ class TickerHandler(object):
     objects to various tick rates.  The pool maintains creation
     instructions and and re-applies them at a server restart.
     """
-    def __init__(self):
+    def __init__(self, save_name="ticker_storage"):
         """
         Initialize handler
         """
         self.ticker_storage = {}
-        self.ticker_pool = _TickerPool()
+        self.save_name = save_name
+        self.ticker_pool = TickerPool()
 
-    def _store_key(self, obj, interval, hook_key):
+    def _store_key(self, obj, interval):
         """
         Tries to create a store_key for the object.
         Returns a tuple (isdb, store_key) where isdb
@@ -155,7 +155,7 @@ class TickerHandler(object):
                 objkey = id(obj)
             isdb = False
         # return sidb and store_key
-        return isdb, (objkey, interval, hook_key)
+        return isdb, (objkey, interval)
 
     def save(self):
         """
@@ -164,42 +164,42 @@ class TickerHandler(object):
         """
         #print "save:", self.ticker_storage
         if self.ticker_storage:
-            ServerConfig.objects.conf(key="ticker_storage",
+            ServerConfig.objects.conf(key=self.save_name,
                                     value=dbserialize(self.ticker_storage))
         else:
-            ServerConfig.objects.conf(key="ticker_storage", delete=True)
+            ServerConfig.objects.conf(key=self.save_name, delete=True)
 
     def restore(self):
         """
         Restore ticker_storage from database and re-initialize the handler from storage. This is triggered by the server at restart.
         """
         # load stored command instructions and use them to re-initialize handler
-        ticker_storage = ServerConfig.objects.conf(key="ticker_storage")
+        ticker_storage = ServerConfig.objects.conf(key=self.save_name)
         if ticker_storage:
             self.ticker_storage = dbunserialize(ticker_storage)
-            #print "restore:", self.ticker_storage
-            for (obj, interval, hook_key) in self.ticker_storage.values():
+            print "restore:", self.ticker_storage
+            for (obj, interval), (args, kwargs) in self.ticker_storage.items():
                 obj = unpack_dbobj(obj)
-                _, store_key = self._store_key(obj, interval, hook_key)
-                self.ticker_pool.add(store_key, obj, interval, hook_key)
+                _, store_key = self._store_key(obj, interval)
+                self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
-    def add(self, obj, interval, hook_key="at_tick"):
+    def add(self, obj, interval, *args, **kwargs):
         """
         Add object to tickerhandler. The object must have an at_tick
         method. This will be called every interval seconds until the
         object is unsubscribed from the ticker.
         """
-        isdb, store_key = self._store_key(obj, interval, hook_key)
+        isdb, store_key = self._store_key(obj, interval)
         if isdb:
-            self.ticker_storage[store_key] = store_key
+            self.ticker_storage[store_key] = (args, kwargs)
             self.save()
-        self.ticker_pool.add(store_key, obj, interval, hook_key)
+        self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
-    def remove(self, obj, interval, hook_key="at_tick"):
+    def remove(self, obj, interval):
         """
         Remove object from ticker with given interval.
         """
-        isdb, store_key = self._store_key(obj, interval, hook_key)
+        isdb, store_key = self._store_key(obj, interval)
         if isdb:
             self.ticker_storage.pop(store_key, None)
             self.save()
