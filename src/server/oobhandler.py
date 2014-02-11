@@ -35,7 +35,7 @@ from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
 #from src.scripts.scripts import Script
 #from src.utils.create import create_script
-from src.scripts import Ticker, TickerPool, TickerHandler
+from src.scripts.tickerhandler import Ticker, TickerPool, TickerHandler
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from src.utils import logger
 from src.utils.utils import all_from_module, make_iter
