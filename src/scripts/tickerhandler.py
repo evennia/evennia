@@ -37,7 +37,6 @@ class Ticker(object):
         self.subscriptions = {}
         self.task = LoopingCall(callback, self)
 
-
     def validate(self):
         """
         Start/stop the task depending on how many
@@ -80,6 +79,8 @@ class TickerPool(object):
     This maintains a pool of Twisted LoopingCall tasks
     for calling subscribed objects at given times.
     """
+    ticker_class = Ticker
+
     def __init__(self):
         "Initialize the pool"
         self.tickers = {}
@@ -89,7 +90,7 @@ class TickerPool(object):
         Add new ticker subscriber
         """
         if interval not in self.tickers:
-            self.tickers[interval] = Ticker(interval)
+            self.tickers[interval] = self.ticker_class(interval)
         self.tickers[interval].add(store_key, obj, *args, **kwargs)
 
     def remove(self, store_key, interval):
@@ -118,13 +119,15 @@ class TickerHandler(object):
     objects to various tick rates.  The pool maintains creation
     instructions and and re-applies them at a server restart.
     """
+    ticker_pool_class = TickerPool
+
     def __init__(self, save_name="ticker_storage"):
         """
         Initialize handler
         """
         self.ticker_storage = {}
         self.save_name = save_name
-        self.ticker_pool = TickerPool()
+        self.ticker_pool = self.ticker_pool_class()
 
     def _store_key(self, obj, interval):
         """
@@ -177,7 +180,7 @@ class TickerHandler(object):
         ticker_storage = ServerConfig.objects.conf(key=self.save_name)
         if ticker_storage:
             self.ticker_storage = dbunserialize(ticker_storage)
-            print "restore:", self.ticker_storage
+            #print "restore:", self.ticker_storage
             for (obj, interval), (args, kwargs) in self.ticker_storage.items():
                 obj = unpack_dbobj(obj)
                 _, store_key = self._store_key(obj, interval)

@@ -33,8 +33,9 @@ from inspect import isfunction
 from django.conf import settings
 from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
-from src.scripts.scripts import Script
-from src.utils.create import create_script
+#from src.scripts.scripts import Script
+#from src.utils.create import create_script
+from src.scripts import Ticker, TickerPool, TickerHandler
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from src.utils import logger
 from src.utils.utils import all_from_module, make_iter
@@ -125,83 +126,108 @@ class TrackerBase(object):
         pass
 
 
-class _RepeaterScript(Script):
+#class _RepeaterScript(Script):
+#    """
+#    Repeating and subscription-enabled script for triggering OOB
+#    functions. Maintained in a _RepeaterPool.
+#    """
+#    def at_script_creation(self):
+#        "Called when script is initialized"
+#        self.key = "oob_func"
+#        self.desc = "OOB functionality script"
+#        self.persistent = False  # oob scripts should always be non-persistent
+#        self.ndb.subscriptions = {}
+#
+#    def at_repeat(self):
+#        """
+#        Calls subscriptions every self.interval seconds
+#        """
+#        for (func_key, sessid, interval, args, kwargs) in self.ndb.subscriptions.values():
+#            session = SESSIONS.session_from_sessid(sessid)
+#            OOB_HANDLER.execute_cmd(session, func_key, *args, **kwargs)
+#
+#    def subscribe(self, store_key, sessid, func_key, interval, *args, **kwargs):
+#        """
+#        Sign up a subscriber to this oobfunction. Subscriber is
+#        a database object with a dbref.
+#        """
+#        self.ndb.subscriptions[store_key] = (func_key, sessid, interval, args, kwargs)
+#
+#    def unsubscribe(self, store_key):
+#        """
+#        Unsubscribe from oobfunction. Returns True if removal was
+#        successful, False otherwise
+#        """
+#        self.ndb.subscriptions.pop(store_key, None)
+#
+#
+#class _RepeaterPool(object):
+#    """
+#    This maintains a pool of _RepeaterScript scripts, ordered one per
+#    interval. It will automatically cull itself once a given interval's
+#    script has no more subscriptions.
+#
+#    This is used and accessed from oobhandler.repeat/unrepeat
+#    """
+#
+#    def __init__(self):
+#        self.scripts = {}
+#
+#    def add(self, store_key, sessid, func_key, interval, *args, **kwargs):
+#        """
+#        Add a new tracking
+#        """
+#        if interval not in self.scripts:
+#            # if no existing interval exists, create new script to fill the gap
+#            new_tracker = create_script(_RepeaterScript,
+#                           key="oob_repeater_%is" % interval, interval=interval)
+#            self.scripts[interval] = new_tracker
+#        self.scripts[interval].subscribe(store_key, sessid, func_key,
+#                                                      interval, *args, **kwargs)
+#
+#    def remove(self, store_key, interval):
+#        """
+#        Remove tracking
+#        """
+#        if interval in self.scripts:
+#            self.scripts[interval].unsubscribe(store_key)
+#            if len(self.scripts[interval].ndb.subscriptions) == 0:
+#                # no more subscriptions for this interval. Clean out the script.
+#                self.scripts[interval].stop()
+#
+#    def stop(self):
+#        """
+#        Stop all scripts in pool. This is done at server reload since
+#        restoring the pool will automatically re-populate the pool.
+#        """
+#        for script in self.scripts.values():
+#            script.stop()
+
+from twisted.internet.task import LoopingCall
+
+class OOBTicker(Ticker):
     """
-    Repeating and subscription-enabled script for triggering OOB
-    functions. Maintained in a _RepeaterPool.
+    Version of Ticker that calls OOB_FUNC rather than trying to call
+    a hook method.
     """
-    def at_script_creation(self):
-        "Called when script is initialized"
-        self.key = "oob_func"
-        self.desc = "OOB functionality script"
-        self.persistent = False  # oob scripts should always be non-persistent
-        self.ndb.subscriptions = {}
+    def __init__(self, interval):
+        def callback(self, oobhandler, sessions):
+            for key, (_, args, kwargs) in self.subscriptions.items():
+                session = sessions.session_from_sessid(kwargs.get("sessid"))
+                try:
+                    oobhandler.execute_cmd(session, kwargs.get("func_key"), *args, **kwargs)
+                except Exception:
+                    logger.log_trace()
 
-    def at_repeat(self):
-        """
-        Calls subscriptions every self.interval seconds
-        """
-        for (func_key, sessid, interval, args, kwargs) in self.ndb.subscriptions.values():
-            session = SESSIONS.session_from_sessid(sessid)
-            OOB_HANDLER.execute_cmd(session, func_key, *args, **kwargs)
+        self.interval = interval
+        self.subscriptions = {}
+        self.task = LoopingCall(callback, self, OOB_HANDLER, SESSIONS)
 
-    def subscribe(self, store_key, sessid, func_key, interval, *args, **kwargs):
-        """
-        Sign up a subscriber to this oobfunction. Subscriber is
-        a database object with a dbref.
-        """
-        self.ndb.subscriptions[store_key] = (func_key, sessid, interval, args, kwargs)
+class OOBTickerPool(TickerPool):
+    ticker_class = OOBTicker
 
-    def unsubscribe(self, store_key):
-        """
-        Unsubscribe from oobfunction. Returns True if removal was
-        successful, False otherwise
-        """
-        self.ndb.subscriptions.pop(store_key, None)
-
-
-class _RepeaterPool(object):
-    """
-    This maintains a pool of _RepeaterScript scripts, ordered one per
-    interval. It will automatically cull itself once a given interval's
-    script has no more subscriptions.
-
-    This is used and accessed from oobhandler.repeat/unrepeat
-    """
-
-    def __init__(self):
-        self.scripts = {}
-
-    def add(self, store_key, sessid, func_key, interval, *args, **kwargs):
-        """
-        Add a new tracking
-        """
-        if interval not in self.scripts:
-            # if no existing interval exists, create new script to fill the gap
-            new_tracker = create_script(_RepeaterScript,
-                           key="oob_repeater_%is" % interval, interval=interval)
-            self.scripts[interval] = new_tracker
-        self.scripts[interval].subscribe(store_key, sessid, func_key,
-                                                      interval, *args, **kwargs)
-
-    def remove(self, store_key, interval):
-        """
-        Remove tracking
-        """
-        if interval in self.scripts:
-            self.scripts[interval].unsubscribe(store_key)
-            if len(self.scripts[interval].ndb.subscriptions) == 0:
-                # no more subscriptions for this interval. Clean out the script.
-                self.scripts[interval].stop()
-
-    def stop(self):
-        """
-        Stop all scripts in pool. This is done at server reload since
-        restoring the pool will automatically re-populate the pool.
-        """
-        for script in self.scripts.values():
-            script.stop()
-
+class OOBTickerHandler(TickerHandler):
+    ticker_pool_class = OOBTickerPool
 
 # Main OOB Handler
 
@@ -217,8 +243,9 @@ class OOBHandler(object):
         """
         self.sessionhandler = SESSIONS
         self.oob_tracker_storage = {}
-        self.oob_repeat_storage = {}
-        self.oob_tracker_pool = _RepeaterPool()
+        #self.oob_repeat_storage = {}
+        #self.oob_tracker_pool = _RepeaterPool()
+        self.tickerhandler = OOBTickerHandler("oob_ticker_storage")
 
     def save(self):
         """
@@ -229,11 +256,12 @@ class OOBHandler(object):
             #print "saved tracker_storage:", self.oob_tracker_storage
             ServerConfig.objects.conf(key="oob_tracker_storage",
                                     value=dbserialize(self.oob_tracker_storage))
-        if  self.oob_repeat_storage:
-            #print "saved repeat_storage:", self.oob_repeat_storage
-            ServerConfig.objects.conf(key="oob_repeat_storage",
-                                     value=dbserialize(self.oob_repeat_storage))
-        self.oob_tracker_pool.stop()
+        self.tickerhandler.save()
+        #if  self.oob_repeat_storage:
+        #    #print "saved repeat_storage:", self.oob_repeat_storage
+        #    ServerConfig.objects.conf(key="oob_repeat_storage",
+        #                             value=dbserialize(self.oob_repeat_storage))
+        #self.oob_tracker_pool.stop()
 
     def restore(self):
         """
@@ -250,14 +278,16 @@ class OOBHandler(object):
             # make sure to purce the storage
             ServerConfig.objects.conf(key="oob_tracker_storage", delete=True)
 
-        repeat_storage = ServerConfig.objects.conf(key="oob_repeat_storage")
-        if repeat_storage:
-            self.oob_repeat_storage = dbunserialize(repeat_storage)
-            #print "recovered from repeat_storage:", self.oob_repeat_storage
-            for (obj, sessid, func_key, interval, args, kwargs) in self.oob_repeat_storage.values():
-                self.repeat(unpack_dbobj(obj), sessid, func_key, interval, *args, **kwargs)
-            # make sure to purge the storage
-            ServerConfig.objects.conf(key="oob_repeat_storage", delete=True)
+        self.tickerhandler.restore()
+
+        #repeat_storage = ServerConfig.objects.conf(key="oob_repeat_storage")
+        #if repeat_storage:
+        #    self.oob_repeat_storage = dbunserialize(repeat_storage)
+        #    #print "recovered from repeat_storage:", self.oob_repeat_storage
+        #    for (obj, sessid, func_key, interval, args, kwargs) in self.oob_repeat_storage.values():
+        #        self.repeat(unpack_dbobj(obj), sessid, func_key, interval, *args, **kwargs)
+        #    # make sure to purge the storage
+        #    ServerConfig.objects.conf(key="oob_repeat_storage", delete=True)
 
     def track(self, obj, sessid, fieldname, trackerclass, *args, **kwargs):
         """
@@ -362,27 +392,29 @@ class OOBHandler(object):
         """
         if not func_key in _OOB_FUNCS:
             raise KeyError("%s is not a valid OOB function name.")
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
-        store_obj = pack_dbobj(obj)
-        store_key = (store_obj, sessid, func_key, interval)
-        # prepare to store
-        self.oob_repeat_storage[store_key] = (store_obj, sessid, func_key, interval, args, kwargs)
-        self.oob_tracker_pool.add(store_key, sessid, func_key, interval, *args, **kwargs)
+        #try:
+        #    obj = obj.dbobj
+        #except AttributeError:
+        #    pass
+        self.tickerhandler.add(self, obj, interval, func_key=func_key, sessid=sessid, *args, **kwargs)
+        #store_obj = pack_dbobj(obj)
+        #store_key = (store_obj, sessid, func_key, interval)
+        ## prepare to store
+        #self.oob_repeat_storage[store_key] = (store_obj, sessid, func_key, interval, args, kwargs)
+        #self.oob_tracker_pool.add(store_key, sessid, func_key, interval, *args, **kwargs)
 
     def unrepeat(self, obj, sessid, func_key, interval=20):
         """
         Stop a repeating action
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
-        store_key = (pack_dbobj(obj), sessid, func_key, interval)
-        self.oob_tracker_pool.remove(store_key, interval)
-        self.oob_repeat_storage.pop(store_key, None)
+        self.tickerhandler.remove(self, obj, interval)
+        #try:
+        #    obj = obj.dbobj
+        #except AttributeError:
+        #    pass
+        #store_key = (pack_dbobj(obj), sessid, func_key, interval)
+        #self.oob_tracker_pool.remove(store_key, interval)
+        #self.oob_repeat_storage.pop(store_key, None)
 
     def msg(self, sessid, funcname, *args, **kwargs):
         "Shortcut to relay oob data back to portal. Used by oob functions."
