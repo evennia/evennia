@@ -62,7 +62,7 @@ def format_help_list(hdict_cmds, hdict_db):
 
 class CmdHelp(Command):
     """
-    The main help command
+    view help or a list of topics
 
     Usage:
       help <topic or command>
@@ -158,7 +158,7 @@ class CmdHelp(Command):
 
 class CmdSetHelp(MuxCommand):
     """
-    @help - edit the help database
+    edit the help database
 
     Usage:
       @help[/switches] <topic>[,category[,locks]] = <text>

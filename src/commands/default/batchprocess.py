@@ -216,7 +216,7 @@ def purge_processor(caller):
 
 class CmdBatchCommands(MuxCommand):
     """
-    Build from batch-command file
+    build from batch-command file
 
     Usage:
      @batchcommands[/interactive] <python.path.to.file>
@@ -317,7 +317,7 @@ class CmdBatchCommands(MuxCommand):
 
 class CmdBatchCode(MuxCommand):
     """
-    Build from batch-code file
+    build from batch-code file
 
     Usage:
      @batchcode[/interactive] <python path to file>

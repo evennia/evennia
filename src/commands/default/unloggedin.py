@@ -30,7 +30,7 @@ if not CONNECTION_SCREEN:
 
 class CmdUnconnectedConnect(MuxCommand):
     """
-    Connect to the game.
+    connect to the game
 
     Usage (at login screen):
       connect playername password
@@ -103,7 +103,7 @@ class CmdUnconnectedConnect(MuxCommand):
 
 class CmdUnconnectedCreate(MuxCommand):
     """
-    Create a new account.
+    create a new player account
 
     Usage (at login screen):
       create <playername> <password>
@@ -223,6 +223,11 @@ class CmdUnconnectedCreate(MuxCommand):
 
 class CmdUnconnectedQuit(MuxCommand):
     """
+    quit when in unlogged-in state
+
+    Usage:
+      quit
+
     We maintain a different version of the quit command
     here for unconnected players for the sake of simplicity. The logged in
     version is a bit more complicated.
@@ -240,6 +245,11 @@ class CmdUnconnectedQuit(MuxCommand):
 
 class CmdUnconnectedLook(MuxCommand):
     """
+    look when in unlogged-in state
+
+    Usage:
+      look
+
     This is an unconnected version of the look command for simplicity.
 
     This is called by the server and kicks everything in gear.
@@ -256,6 +266,11 @@ class CmdUnconnectedLook(MuxCommand):
 
 class CmdUnconnectedHelp(MuxCommand):
     """
+    get help when in unconnected-in state
+
+    Usage:
+      help
+
     This is an unconnected version of the help command,
     for simplicity. It shows a pane of info.
     """

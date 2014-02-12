@@ -44,7 +44,7 @@ PERMISSION_HIERARCHY_LOWER = [perm.lower() for perm in PERMISSION_HIERARCHY]
 
 class CmdOOCLook(MuxPlayerCommand):
     """
-    ooc look
+    look while out-of-character
 
     Usage:
       look
@@ -151,7 +151,7 @@ class CmdOOCLook(MuxPlayerCommand):
 
 class CmdCharCreate(MuxPlayerCommand):
     """
-    Create a character
+    create a new character
 
     Usage:
       @charcreate <charname> [= desc]
@@ -202,7 +202,7 @@ class CmdCharCreate(MuxPlayerCommand):
 
 class CmdIC(MuxPlayerCommand):
     """
-    Switch control to an object
+    control an object you have permission to puppet
 
     Usage:
       @ic <character>
@@ -272,7 +272,7 @@ class CmdIC(MuxPlayerCommand):
 
 class CmdOOC(MuxPlayerCommand):
     """
-    go ooc
+    stop puppeting and go ooc
 
     Usage:
       @ooc
@@ -311,7 +311,7 @@ class CmdOOC(MuxPlayerCommand):
 
 class CmdSessions(MuxPlayerCommand):
     """
-    check connected session(s)
+    check your connected session(s)
 
     Usage:
       @sessions
@@ -346,7 +346,7 @@ class CmdSessions(MuxPlayerCommand):
 
 class CmdWho(MuxPlayerCommand):
     """
-    who
+    list who is currently online
 
     Usage:
       who
@@ -417,7 +417,7 @@ class CmdWho(MuxPlayerCommand):
 
 class CmdEncoding(MuxPlayerCommand):
     """
-    encoding - set a custom text encoding
+    set which text encoding to use
 
     Usage:
       @encoding/switches [<encoding>]
@@ -478,7 +478,7 @@ class CmdEncoding(MuxPlayerCommand):
 
 class CmdPassword(MuxPlayerCommand):
     """
-    @password - set your password
+    change your password
 
     Usage:
       @password <old password> = <new password>
@@ -509,7 +509,7 @@ class CmdPassword(MuxPlayerCommand):
 
 class CmdQuit(MuxPlayerCommand):
     """
-    quit
+    quit the game
 
     Usage:
       @quit
@@ -546,7 +546,7 @@ class CmdQuit(MuxPlayerCommand):
 
 class CmdColorTest(MuxPlayerCommand):
     """
-    testing colors
+    testing which colors your client support
 
     Usage:
       @color ansi|xterm256
@@ -628,7 +628,7 @@ class CmdColorTest(MuxPlayerCommand):
 
 class CmdQuell(MuxPlayerCommand):
     """
-    Quelling permissions
+    use character's permissions instead of player's
 
     Usage:
       quell

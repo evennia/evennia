@@ -90,7 +90,7 @@ class ObjManipCommand(MuxCommand):
 
 class CmdSetObjAlias(MuxCommand):
     """
-    Adding permanent aliases
+    adding permanent aliases for object
 
     Usage:
       @alias <obj> [= [alias[,alias,alias,...]]]
@@ -162,7 +162,7 @@ class CmdSetObjAlias(MuxCommand):
 
 class CmdCopy(ObjManipCommand):
     """
-    @copy - copy objects
+    copy an object and its properties
 
     Usage:
       @copy[/reset] <original obj> [= new_name][;alias;alias..][:new_location] [,new_name2 ...]
@@ -236,7 +236,7 @@ class CmdCopy(ObjManipCommand):
 
 class CmdCpAttr(ObjManipCommand):
     """
-    @cpattr - copy attributes
+    copy attributes between objects
 
     Usage:
       @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
@@ -336,7 +336,7 @@ class CmdCpAttr(ObjManipCommand):
 
 class CmdMvAttr(ObjManipCommand):
     """
-    @mvattr - move attributes
+    move attributes between objects
 
     Usage:
       @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
@@ -376,7 +376,7 @@ class CmdMvAttr(ObjManipCommand):
 
 class CmdCreate(ObjManipCommand):
     """
-    @create - create new objects
+    create new objects
 
     Usage:
       @create[/drop] objname[;alias;alias...][:typeclass], objname...
@@ -448,7 +448,7 @@ class CmdCreate(ObjManipCommand):
 
 class CmdDesc(MuxCommand):
     """
-    @desc - describe an object or room
+    describe an object
 
     Usage:
       @desc [<obj> =] >description>
@@ -486,7 +486,7 @@ class CmdDesc(MuxCommand):
 
 class CmdDestroy(MuxCommand):
     """
-    @destroy - remove objects from the game
+    permanently delete objects
 
     Usage:
        @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
@@ -566,7 +566,7 @@ class CmdDestroy(MuxCommand):
 
 class CmdDig(ObjManipCommand):
     """
-    @dig - build and connect new rooms to the current one
+    build new rooms and connect them to the current location
 
     Usage:
       @dig[/switches] roomname[;alias;alias...][:typeclass]
@@ -701,7 +701,7 @@ class CmdDig(ObjManipCommand):
 
 class CmdTunnel(MuxCommand):
     """
-    dig in often-used directions
+    create new rooms in cardinal directions only
 
     Usage:
       @tunnel[/switch] <direction> [= roomname[;alias;alias;...][:typeclass]]
@@ -781,7 +781,7 @@ class CmdTunnel(MuxCommand):
 
 class CmdLink(MuxCommand):
     """
-    @link - connect objects
+    link existing rooms together with exits
 
     Usage:
       @link[/switches] <object> = <target>
@@ -868,7 +868,7 @@ class CmdLink(MuxCommand):
 
 class CmdUnLink(CmdLink):
     """
-    @unlink - unconnect objects
+    remove exit-connections between rooms
 
     Usage:
       @unlink <Object>
@@ -903,7 +903,7 @@ class CmdUnLink(CmdLink):
 
 class CmdSetHome(CmdLink):
     """
-    @home - control an object's home location
+    set an object's home location
 
     Usage:
       @home <obj> [= home_location]
@@ -955,7 +955,7 @@ class CmdSetHome(CmdLink):
 
 class CmdListCmdSets(MuxCommand):
     """
-    list command sets on an object
+    list command sets defined on an object
 
     Usage:
       @cmdsets [obj]
@@ -984,7 +984,7 @@ class CmdListCmdSets(MuxCommand):
 
 class CmdName(ObjManipCommand):
     """
-    cname - change the name and/or aliases of an object
+    change the name and/or aliases of an object
 
     Usage:
       @name obj = name;alias1;alias2
@@ -1036,7 +1036,7 @@ class CmdName(ObjManipCommand):
 
 class CmdOpen(ObjManipCommand):
     """
-    @open - create new exit
+    open a new exit from the current room
 
     Usage:
       @open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination>
@@ -1167,7 +1167,7 @@ class CmdOpen(ObjManipCommand):
 
 class CmdSetAttribute(ObjManipCommand):
     """
-    @set - set attributes
+    set attribute on an object or player
 
     Usage:
       @set <obj>/<attr> = <value>
@@ -1329,7 +1329,7 @@ class CmdSetAttribute(ObjManipCommand):
 
 class CmdTypeclass(MuxCommand):
     """
-    @typeclass - set object typeclass
+    set or change an object's typeclass
 
     Usage:
       @typclass[/switch] <object> [= <typeclass.path>]
@@ -1430,7 +1430,7 @@ class CmdTypeclass(MuxCommand):
 
 class CmdWipe(ObjManipCommand):
     """
-    @wipe - clears attributes
+    clear all attributes from an object
 
     Usage:
       @wipe <object>[/attribute[/attribute...]]
@@ -1482,7 +1482,7 @@ class CmdWipe(ObjManipCommand):
 
 class CmdLock(ObjManipCommand):
     """
-    lock - assign a lock definition to an object
+    assign a lock definition to an object
 
     Usage:
       @lock <object>[ = <lockstring>]
@@ -1566,7 +1566,7 @@ class CmdLock(ObjManipCommand):
 
 class CmdExamine(ObjManipCommand):
     """
-    examine - detailed info on objects
+    get detailed information about an object
 
     Usage:
       examine [<object>[/attrname]]
@@ -1819,7 +1819,7 @@ class CmdExamine(ObjManipCommand):
 
 class CmdFind(MuxCommand):
     """
-    find objects
+    search the database for objects
 
     Usage:
       @find[/switches] <name or dbref or *player> [= dbrefmin[-dbrefmax]]
@@ -2030,7 +2030,7 @@ class CmdTeleport(MuxCommand):
 
 class CmdScript(MuxCommand):
     """
-    attach scripts
+    attach a script to an object
 
     Usage:
       @script[/switch] <obj> [= <script.path or scriptkey>]
@@ -2122,7 +2122,7 @@ class CmdScript(MuxCommand):
 
 class CmdTag(MuxCommand):
     """
-    handles tagging
+    handles the tags of an object
 
     Usage:
       @tag[/del] <obj> [= <tag>[:<category>]]

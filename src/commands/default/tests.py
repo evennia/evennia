@@ -187,7 +187,7 @@ class TestSystem(CommandTest):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
         self.call(system.CmdPy(), "1+2", ">>> 1+2|<<< 3")
-        self.call(system.CmdScripts(), "", "id ")
+        self.call(system.CmdScripts(), "", "dbref ")
         self.call(system.CmdObjects(), "", "Object subtype totals")
         self.call(system.CmdAbout(), "", None)
         self.call(system.CmdServerLoad(), "", "Server CPU and Memory load:")
@@ -198,10 +198,10 @@ class TestAdmin(CommandTest):
     CID = 4
     def test_cmds(self):
         # not testing CmdBoot, CmdDelPlayer, CmdNewPassword
-        self.call(admin.CmdEmit(), "Char4b = Test", "Emitted to Char4b.")
-        self.call(admin.CmdPerm(), "Obj4 = Builders", "Permission 'Builders' given to Obj4.")
+        self.call(admin.CmdEmit(), "Char4b = Test", "Emitted to Char4b:\nTest")
+        self.call(admin.CmdPerm(), "Obj4 = Builders", "Permission 'Builders' given to Obj4 (the Object/Character).")
         self.call(admin.CmdWall(), "Test", "Announcing to all connected players ...")
-        self.call(admin.CmdPerm(), "Char4b = Builders","Permission 'Builders' given to Char4b.")
+        self.call(admin.CmdPerm(), "Char4b = Builders","Permission 'Builders' given to Char4b (the Object/Character).")
         self.call(admin.CmdBan(), "Char4", "NameBan char4 was added.")
 
 

@@ -7,7 +7,6 @@ System commands
 import traceback
 import os
 import datetime
-import time
 import sys
 import django
 import twisted
@@ -36,7 +35,7 @@ __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
 
 class CmdReload(MuxCommand):
     """
-    Reload the system
+    reload the server
 
     Usage:
       @reload [reason]
@@ -62,7 +61,7 @@ class CmdReload(MuxCommand):
 
 class CmdReset(MuxCommand):
     """
-    Reset and reboot the system
+    reset and reboot the server
 
     Usage:
       @reset
@@ -88,7 +87,7 @@ class CmdReset(MuxCommand):
 class CmdShutdown(MuxCommand):
 
     """
-    @shutdown
+    stop the server completely
 
     Usage:
       @shutdown [announcement]
@@ -118,7 +117,7 @@ class CmdShutdown(MuxCommand):
 
 class CmdPy(MuxCommand):
     """
-    Execute a snippet of python code
+    execute a snippet of python code
 
     Usage:
       @py <cmd>
@@ -242,7 +241,7 @@ def format_script_list(scripts):
 
 class CmdScripts(MuxCommand):
     """
-    Operate and list global scripts, list all scrips.
+    list and manage all running scripts
 
     Usage:
       @scripts[/switches] [#dbref, key, script.path or <obj>]
@@ -338,7 +337,7 @@ class CmdScripts(MuxCommand):
 
 class CmdObjects(MuxCommand):
     """
-    @objects - Give a summary of object types in database
+    statistics on objects in the database
 
     Usage:
       @objects [<nr>]
@@ -403,7 +402,7 @@ class CmdObjects(MuxCommand):
 
 class CmdPlayers(MuxCommand):
     """
-    @players - give a summary of all registed Players
+    list all registered players
 
     Usage:
       @players [nr]
@@ -447,7 +446,7 @@ class CmdPlayers(MuxCommand):
 
 class CmdService(MuxCommand):
     """
-    @service - manage services
+    manage system services
 
     Usage:
       @service[/switch] <service>
@@ -544,7 +543,7 @@ class CmdService(MuxCommand):
 
 class CmdAbout(MuxCommand):
     """
-    @about - game engine info
+    show Evennia info
 
     Usage:
       @about
@@ -592,12 +591,13 @@ class CmdAbout(MuxCommand):
 
 class CmdTime(MuxCommand):
     """
-    @time
+    show server time statistics
 
     Usage:
       @time
 
-    Server time statistics.
+    List Server time statistics such as uptime
+    and the current time stamp.
     """
     key = "@time"
     aliases = "@uptime"
@@ -617,7 +617,7 @@ class CmdTime(MuxCommand):
 
 class CmdServerLoad(MuxCommand):
     """
-    server load and memory statistics
+    show server load and memory statistics
 
     Usage:
        @serverload

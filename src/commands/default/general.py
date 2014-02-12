@@ -16,7 +16,7 @@ AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(
 
 class CmdHome(MuxCommand):
     """
-    home
+    move to your character's home location
 
     Usage:
       home
@@ -42,7 +42,7 @@ class CmdHome(MuxCommand):
 
 class CmdLook(MuxCommand):
     """
-    look
+    look at location or object
 
     Usage:
       look
@@ -88,7 +88,7 @@ class CmdLook(MuxCommand):
 
 class CmdNick(MuxCommand):
     """
-    Define a personal alias/nick
+    define a personal alias/nick
 
     Usage:
       nick[/switches] <nickname> = [<string>]
@@ -178,7 +178,7 @@ class CmdNick(MuxCommand):
 
 class CmdInventory(MuxCommand):
     """
-    inventory
+    view inventory
 
     Usage:
       inventory
@@ -207,7 +207,7 @@ class CmdInventory(MuxCommand):
 
 class CmdGet(MuxCommand):
     """
-    get
+    pick up something
 
     Usage:
       get <obj>
@@ -257,7 +257,7 @@ class CmdGet(MuxCommand):
 
 class CmdDrop(MuxCommand):
     """
-    drop
+    drop something
 
     Usage:
       drop <obj>
@@ -300,7 +300,7 @@ class CmdDrop(MuxCommand):
 
 class CmdGive(MuxCommand):
     """
-    give away things
+    give away something to someone
 
     Usage:
       give <inventory obj> = <target>
@@ -336,7 +336,7 @@ class CmdGive(MuxCommand):
 
 class CmdSay(MuxCommand):
     """
-    say
+    speak as your character
 
     Usage:
       say <message>
@@ -374,7 +374,7 @@ class CmdSay(MuxCommand):
 
 class CmdPose(MuxCommand):
     """
-    pose - strike a pose
+    strike a pose
 
     Usage:
       pose <pose text>
@@ -417,7 +417,7 @@ class CmdPose(MuxCommand):
 
 class CmdAccess(MuxCommand):
     """
-    access - show access groups
+    show your current game access
 
     Usage:
       access

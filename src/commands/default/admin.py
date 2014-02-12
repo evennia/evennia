@@ -7,10 +7,9 @@ Admin commands
 import time
 import re
 from django.conf import settings
-from django.contrib.auth.models import User
 from src.server.sessionhandler import SESSIONS
 from src.server.models import ServerConfig
-from src.utils import utils, prettytable, search
+from src.utils import prettytable, search
 from src.commands.default.muxcommand import MuxCommand
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
@@ -22,7 +21,7 @@ __all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer",
 
 class CmdBoot(MuxCommand):
     """
-    @boot
+    kick a player from the server.
 
     Usage
       @boot[/switches] <player obj> [: reason]
@@ -210,7 +209,7 @@ class CmdBan(MuxCommand):
 
 class CmdUnban(MuxCommand):
     """
-    remove a ban
+    remove a ban from a player
 
     Usage:
       @unban <banid>
@@ -255,7 +254,7 @@ class CmdUnban(MuxCommand):
 
 class CmdDelPlayer(MuxCommand):
     """
-    delplayer - delete player from server
+    delete a player from the server
 
     Usage:
       @delplayer[/switch] <name> [: reason]
@@ -325,7 +324,7 @@ class CmdDelPlayer(MuxCommand):
 
 class CmdEmit(MuxCommand):
     """
-    @emit
+    admin command for emitting message to multiple objects
 
     Usage:
       @emit[/switches] [<obj>, <obj>, ... =] <message>
@@ -404,7 +403,7 @@ class CmdEmit(MuxCommand):
 
 class CmdNewPassword(MuxCommand):
     """
-    @userpassword
+    change the password of a player
 
     Usage:
       @userpassword <user obj> = <new password>
@@ -439,7 +438,7 @@ class CmdNewPassword(MuxCommand):
 
 class CmdPerm(MuxCommand):
     """
-    @perm - set permissions
+    set the permissions of a player/object
 
     Usage:
       @perm[/switch] <object> [= <permission>[,<permission>,...]]
@@ -539,7 +538,7 @@ class CmdPerm(MuxCommand):
 
 class CmdWall(MuxCommand):
     """
-    @wall
+    make an announcement to all
 
     Usage:
       @wall <message>

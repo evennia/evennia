@@ -48,7 +48,7 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
 
 class CmdAddCom(MuxPlayerCommand):
     """
-    addcom - subscribe to a channel with optional alias
+    add a channel alias and/or subscribe to a channel
 
     Usage:
        addcom [alias=] <channel>
@@ -117,7 +117,7 @@ class CmdAddCom(MuxPlayerCommand):
 
 class CmdDelCom(MuxPlayerCommand):
     """
-    delcom - unsubscribe from channel or remove channel alias
+    remove a channel alias and/or unsubscribe from channel
 
     Usage:
        delcom <alias or channel>
@@ -174,7 +174,7 @@ class CmdDelCom(MuxPlayerCommand):
 
 class CmdAllCom(MuxPlayerCommand):
     """
-    allcom - operate on all channels
+    perform admin operations on all channels
 
     Usage:
       allcom [on | off | who | destroy]
@@ -240,7 +240,7 @@ class CmdAllCom(MuxPlayerCommand):
 
 class CmdChannels(MuxPlayerCommand):
     """
-    @clist
+    list all channels available to you
 
     Usage:
       @channels
@@ -309,7 +309,7 @@ class CmdChannels(MuxPlayerCommand):
 
 class CmdCdestroy(MuxPlayerCommand):
     """
-    @cdestroy
+    destroy a channel you created
 
     Usage:
       @cdestroy <channel>
@@ -346,7 +346,7 @@ class CmdCdestroy(MuxPlayerCommand):
 
 class CmdCBoot(MuxPlayerCommand):
     """
-    @cboot
+    kick a player from a channel you control
 
     Usage:
        @cboot[/quiet] <channel> = <player> [:reason]
@@ -407,7 +407,7 @@ class CmdCBoot(MuxPlayerCommand):
 
 class CmdCemit(MuxPlayerCommand):
     """
-    @cemit - send a message to channel
+    send an admin message to a channel you control
 
     Usage:
       @cemit[/switches] <channel> = <message>
@@ -455,7 +455,7 @@ class CmdCemit(MuxPlayerCommand):
 
 class CmdCWho(MuxPlayerCommand):
     """
-    @cwho
+    show who is listening to a channel
 
     Usage:
       @cwho <channel>
@@ -493,8 +493,8 @@ class CmdCWho(MuxPlayerCommand):
 
 class CmdChannelCreate(MuxPlayerCommand):
     """
-    @ccreate
-    channelcreate
+    create a new channel
+
     Usage:
      @ccreate <new channel>[;alias;alias...] = description
 
@@ -543,7 +543,7 @@ class CmdChannelCreate(MuxPlayerCommand):
 
 class CmdClock(MuxPlayerCommand):
     """
-    @clock - changes channel access restrictions
+    change channel locks of a channel you control
 
     Usage:
       @clock <channel> [= <lockstring>]
@@ -589,7 +589,7 @@ class CmdClock(MuxPlayerCommand):
 
 class CmdCdesc(MuxPlayerCommand):
     """
-    @cdesc - set channel description
+    describe a channel you control
 
     Usage:
       @cdesc <channel> = <description>
@@ -627,7 +627,7 @@ class CmdCdesc(MuxPlayerCommand):
 
 class CmdPage(MuxPlayerCommand):
     """
-    page - send private message
+    send a private message to another player
 
     Usage:
       page[/switches] [<player>,<player>,... = <message>]
@@ -758,7 +758,7 @@ class CmdPage(MuxPlayerCommand):
 
 class CmdIRC2Chan(MuxCommand):
     """
-    @irc2chan - link evennia channel to an IRC channel
+    link an evennia channel to an external IRC channel
 
     Usage:
       @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
@@ -853,7 +853,7 @@ class CmdIRC2Chan(MuxCommand):
 
 class CmdIMC2Chan(MuxCommand):
     """
-    imc2chan - link an evennia channel to imc2
+    link an evennia channel to an external IMC2 channel
 
     Usage:
       @imc2chan[/switches] <evennia_channel> = <imc2_channel>
@@ -931,7 +931,7 @@ class CmdIMC2Chan(MuxCommand):
 
 class CmdIMCInfo(MuxCommand):
     """
-    imcinfo - package of imc info commands
+    get various IMC2 information
 
     Usage:
       @imcinfo[/switches]
@@ -1031,7 +1031,7 @@ class CmdIMCInfo(MuxCommand):
 # unclear if this is working ...
 class CmdIMCTell(MuxCommand):
     """
-    imctell - send a page to a remote IMC player
+    send a page to a remote IMC player
 
     Usage:
       imctell User@MUD = <msg>
@@ -1073,7 +1073,7 @@ class CmdIMCTell(MuxCommand):
 # RSS connection
 class CmdRSS2Chan(MuxCommand):
     """
-    @rss2chan - link evennia channel to an RSS feed
+    link an evennia channel to an external RSS feed
 
     Usage:
       @rss2chan[/switches] <evennia_channel> = <rss_url>
