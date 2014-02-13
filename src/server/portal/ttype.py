@@ -25,17 +25,6 @@ MTTS = [(128, 'PROXY'),
         (4, 'UTF-8'),
         (2, 'VT100'),
         (1, 'ANSI')]
-# some clients sends erroneous strings instead
-# of capability numbers. We try to convert back.
-MTTS_invert = {"PROXY": 128,
-               "SCREEN COLOR PALETTE": 64,
-               "OSC COLOR PALETTE": 32,
-               "MOUSE TRACKING": 16,
-               "256 COLORS": 8,
-               "UTF-8": 4,
-               "VT100": 2,
-               "ANSI": 1}
-
 
 class Ttype(object):
     """
@@ -53,65 +42,101 @@ class Ttype(object):
         self.ttype_step = 0
         self.protocol = protocol
         self.protocol.protocol_flags['TTYPE'] = {"init_done": False}
+        # is it a safe bet to assume ANSI is always supported?
+        self.protocol.protocol_flags['TTYPE']['ANSI'] = True
         # setup protocol to handle ttype initialization and negotiation
-        self.protocol.negotiationMap[TTYPE] = self.do_ttype
+        self.protocol.negotiationMap[TTYPE] = self.will_ttype
         # ask if client will ttype, connect callback if it does.
-        self.protocol.will(TTYPE).addCallbacks(self.do_ttype, self.no_ttype)
+        self.protocol.do(TTYPE).addCallbacks(self.will_ttype, self.wont_ttype)
 
-    def no_ttype(self, option):
+    def wont_ttype(self, option):
         """
         Callback if ttype is not supported by client.
         """
-        self.protocol.protocol_flags['TTYPE'] = {"init_done": True}
+        self.protocol.protocol_flags['TTYPE']["init_done"] = True
 
-    def do_ttype(self, option):
+    def will_ttype(self, option):
         """
         Handles negotiation of the ttype protocol once the
-        client has confirmed that it supports the ttype
+        client has confirmed that it will respond with the ttype
         protocol.
 
         The negotiation proceeds in several steps, each returning a
         certain piece of information about the client. All data is
         stored on protocol.protocol_flags under the TTYPE key.
         """
+
         options = self.protocol.protocol_flags.get('TTYPE')
-        if options and options.get('init_done'):
+
+        if options and options.get('init_done') or self.ttype_step > 3:
             return
 
-        self.ttype_step += 1
-
-        if self.ttype_step == 1:
-            # set up info storage and initialize subnegotiation
-            self.protocol.requestNegotiation(TTYPE, SEND)
-        else:
-            # receive data
+        try:
             option = "".join(option).lstrip(IS)
-            if self.ttype_step == 2:
-                self.protocol.protocol_flags['TTYPE']['CLIENTNAME'] = option
-                self.protocol.requestNegotiation(TTYPE, SEND)
-            elif self.ttype_step == 3:
-                self.protocol.protocol_flags['TTYPE']['TERM'] = option
-                self.protocol.requestNegotiation(TTYPE, SEND)
-            elif self.ttype_step == 4:
-                try:
-                    option = int(option.strip('MTTS '))
-                except ValueError:
-                    # it seems some clients don't send MTTS according to
-                    # protocol specification, but instead just sends
-                    # the data as plain strings. We try to convert back.
-                    option = MTTS_invert.get(option.strip('MTTS ').upper())
-                    if not option:
-                        # no conversion possible. Give up.
-                        self.protocol.protocol_flags['TTYPE']['init_done'] = True
-                        return
-                self.protocol.protocol_flags['TTYPE']['MTTS'] = option
-                for codenum, standard in MTTS:
-                    if option == 0:
-                        break
-                    status = option & codenum
-                    self.protocol.protocol_flags['TTYPE'][standard] = status
-                    #if status:
-                    #    option = option % codenum
-                self.protocol.protocol_flags['TTYPE']['init_done'] = True
+        except TypeError:
+            pass
 
-            #print "ttype results:", self.protocol.protocol_flags['TTYPE'],id(self.protocol)
+        #print "incoming TTYPE option:", option
+
+        if self.ttype_step == 0:
+            # just start the request chain
+            self.protocol.requestNegotiation(TTYPE, SEND)
+
+        elif self.ttype_step == 1:
+            # this is supposed to be the name of the client/terminal.
+            # For clients not supporting the extended TTYPE
+            # definition, subsequent calls will just repeat-return this.
+            clientname = option.upper()
+            # use name to identify support for xterm256. Many of these
+            # only support after a certain version, but all support
+            # it since at least 4 years. We assume recent client here for now.
+            xterm256 = False
+            if clientname.startswith("MUDLET"):
+                # supports xterm256 stably since 1.1 (2010?)
+                xterm256 = clientname.split("MUDLET",1)[1].strip() >= "1.1"
+            else:
+                xterm256 = (clientname.startswith("XTERM") or
+                            clientname.endswith("-256COLOR") or
+                            clientname in ("ATLANTIS",      # > 0.9.9.0 (aug 2009)
+                                           "CMUD",          # > 3.04 (mar 2009)
+                                           "KILDCLIENT",    # > 2.2.0 (sep 2005)
+                                           "MUDLET",        # > beta 15 (sep 2009)
+                                           "MUSHCLIENT",    # > 4.02 (apr 2007)
+                                           "PUTTY"))        # > 0.58 (apr 2005)
+
+            # all clients supporting TTYPE at all seem to support ANSI
+            self.protocol.protocol_flags['TTYPE']['ANSI'] = True
+            self.protocol.protocol_flags['TTYPE']['256 COLORS'] = xterm256
+            self.protocol.protocol_flags['TTYPE']['CLIENTNAME'] = clientname
+            self.protocol.requestNegotiation(TTYPE, SEND)
+
+        elif self.ttype_step == 2:
+            # this is a term capabilities flag
+            term = option
+            # identify xterm256 based on flag
+            xterm256 = (term.endswith("-256color")         # Apple Terminal, old Tintin
+                        or term.endswith("xterm") and      # old Tintin, Putty
+                        not term.endswith("-color"))
+            if xterm256:
+                self.protocol.protocol_flags['TTYPE']['ANSI'] = True
+                self.protocol.protocol_flags['TTYPE']['256 COLORS'] = xterm256
+            self.protocol.protocol_flags['TTYPE']['TERM'] = term
+            # request next information
+            self.protocol.requestNegotiation(TTYPE, SEND)
+
+        elif self.ttype_step == 3:
+            # the MTTS bitstring identifying term capabilities
+            if option.startswith("MTTS"):
+                option = option.split(" ")[1]
+                if option.isdigit():
+                    # a number - determine the actual capabilities
+                    option = int(option)
+                    support = dict((capability, True) for bitval, capability in MTTS if option & bitval > 0)
+                    self.protocol.protocol_flags['TTYPE'].update(support)
+                else:
+                    # some clients send erroneous MTTS as a string. Add directly.
+                    self.protocol.protocol_flags['TTYPE'][option.upper()] = True
+
+            self.protocol.protocol_flags['TTYPE']['init_done'] = True
+            #print "TTYPE final:", self.protocol.protocol_flags['TTYPE']
+        self.ttype_step += 1
