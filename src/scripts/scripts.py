@@ -32,42 +32,63 @@ class ExtendedLoopingCall(LoopingCall):
     than self.interval.
     """
     start_delay = None
+    repeats = None
 
-    def start(self, interval, now=True, start_delay=None):
+    def start(self, interval, now=True, start_delay=None, repeats=None):
         """
         Start running function every interval seconds.
 
         This overloads the LoopingCall default by offering
-        the start_delay keyword.
+        the start_delay keyword and ability to repeat.
 
         start_delay: The number of seconds before starting.
                      If None, wait interval seconds. Only
                      valid is now is False.
+        repeats: Number of times for loopingcall to repeat before
+                 stopping. If None or 0, will loop forever.
         """
         assert not self.running, ("Tried to start an already running "
                                   "LoopingCall.")
         if interval < 0:
             raise ValueError, "interval must be >= 0"
-        self.running = True
+
         d = self.deferred = Deferred()
         self.starttime = self.clock.seconds()
         self._lastTime = self.starttime
         self.interval = interval
+
+        if repeats and repeats > 0:
+            self.repeats = int(repeats)
+
         if now:
             self()
-        elif start_delay is not None and start_delay >= 0:
-            self.interval = start_delay
-            self._reschedule()
-            # this is set after the _reshedule call to make
-            # next_call find it until next reshedule.
-            self.start_delay = start_delay
-            self.interval = interval
         else:
-            self._reschedule()
+            if self.repeats is not None:
+                # need to ignore the first reschedule
+                self.repeats += 1
+            if start_delay is not None and start_delay >= 0:
+                # we set start_delay after the _reshedule call to make
+                # next_call_time() find it until next reshedule.
+                self.interval = start_delay
+                self._reschedule()
+                self.interval = interval
+                self.start_delay = start_delay
+            else:
+                self._reschedule()
+
         return d
 
     def _reschedule(self):
-        "Handle delayed call so next_call get it right"
+        """
+        Handle call rescheduling including
+        nulling start_delay and stopping if
+        number of repeats is reached.
+        """
+        if self.repeats is not None:
+            self.repeats -= 1
+            if self.repeats <= 0:
+               self.stop()
+               return
         self.start_delay = None
         super(ExtendedLoopingCall, self)._reschedule()
 
