@@ -232,7 +232,7 @@ def format_script_list(scripts):
                        script.key,
                        script.interval if script.interval > 0 else "--",
                        "%ss" % nextrep if nextrep else "--",
-                       "%i" % script.repeats if script.repeats else "--",
+                       "%i/%i" % (script.remaining_repeats(), script.repeats) if script.repeats else "--",
                        "*" if script.persistent else "-",
                        script.typeclass_path.rsplit('.', 1)[-1],
                        crop(script.desc, width=20)])

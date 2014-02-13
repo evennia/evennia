@@ -44,7 +44,7 @@ class ExtendedLoopingCall(LoopingCall):
                  stopping. If None or 0, will loop forever.
         """
         assert not self.running, ("Tried to start an already running "
-                                  "LoopingCall.")
+                                  "ExtendedLoopingCall.")
         if interval < 0:
             raise ValueError, "interval must be >= 0"
 
@@ -84,12 +84,22 @@ class ExtendedLoopingCall(LoopingCall):
         """
         if self.repeats is not None:
             self.repeats -= 1
-            if self.repeats <= 0:
-               self.stop()
-               return
         self.start_delay = None
         super(ExtendedLoopingCall, self)._reschedule()
+        # we cannot kill the task here, it seems the
+        # callback will often not have time to be
+        # triggered if we do. So kill from outside
+        # by checking repeats <= 0.
+        #if self.repeats <= 0:
+        #    self.stop()
 
+    def fire(self):
+        "Force-fire the callback"
+        assert self.running ("Tried to fire an ExtendedLoopingCall "
+                             "that was not running.")
+        if self.call is not None:
+            self.call.cancel()
+            self()
 
     def next_call_time(self):
         """
@@ -125,13 +135,15 @@ class ScriptBase(TypeClass):
 
         self.ndb._task = ExtendedLoopingCall(self._step_task)
 
-        if self.ndb._paused_time:
+        if self.db._paused_time:
             # the script was paused; restarting
+            repeats = self.db._paused_repeats or self.dbobj.db_repeats
             self.ndb._task.start(self.dbobj.db_interval,
                                         now=False,
                                         start_delay=self.ndb._paused_time,
-                                        repeats=self.dbobj.db_repeats)
-            del self.ndb._paused_time
+                                        repeats=repeats)
+            del self.db._paused_time
+            del self.db._paused_repeats
         else:
             # starting script anew
             self.ndb._task.start(self.dbobj.db_interval,
@@ -148,8 +160,8 @@ class ScriptBase(TypeClass):
         "callback for runner errors"
         cname = self.__class__.__name__
         estring = _("Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
-                   {"key": self.key, "dbid": self.dbid, "cname": cname,
-                    "err": e.getErrorMessage()}
+                          {"key": self.key, "dbid": self.dbid, "cname": cname,
+                           "err": e.getErrorMessage()}
         try:
             self.dbobj.db_obj.msg(estring)
         except Exception:
@@ -166,15 +178,13 @@ class ScriptBase(TypeClass):
         # call hook
         self.at_repeat()
 
+        # check repeats
         repeats = self.ndb._task.repeats
-        if repeats is not None:
-            if repeats <= 0:
-                self.stop()
-            else:
-                self.dbobj.repeats = repeats
+        if repeats is not None and repeats <= 0:
+            self.stop()
 
     def _step_task(self):
-        "step task"
+        "Step task. This groups error handling."
         try:
             return maybeDeferred(self._step_callback).addErrback(self._step_errback)
         except Exception:
@@ -195,6 +205,11 @@ class ScriptBase(TypeClass):
             return int(task.next_call_time())
         return None
 
+    def remaining_repeats(self):
+        "Get the number of returning repeats. Returns None if unlimited repeats."
+        task = self.ndb._task
+        if task:
+            return task.repeats
 
     def start(self, force_restart=False):
         """
@@ -272,8 +287,8 @@ class ScriptBase(TypeClass):
         #print "pausing", self.key, self.time_until_next_repeat()
         task = self.ndb._task
         if task:
-            dt = self.ndb._task.next_call_time()
-            self.db._paused_time = dt
+            self.db._paused_time = task.next_call_time()
+            self.db._paused_repeats = task.repeats
             self._stop_task()
 
     def unpause(self):
@@ -281,10 +296,7 @@ class ScriptBase(TypeClass):
         Restart a paused script. This WILL call at_start().
         """
         #print "unpausing", self.key, self.db._paused_time
-        dt = self.db._paused_time
-        if dt:
-            self.ndb._paused_time = dt
-            del self.db._paused_time
+        if self.db._paused_time:
             self.dbobj.is_active = True
 
             try:
@@ -294,6 +306,16 @@ class ScriptBase(TypeClass):
 
             self._start_task()
             return True
+
+    def fire(self):
+        """
+        Fire a premature triggering of the script callback. This
+        will reset timer and count down repeats as if the script
+        had fired normally.
+        """
+        task = self.ndb._task
+        if task:
+            task.fire()
 
     # hooks
     def at_script_creation(self):
