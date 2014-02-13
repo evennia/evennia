@@ -5,8 +5,7 @@ scripts are inheriting from.
 It also defines a few common scripts.
 """
 
-from time import time
-from twisted.internet.defer import maybeDeferred, Deferred
+from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
 from django.utils.translation import ugettext as _
@@ -22,9 +21,6 @@ _SESSIONS = None
 # attr-cache size in MB
 _ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE
 
-
-def test():
-    print "Called: %s " % time()
 
 class ExtendedLoopingCall(LoopingCall):
     """
@@ -52,10 +48,12 @@ class ExtendedLoopingCall(LoopingCall):
         if interval < 0:
             raise ValueError, "interval must be >= 0"
 
+        self.running = True
         d = self.deferred = Deferred()
         self.starttime = self.clock.seconds()
-        self._lastTime = self.starttime
+        self._expectNextCallAt = self.starttime
         self.interval = interval
+        self._runAtStart = now
 
         if repeats and repeats > 0:
             self.repeats = int(repeats)
@@ -92,20 +90,6 @@ class ExtendedLoopingCall(LoopingCall):
         self.start_delay = None
         super(ExtendedLoopingCall, self)._reschedule()
 
-    def reset(self, force_call=True):
-        """
-        Reset the loop timer. The task must already be started.
-
-        force_call - trigger the callback function
-        """
-        assert self.running, ("Tried to reset a LoopingCall that was "
-                              "not running.")
-        if self.call is not None:
-            self.call.cancel()
-        if force_call:
-            self()
-        else:
-            self._reschedule()
 
     def next_call_time(self):
         """
@@ -113,20 +97,13 @@ class ExtendedLoopingCall(LoopingCall):
         start_delay into account.
         """
         currentTime = self.clock.seconds()
-        if self.start_delay is not None:
-            # take start_delay into account
-            untilNextTime = (self._lastTime - currentTime) % self.start_delay
-            return max(self._lastTime + self.start_delay, currentTime + untilNextTime)
-        else:
-            untilNextTime = (self._lastTime - currentTime) % self.interval
-            return max(self._lastTime + self.interval, currentTime + untilNextTime)
-
+        return self._expectNextCallAt - currentTime
 
 
 #
 # Base script, inherit from Script below instead.
 #
-class ScriptClass(TypeClass):
+class ScriptBase(TypeClass):
     """
     Base class for scripts. Don't inherit from this, inherit
     from the class 'Script'  instead.
@@ -143,31 +120,31 @@ class ScriptClass(TypeClass):
         except Exception:
             return False
 
-    def _start_task(self, start_now=True):
+    def _start_task(self):
         "start task runner"
 
-        self.ndb.twisted_task = LoopingCall(self._step_task)
+        self.ndb._task = ExtendedLoopingCall(self._step_task)
+
         if self.ndb._paused_time:
-            # we had paused the script, restarting
-            #print " start with paused time:", self.key, self.ndb._paused_time
-            self.ndb.twisted_task.start(self.ndb._paused_time, now=False)
+            # the script was paused; restarting
+            self.ndb._task.start(self.dbobj.db_interval,
+                                        now=False,
+                                        start_delay=self.ndb._paused_time,
+                                        repeats=self.dbobj.db_repeats)
+            del self.ndb._paused_time
         else:
-            # starting script anew.
-            #print "_start_task: self.interval:", self.key, self.dbobj.interval
-            self.ndb.twisted_task.start(self.dbobj.interval,
-                                        now=start_now and not self.start_delay)
-        self.ndb.time_last_called = int(time())
+            # starting script anew
+            self.ndb._task.start(self.dbobj.db_interval,
+                                 now=self.dbobj.db_start_delay,
+                                 repeats=self.dbobj.db_repeats)
 
     def _stop_task(self):
         "stop task runner"
-        try:
-            #print "stopping twisted task:", id(self.ndb.twisted_task), self.obj
-            if self.ndb.twisted_task and self.ndb.twisted_task.running:
-                self.ndb.twisted_task.stop()
-        except Exception:
-            logger.log_trace()
+        task = self.ndb._task
+        if task and task.running:
+            task.stop()
 
-    def _step_err_callback(self, e):
+    def _step_errback(self, e):
         "callback for runner errors"
         cname = self.__class__.__name__
         estring = _("Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
@@ -179,38 +156,27 @@ class ScriptClass(TypeClass):
             pass
         logger.log_errmsg(estring)
 
-    def _step_succ_callback(self):
+    def _step_callback(self):
         "step task runner. No try..except needed due to defer wrap."
+
         if not self.is_valid():
             self.stop()
             return
-        self.at_repeat()
-        repeats = self.dbobj.db_repeats
-        if repeats <= 0:
-            pass  # infinite repeat
-        elif repeats == 1:
-            self.stop()
-            return
-        else:
-            self.dbobj.db_repeats -= 1
-        self.ndb.time_last_called = int(time())
-        self.save()
 
-        if self.ndb._paused_time:
-            # this means we were running an unpaused script, for the
-            # time remaining after the pause. Now we start a normal-running
-            # timer again.
-            # print "switching to normal run:", self.key
-            del self.ndb._paused_time
-            self._stop_task()
-            self._start_task(start_now=False)
+        # call hook
+        self.at_repeat()
+
+        repeats = self.ndb._task.repeats
+        if repeats is not None:
+            if repeats <= 0:
+                self.stop()
+            else:
+                self.dbobj.repeats = repeats
 
     def _step_task(self):
         "step task"
         try:
-            d = maybeDeferred(self._step_succ_callback)
-            d.addErrback(self._step_err_callback)
-            return d
+            return maybeDeferred(self._step_callback).addErrback(self._step_errback)
         except Exception:
             logger.log_trace()
 
@@ -224,13 +190,11 @@ class ScriptClass(TypeClass):
         system; it's only here for the user to be able to
         check in on their scripts and when they will next be run.
         """
-        try:
-            if self.ndb._paused_time:
-                return max(0, (self.ndb.time_last_called + self.ndb._paused_time) - int(time()))
-            else:
-                return max(0, (self.ndb.time_last_called + self.dbobj.db_interval) - int(time()))
-        except Exception:
-            return None
+        task = self.ndb._task
+        if task:
+            return int(task.next_call_time())
+        return None
+
 
     def start(self, force_restart=False):
         """
@@ -243,6 +207,7 @@ class ScriptClass(TypeClass):
         returns 0 or 1 to indicated the script has been started or not.
                 Used in counting.
         """
+
         #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj),
         #                                                          self.is_active, force_restart)
 
@@ -292,12 +257,7 @@ class ScriptClass(TypeClass):
                 self.at_stop()
             except Exception:
                 logger.log_trace()
-        if self.dbobj.db_interval > 0:
-            try:
-                self._stop_task()
-            except Exception:
-                logger.log_trace("Stopping script %s(%s)" % (self.key, self.dbid))
-                pass
+        self._stop_task()
         try:
             self.dbobj.delete()
         except AssertionError:
@@ -310,11 +270,11 @@ class ScriptClass(TypeClass):
         This stops a running script and stores its active state.
         """
         #print "pausing", self.key, self.time_until_next_repeat()
-        dt = self.time_until_next_repeat()
-        if dt is None:
-            return
-        self.db._paused_time = dt
-        self._stop_task()
+        task = self.ndb._task
+        if task:
+            dt = self.ndb._task.next_call_time()
+            self.db._paused_time = dt
+            self._stop_task()
 
     def unpause(self):
         """
@@ -322,19 +282,18 @@ class ScriptClass(TypeClass):
         """
         #print "unpausing", self.key, self.db._paused_time
         dt = self.db._paused_time
-        if dt is None:
-            return False
-        try:
-            self.dbobj.is_active = True
-            self.at_start()
+        if dt:
             self.ndb._paused_time = dt
-            self._start_task(start_now=False)
             del self.db._paused_time
-        except Exception:
-            logger.log_trace()
-            self.dbobj.is_active = False
-            return False
-        return True
+            self.dbobj.is_active = True
+
+            try:
+                self.at_start()
+            except Exception:
+                logger.log_trace()
+
+            self._start_task()
+            return True
 
     # hooks
     def at_script_creation(self):
@@ -366,7 +325,7 @@ class ScriptClass(TypeClass):
 # Base Script - inherit from this
 #
 
-class Script(ScriptClass):
+class Script(ScriptBase):
     """
     This is the class you should inherit from, it implements
     the hooks called by the script machinery.
