@@ -6,7 +6,7 @@ It also defines a few common scripts.
 """
 
 from time import time
-from twisted.internet.defer import maybeDeferred
+from twisted.internet.defer import maybeDeferred, Deferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
 from django.utils.translation import ugettext as _
@@ -21,6 +21,85 @@ __all__ = ["Script", "DoNothing", "CheckSessions",
 _SESSIONS = None
 # attr-cache size in MB
 _ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE
+
+
+def test():
+    print "Called: %s " % time()
+
+class ExtendedLoopingCall(LoopingCall):
+    """
+    LoopingCall that can start at a delay different
+    than self.interval.
+    """
+    start_delay = None
+
+    def start(self, interval, now=True, start_delay=None):
+        """
+        Start running function every interval seconds.
+
+        This overloads the LoopingCall default by offering
+        the start_delay keyword.
+
+        start_delay: The number of seconds before starting.
+                     If None, wait interval seconds. Only
+                     valid is now is False.
+        """
+        assert not self.running, ("Tried to start an already running "
+                                  "LoopingCall.")
+        if interval < 0:
+            raise ValueError, "interval must be >= 0"
+        self.running = True
+        d = self.deferred = Deferred()
+        self.starttime = self.clock.seconds()
+        self._lastTime = self.starttime
+        self.interval = interval
+        if now:
+            self()
+        elif start_delay is not None and start_delay >= 0:
+            self.interval = start_delay
+            self._reschedule()
+            # this is set after the _reshedule call to make
+            # next_call find it until next reshedule.
+            self.start_delay = start_delay
+            self.interval = interval
+        else:
+            self._reschedule()
+        return d
+
+    def _reschedule(self):
+        "Handle delayed call so next_call get it right"
+        self.start_delay = None
+        super(ExtendedLoopingCall, self)._reschedule()
+
+    def reset(self, force_call=True):
+        """
+        Reset the loop timer. The task must already be started.
+
+        force_call - trigger the callback function
+        """
+        assert self.running, ("Tried to reset a LoopingCall that was "
+                              "not running.")
+        if self.call is not None:
+            self.call.cancel()
+        if force_call:
+            self()
+        else:
+            self._reschedule()
+
+    def next_call_time(self):
+        """
+        Return the time in seconds until the next call. This takes
+        start_delay into account.
+        """
+        currentTime = self.clock.seconds()
+        if self.start_delay is not None:
+            # take start_delay into account
+            untilNextTime = (self._lastTime - currentTime) % self.start_delay
+            return max(self._lastTime + self.start_delay, currentTime + untilNextTime)
+        else:
+            untilNextTime = (self._lastTime - currentTime) % self.interval
+            return max(self._lastTime + self.interval, currentTime + untilNextTime)
+
 
 
 #
