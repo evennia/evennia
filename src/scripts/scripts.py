@@ -203,7 +203,7 @@ class ScriptBase(TypeClass):
         task = self.ndb._task
         if task:
             try:
-                return int(task.next_call_time())
+                return int(round(task.next_call_time()))
             except TypeError:
                 pass
         return None
