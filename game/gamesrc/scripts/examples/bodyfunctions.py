@@ -33,9 +33,9 @@ class BodyFunctions(Script):
         a random check here so as to only return 33% of the time.
         """
 
-        #if random.random() < 0.66:
-        #    # no message this time
-        #    return
+        if random.random() < 0.66:
+            # no message this time
+            return
         rand = random.random()
         # return a random message
         if rand < 0.1:
