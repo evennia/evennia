@@ -62,7 +62,7 @@ class ExtendedLoopingCall(LoopingCall):
             self()
         else:
             if self.repeats is not None:
-                # need to ignore the first reschedule
+                # need to compensate for the first reschedule
                 self.repeats += 1
             if start_delay is not None and start_delay >= 0:
                 # we set start_delay after the _reshedule call to make
@@ -82,23 +82,21 @@ class ExtendedLoopingCall(LoopingCall):
         nulling start_delay and stopping if
         number of repeats is reached.
         """
+        self.start_delay = None
         if self.repeats is not None:
             self.repeats -= 1
-        self.start_delay = None
         super(ExtendedLoopingCall, self)._reschedule()
-        # we cannot kill the task here, it seems the
-        # callback will often not have time to be
-        # triggered if we do. So kill from outside
-        # by checking repeats <= 0.
-        #if self.repeats <= 0:
-        #    self.stop()
+        # for self.repeats <= 0, don't kill loop here; the callback
+        # won't have time to be called in some situations. Kill
+        # externally by checking task.repeats <= 0.
 
     def fire(self):
         "Force-fire the callback"
-        assert self.running ("Tried to fire an ExtendedLoopingCall "
-                             "that was not running.")
+        assert self.running, ("Tried to fire an ExtendedLoopingCall "
+                              "that was not running.")
         if self.call is not None:
             self.call.cancel()
+            self._expectNextCallAt = self.clock.seconds()
             self()
 
     def next_call_time(self):
@@ -106,9 +104,10 @@ class ExtendedLoopingCall(LoopingCall):
         Return the time in seconds until the next call. This takes
         start_delay into account.
         """
-        currentTime = self.clock.seconds()
-        return self._expectNextCallAt - currentTime
-
+        if self.running:
+            currentTime = self.clock.seconds()
+            return self._expectNextCallAt - currentTime
+        return None
 
 #
 # Base script, inherit from Script below instead.
@@ -139,15 +138,15 @@ class ScriptBase(TypeClass):
             # the script was paused; restarting
             repeats = self.db._paused_repeats or self.dbobj.db_repeats
             self.ndb._task.start(self.dbobj.db_interval,
-                                        now=False,
-                                        start_delay=self.ndb._paused_time,
-                                        repeats=repeats)
+                                 now=False,
+                                 start_delay=self.db._paused_time,
+                                 repeats=repeats)
             del self.db._paused_time
             del self.db._paused_repeats
         else:
             # starting script anew
             self.ndb._task.start(self.dbobj.db_interval,
-                                 now=self.dbobj.db_start_delay,
+                                 now=not self.dbobj.db_start_delay,
                                  repeats=self.dbobj.db_repeats)
 
     def _stop_task(self):
@@ -181,6 +180,7 @@ class ScriptBase(TypeClass):
         # check repeats
         repeats = self.ndb._task.repeats
         if repeats is not None and repeats <= 0:
+            print "stopping script!"
             self.stop()
 
     def _step_task(self):
@@ -202,7 +202,10 @@ class ScriptBase(TypeClass):
         """
         task = self.ndb._task
         if task:
-            return int(task.next_call_time())
+            try:
+                return int(task.next_call_time())
+            except TypeError:
+                pass
         return None
 
     def remaining_repeats(self):
@@ -284,8 +287,8 @@ class ScriptBase(TypeClass):
         """
         This stops a running script and stores its active state.
         """
-        #print "pausing", self.key, self.time_until_next_repeat()
         task = self.ndb._task
+        print "pausing", self.key, self.time_until_next_repeat()
         if task:
             self.db._paused_time = task.next_call_time()
             self.db._paused_repeats = task.repeats

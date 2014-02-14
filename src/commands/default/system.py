@@ -227,12 +227,23 @@ def format_script_list(scripts):
     table.align = 'r'
     for script in scripts:
         nextrep = script.time_until_next_repeat()
+        if nextrep is None:
+            nextrep = "PAUS" if script.db._paused_time else "--"
+        else:
+            nextrep = "%ss" % nextrep
+
+        maxrepeat = script.repeats
+        if maxrepeat:
+            rept = "%i/%i" % (maxrepeat - script.remaining_repeats(), maxrepeat)
+        else:
+            rept = "-/-"
+
         table.add_row([script.id,
                        script.obj.key if (hasattr(script, 'obj') and script.obj) else "<Global>",
                        script.key,
                        script.interval if script.interval > 0 else "--",
-                       "%ss" % nextrep if nextrep else "--",
-                       "%i/%i" % (script.remaining_repeats(), script.repeats) if script.repeats else "--",
+                       nextrep,
+                       rept,
                        "*" if script.persistent else "-",
                        script.typeclass_path.rsplit('.', 1)[-1],
                        crop(script.desc, width=20)])
