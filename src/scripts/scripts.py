@@ -90,7 +90,7 @@ class ExtendedLoopingCall(LoopingCall):
         # won't have time to be called in some situations. Kill
         # externally by checking task.repeats <= 0.
 
-    def fire(self):
+    def force_repeat(self):
         "Force-fire the callback"
         assert self.running, ("Tried to fire an ExtendedLoopingCall "
                               "that was not running.")
@@ -310,15 +310,15 @@ class ScriptBase(TypeClass):
             self._start_task()
             return True
 
-    def fire(self):
+    def force_repeat(self):
         """
         Fire a premature triggering of the script callback. This
-        will reset timer and count down repeats as if the script
+        will reset the timer and count down repeats as if the script
         had fired normally.
         """
         task = self.ndb._task
         if task:
-            task.fire()
+            task.force_repeat()
 
     # hooks
     def at_script_creation(self):
