@@ -17,10 +17,10 @@ from src.utils import logger
 __all__ = ["Script", "DoNothing", "CheckSessions",
            "ValidateScripts", "ValidateChannelHandler"]
 
+_GA = object.__getattribute__
 _SESSIONS = None
 # attr-cache size in MB
 _ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE
-
 
 class ExtendedLoopingCall(LoopingCall):
     """
@@ -28,9 +28,9 @@ class ExtendedLoopingCall(LoopingCall):
     than self.interval.
     """
     start_delay = None
-    repeats = None
+    callcount = 0
 
-    def start(self, interval, now=True, start_delay=None, repeats=None):
+    def start(self, interval, now=True, start_delay=None, count_start=0):
         """
         Start running function every interval seconds.
 
@@ -40,8 +40,12 @@ class ExtendedLoopingCall(LoopingCall):
         start_delay: The number of seconds before starting.
                      If None, wait interval seconds. Only
                      valid is now is False.
-        repeats: Number of times for loopingcall to repeat before
-                 stopping. If None or 0, will loop forever.
+        repeat_start: the task will track how many times it has run.
+                      this will change where it starts counting from.
+                      Note that as opposed to Twisted's inbuild
+                      counter, this will count also if force_repeat()
+                      was called (so it will not just count the number
+                      of interval seconds since start).
         """
         assert not self.running, ("Tried to start an already running "
                                   "ExtendedLoopingCall.")
@@ -54,16 +58,11 @@ class ExtendedLoopingCall(LoopingCall):
         self._expectNextCallAt = self.starttime
         self.interval = interval
         self._runAtStart = now
-
-        if repeats and repeats > 0:
-            self.repeats = int(repeats)
+        self.callcount = max(0, count_start)
 
         if now:
             self()
         else:
-            if self.repeats is not None:
-                # need to compensate for the first reschedule
-                self.repeats += 1
             if start_delay is not None and start_delay >= 0:
                 # we set start_delay after the _reshedule call to make
                 # next_call_time() find it until next reshedule.
@@ -73,8 +72,12 @@ class ExtendedLoopingCall(LoopingCall):
                 self.start_delay = start_delay
             else:
                 self._reschedule()
-
         return d
+
+    def __call__(self):
+        "tick one step"
+        self.callcount += 1
+        super(ExtendedLoopingCall, self).__call__()
 
     def _reschedule(self):
         """
@@ -83,12 +86,7 @@ class ExtendedLoopingCall(LoopingCall):
         number of repeats is reached.
         """
         self.start_delay = None
-        if self.repeats is not None:
-            self.repeats -= 1
         super(ExtendedLoopingCall, self)._reschedule()
-        # for self.repeats <= 0, don't kill loop here; the callback
-        # won't have time to be called in some situations. Kill
-        # externally by checking task.repeats <= 0.
 
     def force_repeat(self):
         "Force-fire the callback"
@@ -136,18 +134,17 @@ class ScriptBase(TypeClass):
 
         if self.db._paused_time:
             # the script was paused; restarting
-            repeats = self.db._paused_repeats or self.dbobj.db_repeats
+            callcount = self.db._paused_callcount or 0
             self.ndb._task.start(self.dbobj.db_interval,
                                  now=False,
                                  start_delay=self.db._paused_time,
-                                 repeats=repeats)
+                                 count_start=callcount)
             del self.db._paused_time
             del self.db._paused_repeats
         else:
             # starting script anew
             self.ndb._task.start(self.dbobj.db_interval,
-                                 now=not self.dbobj.db_start_delay,
-                                 repeats=self.dbobj.db_repeats)
+                                 now=not self.dbobj.db_start_delay)
 
     def _stop_task(self):
         "stop task runner"
@@ -178,8 +175,9 @@ class ScriptBase(TypeClass):
         self.at_repeat()
 
         # check repeats
-        repeats = self.ndb._task.repeats
-        if repeats is not None and repeats <= 0:
+        callcount = self.ndb._task.callcount
+        maxcount = self.dbobj.db_repeats
+        if maxcount > 0 and maxcount <= callcount:
             print "stopping script!"
             self.stop()
 
@@ -212,7 +210,7 @@ class ScriptBase(TypeClass):
         "Get the number of returning repeats. Returns None if unlimited repeats."
         task = self.ndb._task
         if task:
-            return task.repeats
+            return max(0, self.dbobj.db_repeats - task.callcount)
 
     def start(self, force_restart=False):
         """
@@ -237,7 +235,7 @@ class ScriptBase(TypeClass):
         if obj:
             # check so the scripted object is valid and initalized
             try:
-                object.__getattribute__(obj.dbobj, 'cmdset')
+                _GA(obj.dbobj, 'cmdset')
             except AttributeError:
                 # this means the object is not initialized.
                 logger.log_trace()
@@ -248,17 +246,16 @@ class ScriptBase(TypeClass):
         if self.unpause():
             return 1
 
-        # try to start the script from scratch
+        # start the script from scratch
+        self.dbobj.is_active = True
         try:
-            self.dbobj.is_active = True
             self.at_start()
-            if self.dbobj.db_interval > 0:
-                self._start_task()
-            return 1
         except Exception:
             logger.log_trace()
-            self.dbobj.is_active = False
-            return 0
+
+        if self.dbobj.db_interval > 0:
+            self._start_task()
+        return 1
 
     def stop(self, kill=False):
         """
@@ -286,20 +283,23 @@ class ScriptBase(TypeClass):
     def pause(self):
         """
         This stops a running script and stores its active state.
+        It WILL NOT call that at_stop() hook.
         """
-        task = self.ndb._task
-        print "pausing", self.key, self.time_until_next_repeat()
-        if task:
-            self.db._paused_time = task.next_call_time()
-            self.db._paused_repeats = task.repeats
-            self._stop_task()
+        if not self.db._paused_time:
+            # only allow pause if not already paused
+            task = self.ndb._task
+            if task:
+                self.db._paused_time = task.next_call_time()
+                self.db._paused_callcount = task.callcount
+                self._stop_task()
+            self.dbobj.is_active = False
 
     def unpause(self):
         """
-        Restart a paused script. This WILL call at_start().
+        Restart a paused script. This WILL call the at_start() hook.
         """
-        #print "unpausing", self.key, self.db._paused_time
         if self.db._paused_time:
+            # only unpause if previously paused
             self.dbobj.is_active = True
 
             try:
@@ -424,7 +424,8 @@ class Script(ScriptBase):
           at_start() - Called every time the script is started, which for
                       persistent scripts is at least once every server start.
                       Note that this is unaffected by self.delay_start, which
-                      only delays the first call to at_repeat().
+                      only delays the first call to at_repeat(). It will also
+                      be called after a pause, to allow for setting up the script.
           at_repeat() - Called every self.interval seconds. It will be called
                       immediately upon launch unless self.delay_start is True,
                       which will delay the first call of this method by
