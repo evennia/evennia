@@ -281,7 +281,7 @@ def get_evennia_version():
     """
     try:
         f = open(settings.BASE_PATH + os.sep + "VERSION.txt", 'r')
-        return "%s-r%s" % (f.read().strip(), os.popen("git log --format=\"%H\" -n 1").read().strip())
+        return "%s-%s" % (f.read().strip(), os.popen("git rev-parse --short HEAD").read().strip())
     except IOError:
         return "Unknown version"
 
