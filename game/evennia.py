@@ -31,7 +31,7 @@ if not os.path.exists('settings.py'):
 SIG = signal.SIGINT
 
 
-CMDLINEHELP = \
+CMDLINE_HELP = \
 """
 Main Evennia launcher. When starting in interactive (-i) mode, only
 the Server will do so since this is the most commonly useful setup. To
@@ -41,9 +41,32 @@ program.
 """
 
 
-HELPENTRY = \
+VERSION_INFO = \
 """
-                                                 (version %s)
+ Evennia {version}
+ {about}
+ OS: {os}
+ Python: {python}
+ Twisted: {twisted}
+ Django: {django}
+ {south}
+"""
+
+ABOUT_INFO= \
+"""
+ MUD/MUX/MU* development system
+
+ Licence: BSD 3-Clause Licence
+ Web: http://www.evennia.com
+ Irc: #evennia on FreeNode
+ Forum: http://www.evennia.com/discussions
+ Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
+ Maintainer (2006-10): Greg Taylor
+"""
+
+HELP_ENTRY = \
+"""
+                                         (version %s)
 
 All functionality of the launcher can also be accessed directly from
 the command line. Use  "python evennia.py -h" for command line
@@ -73,9 +96,7 @@ log into the game to stop or restart the server instead.
 
 MENU = \
 """
-+---------------------------------------------------------------------------+
-|                                                                           |
-|                    Welcome to the Evennia launcher!                       |
++----Evennia Launcher-------------------------------------------------------+
 |                                                                           |
 +--- Starting --------------------------------------------------------------+
 |                                                                           |
@@ -96,8 +117,7 @@ MENU = \
 |  9) Stopping only Portal.                                                 |
 |                                                                           |
 +---------------------------------------------------------------------------+
-|  h) Help                                                                  |
-|  q) Abort                                                                 |
+|  h) Help                     i) About info                      q) Abort  |
 +---------------------------------------------------------------------------+
 """
 
@@ -256,6 +276,25 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
         return
     print "Evennia:", errmsg
 
+def show_version_info(about=False):
+    """
+    Display version info
+    """
+    import os, sys
+    import twisted
+    import django
+    try:
+        import south
+        sversion = "South %s" % south.__version__
+    except ImportError:
+        sversion = "South <not installed>"
+
+    return VERSION_INFO.format(version=EVENNIA_VERSION,
+                             about=ABOUT_INFO if about else "",
+                             os=os.name, python=sys.version.split()[0],
+                             twisted=twisted.version.short(),
+                             django=django.get_version(),
+                             south=sversion)
 
 def run_menu():
     """
@@ -274,7 +313,11 @@ def run_menu():
         if inp.lower() == 'q':
             sys.exit()
         elif inp.lower() == 'h':
-            print HELPENTRY % EVENNIA_VERSION
+            print HELP_ENTRY % EVENNIA_VERSION
+            raw_input("press <return> to continue ...")
+            continue
+        elif inp.lower() in ('v', 'i', 'a'):
+            print show_version_info(about=True)
             raw_input("press <return> to continue ...")
             continue
 
@@ -414,9 +457,9 @@ def error_check_python_modules():
     if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
         raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
     if hasattr(settings, "BASE_COMM_TYPECLASS"):
-        raise DeprecationWarning(depstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
+        raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
     if hasattr(settings, "COMM_TYPECLASS_PATHS"):
-        raise DeprecationWarning(depstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
+        raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
 
     from src.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
@@ -437,14 +480,20 @@ def main():
     """
 
     parser = OptionParser(usage="%prog [-i] start|stop|reload|menu [server|portal]",
-                          description=CMDLINEHELP)
+                          description=CMDLINE_HELP)
     parser.add_option('-i', '--interactive', action='store_true',
                       dest='interactive', default=False,
                       help="Start given processes in interactive mode.")
+    parser.add_option('-v', '--version', action='store_true',
+                      dest='show_version', default=False,
+                      help="Show version info.")
 
     options, args = parser.parse_args()
 
     if not args:
+        if options.show_version:
+            print show_version_info()
+            return
         mode = "menu"
         service = 'all'
     if args:

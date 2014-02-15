@@ -588,14 +588,14 @@ class CmdAbout(MuxCommand):
 
          {wOS{n %s
          {wPython{n %s
-         {wDjango{n %s
          {wTwisted{n %s
+         {wDjango{n %s
          %s
         """ % (utils.get_evennia_version(),
                os.name,
                sys.version.split()[0],
-               django.get_version(),
                twisted.version.short(),
+               django.get_version(),
                sversion)
         self.caller.msg(string)
 
