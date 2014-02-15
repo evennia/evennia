@@ -54,7 +54,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # before the handshakes have had time to finish. Keeping this patch
         # until coming up with a more elegant solution /Griatch
         from src.utils.utils import delay
-        delay(1, self, self.sessionhandler.connect)
+        delay(1, callback=self.sessionhandler.connect, retval=self)
         #self.sessionhandler.connect(self)
 
     def enableRemote(self, option):
