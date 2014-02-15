@@ -2,7 +2,7 @@
 Django ID mapper
 
 Modified for Evennia by making sure that no model references
-leave caching unexpectedly (no use if WeakRefs).
+leave caching unexpectedly (no use of WeakRefs).
 
 Also adds cache_size() for monitoring the size of the cache.
 """

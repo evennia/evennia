@@ -17,6 +17,7 @@ transparently through the decorating TypeClass.
 import traceback
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
                                     AliasHandler, AttributeHandler)
@@ -26,7 +27,8 @@ from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import make_iter, to_str, to_unicode, variable_from_module
+from src.utils.utils import (make_iter, to_str, to_unicode,
+                             variable_from_module, dbref)
 
 from django.utils.translation import ugettext as _
 
@@ -179,6 +181,56 @@ class ObjectDB(TypedObject):
         _SA(self, "db_cmdset_storage", None)
         _GA(self, "save")()
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
+
+    # location getsetter
+    def __location_get(self):
+        "Get location"
+        loc = _GA(_GA(self, "dbobj"), "db_location")
+        return _GA(loc, "typeclass") if loc else loc
+
+    def __location_set(self, location):
+        "Set location, checking for loops and allowing dbref"
+        if isinstance(location, (basestring, int)):
+            # allow setting of #dbref
+            dbid = dbref(location, reqhash=False)
+            if dbid:
+                try:
+                    location = ObjectDB.objects.get(id=dbid)
+                except ObjectDoesNotExist:
+                    # maybe it is just a name that happens to look like a dbid
+                    pass
+        try:
+            def is_loc_loop(loc, depth=0):
+                "Recursively traverse target location, trying to catch a loop."
+                if depth > 10:
+                    return
+                elif loc == self:
+                    raise RuntimeError
+                elif loc == None:
+                    raise RuntimeWarning
+                return is_loc_loop(_GA(_GA(loc, "dbobj"), "db_location"), depth + 1)
+            try:
+                is_loc_loop(location)
+            except RuntimeWarning:
+                pass
+            # actually set the field
+            _SA(_GA(self, "dbobj"), "db_location", _GA(location, "dbobj") if location else location)
+            _GA(_GA(self, "dbobj"), "save")(update_fields=["db_location"])
+        except RuntimeError:
+            errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
+            logger.log_errmsg(errmsg)
+            raise RuntimeError(errmsg)
+        except Exception, e:
+            errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
+            logger.log_errmsg(errmsg)
+            raise Exception(errmsg)
+
+    def __location_del(self):
+        "Cleably delete the location reference"
+        _SA(_GA(self, "dbobj"), "db_location", None)
+        _GA(_GA(self, "dbobj"), "save")(upate_fields=["db_location"])
+    location = property(__location_get, __location_set, __location_del)
+
 
     class Meta:
         "Define Django meta options"
