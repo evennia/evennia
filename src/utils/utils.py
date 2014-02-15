@@ -485,24 +485,26 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-def delay(delay=2, retval=None, callback=None):
+def delay(delay=2, callback=None, retval=None):
     """
     Delay the return of a value.
     Inputs:
       delay (int) - the delay in seconds
-      retval (any) - this will be returned by this function after a delay
-      callback (func(retval)) - if given, this will be called with retval
-                                after delay seconds
+      callback (func() or func(retval)) - if given, will be called without
+                     arguments or with retval after delay seconds
+      retval (any) - this will be returned by this function after a delay,
+                     or as input to callback
     Returns:
       deferred that will fire with callback after delay seconds. Note that
       if delay() is used in the commandhandler callback chain, the callback
       chain can be defined directly in the command body and don't need to be
       specified here.
     """
-    d = defer.Deferred()
-    callb = callback or d.callback
-    reactor.callLater(delay, callb, retval)
-    return d
+    callb = callback or defer.Deferred().callback
+    if retval is not None:
+        return reactor.callLater(delay, callb, retval)
+    else:
+        return reactor.callLater(delay, callb)
 
 
 _TYPECLASSMODELS = None

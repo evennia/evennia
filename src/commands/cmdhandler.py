@@ -399,14 +399,6 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
             # (return value is normally None)
             ret = yield cmd.func()
 
-            if hasattr(cmd, "func_parts"):
-                # yield on command parts (for multi-part delayed commands)
-                for func_part in make_iter(cmd.func_parts):
-                    err = yield func_part()
-                    # returning anything but a deferred/None will kill the chain
-                    if err:
-                        break
-
             # post-command hook
             yield cmd.at_post_cmd()
 
