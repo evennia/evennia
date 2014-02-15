@@ -30,40 +30,45 @@ if not os.path.exists('settings.py'):
 # signal processing
 SIG = signal.SIGINT
 
+
+CMDLINEHELP = \
+"""
+Main Evennia launcher. When starting in interactive (-i) mode, only
+the Server will do so since this is the most commonly useful setup. To
+activate interactive mode also for the Portal, use the menu or launch
+the two services one after the other as two separate calls to this
+program.
+"""
+
+
 HELPENTRY = \
 """
                                                  (version %s)
 
-This program launches Evennia with various options. You can access all
-this functionality directly from the command line; for example option
-five (restart server) would be "evennia.py restart server".  Use
-"evennia.py -h" for command line options.
+All functionality of the launcher can also be accessed directly from
+the command line. Use  "python evennia.py -h" for command line
+options.
 
-Evennia consists of two separate programs that both must be running
-for the game to work as it should:
+Evennia consists of two separate parts that both must be running
+for the server to work as it should:
 
 Portal - the connection to the outside world (via telnet, web, ssh
          etc). This is normally running as a daemon and don't need to
          be reloaded unless you are debugging a new connection
-         protocol. As long as this is running, players won't loose
-         their connection to your game. Only one instance of Portal
-         will be started, more will be ignored.
+         protocol.
 Server - the game server itself. This will often need to be reloaded
          as you develop your game. The Portal will auto-connect to the
-         Server whenever the Server activates. We will also make sure
-         to automatically restart this whenever it is shut down (from
-         here or from inside the game or via task manager etc). Only
-         one instance of Server will be started, more will be ignored.
+         Server whenever the Server activates.
 
 In a production environment you will want to run with the default
-option (1), which runs as much as possible as a background
-process. When developing your game it is however convenient to
-directly see tracebacks on standard output, so starting with options
-2-4 may be a good bet. As you make changes to your code, reload the
-server (option 5) to make it available to users.
+option (1), which runs as much as possible as a background process.
+When developing your game it is however convenient to directly see
+tracebacks on standard output, so starting with options 2-4 may be a
+good bet. As you make changes to your code, reload the server (option
+5) to make changes appear in the game.
 
-Reload and stop is not well supported in Windows. If you have issues, log
-into the game to stop or restart the server instead.
+Reload and stop is not well supported in Windows. If you have issues,
+log into the game to stop or restart the server instead.
 """
 
 MENU = \
@@ -72,34 +77,27 @@ MENU = \
 |                                                                           |
 |                    Welcome to the Evennia launcher!                       |
 |                                                                           |
-|                Pick an option below. Use 'h' to get help.                 |
++--- Starting --------------------------------------------------------------+
 |                                                                           |
-+--- Starting (will not restart already running processes) -----------------+
+|  1) (default):      All output to logfiles.                               |
+|  2) (game debug):   Server outputs to terminal instead of to logfile.     |
+|  3) (portal debug): Portal outputs to terminal instead of to logfile.     |
+|  4) (full debug):   Both Server and Portal output to terminal             |
 |                                                                           |
-|  1) (default):      Start Server and Portal. Portal starts in daemon mode.|
-|                     All output is to logfiles.                            |
-|  2) (game debug):   Start Server and Portal. Portal starts in daemon mode.|
-|                     Server outputs to stdout instead of logfile.          |
-|  3) (portal debug): Start Server and Portal. Portal starts in non-daemon  |
-|                     mode (can be reloaded) and logs to stdout.            |
-|  4) (full debug):   Start Server and Portal. Portal starts in non-daemon  |
-|                     mode (can be reloaded). Both log to stdout.           |
-|                                                                           |
-+--- Restarting (must first be started) ------------------------------------+
++--- Restarting ------------------------------------------------------------+
 |                                                                           |
 |  5) Reload the Server                                                     |
-|  6) Reload the Portal (only works in non-daemon mode. If running          |
-|       in daemon mode, Portal needs to be stopped/started manually.        |
+|  6) Reload the Portal (only works when portal outputs to terminal).       |
 |                                                                           |
-+--- Stopping (must first be started) --------------------------------------+
++--- Stopping --------------------------------------------------------------+
 |                                                                           |
-|  7) Stopping both Portal and Server. Server will not restart.             |
-|  8) Stopping only Server. Server will not restart.                        |
+|  7) Stopping both Portal and Server.                                      |
+|  8) Stopping only Server.                                                 |
 |  9) Stopping only Portal.                                                 |
 |                                                                           |
 +---------------------------------------------------------------------------+
 |  h) Help                                                                  |
-|  q) Quit                                                                  |
+|  q) Abort                                                                 |
 +---------------------------------------------------------------------------+
 """
 
@@ -438,9 +436,8 @@ def main():
     This handles command line input.
     """
 
-    parser = OptionParser(usage="%prog [-i] [menu|start|reload|stop [server|portal|all]]",
-                          description="""This is the main Evennia launcher. It handles the Portal and Server, the two services making up Evennia. Default is to operate on both services. Interactive mode sets the service to log to stdout, in the foreground. Note that when launching 'all' services with the \"--interactive\" flag, both services will be started, but only Server will actually be started in interactive mode, simply because this is the most commonly useful setup. To activate interactive mode also for Portal, use the menu or launch the two services explicitly as two separate calls to this program.""")
-
+    parser = OptionParser(usage="%prog [-i] start|stop|reload|menu [server|portal]",
+                          description=CMDLINEHELP)
     parser.add_option('-i', '--interactive', action='store_true',
                       dest='interactive', default=False,
                       help="Start given processes in interactive mode.")
