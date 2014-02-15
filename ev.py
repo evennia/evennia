@@ -153,6 +153,7 @@ from src.objects.objects import Object, Character, Room, Exit
 
 from src.utils.search import *
 from src.utils.create import *
+from src.scripts.tickerhandler import TICKER_HANDLER as tickerhandler
 from src.utils import logger
 from src.utils import utils
 from src.utils import gametime

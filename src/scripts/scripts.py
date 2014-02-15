@@ -408,8 +408,11 @@ class Script(ScriptBase):
                    is persistent, the pause state will survive a shutdown.
          unpause() - restart a previously paused script. The script will
                      continue as if it was never paused.
+         force_repeat() - force-step the script, regardless of how much remains
+                    until next step. This counts like a normal firing in all ways.
          time_until_next_repeat() - if a timed script (interval>0), returns
                     time until next tick
+         remaining_repeats() - number of repeats remaining, if limited
 
         * Hook methods
 
@@ -565,19 +568,3 @@ class ValidateChannelHandler(Script):
         #print "ValidateChannelHandler run."
         channelhandler.CHANNELHANDLER.update()
 
-#class ClearAttributeCache(Script):
-#    "Clear the attribute cache."
-#    def at_script_creation(self):
-#        "Setup the script"
-#        self.key = "sys_cache_clear"
-#        self.desc = _("Clears the Attribute Cache")
-#        self.interval = 3600 * 2
-#        self.persistent = True
-#    def at_repeat(self):
-#        "called every 2 hours. Sets a max attr-cache limit to 100 MB." # enough for normal usage?
-#        if is_pypy:
-#            # pypy don't support get_size, so we have to skip out here.
-#            return
-#        attr_cache_size, _, _ = caches.get_cache_sizes()
-#        if attr_cache_size > _ATTRIBUTE_CACHE_MAXSIZE:
-#            caches.flush_attr_cache()
