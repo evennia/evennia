@@ -200,7 +200,6 @@ class _SaverSet(_SaverMutable, MutableSet):
     def discard(self, value):
         self._data.discard(value)
 
-
 #
 # serialization helpers
 #
@@ -241,7 +240,6 @@ def unpack_dbobj(item):
         dbobj = obj
     return _TO_DATESTRING(dbobj) == item[2] and obj or None
 
-
 #
 # Access methods
 #
@@ -264,7 +262,7 @@ def to_pickle(data):
         elif dtype in (list, _SaverList):
             return [process_item(val) for val in item]
         elif dtype in (dict, _SaverDict):
-            return dict((key, process_item(val)) for key, val in item.items())
+            return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif hasattr(item, '__item__'):
@@ -305,7 +303,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
-            return dict((key, process_item(val)) for key, val in item.items())
+            return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == set:
             return set(process_item(val) for val in item)
         elif hasattr(item, '__iter__'):
@@ -333,7 +331,7 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(parent=parent)
-            dat._data.update(dict((key, process_tree(val, dat))
+            dat._data.update(dict((process_item(key), process_tree(val, dat))
                                    for key, val in item.items()))
             return dat
         elif dtype == set:
@@ -361,7 +359,7 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(db_obj=db_obj)
-            dat._data.update((key, process_tree(val, parent=dat))
+            dat._data.update((process_item(key), process_tree(val, parent=dat))
                               for key, val in data.items())
             return dat
         elif dtype == set:
