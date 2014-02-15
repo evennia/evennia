@@ -42,7 +42,7 @@ from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import logger, utils
 from src.commands.cmdparser import at_multimatch_cmd
-from src.utils.utils import string_suggestions, make_iter
+from src.utils.utils import string_suggestions, make_iter, to_unicode
 
 from django.utils.translation import ugettext as _
 
@@ -270,6 +270,9 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
 
     Note that this function returns a deferred!
     """
+
+    raw_string = to_unicode(raw_string, force_string=True)
+
     session, player, obj = None, None, None
     if callertype == "session":
         session = called_by
