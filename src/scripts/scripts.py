@@ -178,7 +178,7 @@ class ScriptBase(TypeClass):
         callcount = self.ndb._task.callcount
         maxcount = self.dbobj.db_repeats
         if maxcount > 0 and maxcount <= callcount:
-            print "stopping script!"
+            #print "stopping script!"
             self.stop()
 
     def _step_task(self):
