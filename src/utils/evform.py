@@ -3,8 +3,8 @@
 Mudform - a way to create advanced ascii forms
 
 WARNING: UNDER DEVELOPMENT. Evform does currently NOT support
-colour ANSI markers in the table. Non-colour forms should 
-work fully (so make issues if they don't). 
+colour ANSI markers in the table. Non-colour forms should
+work fully (so make issues if they don't).
 
 
 This is intended for creating advanced ascii game forms, such as a
@@ -55,12 +55,16 @@ INVALID_FORMCHARS in this module). Form Rectangles can have any size,
 but must be separated from each other by at least one other
 character's width.
 
+
 Use as follows:
 
     import mudform
 
     # create a new form from the template
     form = mudform.MudForm("path/to/testform.py")
+
+    (MudForm can also take a dictionary holding
+     the required keys FORMCHAR, TABLECHAR and FORM)
 
     # add data to each tagged form cell
     form.map(cells={1: "Tom the Bouncer",
