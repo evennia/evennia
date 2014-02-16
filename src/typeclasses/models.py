@@ -27,12 +27,8 @@ these to create custom managers.
 """
 
 import sys
-#try:
-#    import cPickle as pickle
-#except ImportError:
-#    import pickle
+import re
 import traceback
-#from collections import defaultdict
 
 from django.db import models
 from django.conf import settings
@@ -398,8 +394,9 @@ class NickHandler(AttributeHandler):
         "Remove Nick with matching category"
         super(NickHandler, self).remove(key, category=category, **kwargs)
 
-    def nickreplace(self, raw_string, categories=("inputline", "channels"), include_player=True):
+    def nickreplace(self, raw_string, categories=("inputline", "channel"), include_player=True):
         "Replace entries in raw_string with nick replacement"
+        raw_string
         obj_nicks, player_nicks = [], []
         for category in make_iter(categories):
             obj_nicks.extend(make_iter(self.get(category=category, return_obj=True)))
@@ -407,8 +404,10 @@ class NickHandler(AttributeHandler):
             for category in make_iter(categories):
                 player_nicks.extend(make_iter(self.obj.player.nicks.get(category=category, return_obj=True)))
         for nick in obj_nicks + player_nicks:
-            if raw_string.startswith(nick.db_key):
-                raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
+            # make a case-insensitive match here
+            match = re.match(re.escape(nick.db_key), raw_string, re.IGNORECASE)
+            if match:
+                raw_string = raw_string.replace(match.group(), nick.db_strvalue, 1)
                 break
         return raw_string
 

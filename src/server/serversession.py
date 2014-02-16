@@ -191,7 +191,7 @@ class ServerSession(Session):
                 puppet = self.player.get_puppet(self.sessid)
                 if puppet:
                     text = puppet.nicks.nickreplace(text,
-                                  categories=("inputline", "channels"), include_player=True)
+                                  categories=("inputline", "channel"), include_player=True)
                 else:
                     text = self.player.nicks.nickreplace(text,
                                 categories=("inputline", "channels"), include_player=False)

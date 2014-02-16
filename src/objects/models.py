@@ -451,7 +451,7 @@ class ObjectDB(TypedObject):
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
-                     categories=("inputline", "channels"), include_player=True)
+                     categories=("inputline", "channel"), include_player=True)
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
 
     def msg(self, text=None, from_obj=None, sessid=0, **kwargs):
