@@ -28,7 +28,7 @@ from src.comms import managers
 from src.comms.managers import identify_object
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import is_iter, to_str, crop, make_iter
+from src.utils.utils import to_str, crop, make_iter
 
 __all__ = ("Msg", "TempMsg", "ChannelDB",
             "PlayerChannelConnection", "ExternalChannelConnection")
@@ -365,9 +365,9 @@ class ChannelDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         TypedObject.__init__(self, *args, **kwargs)
-        _SA(self, "tags", TagHandler(self, category_prefix="comm_"))
-        _SA(self, "aliases", AliasHandler(self, category_prefix="comm_"))
         _SA(self, "attributes", AttributeHandler(self))
+        _SA(self, "tags", TagHandler(self))
+        _SA(self, "aliases", AliasHandler(self))
 
     class Meta:
         "Define Django meta options"

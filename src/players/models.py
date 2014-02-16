@@ -114,9 +114,9 @@ class PlayerDB(TypedObject, AbstractUser):
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
         _SA(self, "attributes", AttributeHandler(self))
-        _SA(self, "tags", TagHandler(self, category_prefix="player_"))
-        _SA(self, "aliases", AliasHandler(self, category_prefix="player_"))
         _SA(self, "nicks", NickHandler(self))
+        _SA(self, "tags", TagHandler(self))
+        _SA(self, "aliases", AliasHandler(self))
 
     # alias to the objs property
     def __characters_get(self):

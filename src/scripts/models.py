@@ -106,9 +106,9 @@ class ScriptDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         super(ScriptDB, self).__init__(*args, **kwargs)
-        _SA(self, "tags", TagHandler(self, category_prefix="script_"))
         _SA(self, "attributes", AttributeHandler(self))
-        #_SA(self, "aliases", AliasHandler(self, category_prefix="script_"))
+        _SA(self, "tags", TagHandler(self))
+        #_SA(self, "aliases", AliasHandler(self))
 
     #
     #
