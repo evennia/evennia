@@ -1807,7 +1807,7 @@ class CmdExamine(ObjManipCommand):
                     # we are only interested in specific attributes
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
-                if obj.sessid:
+                if hasattr(obj, "sessid") and obj.sessid:
                     mergemode = "session"
                 elif self.player_mode:
                     mergemode = "player"

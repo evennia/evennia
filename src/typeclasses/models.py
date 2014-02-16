@@ -218,8 +218,7 @@ class AttributeHandler(object):
 
     def _recache(self):
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
-                                       to_str(attr.db_category,
-                                       force_string=True).lower()), attr)
+                                       attr.db_category.lower() if attr.db_category else None), attr)
                         for attr in _GA(self.obj, self._m2m_fieldname).filter(
                             db_model=self._model, db_attrtype=self._attrtype))
         #set_attr_cache(self.obj, self._cache) # currently only for testing
@@ -369,8 +368,8 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        catkey = "-%s" % category.strip().lower() if category is not None else None
-        return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
+        catkey = "-%s" % (category.strip().lower() if category is not None else None)
+        return [attr for key, attr in self._cache.items() if key and key.endswith(catkey)]
 
 class NickHandler(AttributeHandler):
     """
