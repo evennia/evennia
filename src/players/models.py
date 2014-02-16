@@ -424,7 +424,7 @@ class PlayerDB(TypedObject, AbstractUser):
         # nick replacement - we require full-word matching.
 
         raw_string = utils.to_unicode(raw_string)
-        raw_string = self.nicks.nickreplacement(raw_string,
+        raw_string = self.nicks.nickreplace(raw_string,
                           categories=("inputline", "channels"), include_player=False)
         if not sessid and _MULTISESSION_MODE in (0, 1):
             # in this case, we should either have only one sessid, or the sessid

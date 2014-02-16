@@ -374,15 +374,8 @@ class ObjectDB(TypedObject):
             return self.typeclass
 
         if use_nicks:
-            # get all valid nicks to search
-            nicks = self.nicks.get(category="object")
-            if self.has_player:
-                pnicks = self.nicks.get(category="player")
-                nicks = nicks + pnicks
-            for nick in nicks:
-                if searchdata == nick.db_key:
-                    searchdata = nick.strvalue
-                    break
+            # do nick-replacement on search
+            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
 
         candidates=None
         if(global_search or (is_string and searchdata.startswith("#") and

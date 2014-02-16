@@ -400,11 +400,10 @@ class NickHandler(AttributeHandler):
 
     def nickreplace(self, raw_string, categories=("inputline", "channels"), include_player=True):
         "Replace entries in raw_string with nick replacement"
-        obj_nicks = []
+        obj_nicks, player_nicks = [], []
         for category in make_iter(categories):
             obj_nicks.extend(make_iter(self.get(category=category, return_obj=True)))
         if include_player and self.obj.has_player:
-            player_nicks = []
             for category in make_iter(categories):
                 player_nicks.extend(make_iter(self.obj.player.nicks.get(category=category, return_obj=True)))
         for nick in obj_nicks + player_nicks:
