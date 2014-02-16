@@ -106,6 +106,10 @@ class Attribute(SharedMemoryModel):
     db_category = models.CharField('category', max_length=128, db_index=True, blank=True, null=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True)
+    # Which model of object this Attribute is attached to (A natural key like objects.dbobject)
+    db_model = models.CharField('model', max_length=32, db_index=True, blank=True, null=True)
+    # subclass of Attribute (None or nick)
+    db_attrype = models.CharField('attrtype', max_length=16, db_index=True, blank=True, null=True)
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
 
@@ -204,18 +208,21 @@ class AttributeHandler(object):
     _attrcreate = "attrcreate"
     _attredit = "attredit"
     _attrread = "attrread"
+    _attrtype = None
 
     def __init__(self, obj):
         "Initialize handler"
         self.obj = obj
+        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
         self._cache = None
 
     def _recache(self):
-        self._cache = dict(("%s_%s" % (to_str(attr.db_key).lower(),
+        self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        to_str(attr.db_category,
                                        force_string=True).lower()), attr)
-                        for attr in _GA(self.obj, self._m2m_fieldname).all())
-        set_attr_cache(self.obj, self._cache) # currently only for testing
+                        for attr in _GA(self.obj, self._m2m_fieldname).filter(
+                            db_model=self._model, db_attrtype=self._attrtype))
+        #set_attr_cache(self.obj, self._cache) # currently only for testing
 
     def has(self, key, category=None):
         """
@@ -226,9 +233,10 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        catkey = to_str(category, force_string=True).lower()
-        searchkeys = ["%s_%s" % (k.lower(), catkey) for k in make_iter(key)]
-        ret = [self._cache[skey] for skey in searchkeys if skey in self._cache]
+        key = [key.strip().lower() if key is not None else None for key in make_iter(key)]
+        category = category.strip().lower() if category is not None else None
+        searchkeys = ["%s-%s" % (k, category) for k in make_iter(key)]
+        ret = [self._cache.get(skey) for skey in searchkeys]
         return ret[0] if len(ret) == 1 else ret
 
     def get(self, key=None, category=None, default=None, return_obj=False,
@@ -251,14 +259,15 @@ class AttributeHandler(object):
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         ret = []
-        catkey = to_str(category, force_string=True).lower()
+        key = [key.strip().lower() if key is not None else None for key in make_iter(key)]
+        category = category.strip().lower() if category is not None else None
         if not key:
             # return all with matching category (or no category)
-            catkey = "_%s" % catkey
+            catkey = "-%s" % category
             ret = [attr for key, attr in self._cache.items() if key.endswith(catkey)]
         else:
-            for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
-                attr_obj = self._cache.get(keystr)
+            for searchkey in ("%s-%s" % (k, category) for k in key):
+                attr_obj = self._cache.get(searchkey)
                 if attr_obj:
                     ret.append(attr_obj)
                 else:
@@ -293,11 +302,14 @@ class AttributeHandler(object):
             return
         if self._cache is None:
             self._recache()
-        cachekey = "%s_%s" % (key.lower(), to_str(category, force_string=True).lower())
+        key = key.strip().lower() if key is not None else None
+        category = category.strip().lower() if category is not None else None
+        cachekey = "%s-%s" % (key, category)
         attr_obj = self._cache.get(cachekey)
         if not attr_obj:
             # no old attr available; create new.
-            attr_obj = Attribute(db_key=key, db_category=category)
+            attr_obj = Attribute(db_key=key, db_category=category,
+                                 db_model=self._model, db_attrtype=self._attrtype)
             attr_obj.save()  # important
             _GA(self.obj, self._m2m_fieldname).add(attr_obj)
             self._cache[cachekey] = attr_obj
@@ -323,14 +335,14 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        catkey = to_str(category, force_string=True).lower()
-        for keystr in ("%s_%s" % (k.lower(), catkey) for k in make_iter(key)):
-            attr_obj = self._cache.get(keystr)
+        key = [key.strip().lower() if key is not None else None for key in make_iter(key)]
+        category = category.strip().lower() if category is not None else None
+        for searchstr in ("%s-%s" % (k, category) for k in key):
+            attr_obj = self._cache.get(searchstr)
             if attr_obj:
-                if accessing_obj and not attr_obj.access(accessing_obj,
-                                    self._attredit, default=default_access):
-                    continue
-                attr_obj.delete()
+                if not (accessing_obj and not attr_obj.access(accessing_obj,
+                        self._attredit, default=default_access)):
+                    attr_obj.delete()
             elif not attr_obj and raise_exception:
                 raise AttributeError
         self._recache()
@@ -357,7 +369,7 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        catkey = "_%s" % to_str(category, force_string=True).lower()
+        catkey = "-%s" % category.strip().lower() if category is not None else None
         return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
 
 class NickHandler(AttributeHandler):
@@ -368,31 +380,22 @@ class NickHandler(AttributeHandler):
     Nicks are stored as Attributes
     with categories nick_<nicktype>
     """
+    _attrtype = "nick"
+
     def has(self, key, category="inputline"):
-        category = "nick_%s" % category
         return super(NickHandler, self).has(key, category=category)
 
     def get(self, key=None, category="inputline", **kwargs):
         "Get the replacement value matching the given key and category"
-        category = "nick_%s" % category
         return super(NickHandler, self).get(key=key, category=category, strattr=True, **kwargs)
 
     def add(self, key, replacement, category="inputline", **kwargs):
         "Add a new nick"
-        category = "nick_%s" % category
         super(NickHandler, self).add(key, replacement, category=category, strattr=True, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
         "Remove Nick with matching category"
-        category = "nick_%s" % category
         super(NickHandler, self).remove(key, category=category, **kwargs)
-
-    def all(self, category=None):
-        "Return all attributes with nick_* category"
-        if category:
-            category = "nick_%s" % category
-            return super(NickHandler, self).all(category=category)
-        return _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith="nick_")
 
 
 class NAttributeHandler(object):
@@ -507,8 +510,8 @@ class TagHandler(object):
 
     def _recache(self):
         "Update cache from database field"
-        self._cache = dict(("%s-%s" % (p.db_key, p.db_category), p)
-                            for p in _GA(self.obj, self._m2m_fieldname).filter(
+        self._cache = dict(("%s-%s" % (tag.db_key, tag.db_category), tag)
+                            for tag in _GA(self.obj, self._m2m_fieldname).filter(
                                          db_model=self._model, db_tagtype=self._tagtype))
 
     def add(self, tag, category=None, data=None):
