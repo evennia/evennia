@@ -103,19 +103,24 @@ class PlayerManager(TypedObjectManager, UserManager):
             return None
 
     @returns_typeclass_list
-    def player_search(self, ostring):
+    def player_search(self, ostring, exact=True):
         """
         Searches for a particular player by name or
         database id.
 
-        ostring = a string or database id.
+        ostring - a string or database id.
+        exact - allow for a partial match
         """
         dbref = self.dbref(ostring)
         if dbref or dbref == 0:
+            # bref search is always exact
             matches = self.filter(id=dbref)
             if matches:
                 return matches
-        return self.filter(username__iexact=ostring)
+        if exact:
+            return self.filter(username__iexact=ostring)
+        else:
+            return self.filter(username__icontains=ostring)
 
     def swap_character(self, player, new_character, delete_old_character=False):
         """
