@@ -13,8 +13,8 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(db_index=True, max_length=32, null=True, blank=True),
                       keep_default=False)
 
-        # Adding field 'Attribute.db_attrype'
-        db.add_column(u'typeclasses_attribute', 'db_attrype',
+        # Adding field 'Attribute.db_attrtype'
+        db.add_column(u'typeclasses_attribute', 'db_attrtype',
                       self.gf('django.db.models.fields.CharField')(db_index=True, max_length=16, null=True, blank=True),
                       keep_default=False)
 
@@ -33,8 +33,8 @@ class Migration(SchemaMigration):
         # Deleting field 'Attribute.db_model'
         db.delete_column(u'typeclasses_attribute', 'db_model')
 
-        # Deleting field 'Attribute.db_attrype'
-        db.delete_column(u'typeclasses_attribute', 'db_attrype')
+        # Deleting field 'Attribute.db_attrtype'
+        db.delete_column(u'typeclasses_attribute', 'db_attrtype')
 
         # Deleting field 'Tag.db_model'
         db.delete_column(u'typeclasses_tag', 'db_model')
@@ -46,7 +46,7 @@ class Migration(SchemaMigration):
     models = {
         u'typeclasses.attribute': {
             'Meta': {'object_name': 'Attribute'},
-            'db_attrype': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'null': 'True', 'blank': 'True'}),
+            'db_attrtype': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'db_category': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),

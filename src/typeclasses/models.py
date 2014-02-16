@@ -109,7 +109,7 @@ class Attribute(SharedMemoryModel):
     # Which model of object this Attribute is attached to (A natural key like objects.dbobject)
     db_model = models.CharField('model', max_length=32, db_index=True, blank=True, null=True)
     # subclass of Attribute (None or nick)
-    db_attrype = models.CharField('attrtype', max_length=16, db_index=True, blank=True, null=True)
+    db_attrtype = models.CharField('attrtype', max_length=16, db_index=True, blank=True, null=True)
     # time stamp
     db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
 
@@ -588,6 +588,7 @@ class TagHandler(object):
                 return [(to_str(p.db_key), to_str(p.db_category)) for p in matches]
             else:
                 return [to_str(p.db_key) for p in matches]
+        return []
 
         #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 

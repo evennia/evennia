@@ -237,7 +237,7 @@ class Migration(DataMigration):
         },
         u'typeclasses.attribute': {
             'Meta': {'object_name': 'Attribute'},
-            'db_attrype': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'null': 'True', 'blank': 'True'}),
+            'db_attrtype': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'db_category': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
