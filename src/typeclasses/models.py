@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
-from src.server.caches import get_attr_cache, set_attr_cache
+from src.server.caches import set_attr_cache
 
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
@@ -462,6 +462,10 @@ class Tag(models.Model):
                                    help_text="tag category", db_index=True)
     db_data = models.TextField('data', null=True, blank=True,
                                help_text="optional data field with extra information. This is not searched for.")
+    # this is "objects.objectdb" etc
+    db_model = models.CharField('model', max_length=32, null=True, help_text="database model to Tag", db_index=True)
+    # this is None, alias or permission
+    db_tagtype = models.CharField('tagtype', max_length=16, null=True, help_text="overall type of Tag", db_index=True)
 
     objects = managers.TagManager()
 
@@ -488,62 +492,64 @@ class TagHandler(object):
     Generic tag-handler. Accessed via TypedObject.tags.
     """
     _m2m_fieldname = "db_tags"
-    _base_category = ""
+    _tagtype = None
 
-    def __init__(self, obj, category_prefix=""):
+    def __init__(self, obj):
         """
         Tags are stored internally in the TypedObject.db_tags m2m field
-        using the category <category_prefix><tag_category>
+        with an tag.db_model based on the obj the taghandler is stored on
+        and with a tagtype given by self.handlertype
         """
         self.obj = obj
-        self.prefix = "%s%s" % (category_prefix.strip(" _").lower()
-                                if category_prefix else "", self._base_category)
+        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
         self._cache = None
 
+
     def _recache(self):
-        self._cache = dict((to_str(p.db_key), p) for p in _GA(self.obj, self._m2m_fieldname).filter(
-                            db_category__startswith=self.prefix))
+        "Update cache from database field"
+        self._cache = dict(("%s-%s" % (p.db_key, p.db_category), p)
+                            for p in _GA(self.obj, self._m2m_fieldname).filter(
+                                         db_model=self._model, db_tagtype=self._tagtype))
 
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
         for tagstr in make_iter(tag):
             tagstr = tagstr.strip().lower() if tagstr is not None else None
-            categ = "%s%s" % (self.prefix, category.strip().lower() if category is not None else "")
+            category = category().lower() if category is not None else None
             data = str(data) if data is not None else None
             # this will only create tag if no matches existed beforehand (it
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
-            tagobj = Tag.objects.create_tag(key=tagstr, category=categ, data=data)
+            tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data,
+                                            model=self._model, tagtype=self._tagtype)
             _GA(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:
                 self._recache()
-            self._cache[tagstr] = tagobj
+            cachestring = "%s-%s" % (tagstr, category)
+            self._cache[cachestring] = tagobj
 
-    def get(self, key, category="", return_data=False):
+    def get(self, key, category="", return_tagobj=False):
         """
         Get the tag for the given key or list of tags. If
         return_data=True, return the matching Tag objects instead.
+        Returns a single tag if a unique match, otherwise a list
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         ret = []
-        category = "%s%s" % (self.prefix, category.strip().lower()
-                             if category is not None else "")
-        ret = [val for val in (self._cache.get(keystr.strip().lower())
-                 for keystr in make_iter(key)) if val]
-        ret = [to_str(tag.db_data) for tag in ret] if return_data else ret
+        category = category.strip().lower() if category is not None else None
+        searchkey = ["%s-%s" % (key.strip().lower(), category) if key is not None else None for key in make_iter(key)]
+        ret = [val for val in (self._cache.get(searchkey) for keystr in key) if val]
+        ret = [to_str(tag.db_data) for tag in ret] if return_tagobj else ret
         return ret[0] if len(ret) == 1 else ret
 
-    def remove(self, tag, category=None):
-        "Remove a tag from the handler, where tag is the key of the tag to remove"
-        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-            self._recache()
+    def remove(self, key, category=None):
+        "Remove a tag from the handler based ond key and category."
         for tag in make_iter(tag):
             if not (tag or tag.strip()):  # we don't allow empty tags
                 continue
             tagstr = tag.strip().lower() if tag is not None else None
-            category = "%s%s" % (self.prefix, category.strip().lower()
-                                 if category is not None else "")
+            category = category.strip().lower() if tag is not None else None
 
             # This does not delete the tag object itself. Maybe it should do
             # that when no objects reference the tag anymore (how to check)?
@@ -554,7 +560,7 @@ class TagHandler(object):
 
     def clear(self):
         "Remove all tags from the handler"
-        for tag in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix):
+        for tag in _GA(self.obj, self._m2m_fieldname).filter(db_model=self._model, db_tagtype=self._tagtype):
             _GA(self.obj, self._m2m_fieldname).remove(tag)
         self._recache()
 
@@ -563,21 +569,22 @@ class TagHandler(object):
         Get all tags in this handler.
         If category is given, return only Tags with this category.  If
         return_keys_and_categories is set, return a list of tuples [(key, category), ...]
-        where the category is stripped of the category prefix (this is ignored
-        if category keyword is given).
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         if category:
-            category = "%s%s" % (self.prefix, category.strip().lower()
-                                 if category is not None else "")
-            return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(
-                                          db_category=category).values_list("db_key") if p[0]]
-        elif return_key_and_category:
-            # return tuple (key, category)
-            return [(to_str(p.db_key), to_str(p.db_category).lstrip(self.prefix)) for p in self._cache.values()]
+            category = category.strip().lower() if category is not None else None
+            matches = _GA(self.obj, self._m2m_fieldname).filter(db_category=category,
+                                                                db_tagtype=self._tagtype,
+                                                                db_model=self._model).values_list("db_key")
         else:
-            return self._cache.keys()
+            matches = self._cache.values()
+        if matches:
+            if return_key_and_category:
+                # return tuple (key, category)
+                return [(to_str(p.db_key), to_str(p.db_category)) for p in matches]
+            else:
+                return [to_str(p.db_key) for p in matches]
 
         #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
@@ -589,11 +596,11 @@ class TagHandler(object):
 
 
 class AliasHandler(TagHandler):
-    _base_category = "alias"
+    _tagtype = "alias"
 
 
 class PermissionHandler(TagHandler):
-    _base_category = "permission"
+    _tagtype = "permission"
 
 
 #------------------------------------------------------------

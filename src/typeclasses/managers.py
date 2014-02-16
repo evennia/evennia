@@ -6,6 +6,7 @@ all Attributes and TypedObjects).
 from functools import update_wrapper
 from django.db import models
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 from src.utils import idmapper
 from src.utils.utils import make_iter
 from src.utils.dbserialize import to_pickle
@@ -113,60 +114,61 @@ class TagManager(models.Manager):
             tags = tags.filter(db_category__iexact=category.lower().strip())
         return list(tags)
 
-    def get_tag(self, key=None, category=None):
+    def get_tag(self, key=None, category=None, model="objects.objectdb", tagtype=None):
         """
         Search and return all tags matching any combination of
         the search criteria.
          search_key (string) - the tag identifier
          category (string) - the tag category
+         model - the type of object tagged, on naturalkey form, like "objects.objectdb"
+         tagtype - None, alias or permission
 
         Returns a single Tag (or None) if both key and category is given,
         otherwise it will return a list.
         """
         key_cands = Q(db_key__iexact=key.lower().strip()) if key is not None else Q()
         cat_cands = Q(db_category__iexact=category.lower().strip()) if category is not None else Q()
-        tags = self.filter(key_cands & cat_cands)
+        tags = self.filter(db_model=model, db_tagtype=tagtype).filter(key_cands & cat_cands)
         if key and category:
             return tags[0] if tags else None
         else:
             return list(tags)
 
-    def get_objs_with_tag(self, key=None, category=None, objclass=None):
+    def get_objs_with_tag(self, key=None, category=None, model="objects.objectdb", tagtype=None):
         """
         Search and return all objects of objclass that has tags matching
         the given search criteria.
          key (string) - the tag identifier
          category (string) - the tag category
+         model (string) - tag model name. Defaults to "ObjectDB"
+         tagtype (string) - None, alias or permission
          objclass (dbmodel) - the object class to search. If not given, use ObjectDB.
         """
-        global _ObjectDB
-        if not objclass:
-            if not _ObjectDB:
-                from src.objects.models import ObjectDB as _ObjectDB
-            objclass = _ObjectDB
+        objclass = ContentType.objects.get_by_natural_key(*model.split(".", 1)).model_class()
         key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if key is not None else Q()
         cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category is not None else Q()
-        return objclass.objects.filter(key_cands & cat_cands)
+        return objclass.objects.filter(db_model=model, db_tagtype=tagtype).filter(key_cands & cat_cands)
 
-    def create_tag(self, key=None, category=None, data=None):
+    def create_tag(self, key=None, category=None, data=None, model="objects.objectdb", tagtype=None):
         """
         Create a tag. This makes sure the create case-insensitive tags.
-        Note that if the exact same tag configuration (key+category)
+        Note that if the exact same tag configuration (key+category+model+tagtype)
         exists, it will be re-used. A data keyword will overwrite existing
         data on a tag (it is not part of what makes the tag unique).
 
         """
         data = str(data) if data is not None else None
 
-        tag = self.get_tag(key=key, category=category)
+        tag = self.get_tag(key=key, category=category, model=model, tagtype=tagtype)
         if tag and data is not None:
             tag.db_data = data
             tag.save()
         elif not tag:
             tag = self.create(db_key=key.lower().strip() if key is not None else None,
-                              db_category=category.lower().strip()
-                              if category and key is not None else None,
-                              db_data=str(data) if data is not None else None)
+                              db_category=category.lower().strip() if category and key is not None else None,
+                              db_data=str(data) if data is not None else None,
+                              db_model=model,
+                              db_tagtype=tagtype)
             tag.save()
         return make_iter(tag)[0]
 
