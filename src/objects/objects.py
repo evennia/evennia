@@ -1013,7 +1013,7 @@ class Exit(Object):
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
         exit_cmdset.key = '_exitset'
-        exit_cmdset.priority = 9
+        exit_cmdset.priority = 101
         exit_cmdset.duplicates = True
         # add command to cmdset
         exit_cmdset.add(cmd)

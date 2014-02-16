@@ -81,7 +81,7 @@ class _ErrorCmdSet(CmdSet):
 class _EmptyCmdSet(CmdSet):
     "This cmdset represents an empty cmdset"
     key = "_EMPTY_CMDSET"
-    priority = -100
+    priority = -101
     mergetype = "Union"
 
 def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):

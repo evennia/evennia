@@ -20,7 +20,7 @@ class PlayerCmdSet(CmdSet):
     """
 
     key = "DefaultPlayer"
-    priority = -5
+    priority = -10
 
     def at_cmdset_creation(self):
         "Populates the cmdset"

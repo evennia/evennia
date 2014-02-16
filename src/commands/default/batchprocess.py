@@ -814,7 +814,7 @@ class BatchSafeCmdSet(CmdSet):
     always be available to get out of everything.
     """
     key = "Batch_default"
-    priority = 104  # override other cmdsets.
+    priority = 150  # override other cmdsets.
 
     def at_cmdset_creation(self):
         "Init the cmdset"
