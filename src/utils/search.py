@@ -32,7 +32,8 @@ from django.contrib.contenttypes.models import ContentType
 # limit symbol import from API
 __all__ = ("search_object", "search_player", "search_script",
            "search_message", "search_channel", "search_help_entry",
-           "search_tag")
+           "search_object_tag", "search_script_tag", "search_player_tag",
+           "search_channel_tag")
 
 
 # import objects this way to avoid circular import problems
@@ -189,10 +190,10 @@ help_entries = search_help_entries
 # Note that this returns the object attached to the tag, not the tag itself
 # (this is usually what you want)
 search_tag = Tag.objects.get_objs_with_tag
-search_player_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="objects.objectdb")
-search_player_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="players.playerdb")
-search_script_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="scripts.scriptdb")
-search_channel_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="comms.channeldb")
+def search_object_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="objects.objectdb")
+def search_player_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="players.playerdb")
+def search_script_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="scripts.scriptdb")
+def search_channel_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="comms.channeldb")
 
 #        """
 #        Search and return all tags matching any combination of

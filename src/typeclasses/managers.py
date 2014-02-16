@@ -15,6 +15,39 @@ __all__ = ("AttributeManager", "TypedObjectManager")
 _GA = object.__getattribute__
 _ObjectDB = None
 
+#
+# helper functions for the TypedObjectManager.
+#
+
+def returns_typeclass_list(method):
+    """
+    Decorator: Changes return of the decorated method (which are
+    TypeClassed objects) into object_classes(s) instead.  Will always
+    return a list (may be empty).
+    """
+    def func(self, *args, **kwargs):
+        "decorator. Returns a list."
+        self.__doc__ = method.__doc__
+        matches = make_iter(method(self, *args, **kwargs))
+        return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
+                                               for dbobj in make_iter(matches)]
+    return update_wrapper(func, method)
+
+
+def returns_typeclass(method):
+    """
+    Decorator: Will always return a single typeclassed result or None.
+    """
+    def func(self, *args, **kwargs):
+        "decorator. Returns result or None."
+        self.__doc__ = method.__doc__
+        matches = method(self, *args, **kwargs)
+        dbobj = matches and make_iter(matches)[0] or None
+        if dbobj:
+            return (hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
+        return None
+    return update_wrapper(func, method)
+
 # Managers
 
 def _attr_pickled(method):
@@ -134,6 +167,7 @@ class TagManager(models.Manager):
         else:
             return list(tags)
 
+    @returns_typeclass_list
     def get_objs_with_tag(self, key=None, category=None, model="objects.objectdb", tagtype=None):
         """
         Search and return all objects of objclass that has tags matching
@@ -173,38 +207,6 @@ class TagManager(models.Manager):
         return make_iter(tag)[0]
 
 
-#
-# helper functions for the TypedObjectManager.
-#
-
-def returns_typeclass_list(method):
-    """
-    Decorator: Changes return of the decorated method (which are
-    TypeClassed objects) into object_classes(s) instead.  Will always
-    return a list (may be empty).
-    """
-    def func(self, *args, **kwargs):
-        "decorator. Returns a list."
-        self.__doc__ = method.__doc__
-        matches = make_iter(method(self, *args, **kwargs))
-        return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
-                                               for dbobj in make_iter(matches)]
-    return update_wrapper(func, method)
-
-
-def returns_typeclass(method):
-    """
-    Decorator: Will always return a single typeclassed result or None.
-    """
-    def func(self, *args, **kwargs):
-        "decorator. Returns result or None."
-        self.__doc__ = method.__doc__
-        matches = method(self, *args, **kwargs)
-        dbobj = matches and make_iter(matches)[0] or None
-        if dbobj:
-            return (hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
-        return None
-    return update_wrapper(func, method)
 
 
 #class TypedObjectManager(idmap.CachingManager):

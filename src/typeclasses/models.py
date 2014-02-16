@@ -533,8 +533,10 @@ class TagHandler(object):
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
         for tagstr in make_iter(tag):
-            tagstr = tagstr.strip().lower() if tagstr is not None else None
-            category = category().lower() if category is not None else None
+            if not tagstr:
+                continue
+            tagstr = tagstr.strip().lower()
+            category = category.strip().lower() if category is not None else None
             data = str(data) if data is not None else None
             # this will only create tag if no matches existed beforehand (it
             # will overload data on an existing tag since that is not

@@ -1676,14 +1676,18 @@ class CmdExamine(ObjManipCommand):
             perms_string += " [Superuser]"
 
         string += "\n{wPermissions{n: %s" % perms_string
+
+        tags_string = utils.fill(", ".join(tag for tag in obj.tags.all()), indent=5)
+        if tags_string:
+            string += "\n{wTags{n: %s" % tags_string
+
         locks = str(obj.locks)
         if locks:
             locks_string = utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
         else:
             locks_string = " Default"
-
-
         string += "\n{wLocks{n:%s" % locks_string
+
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             stored_cmdsets = obj.cmdset.all()
@@ -2148,7 +2152,7 @@ class CmdTag(MuxCommand):
         "Implement the @tag functionality"
 
         if not self.args:
-            self.caller.msg("Usage: @tag[/switches] [<tag>|<obj>[=<tag>[<category>]]")
+            self.caller.msg("Usage: @tag[/switches] <obj> [= <tag>[:<category>]]")
             return
         if "search" in self.switches:
             # search by tag

@@ -375,9 +375,9 @@ class ObjectDB(TypedObject):
 
         if use_nicks:
             # get all valid nicks to search
-            nicks = self.nicks.all(category="object")
+            nicks = self.nicks.get(category="object")
             if self.has_player:
-                pnicks = self.nicks.all(category="player")
+                pnicks = self.nicks.get(category="player")
                 nicks = nicks + pnicks
             for nick in nicks:
                 if searchdata == nick.db_key:
