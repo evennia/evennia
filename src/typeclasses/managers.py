@@ -181,7 +181,8 @@ class TagManager(models.Manager):
         objclass = ContentType.objects.get_by_natural_key(*model.split(".", 1)).model_class()
         key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if key is not None else Q()
         cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category is not None else Q()
-        return objclass.objects.filter(db_tags__db_model=model, db_tags__db_tagtype=tagtype).filter(key_cands & cat_cands)
+        tag_crit = Q(db_tags__db_model=model, db_tags__db_tagtype=tagtype)
+        return objclass.objects.filter(tag_crit & key_cands & cat_cands)
 
     def create_tag(self, key=None, category=None, data=None, model="objects.objectdb", tagtype=None):
         """
