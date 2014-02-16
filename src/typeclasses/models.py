@@ -484,9 +484,7 @@ class Tag(models.Model):
     db_model = models.CharField('model', max_length=32, null=True, help_text="database model to Tag", db_index=True)
     # this is None, alias or permission
     db_tagtype = models.CharField('tagtype', max_length=16, null=True, help_text="overall type of Tag", db_index=True)
-
     objects = managers.TagManager()
-
 
     class Meta:
         "Define Django meta options"
