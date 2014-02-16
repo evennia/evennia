@@ -13,7 +13,7 @@ from django.conf import settings
 #from src.scripts.models import ScriptDB
 from src.comms.models import ChannelDB
 from src.utils import logger, utils
-from src.utils.utils import make_iter, to_str
+from src.utils.utils import make_iter, to_unicode
 from src.commands import cmdhandler, cmdsethandler
 from src.server.session import Session
 
@@ -181,25 +181,20 @@ class ServerSession(Session):
         """
         if text:
             # this is treated as a command input
-            text = to_str(text)
+            text = to_unicode(text)
             # handle the 'idle' command
             if text.strip() == IDLE_COMMAND:
                 self.update_session_counters(idle=True)
                 return
             if self.player:
                 # nick replacement
-                nicks = self.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
                 puppet = self.player.get_puppet(self.sessid)
                 if puppet:
-                    # merge, give prio to the lowest level (puppet)
-                    nicks = list(puppet.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))) + list(nicks)
-                raw_list = text.split(None)
-                raw_list = [" ".join(raw_list[:i + 1])
-                              for i in range(len(raw_list)) if raw_list[:i + 1]]
-                for nick in nicks:
-                    if nick.db_key in raw_list:
-                        text = text.replace(nick.db_key, nick.db_strvalue, 1)
-                        break
+                    text = puppet.nicks.nickreplace(text,
+                                  categories=("inputline", "channels"), include_player=True)
+                else:
+                    text = self.player.nicks.nickreplace(text,
+                                categories=("inputline", "channels"), include_player=False)
             cmdhandler.cmdhandler(self, text, callertype="session", sessid=self.sessid)
             self.update_session_counters()
         if "oob" in kwargs:

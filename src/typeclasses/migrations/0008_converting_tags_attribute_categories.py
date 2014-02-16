@@ -6,6 +6,8 @@ from django.db import models
 
 class Migration(DataMigration):
 
+    depends_on = (("comms", "0017_renaming_typeclass_from_comm_to_channel"), )
+
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Don't use "from appname.models import ModelName".

@@ -126,14 +126,14 @@ class CmdNick(MuxCommand):
 
         caller = self.caller
         switches = self.switches
-        nicks = caller.nicks.get(category="channel")
+        nicks = caller.nicks.get(return_obj=True)
 
         if 'list' in switches:
             table = prettytable.PrettyTable(["{wNickType",
                                              "{wNickname",
                                              "{wTranslates-to"])
-            for nick in nicks:
-                table.add_row([nick.db_category, nick.db_key, nick.db_data])
+            for nick in utils.make_iter(nicks):
+                table.add_row([nick.db_category, nick.db_key, nick.db_strvalue])
             string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
@@ -162,14 +162,14 @@ class CmdNick(MuxCommand):
                 # removal of nick
                 if oldnick:
                     # clear the alias
-                    string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick[0].db_real)
+                    string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick)
                     caller.nicks.delete(nick, category=switch)
                 else:
                     string += "\nNo nick '%s' found, so it could not be removed." % nick
             else:
                 # creating new nick
                 if oldnick:
-                    string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick[0].db_real, real)
+                    string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick, real)
                 else:
                     string += "\nNick set: '%s' = '%s'." % (nick, real)
                 caller.nicks.add(nick, real, category=switch)

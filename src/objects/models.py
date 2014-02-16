@@ -457,19 +457,8 @@ class ObjectDB(TypedObject):
 
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
-
-        raw_list = raw_string.split(None)
-        raw_list = [" ".join(raw_list[:i + 1]) for i in range(len(raw_list))
-                                                        if raw_list[:i + 1]]
-        # fetch the nick data efficiently
-        nicks = self.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel"))
-        if self.has_player:
-            # attach player nicks as well, but after the object-level nicks
-            nicks = list(nicks) + list(self.player.db_attributes.filter(db_category__in=("nick_inputline", "nick_channel")))
-        for nick in nicks:
-            if nick.db_key in raw_list:
-                raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
-                break
+        raw_string = self.nicks.nickreplace(raw_string,
+                     categories=("inputline", "channels"), include_player=True)
         return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
 
     def msg(self, text=None, from_obj=None, sessid=0, **kwargs):

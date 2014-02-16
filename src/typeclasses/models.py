@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
-from src.server.caches import set_attr_cache
+#from src.server.caches import set_attr_cache
 
 #from src.server.caches import call_ndb_hooks
 from src.server.models import ServerConfig
@@ -232,10 +232,10 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        key = [key.strip().lower() if key is not None else None for key in make_iter(key)]
+        key = [k.strip().lower() for k in make_iter(key) if k]
         category = category.strip().lower() if category is not None else None
         searchkeys = ["%s-%s" % (k, category) for k in make_iter(key)]
-        ret = [self._cache.get(skey) for skey in searchkeys]
+        ret = [self._cache.get(skey) for skey in searchkeys if skey in self._cache]
         return ret[0] if len(ret) == 1 else ret
 
     def get(self, key=None, category=None, default=None, return_obj=False,
@@ -258,12 +258,13 @@ class AttributeHandler(object):
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         ret = []
-        key = [key.strip().lower() if key is not None else None for key in make_iter(key)]
+        key = [k.strip().lower() for k in make_iter(key) if k]
         category = category.strip().lower() if category is not None else None
+        #print "cache:", self._cache.keys(), key
         if not key:
             # return all with matching category (or no category)
-            catkey = "-%s" % category
-            ret = [attr for key, attr in self._cache.items() if key.endswith(catkey)]
+            catkey = "-%s" % category if category is not None else None
+            ret = [attr for key, attr in self._cache.items() if key and key.endswith(catkey)]
         else:
             for searchkey in ("%s-%s" % (k, category) for k in key):
                 attr_obj = self._cache.get(searchkey)
@@ -278,9 +279,9 @@ class AttributeHandler(object):
             # check 'attrread' locks
             ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]
         if strattr:
-            ret = ret if return_obj else [attr.strvalue if attr else None for attr in ret]
+            ret = ret if return_obj else [attr.strvalue for attr in ret if attr]
         else:
-            ret = ret if return_obj else [attr.value if attr else None for attr in ret]
+            ret = ret if return_obj else [attr.value for attr in ret if attr]
         return ret[0] if len(ret)==1 else ret
 
     def add(self, key, value, category=None, lockstring="",
@@ -301,7 +302,9 @@ class AttributeHandler(object):
             return
         if self._cache is None:
             self._recache()
-        key = key.strip().lower() if key is not None else None
+        if not key:
+            return
+        key = key.strip().lower()
         category = category.strip().lower() if category is not None else None
         cachekey = "%s-%s" % (key, category)
         attr_obj = self._cache.get(cachekey)
@@ -334,7 +337,7 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        key = [key.strip().lower() if key is not None else None for key in make_iter(key)]
+        key = [k.strip().lower() for k in make_iter(key) if k]
         category = category.strip().lower() if category is not None else None
         for searchstr in ("%s-%s" % (k, category) for k in key):
             attr_obj = self._cache.get(searchstr)
@@ -358,7 +361,7 @@ class AttributeHandler(object):
             attr.delete()
         self._recache()
 
-    def all(self, category=None, accessing_obj=None, default_access=True):
+    def all(self, accessing_obj=None, default_access=True):
         """
         Return all Attribute objects on this object.
 
@@ -368,8 +371,7 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        catkey = "-%s" % (category.strip().lower() if category is not None else None)
-        return [attr for key, attr in self._cache.items() if key and key.endswith(catkey)]
+        return self._cache.values()
 
 class NickHandler(AttributeHandler):
     """
@@ -395,6 +397,21 @@ class NickHandler(AttributeHandler):
     def remove(self, key, category="inputline", **kwargs):
         "Remove Nick with matching category"
         super(NickHandler, self).remove(key, category=category, **kwargs)
+
+    def nickreplace(self, raw_string, categories=("inputline", "channels"), include_player=True):
+        "Replace entries in raw_string with nick replacement"
+        obj_nicks = []
+        for category in make_iter(categories):
+            obj_nicks.extend(make_iter(self.get(category=category, return_obj=True)))
+        if include_player and self.obj.has_player:
+            player_nicks = []
+            for category in make_iter(categories):
+                player_nicks.extend(make_iter(self.obj.player.nicks.get(category=category, return_obj=True)))
+        for nick in obj_nicks + player_nicks:
+            if raw_string.startswith(nick.db_key):
+                raw_string = raw_string.replace(nick.db_key, nick.db_strvalue, 1)
+                break
+        return raw_string
 
 
 class NAttributeHandler(object):

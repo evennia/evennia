@@ -180,26 +180,33 @@ help_entries = search_help_entries
 
 
 # Locate Tags
-#    def get_objs_with_tag(self, objclass, key=None, category=None):
-#        """
-#        Search and return all objects of objclass that has tags matching
-#        the given search criteria.
-#         objclass (dbmodel) - the object class to search
-#         key (string) - the tag identifier
-#         category (string) - the tag category
-#        """
+
+#    search_object_tag(key, category=None) (also search_tag works)
+#    search_player_tag(key, category=None)
+#    search_script_tag(key, category=None)
+#    search_channel_tag(key, category=None)
+
 # Note that this returns the object attached to the tag, not the tag itself
 # (this is usually what you want)
 search_tag = Tag.objects.get_objs_with_tag
+search_player_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="objects.objectdb")
+search_player_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="players.playerdb")
+search_script_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="scripts.scriptdb")
+search_channel_tag = lambda key, category: Tag.objects.get_objs_with_tag(key, category, model="comms.channeldb")
 
 #        """
 #        Search and return all tags matching any combination of
 #        the search criteria.
 #         search_key (string) - the tag identifier
 #         category (string) - the tag category
+#         model - one of
+#              "objects.objectdb" (default), "players.playerdb",
+#              "scripts.scriptdb" or "comms.channeldb"
 #
 #        Returns a single Tag (or None) if both key and category is given,
 #        otherwise it will return a list.
 #        """
-# This returns the tag object itself
+# This returns the tag object itself.
 search_tag_object = Tag.objects.get_tag
+
+
