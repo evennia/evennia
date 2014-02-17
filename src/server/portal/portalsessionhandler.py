@@ -4,6 +4,7 @@ Sessionhandler for portal sessions
 import time
 from src.server.sessionhandler import SessionHandler, PCONN, PDISCONN
 
+_MOD_IMPORT = None
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -66,6 +67,32 @@ class PortalSessionHandler(SessionHandler):
         # tell server to also delete this session
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PDISCONN)
+
+
+    def server_connect(self, protocol_class_path):
+        """
+        Called by server to force the initialization of a new
+        protocol instance. Server wants this instance to get
+        a unique sessid and to be connected back as normal. This
+        is used to initiate irc/imc2/rss etc connections.
+
+        protocol_class_path - full python path to the class factory
+                    for the protocol used, eg
+                    'src.server.portal.irc.IRCClient'
+                The given class will be instantiated with this handler
+                in a property sessionhandler. It must have a
+                connectionMade() method, responsible for configuring
+                itself and then calling self.sessionhandler.connect(self)
+                like any other protocol.
+        """
+        global _MOD_IMPORT
+        if not _MOD_IMPORT:
+            from src.utils.utils import variable_from_module as _MOD_IMPORT
+        path, clsname = protocol_class_path.rsplit(".", 1)
+        cls = _MOD_IMPORT(path, clsname)
+        protocol = cls()
+        protocol.sessionhandler = self
+        protocol.connectionMade()
 
     def server_disconnect(self, sessid, reason=""):
         """

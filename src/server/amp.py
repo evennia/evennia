@@ -19,7 +19,6 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
 # imports needed on both server and portal side
 import os
 from collections import defaultdict
-from textwrap import wrap
 try:
     import cPickle as pickle
 except ImportError:
@@ -38,7 +37,8 @@ SLOGIN = chr(4)       # server session login
 SDISCONN = chr(5)     # server session disconnect
 SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
-SSYNC = chr(8)        # server sessigon sync
+SSYNC = chr(8)        # server session sync
+SCONN = chr(9)        # server creating new connectiong (for irc/imc2 bots etc)
 
 MAXLEN = 65535  # max allowed data length in AMP protocol
 _MSGBUFFER = defaultdict(list)
@@ -335,39 +335,6 @@ class AMPProtocol(amp.AMP):
                 recv_kwargs = dict((key, "".join(kw[key] for kw in buf)) for key in kwargs)
                 return recv_kwargs
 
-#    def send_split_msg(self, sessid, msg, data, command):
-#        """
-#        This helper method splits the sending of a msg into multiple parts
-#        with a maxlength of MAXLEN. This is to avoid repetition in the two
-#        msg-sending commands. When calling this, the maximum length has
-#        already been exceeded.
-#        Inputs:
-#            msg - string
-#            data - data dictionary
-#            command - one of MsgPortal2Server or MsgServer2Portal commands
-#        """
-#        # split the strings into acceptable chunks
-#        datastr = dumps(data)
-#        nmsg, ndata = len(msg), len(datastr)
-#        if nmsg > MAXLEN or ndata > MAXLEN:
-#            msglist = [msg[i:i + MAXLEN] for i in range(0, len(msg), MAXLEN)]
-#            datalist = [datastr[i:i + MAXLEN]
-#                            for i in range(0, len(datastr), MAXLEN)]
-#        nmsglist, ndatalist = len(msglist), len(datalist)
-#        if ndatalist < nmsglist:
-#            datalist.extend("" for i in range(nmsglist - ndatalist))
-#        if nmsglist < ndatalist:
-#            msglist.extend("" for i in range(ndatalist - nmsglist))
-#        # we have split the msg/data into right-size chunks. Now we
-#        # send it in sequence
-#        return [self.callRemote(command,
-#                        sessid=sessid,
-#                        msg=to_str(msg),
-#                        ipart=icall,
-#                        nparts=nmsglist,
-#                        data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
-#                for icall, (msg, data) in enumerate(zip(msglist, datalist))]
-
     # Message definition + helper methods to call/create each message type
 
     # Portal -> Server Msg
@@ -388,20 +355,6 @@ class AMPProtocol(amp.AMP):
                                                  text=ret["text"],
                                                  **loads(ret["data"]))
         return {}
-#        global MSGBUFFER
-#        if nparts > 1:
-#            # a multipart message
-#            if len(MSGBUFFER[sessid]) != nparts:
-#                # we don't have all parts yet. Wait.
-#                return {}
-#            else:
-#                # we have all parts. Put it all together in the right order.
-#                msg = "".join(t[1] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-#                data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-#                del MSGBUFFER[sessid]
-#        # call session hook with the data
-#        self.factory.server.sessions.data_in(sessid, text=msg, **loads(data))
-#        return {}
     MsgPortal2Server.responder(amp_msg_portal2server)
 
     def call_remote_MsgPortal2Server(self, sessid, msg, data=""):
@@ -412,17 +365,6 @@ class AMPProtocol(amp.AMP):
         return self.safe_send(MsgPortal2Server, sessid,
                               msg=to_str(msg) if msg is not None else "",
                               data=dumps(data))
-#        try:
-#            return self.callRemote(MsgPortal2Server,
-#                            sessid=sessid,
-#                            msg=to_str(msg) if msg is not None else "",
-#                            ipart=0,
-#                            nparts=1,
-#                            data=dumps(data)).addErrback(self.errback, "MsgPortal2Server")
-#        except amp.TooLong:
-#            # the msg (or data) was too long for AMP to send.
-#            # We need to send in blocks.
-#            return self.send_split_msg(sessid, msg, data, MsgPortal2Server)
 
     # Server -> Portal message
 
@@ -438,21 +380,6 @@ class AMPProtocol(amp.AMP):
                                                   text=ret["text"],
                                                   **loads(ret["data"]))
         return {}
-#        global MSGBUFFER
-#        if nparts > 1:
-#            # a multipart message
-#            MSGBUFFER[sessid].append((ipart, msg, data))
-#            if len(MSGBUFFER[sessid]) != nparts:
-#                # we don't have all parts yet. Wait.
-#                return {}
-#            else:
-#                # we have all parts. Put it all together in the right order.
-#                msg = "".join(t[1] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-#                data = "".join(t[2] for t in sorted(MSGBUFFER[sessid], key=lambda o: o[0]))
-#                del MSGBUFFER[sessid]
-#        # call session hook with the data
-#        self.factory.portal.sessions.data_out(sessid, text=msg, **loads(data))
-#        return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
     def call_remote_MsgServer2Portal(self, sessid, msg, data=""):
@@ -463,18 +390,6 @@ class AMPProtocol(amp.AMP):
         return self.safe_send(MsgServer2Portal, sessid,
                               msg=to_str(msg) if msg is not None else "",
                               data=dumps(data))
-
-#        try:
-#            return self.callRemote(MsgServer2Portal,
-#                            sessid=sessid,
-#                            msg=to_str(msg) if msg is not None else "",
-#                            ipart=0,
-#                            nparts=1,
-#                            data=dumps(data)).addErrback(self.errback, "MsgServer2Portal")
-#        except amp.TooLong:
-#            # the msg (or data) was too long for AMP to send.
-#            # We need to send in blocks.
-#            return self.send_split_msg(sessid, msg, data, MsgServer2Portal)
 
     # Server administration from the Portal side
     def amp_server_admin(self, sessid, ipart, nparts, operation, data):
@@ -520,10 +435,6 @@ class AMPProtocol(amp.AMP):
         #print "serveradmin (portal side):", sessid, ord(operation), data
         data = dumps(data)
         return self.safe_send(ServerAdmin, sessid, operation=operation, data=data)
-#        return self.callRemote(ServerAdmin,
-#                        sessid=sessid,
-#                        operation=operation,
-#                        data=data).addErrback(self.errback, "ServerAdmin")
 
     # Portal administraton from the Server side
 
@@ -561,6 +472,8 @@ class AMPProtocol(amp.AMP):
                 portal_sessionhandler.server_session_sync(data)
                 # set a flag in case we are about to shut down soon
                 self.factory.server_restart_mode = True
+            elif operation == SCONN: # server_force_connection (for irc/imc2 etc)
+                portal_sessionhandler.server_connect(data)
             else:
                 raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
@@ -571,11 +484,7 @@ class AMPProtocol(amp.AMP):
         Access method called by the server side.
         """
         self.safe_send(PortalAdmin, sessid, operation=operation, data=dumps(data))
-        #print "portaladmin (server side):", sessid, ord(operation), data
-#        return self.callRemote(PortalAdmin,
-#                               sessid=sessid,
-#                               operation=operation,
-#                               data=dumps(data)).addErrback(self.errback, "PortalAdmin")
+
     # Extra functions
 
     def amp_function_call(self, module, function, args, **kwargs):
