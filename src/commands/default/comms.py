@@ -8,7 +8,7 @@ for easy handling.
 
 """
 from django.conf import settings
-from src.comms.models import ChannelDB, Msg, PlayerChannelConnection, ExternalChannelConnection
+from src.comms.models import ChannelDB, Msg, ExternalChannelConnection
 from src.comms import irc, imc2, rss
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils, prettytable
@@ -96,7 +96,7 @@ class CmdAddCom(MuxPlayerCommand):
         string = ""
         if not channel.has_connection(player):
             # we want to connect as well.
-            if not channel.connect_to(player):
+            if not channel.connect(player):
                 # if this would have returned True, the player is connected
                 self.msg("%s: You are not allowed to join this channel." % channel.key)
                 return
@@ -154,7 +154,7 @@ class CmdDelCom(MuxPlayerCommand):
             for nick in [nick for nick in caller.nicks.get(category="channel")
                          if nick.strvalue.lower() == chkey]:
                 nick.delete()
-            disconnect = channel.disconnect_from(player)
+            disconnect = channel.disconnect(player)
             if disconnect:
                 self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
             return
@@ -209,7 +209,7 @@ class CmdAllCom(MuxPlayerCommand):
                 caller.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
              #get names all subscribed channels and disconnect from them all
-            channels = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
+            channels = ChannelDB.objects.get_subscriptions(caller)
             for channel in channels:
                 caller.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
@@ -227,9 +227,9 @@ class CmdAllCom(MuxPlayerCommand):
                 string += "No channels."
             for channel in channels:
                 string += "\n{w%s:{n\n" % channel.key
-                conns = PlayerChannelConnection.objects.get_all_connections(channel)
-                if conns:
-                    string += "  " + ", ".join([conn.player.key for conn in conns])
+                subs = channel.subscriptions.all()
+                if subs:
+                    string += "  " + ", ".join([player.key for player in subs])
                 else:
                     string += "  <None>"
             self.msg(string.strip())
@@ -269,7 +269,7 @@ class CmdChannels(MuxPlayerCommand):
             self.msg("No channels available.")
             return
         # all channel we are already subscribed to
-        subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
+        subs = ChannelDB.objects.get_subscriptions(caller)
         #print subs
 
         if self.cmdstring == "comlist":
@@ -388,7 +388,7 @@ class CmdCBoot(MuxPlayerCommand):
             string = "You don't control this channel."
             self.msg(string)
             return
-        if not PlayerChannelConnection.objects.has_player_connection(player, channel):
+        if not player.dbobj in channel.db_subscriptions.all():
             string = "Player %s is not connected to channel %s." % (player.key, channel.key)
             self.msg(string)
             return
@@ -401,7 +401,7 @@ class CmdCBoot(MuxPlayerCommand):
                      if nick.db_real.lower() == channel.key]:
             nick.delete()
         # disconnect player
-        channel.disconnect_from(player)
+        channel.disconnect(player)
         CHANNELHANDLER.update()
 
 
@@ -483,9 +483,9 @@ class CmdCWho(MuxPlayerCommand):
             return
         string = "\n{CChannel subscriptions{n"
         string += "\n{w%s:{n\n" % channel.key
-        conns = PlayerChannelConnection.objects.get_all_connections(channel)
-        if conns:
-            string += "  " + ", ".join([conn.player.key for conn in conns])
+        subs = channel.db_subscriptions.all()
+        if subs:
+            string += "  " + ", ".join([player.key for player in subs])
         else:
             string += "  <None>"
         self.msg(string.strip())
@@ -537,7 +537,7 @@ class CmdChannelCreate(MuxPlayerCommand):
                                          aliases,
                                          description,
                                          locks=lockstring)
-        new_chan.connect_to(caller)
+        new_chan.connect(caller)
         self.msg("Created channel %s and connected to it." % new_chan.key)
 
 

@@ -2,10 +2,8 @@
 These managers handles the
 """
 
-import itertools
 from django.db import models
 from django.db.models import Q
-from django.contrib.contenttypes.models import ContentType
 from src.typeclasses.managers import returns_typeclass_list, returns_typeclass
 
 _GA = object.__getattribute__
@@ -14,7 +12,6 @@ _ObjectDB = None
 _ChannelDB = None
 _SESSIONS = None
 _ExternalConnection = None
-_User = None
 
 # error class
 
@@ -49,7 +46,7 @@ def dbref(dbref, reqhash=True):
 def identify_object(inp):
     "identify if an object is a player or an object; return its database model"
     # load global stores
-    global _PlayerDB, _ObjectDB, _ChannelDB, _ExternalConnection, _User
+    global _PlayerDB, _ObjectDB, _ChannelDB, _ExternalConnection
     if not _PlayerDB:
         from src.players.models import PlayerDB as _PlayerDB
     if not _ObjectDB:
@@ -58,8 +55,6 @@ def identify_object(inp):
         from src.comms.models import ChannelDB as _ChannelDB
     if not _ExternalConnection:
         from src.comms.models import ExternalChannelConnection as _ExternalConnection
-    if not _User:
-        from django.contrib.auth.models import User as _User
     if not inp:
         return inp, None
     # try to identify the type
@@ -284,9 +279,8 @@ class ChannelManager(models.Manager):
 
     Evennia-specific:
     get_all_channels
-    get_channel
-    del_channel
-    get_all_connections
+    get_channel(channel)
+    get_subscriptions(player)
     channel_search (equivalent to ev.search_channel)
 
     """
@@ -313,56 +307,65 @@ class ChannelManager(models.Manager):
             return channels[0]
         return None
 
-    def del_channel(self, channelkey):
+    @returns_typeclass_list
+    def get_subscriptions(self, player):
         """
-        Delete channel matching channelkey.
-        Also cleans up channelhandler.
+        Return all channels a given player is subscribed to
         """
-        channels = self.filter(db_key__iexact=channelkey)
-        if not channels:
-            # no aliases allowed for deletion.
-            return False
-        for channel in channels:
-            channel.delete()
-        from src.comms.channelhandler import CHANNELHANDLER
-        CHANNELHANDLER.update()
-        return None
+        return player.dbobj.subscription_set.all()
 
-    def get_all_connections(self, channel, online=False):
-        """
-        Return the connections of all players listening
-        to this channel. If Online is true, it only returns
-        connected players.
-        """
-        global _SESSIONS
-        if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
 
-        PlayerChannelConnection = ContentType.objects.get(app_label="comms",
-                                                          model="playerchannelconnection").model_class()
-        ExternalChannelConnection = ContentType.objects.get(app_label="comms",
-                                                            model="externalchannelconnection").model_class()
-        players = []
-        if online:
-            session_list = _SESSIONS.get_sessions()
-            unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
-            online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
-            for player in online_players:
-                players.extend(PlayerChannelConnection.objects.filter(
-                    db_player=player.dbobj, db_channel=channel.dbobj))
-        else:
-            players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
+#    def del_channel(self, channelkey):
+#        """
+#        Delete channel matching channelkey.
+#        Also cleans up channelhandler.
+#        """
+#        channels = self.filter(db_key__iexact=channelkey)
+#        if not channels:
+#            # no aliases allowed for deletion.
+#            return False
+#        for channel in channels:
+#            channel.delete()
+#        from src.comms.channelhandler import CHANNELHANDLER
+#        CHANNELHANDLER.update()
+#        return None
 
-        external_connections = ExternalChannelConnection.objects.get_all_connections(channel)
-
-        return itertools.chain(players, external_connections)
+#    def get_all_connections(self, channel, online=False):
+#        """
+#        Return the connections of all players listening
+#        to this channel. If Online is true, it only returns
+#        connected players.
+#        """
+#        global _SESSIONS
+#        if not _SESSIONS:
+#            from src.server.sessionhandler import SESSIONS as _SESSIONS
+#
+#        PlayerChannelConnection = ContentType.objects.get(app_label="comms",
+#                                                          model="playerchannelconnection").model_class()
+#        ExternalChannelConnection = ContentType.objects.get(app_label="comms",
+#                                                            model="externalchannelconnection").model_class()
+#        players = []
+#        if online:
+#            session_list = _SESSIONS.get_sessions()
+#            unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
+#            online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
+#            for player in online_players:
+#                players.extend(PlayerChannelConnection.objects.filter(
+#                    db_player=player.dbobj, db_channel=channel.dbobj))
+#        else:
+#            players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
+#
+#        external_connections = ExternalChannelConnection.objects.get_all_connections(channel)
+#
+#        return itertools.chain(players, external_connections)
 
     @returns_typeclass_list
-    def channel_search(self, ostring):
+    def channel_search(self, ostring, exact=True):
         """
         Search the channel database for a particular channel.
 
         ostring - the key or database id of the channel.
+        exact - require an exact key match (still not case sensitive)
         """
         channels = []
         if not ostring: return channels
@@ -374,7 +377,10 @@ class ChannelManager(models.Manager):
             pass
         if not channels:
             # no id match. Search on the key.
-            channels = self.filter(db_key__iexact=ostring)
+            if exact:
+                channels = self.filter(db_key__iexact=ostring)
+            else:
+                channels = self.filter(db_key__icontains=ostring)
         if not channels:
             # still no match. Search by alias.
             channels = [channel for channel in self.all()

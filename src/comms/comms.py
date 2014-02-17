@@ -162,15 +162,16 @@ class Channel(TypeClass):
         this channel, and sending them a message.
         """
         # get all players connected to this channel and send to them
-        for conn in ChannelDB.objects.get_all_connections(self, online=online):
+        for player in self.dbobj.db_subscriptions.all():
+            player = player.typeclass
             try:
-                conn.player.msg(msg.message, from_obj=msg.senders)
+                player.msg(msg.message, from_obj=msg.senders)
             except AttributeError:
                 try:
-                    conn.to_external(msg.message,
+                    player.to_external(msg.message,
                                      senders=msg.senders, from_channel=self)
                 except Exception:
-                    logger.log_trace("Cannot send msg to connection '%s'" % conn)
+                    logger.log_trace("Cannot send msg to connection '%s'" % player)
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
             persistent=False, online=False, emit=False, external=False):

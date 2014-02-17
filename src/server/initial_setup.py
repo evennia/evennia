@@ -141,10 +141,9 @@ def create_channels():
 
     # connect the god user to all these channels by default.
     goduser = get_god_player()
-    from src.comms.models import PlayerChannelConnection
-    PlayerChannelConnection.objects.create_connection(goduser, pchan)
-    PlayerChannelConnection.objects.create_connection(goduser, ichan)
-    PlayerChannelConnection.objects.create_connection(goduser, cchan)
+    pchan.connect(goduser)
+    ichan.connect(goduser)
+    cchan.connect(goduser)
 
 
 def create_system_scripts():

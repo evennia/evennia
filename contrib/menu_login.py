@@ -233,7 +233,7 @@ class CmdPasswordCreate(Command):
             pchanneldef = settings.CHANNEL_PUBLIC
             if pchanneldef:
                 pchannel = managers.channels.get_channel(pchanneldef[0])
-                if not pchannel.connect_to(new_player):
+                if not pchannel.connect(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
 

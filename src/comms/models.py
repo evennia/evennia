@@ -31,7 +31,7 @@ from src.utils import logger
 from src.utils.utils import to_str, crop, make_iter
 
 __all__ = ("Msg", "TempMsg", "ChannelDB",
-            "PlayerChannelConnection", "ExternalChannelConnection")
+            "ExternalChannelConnection")
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -356,8 +356,8 @@ class ChannelDB(TypedObject):
       permissions - perm strings
 
     """
-    db_subscribers = models.ManyToManyField("players.PlayerDB",
-                     related_name="subscriber_player_set", null=True, verbose_name='subscribers', db_index=True)
+    db_subscriptions = models.ManyToManyField("players.PlayerDB",
+                       related_name="subscription_set", null=True, verbose_name='subscriptions', db_index=True)
 
     # Database manager
     objects = managers.ChannelManager()
@@ -388,46 +388,43 @@ class ChannelDB(TypedObject):
         Checks so this player is actually listening
         to this channel.
         """
-        # also handle object.player calls
-        player, typ = identify_object(player)
-        if typ == 'object':
+        if hasattr(player, "player"):
             player = player.player
-            player, typ = identify_object(player)
-        if player and not typ == "player":
-            logger.log_errmsg("Channel.has_connection received object of type '%s'. It only accepts players/characters." % typ)
-            return
-        # do the check
-        return PlayerChannelConnection.objects.has_player_connection(player, self)
+        player = player.dbobj
+        return player in self.db_subscriptions.all()
 
-    def connect_to(self, player):
-        "Connect the user to this channel"
-        self.typeclass.pre_join_channel(player)
+    def connect(self, player):
+        "Connect the user to this channel. This checks access."
+        if hasattr(player, "player"):
+            player = player.player
+        player = player.typeclass
+        # check access
         if not self.access(player, 'listen'):
             return False
+        # pre-join hook
         connect = self.typeclass.pre_join_channel(player)
         if not connect:
             return False
-        player = player.dbobj
-        conn = PlayerChannelConnection.objects.create_connection(player, self)
-        if conn:
-            self.typeclass.post_join_channel(player)
-            return True
-        return False
+        # subscribe
+        self.db_subscriptions.add(player.dbobj)
+        # post-join hook
+        self.typeclass.post_join_channel(player)
+        return True
 
-    def disconnect_from(self, player):
+    def disconnect(self, player):
         "Disconnect user from this channel."
+        if hasattr(player, "player"):
+            player = player.player
+        player = player.typeclass
+        # pre-disconnect hook
         disconnect = self.typeclass.pre_leave_channel(player)
         if not disconnect:
             return False
-        PlayerChannelConnection.objects.break_connection(player, self)
-        self.typeclass.post_leave_channel(player)
+        # disconnect
+        self.db_subscriptions.remove(player)
+        # post-disconnect hook
+        self.typeclass.post_leave_channel(player.dbobj)
         return True
-
-    def delete(self):
-        "Clean out all connections to this channel and delete it."
-        for connection in ChannelDB.objects.get_all_connections(self):
-            connection.delete()
-        super(ChannelDB, self).delete()
 
     def access(self, accessing_obj, access_type='listen', default=False):
         """
@@ -438,65 +435,13 @@ class ChannelDB(TypedObject):
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
-
-class PlayerChannelConnection(SharedMemoryModel):
-    """
-    This connects a player object to a particular comm channel.
-    The advantage of making it like this is that one can easily
-    break the connection just by deleting this object.
-    """
-
-    # Player connected to a channel
-    db_player = models.ForeignKey("players.PlayerDB", verbose_name='player')
-    # Channel the player is connected to
-    db_channel = models.ForeignKey(ChannelDB, verbose_name='channel')
-
-    # Database manager
-    objects = managers.PlayerChannelConnectionManager()
-
-    # player property (wraps db_player)
-    #@property
-    def player_get(self):
-        "Getter. Allows for value = self.player"
-        return self.db_player
-
-    #@player.setter
-    def player_set(self, value):
-        "Setter. Allows for self.player = value"
-        self.db_player = value
-        self.save()
-
-    #@player.deleter
-    def player_del(self):
-        "Deleter. Allows for del self.player. Deletes connection."
-        self.delete()
-    player = property(player_get, player_set, player_del)
-
-    # channel property (wraps db_channel)
-    #@property
-    def channel_get(self):
-        "Getter. Allows for value = self.channel"
-        return self.db_channel.typeclass
-
-    #@channel.setter
-    def channel_set(self, value):
-        "Setter. Allows for self.channel = value"
-        self.db_channel = value.dbobj
-        self.save()
-
-    #@channel.deleter
-    def channel_del(self):
-        "Deleter. Allows for del self.channel. Deletes connection."
-        self.delete()
-    channel = property(channel_get, channel_set, channel_del)
-
-    def __str__(self):
-        return "Connection Player '%s' <-> %s" % (self.player, self.channel)
-
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Channel<->Player link"
-        verbose_name_plural = "Channel<->Player links"
+    def delete(self):
+        """
+        Deletes channel while also cleaning up channelhandler
+        """
+        super(ChannelDB, self).delete()
+        from src.comms.channelhandler import CHANNELHANDLER
+        CHANNELHANDLER.update()
 
 
 class ExternalChannelConnection(SharedMemoryModel):
