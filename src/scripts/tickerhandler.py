@@ -49,7 +49,7 @@ call the handler's save() and restore() methods when the server reboots.
 
 """
 from twisted.internet.defer import inlineCallbacks
-from twisted.internet.task import LoopingCall
+from src.scripts.scripts import ExtendedLoopingCall
 from src.server.models import ServerConfig
 from src.utils.logger import log_trace
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
@@ -92,9 +92,9 @@ class Ticker(object):
         self.interval = interval
         self.subscriptions = {}
         # set up a twisted asynchronous repeat call
-        self.task = LoopingCall(self._callback)
+        self.task = ExtendedLoopingCall(self._callback)
 
-    def validate(self):
+    def validate(self, start_delay=None):
         """
         Start/stop the task depending on how many
         subscribers we have using it.
@@ -108,14 +108,18 @@ class Ticker(object):
             if not subs:
                 self.task.stop()
         elif subs:
-            self.task.start(self.interval, now=False)
+            print "starting with start_delay=", start_delay
+            self.task.start(self.interval, now=False, start_delay=start_delay)
 
     def add(self, store_key, obj, *args, **kwargs):
         """
-        Sign up a subscriber to this ticker
+        Sign up a subscriber to this ticker. If kwargs contains
+        a keyword _start_delay, this will be used to delay the start
+        of the trigger instead of interval.
         """
+        start_delay = kwargs.pop("_start_delay", None)
         self.subscriptions[store_key] = (obj, args, kwargs)
-        self.validate()
+        self.validate(start_delay=start_delay)
 
     def remove(self, store_key):
         """
@@ -170,7 +174,6 @@ class TickerPool(object):
             for ticker in self.tickers.values():
                 ticker.stop()
 
-
 class TickerHandler(object):
     """
     The Tickerhandler maintains a pool of tasks for subscribing
@@ -221,10 +224,17 @@ class TickerHandler(object):
     def save(self):
         """
         Save ticker_storage as a serialized string into a temporary
-        ServerConf field. This is called by server when it shuts down
+        ServerConf field. Whereas saving is done on the fly, if called by
+        server when it shuts down, the current timer of each ticker will be
+        saved so it can start over from that point.
         """
-        #print "save:", self.ticker_storage
         if self.ticker_storage:
+            start_delays = dict((interval, ticker.task.next_call_time())
+                                 for interval, ticker in self.ticker_pool.tickers.items())
+            # update the timers for the tickers
+            for (obj, interval), (args, kwargs) in self.ticker_storage.items():
+                kwargs["_start_delay"] = start_delays.get(interval, None)
+
             ServerConfig.objects.conf(key=self.save_name,
                                     value=dbserialize(self.ticker_storage))
         else:

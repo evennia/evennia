@@ -313,6 +313,8 @@ class Evennia(object):
 
             from src.server.oobhandler import OOB_HANDLER
             OOB_HANDLER.save()
+            from src.scripts.tickerhandler import TICKER_HANDLER
+            TICKER_HANDLER.save()
 
             if SERVER_STARTSTOP_MODULE:
                 SERVER_STARTSTOP_MODULE.at_server_reload_stop()
