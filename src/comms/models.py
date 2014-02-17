@@ -356,6 +356,8 @@ class ChannelDB(TypedObject):
       permissions - perm strings
 
     """
+    db_subscribers = models.ManyToManyField("players.PlayerDB",
+                     related_name="subscriber_player_set", null=True, verbose_name='subscribers', db_index=True)
 
     # Database manager
     objects = managers.ChannelManager()
