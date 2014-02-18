@@ -3,7 +3,7 @@ Default Typeclass for Comms.
 
 See objects.objects for more information on Typeclassing.
 """
-from src.comms import Msg, TempMsg, ChannelDB
+from src.comms import Msg, TempMsg
 from src.typeclasses.typeclass import TypeClass
 from src.utils import logger
 from src.utils.utils import make_iter
@@ -14,8 +14,8 @@ class Channel(TypeClass):
     This is the base class for all Comms. Inherit from this to create different
     types of communication channels.
     """
-    def __init__(self, dbobj):
-        super(Channel, self).__init__(dbobj)
+
+    # helper methods, for easy overloading
 
     def channel_prefix(self, msg=None, emit=False):
         """
@@ -107,6 +107,7 @@ class Channel(TypeClass):
         """
         Run at channel creation.
         """
+        pass
 
     def pre_join_channel(self, joiner):
         """
@@ -132,6 +133,7 @@ class Channel(TypeClass):
         """
         Run right after an object or player leaves a channel.
         """
+        pass
 
     def pre_send_message(self, msg):
         """
@@ -146,6 +148,7 @@ class Channel(TypeClass):
         """
         Run after a message is sent to the channel.
         """
+        pass
 
     def at_init(self):
         """
@@ -155,6 +158,7 @@ class Channel(TypeClass):
         in some way after being created but also after each server
         restart or reload.
         """
+        pass
 
     def distribute_message(self, msg, online=False):
         """
@@ -165,7 +169,9 @@ class Channel(TypeClass):
         for player in self.dbobj.db_subscriptions.all():
             player = player.typeclass
             try:
-                player.msg(msg.message, from_obj=msg.senders)
+                # note our addition of the from_channel keyword here. This could be checked
+                # by a custom player.msg() to treat channel-receives differently.
+                player.msg(msg.message, from_obj=msg.senders, from_channel=self)
             except AttributeError:
                 try:
                     player.to_external(msg.message,

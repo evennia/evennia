@@ -482,7 +482,7 @@ class Script(ScriptBase):
     def at_stop(self):
         """
         Called whenever when it's time for this script to stop
-        (either because is_valid returned False or )
+        (either because is_valid returned False or it runs out of iterations)
         """
         pass
 

@@ -69,7 +69,7 @@ class PortalSessionHandler(SessionHandler):
                                                          operation=PDISCONN)
 
 
-    def server_connect(self, protocol_class_path):
+    def server_connect(self, protocol_path="", uid=None):
         """
         Called by server to force the initialization of a new
         protocol instance. Server wants this instance to get
@@ -83,12 +83,12 @@ class PortalSessionHandler(SessionHandler):
                 in a property sessionhandler. It must have a
                 connectionMade() method, responsible for configuring
                 itself and then calling self.sessionhandler.connect(self)
-                like any other protocol.
+                like any other newly connected protocol.
         """
         global _MOD_IMPORT
         if not _MOD_IMPORT:
             from src.utils.utils import variable_from_module as _MOD_IMPORT
-        path, clsname = protocol_class_path.rsplit(".", 1)
+        path, clsname = protocol_path.rsplit(".", 1)
         cls = _MOD_IMPORT(path, clsname)
         protocol = cls()
         protocol.sessionhandler = self

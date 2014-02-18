@@ -37,6 +37,7 @@ SDISCONN = chr(5)     # server session disconnect
 SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
+SCONN = chr(9)        # server portal connection (for bots)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -256,6 +257,25 @@ class ServerSessionHandler(SessionHandler):
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
 
+    # server-side access methods
+
+    def start_bot_session(self, protocol_path, uid):
+        """
+        This method allows the server-side to force the Portal to create
+        a new bot session using the protocol specified by protocol_path,
+        which should be the full python path to the class, including the
+        class name, like "src.server.portal.irc.IRCClient".
+        The new session will use the supplied player-bot uid to
+        initiate an already logged-in connection. The Portal will
+        treat this as a normal connection and henceforth so will the
+        Server.
+        """
+        data = {"protocol_path":protocol_path,
+                "uid":uid}
+        self.server.amp_protocol.call_remote_PortalAdmin(0,
+                                                         operation=SCONN,
+                                                         data=data)
+
     def portal_shutdown(self):
         """
         Called by server when shutting down the portal.
@@ -263,7 +283,6 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.call_remote_PortalAdmin(0,
                                                          operation=SSHUTD,
                                                          data="")
-    # server-side access methods
 
     def login(self, session, player, testmode=False):
         """

@@ -473,7 +473,7 @@ class AMPProtocol(amp.AMP):
                 # set a flag in case we are about to shut down soon
                 self.factory.server_restart_mode = True
             elif operation == SCONN: # server_force_connection (for irc/imc2 etc)
-                portal_sessionhandler.server_connect(data)
+                portal_sessionhandler.server_connect(**data)
             else:
                 raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
