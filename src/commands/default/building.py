@@ -2135,13 +2135,15 @@ class CmdTag(MuxCommand):
     Switches:
       search - return all objects
       del - remove the given tag. If no tag is specified,
-            clear all tags.
+            clear all tags on object.
 
     Manipulates and lists tags on objects. Tags allow for quick
     grouping of and searching for objects.  If only <obj> is given,
     list all tags on the object.  If /search is used, list objects
     with the given tag.
-    The category can be used for grouping tags themselves.
+    The category can be used for grouping tags themselves, but it
+    should be used with restrain - tags on their own are usually
+    enough to for most grouping schemes.
     """
 
     key = "@tag"
@@ -2158,19 +2160,20 @@ class CmdTag(MuxCommand):
             # search by tag
             tag = self.args
             category = None
-            search_category = None
             if ":" in tag:
                 tag, category = [part.strip() for part in tag.split(":", 1)]
-                search_category = "object_%s" % category
             #print "tag search:", tag, search_category
-            objs = search.search_tag(tag, category=search_category)
+            objs = search.search_tag(tag, category=category)
             nobjs = len(objs)
             if nobjs > 0:
-                string = "Found %i object%s with tag '%s'%s:\n %s" % (nobjs,
+                catstr = " (category: '{w%s{n')" % category if category else \
+                                ("" if nobjs == 1 else " (may have different tag categories)")
+                matchstr = ", ".join("{w%s{n(#%i)" % (o.key, o.dbid) for o in objs)
+
+                string = "Found {w%i{n object%s with tag '{w%s{n'%s:\n %s" % (nobjs,
                                                        "s" if nobjs > 1 else "",
                                                        tag,
-                                                       " (category: %s)" % category if category else "",
-                                                       ", ".join("%s(#%i)" % (o.key, o.dbid) for o in objs))
+                                                       catstr, matchstr)
             else:
                 string = "No objects found with tag '%s%s'." % (tag,
                                                         " (category: %s)" % category if category else "")
