@@ -4,44 +4,48 @@ Evennia Setup
 -------------
 
 You can find the updated and more detailed version of this page on
-http://code.google.com/p/evennia/wiki/GettingStarted
+https://github.com/evennia/evennia/wiki/Getting-Started. You don't
+need to make your server visible online during development, you only
+need an internet connection for downloading and updating. 
 
 
 Installation
 ------------
 
-* Make sure you have/install the prerequsites with minimum versions
-  listed on http://code.google.com/p/evennia/wiki/GettingStarted:
+*  Make sure you have the prerequsites with minimum versions
+  listed on https://github.com/evennia/evennia/wiki/Getting-Started:
 
     - python
     - django
-    - twisted + PIL
-    - mercurial
-    - django-south (optional, but highly recommended)
+    - twisted + Pillow
+    - GIT
+    - django-south
 
 * Go to a directory on your harddrive where you want the 'evennia'
   directory to be created, for example mud/.
 
-    $ cd mud/
+    cd mud/
 
-* Get a copy of the Evennia source:
+* Get a copy of the Evennia source (you should have done this 
+  already if you are reading this file):
 
-    $ hg clone https://code.google.com/p/evennia/ evennia
+    git clone https://github.com/evennia/evennia.git
+    or 
+    git clone git@github.com:evennia/evennia.git
+
+    In the future, do 'git pull' to update the server. 
 
 * Change to the evennia/game directory and run the setup scripts.
 
-    $ cd evennia/game
+    cd evennia/game
 
-    $ python manage.py
+    python manage.py
 
 * Edit the new game/settings.py if needed, then run
-  (make sure to create an admin account when asked):
 
-    $ python manage.py syncdb
+    python manage.py syncdb
 
-* If you use django-south you need to also run
-
-    $ python manage.py migrate
+    python manage.py migrate
 
 
 Starting Evennia
@@ -49,10 +53,11 @@ Starting Evennia
 
 * Start the server with
 
-    $ python evennia.py -i start
+    python evennia.py -i start
 
-  or run without arguments for a menu of launch options.
-  See http://code.google.com/p/evennia/wiki/StartStopReload for more info.
+  or run without arguments for a menu of launch options. Make
+  sure to create a superuser when asked. The email does not have
+  to be a real one for testing (evennia does not check it)
 
 * Start up your MUD client of choice and point it to your server and port 4000.
   If you are just running locally the server name is 'localhost'.
@@ -60,7 +65,7 @@ Starting Evennia
 * Alternatively, you can find the web interface and webclient by
   pointing your web browser to http://localhost:8000.
 
-* Login with the email address and password you provided when setting up the server.
+* For superuser access, login with the account and password you provided earlier.
 
 
 Welcome to Evennia!
