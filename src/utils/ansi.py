@@ -567,6 +567,11 @@ class ANSIString(unicode):
         replayed.
         """
         slice_indexes = self._char_indexes[slc]
+        # If it's the end of the string, we need to append final color codes.
+        if self._char_indexes and self._char_indexes[-1] in slice_indexes:
+            append_tail = self._get_interleving(len(self))
+        else:
+            append_tail = ''
         if not slice_indexes:
             return ANSIString('')
         try:
@@ -584,7 +589,7 @@ class ANSIString(unicode):
                 string += self._raw_string[i]
             except IndexError:
                 pass
-        return ANSIString(string, decoded=True)
+        return ANSIString(string + append_tail, decoded=True)
 
     def __getitem__(self, item):
         """
@@ -599,9 +604,12 @@ class ANSIString(unicode):
             # Slices must be handled specially.
             return self._slice(item)
         try:
-            item = self._char_indexes[item]
+            self._char_indexes[item]
         except IndexError:
-            raise IndexError("ANSIString index out of range.")
+            raise IndexError("ANSIString Index out of range")
+        # Get character codes after the index as well.
+        append_tail = self._get_interleving(item + 1)
+        item = self._char_indexes[item]
 
         clean = self._raw_string[item]
         result = ''
@@ -610,38 +618,7 @@ class ANSIString(unicode):
         for index in range(0, item + 1):
             if index in self._code_indexes:
                 result += self._raw_string[index]
-        return ANSIString(result + clean, decoded=True)
-
-    def rsplit(self, sep=None, maxsplit=None):
-        """
-        Like split, but from the end of the string, rather than the beginning.
-        """
-        return self.split(sep, maxsplit, reverse=True)
-
-    def split(self, sep=None, maxsplit=None, reverse=False):
-        """
-        Splits in a manner similar to the standard string split method. First,
-        we split the clean string. Then we measure each section of the result
-        to figure out where they start and end, and replay any escapes that
-        would have occured before that.
-        """
-        if hasattr(sep, 'clean_string'):
-            sep = sep.clean_string
-        args = [sep]
-        if maxsplit is not None:
-            args.append(maxsplit)
-        if reverse:
-            parent_result = self._clean_string.rsplit(*args)
-        else:
-            parent_result = self._clean_string.split(*args)
-        # Might be None.
-        sep = sep or ''
-        current_index = 0
-        result = []
-        for section in parent_result:
-            result.append(self[current_index:current_index + len(section)])
-            current_index += (len(section)) + len(sep)
-        return result
+        return ANSIString(result + clean + append_tail, decoded=True)
 
     def clean(self):
         """
@@ -744,11 +721,24 @@ class ANSIString(unicode):
         char_indexes = []
         for start, end in list(group(flat_ranges, 2)):
             char_indexes.extend(range(start, end))
-        # The end character will be left off if it's a normal character. Fix
-        # that here.
-        if end_index in flat_ranges:
-            char_indexes.append(end_index)
         return code_indexes, char_indexes
+
+    def _get_interleving(self, index):
+        """
+        Get the code characters from the given slice end to the next
+        character.
+        """
+        index = self._char_indexes[index - 1]
+        s = ''
+        while True:
+            index += 1
+            if index in self._char_indexes:
+                break
+            elif index in self._code_indexes:
+                s += self._raw_string[index]
+            else:
+                break
+        return s
 
     def split(self, by, maxsplit=-1):
         """
@@ -768,11 +758,12 @@ class ANSIString(unicode):
             next = self._clean_string.find(by, start)
             if next < 0:
                 break
-            res.append(self[start:next])
+            # Get character codes after the index as well.
+            res.append(self[start:next] + self._get_interleving(next))
             start = next + bylen
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
-        res.append(self[start:len(self)])
+        res.append(self[start:len(self)] + self._get_interleving(len(self)))
         return res
 
     def rsplit(self, by, maxsplit=-1):
@@ -793,11 +784,12 @@ class ANSIString(unicode):
             next = self._clean_string.rfind(by, 0, end)
             if next < 0:
                 break
-            res.append(self[next+bylen:end])
+            # Get character codes after the index as well.
+            res.append(self[next+bylen:end] + self._get_interleving(end))
             end = next
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
-        res.append(self[:end])
+        res.append(self[:end] + self._get_interleving(end))
         res.reverse()
         return res
 
