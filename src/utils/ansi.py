@@ -750,6 +750,57 @@ class ANSIString(unicode):
             char_indexes.append(end_index)
         return code_indexes, char_indexes
 
+    def split(self, by, maxsplit=-1):
+        """
+        Stolen from PyPy's pure Python string implementation, tweaked for
+        ANSIString.
+
+        PyPy is distributed under the MIT licence.
+        http://opensource.org/licenses/MIT
+        """
+        bylen = len(by)
+        if bylen == 0:
+            raise ValueError("empty separator")
+
+        res = []
+        start = 0
+        while maxsplit != 0:
+            next = self._clean_string.find(by, start)
+            if next < 0:
+                break
+            res.append(self[start:next])
+            start = next + bylen
+            maxsplit -= 1   # NB. if it's already < 0, it stays < 0
+
+        res.append(self[start:len(self)])
+        return res
+
+    def rsplit(self, by, maxsplit=-1):
+        """
+        Stolen from PyPy's pure Python string implementation, tweaked for
+        ANSIString.
+
+        PyPy is distributed under the MIT licence.
+        http://opensource.org/licenses/MIT
+        """
+        res = []
+        end = len(self)
+        bylen = len(by)
+        if bylen == 0:
+            raise ValueError("empty separator")
+
+        while maxsplit != 0:
+            next = self._clean_string.rfind(by, 0, end)
+            if next < 0:
+                break
+            res.append(self[next+bylen:end])
+            end = next
+            maxsplit -= 1   # NB. if it's already < 0, it stays < 0
+
+        res.append(self[:end])
+        res.reverse()
+        return res
+
     @_spacing_preflight
     def center(self, width, fillchar, difference):
         """
