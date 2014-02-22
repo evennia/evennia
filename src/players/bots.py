@@ -112,7 +112,7 @@ class IRCBot(Bot):
         # instruct the server and portal to create a new session
         _SESSIONS.start_bot_session("src.server.portal.irc.IRCClient", self.id)
 
-    def connect_to_channel(self, channelname):
+    def connect_to_channel(self, botkey, channelname):
         """
         Connect the bot to an Evennia channel
         """
@@ -130,4 +130,5 @@ class IRCBot(Bot):
             self.dbobj.msg(text=text)
 
 
-    def execute_cmd(
+    def execute_cmd(self):
+        pass

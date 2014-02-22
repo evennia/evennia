@@ -259,7 +259,7 @@ class ServerSessionHandler(SessionHandler):
 
     # server-side access methods
 
-    def start_bot_session(self, protocol_path, uid):
+    def start_bot_session(self, protocol_path, uid, configdict):
         """
         This method allows the server-side to force the Portal to create
         a new bot session using the protocol specified by protocol_path,
@@ -271,7 +271,8 @@ class ServerSessionHandler(SessionHandler):
         Server.
         """
         data = {"protocol_path":protocol_path,
-                "uid":uid}
+                "uid":uid,
+                "config":configdict}
         self.server.amp_protocol.call_remote_PortalAdmin(0,
                                                          operation=SCONN,
                                                          data=data)

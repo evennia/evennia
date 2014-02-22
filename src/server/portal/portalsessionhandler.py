@@ -69,28 +69,29 @@ class PortalSessionHandler(SessionHandler):
                                                          operation=PDISCONN)
 
 
-    def server_connect(self, protocol_path="", uid=None):
+    def server_connect(self, protocol_path="", uid=None, config=dict()):
         """
         Called by server to force the initialization of a new
         protocol instance. Server wants this instance to get
         a unique sessid and to be connected back as normal. This
         is used to initiate irc/imc2/rss etc connections.
 
-        protocol_class_path - full python path to the class factory
+        protocol_path - full python path to the class factory
                     for the protocol used, eg
                     'src.server.portal.irc.IRCClient'
-                The given class will be instantiated with this handler
-                in a property sessionhandler. It must have a
-                connectionMade() method, responsible for configuring
-                itself and then calling self.sessionhandler.connect(self)
-                like any other newly connected protocol.
+        uid - database uid to the connected player-bot
+        config - dictionary of configuration options, fed as **kwarg
+                 to protocol class' __init__ method.
+
+        The called protocol class must have a method ConnectionMade
+        that calls the portalsession.connect() as a normal protocol.
         """
         global _MOD_IMPORT
         if not _MOD_IMPORT:
             from src.utils.utils import variable_from_module as _MOD_IMPORT
         path, clsname = protocol_path.rsplit(".", 1)
         cls = _MOD_IMPORT(path, clsname)
-        protocol = cls()
+        protocol = cls(**config)
         protocol.sessionhandler = self
         protocol.connectionMade()
 
