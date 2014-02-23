@@ -177,7 +177,11 @@ class ServerSession(Session):
         """
         Send User->Evennia. This will in effect
         execute a command string on the server.
-        Eventual extra data moves through oob_data_in
+
+        Especially handled keywords:
+
+        oob - this should hold a dictionary of oob command calls from
+              the oob-supporting protocol.
         """
         if text:
             # this is treated as a command input

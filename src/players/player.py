@@ -136,8 +136,9 @@ class Player(TypeClass):
     def execute_cmd(self, raw_string, sessid=None):
         """
         Do something as this object. This command transparently
-        lets its typeclass execute the command. Evennia also calls
-        this method whenever the player sends a command on the command line.
+        lets its typeclass execute the command. This method
+        is -not- called by Evennia normally, it is here to be
+        called explicitly in code.
 
         Argument:
         raw_string (string) - raw command input

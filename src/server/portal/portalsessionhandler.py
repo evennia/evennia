@@ -78,12 +78,12 @@ class PortalSessionHandler(SessionHandler):
 
         protocol_path - full python path to the class factory
                     for the protocol used, eg
-                    'src.server.portal.irc.IRCClient'
+                    'src.server.portal.irc.IRCClientFactory'
         uid - database uid to the connected player-bot
         config - dictionary of configuration options, fed as **kwarg
                  to protocol class' __init__ method.
 
-        The called protocol class must have a method ConnectionMade
+        The called protocol class must have a method start()
         that calls the portalsession.connect() as a normal protocol.
         """
         global _MOD_IMPORT
@@ -93,7 +93,7 @@ class PortalSessionHandler(SessionHandler):
         cls = _MOD_IMPORT(path, clsname)
         protocol = cls(**config)
         protocol.sessionhandler = self
-        protocol.connectionMade()
+        protocol.start()
 
     def server_disconnect(self, sessid, reason=""):
         """

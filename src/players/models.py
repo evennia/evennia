@@ -78,6 +78,7 @@ class PlayerDB(TypedObject, AbstractUser):
       name - alias for user.username
       sessions - sessions connected to this player
       is_superuser - bool if this player is a superuser
+      is_bot - bool if this player is a bot and not a real player
 
     """
 
@@ -419,12 +420,11 @@ class PlayerDB(TypedObject, AbstractUser):
         """
         Do something as this player. This method is never called normally,
         but only when the player object itself is supposed to execute the
-        command. It does not take nicks on eventual puppets into account.
+        command. It takes player nicks into account, but not nicks of
+        eventual puppets.
 
         raw_string - raw command input coming from the command line.
         """
-        # nick replacement - we require full-word matching.
-
         raw_string = utils.to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
                           categories=("inputline", "channel"), include_player=False)
