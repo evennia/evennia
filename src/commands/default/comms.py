@@ -7,20 +7,24 @@ make sure to homogenize self.caller to always be the player object
 for easy handling.
 
 """
+import time
 from django.conf import settings
 from src.comms.models import ChannelDB, Msg, ExternalChannelConnection
-from src.comms import irc, imc2, rss
+#from src.comms import irc, imc2, rss
+from src.players.models import PlayerDB
+from src.players import bots
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils, prettytable
 from src.utils.utils import make_iter
+from src.utils import create
 from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
            "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
            "CmdCWho", "CmdChannelCreate", "CmdClock", "CmdCdesc",
-           "CmdPage", "CmdIRC2Chan", "CmdIMC2Chan", "CmdIMCInfo",
-           "CmdIMCTell", "CmdRSS2Chan")
+           "CmdPage", "CmdIRC2Chan")#, "CmdIMC2Chan", "CmdIMCInfo",
+           #"CmdIMCTell", "CmdRSS2Chan")
 
 
 def find_channel(caller, channelname, silent=False, noaliases=False):
@@ -794,21 +798,19 @@ class CmdIRC2Chan(MuxCommand):
 
         if 'list' in self.switches:
             # show all connections
-            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='irc_')
-            if connections:
-                table = prettytable.PrettyTable(["Evennia channel", "IRC channel"])
-                for conn in connections:
-                    table.add_row([conn.channel.key, " ".join(conn.external_config.split('|'))])
-                string = "{wIRC connections:{n\n%s" % table
-                self.msg(string)
+            ircbots = [bot.typeclass for bot in PlayerDB.filter(db_isbot=True)]
+            if ircbots:
+                string = "{wIRC connections:{n\n%s" % ircbots
+                self.caller.msg(string)
             else:
-                self.msg("No connections found.")
+                self.msg("No irc bots found.")
             return
 
         if not self.args or not self.rhs:
             string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
             self.msg(string)
             return
+
         channel = self.lhs
         self.rhs = self.rhs.replace('#', ' ') # to avoid Python comment issues
         try:
@@ -822,333 +824,320 @@ class CmdIRC2Chan(MuxCommand):
 
         if('disconnect' in self.switches or 'remove' in self.switches or
                                                     'delete' in self.switches):
-            chanmatch = find_channel(self.caller, channel, silent=True)
-            if chanmatch:
-                channel = chanmatch.key
-
-            ok = irc.delete_connection(channel,
-                                       irc_network,
-                                       irc_port,
-                                       irc_channel,
-                                       irc_botname)
-            if not ok:
-                self.msg("IRC connection/bot could not be removed, does it exist?")
-            else:
+            botname = "ircbot-%s" % irc_botname
+            matches = PlayerDB.filter(db_isbot=True, db_key=botname)
+            if matches:
+                matches[0].delete()
                 self.msg("IRC connection destroyed.")
+            else:
+                self.msg("IRC connection/bot could not be removed, does it exist?")
             return
 
-        channel = find_channel(self.caller, channel)
-        if not channel:
-            return
-        ok = irc.create_connection(channel,
-                                   irc_network,
-                                   irc_port,
-                                   irc_channel,
-                                   irc_botname)
-        if not ok:
-            self.msg("This IRC connection already exists.")
-            return
+        # create a new bot
+        bot = create.create_player(bots.IRCBot, key=botname)
+        bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
+                  irc_network=irc_network, irc_port=irc_port)
         self.msg("Connection created. Starting IRC bot.")
 
 
-class CmdIMC2Chan(MuxCommand):
-    """
-    link an evennia channel to an external IMC2 channel
-
-    Usage:
-      @imc2chan[/switches] <evennia_channel> = <imc2_channel>
-
-    Switches:
-      /disconnect - this clear the imc2 connection to the channel.
-      /remove     -                "
-      /list       - show all imc2<->evennia mappings
-
-    Example:
-      @imc2chan myimcchan = ievennia
-
-    Connect an existing evennia channel to a channel on an IMC2
-    network. The network contact information is defined in settings and
-    should already be accessed at this point. Use @imcchanlist to see
-    available IMC channels.
-
-    """
-
-    key = "@imc2chan"
-    locks = "cmd:serversetting(IMC2_ENABLED) and pperm(Immortals)"
-    help_category = "Comms"
-
-    def func(self):
-        "Setup the imc-channel mapping"
-
-        if not settings.IMC2_ENABLED:
-            string = """IMC is not enabled. You need to activate it in game/settings.py."""
-            self.msg(string)
-            return
-
-        if 'list' in self.switches:
-            # show all connections
-            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
-            if connections:
-                table = prettytable.PrettyTable(["Evennia channel", "IMC channel"])
-                for conn in connections:
-                    table.add_row([conn.channel.key, conn.external_config])
-                string = "{wIMC connections:{n\n%s" % table
-                self.msg(string)
-            else:
-                self.msg("No connections found.")
-            return
-
-        if not self.args or not self.rhs:
-            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2_channel>"
-            self.msg(string)
-            return
-
-        channel = self.lhs
-        imc2_channel = self.rhs
-
-        if('disconnect' in self.switches or 'remove' in self.switches or
-                                                    'delete' in self.switches):
-            # we don't search for channels before this since we want
-            # to clear the link also if the channel no longer exists.
-            ok = imc2.delete_connection(channel, imc2_channel)
-            if not ok:
-                self.msg("IMC2 connection could not be removed, does it exist?")
-            else:
-                self.msg("IMC2 connection destroyed.")
-            return
-
-        # actually get the channel object
-        channel = find_channel(self.caller, channel)
-        if not channel:
-            return
-
-        ok = imc2.create_connection(channel, imc2_channel)
-        if not ok:
-            self.msg("The connection %s <-> %s  already exists." % (channel.key, imc2_channel))
-            return
-        self.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
-
-
-class CmdIMCInfo(MuxCommand):
-    """
-    get various IMC2 information
-
-    Usage:
-      @imcinfo[/switches]
-      @imcchanlist - list imc2 channels
-      @imclist -     list connected muds
-      @imcwhois <playername> - whois info about a remote player
-
-    Switches for @imcinfo:
-      channels - as @imcchanlist (default)
-      games or muds - as @imclist
-      whois - as @imcwhois (requires an additional argument)
-      update - force an update of all lists
-
-    Shows lists of games or channels on the IMC2 network.
-    """
-
-    key = "@imcinfo"
-    aliases = ["@imcchanlist", "@imclist", "@imcwhois"]
-    locks = "cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)"
-    help_category = "Comms"
-
-    def func(self):
-        "Run the command"
-
-        if not settings.IMC2_ENABLED:
-            string = """IMC is not enabled. You need to activate it in game/settings.py."""
-            self.msg(string)
-            return
-
-        if "update" in self.switches:
-            # update the lists
-            import time
-            from src.comms.imc2lib import imc2_packets as pck
-            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CLIENT
-            # update connected muds
-            IMC2_CLIENT.send_packet(pck.IMC2PacketKeepAliveRequest())
-            # prune inactive muds
-            for name, mudinfo in IMC2_MUDLIST.mud_list.items():
-                if time.time() - mudinfo.last_updated > 3599:
-                    del IMC2_MUDLIST.mud_list[name]
-            # update channel list
-            IMC2_CLIENT.send_packet(pck.IMC2PacketIceRefresh())
-            self.msg("IMC2 lists were re-synced.")
-
-        elif("games" in self.switches or "muds" in self.switches
-                                            or self.cmdstring == "@imclist"):
-            # list muds
-            from src.comms.imc2 import IMC2_MUDLIST
-
-            muds = IMC2_MUDLIST.get_mud_list()
-            networks = set(mud.networkname for mud in muds)
-            string = ""
-            nmuds = 0
-            for network in networks:
-                table = prettytable.PrettyTable(["Name", "Url", "Host", "Port"])
-                for mud in (mud for mud in muds if mud.networkname == network):
-                    nmuds += 1
-                    table.add_row([mud.name, mud.url, mud.host, mud.port])
-                string += "\n{wMuds registered on %s:{n\n%s" % (network, table)
-            string += "\n %i Muds found." % nmuds
-            self.msg(string)
-
-        elif "whois" in self.switches or self.cmdstring == "@imcwhois":
-            # find out about a player
-            if not self.args:
-                self.msg("Usage: @imcwhois <playername>")
-                return
-            from src.comms.imc2 import IMC2_CLIENT
-            self.msg("Sending IMC whois request. If you receive no response, no matches were found.")
-            IMC2_CLIENT.msg_imc2(None,
-                                 from_obj=self.caller,
-                                 packet_type="imcwhois",
-                                 target=self.args)
-
-        elif(not self.switches or "channels" in self.switches or
-                                              self.cmdstring == "@imcchanlist"):
-            # show channels
-            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CLIENT
-
-            channels = IMC2_CHANLIST.get_channel_list()
-            string = ""
-            nchans = 0
-            table = prettytable.PrettyTable(["Full name", "Name", "Owner", "Perm", "Policy"])
-            for chan in channels:
-                nchans += 1
-                table.add_row([chan.name, chan.localname, chan.owner,
-                               chan.level, chan.policy])
-            string += "\n{wChannels on %s:{n\n%s" % (IMC2_CLIENT.factory.network, table)
-            string += "\n%i Channels found." % nchans
-            self.msg(string)
-        else:
-            # no valid inputs
-            string = "Usage: imcinfo|imcchanlist|imclist"
-            self.msg(string)
-
-
-# unclear if this is working ...
-class CmdIMCTell(MuxCommand):
-    """
-    send a page to a remote IMC player
-
-    Usage:
-      imctell User@MUD = <msg>
-      imcpage      "
-
-    Sends a page to a user on a remote MUD, connected
-    over IMC2.
-    """
-
-    key = "imctell"
-    aliases = ["imcpage", "imc2tell", "imc2page"]
-    locks = "cmd: serversetting(IMC2_ENABLED)"
-    help_category = "Comms"
-
-    def func(self):
-        "Send tell across IMC"
-
-        if not settings.IMC2_ENABLED:
-            string = """IMC is not enabled. You need to activate it in game/settings.py."""
-            self.msg(string)
-            return
-
-        from src.comms.imc2 import IMC2_CLIENT
-
-        if not self.args or not '@' in self.lhs or not self.rhs:
-            string = "Usage: imctell User@Mud = <msg>"
-            self.msg(string)
-            return
-        target, destination = self.lhs.split("@", 1)
-        message = self.rhs.strip()
-        data = {"target":target, "destination":destination}
-
-        # send to imc2
-        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", **data)
-
-        self.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
-
-
-# RSS connection
-class CmdRSS2Chan(MuxCommand):
-    """
-    link an evennia channel to an external RSS feed
-
-    Usage:
-      @rss2chan[/switches] <evennia_channel> = <rss_url>
-
-    Switches:
-      /disconnect - this will stop the feed and remove the connection to the
-                    channel.
-      /remove     -                                 "
-      /list       - show all rss->evennia mappings
-
-    Example:
-      @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
-
-    This creates an RSS reader  that connects to a given RSS feed url. Updates
-    will be echoed as a title and news link to the given channel. The rate of
-    updating is set with the RSS_UPDATE_INTERVAL variable in settings (default
-    is every 10 minutes).
-
-    When disconnecting you need to supply both the channel and url again so as
-    to identify the connection uniquely.
-    """
-
-    key = "@rss2chan"
-    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
-    help_category = "Comms"
-
-    def func(self):
-        "Setup the rss-channel mapping"
-
-        if not settings.RSS_ENABLED:
-            string = """RSS is not enabled. You need to activate it in game/settings.py."""
-            self.msg(string)
-            return
-
-        if 'list' in self.switches:
-            # show all connections
-            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='rss_')
-            if connections:
-                table = prettytable.PrettyTable(["Evennia channel", "RSS url"])
-                for conn in connections:
-                    table.add_row([conn.channel.key, conn.external_config.split('|')[0]])
-                string = "{wConnections to RSS:{n\n%s" % table
-                self.msg(string)
-            else:
-                self.msg("No connections found.")
-            return
-
-        if not self.args or not self.rhs:
-            string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
-            self.msg(string)
-            return
-        channel = self.lhs
-        url = self.rhs
-
-        if('disconnect' in self.switches or 'remove' in self.switches or
-                                                    'delete' in self.switches):
-            chanmatch = find_channel(self.caller, channel, silent=True)
-            if chanmatch:
-                channel = chanmatch.key
-
-            ok = rss.delete_connection(channel, url)
-            if not ok:
-                self.msg("RSS connection/reader could not be removed, does it exist?")
-            else:
-                self.msg("RSS connection destroyed.")
-            return
-
-        channel = find_channel(self.caller, channel)
-        if not channel:
-            return
-        interval = settings.RSS_UPDATE_INTERVAL
-        if not interval:
-            interval = 10*60
-        ok = rss.create_connection(channel, url, interval)
-        if not ok:
-            self.msg("This RSS connection already exists.")
-            return
-        self.msg("Connection created. Starting RSS reader.")
+#class CmdIMC2Chan(MuxCommand):
+#    """
+#    link an evennia channel to an external IMC2 channel
+#
+#    Usage:
+#      @imc2chan[/switches] <evennia_channel> = <imc2_channel>
+#
+#    Switches:
+#      /disconnect - this clear the imc2 connection to the channel.
+#      /remove     -                "
+#      /list       - show all imc2<->evennia mappings
+#
+#    Example:
+#      @imc2chan myimcchan = ievennia
+#
+#    Connect an existing evennia channel to a channel on an IMC2
+#    network. The network contact information is defined in settings and
+#    should already be accessed at this point. Use @imcchanlist to see
+#    available IMC channels.
+#
+#    """
+#
+#    key = "@imc2chan"
+#    locks = "cmd:serversetting(IMC2_ENABLED) and pperm(Immortals)"
+#    help_category = "Comms"
+#
+#    def func(self):
+#        "Setup the imc-channel mapping"
+#
+#        if not settings.IMC2_ENABLED:
+#            string = """IMC is not enabled. You need to activate it in game/settings.py."""
+#            self.msg(string)
+#            return
+#
+#        if 'list' in self.switches:
+#            # show all connections
+#            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
+#            if connections:
+#                table = prettytable.PrettyTable(["Evennia channel", "IMC channel"])
+#                for conn in connections:
+#                    table.add_row([conn.channel.key, conn.external_config])
+#                string = "{wIMC connections:{n\n%s" % table
+#                self.msg(string)
+#            else:
+#                self.msg("No connections found.")
+#            return
+#
+#        if not self.args or not self.rhs:
+#            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2_channel>"
+#            self.msg(string)
+#            return
+#
+#        channel = self.lhs
+#        imc2_channel = self.rhs
+#
+#        if('disconnect' in self.switches or 'remove' in self.switches or
+#                                                    'delete' in self.switches):
+#            # we don't search for channels before this since we want
+#            # to clear the link also if the channel no longer exists.
+#            ok = imc2.delete_connection(channel, imc2_channel)
+#            if not ok:
+#                self.msg("IMC2 connection could not be removed, does it exist?")
+#            else:
+#                self.msg("IMC2 connection destroyed.")
+#            return
+#
+#        # actually get the channel object
+#        channel = find_channel(self.caller, channel)
+#        if not channel:
+#            return
+#
+#        ok = imc2.create_connection(channel, imc2_channel)
+#        if not ok:
+#            self.msg("The connection %s <-> %s  already exists." % (channel.key, imc2_channel))
+#            return
+#        self.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
+#
+#
+#class CmdIMCInfo(MuxCommand):
+#    """
+#    get various IMC2 information
+#
+#    Usage:
+#      @imcinfo[/switches]
+#      @imcchanlist - list imc2 channels
+#      @imclist -     list connected muds
+#      @imcwhois <playername> - whois info about a remote player
+#
+#    Switches for @imcinfo:
+#      channels - as @imcchanlist (default)
+#      games or muds - as @imclist
+#      whois - as @imcwhois (requires an additional argument)
+#      update - force an update of all lists
+#
+#    Shows lists of games or channels on the IMC2 network.
+#    """
+#
+#    key = "@imcinfo"
+#    aliases = ["@imcchanlist", "@imclist", "@imcwhois"]
+#    locks = "cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)"
+#    help_category = "Comms"
+#
+#    def func(self):
+#        "Run the command"
+#
+#        if not settings.IMC2_ENABLED:
+#            string = """IMC is not enabled. You need to activate it in game/settings.py."""
+#            self.msg(string)
+#            return
+#
+#        if "update" in self.switches:
+#            # update the lists
+#            import time
+#            from src.comms.imc2lib import imc2_packets as pck
+#            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CLIENT
+#            # update connected muds
+#            IMC2_CLIENT.send_packet(pck.IMC2PacketKeepAliveRequest())
+#            # prune inactive muds
+#            for name, mudinfo in IMC2_MUDLIST.mud_list.items():
+#                if time.time() - mudinfo.last_updated > 3599:
+#                    del IMC2_MUDLIST.mud_list[name]
+#            # update channel list
+#            IMC2_CLIENT.send_packet(pck.IMC2PacketIceRefresh())
+#            self.msg("IMC2 lists were re-synced.")
+#
+#        elif("games" in self.switches or "muds" in self.switches
+#                                            or self.cmdstring == "@imclist"):
+#            # list muds
+#            from src.comms.imc2 import IMC2_MUDLIST
+#
+#            muds = IMC2_MUDLIST.get_mud_list()
+#            networks = set(mud.networkname for mud in muds)
+#            string = ""
+#            nmuds = 0
+#            for network in networks:
+#                table = prettytable.PrettyTable(["Name", "Url", "Host", "Port"])
+#                for mud in (mud for mud in muds if mud.networkname == network):
+#                    nmuds += 1
+#                    table.add_row([mud.name, mud.url, mud.host, mud.port])
+#                string += "\n{wMuds registered on %s:{n\n%s" % (network, table)
+#            string += "\n %i Muds found." % nmuds
+#            self.msg(string)
+#
+#        elif "whois" in self.switches or self.cmdstring == "@imcwhois":
+#            # find out about a player
+#            if not self.args:
+#                self.msg("Usage: @imcwhois <playername>")
+#                return
+#            from src.comms.imc2 import IMC2_CLIENT
+#            self.msg("Sending IMC whois request. If you receive no response, no matches were found.")
+#            IMC2_CLIENT.msg_imc2(None,
+#                                 from_obj=self.caller,
+#                                 packet_type="imcwhois",
+#                                 target=self.args)
+#
+#        elif(not self.switches or "channels" in self.switches or
+#                                              self.cmdstring == "@imcchanlist"):
+#            # show channels
+#            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CLIENT
+#
+#            channels = IMC2_CHANLIST.get_channel_list()
+#            string = ""
+#            nchans = 0
+#            table = prettytable.PrettyTable(["Full name", "Name", "Owner", "Perm", "Policy"])
+#            for chan in channels:
+#                nchans += 1
+#                table.add_row([chan.name, chan.localname, chan.owner,
+#                               chan.level, chan.policy])
+#            string += "\n{wChannels on %s:{n\n%s" % (IMC2_CLIENT.factory.network, table)
+#            string += "\n%i Channels found." % nchans
+#            self.msg(string)
+#        else:
+#            # no valid inputs
+#            string = "Usage: imcinfo|imcchanlist|imclist"
+#            self.msg(string)
+#
+#
+## unclear if this is working ...
+#class CmdIMCTell(MuxCommand):
+#    """
+#    send a page to a remote IMC player
+#
+#    Usage:
+#      imctell User@MUD = <msg>
+#      imcpage      "
+#
+#    Sends a page to a user on a remote MUD, connected
+#    over IMC2.
+#    """
+#
+#    key = "imctell"
+#    aliases = ["imcpage", "imc2tell", "imc2page"]
+#    locks = "cmd: serversetting(IMC2_ENABLED)"
+#    help_category = "Comms"
+#
+#    def func(self):
+#        "Send tell across IMC"
+#
+#        if not settings.IMC2_ENABLED:
+#            string = """IMC is not enabled. You need to activate it in game/settings.py."""
+#            self.msg(string)
+#            return
+#
+#        from src.comms.imc2 import IMC2_CLIENT
+#
+#        if not self.args or not '@' in self.lhs or not self.rhs:
+#            string = "Usage: imctell User@Mud = <msg>"
+#            self.msg(string)
+#            return
+#        target, destination = self.lhs.split("@", 1)
+#        message = self.rhs.strip()
+#        data = {"target":target, "destination":destination}
+#
+#        # send to imc2
+#        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", **data)
+#
+#        self.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
+#
+#
+## RSS connection
+#class CmdRSS2Chan(MuxCommand):
+#    """
+#    link an evennia channel to an external RSS feed
+#
+#    Usage:
+#      @rss2chan[/switches] <evennia_channel> = <rss_url>
+#
+#    Switches:
+#      /disconnect - this will stop the feed and remove the connection to the
+#                    channel.
+#      /remove     -                                 "
+#      /list       - show all rss->evennia mappings
+#
+#    Example:
+#      @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
+#
+#    This creates an RSS reader  that connects to a given RSS feed url. Updates
+#    will be echoed as a title and news link to the given channel. The rate of
+#    updating is set with the RSS_UPDATE_INTERVAL variable in settings (default
+#    is every 10 minutes).
+#
+#    When disconnecting you need to supply both the channel and url again so as
+#    to identify the connection uniquely.
+#    """
+#
+#    key = "@rss2chan"
+#    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
+#    help_category = "Comms"
+#
+#    def func(self):
+#        "Setup the rss-channel mapping"
+#
+#        if not settings.RSS_ENABLED:
+#            string = """RSS is not enabled. You need to activate it in game/settings.py."""
+#            self.msg(string)
+#            return
+#
+#        if 'list' in self.switches:
+#            # show all connections
+#            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='rss_')
+#            if connections:
+#                table = prettytable.PrettyTable(["Evennia channel", "RSS url"])
+#                for conn in connections:
+#                    table.add_row([conn.channel.key, conn.external_config.split('|')[0]])
+#                string = "{wConnections to RSS:{n\n%s" % table
+#                self.msg(string)
+#            else:
+#                self.msg("No connections found.")
+#            return
+#
+#        if not self.args or not self.rhs:
+#            string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
+#            self.msg(string)
+#            return
+#        channel = self.lhs
+#        url = self.rhs
+#
+#        if('disconnect' in self.switches or 'remove' in self.switches or
+#                                                    'delete' in self.switches):
+#            chanmatch = find_channel(self.caller, channel, silent=True)
+#            if chanmatch:
+#                channel = chanmatch.key
+#
+#            ok = rss.delete_connection(channel, url)
+#            if not ok:
+#                self.msg("RSS connection/reader could not be removed, does it exist?")
+#            else:
+#                self.msg("RSS connection destroyed.")
+#            return
+#
+#        channel = find_channel(self.caller, channel)
+#        if not channel:
+#            return
+#        interval = settings.RSS_UPDATE_INTERVAL
+#        if not interval:
+#            interval = 10*60
+#        ok = rss.create_connection(channel, url, interval)
+#        if not ok:
+#            self.msg("This RSS connection already exists.")
+#            return
+#        self.msg("Connection created. Starting RSS reader.")

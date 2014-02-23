@@ -143,7 +143,7 @@ from src.locks import lockfuncs
 from src.scripts.scripts import Script
 
 # comms
-from src.comms.models import Msg, ChannelDB, PlayerChannelConnection, ExternalChannelConnection
+from src.comms.models import Msg, ChannelDB#, PlayerChannelConnection, ExternalChannelConnection
 from src.comms.comms import Channel
 
 # objects
@@ -214,7 +214,7 @@ class DBmanagers(_EvContainer):
     from src.help.models import HelpEntry
     from src.players.models import PlayerDB
     from src.scripts.models import ScriptDB
-    from src.comms.models import Msg, ChannelDB, PlayerChannelConnection, ExternalChannelConnection
+    from src.comms.models import Msg, ChannelDB#, PlayerChannelConnection, ExternalChannelConnection
     from src.objects.models import ObjectDB
     from src.server.models import ServerConfig
     from src.typeclasses.models import Tag, Attribute
@@ -225,15 +225,16 @@ class DBmanagers(_EvContainer):
     scripts = ScriptDB.objects
     msgs = Msg.objects
     channels = ChannelDB.objects
-    connections = PlayerChannelConnection.objects
-    externalconnections = ExternalChannelConnection.objects
+    #connections = PlayerChannelConnection.objects
+    #externalconnections = ExternalChannelConnection.objects
     objects = ObjectDB.objects
     serverconfigs = ServerConfig.objects
     attributes = Attribute.objects
     tags = Tag.objects
     # remove these so they are not visible as properties
-    del HelpEntry, PlayerDB, ScriptDB, Msg, ChannelDB, PlayerChannelConnection,
-    del ExternalChannelConnection, ObjectDB, ServerConfig, Tag, Attribute
+    del HelpEntry, PlayerDB, ScriptDB, Msg, ChannelDB#, PlayerChannelConnection,
+    #del ExternalChannelConnection
+    del ObjectDB, ServerConfig, Tag, Attribute
 
 managers = DBmanagers()
 del DBmanagers

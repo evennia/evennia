@@ -5,7 +5,7 @@ Player that are  controlled by the server.
 """
 
 from src.players.player import Player
-from src.scripts.script import Script
+from src.scripts.scripts import Script
 from src.commands.command import Command
 from src.commands.cmdset import CmdSet
 from src.commands.cmdhandler import CMD_NOMATCH

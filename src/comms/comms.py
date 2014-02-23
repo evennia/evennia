@@ -171,7 +171,7 @@ class Channel(TypeClass):
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
-                player.msg(msg.message, from_obj=msg.senders, from_channel=self)
+                player.msg(msg.message, from_obj=msg.senders, from_channel=self.id)
             except AttributeError:
                 try:
                     player.to_external(msg.message,
