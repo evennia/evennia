@@ -58,7 +58,13 @@ class ScriptHandler(object):
               definition)
         autostart - start the script upon adding it
         """
-        script = create.create_script(scriptclass, key=key, obj=self.obj,
+        if self.obj.dbobj.__class__.__name__ == "PlayerDB":
+            # we add to a Player, not an Object
+            script = create.create_script(scriptclass, key=key, player=self.obj,
+                                          autostart=autostart)
+        else:
+            # the normal - adding to an Object
+            script = create.create_script(scriptclass, key=key, obj=self.obj,
                                       autostart=autostart)
         if not script:
             logger.log_errmsg("Script %s could not be created and/or started." % scriptclass)
@@ -75,12 +81,13 @@ class ScriptHandler(object):
             num += script.start()
         return num
 
-    def delete(self, scriptid):
+    def delete(self, scriptid=None):
         """
         Forcibly delete a script from this object.
 
         scriptid can be a script key or the path to a script (in the
                  latter case all scripts with this path will be deleted!)
+                 If no scriptid is set, delete all scripts on the object.
 
         """
         delscripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
@@ -91,7 +98,7 @@ class ScriptHandler(object):
             num += script.stop()
         return num
 
-    def stop(self, scriptid):
+    def stop(self, scriptid=None):
         """
         Alias for delete. scriptid can be a script key or a script path string.
         """

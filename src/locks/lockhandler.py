@@ -201,6 +201,8 @@ class LockHandler(object):
         elist = []  # errors
         wlist = []  # warnings
         for raw_lockstring in storage_lockstring.split(';'):
+            if not raw_lockstring:
+                continue
             lock_funcs = []
             try:
                 access_type, rhs = (part.strip() for part in raw_lockstring.split(':', 1))

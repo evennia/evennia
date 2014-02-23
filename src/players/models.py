@@ -415,7 +415,7 @@ class PlayerDB(TypedObject, AbstractUser):
             # deleting command)
             self.unpuppet_object(session.sessid)
             session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
-
+        self.scripts.stop()
         super(PlayerDB, self).delete(*args, **kwargs)
 
     def execute_cmd(self, raw_string, sessid=None):

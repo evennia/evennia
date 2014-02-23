@@ -30,11 +30,16 @@ class IRCBot(irc.IRCClient, Session):
     def signedOn(self):
         """
         This is called when we successfully connect to
-        the network. We make sure to store ourself
-        on the factory.
+        the network. We make sure to now register with
+        the game as a full session.
         """
         self.join(self.channel)
         self.factory.bot = self
+        self.init_session("ircbot", self.network, self.factory.sessionhandler)
+        # we link back to our bot and log in
+        self.uid = self.factory.uid
+        self.logged_in = True
+        self.factory.sessionhandler.connect(self)
 
     def privmsg(self, user, channel, msg):
         "A message was sent to channel"
@@ -55,11 +60,6 @@ class IRCBot(irc.IRCClient, Session):
         "Data from server-> IRC"
         self.say(self.channel, text)
 
-    def start(self):
-        "Connect session to sessionhandler"
-        service = internet.TCPClient(self.network, int(self.port), self)
-        self.sessionhandler.portal.services.addService(service)
-        self.sessionhandler.connect(self)
 
 class IRCBotFactory(protocol.ReconnectingClientFactory):
     """
@@ -71,14 +71,14 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
     factor = 1.5
     maxDelay = 60
 
-    def __init__(self, botname=None, channel=None, network=None, port=None):
+    def __init__(self, uid=None, botname=None, channel=None, network=None, port=None):
         "Storing some important protocol properties"
-        self.nickname = botname
-        self.logger = logger
-        self.channel = channel
-        self.network = network
-        self.port = port
-        self.bots = None
+        self.uid = int(uid)
+        self.nickname = str(botname)
+        self.channel = str(channel)
+        self.network = str(network)
+        self.port = int(port)
+        self.bot = None
 
     def buildProtocol(self, addr):
         "Build the protocol and assign it some properties"
@@ -94,6 +94,10 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         "Tracks reconnections for debugging"
         logger.log_infomsg("(re)connecting to %s" % self.channel)
 
+    def start(self):
+        "Connect session to sessionhandler"
+        service = internet.TCPClient(self.network, self.port, self)
+        self.sessionhandler.portal.services.addService(service)
 
 
 #

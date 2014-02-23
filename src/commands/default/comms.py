@@ -826,7 +826,7 @@ class CmdIRC2Chan(MuxCommand):
 
         if('disconnect' in self.switches or 'remove' in self.switches or
                                                     'delete' in self.switches):
-            matches = PlayerDB.filter(db_isbot=True, db_key=botname)
+            matches = PlayerDB.objects.filter(db_is_bot=True, db_key=botname)
             if matches:
                 matches[0].delete()
                 self.msg("IRC connection destroyed.")
@@ -835,7 +835,15 @@ class CmdIRC2Chan(MuxCommand):
             return
 
         # create a new bot
-        bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
+        bot = PlayerDB.objects.filter(username__iexact=botname)
+        if bot:
+            # re-use an existing bot
+            bot = bot[0].typeclass
+            if not bot.is_bot:
+                self.msg("Player '%s', which is not a bot, already exists." % botname)
+                return
+        else:
+            bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port)
         self.msg("Connection created. Starting IRC bot.")

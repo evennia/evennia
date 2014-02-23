@@ -69,7 +69,7 @@ class PortalSessionHandler(SessionHandler):
                                                          operation=PDISCONN)
 
 
-    def server_connect(self, protocol_path="", uid=None, config=dict()):
+    def server_connect(self, protocol_path="", config=dict()):
         """
         Called by server to force the initialization of a new
         protocol instance. Server wants this instance to get
@@ -79,7 +79,6 @@ class PortalSessionHandler(SessionHandler):
         protocol_path - full python path to the class factory
                     for the protocol used, eg
                     'src.server.portal.irc.IRCClientFactory'
-        uid - database uid to the connected player-bot
         config - dictionary of configuration options, fed as **kwarg
                  to protocol class' __init__ method.
 
@@ -91,6 +90,8 @@ class PortalSessionHandler(SessionHandler):
             from src.utils.utils import variable_from_module as _MOD_IMPORT
         path, clsname = protocol_path.rsplit(".", 1)
         cls = _MOD_IMPORT(path, clsname)
+        if not cls:
+            raise RuntimeError("ServerConnect: protocol factory '%s' not found." % protocol_path)
         protocol = cls(**config)
         protocol.sessionhandler = self
         protocol.start()

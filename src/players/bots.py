@@ -31,7 +31,7 @@ class BotStarter(Script):
     def at_start(self):
         "Kick bot into gear"
         if not self.db.started:
-            self.obj.start()
+            self.player.start()
             self.db.started = False
 
     def at_server_reload(self):
@@ -56,7 +56,7 @@ class CmdBotListen(Command):
     key = CMD_NOMATCH
 
     def func(self):
-        text = self.cmdname + self.args
+        text = self.cmdstring + self.args
         self.obj.execute_cmd(text, sessid=self.sessid)
 
 
@@ -84,7 +84,7 @@ class Bot(Player):
         # the text encoding to use.
         self.db.encoding = "utf-8"
         # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:all()"
+        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:false()"
         self.locks.add(lockstring)
         # set the basics of being a bot
         self.cmdset.add_default(BotCmdSet)
@@ -134,12 +134,16 @@ class IRCBot(Bot):
         # if keywords are given, store (the BotStarter script
         # will not give any keywords, so this should normally only
         # happen at initialization)
-        self.db.irc_botname = irc_botname if irc_botname else self.key
+        if irc_botname:
+            self.db.irc_botname = irc_botname
+        elif not self.db.irc_botname:
+            self.db.irc_botname = self.key
         if ev_channel:
             # connect to Evennia channel
             channel = search.channel_search(ev_channel)
             if not channel:
                 raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+            channel = channel[0]
             channel.connect(self)
             self.db.ev_channel = channel
         if irc_channel:
@@ -154,11 +158,12 @@ class IRCBot(Bot):
 
         # instruct the server and portal to create a new session with
         # the stored configuration
-        configdict = {"botname": self.db.irc_botname,
+        configdict = {"uid":self.dbid,
+                      "botname": self.db.irc_botname,
                       "channel": self.db.irc_channel ,
                       "network": self.db.irc_network,
                       "port": self.db.irc_port}
-        _SESSIONS.start_bot_session("src.server.portal.irc.IRCClient", self.id, configdict)
+        _SESSIONS.start_bot_session("src.server.portal.irc.IRCBotFactory", configdict)
 
     def msg(self, text=None, **kwargs):
         """

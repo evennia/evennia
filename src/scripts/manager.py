@@ -44,13 +44,22 @@ class ScriptManager(TypedObjectManager):
         if not obj:
             return []
         obj = obj.dbobj
+        player = obj.__class__.__name__ == "PlayerDB"
+        print "get_all_scripts_on_obj:", obj, player
         if key:
             dbref = self.dbref(key)
             if dbref or dbref == 0:
-                script = self.filter(db_obj=obj, id=dbref)
+                if player:
+                    script = self.filter(db_player=obj, id=dbref)
+                else:
+                    script = self.filter(db_obj=obj, id=dbref)
                 if script:
                     return script
+            elif player:
+                return self.filter(db_player=obj, db_key=key)
             return self.filter(db_obj=obj.dbobj, db_key=key)
+        if player:
+            self.filter(db_player=obj)
         return self.filter(db_obj=obj)
 
     @returns_typeclass_list
