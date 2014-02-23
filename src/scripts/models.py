@@ -59,6 +59,7 @@ class ScriptDB(TypedObject):
     The ScriptDB adds the following properties:
       desc - optional description of script
       obj - the object the script is linked to, if any
+      player - the player the script is linked to (exclusive with obj)
       interval - how often script should run
       start_delay - if the script should start repeating right away
       repeats - how many times the script should repeat
@@ -82,6 +83,8 @@ class ScriptDB(TypedObject):
     # A reference to the database object affected by this Script, if any.
     db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, verbose_name='scripted object',
                                help_text='the object to store this script on, if not a global script.')
+    db_player = models.ForeignKey("players.PlayerDB", null=True, blank=True, verbose_name="scripted player",
+                               help_text='the player to store this script on (should not be set if obj is set)')
     # how often to run Script (secs). -1 means there is no timer
     db_interval = models.IntegerField('interval', default=-1, help_text='how often to repeat script, in seconds. -1 means off.')
     # start script right away or wait interval seconds first

@@ -202,7 +202,7 @@ object = create_object
 # Script creation
 #
 
-def create_script(typeclass, key=None, obj=None, locks=None,
+def create_script(typeclass, key=None, obj=None, player=None, locks=None,
                   interval=None, start_delay=None, repeats=None,
                   persistent=None, autostart=True, report_to=None):
     """
@@ -273,10 +273,9 @@ def create_script(typeclass, key=None, obj=None, locks=None,
             raise Exception(_GA(new_db_script, "typeclass_last_errmsg"))
 
     if obj:
-        try:
-            new_script.obj = obj
-        except ValueError:
-            new_script.obj = obj.dbobj
+        new_script.obj = obj
+    if player:
+        new_script.player = player
 
     # call the hook method. This is where all at_creation
     # customization happens as the typeclass stores custom

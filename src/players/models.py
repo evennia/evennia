@@ -25,6 +25,7 @@ from src.players import manager
 from src.scripts.models import ScriptDB
 from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
                                     AliasHandler, AttributeHandler)
+from src.scripts.scripthandler import ScriptHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils, logger
@@ -116,6 +117,7 @@ class PlayerDB(TypedObject, AbstractUser):
         # handlers
         _SA(self, "cmdset", CmdSetHandler(self))
         _GA(self, "cmdset").update(init_mode=True)
+        _SA(self, "scripts", ScriptHandler(self))
         _SA(self, "attributes", AttributeHandler(self))
         _SA(self, "nicks", NickHandler(self))
         _SA(self, "tags", TagHandler(self))
