@@ -608,7 +608,10 @@ class ANSIString(unicode):
         except IndexError:
             raise IndexError("ANSIString Index out of range")
         # Get character codes after the index as well.
-        append_tail = self._get_interleving(item + 1)
+        if self._char_indexes[-1] == self._char_indexes[item]:
+            append_tail = self._get_interleving(item + 1)
+        else:
+            append_tail = ''
         item = self._char_indexes[item]
 
         clean = self._raw_string[item]
@@ -721,6 +724,13 @@ class ANSIString(unicode):
         char_indexes = []
         for start, end in list(group(flat_ranges, 2)):
             char_indexes.extend(range(start, end))
+        # The end character will be left off if it's a normal character. Fix
+        # that here.
+        if end_index in flat_ranges:
+            char_indexes.append(end_index)
+            # And in some instances, this may also end up in the code indexes
+            if end_index in code_indexes:
+                code_indexes.pop()
         return code_indexes, char_indexes
 
     def _get_interleving(self, index):
@@ -728,7 +738,10 @@ class ANSIString(unicode):
         Get the code characters from the given slice end to the next
         character.
         """
-        index = self._char_indexes[index - 1]
+        try:
+            index = self._char_indexes[index - 1]
+        except IndexError:
+            return ''
         s = ''
         while True:
             index += 1
@@ -759,7 +772,7 @@ class ANSIString(unicode):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[start:next] + self._get_interleving(next))
+            res.append(self[start:next])
             start = next + bylen
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
@@ -785,7 +798,7 @@ class ANSIString(unicode):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next+bylen:end] + self._get_interleving(end))
+            res.append(self[next+bylen:end])
             end = next
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
