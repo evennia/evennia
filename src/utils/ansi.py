@@ -772,7 +772,7 @@ class ANSIString(unicode):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[start:next])
+            res.append(self[start:next] + self._get_interleving(next))
             start = next + bylen
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
@@ -798,7 +798,7 @@ class ANSIString(unicode):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next+bylen:end])
+            res.append(self[next+bylen:end] + self._get_interleving(end))
             end = next
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
