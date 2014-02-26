@@ -232,7 +232,6 @@ class Cell(object):
 
     def _split_lines(self, text):
         "Simply split by linebreak"
-        print "split:", text, text.split("\n")
         return text.split("\n")
 
     def _fit_width(self, data):
@@ -244,8 +243,10 @@ class Cell(object):
         adjusted_data = []
         for line in data:
             if 0 < width < len(line):
-                adjusted_data.extend(_to_ansi(wrap(line, width=width, drop_whitespace=False,
-                                     replace_whitespace=False, expand_tabs=False))) # fix for ANSIString not supporting expand_tabs/translate
+                # replace_whitespace=False, expand_tabs=False is a
+                # fix for ANSIString not supporting expand_tabs/translate
+                adjusted_data.extend([_to_ansi(part + "{n") for part in wrap(line, width=width, drop_whitespace=False,
+                                     replace_whitespace=False, expand_tabs=False)])
             else:
                 adjusted_data.append(line)
         if self.enforce_size:
