@@ -141,11 +141,12 @@ INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
-    return obj
-    if hasattr(obj, "__iter__"):
+    if isinstance(obj, dict):
+        return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
+    elif hasattr(obj, "__iter__"):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(unicode(obj), regexable=regexable)
+        return ANSIString(to_unicode(obj), regexable=regexable)
 
 class EvForm(object):
     """
@@ -388,7 +389,7 @@ class EvForm(object):
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        self.raw_form = to_unicode(datadict.get("FORM", "")).split("\n")
+        self.raw_form = _to_ansi(to_unicode(datadict.get("FORM", "")).split("\n"))
         # strip first line
         self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
 
