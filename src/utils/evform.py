@@ -58,10 +58,10 @@ character's width.
 
 Use as follows:
 
-    import mudform
+    import evform
 
     # create a new form from the template
-    form = mudform.MudForm("path/to/testform.py")
+    form = evform.EvForm("path/to/testform.py")
 
     (MudForm can also take a dictionary holding
      the required keys FORMCHAR, TABLECHAR and FORM)
@@ -77,10 +77,10 @@ Use as follows:
                     8: 10,
                     9:  3})
     # create the EvTables
-    tableA = mudform.EvTable("HP","MV","MP",
+    tableA = evform.EvTable("HP","MV","MP",
                                table=[["**"], ["*****"], ["***"]],
                                border="incols")
-    tableB = mudform.EvTable("Skill", "Value", "Exp",
+    tableB = evform.EvTable("Skill", "Value", "Exp",
                                table=[["Shooting", "Herbalism", "Smithing"],
                                       [12,14,9],["550/1200", "990/1400", "205/900"]],
                                border="incols")
@@ -131,6 +131,7 @@ import re
 import copy
 from src.utils.evtable import Cell, EvTable
 from src.utils.utils import all_from_module, to_str, to_unicode
+from src.utils.ansi import ANSIString
 
 # non-valid form-identifying characters (which can thus be
 # used as separators between forms without being detected
@@ -138,6 +139,13 @@ from src.utils.utils import all_from_module, to_str, to_unicode
 
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 
+def _to_ansi(obj, regexable=False):
+    "convert to ANSIString"
+    return obj
+    if hasattr(obj, "__iter__"):
+        return [_to_ansi(o) for o in obj]
+    else:
+        return ANSIString(unicode(obj), regexable=regexable)
 
 class EvForm(object):
     """
@@ -168,8 +176,8 @@ class EvForm(object):
         self.filename = filename
         self.input_form_dict = form
 
-        self.cells_mapping =  dict((str(key), value) for key, value in cells.items()) if cells  else {}
-        self.tables_mapping = dict((str(key), value) for key, value in tables.items()) if tables else {}
+        self.cells_mapping =  dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells  else {}
+        self.tables_mapping = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
 
         self.cellchar = "x"
         self.tablechar = "c"
@@ -207,7 +215,7 @@ class EvForm(object):
         # Locate the identifier tags and the horizontal end coords for all forms
         re_cellchar =  re.compile(r"%s+([^%s%s])%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar))
         re_tablechar = re.compile(r"%s+([^%s%s|])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar))
-        for iy, line in enumerate(form):
+        for iy, line in enumerate(_to_ansi(form, regexable=True)):
             # find cells
             ix0 = 0
             while True:
@@ -228,6 +236,7 @@ class EvForm(object):
                     ix0 = match.end()
                 else:
                     break
+        #print "cell_coords:", cell_coords
         #print "table_coords:", table_coords
 
         # get rectangles and assign Cells
@@ -261,8 +270,8 @@ class EvForm(object):
             # we have all the coordinates we need. Create Cell.
             data = self.cells_mapping.get(key, "")
             #if key == "1":
-            #print "creating cell '%s' (%s):" % (key, data)
-            #print "iy=%s, iyup=%s, iydown=%s, leftix=%s, rightix=%s, width=%s, height=%s" % (iy, iyup, iydown, leftix, rightix, width, height)
+            #    print "creating cell '%s' (%s):" % (key, data)
+            #    print "iy=%s, iyup=%s, iydown=%s, leftix=%s, rightix=%s, width=%s, height=%s" % (iy, iyup, iydown, leftix, rightix, width, height)
 
             options = { "pad_left":0, "pad_right":0, "pad_top":0, "pad_bottom":0, "align":"l", "valign":"t", "enforce_size":True}
             options.update(custom_options)
@@ -347,8 +356,8 @@ class EvForm(object):
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        new_cells =  dict((to_str(key), value) for key, value in cells.items()) if cells  else {}
-        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
+        new_cells =  dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells  else {}
+        new_tables = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
 
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)
