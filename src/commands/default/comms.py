@@ -799,7 +799,7 @@ class CmdIRC2Chan(MuxCommand):
             ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True)]
             if ircbots:
                 from src.utils.evtable import EvTable
-                table = EvTable("dbid", "botname", "ev-channel", "irc-channel", width=78, border_width=1)
+                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", border="cells")
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
                     table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)

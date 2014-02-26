@@ -660,6 +660,10 @@ class EvTable(object):
                      Adjusts collumns to have as even width as
                      possible. This often looks best also for
                      mixed-length tables.
+            maxwidth - This will set a maximum width of the table
+                    while allowing it to be smaller. Only if it
+                    grows wider than this size will it be resized.
+                    This has no meaning if width is set.
 
             See Cell class for further kwargs. These will be passed
             to each cell in the table.
@@ -707,6 +711,9 @@ class EvTable(object):
         self.width = kwargs.pop("width", None)
         self.height = kwargs.pop("height", None)
         self.evenwidth = kwargs.pop("evenwidth", True)
+        self.maxwidth = kwargs.pop("maxwidth", None)
+        if self.maxwidth and self.width and self.maxwidth < self.width:
+            raise Exception("table maxwidth < table width!")
         # size in cell cols/rows
         self.ncols = 0
         self.nrows = 0
@@ -860,20 +867,23 @@ class EvTable(object):
         # equalize widths within each column
         cwidths = [max(cell.get_width() for cell in col) for col in self.worktable]
 
-        if self.width:
+        if self.width or self.maxwidth and self.maxwidth < sum(cwidths):
             # we set a table width. Horizontal cells will be evenly distributed and
             # expand vertically as needed (unless self.height is set, see below)
+
+            # use fixed width, or set to maxwidth
+            width = self.width if self.width else self.maxwidth
 
             if ncols:
                 # get minimum possible cell widths for each row
                 cwidths_min = [max(cell.get_min_width() for cell in col) for col in self.worktable]
                 cwmin = sum(cwidths_min)
 
-                if cwmin > self.width:
+                if cwmin > width:
                     # we cannot shrink any more
                     raise Exception("Cannot shrink table width to %s. Minimum size is %s." % (self.width, cwmin))
 
-                excess = self.width - cwmin
+                excess = width - cwmin
                 if self.evenwidth:
                     # make each collumn of equal width
                     for i in range(excess):
