@@ -7,8 +7,8 @@ This is an advanced ASCII table creator. It was inspired
 by prettytable but shares no code.
 
 WARNING: UNDER DEVELOPMENT. Evtable does currently NOT support
-colour ANSI markers in the table. Non-colour tables should 
-work fully (so make issues if they don't). 
+colour ANSI markers in the table. Non-colour tables should
+work fully (so make issues if they don't).
 
 
 Example usage:
@@ -74,12 +74,18 @@ ANSI-coloured string types.
 """
 from textwrap import wrap
 from copy import deepcopy, copy
-
-#from src.utils.ansi import ANSIString
+from src.utils.ansi import ANSIString
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."
     return not hasattr(obj, '__iter__') and [obj] or obj
+
+def _to_ansi(obj, regexable=False):
+    "convert to ANSIString"
+    if hasattr(obj, "__iter__"):
+        return [_to_ansi(o) for o in obj]
+    else:
+        return ANSIString(unicode(obj), regexable=regexable)
 
 
 # Cell class (see further down for the EvTable itself)
@@ -196,8 +202,8 @@ class Cell(object):
         self.align = kwargs.get("align", "c")
         self.valign = kwargs.get("valign", "c")
 
-        self.data = self._split_lines(unicode(data))
-        #self.data = self._split_lines(ANSIString(unicode(data)))
+        #self.data = self._split_lines(unicode(data))
+        self.data = self._split_lines(_to_ansi(data))
         self.raw_width = max(len(line) for line in self.data)
         self.raw_height = len(self.data)
 
@@ -226,6 +232,7 @@ class Cell(object):
 
     def _split_lines(self, text):
         "Simply split by linebreak"
+        print "split:", text, text.split("\n")
         return text.split("\n")
 
     def _fit_width(self, data):
@@ -237,7 +244,8 @@ class Cell(object):
         adjusted_data = []
         for line in data:
             if 0 < width < len(line):
-                adjusted_data.extend(wrap(line, width=width, drop_whitespace=False))
+                adjusted_data.extend(_to_ansi(wrap(line, width=width, drop_whitespace=False,
+                                     replace_whitespace=False, expand_tabs=False))) # fix for ANSIString not supporting expand_tabs/translate
             else:
                 adjusted_data.append(line)
         if self.enforce_size:
@@ -368,8 +376,8 @@ class Cell(object):
 
         kwargs - like when creating the cell anew.
         """
-        self.data = self._split_lines(unicode(data))
-        #self.data = self._split_lines(ANSIString(unicode(data)))
+        #self.data = self._split_lines(unicode(data))
+        self.data = self._split_lines(_to_ansi(data))
         self.raw_width = max(len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)
@@ -460,6 +468,7 @@ class EvTable(object):
     all cell boundaries lining up.
     """
 
+
     def __init__(self, *args, **kwargs):
         """
          Args:
@@ -523,7 +532,7 @@ class EvTable(object):
                     self.table.extend([] for i in range(excess))
                 elif excess < 0:
                     # too short header
-                    header.extend(["" for i in range(abs(excess))])
+                    header.extend(_to_ansi(["" for i in range(abs(excess))]))
                 for ix, heading in enumerate(header):
                     self.table[ix].insert(0, heading)
             else:

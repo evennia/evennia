@@ -358,7 +358,7 @@ def _on_raw(func_name):
         args = list(args)
         try:
             string = args.pop(0)
-            if hasattr(string, 'raw_string'):
+            if hasattr(string, '_raw_string'):
                 args.insert(0, string.raw())
             else:
                 args.insert(0, string)
@@ -381,9 +381,9 @@ def _transform(func_name):
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
         to_string = []
-        for index in range(0, len(self.raw_string)):
+        for index in range(0, len(self._raw_string)):
             if index in self._code_indexes:
-                to_string.append(self.raw_string[index])
+                to_string.append(self._raw_string[index])
             elif index in self._char_indexes:
                 to_string.append(replacement_string[index])
         return ANSIString(''.join(to_string), decoded=True)
@@ -470,7 +470,7 @@ class ANSIString(unicode):
             string = str(string)
         parser = kwargs.get('parser', ANSI_PARSER)
         regexable = kwargs.get('regexable', False)
-        decoded = kwargs.get('decoded', False) or hasattr(string, 'raw_string')
+        decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
         if not decoded:
             string = parser.parse_ansi(string)
         if isinstance(string, unicode):
@@ -533,7 +533,7 @@ class ANSIString(unicode):
         if not isinstance(other, basestring):
             return NotImplemented
         return ANSIString(self._raw_string + getattr(
-            other, 'raw_string', other), decoded=True)
+            other, '_raw_string', other), decoded=True)
 
     def __radd__(self, other):
         """
@@ -542,7 +542,7 @@ class ANSIString(unicode):
         if not isinstance(other, basestring):
             return NotImplemented
         return ANSIString(getattr(
-            other, 'raw_string', other) + self._raw_string, decoded=True)
+            other, '_raw_string', other) + self._raw_string, decoded=True)
 
     def __getslice__(self, i, j):
         """
@@ -705,32 +705,8 @@ class ANSIString(unicode):
         if not code_indexes:
             # Plain string, no ANSI codes.
             return code_indexes, range(0, len(self._raw_string))
-        flat_ranges = []
-        # We need to get the ones between them, but the code might start at
-        # the beginning, and there might be codes at the end.
-        for tup in matches:
-            flat_ranges.extend(tup)
-        # Is the beginning of the string a code character?
-        if flat_ranges[0] == 0:
-            flat_ranges.pop(0)
-        else:
-            flat_ranges.insert(0, 0)
-        # How about the end?
-        end_index = (len(self._raw_string) - 1)
-        if flat_ranges[-1] == end_index:
-            flat_ranges.pop()
-        else:
-            flat_ranges.append(end_index)
-        char_indexes = []
-        for start, end in list(group(flat_ranges, 2)):
-            char_indexes.extend(range(start, end))
-        # The end character will be left off if it's a normal character. Fix
-        # that here.
-        if end_index in flat_ranges:
-            char_indexes.append(end_index)
-            # And in some instances, this may also end up in the code indexes
-            if end_index in code_indexes:
-                code_indexes.pop()
+        # all indexes not occupied by ansi codes are normal characters
+        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes]
         return code_indexes, char_indexes
 
     def _get_interleving(self, index):
