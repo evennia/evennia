@@ -40,7 +40,8 @@ class IRCBot(irc.IRCClient, Session):
         self.uid = self.factory.uid
         self.logged_in = True
         self.factory.sessionhandler.connect(self)
-        logger.log_infomsg("IRC bot connected")
+        logger.log_infomsg("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
+                                                                              self.network, self.port))
 
     def privmsg(self, user, channel, msg):
         "A message was sent to channel"

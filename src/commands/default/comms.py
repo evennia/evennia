@@ -7,16 +7,14 @@ make sure to homogenize self.caller to always be the player object
 for easy handling.
 
 """
-import time
 from django.conf import settings
-from src.comms.models import ChannelDB, Msg, ExternalChannelConnection
+from src.comms.models import ChannelDB, Msg
 #from src.comms import irc, imc2, rss
 from src.players.models import PlayerDB
 from src.players import bots
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import create, utils, prettytable
 from src.utils.utils import make_iter
-from src.utils import create
 from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
@@ -798,10 +796,14 @@ class CmdIRC2Chan(MuxCommand):
 
         if 'list' in self.switches:
             # show all connections
-            ircbots = [bot.typeclass for bot in PlayerDB.filter(db_isbot=True)]
+            ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True)]
             if ircbots:
-                string = "{wIRC connections:{n\n%s" % ircbots
-                self.caller.msg(string)
+                from src.utils.evtable import EvTable
+                table = EvTable("dbid", "botname", "ev-channel", "irc-channel", width=78, border_width=1)
+                for ircbot in ircbots:
+                    ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
+                    table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)
+                self.caller.msg(table)
             else:
                 self.msg("No irc bots found.")
             return
