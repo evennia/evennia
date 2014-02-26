@@ -201,7 +201,7 @@ class ServerSessionHandler(SessionHandler):
             # protocols like SSH
             sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
         sess.at_sync()
-        # validate all script
+        # validate all scripts
         _ScriptDB.objects.validate()
         self.sessions[sess.sessid] = sess
         sess.data_in(CMD_LOGINSTART)

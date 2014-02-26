@@ -225,7 +225,7 @@ class ScriptBase(TypeClass):
         """
 
         #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj),
-        #                                                          self.is_active, force_restart)
+        #                                                         self.is_active, force_restart)
 
         if self.dbobj.is_active and not force_restart:
             # script already runs and should not be restarted.

@@ -40,17 +40,19 @@ class IRCBot(irc.IRCClient, Session):
         self.uid = self.factory.uid
         self.logged_in = True
         self.factory.sessionhandler.connect(self)
+        logger.log_infomsg("IRC bot connected")
 
     def privmsg(self, user, channel, msg):
         "A message was sent to channel"
         if not msg.startswith('***'):
             user = user.split('!', 1)[0]
-            self.data_in
+            self.data_in("bot_data_in %s@%s: %s" % (user, channel, msg))
 
     def action(self, user, channel, msg):
         "An action was done in channel"
         if not msg.startswith('**'):
             user = user.split('!', 1)[0]
+            self.data_in("bot_data_in %s@%s %s" % (user, channel, msg))
 
     def data_in(self, text=None, **kwargs):
         "Data IRC -> Server"
@@ -58,7 +60,9 @@ class IRCBot(irc.IRCClient, Session):
 
     def data_out(self, text=None, **kwargs):
         "Data from server-> IRC"
-        self.say(self.channel, text)
+        if text.startswith("bot_data_out"):
+            text = text.split(" ", 1)[1]
+            self.say(self.channel, text)
 
 
 class IRCBotFactory(protocol.ReconnectingClientFactory):

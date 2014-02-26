@@ -8,10 +8,11 @@ from src.players.player import Player
 from src.scripts.scripts import Script
 from src.commands.command import Command
 from src.commands.cmdset import CmdSet
-from src.commands.cmdhandler import CMD_NOMATCH
+from src.commands.cmdhandler import CMD_NOMATCH, CMD_LOGINSTART
 from src.utils import search
 
 _SESSIONS = None
+_CHANNELDB = None
 
 
 # Bot helper utilities
@@ -32,12 +33,12 @@ class BotStarter(Script):
         "Kick bot into gear"
         if not self.db.started:
             self.player.start()
-            self.db.started = False
+            self.db.started = True
 
     def at_server_reload(self):
         """
-        If server reloads we don't need to start the bot again,
-        the Portal resync will do that for us.
+        If server reloads we don't need to reconnect the protocol
+        again, this is handled by the portal reconnect mechanism.
         """
         self.db.started = True
 
@@ -53,12 +54,9 @@ class CmdBotListen(Command):
     session and pipes it into its execute_cmd
     method.
     """
-    key = CMD_NOMATCH
-
+    key = "bot_data_in"
     def func(self):
-        text = self.cmdstring + self.args
-        self.obj.execute_cmd(text, sessid=self.sessid)
-
+        self.obj.typeclass.execute_cmd(self.args.strip(), sessid=self.sessid)
 
 class BotCmdSet(CmdSet):
     "Holds the BotListen command"
@@ -153,9 +151,6 @@ class IRCBot(Bot):
         if irc_port:
             self.db.irc_port = irc_port
 
-        # cache channel
-        self.ndb.ev_channel = self.db.ev_channel
-
         # instruct the server and portal to create a new session with
         # the stored configuration
         configdict = {"uid":self.dbid,
@@ -169,17 +164,21 @@ class IRCBot(Bot):
         """
         Takes text from connected channel (only)
         """
-        if "from_channel" in kwargs and text:
-            # a channel receive. This is the only one we deal with
-            channel = kwargs.pop("from_channel")
-            ckey = channel.key
-            text = "[%s] %s" % (ckey, text)
-            self.dbobj.msg(text=text)
+        if not self.ndb.ev_channel and self.db.ev_channel:
+            # cache channel lookup
+            self.ndb.ev_channel = self.db.ev_channel
+        if "from_channel" in kwargs and text and self.ndb.ev_channel.dbid == kwargs["from_channel"]:
+            if "from_obj" not in kwargs or kwargs["from_obj"] != [self.dbobj.id]:
+                text = "bot_data_out %s" % text
+                self.dbobj.msg(text=text)
 
     def execute_cmd(self, text=None, sessid=None):
         """
         Take incoming data and send it to connected channel. This is triggered
         by the CmdListen command in the BotCmdSet.
         """
-        if self.ndb.channel:
-            self.ndb.channel.msg(text)
+        if not self.ndb.ev_channel and self.db.ev_channel:
+            # cache channel lookup
+            self.ndb.ev_channel = self.db.ev_channel
+        if self.ndb.ev_channel:
+            self.ndb.ev_channel.msg(text, senders=self.dbobj.id)

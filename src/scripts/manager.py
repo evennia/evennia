@@ -7,6 +7,7 @@ from src.typeclasses.managers import TypedObjectManager
 from src.typeclasses.managers import returns_typeclass_list
 from src.utils.utils import make_iter
 __all__ = ("ScriptManager",)
+_GA = object.__getattribute__
 
 VALIDATE_ITERATION = 0
 
@@ -44,23 +45,22 @@ class ScriptManager(TypedObjectManager):
         if not obj:
             return []
         obj = obj.dbobj
-        player = obj.__class__.__name__ == "PlayerDB"
-        print "get_all_scripts_on_obj:", obj, player
+        player = _GA(_GA(obj, "__class__"), "__name__") == "PlayerDB"
         if key:
             dbref = self.dbref(key)
             if dbref or dbref == 0:
                 if player:
-                    script = self.filter(db_player=obj, id=dbref)
+                    return self.filter(db_player=obj, id=dbref)
                 else:
-                    script = self.filter(db_obj=obj, id=dbref)
-                if script:
-                    return script
+                    return self.filter(db_obj=obj, id=dbref)
             elif player:
                 return self.filter(db_player=obj, db_key=key)
-            return self.filter(db_obj=obj.dbobj, db_key=key)
-        if player:
-            self.filter(db_player=obj)
-        return self.filter(db_obj=obj)
+            else:
+                return self.filter(db_obj=obj, db_key=key)
+        elif player:
+            return self.filter(db_player=obj)
+        else:
+            return self.filter(db_obj=obj)
 
     @returns_typeclass_list
     def get_all_scripts(self, key=None):
@@ -168,6 +168,7 @@ class ScriptManager(TypedObjectManager):
             if dbref and self.dbref(dbref, reqhash=False):
                 scripts = self.get_id(dbref)
             elif obj:
+                #print "calling get_all_scripts_on_obj", obj, key, VALIDATE_ITERATION
                 scripts = self.get_all_scripts_on_obj(obj, key=key)
             else:
                 scripts = self.get_all_scripts(key=key) #self.model.get_all_cached_instances()
