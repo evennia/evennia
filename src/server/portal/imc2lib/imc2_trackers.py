@@ -23,19 +23,15 @@ class IMC2Mud(object):
         self.last_updated = time()
 
 
-class IMC2MudList(object):
+class IMC2MudList(dict):
     """
     Keeps track of other MUDs connected to the IMC network.
     """
-    def __init__(self):
-        # Mud list is stored in a dict, key being the IMC Mud name.
-        self.mud_list = {}
-
     def get_mud_list(self):
         """
         Returns a sorted list of connected Muds.
         """
-        muds = self.mud_list.items()
+        muds = self.items()
         muds.sort()
         return [value for key, value in muds]
 
@@ -45,7 +41,7 @@ class IMC2MudList(object):
         Mud list for later retrieval.
         """
         mud = IMC2Mud(packet)
-        self.mud_list[mud.name] = mud
+        self[mud.name] = mud
 
     def remove_mud_from_packet(self, packet):
         """
@@ -53,7 +49,7 @@ class IMC2MudList(object):
         """
         mud = IMC2Mud(packet)
         try:
-            del self.mud_list[mud.name]
+            del self[mud.name]
         except KeyError:
             # No matching entry, no big deal.
             pass
@@ -72,19 +68,16 @@ class IMC2Channel(object):
         self.last_updated = time()
 
 
-class IMC2ChanList(object):
+class IMC2ChanList(dict):
     """
-    Keeps track of other MUDs connected to the IMC network.
+    Keeps track of Channels on the IMC network.
     """
-    def __init__(self):
-        # Chan list is stored in a dict, key being the IMC Mud name.
-        self.chan_list = {}
 
     def get_channel_list(self):
         """
         Returns a sorted list of cached channels.
         """
-        channels = self.chan_list.items()
+        channels = self.items()
         channels.sort()
         return [value for key, value in channels]
 
@@ -94,7 +87,7 @@ class IMC2ChanList(object):
         channel list for later retrieval.
         """
         channel = IMC2Channel(packet)
-        self.chan_list[channel.name] = channel
+        self[channel.name] = channel
 
     def remove_channel_from_packet(self, packet):
         """
@@ -102,7 +95,7 @@ class IMC2ChanList(object):
         """
         channel = IMC2Channel(packet)
         try:
-            del self.chan_list[channel.name]
+            del self[channel.name]
         except KeyError:
             # No matching entry, no big deal.
             pass

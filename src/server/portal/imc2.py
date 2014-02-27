@@ -3,213 +3,186 @@ IMC2 client module. Handles connecting to and communicating with an IMC2 server.
 """
 
 from time import time
+from twisted.internet import task
 from twisted.application import internet
 from twisted.internet import protocol
 from twisted.conch import telnet
-from django.conf import settings
 
-from src.utils import logger, create, search, utils
-from src.server.sessionhandler import SESSIONS
-from src.scripts.scripts import Script
-from src.comms.models import ChannelDB, ExternalChannelConnection
-from src.comms.imc2lib import imc2_packets as pck
-from src.comms.imc2lib.imc2_trackers import IMC2MudList, IMC2ChanList
-from src.comms.imc2lib.imc2_listeners import handle_whois_reply
+from src.server.session import Session
+from src.utils import logger, utils
+from src.server.portal.imc2lib import imc2_packets as pck
 
 from django.utils.translation import ugettext as _
 
-# IMC2 network setup
-IMC2_MUDNAME = settings.SERVERNAME
-IMC2_NETWORK = settings.IMC2_NETWORK
-IMC2_PORT = settings.IMC2_PORT
-IMC2_CLIENT_PWD = settings.IMC2_CLIENT_PWD
-IMC2_SERVER_PWD = settings.IMC2_SERVER_PWD
 
-# channel to send info to
-INFOCHANNEL = ChannelDB.objects.channel_search(settings.CHANNEL_MUDINFO[0])
-# all linked channel connections
-IMC2_CLIENT = None
-# IMC2 debug mode
-IMC2_DEBUG = False
-# Use this instance to keep track of the other games on the network.
-IMC2_MUDLIST = IMC2MudList()
-# Tracks the list of available channels on the network.
-IMC2_CHANLIST = IMC2ChanList()
+# storage containers for IMC2 muds and channels
 
-#
-# Helper method
-#
-
-def msg_info(message):
+class IMC2Mud(object):
     """
-    Send info to default info channel
+    Stores information about other games connected to our current IMC2 network.
     """
-    try:
-        INFOCHANNEL[0].msg(message)
-        message = '[%s][IMC2]: %s' % (INFOCHANNEL[0].key, message)
-    except Exception:
-        logger.log_infomsg("MUDinfo (imc2): %s" % message)
+    def __init__(self, packet):
+        self.name = packet.origin
+        self.versionid = packet.optional_data.get('versionid', None)
+        self.networkname = packet.optional_data.get('networkname', None)
+        self.url = packet.optional_data.get('url', None)
+        self.host = packet.optional_data.get('host', None)
+        self.port = packet.optional_data.get('port', None)
+        self.sha256 = packet.optional_data.get('sha256', None)
+        # This is used to determine when a Mud has fallen into inactive status.
+        self.last_updated = time()
 
-#
-# Regular scripts
-#
 
-class Send_IsAlive(Script):
+class IMC2MudList(dict):
     """
-    Sends periodic keepalives to network neighbors. This lets the other
-    games know that our game is still up and connected to the network. Also
-    provides some useful information about the client game.
+    Keeps track of other MUDs connected to the IMC network.
     """
-    def at_script_creation(self):
-        self.key = 'IMC2_Send_IsAlive'
-        self.interval = 900
-        self.desc = _("Send an IMC2 is-alive packet")
-        self.persistent = True
+    def get_mud_list(self):
+        """
+        Returns a sorted list of connected Muds.
+        """
+        muds = self.items()
+        muds.sort()
+        return [value for key, value in muds]
 
-    def at_repeat(self):
-        IMC2_CLIENT.send_packet(pck.IMC2PacketIsAlive())
+    def update_mud_from_packet(self, packet):
+        """
+        This grabs relevant info from the packet and stuffs it in the
+        Mud list for later retrieval.
+        """
+        mud = IMC2Mud(packet)
+        self[mud.name] = mud
 
-    def is_valid(self):
-        "Is only valid as long as there are channels to update"
-        return any(service for service in SESSIONS.server.services
-                    if service.name.startswith("imc2_"))
+    def remove_mud_from_packet(self, packet):
+        """
+        Removes a mud from the Mud list when given a packet.
+        """
+        mud = IMC2Mud(packet)
+        try:
+            del self[mud.name]
+        except KeyError:
+            # No matching entry, no big deal.
+            pass
 
-class Send_Keepalive_Request(Script):
+
+class IMC2Channel(object):
     """
-    Event: Sends a keepalive-request to connected games in order to see who
-    is connected.
+    Stores information about channels available on the network.
     """
-    def at_script_creation(self):
-        self.key = "IMC2_Send_Keepalive_Request"
-        self.interval = 3500
-        self.desc = _("Send an IMC2 keepalive-request packet")
-        self.persistent = True
+    def __init__(self, packet):
+        self.localname = packet.optional_data.get('localname', None)
+        self.name = packet.optional_data.get('channel', None)
+        self.level = packet.optional_data.get('level', None)
+        self.owner = packet.optional_data.get('owner', None)
+        self.policy = packet.optional_data.get('policy', None)
+        self.last_updated = time()
 
-    def at_repeat(self):
-        IMC2_CLIENT.channel.send_packet(pck.IMC2PacketKeepAliveRequest())
 
-    def is_valid(self):
-        "Is only valid as long as there are channels to update"
-        return any(service for service in SESSIONS.server.services
-                                if service.name.startswith("imc2_"))
-
-class Prune_Inactive_Muds(Script):
+class IMC2ChanList(dict):
     """
-    Prunes games that have not sent is-alive packets for a while. If
-    we haven't heard from them, they're probably not connected or don't
-    implement the protocol correctly. In either case, good riddance to them.
+    Keeps track of Channels on the IMC network.
     """
-    def at_script_creation(self):
-        self.key = "IMC2_Prune_Inactive_Muds"
-        self.interval = 1800
-        self.desc = _("Check IMC2 list for inactive games")
-        self.persistent = True
-        self.inactive_threshold = 3599
 
-    def at_repeat(self):
-        for name, mudinfo in IMC2_MUDLIST.mud_list.items():
-            if time() - mudinfo.last_updated > self.inactive_threshold:
-                del IMC2_MUDLIST.mud_list[name]
+    def get_channel_list(self):
+        """
+        Returns a sorted list of cached channels.
+        """
+        channels = self.items()
+        channels.sort()
+        return [value for key, value in channels]
 
-    def is_valid(self):
-        "Is only valid as long as there are channels to update"
-        return any(service for service in SESSIONS.server.services
-                    if service.name.startswith("imc2_"))
+    def update_channel_from_packet(self, packet):
+        """
+        This grabs relevant info from the packet and stuffs it in the
+        channel list for later retrieval.
+        """
+        channel = IMC2Channel(packet)
+        self[channel.name] = channel
+
+    def remove_channel_from_packet(self, packet):
+        """
+        Removes a channel from the Channel list when given a packet.
+        """
+        channel = IMC2Channel(packet)
+        try:
+            del self[channel.name]
+        except KeyError:
+            # No matching entry, no big deal.
+            pass
 
 
-class Sync_Server_Channel_List(Script):
-    """
-    Re-syncs the network's channel list. This will
-    cause a cascade of reply packets of a certain type
-    from the network. These are handled by the protocol,
-    gradually updating the channel cache.
-    """
-    def at_script_creation(self):
-        self.key = "IMC2_Sync_Server_Channel_List"
-        self.interval = 24 * 3600  # once every day
-        self.desc = _("Re-sync IMC2 network channel list")
-        self.persistent = True
-
-    def at_repeat(self):
-        checked_networks = []
-        network = IMC2_CLIENT.factory.network
-        if not network in checked_networks:
-            channel.send_packet(pkg.IMC2PacketIceRefresh())
-            checked_networks.append(network)
-
-    def is_valid(self):
-        return any(service for service in SESSIONS.server.services
-                    if service.name.startswith("imc2_"))
 
 
 #
 # IMC2 protocol
 #
-class IMC2Protocol(telnet.StatefulTelnetProtocol):
+class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
     """
     Provides the abstraction for the IMC2 protocol. Handles connection,
     authentication, and all necessary packets.
     """
     def __init__(self):
-        global IMC2_CLIENT
-        IMC2_CLIENT = self
         self.is_authenticated = False
-        self.auth_type = None
-        self.server_name = None
-        self.network_name = None
-        self.sequence = None
-
-    def connectionMade(self):
-        """
-        Triggered after connecting to the IMC2 network.
-        """
+        # only support plaintext passwords
         self.auth_type = "plaintext"
-        if IMC2_DEBUG:
-            logger.log_infomsg("IMC2: Connected to network server.")
-            logger.log_infomsg("IMC2: Sending authentication packet.")
-        self.send_packet(pck.IMC2PacketAuthPlaintext())
+        self.sequence = None
+        self.imc2_mudlist = IMC2MudList()
+        self.imc2_chanlist = IMC2ChanList()
 
-    def connectionLost(self, reason=None):
-        """
-        This is executed when the connection is lost for
-        whatever reason.
-        """
-        try:
-            service = SESSIONS.server.services.getServiceNamed("imc2_%s:%s(%s)" % (IMC2_NETWORK, IMC2_PORT, IMC2_MUDNAME))
-        except Exception:
-            return
-        if service.running:
-            service.stopService()
-
-    def send_packet(self, packet):
-        """
-        Given a sub-class of IMC2Packet, assemble the packet and send it
-        on its way to the IMC2 server.
-
-        Evennia -> IMC2
-        """
-        if self.sequence:
-            # This gets incremented with every command.
-            self.sequence += 1
+    def _send_packet(self, packet):
+        "Helper function to send packets across the wire"
         packet.imc2_protocol = self
         packet_str = utils.to_str(packet.assemble(self.factory.mudname,
-                             self.factory.client_pwd, self.factory.server_pwd))
-        if IMC2_DEBUG and not (hasattr(packet, 'packet_type') and
-                                       packet.packet_type == "is-alive"):
-            logger.log_infomsg("IMC2: SENT> %s" % packet_str)
-            logger.log_infomsg(str(packet))
+                         self.factory.client_pwd, self.factory.server_pwd))
         self.sendLine(packet_str)
 
-    def _parse_auth_response(self, line):
+    def _isalive(self):
+        "Send an isalive packet"
+        self._send_packet(pck.IMC2PacketIsAlive())
+
+    def _keepalive(self):
+        "Send a keepalive packet"
+        # send to channel?
+        self._send_packet(pck.IMC2PacketKeepAliveRequest())
+
+    def _channellist(self):
+        "Sync the network channel list"
+        checked_networks = []
+        if not self.network in checked_networks:
+            self._send_packet(pck.IMC2PacketIceRefresh())
+            checked_networks.append(self.network)
+
+    def _prune(self):
+        "Prune active channel list"
+        t0 = time()
+        for name, mudinfo in self.imc2_mudlist.items():
+            if t0 - mudinfo.last_updated > 3599:
+                del self.imc2_mudlist[name]
+
+    def _whois_reply(self, packet):
+        "handle reply from server from an imcwhois request"
+        # packet.target potentially contains the id of an character to target
+        # not using that here
+        response_text = imc2_ansi.parse_ansi(packet.optional_data.get('text', 'Unknown'))
+        string = _('Whois reply from %(origin)s: %(msg)s') % {"origin":packet.origin, "msg":response_text}
+        # somehow pass reply on to a given player
+
+    def _format_tell(self, packet):
         """
-        Parses the IMC2 network authentication packet.
+        Handle tells over IMC2 by formatting the text properly
         """
+        return _("{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s") % {"sender": packet.sender,
+                                                        "origin": packet.origin,
+                                                        "msg": packet.optional_data.get('text', 'ERROR: No text provided.')}
+
+    def _imc_login(self, line):
+        "Connect and identify to imc network"
+
         if self.auth_type == "plaintext":
-            # Plain text passwords.
+            # Only support Plain text passwords.
             # SERVER Sends: PW <servername> <serverpw> version=<version#> <networkname>
 
-            if IMC2_DEBUG:
-                logger.log_infomsg("IMC2: AUTH< %s" % line)
+            logger.log_infomsg("IMC2: AUTH< %s" % line)
 
             line_split = line.split(' ')
             pw_present = line_split[0] == 'PW'
@@ -218,7 +191,6 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
             if "reject" in line_split:
                 auth_message = _("IMC2 server rejected connection.")
                 logger.log_infomsg(auth_message)
-                msg_info(auth_message)
                 return
 
             if pw_present:
@@ -232,266 +204,193 @@ class IMC2Protocol(telnet.StatefulTelnetProtocol):
             self.sequence = int(time())
 
             # Log to stdout and notify over MUDInfo.
-            auth_message = _("Successfully authenticated to the '%s' network.") % self.factory.network
-            logger.log_infomsg('IMC2: %s' % auth_message)
-            msg_info(auth_message)
+            logger.log_infomsg('IMC2: Authenticated to %s' % self.factory.network)
 
             # Ask to see what other MUDs are connected.
-            self.send_packet(pck.IMC2PacketKeepAliveRequest())
+            self._send_packet(pck.IMC2PacketKeepAliveRequest())
             # IMC2 protocol states that KeepAliveRequests should be followed
             # up by the requester sending an IsAlive packet.
-            self.send_packet(pck.IMC2PacketIsAlive())
+            self._send_packet(pck.IMC2PacketIsAlive())
             # Get a listing of channels.
-            self.send_packet(pck.IMC2PacketIceRefresh())
+            self._send_packet(pck.IMC2PacketIceRefresh())
 
-    def _msg_evennia(self, packet):
+    def connectionMade(self):
         """
-        Handle the sending of packet data to Evennia channel
-        (Message from IMC2 -> Evennia)
+        Triggered after connecting to the IMC2 network.
         """
-        conn_name = packet.optional_data.get('channel', None)
 
-        # If the packet lacks the 'echo' key, don't bother with it.
-        if not conn_name or not packet.optional_data.get('echo', None):
-            return
-        imc2_channel = conn_name.split(':', 1)[1]
-
-        # Look for matching IMC2 channel maps mapping to this imc2 channel.
-        conns = ExternalChannelConnection.objects.filter(db_external_key__startswith="imc2_")
-        conns = [conn for conn in conns if imc2_channel in conn.db_external_config.split(",")]
-        if not conns:
-            # we are not listening to this imc2 channel.
-            return
-
-        # Format the message to send to local channel(s).
-        for conn in conns:
-            message = '[%s] %s@%s: %s' % (conn.channel.key, packet.sender, packet.origin, packet.optional_data.get('text'))
-            conn.to_channel(message)
-
-    def _format_tell(self, packet):
-        """
-        Handle tells over IMC2 by formatting the text properly
-        """
-        return _("{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s") % {"sender": packet.sender,
-                                                        "origin": packet.origin,
-                                                        "msg": packet.optional_data.get('text', 'ERROR: No text provided.')}
+        self.stopping = False
+        self.factory.bot = self
+        address = "%s@%s" % (self.mudname, self.network)
+        self.init_session("ircbot", address, self.factory.sessionhandler)
+        # link back and log in
+        self.uid = int(self.factory.uid)
+        self.logged_in = True
+        self.factory.sessionhandler.connect(self)
+        logger.log_infomsg("IMC2 bot connected to %s." % self.network)
+        # Send authentication packet. The reply will be caught by lineReceived
+        self._send_packet(pck.IMC2PacketAuthPlaintext())
 
     def lineReceived(self, line):
         """
-        Triggered when text is received from the IMC2 network. Figures out
-        what to do with the packet.
         IMC2 -> Evennia
+
+        Triggered when text is received from the IMC2 network. Figures out
+        what to do with the packet. This deals with the following
+
         """
         line = line.strip()
 
         if not self.is_authenticated:
-            self._parse_auth_response(line)
-        else:
-            if IMC2_DEBUG and not 'is-alive' in line:
-                # if IMC2_DEBUG mode is on, print the contents of the packet
-                # to stdout.
-                logger.log_infomsg("IMC2: RECV> %s" % line)
+            # we are not authenticated yet. Deal with this.
+            self._imc_login(line)
+            return
 
-            # Parse the packet and encapsulate it for easy access
-            packet = pck.IMC2Packet(self.factory.mudname, packet_str=line)
+        #logger.log_infomsg("IMC2: RECV> %s" % line)
 
-            if IMC2_DEBUG and packet.packet_type not in ('is-alive', 'keepalive-request'):
-                # Print the parsed packet's __str__ representation.
-                # is-alive and keepalive-requests happen pretty frequently.
-                # Don't bore us with them in stdout.
-                logger.log_infomsg(str(packet))
+        # Parse the packet and encapsulate it for easy access
+        packet = pck.IMC2Packet(self.mudname, packet_str=line)
 
-            # Figure out what kind of packet we're dealing with and hand it
-            # off to the correct handler.
+        # Figure out what kind of packet we're dealing with and hand it
+        # off to the correct handler.
 
-            if packet.packet_type == 'is-alive':
-                IMC2_MUDLIST.update_mud_from_packet(packet)
-            elif packet.packet_type == 'keepalive-request':
-                # Don't need to check the destination, we only receive these
-                # packets when they are intended for us.
-                self.send_packet(pck.IMC2PacketIsAlive())
-            elif packet.packet_type == 'ice-msg-b':
-                self._msg_evennia(packet)
-            elif packet.packet_type == 'whois-reply':
-                handle_whois_reply(packet)
-            elif packet.packet_type == 'close-notify':
-                IMC2_MUDLIST.remove_mud_from_packet(packet)
-            elif packet.packet_type == 'ice-update':
-                IMC2_CHANLIST.update_channel_from_packet(packet)
-            elif packet.packet_type == 'ice-destroy':
-                IMC2_CHANLIST.remove_channel_from_packet(packet)
-            elif packet.packet_type == 'tell':
-                player = search.players(packet.target)
-                if not player:
-                    return
-                player[0].msg(self._format_tell(packet))
+        if packet.packet_type == 'is-alive':
+            self.imc2_mudlist.update_mud_from_packet(packet)
+        elif packet.packet_type == 'keepalive-request':
+            # Don't need to check the destination, we only receive these
+            # packets when they are intended for us.
+            self.send_packet(pck.IMC2PacketIsAlive())
+        elif packet.packet_type == 'ice-msg-b':
+            self.data_out(text=line, packettype="broadcast")
+        elif packet.packet_type == 'whois-reply':
+            # handle eventual whois reply
+        elif packet.packet_type == 'close-notify':
+            self.imc2_mudlist.remove_mud_from_packet(packet)
+        elif packet.packet_type == 'ice-update':
+            self.imc2_chanlist.update_channel_from_packet(packet)
+        elif packet.packet_type == 'ice-destroy':
+            self.imc2_chanlist.remove_channel_from_packet(packet)
+        elif packet.packet_type == 'tell':
+            # send message to identified player
+            pass
 
-    def msg_imc2(self, message, from_obj=None, packet_type="imcbroadcast", data=None):
+    def data_in(self, text=None, **kwargs):
         """
-        Called by Evennia to send a message through the imc2 connection
+        Data IMC2 -> Evennia
         """
-        if from_obj:
-            if hasattr(from_obj, 'key'):
-                from_name = from_obj.key
+        self.sessionhandler.data_in(self, text=text, **kwargs)
+
+    def data_out(self, text=None, **kwargs):
+        """
+        Evennia -> IMC2
+
+        Keywords
+           packet_type:
+            broadcast - send to everyone on IMC channel
+            tell - send a tell (see target keyword)
+            whois - get whois information (see target keyword)
+          sender - used by tell to identify the sender
+          target - key identifier of target to tells or whois. If not
+                   given "Unknown" will be used.
+          destination - used by tell to specify mud destination to send to
+
+        """
+
+        if self.sequence:
+            # This gets incremented with every command.
+            self.sequence += 1
+
+        packet_type = kwargs.get("packet_type", "imcbroadcast")
+
+        if packet_type == "broadcast":
+            # broadcast to everyone on IMC channel
+
+            if text.startswith("bot_data_out"):
+                text = text.split(" ", 1)[1]
             else:
-                from_name = from_obj
-        else:
-            from_name = self.factory.mudname
+                return
 
-        if packet_type == "imcbroadcast":
-            if type(data) == dict:
-                conns = ExternalChannelConnection.objects.filter(db_external_key__startswith="imc2_",
-                                                                 db_channel=data.get("channel", "Unknown"))
-                if not conns:
-                    return
-                # we remove the extra channel info since imc2 supplies this anyway
-                if ":" in message:
-                    header, message = [part.strip() for part in message.split(":", 1)]
-                # send the packet
-                imc2_channel = conns[0].db_external_config.split(',')[0] # only send to the first channel
-                self.send_packet(pck.IMC2PacketIceMsgBroadcasted(self.factory.servername, imc2_channel,
-                                                                 from_name, message))
-        elif packet_type == "imctell":
-            # send a tell
-            if type(data) == dict:
-                target = data.get("target", "Unknown")
-                destination = data.get("destination", "Unknown")
-                self.send_packet(pck.IMC2PacketTell(from_name, target, destination, message))
+            # we remove the extra channel info since imc2 supplies this anyway
+            if ":" in text:
+                header, message = [part.strip() for part in text.split(":", 1)]
+            # Create imc2packet and send it
+            self._send_packet(pck.IMC2PacketIceMsgBroadcasted(self.servername,
+                                                        self.channel,
+                                                        header, text))
+        elif packet_type == "tell":
+            # send an IMC2 tell
+            sender = kwargs.get("sender", self.mudname)
+            target = kwargs.get("target", "Unknown")
+            destination = kwargs.get("destination", "Unknown")
+            self._send_packet(pck.IMC2PacketTell(sender, target, destination, text))
 
-        elif packet_type == "imcwhois":
+        elif packet_type == "whois":
             # send a whois request
-            if type(data) == dict:
-                target = data.get("target", "Unknown")
-                self.send_packet(pck.IMC2PacketWhois(from_obj.id, target))
+            sender = kwargs.get("sender", self.mudname)
+            target = kwargs.get("target", "Unknown")
+            self._send_packet(pck.IMC2PacketWhois(sender, target))
 
 
-class IMC2Factory(protocol.ClientFactory):
+class IMC2BotFactory(protocol.ReconnectingClientFactory):
     """
     Creates instances of the IMC2Protocol. Should really only ever
     need to create one connection. Tied in via src/server.py.
     """
-    protocol = IMC2Protocol
+    initialDelay = 1
+    factor = 1.5
+    maxDelay = 60
 
-    def __init__(self, network, port, mudname, client_pwd, server_pwd):
-        self.pretty_key = "%s:%s(%s)" % (network, port, mudname)
+    def __init__(self, sessionhandler, uid=None, network=None, channel=None,
+                 port=None, mudname=None, client_pwd=None, server_pwd=None):
+        self.uid = uid
         self.network = network
         sname, host = network.split(".", 1)
         self.servername = sname.strip()
+        self.channel = channel
         self.port = port
         self.mudname = mudname
         self.protocol_version = '2'
         self.client_pwd = client_pwd
         self.server_pwd = server_pwd
+        self.bot = None
+        self.task_isalive = None
+        self.task_keepalive = None
+        self.task_prune = None
+        self.task_channellist = None
+
+    def buildProtocol(self, addr):
+        "Build the protocol"
+        protocol = IMC2Bot()
+        protocol.factory = self
+        protocol.network = self.network
+        protocol.servername = self.servername
+        protocol.channel = self.channel
+        protocol.mudname = self.mudname
+        protocol.port = self.port
+        return protocol
 
     def clientConnectionFailed(self, connector, reason):
-        message = _('Connection failed: %s') % reason.getErrorMessage()
-        msg_info(message)
-        logger.log_errmsg('IMC2: %s' % message)
+        self.retry(connector)
 
     def clientConnectionLost(self, connector, reason):
-        message = _('Connection lost: %s') % reason.getErrorMessage()
-        msg_info(message)
-        logger.log_errmsg('IMC2: %s' % message)
+        if not self.bot.stopping:
+            self.retry(connector)
 
+    def start(self):
+        "Connect session to sessionhandler"
+        def errback(fail):
+            logger.log_errmsg(fail.value)
 
-def build_connection_key(channel, imc2_channel):
-    "Build an id hash for the connection"
-    if hasattr(channel, "key"):
-        channel = channel.key
-    return "imc2_%s:%s(%s)%s<>%s" % (IMC2_NETWORK, IMC2_PORT,
-                                     IMC2_MUDNAME, imc2_channel, channel)
+        if self.port:
+            service = internet.TCPClient(self.network, int(self.port), self)
+            self.sessionhandler.portal.services.addService(service)
+        # start tasks
+        self.task_isalive = task.LoopingCall(self.bot._isalive)
+        self.task_keepalive = task.LoopingCall(self.bot._keepalive)
+        self.task_prune = task.LoopingCall(self.bot._prune)
+        self.task_channellist = task.LoopingCall(self.bot._channellist)
+        self.task_isalive.start(900, now=False)
+        self.task_keepalive.start(3500, now=False)
+        self.task_prune.start(1800, now=False)
+        self.task_channellist.start(3600 * 24, now=False)
 
-
-def start_scripts(validate=False):
-    """
-    Start all the needed scripts
-    """
-
-    if validate:
-        from src.scripts.models import ScriptDB
-        ScriptDB.objects.validate()
-        return
-    if not search.scripts("IMC2_Send_IsAlive"):
-        create.create_script(Send_IsAlive)
-    if not search.scripts("IMC2_Send_Keepalive_Request"):
-        create.create_script(Send_Keepalive_Request)
-    if not search.scripts("IMC2_Prune_Inactive_Muds"):
-        create.create_script(Prune_Inactive_Muds)
-    if not search.scripts("IMC2_Sync_Server_Channel_List"):
-        create.create_script(Sync_Server_Channel_List)
-
-
-def create_connection(channel, imc2_channel):
-    """
-    This will create a new IMC2<->channel connection.
-    """
-
-    if not type(channel) == ChannelDB:
-        new_channel = ChannelDB.objects.filter(db_key=channel)
-        if not new_channel:
-            logger.log_errmsg(_("Cannot attach IMC2<->Evennia: Evennia Channel '%s' not found") % channel)
-            return False
-        channel = new_channel[0]
-    key = build_connection_key(channel, imc2_channel)
-
-    old_conns = ExternalChannelConnection.objects.filter(db_external_key=key)
-    if old_conns:
-        # this evennia channel is already connected to imc. Check
-        # if imc2_channel is different.
-        # connection already exists. We try to only connect a new channel
-        old_config = old_conns[0].db_external_config.split(",")
-        if imc2_channel in old_config:
-            return False # we already listen to this channel
-        else:
-            # We add a new imc2_channel to listen to
-            old_config.append(imc2_channel)
-            old_conns[0].db_external_config = ",".join(old_config)
-            old_conns[0].save()
-            return True
-    else:
-        # no old connection found; create a new one.
-        config = imc2_channel
-        # how the evennia channel will be able to contact this protocol in reverse
-        send_code = "from src.comms.imc2 import IMC2_CLIENT\n"
-        send_code += "data={'channel':from_channel}\n"
-        send_code += "IMC2_CLIENT.msg_imc2(message, senders=[self])\n"
-        conn = ExternalChannelConnection(db_channel=channel, db_external_key=key, db_external_send_code=send_code,
-                                         db_external_config=config)
-        conn.save()
-        return True
-
-def delete_connection(channel, imc2_channel):
-    "Destroy a connection"
-    if hasattr(channel, "key"):
-        channel = channel.key
-    key = build_connection_key(channel, imc2_channel)
-
-    try:
-        conn = ExternalChannelConnection.objects.get(db_external_key=key)
-    except ExternalChannelConnection.DoesNotExist:
-        return False
-    conn.delete()
-    return True
-
-
-def connect_to_imc2():
-    "Create the imc instance and connect to the IMC2 network."
-
-    # connect
-    imc = internet.TCPClient(IMC2_NETWORK,
-                             int(IMC2_PORT),
-                             IMC2Factory(IMC2_NETWORK,
-                                         IMC2_PORT,
-                                         IMC2_MUDNAME,
-                                         IMC2_CLIENT_PWD,
-                                         IMC2_SERVER_PWD))
-    imc.setName("imc2_%s:%s(%s)" % (IMC2_NETWORK, IMC2_PORT, IMC2_MUDNAME))
-    SESSIONS.server.services.addService(imc)
-
-
-def connect_all():
-    """
-    Activates the imc2 system. Called by the server if IMC2_ENABLED=True.
-    """
-    connect_to_imc2()
-    start_scripts()

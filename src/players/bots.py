@@ -121,6 +121,8 @@ class Bot(Player):
 
 # Bot implementations
 
+# IRC
+
 class IRCBot(Bot):
     """
     Bot for handling IRC connections.
@@ -194,6 +196,8 @@ class IRCBot(Bot):
             self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
 
 
+# RSS
+
 class RSSBot(Bot):
     """
     An RSS relayer. The RSS protocol itself runs a ticker to update its feed at regular
@@ -240,4 +244,75 @@ class RSSBot(Bot):
         if self.ndb.ev_channel:
             self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
 
+class IMC2Bot(Bot):
+    """
+    IMC2 Bot
+    """
+    def start(self, ev_channel=None, imc2_network=None, imc2_mudname=None,
+              imc2_port=None, imc2_client_pwd=None, imc2_server_pwd=None):
+        """
+        Start by telling the portal to start a new session
+        ev_channel - key of the Evennia channel to connect to
+        imc2_network - IMC2 network name
+        imc2_mudname - registered mudname (if not given, use settings.SERVERNAME)
+        imc2_port - port number of IMC2 network
+        imc2_client_pwd - client password registered with IMC2 network
+        imc2_server_pwd - server password registered with IMC2 network
+        """
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        if ev_channel:
+            # connect to Evennia channel
+            channel = search.channel_search(ev_channel)
+            if not channel:
+                raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+            channel = channel[0]
+            channel.connect(self)
+            self.db.ev_channel = channel
+        if imc2_network:
+            self.db.imc2_network = imc2_network
+        if imc2_port:
+            self.db.imc2_port = imc2_port
+        if imc2_mudname:
+            self.db.imc2_mudname = imc2_mudname
+        elif not self.db.imc2_mudname:
+            self.db.imc2_mudname = settings.SERVERNAME
+        # storing imc2 passwords in attributes - a possible
+        # security issue?
+        if imc2_server_pwd:
+            self.db.imc2_server_pwd = imc2_server_pwd
+        if imc2_client_pwd:
+            self.db.imc2_client_pwd = imc2_client_pwd
+
+        configdict = {"uid": self.dbid,
+                      "mudname": self.db.imc2_mudname,
+                      "network": self.db.imc2_network,
+                      "port": self.db.imc2_port,
+                      "client_pwd": self.db.client_pwd,
+                      "server_pwd": self.db.server_pwd}
+
+        _SESSIONS.start_bot_session("src.server.portal.imc2.IMC2BotFactory", configdict)
+
+    def msg(self, text=None, **kwargs):
+        """
+        Takes text from connected channel (only)
+        """
+        if not self.ndb.ev_channel and self.db.ev_channel:
+            # cache channel lookup
+            self.ndb.ev_channel = self.db.ev_channel
+        if "from_channel" in kwargs and text and self.ndb.ev_channel.dbid == kwargs["from_channel"]:
+            if "from_obj" not in kwargs or kwargs["from_obj"] != [self.dbobj.id]:
+                text = "bot_data_out %s" % text
+                self.dbobj.msg(text=text)
+
+    def execute_cmd(self, text=None, sessid=None):
+        """
+        Relay incoming data to connected channel.
+        """
+        if not self.ndb.ev_channel and self.db.ev_channel:
+            # cache channel lookup
+            self.ndb.ev_channel = self.db.ev_channel
+        if self.ndb.ev_channel:
+            self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
 
