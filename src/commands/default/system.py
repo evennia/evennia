@@ -19,6 +19,7 @@ from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
 from src.utils import logger, utils, gametime, create, is_pypy, prettytable
+from src.utils.evtable import EvTable
 from src.utils.utils import crop
 from src.commands.default.muxcommand import MuxCommand
 
@@ -214,17 +215,9 @@ def format_script_list(scripts):
     if not scripts:
         return "<No scripts>"
 
-    table = prettytable.PrettyTable(["{wdbref",
-                                     "{wobj",
-                                     "{wkey",
-                                     "{wintval",
-                                     "{wnext",
-                                     "{wrept",
-                                     "{wdb",
-                                     "{wtypeclass",
-                                     "{wdesc"],
-                                     align='r')
-    table.align = 'r'
+    table = EvTable("{wdbref{n", "{wobj{n", "{wkey{n", "{wintval{n", "{wnext{n",
+                    "{wrept{n", "{wdb", "{wtypeclass{n", "{wdesc{n",
+                    align='r', border="cells")
     for script in scripts:
         nextrep = script.time_until_next_repeat()
         if nextrep is None:
@@ -238,15 +231,15 @@ def format_script_list(scripts):
         else:
             rept = "-/-"
 
-        table.add_row([script.id,
-                       script.obj.key if (hasattr(script, 'obj') and script.obj) else "<Global>",
-                       script.key,
-                       script.interval if script.interval > 0 else "--",
-                       nextrep,
-                       rept,
-                       "*" if script.persistent else "-",
-                       script.typeclass_path.rsplit('.', 1)[-1],
-                       crop(script.desc, width=20)])
+        table.add_row(script.id,
+                      script.obj.key if (hasattr(script, 'obj') and script.obj) else "<Global>",
+                      script.key,
+                      script.interval if script.interval > 0 else "--",
+                      nextrep,
+                      rept,
+                      "*" if script.persistent else "-",
+                      script.typeclass_path.rsplit('.', 1)[-1],
+                      crop(script.desc, width=20))
     return "%s" % table
 
 
@@ -380,30 +373,27 @@ class CmdObjects(MuxCommand):
         nother = nobjs - nchars - nrooms - nexits
 
         # total object sum table
-        totaltable = prettytable.PrettyTable(["{wtype", "{wcomment", "{wcount", "{w%%"])
+        totaltable = EvTable("{wtype{n", "{wcomment{n", "{wcount{n", "{w%%{n", border="cells")
         totaltable.align = 'l'
-        totaltable.add_row(["Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100)])
-        totaltable.add_row(["Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100)])
-        totaltable.add_row(["Exits", "(destination!=None)", nexits, "%.2f" % ((float(nexits) / nobjs) * 100)])
-        totaltable.add_row(["Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100)])
+        totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
+        totaltable.add_row("Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
+        totaltable.add_row("Exits", "(destination!=None)", nexits, "%.2f" % ((float(nexits) / nobjs) * 100))
+        totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
-        typetable = prettytable.PrettyTable(["{wtypeclass", "{wcount", "{w%%"])
+        typetable = EvTable("{wtypeclass{n", "{wcount{n", "{w%%{n", border="cells")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
         for path, count in dbtotals.items():
-            typetable.add_row([path, count, "%.2f" % ((float(count) / nobjs) * 100)])
+            typetable.add_row(path, count, "%.2f" % ((float(count) / nobjs) * 100))
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = prettytable.PrettyTable(["{wcreated",
-                                               "{wdbref",
-                                               "{wname",
-                                               "{wtypeclass"])
+        latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", border="cells")
         latesttable.align = 'l'
         for obj in objs:
-            latesttable.add_row([utils.datetime_format(obj.date_created),
-                                 obj.dbref, obj.key, obj.typeclass.path])
+            latesttable.add_row(utils.datetime_format(obj.date_created),
+                                obj.dbref, obj.key, obj.typeclass.path)
 
         string = "\n{wObject subtype totals (out of %i Objects):{n\n%s" % (nobjs, totaltable)
         string += "\n{wObject typeclass distribution:{n\n%s" % typetable
@@ -439,16 +429,14 @@ class CmdPlayers(MuxCommand):
 
         # typeclass table
         dbtotals = PlayerDB.objects.object_totals()
-        typetable = prettytable.PrettyTable(["{wtypeclass", "{wcount", "{w%%"])
-        typetable.align = 'l'
+        typetable = EvTable("{wtypeclass{n", "{wcount{n", "{w%%{n", border="cells", align="l")
         for path, count in dbtotals.items():
-            typetable.add_row([path, count, "%.2f" % ((float(count) / nplayers) * 100)])
+            typetable.add_row(path, count, "%.2f" % ((float(count) / nplayers) * 100))
         # last N table
         plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
-        latesttable = prettytable.PrettyTable(["{wcreated", "{wdbref", "{wname", "{wtypeclass"])
-        latesttable.align = 'l'
+        latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", border="cells", align="l")
         for ply in plyrs:
-            latesttable.add_row([utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.typeclass.path])
+            latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.typeclass.path)
 
         string = "\n{wPlayer typeclass distribution:{n\n%s" % typetable
         string += "\n{wLast %s Players created:{n\n%s" % (min(nplayers, nlim), latesttable)
