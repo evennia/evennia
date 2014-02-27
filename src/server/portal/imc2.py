@@ -10,6 +10,7 @@ from twisted.conch import telnet
 
 from src.server.session import Session
 from src.utils import logger, utils
+from src.server.portal.imc2lib import imc2_ansi
 from src.server.portal.imc2lib import imc2_packets as pck
 
 from django.utils.translation import ugettext as _
@@ -111,11 +112,10 @@ class IMC2ChanList(dict):
             pass
 
 
-
-
 #
 # IMC2 protocol
 #
+
 class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
     """
     Provides the abstraction for the IMC2 protocol. Handles connection,
@@ -165,7 +165,8 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
         # not using that here
         response_text = imc2_ansi.parse_ansi(packet.optional_data.get('text', 'Unknown'))
         string = _('Whois reply from %(origin)s: %(msg)s') % {"origin":packet.origin, "msg":response_text}
-        # somehow pass reply on to a given player
+        # somehow pass reply on to a given player, for now we just send to channel
+        self.data_in(string)
 
     def _format_tell(self, packet):
         """
@@ -264,6 +265,7 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
             self.data_out(text=line, packettype="broadcast")
         elif packet.packet_type == 'whois-reply':
             # handle eventual whois reply
+            self._whois_reply(packet)
         elif packet.packet_type == 'close-notify':
             self.imc2_mudlist.remove_mud_from_packet(packet)
         elif packet.packet_type == 'ice-update':
@@ -278,6 +280,7 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
         """
         Data IMC2 -> Evennia
         """
+        text = "bot_data_in " + text
         self.sessionhandler.data_in(self, text=text, **kwargs)
 
     def data_out(self, text=None, **kwargs):
