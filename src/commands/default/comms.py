@@ -764,6 +764,8 @@ class CmdIRC2Chan(MuxCommand):
 
     Usage:
       @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+      @irc2chan/list
+      @irc2chan/delete botname|dbid
 
     Switches:
       /disconnect - this will delete the bot and remove the irc connection
@@ -799,13 +801,28 @@ class CmdIRC2Chan(MuxCommand):
             ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True)]
             if ircbots:
                 from src.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", border="cells")
+                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", border="cells", maxwidth=78)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
                     table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)
                 self.caller.msg(table)
             else:
                 self.msg("No irc bots found.")
+            return
+
+
+        if('disconnect' in self.switches or 'remove' in self.switches or
+                                                    'delete' in self.switches):
+            botname = "ircbot-%s" % self.lhs
+            matches = PlayerDB.objects.filter(db_is_bot=True, db_key=botname)
+            if not matches:
+                # try dbref match
+                matches = PlayerDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
+            if matches:
+                matches[0].delete()
+                self.msg("IRC connection destroyed.")
+            else:
+                self.msg("IRC connection/bot could not be removed, does it exist?")
             return
 
         if not self.args or not self.rhs:
@@ -825,16 +842,6 @@ class CmdIRC2Chan(MuxCommand):
             return
 
         botname = "ircbot-%s" % irc_botname
-
-        if('disconnect' in self.switches or 'remove' in self.switches or
-                                                    'delete' in self.switches):
-            matches = PlayerDB.objects.filter(db_is_bot=True, db_key=botname)
-            if matches:
-                matches[0].delete()
-                self.msg("IRC connection destroyed.")
-            else:
-                self.msg("IRC connection/bot could not be removed, does it exist?")
-            return
 
         # create a new bot
         bot = PlayerDB.objects.filter(username__iexact=botname)

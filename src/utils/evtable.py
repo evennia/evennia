@@ -75,6 +75,7 @@ ANSI-coloured string types.
 #from textwrap import wrap
 from textwrap import TextWrapper
 from copy import deepcopy, copy
+from src.utils.utils import to_unicode
 from src.utils.ansi import ANSIString
 
 def make_iter(obj):
@@ -86,7 +87,7 @@ def _to_ansi(obj, regexable=False):
     if hasattr(obj, "__iter__"):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(unicode(obj), regexable=regexable)
+        return ANSIString(to_unicode(obj), regexable=regexable)
 
 
 _unicode = unicode
@@ -644,6 +645,15 @@ class EvTable(object):
                           corners. Default is 1.
             corner_char - character to use in corners when border is
                           active.
+            corner_top_left - character to use in upper left corner of table
+                                (defaults to corner_char)
+            corner_top_right
+            corner_bottom_left
+            corner_bottom_right
+            pretty_corners - (default True): use custom characters to make
+                             the table corners look "rounded". Uses UTF-8
+                             characters.
+
             header_line_char - characters to use for underlining
                                     the header row (default is '~')
                                     Requires border to be active.
@@ -707,6 +717,11 @@ class EvTable(object):
         # border settings are passed into Cell as well (so kwargs.get and not pop)
         self.border_width = kwargs.get("border_width", 1)
         self.corner_char = kwargs.get("corner_char", "+")
+        pcorners = kwargs.pop("pretty_corners", False)
+        self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", '.' if pcorners else  self.corner_char))
+        self.corner_top_right = _to_ansi(kwargs.pop("corner_top_right", '.' if pcorners else self.corner_char))
+        self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", '`' if pcorners else self.corner_char))
+        self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", '´' if pcorners else self.corner_char))
 
         self.width = kwargs.pop("width", None)
         self.height = kwargs.pop("height", None)
@@ -747,13 +762,13 @@ class EvTable(object):
         def corners(ret):
             "Handle corners of table"
             if ix == 0 and iy == 0:
-                ret["corner_top_left"] = cchar
+                ret["corner_top_left"] = self.corner_top_left
             if ix == nx and iy == 0:
-                ret["corner_top_right"] = cchar
+                ret["corner_top_right"] = self.corner_top_right
             if ix == 0 and iy == ny:
-                ret["corner_bottom_left"] = cchar
+                ret["corner_bottom_left"] = self.corner_bottom_left
             if ix == nx and iy == ny:
-                ret["corner_bottom_right"] = cchar
+                ret["corner_bottom_right"] = self.corner_bottom_right
             return ret
 
         def left_edge(ret):
@@ -976,7 +991,7 @@ class EvTable(object):
             cell_data = [cell.get() for cell in cell_row]
             cell_height = min(len(lines) for lines in cell_data)
             for iline in range(cell_height):
-                yield "".join(celldata[iline] for celldata in cell_data)
+                yield "".join(_to_ansi(celldata[iline] for celldata in cell_data))
 
     def add_header(self, *args, **kwargs):
         """
@@ -1094,6 +1109,11 @@ class EvTable(object):
         self.corner_char = kwargs.get("corner_char", self.corner_char)
         self.header_line_char = kwargs.get("header_line_char", self.header_line_char)
 
+        self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", self.corner_top_leftorner_char))
+        self.corner_top_right = _to_ansi(kwargs.pop("corner_top_right", self.corner_char))
+        self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", self.corner_char))
+        self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", self.corner_char))
+
         self.options.update(kwargs)
         self._balance()
 
@@ -1105,5 +1125,5 @@ class EvTable(object):
 
     def __str__(self):
         "print table"
-        return  "\n".join([line for line in self._generate_lines()])
+        return  to_unicode("\n".join([line for line in self._generate_lines()]))
 

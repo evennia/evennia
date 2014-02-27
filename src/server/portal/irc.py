@@ -34,6 +34,7 @@ class IRCBot(irc.IRCClient, Session):
         the game as a full session.
         """
         self.join(self.channel)
+        self.stopping = False
         self.factory.bot = self
         self.init_session("ircbot", self.network, self.factory.sessionhandler)
         # we link back to our bot and log in
@@ -42,6 +43,15 @@ class IRCBot(irc.IRCClient, Session):
         self.factory.sessionhandler.connect(self)
         logger.log_infomsg("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
                                                                               self.network, self.port))
+
+    def disconnect(self, reason=None):
+        """
+        Called by sessionhandler to disconnect this protocol
+        """
+        print "irc disconnect called!"
+        self.sessionhandler.disconnect(self)
+        self.stopping = True
+        self.transport.loseConnection()
 
     def privmsg(self, user, channel, msg):
         "A message was sent to channel"
@@ -98,6 +108,13 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
     def startedConnecting(self, connector):
         "Tracks reconnections for debugging"
         logger.log_infomsg("(re)connecting to %s" % self.channel)
+
+    def clientConnectionFailed(self, connector, reason):
+        self.retry(connector)
+
+    def clientConnectionLost(self, connector, reason):
+        if not self.bot.stopping:
+            self.retry(connector)
 
     def start(self):
         "Connect session to sessionhandler"
