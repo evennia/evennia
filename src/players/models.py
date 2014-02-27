@@ -434,7 +434,11 @@ class PlayerDB(TypedObject, AbstractUser):
             # in this case, we should either have only one sessid, or the sessid
             # should not matter (since the return goes to all of them we can
             # just use the first one as the source)
-            sessid = self.get_all_sessions()[0].sessid
+            try:
+                sessid = self.get_all_sessions()[0].sessid
+            except IndexError:
+                # this can happen for bots
+                sessid = None
         return cmdhandler.cmdhandler(self.typeclass, raw_string,
                                      callertype="player", sessid=sessid)
 
