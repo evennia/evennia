@@ -283,6 +283,11 @@ class Cell(object):
             border_top - top border width
             border_bottom - bottom border width
 
+            crop_string - string to use when cropping sideways,
+                          default is '[...]'
+            crop - crop content of cell rather than expand vertically,
+                   default=False
+
             border_char - this will use a single border char for all borders.
                           overruled by individual settings below
             border_left_char - char used for left border
@@ -327,6 +332,8 @@ class Cell(object):
         self.hfill_char = hfill_char[0] if hfill_char else " "
         vfill_char = kwargs.get("vfill_char", fill_char)
         self.vfill_char = vfill_char[0] if vfill_char else " "
+
+        self.crop_string = kwargs.get("crop_string", "[...]")
 
         # borders and corners
         borderwidth = kwargs.get("border_width", 0)
@@ -374,6 +381,13 @@ class Cell(object):
 
         # prepare data
         self.formatted = self._reformat()
+
+    def _crop(self, text, width):
+        "Apply cropping of text"
+        if len(text) > width:
+            crop_string = self.crop_string
+            return text[:width-len(crop_string)] + crop_string
+        return text
 
     def _reformat(self):
         "Apply formatting"
@@ -822,7 +836,6 @@ class EvTable(object):
 
         bwidth = self.border_width
         headchar = self.header_line_char
-        cchar = self.corner_char
 
         # use the helper functions to define various
         # table "styles"
