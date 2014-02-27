@@ -236,14 +236,14 @@ class AttributeHandler(object):
 
     def get(self, key=None, category=None, default=None, return_obj=False,
             strattr=False, raise_exception=False, accessing_obj=None,
-            default_access=True):
+            default_access=True, not_found_none=False):
         """
         Returns the value of the given Attribute or list of Attributes.
         strattr will cause the string-only value field instead of the normal
         pickled field data. Use to get back values from Attributes added with
         the strattr keyword.
         If return_obj=True, return the matching Attribute object
-        instead. Returns None if no matches (or [ ] if key was a list
+        instead. Returns default if no matches (or [ ] if key was a list
         with no matches). If raise_exception=True, failure to find a
         match will raise AttributeError instead.
 
@@ -278,6 +278,8 @@ class AttributeHandler(object):
             ret = ret if return_obj else [attr.strvalue for attr in ret if attr]
         else:
             ret = ret if return_obj else [attr.value for attr in ret if attr]
+        if not ret:
+            return ret if len(key) > 1 else default
         return ret[0] if len(ret)==1 else ret
 
     def add(self, key, value, category=None, lockstring="",
@@ -399,10 +401,10 @@ class NickHandler(AttributeHandler):
         raw_string
         obj_nicks, player_nicks = [], []
         for category in make_iter(categories):
-            obj_nicks.extend(make_iter(self.get(category=category, return_obj=True)))
+            obj_nicks.extend([n for n in make_iter(self.get(category=category, return_obj=True)) if n])
         if include_player and self.obj.has_player:
             for category in make_iter(categories):
-                player_nicks.extend(make_iter(self.obj.player.nicks.get(category=category, return_obj=True)))
+                player_nicks.extend([n for n in make_iter(self.obj.player.nicks.get(category=category, return_obj=True)) if n])
         for nick in obj_nicks + player_nicks:
             # make a case-insensitive match here
             match = re.match(re.escape(nick.db_key), raw_string, re.IGNORECASE)

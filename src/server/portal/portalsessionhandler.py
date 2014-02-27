@@ -92,8 +92,7 @@ class PortalSessionHandler(SessionHandler):
         cls = _MOD_IMPORT(path, clsname)
         if not cls:
             raise RuntimeError("ServerConnect: protocol factory '%s' not found." % protocol_path)
-        protocol = cls(**config)
-        protocol.sessionhandler = self
+        protocol = cls(self, **config)
         protocol.start()
 
     def server_disconnect(self, sessid, reason=""):

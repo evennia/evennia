@@ -36,9 +36,10 @@ class IRCBot(irc.IRCClient, Session):
         self.join(self.channel)
         self.stopping = False
         self.factory.bot = self
-        self.init_session("ircbot", self.network, self.factory.sessionhandler)
+        address = "%s@%s" % (self.channel, self.network)
+        self.init_session("ircbot", address, self.factory.sessionhandler)
         # we link back to our bot and log in
-        self.uid = self.factory.uid
+        self.uid = int(self.factory.uid)
         self.logged_in = True
         self.factory.sessionhandler.connect(self)
         logger.log_infomsg("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
@@ -86,13 +87,14 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
     factor = 1.5
     maxDelay = 60
 
-    def __init__(self, uid=None, botname=None, channel=None, network=None, port=None):
+    def __init__(self, sessionhandler, uid=None, botname=None, channel=None, network=None, port=None):
         "Storing some important protocol properties"
-        self.uid = int(uid)
+        self.sessionhandler = sessionhandler
+        self.uid = uid
         self.nickname = str(botname)
         self.channel = str(channel)
         self.network = str(network)
-        self.port = int(port)
+        self.port = port
         self.bot = None
 
     def buildProtocol(self, addr):
@@ -118,8 +120,9 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
 
     def start(self):
         "Connect session to sessionhandler"
-        service = internet.TCPClient(self.network, self.port, self)
-        self.sessionhandler.portal.services.addService(service)
+        if self.port:
+            service = internet.TCPClient(self.network, int(self.port), self)
+            self.sessionhandler.portal.services.addService(service)
 
 
 #

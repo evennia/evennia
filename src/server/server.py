@@ -423,32 +423,21 @@ if WEBSERVER_ENABLED:
 
         print "  webserver: %s" % serverport
 
+ENABLED = []
 if IRC_ENABLED:
-
     # IRC channel connections
-
-    print '  irc enabled'
-
-    from src.comms import irc
-    irc.connect_all()
+    ENABLED.append('irc')
 
 if IMC2_ENABLED:
-
     # IMC2 channel connections
-
-    print '  imc2 enabled'
-
-    from src.comms import imc2
-    imc2.connect_all()
+    ENABLED.append('imc2')
 
 if RSS_ENABLED:
-
     # RSS feed channel connections
+    ENABLED.append('rss')
 
-    print '  rss enabled'
-
-    from src.comms import rss
-    rss.connect_all()
+if ENABLED:
+    print "  " + ", ".join(ENABLED) + " enabled."
 
 for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols

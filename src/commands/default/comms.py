@@ -21,8 +21,8 @@ from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
            "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
            "CmdCWho", "CmdChannelCreate", "CmdClock", "CmdCdesc",
-           "CmdPage", "CmdIRC2Chan")#, "CmdIMC2Chan", "CmdIMCInfo",
-           #"CmdIMCTell", "CmdRSS2Chan")
+           "CmdPage", "CmdIRC2Chan", "CmdRSS2Chan")#, "CmdIMC2Chan", "CmdIMCInfo",
+           #"CmdIMCTell")
 
 
 def find_channel(caller, channelname, silent=False, noaliases=False):
@@ -798,7 +798,7 @@ class CmdIRC2Chan(MuxCommand):
 
         if 'list' in self.switches:
             # show all connections
-            ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True)]
+            ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
                 from src.utils.evtable import EvTable
                 table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", border="cells", maxwidth=78)
@@ -849,13 +849,108 @@ class CmdIRC2Chan(MuxCommand):
             # re-use an existing bot
             bot = bot[0].typeclass
             if not bot.is_bot:
-                self.msg("Player '%s', which is not a bot, already exists." % botname)
+                self.msg("Player '%s' already exists and is not a bot." % botname)
                 return
         else:
             bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port)
         self.msg("Connection created. Starting IRC bot.")
+
+# RSS connection
+class CmdRSS2Chan(MuxCommand):
+    """
+    link an evennia channel to an external RSS feed
+
+    Usage:
+      @rss2chan[/switches] <evennia_channel> = <rss_url>
+
+    Switches:
+      /disconnect - this will stop the feed and remove the connection to the
+                    channel.
+      /remove     -                                 "
+      /list       - show all rss->evennia mappings
+
+    Example:
+      @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
+
+    This creates an RSS reader  that connects to a given RSS feed url. Updates
+    will be echoed as a title and news link to the given channel. The rate of
+    updating is set with the RSS_UPDATE_INTERVAL variable in settings (default
+    is every 10 minutes).
+
+    When disconnecting you need to supply both the channel and url again so as
+    to identify the connection uniquely.
+    """
+
+    key = "@rss2chan"
+    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
+    help_category = "Comms"
+
+    def func(self):
+        "Setup the rss-channel mapping"
+
+        # checking we have all we need
+        if not settings.RSS_ENABLED:
+            string = """RSS is not enabled. You need to activate it in game/settings.py."""
+            self.msg(string)
+            return
+        try:
+            import feedparser
+            feedparser   # to avoid checker error of not being used
+        except ImportError:
+            string = ("RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser). "
+                      "Install before continuing.")
+            self.msg(string)
+            return
+
+        if 'list' in self.switches:
+            # show all connections
+            rssbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
+            if rssbots:
+                from src.utils.evtable import EvTable
+                table = EvTable("{wdbid{n", "{wupdate rate{n", "{wev-channel", "{wRSS feed URL{n", border="cells", maxwidth=78)
+                for rssbot in rssbots:
+                    table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
+                self.caller.msg(table)
+            else:
+                self.msg("No rss bots found.")
+            return
+
+        if('disconnect' in self.switches or 'remove' in self.switches or
+                                                    'delete' in self.switches):
+            botname = "rssbot-%s" % self.lhs
+            matches = PlayerDB.objects.filter(db_is_bot=True, db_key=botname)
+            if not matches:
+                # try dbref match
+                matches = PlayerDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
+            if matches:
+                matches[0].delete()
+                self.msg("RSS connection destroyed.")
+            else:
+                self.msg("RSS connection/bot could not be removed, does it exist?")
+            return
+
+        if not self.args or not self.rhs:
+            string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
+            self.msg(string)
+            return
+        channel = self.lhs
+        url = self.rhs
+
+        botname = "rssbot-%s" % url
+        # create a new bot
+        bot = PlayerDB.objects.filter(username__iexact=botname)
+        if bot:
+            # re-use existing bot
+            bot = bot[0].typeclass
+            if not bot.is_bot:
+                self.msg("Player '%s' already exists and is not a bot." % botname)
+                return
+        else:
+            bot = create.create_player(botname, None, None, typeclass=bots.RSSBot)
+        bot.start(ev_channel=channel, rss_url=url, rss_rate=10)
+        self.msg("RSS reporter created. Fetching RSS.")
 
 
 #class CmdIMC2Chan(MuxCommand):
@@ -1077,85 +1172,3 @@ class CmdIRC2Chan(MuxCommand):
 #        self.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
 #
 #
-## RSS connection
-#class CmdRSS2Chan(MuxCommand):
-#    """
-#    link an evennia channel to an external RSS feed
-#
-#    Usage:
-#      @rss2chan[/switches] <evennia_channel> = <rss_url>
-#
-#    Switches:
-#      /disconnect - this will stop the feed and remove the connection to the
-#                    channel.
-#      /remove     -                                 "
-#      /list       - show all rss->evennia mappings
-#
-#    Example:
-#      @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
-#
-#    This creates an RSS reader  that connects to a given RSS feed url. Updates
-#    will be echoed as a title and news link to the given channel. The rate of
-#    updating is set with the RSS_UPDATE_INTERVAL variable in settings (default
-#    is every 10 minutes).
-#
-#    When disconnecting you need to supply both the channel and url again so as
-#    to identify the connection uniquely.
-#    """
-#
-#    key = "@rss2chan"
-#    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
-#    help_category = "Comms"
-#
-#    def func(self):
-#        "Setup the rss-channel mapping"
-#
-#        if not settings.RSS_ENABLED:
-#            string = """RSS is not enabled. You need to activate it in game/settings.py."""
-#            self.msg(string)
-#            return
-#
-#        if 'list' in self.switches:
-#            # show all connections
-#            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='rss_')
-#            if connections:
-#                table = prettytable.PrettyTable(["Evennia channel", "RSS url"])
-#                for conn in connections:
-#                    table.add_row([conn.channel.key, conn.external_config.split('|')[0]])
-#                string = "{wConnections to RSS:{n\n%s" % table
-#                self.msg(string)
-#            else:
-#                self.msg("No connections found.")
-#            return
-#
-#        if not self.args or not self.rhs:
-#            string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
-#            self.msg(string)
-#            return
-#        channel = self.lhs
-#        url = self.rhs
-#
-#        if('disconnect' in self.switches or 'remove' in self.switches or
-#                                                    'delete' in self.switches):
-#            chanmatch = find_channel(self.caller, channel, silent=True)
-#            if chanmatch:
-#                channel = chanmatch.key
-#
-#            ok = rss.delete_connection(channel, url)
-#            if not ok:
-#                self.msg("RSS connection/reader could not be removed, does it exist?")
-#            else:
-#                self.msg("RSS connection destroyed.")
-#            return
-#
-#        channel = find_channel(self.caller, channel)
-#        if not channel:
-#            return
-#        interval = settings.RSS_UPDATE_INTERVAL
-#        if not interval:
-#            interval = 10*60
-#        ok = rss.create_connection(channel, url, interval)
-#        if not ok:
-#            self.msg("This RSS connection already exists.")
-#            return
-#        self.msg("Connection created. Starting RSS reader.")

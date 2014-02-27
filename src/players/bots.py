@@ -59,10 +59,10 @@ class BotStarter(Script):
 
 class CmdBotListen(Command):
     """
-    This is a catch-all command that absorbs
-    all input coming into the bot through its
-    session and pipes it into its execute_cmd
-    method.
+    This is a command that absorbs input
+    aimed specifically at the bot. The session
+    must prepend its data with bot_data_in for
+    this to trigger.
     """
     key = "bot_data_in"
     def func(self):
@@ -199,7 +199,7 @@ class RSSBot(Bot):
     An RSS relayer. The RSS protocol itself runs a ticker to update its feed at regular
     intervals.
     """
-    def start(self, ev_channel=None, rss_url=None, rss_update_rate=None):
+    def start(self, ev_channel=None, rss_url=None, rss_rate=None):
         """
         Start by telling the portal to start a new RSS session
 
@@ -220,19 +220,20 @@ class RSSBot(Bot):
             self.db.ev_channel = channel
         if rss_url:
             self.db.rss_url = rss_url
-        if rss_update_rate:
-            self.db.rss_update_rate = rss_update_rate
+        if rss_rate:
+            self.db.rss_rate = rss_rate
         # instruct the server and portal to create a new session with
         # the stored configuration
         configdict = {"uid": self.dbid,
                       "url": self.db.rss_url,
-                      "rate": self.db.rss_update_rate}
+                      "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("src.server.portal.rss.RSSBotFactory", configdict)
 
     def execute_cmd(self, text=None, sessid=None):
         """
         Echo RSS input to connected channel
         """
+        print "execute_cmd rss:", text
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
