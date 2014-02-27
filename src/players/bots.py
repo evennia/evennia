@@ -4,12 +4,15 @@ Player that are  controlled by the server.
 
 """
 
+from django.conf import settings
 from src.players.player import Player
 from src.scripts.scripts import Script
 from src.commands.command import Command
 from src.commands.cmdset import CmdSet
-from src.commands.cmdhandler import CMD_NOMATCH, CMD_LOGINSTART
 from src.utils import search
+
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_IDLE_COMMAND = settings.IDLE_COMMAND
 
 _SESSIONS = None
 _CHANNELDB = None
@@ -25,15 +28,23 @@ class BotStarter(Script):
     """
     def at_script_creation(self):
         self.key = "botstarter"
-        self.desc = "kickstarts bot"
+        self.desc = "bot start/keepalive"
         self.persistent = True
         self.db.started = False
+        if _IDLE_TIMEOUT > 0:
+            # call before idle_timeout triggers
+            self.interval = int(max(60, _IDLE_TIMEOUT * 0.99))
+            self.start_delay = True
 
     def at_start(self):
         "Kick bot into gear"
         if not self.db.started:
             self.player.start()
             self.db.started = True
+
+    def at_repeat(self):
+        "Called self.interval seconds to keep connection."
+        self.dbobj.execute_cmd(_IDLE_COMMAND)
 
     def at_server_reload(self):
         """
