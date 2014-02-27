@@ -50,7 +50,7 @@ class GameTime(Script):
         Setup the script
         """
         self.key = GAMETIME_SCRIPT_NAME
-        self.desc = "Keeps track of the game time"
+        self.desc = "Saves uptime/runtime"
         self.interval = 60
         self.persistent = True
         self.start_delay = True

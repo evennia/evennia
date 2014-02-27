@@ -15,7 +15,6 @@ _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 _IDLE_COMMAND = settings.IDLE_COMMAND
 
 _SESSIONS = None
-_CHANNELDB = None
 
 
 # Bot helper utilities
@@ -44,7 +43,7 @@ class BotStarter(Script):
 
     def at_repeat(self):
         "Called self.interval seconds to keep connection."
-        self.dbobj.execute_cmd(_IDLE_COMMAND)
+        self.obj.dbobj.execute_cmd(_IDLE_COMMAND)
 
     def at_server_reload(self):
         """
@@ -97,7 +96,7 @@ class Bot(Player):
         self.locks.add(lockstring)
         # set the basics of being a bot
         self.cmdset.add_default(BotCmdSet)
-        script_key = "botstarter_%s" % self.key
+        script_key = "%s" % self.key
         self.scripts.add(BotStarter, key=script_key)
         self.is_bot = True
 
@@ -136,7 +135,7 @@ class IRCBot(Bot):
         irc_network - url of network, like irc.freenode.net
         irc_port - port number of irc network, like 6667
         """
-        global _SESSIONS, _CHANNELDB
+        global _SESSIONS
         if not _SESSIONS:
             from src.server.sessionhandler import SESSIONS as _SESSIONS
 
@@ -193,3 +192,51 @@ class IRCBot(Bot):
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
             self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
+
+
+class RSSBot(Bot):
+    """
+    An RSS relayer. The RSS protocol itself runs a ticker to update its feed at regular
+    intervals.
+    """
+    def start(self, ev_channel=None, rss_url=None, rss_update_rate=None):
+        """
+        Start by telling the portal to start a new RSS session
+
+        ev_channel - key of the Evennia channel to connect to
+        rss_url - full URL to the RSS feed to subscribe to
+        rss_update_rate - how often for the feedreader to update
+        """
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+
+        if ev_channel:
+            # connect to Evennia channel
+            channel = search.channel_search(ev_channel)
+            if not channel:
+                raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+            channel = channel[0]
+            self.db.ev_channel = channel
+        if rss_url:
+            self.db.rss_url = rss_url
+        if rss_update_rate:
+            self.db.rss_update_rate = rss_update_rate
+        # instruct the server and portal to create a new session with
+        # the stored configuration
+        configdict = {"uid": self.dbid,
+                      "url": self.db.rss_url,
+                      "rate": self.db.rss_update_rate}
+        _SESSIONS.start_bot_session("src.server.portal.rss.RSSBotFactory", configdict)
+
+    def execute_cmd(self, text=None, sessid=None):
+        """
+        Echo RSS input to connected channel
+        """
+        if not self.ndb.ev_channel and self.db.ev_channel:
+            # cache channel lookup
+            self.ndb.ev_channel = self.db.ev_channel
+        if self.ndb.ev_channel:
+            self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
+
+

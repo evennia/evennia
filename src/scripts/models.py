@@ -26,12 +26,13 @@ Common examples of uses of Scripts:
 """
 from django.conf import settings
 from django.db import models
-
-from src.typeclasses.models import (TypedObject, TagHandler,
-                                    AttributeHandler)
+from django.core.exceptions import ObjectDoesNotExist
+from src.typeclasses.models import TypedObject, TagHandler, AttributeHandler
 from src.scripts.manager import ScriptManager
+from src.utils.utils import dbref, to_str
 
 __all__ = ("ScriptDB",)
+_GA = object.__getattribute__
 _SA = object.__setattr__
 
 
@@ -113,11 +114,53 @@ class ScriptDB(TypedObject):
         _SA(self, "tags", TagHandler(self))
         #_SA(self, "aliases", AliasHandler(self))
 
+
     #
     #
     # ScriptDB class properties
     #
     #
+
+    # obj property
+    def __get_obj(self):
+        """
+        property wrapper that homogenizes access to either
+        the db_player or db_obj field, using the same obj
+        property name
+        """
+        if self.db_player:
+            return _GA(self, "db_player")
+        return _GA(self, "db_obj")
+
+    def __set_obj(self, value):
+        """
+        Set player or obj to their right database field. If
+        a dbref is given, assume ObjectDB.
+        """
+        try:
+            value = _GA(value, "dbobj")
+        except AttributeError:
+            pass
+        if isinstance(value, (basestring, int)):
+            from src.objects.models import ObjectDB
+            value = to_str(value, force_string=True)
+            if (value.isdigit() or value.startswith("#")):
+                dbid = dbref(value, reqhash=False)
+                if dbid:
+                    try:
+                        value = ObjectDB.objects.get(id=dbid)
+                    except ObjectDoesNotExist:
+                        # maybe it is just a name that happens to look like a dbid
+                        pass
+        if value.__class__.__name__ == "PlayerDB":
+            fname = "db_player"
+            _SA(self, fname, value)
+        else:
+            fname = "db_obj"
+            _SA(self, fname, value)
+        # saving the field
+        _GA(self, "save")(update_fields=[fname])
+    obj = property(__get_obj, __set_obj)
 
 
     def at_typeclass_error(self):
@@ -134,6 +177,7 @@ class ScriptDB(TypedObject):
 
     delete_iter = 0
     def delete(self):
+        "Delete script"
         if self.delete_iter > 0:
             return
         self.delete_iter += 1
