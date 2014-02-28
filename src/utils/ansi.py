@@ -389,6 +389,7 @@ def _transform(func_name):
         return ANSIString(''.join(to_string), decoded=True)
     return wrapped
 
+
 class ANSIMeta(type):
     """
     Many functions on ANSIString are just light wrappers around the unicode
@@ -402,7 +403,7 @@ class ANSIMeta(type):
             setattr(cls, func_name, _query_super(func_name))
         for func_name in [
                 '__mul__', '__mod__', 'expandtabs', '__rmul__', 'join',
-                'decode', 'replace', 'format']:
+                'decode', 'replace', 'format', 'encode']:
             setattr(cls, func_name, _on_raw(func_name))
         for func_name in [
                 'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
@@ -434,62 +435,38 @@ class ANSIString(unicode):
         the same attributes as the standard one, and you may declare the
         string to be handled as already decoded. It is important not to double
         decode strings, as escapes can only be respected once.
-
-        If the regexable flag is set, using __getitem__, such as when getting
-        an index or slicing, will return the result from the raw string. If
-        this flag is set False, it will intelligently skip ANSI escapes.
-
-        ANSIString('{rHello{g, W{yorld', regexable=True)[0] will return the
-        first byte of the escape sequence before 'Hello', while
-        ANSIString('{rHello{g, W{yorld')[0] will return a red 'H'.
-
-        When a regexable ANSIString is sliced, the result is returned as a
-        non-regexable ANSI String. This ensures that usage of regexable
-        ANSIStrings is an explicit choice.
-
-        Why all this complication with the regexable flag?
-
-        The reason is that while we are able to subclass the unicode object in
-        Python, the byte representation of the string in memory cannot be
-        changed and still exists under the hood. This doesn't matter for things
-        coded in pure Python, but since Regexes need to be mindful of
-        performance, the module that handles them operates directly on the
-        memory representation of the string in order to do matching. It is thus
-        completely unaware of our customizations to the class. Interestingly,
-        however, while the re module does its matching on the raw string, it
-        slices the string using the object's methods. This means that running
-        a regex on an ANSIString would return matches at bogus indexes, since
-        the __getitem__ method of ANSIString skips ANSI escape sequences, which
-        were part of the raw data regex was matching against.
-
-        So, if you need to use regex on an ANSIString, make sure you get it in
-        regexable mode first, and be ready to deal with a few edge cases.
         """
         string = to_str(args[0], force_string=True)
         if not isinstance(string, basestring):
             string = str(string)
         parser = kwargs.get('parser', ANSI_PARSER)
-        regexable = kwargs.get('regexable', False)
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
         if not decoded:
             string = parser.parse_ansi(string)
-        if isinstance(string, unicode):
-            string = super(ANSIString, cls).__new__(ANSIString, string)
-        else:
-            string = super(ANSIString, cls).__new__(ANSIString, string, 'utf-8')
-        string._regexable = regexable
-        return string
+        clean_string = unicode(parser.parse_ansi(
+            string, strip_ansi=True), 'utf-8')
+        ansi_string = super(ANSIString, cls).__new__(ANSIString, clean_string)
+        ansi_string._raw_string = string
+        ansi_string._clean_string = clean_string
+        return ansi_string
+
+    def __str__(self):
+        return self._raw_string.encode('utf-8')
+
+    def __unicode__(self):
+        """
+        Unfortunately, this is not called during print() statements due to a
+        bug in the Python interpreter. You can always do unicode() or str()
+        around the resulting ANSIString and print that.
+        """
+        return self._raw_string
 
     def __repr__(self):
         """
         Let's make the repr the command that would actually be used to
         construct this object, for convenience and reference.
         """
-        if self._regexable:
-            reg = ', regexable=True'
-        else:
-            reg = ''
-        return "ANSIString(%s, decoded=True%s)" % (repr(self._raw_string), reg)
+        return "ANSIString(%s, decoded=True)" % repr(self._raw_string)
 
     def __init__(self, *args, **kwargs):
         """
@@ -519,9 +496,6 @@ class ANSIString(unicode):
         """
         self.parser = kwargs.pop('parser', ANSI_PARSER)
         super(ANSIString, self).__init__(*args, **kwargs)
-        self._raw_string = unicode(self)
-        self._clean_string = unicode(self.parser.parse_ansi(
-            self._raw_string, strip_ansi=True), 'utf-8')
         self._code_indexes, self._char_indexes = self._get_indexes()
 
     def __add__(self, other):
@@ -598,8 +572,6 @@ class ANSIString(unicode):
         string instead, bypassing ANSIString's intelligent escape skipping,
         for reasons explained in the __new__ method's docstring.
         """
-        if self._regexable:
-            return ANSIString(self._raw_string[item], decoded=True)
         if isinstance(item, slice):
             # Slices must be handled specially.
             return self._slice(item)
@@ -634,25 +606,6 @@ class ANSIString(unicode):
         Return a unicode object with the ANSI escapes.
         """
         return self._raw_string
-
-    def is_regexable(self):
-        """
-        State whether or not this ANSIString is a 'regexable' ANSIString.
-        Regexable ANSIStrings return indexes from _raw_string when sliced.
-        """
-        return self._regexable
-
-    def regexable(self):
-        """
-        Return the regexable version of this ANSIString.
-        """
-        return ANSIString(self, decoded=True, regexable=True)
-
-    def non_regexable(self):
-        """
-        Return the non-regexable version of this ANSIString.
-        """
-        return ANSIString(self, decoded=True)
 
     def partition(self, sep, reverse=False):
         """
