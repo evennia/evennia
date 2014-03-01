@@ -60,18 +60,9 @@ ANSI_SPACE = " "
 # Escapes
 ANSI_ESCAPES = ("{{", "%%", "\\\\")
 
-
-def sub_meth(obj, function):
-    """
-    RegexObject.sub() allows for the 'repl' argument to be a function.
-    However, it doesn't call bound methods correctly. This forces 'self'
-    to be passed.
-    """
-    if isinstance(function, basestring):
-        return function
-    def wrapped(*args, **kwargs):
-        return function(obj, *args, **kwargs)
-    return wrapped
+from collections import OrderedDict
+_PARSE_CACHE = OrderedDict()
+_PARSE_CACHE_SIZE = 10000
 
 
 class ANSIParser(object):
@@ -84,7 +75,14 @@ class ANSIParser(object):
     an extra { for Merc-style codes
     """
 
-    def parse_rgb(self, rgbmatch):
+    def sub_ansi(self, ansimatch):
+        """
+        Replacer used by re.sub to replace ansi
+        markers with correct ansi sequences
+        """
+        return self.ansi_map.get(ansimatch.group(), "")
+
+    def sub_xterm256(self, rgbmatch):
         """
         This is a replacer method called by re.sub with the matched
         tag. It must return the correct ansi sequence.
@@ -94,7 +92,9 @@ class ANSIParser(object):
         """
         if not rgbmatch:
             return ""
-        rgbtag = rgbmatch.groups()[0]
+
+        # get tag, stripping the initial marker
+        rgbtag = rgbmatch.group()[1:]
 
         background = rgbtag[0] == '['
         if background:
@@ -179,23 +179,34 @@ class ANSIParser(object):
                 return string.clean()
             else:
                 return string.raw()
+
         if not string:
             return ''
-        self.do_xterm256 = xterm256
-        string = utils.to_str(string)
 
-        # go through all available mappings and translate them
-        parts = self.ansi_escapes.split(string) + [" "]
-        string = ""
-        for part, sep in zip(parts[::2], parts[1::2]):
-            for sub in self.ansi_sub:
-                part = sub[0].sub(sub_meth(self, sub[1]), part)
-            string += "%s%s" % (part, sep[0].strip())
+        # check cached parsings
+        global _PARSE_CACHE
+        cachekey = "%s-%s-%s" % (string, strip_ansi, xterm256)
+        if cachekey in _PARSE_CACHE:
+            return _PARSE_CACHE[cachekey]
+
+        self.do_xterm256 = xterm256
+        in_string = utils.to_str(string)
+
+        # do string replacement
+        parsed_string = self.xterm256_sub.sub(self.sub_xterm256, in_string)
+        parsed_string = self.ansi_sub.sub(self.sub_ansi, parsed_string)
+
         if strip_ansi:
             # remove all ansi codes (including those manually
             # inserted in string)
-            string = self.ansi_regex.sub("", string)
-        return string
+            parsed_string = self.ansi_regex.sub("", parsed_string)
+
+        # cache and crop old cache
+        _PARSE_CACHE[cachekey] = parsed_string
+        if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
+           _PARSE_CACHE.popitem(last=False)
+
+        return parsed_string
 
     # MUX-style mappings %cr %cn etc
 
@@ -237,8 +248,8 @@ class ANSIParser(object):
         (r'{/', ANSI_RETURN),          # line break
         (r'{-', ANSI_TAB),             # tab
         (r'{_', ANSI_SPACE),           # space
-        (r'{\*', ANSI_INVERSE),        # invert
-        (r'{\^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
+        (r'{*', ANSI_INVERSE),        # invert
+        (r'{^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
 
         (r'{r', hilite + ANSI_RED),
         (r'{g', hilite + ANSI_GREEN),
@@ -258,32 +269,35 @@ class ANSIParser(object):
         (r'{W', normal + ANSI_WHITE),  # light grey
         (r'{X', normal + ANSI_BLACK),  # pure black
 
-        (r'{\[r', ANSI_BACK_RED),
-        (r'{\[g', ANSI_BACK_GREEN),
-        (r'{\[y', ANSI_BACK_YELLOW),
-        (r'{\[b', ANSI_BACK_BLUE),
-        (r'{\[m', ANSI_BACK_MAGENTA),
-        (r'{\[c', ANSI_BACK_CYAN),
-        (r'{\[w', ANSI_BACK_WHITE),    # light grey background
-        (r'{\[x', ANSI_BACK_BLACK)     # pure black background
+        (r'{[r', ANSI_BACK_RED),
+        (r'{[g', ANSI_BACK_GREEN),
+        (r'{[y', ANSI_BACK_YELLOW),
+        (r'{[b', ANSI_BACK_BLUE),
+        (r'{[m', ANSI_BACK_MAGENTA),
+        (r'{[c', ANSI_BACK_CYAN),
+        (r'{[w', ANSI_BACK_WHITE),    # light grey background
+        (r'{[x', ANSI_BACK_BLACK)     # pure black background
         ]
 
-    # xterm256 {123, %c134,
+    ansi_map = mux_ansi_map + ext_ansi_map
+
+    # xterm256 {123, %c134. These are replaced directly by
+    # the sub_xterm256 method
 
     xterm256_map = [
-        (r'%([0-5]{3})', parse_rgb),  # %123 - foreground colour
-        (r'%(\[[0-5]{3})', parse_rgb),  # %-123 - background colour
-        (r'{([0-5]{3})', parse_rgb),   # {123 - foreground colour
-        (r'{(\[[0-5]{3})', parse_rgb)   # {-123 - background colour
+        (r'%[0-5]{3}', ""),  # %123 - foreground colour
+        (r'%\[[0-5]{3}', ""),  # %[123 - background colour
+        (r'\{[0-5]{3}', ""),   # {123 - foreground colour
+        (r'\{\[[0-5]{3}', "")   # {[123 - background colour
         ]
 
-    # obs - order matters here, we want to do the xterms first since
-    # they collide with some of the other mappings otherwise.
-    ansi_map = xterm256_map + mux_ansi_map + ext_ansi_map
-
     # prepare regex matching
-    ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
-                     for sub in ansi_map]
+    #ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
+    #                 for sub in ansi_map]
+    xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
+    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_map]), re.DOTALL)
+
+    ansi_map = dict(ansi_map)
 
     # prepare matching ansi codes overall
     ansi_regex = re.compile("\033\[[0-9;]+m")
@@ -477,7 +491,7 @@ class ANSIString(unicode):
         """
         return "ANSIString(%s, decoded=True)" % repr(self._raw_string)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, text="", parser=ANSI_PARSER, **kwargs):
         """
         When the ANSIString is first initialized, a few internal variables
         have to be set.
@@ -503,8 +517,8 @@ class ANSIString(unicode):
         tables for which characters in the raw string are related to ANSI
         escapes, and which are for the readable text.
         """
-        self.parser = kwargs.pop('parser', ANSI_PARSER)
-        super(ANSIString, self).__init__(*args, **kwargs)
+        self.parser = parser
+        super(ANSIString, self).__init__(text)
         self._code_indexes, self._char_indexes = self._get_indexes()
 
     def __add__(self, other):
@@ -657,14 +671,10 @@ class ANSIString(unicode):
         It's possible that only one of these tables is actually needed, the
         other assumed to be what isn't in the first.
         """
-        matches = [
-            (match.start(), match.end())
-            for match in self.parser.ansi_regex.finditer(self._raw_string)]
-        code_indexes = []
         # These are all the indexes which hold code characters.
-        for start, end in matches:
-            code_indexes.extend(range(start, end))
-
+        code_indexes = []
+        for match in self.parser.ansi_regex.finditer(self._raw_string):
+            code_indexes.extend(range(match.start(), match.end()))
         if not code_indexes:
             # Plain string, no ANSI codes.
             return code_indexes, range(0, len(self._raw_string))

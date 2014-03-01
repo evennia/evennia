@@ -721,7 +721,7 @@ class EvTable(object):
         hchar = kwargs.pop("header_line_char", "~")
         self.header_line_char = hchar[0] if hchar else "~"
 
-        border = kwargs.pop("border", "none")
+        border = kwargs.pop("border", "tablecols")
         if border is None:
             border = "none"
         if not border in ("none", "table", "tablecols",

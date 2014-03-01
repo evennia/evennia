@@ -217,7 +217,7 @@ def format_script_list(scripts):
 
     table = EvTable("{wdbref{n", "{wobj{n", "{wkey{n", "{wintval{n", "{wnext{n",
                     "{wrept{n", "{wdb", "{wtypeclass{n", "{wdesc{n",
-                    align='r', border="cells")
+                    align='r', border="tablecols")
     for script in scripts:
         nextrep = script.time_until_next_repeat()
         if nextrep is None:
