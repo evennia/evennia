@@ -217,7 +217,6 @@ class ANSIParser(object):
            _PARSE_CACHE.popitem(last=False)
 
         return parsed_string
-
     # MUX-style mappings %cr %cn etc
 
     mux_ansi_map = [
