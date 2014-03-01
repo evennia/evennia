@@ -32,7 +32,7 @@ class BotStarter(Script):
         self.db.started = False
         if _IDLE_TIMEOUT > 0:
             # call before idle_timeout triggers
-            self.interval = int(max(60, _IDLE_TIMEOUT * 0.99))
+            self.interval = int(max(60, _IDLE_TIMEOUT * 0.90))
             self.start_delay = True
 
     def at_start(self):
