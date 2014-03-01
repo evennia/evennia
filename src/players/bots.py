@@ -12,7 +12,6 @@ from src.commands.cmdset import CmdSet
 from src.utils import search
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
-_IDLE_COMMAND = settings.IDLE_COMMAND
 
 _SESSIONS = None
 
@@ -42,8 +41,18 @@ class BotStarter(Script):
             self.db.started = True
 
     def at_repeat(self):
-        "Called self.interval seconds to keep connection."
-        self.obj.dbobj.execute_cmd(_IDLE_COMMAND)
+        """
+        Called self.interval seconds to keep connection. We cannot use
+        the IDLE command from inside the game since the system will
+        not catch it (commands executed from the server side usually
+        has no sessions). So we update the idle counter manually here
+        instead. This keeps the bot getting hit by IDLE_TIMEOUT.
+        """
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+        for session in _SESSIONS.sessions_from_player(self.player):
+            session.update_session_counters(idle=True)
 
     def at_server_reload(self):
         """
@@ -66,6 +75,7 @@ class CmdBotListen(Command):
     """
     key = "bot_data_in"
     def func(self):
+        "Relay to typeclass"
         self.obj.typeclass.execute_cmd(self.args.strip(), sessid=self.sessid)
 
 class BotCmdSet(CmdSet):
