@@ -166,6 +166,12 @@ class ANSIParser(object):
                 else:
                     return ANSI_NORMAL + ANSI_BLUE
 
+    def strip_ansi(self, string):
+        """
+        Strips raw ANSI codes from a string.
+        """
+        return self.ansi_regex.sub("", string)
+
     def parse_ansi(self, string, strip_ansi=False, xterm256=False):
         """
         Parses a string, subbing color codes according to
@@ -199,7 +205,7 @@ class ANSIParser(object):
         if strip_ansi:
             # remove all ansi codes (including those manually
             # inserted in string)
-            parsed_string = self.ansi_regex.sub("", parsed_string)
+            return self.strip_ansi(string)
 
         # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
@@ -378,7 +384,7 @@ def _on_raw(func_name):
                 args.insert(0, string)
         except IndexError:
             pass
-        result = _query_super(func_name)(self, *args, **kwargs)
+        result = getattr(self._raw_string, func_name)(*args, **kwargs)
         if isinstance(result, basestring):
             return ANSIString(result, decoded=True)
         return result
@@ -416,7 +422,7 @@ class ANSIMeta(type):
                 'rfind', 'rindex', '__len__']:
             setattr(cls, func_name, _query_super(func_name))
         for func_name in [
-                '__mul__', '__mod__', 'expandtabs', '__rmul__', 'join',
+                '__mul__', '__mod__', 'expandtabs', '__rmul__',
                 'decode', 'replace', 'format', 'encode']:
             setattr(cls, func_name, _on_raw(func_name))
         for func_name in [
@@ -456,13 +462,17 @@ class ANSIString(unicode):
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
         if not decoded:
+            # Completely new ANSI String
+            clean_string = unicode(parser.parse_ansi(string, strip_ansi=True))
             string = parser.parse_ansi(string)
-        if hasattr(string, '_clean_string'):
+        elif hasattr(string, '_clean_string'):
+            # It's already an ANSIString
             clean_string = string._clean_string
             string = string._raw_string
         else:
-            clean_string = unicode(parser.parse_ansi(
-                string, strip_ansi=True))
+            # It's a string that has been pre-ansi decoded.
+            clean_string = parser.strip_ansi(string)
+
         if not isinstance(string, unicode):
             string = string.decode('utf-8')
         else:
@@ -491,7 +501,7 @@ class ANSIString(unicode):
         """
         return "ANSIString(%s, decoded=True)" % repr(self._raw_string)
 
-    def __init__(self, text="", parser=ANSI_PARSER, **kwargs):
+    def __init__(self, *_, **kwargs):
         """
         When the ANSIString is first initialized, a few internal variables
         have to be set.
@@ -517,8 +527,8 @@ class ANSIString(unicode):
         tables for which characters in the raw string are related to ANSI
         escapes, and which are for the readable text.
         """
-        self.parser = parser
-        super(ANSIString, self).__init__(text)
+        self.parser = kwargs.pop('parser', ANSI_PARSER)
+        super(ANSIString, self).__init__()
         self._code_indexes, self._char_indexes = self._get_indexes()
 
     def __add__(self, other):
@@ -583,8 +593,8 @@ class ANSIString(unicode):
                 string += self._raw_string[i]
             except IndexError:
                 pass
-        if slc.stop is not None:
-            append_tail = self._get_interleving(slc.stop)
+        if i is not None:
+            append_tail = self._get_interleving(self._char_indexes.index(i) + 1)
         else:
             append_tail = ''
         return ANSIString(string + append_tail, decoded=True)
@@ -721,11 +731,11 @@ class ANSIString(unicode):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[start:next] + self._get_interleving(next))
+            res.append(self[start:next])
             start = next + bylen
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
-        res.append(self[start:len(self)] + self._get_interleving(len(self)))
+        res.append(self[start:len(self)])
         return res
 
     def rsplit(self, by, maxsplit=-1):
@@ -747,13 +757,27 @@ class ANSIString(unicode):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next+bylen:end] + self._get_interleving(end))
+            res.append(self[next+bylen:end])
             end = next
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
-        res.append(self[:end] + self._get_interleving(end))
+        res.append(self[:end])
         res.reverse()
         return res
+
+    def join(self, iterable):
+        """
+        Joins together strings in an iterable.
+        """
+        result = ANSIString('')
+        last_item = None
+        for item in iterable:
+            if last_item is not None:
+                result += self
+            result += item
+            last_item = item
+        return result
+
 
     @_spacing_preflight
     def center(self, width, fillchar, difference):
