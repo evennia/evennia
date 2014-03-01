@@ -436,15 +436,24 @@ class ANSIString(unicode):
         string to be handled as already decoded. It is important not to double
         decode strings, as escapes can only be respected once.
         """
-        string = to_str(args[0], force_string=True)
+        string = args[0]
         if not isinstance(string, basestring):
-            string = str(string)
+            string = to_str(string, force_string=True)
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
         if not decoded:
             string = parser.parse_ansi(string)
-        clean_string = unicode(parser.parse_ansi(
-            string, strip_ansi=True), 'utf-8')
+        if hasattr(string, '_clean_string'):
+            clean_string = string._clean_string
+            string = string._raw_string
+        else:
+            clean_string = unicode(parser.parse_ansi(
+                string, strip_ansi=True))
+        if not isinstance(string, unicode):
+            string = string.decode('utf-8')
+        else:
+            # Do this to prevent recursive ANSIStrings.
+            string = unicode(string)
         ansi_string = super(ANSIString, cls).__new__(ANSIString, clean_string)
         ansi_string._raw_string = string
         ansi_string._clean_string = clean_string
@@ -542,10 +551,6 @@ class ANSIString(unicode):
         """
         slice_indexes = self._char_indexes[slc]
         # If it's the end of the string, we need to append final color codes.
-        if self._char_indexes and self._char_indexes[-1] in slice_indexes:
-            append_tail = self._get_interleving(len(self))
-        else:
-            append_tail = ''
         if not slice_indexes:
             return ANSIString('')
         try:
@@ -554,6 +559,7 @@ class ANSIString(unicode):
             return ANSIString('')
         last_mark = slice_indexes[0]
         # Check between the slice intervals for escape sequences.
+        i = None
         for i in slice_indexes[1:]:
             for index in range(last_mark, i):
                 if index in self._code_indexes:
@@ -563,6 +569,10 @@ class ANSIString(unicode):
                 string += self._raw_string[i]
             except IndexError:
                 pass
+        if slc.stop is not None:
+            append_tail = self._get_interleving(slc.stop)
+        else:
+            append_tail = ''
         return ANSIString(string + append_tail, decoded=True)
 
     def __getitem__(self, item):
