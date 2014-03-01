@@ -22,7 +22,7 @@ Result:
 
 +----------------------+----------+---+--------------------------+
 |       Heading1       | Heading2 |   |                          |
-+======================+==========+===+==========================+
++~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
 |           1          |     4    | 7 |     This is long data    |
 +----------------------+----------+---+--------------------------+
 |           2          |     5    | 8 | This is even longer data |
@@ -43,7 +43,7 @@ table.reformat(width=50, align="l")
 creation call) yields the following result:
 +-----------+------------+-----------+-----------+
 | Heading1  | Heading2   |           |           |
-+===========+============+===========+===========+
++~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
 | 1         | 4          | 7         | This is   |
 |           |            |           | long data |
 +-----------+------------+-----------+-----------+
@@ -75,19 +75,19 @@ ANSI-coloured string types.
 #from textwrap import wrap
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from src.utils.utils import to_unicode
+from src.utils.utils import to_unicode, to_str
 from src.utils.ansi import ANSIString
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."
     return not hasattr(obj, '__iter__') and [obj] or obj
 
-def _to_ansi(obj, regexable=False):
+def _to_ansi(obj):
     "convert to ANSIString"
     if hasattr(obj, "__iter__"):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(to_unicode(obj), regexable=regexable)
+        return ANSIString(to_unicode(obj))
 
 
 _unicode = unicode
@@ -133,7 +133,7 @@ class ANSITextWrapper(TextWrapper):
             pat = self.wordsep_re_uni
         else:
             pat = self.wordsep_simple_re_uni
-        chunks = pat.split(_to_ansi(text, regexable=True))
+        chunks = pat.split(_to_ansi(text))
         chunks = filter(None, chunks)  # remove empty chunks
         return chunks
 
@@ -408,7 +408,8 @@ class Cell(object):
             if 0 < width < len(line):
                 # replace_whitespace=False, expand_tabs=False is a
                 # fix for ANSIString not supporting expand_tabs/translate
-                adjusted_data.extend([ANSIString(part + "{n") for part in wrap(line, width=width, drop_whitespace=False)])
+                adjusted_data.extend([ANSIString(part + "{n")
+                    for part in wrap(line, width=width, drop_whitespace=False)])
             else:
                 adjusted_data.append(line)
         if self.enforce_size:
@@ -1138,5 +1139,8 @@ class EvTable(object):
 
     def __str__(self):
         "print table"
+        return  "\n".join([line for line in self._generate_lines()])
+
+    def __unicode__(self):
         return  to_unicode("\n".join([line for line in self._generate_lines()]))
 
