@@ -1005,7 +1005,7 @@ class EvTable(object):
             cell_data = [cell.get() for cell in cell_row]
             cell_height = min(len(lines) for lines in cell_data)
             for iline in range(cell_height):
-                yield "".join(_to_ansi(celldata[iline] for celldata in cell_data))
+                yield ANSIString("").join(_to_ansi(celldata[iline] for celldata in cell_data))
 
     def add_header(self, *args, **kwargs):
         """
@@ -1139,8 +1139,8 @@ class EvTable(object):
 
     def __str__(self):
         "print table"
-        return  "\n".join([line for line in self._generate_lines()])
+        return  ANSIString("\n").join([line for line in self._generate_lines()])
 
     def __unicode__(self):
-        return  to_unicode("\n".join([line for line in self._generate_lines()]))
+        return  to_unicode(ANSIString("\n").join([line for line in self._generate_lines()]))
 
