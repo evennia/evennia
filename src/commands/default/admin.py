@@ -204,7 +204,7 @@ class CmdBan(MuxCommand):
         # save updated banlist
         banlist.append(bantup)
         ServerConfig.objects.conf('server_bans', banlist)
-        self.caller.msg("%s-Ban {w%s{x was added." % (typ, ban))
+        self.caller.msg("%s-Ban {w%s{n was added." % (typ, ban))
 
 
 class CmdUnban(MuxCommand):

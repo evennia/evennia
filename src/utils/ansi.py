@@ -205,9 +205,9 @@ class ANSIParser(object):
         if strip_ansi:
             # remove all ansi codes (including those manually
             # inserted in string)
-            return self.strip_ansi(string)
+            return self.strip_ansi(parsed_string)
 
-        # cache and crop old cache
+         # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
         if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
            _PARSE_CACHE.popitem(last=False)
@@ -682,6 +682,13 @@ class ANSIString(unicode):
         other assumed to be what isn't in the first.
         """
         # These are all the indexes which hold code characters.
+        #matches = [(match.start(), match.end())
+        #            for match in self.parser.ansi_regex.finditer(self._raw_string)]
+        #code_indexes = []
+        #         # These are all the indexes which hold code characters.
+        #for start, end in matches:
+        #    code_indexes.extend(range(start, end))
+
         code_indexes = []
         for match in self.parser.ansi_regex.finditer(self._raw_string):
             code_indexes.extend(range(match.start(), match.end()))
