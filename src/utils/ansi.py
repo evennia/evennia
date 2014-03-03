@@ -166,7 +166,7 @@ class ANSIParser(object):
                 else:
                     return ANSI_NORMAL + ANSI_BLUE
 
-    def strip_ansi(self, string):
+    def strip_raw_codes(self, string):
         """
         Strips raw ANSI codes from a string.
         """
@@ -205,7 +205,7 @@ class ANSIParser(object):
         if strip_ansi:
             # remove all ansi codes (including those manually
             # inserted in string)
-            return self.strip_ansi(parsed_string)
+            return self.strip_raw_codes(parsed_string)
 
          # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
@@ -471,7 +471,7 @@ class ANSIString(unicode):
             string = string._raw_string
         else:
             # It's a string that has been pre-ansi decoded.
-            clean_string = parser.strip_ansi(string)
+            clean_string = parser._strip_raw_ansi(string)
 
         if not isinstance(string, unicode):
             string = string.decode('utf-8')
