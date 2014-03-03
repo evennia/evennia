@@ -268,11 +268,11 @@ class TestComms(CommandTest):
         self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage")
         self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:")
         self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.")
-        self.call(comms.CmdCemit(), "testchan = Test Message", "Sent to channel testchan: [testchan] Test Message")
+        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message")
         self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer7")
         self.call(comms.CmdPage(), "TestPlayer7b = Test", "You paged TestPlayer7b with: 'Test'.")
         self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]") # noone else connected to boot
-        self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' was destroyed.")
+        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestPlayer7: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.")
 
 
 from src.commands.default import batchprocess

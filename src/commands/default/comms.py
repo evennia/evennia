@@ -415,7 +415,6 @@ class CmdCemit(MuxPlayerCommand):
       @cemit[/switches] <channel> = <message>
 
     Switches:
-      noheader - don't show the [channel] header before the message
       sendername - attach the sender's name before the message
       quiet - don't echo the message back to sender
 
@@ -447,8 +446,6 @@ class CmdCemit(MuxPlayerCommand):
         message = self.rhs
         if "sendername" in self.switches:
             message = "%s: %s" % (self.key, message)
-        if not "noheader" in self.switches:
-            message = "[%s] %s" % (channel.key, message)
         channel.msg(message)
         if not "quiet" in self.switches:
             string = "Sent to channel %s: %s" % (channel.key, message)

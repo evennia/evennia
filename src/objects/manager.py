@@ -221,7 +221,7 @@ class ObjectManager(TypedObjectManager):
             return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]
         else:
             alias_candidates = self.filter(id__in=candidates_id, db_tags__db_category__iexact="objectalias")
-            print alias_candidates
+            #print alias_candidates
             alias_strings = alias_candidates.values_list("db_key", flat=True)
             index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
             if index_matches:
