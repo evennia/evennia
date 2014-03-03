@@ -199,8 +199,12 @@ class ANSIParser(object):
         in_string = utils.to_str(string)
 
         # do string replacement
-        parsed_string = self.xterm256_sub.sub(self.sub_xterm256, in_string)
-        parsed_string = self.ansi_sub.sub(self.sub_ansi, parsed_string)
+        parsed_string =  ""
+        parts = self.ansi_escapes.split(in_string) + [" "]
+        for part, sep in zip(parts[::2], parts[1::2]):
+            pstring = self.xterm256_sub.sub(self.sub_xterm256, part)
+            pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
+            parsed_string += "%s%s" % (pstring, sep[0].strip())
 
         if strip_ansi:
             # remove all ansi codes (including those manually
@@ -217,30 +221,30 @@ class ANSIParser(object):
     # MUX-style mappings %cr %cn etc
 
     mux_ansi_map = [
-        # commented out by default; they (especially blink) are
-        # potentially annoying
         (r'%cn', ANSI_NORMAL),
         (r'%ch', ANSI_HILITE),
         (r'%r', ANSI_RETURN),
         (r'%t', ANSI_TAB),
         (r'%b', ANSI_SPACE),
-        #(r'%cf', ANSI_BLINK),
-        #(r'%ci', ANSI_INVERSE),
+        (r'%cf', ANSI_BLINK), # annoying and not supported by all clients
+        (r'%ci', ANSI_INVERSE),
+
         (r'%cr', ANSI_RED),
-        (r'%cR', ANSI_BACK_RED),
         (r'%cg', ANSI_GREEN),
-        (r'%cG', ANSI_BACK_GREEN),
         (r'%cy', ANSI_YELLOW),
-        (r'%cY', ANSI_BACK_YELLOW),
         (r'%cb', ANSI_BLUE),
-        (r'%cB', ANSI_BACK_BLUE),
         (r'%cm', ANSI_MAGENTA),
-        (r'%cM', ANSI_BACK_MAGENTA),
         (r'%cc', ANSI_CYAN),
-        (r'%cC', ANSI_BACK_CYAN),
         (r'%cw', ANSI_WHITE),
-        (r'%cW', ANSI_BACK_WHITE),
         (r'%cx', ANSI_BLACK),
+
+        (r'%cR', ANSI_BACK_RED),
+        (r'%cG', ANSI_BACK_GREEN),
+        (r'%cY', ANSI_BACK_YELLOW),
+        (r'%cB', ANSI_BACK_BLUE),
+        (r'%cM', ANSI_BACK_MAGENTA),
+        (r'%cC', ANSI_BACK_CYAN),
+        (r'%cW', ANSI_BACK_WHITE),
         (r'%cX', ANSI_BACK_BLACK)
         ]
 
@@ -285,7 +289,7 @@ class ANSIParser(object):
         (r'{[x', ANSI_BACK_BLACK)     # pure black background
         ]
 
-    ansi_map = mux_ansi_map + ext_ansi_map
+    #ansi_map = mux_ansi_map + ext_ansi_map
 
     # xterm256 {123, %c134. These are replaced directly by
     # the sub_xterm256 method
@@ -301,9 +305,10 @@ class ANSIParser(object):
     #ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
     #                 for sub in ansi_map]
     xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
-    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_map]), re.DOTALL)
+    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in mux_ansi_map + ext_ansi_map]), re.DOTALL)
 
-    ansi_map = dict(ansi_map)
+    # used by regex replacer to correctly map ansi sequences
+    ansi_map = dict(mux_ansi_map + ext_ansi_map)
 
     # prepare matching ansi codes overall
     ansi_regex = re.compile("\033\[[0-9;]+m")
@@ -471,7 +476,7 @@ class ANSIString(unicode):
             string = string._raw_string
         else:
             # It's a string that has been pre-ansi decoded.
-            clean_string = parser._strip_raw_ansi(string)
+            clean_string = parser.strip_raw_codes(string)
 
         if not isinstance(string, unicode):
             string = string.decode('utf-8')
