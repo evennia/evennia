@@ -3,11 +3,12 @@
 # and run from game/gamesrc/world/connection_screens.py.
 #
 
+from django.conf import settings
 from src.utils import utils
 
 DEFAULT_SCREEN = \
 """{b=============================================================={n
- Welcome to {gEvennia{n, version %s!
+ Welcome to {g%s{n, version %s!
 
  If you have an existing account, connect to it by typing:
       {wconnect <username> <password>{n
@@ -16,4 +17,5 @@ DEFAULT_SCREEN = \
 
  If you have spaces in your username, enclose it in quotes.
  Enter {whelp{n for more info. {wlook{n will re-show this screen.
-{b=============================================================={n""" % utils.get_evennia_version()
+{b=============================================================={n""" \
+% (settings.SERVERNAME, utils.get_evennia_version())
