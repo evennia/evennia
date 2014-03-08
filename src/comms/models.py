@@ -27,11 +27,10 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.comms import managers
 from src.comms.managers import identify_object
 from src.locks.lockhandler import LockHandler
-from src.utils import logger
-from src.utils.utils import to_str, crop, make_iter
+from src.utils.utils import crop, make_iter
 
-__all__ = ("Msg", "TempMsg", "ChannelDB",
-            "ExternalChannelConnection")
+__all__ = ("Msg", "TempMsg", "ChannelDB")
+
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -136,9 +135,6 @@ class Msg(SharedMemoryModel):
                 self.db_sender_players.add(obj)
             elif typ == 'object':
                 self.db_sender_objects.add(obj)
-            elif typ == 'external':
-                self.db_sender_external = "1"
-                self.extra_senders.append(obj)
             elif isinstance(typ, basestring):
                 self.db_sender_external = obj
             elif not obj:
@@ -165,9 +161,6 @@ class Msg(SharedMemoryModel):
                 self.db_sender_players.remove(obj)
             elif typ == 'object':
                 self.db_sender_objects.remove(obj)
-            elif typ == 'external':
-                self.extra_senders = [receiver for receiver in
-                    self.extra_senders if receiver != obj]
             elif isinstance(obj, basestring):
                 self.db_sender_external = obj
             else:
@@ -442,155 +435,3 @@ class ChannelDB(TypedObject):
         super(ChannelDB, self).delete()
         from src.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
-
-
-class ExternalChannelConnection(SharedMemoryModel):
-    """
-    This defines an external protocol connecting to
-    a channel, while storing some critical info about
-    that connection.
-    """
-    # evennia channel connecting to
-    db_channel = models.ForeignKey(ChannelDB, verbose_name='channel',
-                                   help_text='which channel this connection is tied to.')
-    # external connection identifier
-    db_external_key = models.CharField('external key', max_length=128,
-                                       help_text='external connection identifier, used by calling protocol.')
-    # eval-code to use when the channel tries to send a message
-    # to the external protocol.
-    db_external_send_code = models.TextField('executable code', blank=True,
-           help_text='this is a custom snippet of Python code to connect the external protocol to the in-game channel.')
-    # custom config for the connection
-    db_external_config = models.TextField('external config', blank=True,
-                                          help_text='configuration options on form understood by connection.')
-    # activate the connection
-    db_is_enabled = models.BooleanField('is enabled', default=True, help_text='turn on/off the connection.')
-
-    objects = managers.ExternalChannelConnectionManager()
-
-    class Meta:
-        verbose_name = "External Channel Connection"
-
-    def __str__(self):
-        return "%s <-> external %s" % (self.channel.key, self.db_external_key)
-
-    # channel property (wraps db_channel)
-    #@property
-    def channel_get(self):
-        "Getter. Allows for value = self.channel"
-        return self.db_channel
-    #@channel.setter
-
-    def channel_set(self, value):
-        "Setter. Allows for self.channel = value"
-        self.db_channel = value
-        self.save()
-
-    #@channel.deleter
-    def channel_del(self):
-        "Deleter. Allows for del self.channel. Deletes connection."
-        self.delete()
-    channel = property(channel_get, channel_set, channel_del)
-
-    # external_key property (wraps db_external_key)
-    #@property
-    def external_key_get(self):
-        "Getter. Allows for value = self.external_key"
-        return self.db_external_key
-
-    #@external_key.setter
-    def external_key_set(self, value):
-        "Setter. Allows for self.external_key = value"
-        self.db_external_key = value
-        self.save()
-
-    #@external_key.deleter
-    def external_key_del(self):
-        "Deleter. Allows for del self.external_key. Deletes connection."
-        self.delete()
-    external_key = property(external_key_get, external_key_set, external_key_del)
-
-    # external_send_code property (wraps db_external_send_code)
-    #@property
-    def external_send_code_get(self):
-        "Getter. Allows for value = self.external_send_code"
-        return self.db_external_send_code
-
-    #@external_send_code.setter
-    def external_send_code_set(self, value):
-        "Setter. Allows for self.external_send_code = value"
-        self.db_external_send_code = value
-        self.save()
-
-    #@external_send_code.deleter
-    def external_send_code_del(self):
-        "Deleter. Allows for del self.external_send_code. Deletes connection."
-        self.db_external_send_code = ""
-        self.save()
-    external_send_code = property(external_send_code_get, external_send_code_set, external_send_code_del)
-
-    # external_config property (wraps db_external_config)
-    #@property
-    def external_config_get(self):
-        "Getter. Allows for value = self.external_config"
-        return self.db_external_config
-
-    #@external_config.setter
-    def external_config_set(self, value):
-        "Setter. Allows for self.external_config = value"
-        self.db_external_config = value
-        self.save()
-
-    #@external_config.deleter
-    def external_config_del(self):
-        "Deleter. Allows for del self.external_config. Deletes connection."
-        self.db_external_config = ""
-        self.save()
-    external_config = property(external_config_get, external_config_set, external_config_del)
-
-    # is_enabled property (wraps db_is_enabled)
-    #@property
-    def is_enabled_get(self):
-        "Getter. Allows for value = self.is_enabled"
-        return self.db_is_enabled
-
-    #@is_enabled.setter
-    def is_enabled_set(self, value):
-        "Setter. Allows for self.is_enabled = value"
-        self.db_is_enabled = value
-        self.save()
-
-    #@is_enabled.deleter
-    def is_enabled_del(self):
-        "Deleter. Allows for del self.is_enabled. Deletes connection."
-        self.delete()
-    is_enabled = property(is_enabled_get, is_enabled_set, is_enabled_del)
-
-    #
-    # methods
-    #
-
-    def to_channel(self, message, *args, **kwargs):
-        "Send external -> channel"
-        #if 'from_obj' in kwargs and kwargs.pop('from_obj'):
-        #    from_obj = self.external_key
-        self.channel.msg(message, senders=[self], *args, **kwargs)
-
-    def to_external(self, message, senders=None, from_channel=None):
-        "Send channel -> external"
-
-        # make sure we are not echoing back our own message to ourselves
-        # (this would result in a nasty infinite loop)
-        #print senders
-        if self in make_iter(senders):  #.external_key:
-            return
-
-        try:
-            # we execute the code snippet that should make it possible for the
-            # connection to contact the protocol correctly (as set by the
-            # protocol).
-            # Note that the code block has access to the variables here, such
-            # as message, from_obj and from_channel.
-            exec(to_str(self.external_send_code))
-        except Exception:
-            logger.log_trace("Channel %s could not send to External %s" % (self.channel, self.external_key))

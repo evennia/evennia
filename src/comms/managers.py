@@ -11,7 +11,6 @@ _PlayerDB = None
 _ObjectDB = None
 _ChannelDB = None
 _SESSIONS = None
-_ExternalConnection = None
 
 # error class
 
@@ -46,15 +45,13 @@ def dbref(dbref, reqhash=True):
 def identify_object(inp):
     "identify if an object is a player or an object; return its database model"
     # load global stores
-    global _PlayerDB, _ObjectDB, _ChannelDB, _ExternalConnection
+    global _PlayerDB, _ObjectDB, _ChannelDB
     if not _PlayerDB:
         from src.players.models import PlayerDB as _PlayerDB
     if not _ObjectDB:
         from src.objects.models import ObjectDB as _ObjectDB
     if not _ChannelDB:
         from src.comms.models import ChannelDB as _ChannelDB
-    if not _ExternalConnection:
-        from src.comms.models import ExternalChannelConnection as _ExternalConnection
     if not inp:
         return inp, None
     # try to identify the type
@@ -73,8 +70,6 @@ def identify_object(inp):
         return dbref(obj), "dbref"
     elif typ == basestring:
         return obj, "string"
-    elif typ == _ExternalConnection:
-        return obj, "external"
     return obj, None   # Something else
 
 
@@ -114,14 +109,6 @@ def to_object(inp, objtype='player'):
             return _ChannelDB.objects.get(id=obj)
         print objtype, inp, obj, typ, type(inp)
         raise CommError()
-    elif objtype == 'external':
-        if typ == 'string':
-            return _ExternalConnection.objects.get(db_key=inp)
-        if typ == 'dbref':
-            return _ExternalConnection.objects.get(id=obj)
-        print objtype, inp, obj, typ, type(inp)
-        raise CommError()
-
 
 #
 # Msg manager
@@ -342,8 +329,6 @@ class ChannelManager(models.Manager):
 #
 #        PlayerChannelConnection = ContentType.objects.get(app_label="comms",
 #                                                          model="playerchannelconnection").model_class()
-#        ExternalChannelConnection = ContentType.objects.get(app_label="comms",
-#                                                            model="externalchannelconnection").model_class()
 #        players = []
 #        if online:
 #            session_list = _SESSIONS.get_sessions()
@@ -456,64 +441,3 @@ class PlayerChannelConnectionManager(models.Manager):
             conn.delete()
 
 
-class ExternalChannelConnectionManager(models.Manager):
-    """
-    This ExternalChannelConnectionManager implements methods for searching
-    and manipulating HelpEntries directly from the database.
-
-    These methods will all return database objects
-    (or QuerySets) directly.
-
-    An ExternalChannelConnetion describes the connection between an in-game
-    channel and some external source, such as an IRC or IMC channel.
-
-    Evennia-specific:
-    get_all_external_connections
-    has_connection
-    get_all_connections
-    create_connection
-    break_connection
-
-    """
-
-    def get_all_external_connections(self, external):
-        "Get all connections that the given as external."
-        external = to_object(external, objtype='external')
-        return self.filter(db_external_key=external)
-
-    def has_connection(self, external, channel):
-        "Checks so a connection exists external<->channel"
-        external = to_object(external, objtype='external')
-        channel = to_object(channel, objtype="channel")
-        if external and channel:
-            return self.filter(db_external_key=external).filter(db_channel=channel).count() > 0
-        return False
-
-    def get_all_connections(self, channel):
-        """
-        Get all connections for a channel
-        """
-        channel = to_object(channel, objtype='channel')
-        return self.filter(db_channel=channel)
-
-    def create_connection(self, external, channel, config=""):
-        """
-        Connect a external to a channel. external and channel
-        can be actual objects or keystrings.
-        """
-        channel = to_object(channel, objtype='channel')
-        if not channel:
-            raise CommError("NOTFOUND")
-        new_connection = self.model(db_external_key=external, db_channel=channel, db_external_config=config)
-        new_connection.save()
-        return new_connection
-
-    def break_connection(self, external, channel):
-        "Remove link between external and channel"
-        external = to_object(external)
-        channel = to_object(channel, objtype='channel')
-        if not external or not channel:
-            raise CommError("NOTFOUND")
-        conns = self.filter(db_external_key=external).filter(db_channel=channel)
-        for conn in conns:
-            conn.delete()
