@@ -180,6 +180,9 @@ class _SaverDict(_SaverMutable, MutableMapping):
         super(_SaverDict, self).__init__(*args, **kwargs)
         self._data = dict(*args)
 
+    def has_key(self, key):
+        return key in self._data
+
 
 class _SaverSet(_SaverMutable, MutableSet):
     """
