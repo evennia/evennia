@@ -1145,6 +1145,5 @@ class EvTable(object):
         return  ANSIString("\n").join([line for line in self._generate_lines()])
 
     def __unicode__(self):
-        print "parts:", [line for line in self._generate_lines()]
         return  unicode(ANSIString("\n").join([line for line in self._generate_lines()]))
 
