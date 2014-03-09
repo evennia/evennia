@@ -6,10 +6,9 @@ EvTable
 This is an advanced ASCII table creator. It was inspired
 by prettytable but shares no code.
 
-WARNING: UNDER DEVELOPMENT. Evtable does currently NOT support
-colour ANSI markers in the table. Non-colour tables should
-work fully (so make issues if they don't).
-
+Note: to test ANSI colors on the command line you need to
+call the printed table in a unicode() call, like print unicode(table).
+This is due to a bug in the python interpreter and print.
 
 Example usage:
 
@@ -75,7 +74,7 @@ ANSI-coloured string types.
 #from textwrap import wrap
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from src.utils.utils import to_unicode, to_str
+from src.utils.utils import to_unicode
 from src.utils.ansi import ANSIString
 
 def make_iter(obj):
@@ -408,7 +407,7 @@ class Cell(object):
             if 0 < width < len(line):
                 # replace_whitespace=False, expand_tabs=False is a
                 # fix for ANSIString not supporting expand_tabs/translate
-                adjusted_data.extend([ANSIString(part + "{n")
+                adjusted_data.extend([ANSIString(part )
                     for part in wrap(line, width=width, drop_whitespace=False)])
             else:
                 adjusted_data.append(line)
@@ -619,7 +618,11 @@ class Cell(object):
 
     def __str__(self):
         "returns cell contents on string form"
-        return "\n".join(self.formatted)
+        return ANSIString("\n").join(self.formatted)
+
+    def __unicode__(self):
+        "returns cell contents"
+        return unicode(ANSIString("\n").join(self.formatted))
 
 
 # Main Evtable class

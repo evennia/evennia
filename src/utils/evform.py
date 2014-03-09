@@ -17,6 +17,11 @@ has markers in it to denounce fields to fill. The markers map the
 absolute size of the field and will be filled with an evtable.Cell
 object when displaying the form.
 
+Note, when printing examples with ANSI color, you need to wrap
+the output in unicode(), such as print unicode(form). This is
+due to a bug in the Python parser and the print statement.
+
+
 Example of input file testform.py:
 
 FORMCHAR = "x"
@@ -87,7 +92,9 @@ Use as follows:
     # add the tables to the proper ids in the form
     form.map(tables={"A": tableA,
                      "B": tableB}
-    print form
+
+    # unicode is required since the example contains non-ascii characters
+    print unicode(form)
 
 This produces the following result:
 
@@ -154,7 +161,6 @@ class EvForm(object):
     it for rectangular form fields. It can then be fed a
     mapping so as to populate the fields with fixed-width
     Cell or Tablets.
-
 
     """
     def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
@@ -401,6 +407,9 @@ class EvForm(object):
 
     def __str__(self):
         "Prints the form"
-        return "\n".join([to_str(line) for line in self.form])
+        return ANSIString("\n").join([line for line in self.form])
 
+    def __unicode__(self):
+        "prints the form"
+        return unicode(ANSIString("\n").join([line for line in self.form]))
 

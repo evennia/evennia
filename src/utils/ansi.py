@@ -15,7 +15,7 @@ user.
 """
 import re
 from src.utils import utils
-from src.utils.utils import to_str
+from src.utils.utils import to_str, to_unicode
 
 # ANSI definitions
 
@@ -468,7 +468,7 @@ class ANSIString(unicode):
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
         if not decoded:
             # Completely new ANSI String
-            clean_string = unicode(parser.parse_ansi(string, strip_ansi=True))
+            clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True))
             string = parser.parse_ansi(string)
         elif hasattr(string, '_clean_string'):
             # It's already an ANSIString
@@ -483,7 +483,7 @@ class ANSIString(unicode):
         else:
             # Do this to prevent recursive ANSIStrings.
             string = unicode(string)
-        ansi_string = super(ANSIString, cls).__new__(ANSIString, clean_string)
+        ansi_string = super(ANSIString, cls).__new__(ANSIString, to_str(clean_string), "utf-8")
         ansi_string._raw_string = string
         ansi_string._clean_string = clean_string
         return ansi_string
