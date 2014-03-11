@@ -327,7 +327,7 @@ def from_pickle(data, db_obj=None):
             # this must be checked before tuple
             return unpack_dbobj(item)
         elif dtype == tuple:
-            return tuple(process_tree(val) for val in item)
+            return tuple(process_tree(val, item) for val in item)
         elif dtype == list:
             dat = _SaverList(parent=parent)
             dat._data.extend(process_tree(val, dat) for val in item)
