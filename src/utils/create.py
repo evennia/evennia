@@ -491,7 +491,7 @@ def create_player(key, email, password,
     if not email:
         email = "dummy@dummy.com"
     if _PlayerDB.objects.filter(username__iexact=key):
-        raise ValueError("A Player with this name already exists.")
+        raise ValueError("A Player with the name '%s' already exists." % key)
 
     # this handles a given dbref-relocate to a player.
     report_to = handle_dbref(report_to, _PlayerDB)
