@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 
 EvTable
@@ -625,7 +624,7 @@ class Cell(object):
         return unicode(ANSIString("\n").join(self.formatted))
 
 
-# Main Evtable class
+## Main Evtable class
 
 class EvTable(object):
     """
@@ -634,7 +633,6 @@ class EvTable(object):
     This table implements an ordered grid of Cells, with
     all cell boundaries lining up.
     """
-
 
     def __init__(self, *args, **kwargs):
         """
@@ -738,8 +736,8 @@ class EvTable(object):
         pcorners = kwargs.pop("pretty_corners", False)
         self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", '.' if pcorners else  self.corner_char))
         self.corner_top_right = _to_ansi(kwargs.pop("corner_top_right", '.' if pcorners else self.corner_char))
-        self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", '`' if pcorners else self.corner_char))
-        self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", '´' if pcorners else self.corner_char))
+        self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", ' ' if pcorners else self.corner_char))
+        self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", ' ' if pcorners else self.corner_char))
 
         self.width = kwargs.pop("width", None)
         self.height = kwargs.pop("height", None)

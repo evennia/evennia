@@ -47,7 +47,7 @@ FORM = '''
 | cccccccc | ccccccccccccccccccccccccccccccccccc |
 | cccccccc | cccccccccccccccccBccccccccccccccccc |
 |          |                                     |
-`-----------------------------------------------´
+-------------------------------------------------
 '''
 
 The first line of the FORM string is ignored. The forms and table
@@ -117,7 +117,7 @@ This produces the following result:
 |   |**|*  | Herbalism  |14         |990/1400    |
 |   |* |   | Smithing   |9          |205/900     |
 |          |                                     |
- `----------------------------------------------´
+ ------------------------------------------------
 
 The marked forms have been replaced with Cells of text and with
 EvTables. The form can be updated by simply re-applying form.map()

@@ -26,7 +26,7 @@ FORM = """
 | cccccccc | ccccccccccccccccccccccccccccccccccc |
 | cccccccc | cccccccccccccccccBccccccccccccccccc |
 |          |                                     |
-`-----------------------------------------------´
+-------------------------------------------------
 """
 
 

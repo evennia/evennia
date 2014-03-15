@@ -522,7 +522,7 @@ INSTALLED_APPS = (
 AUTH_USER_MODEL = "players.PlayerDB"
 #AUTH_PROFILE_MODULE = "players.PlayerDB"
 # Use a custom test runner that just tests Evennia-specific apps.
-TEST_RUNNER = 'src.utils.test_utils.EvenniaTestSuiteRunner'
+TEST_RUNNER = 'src.server.testing_suite.EvenniaTestSuiteRunner'
 
 ######################################################################
 # Django extensions
