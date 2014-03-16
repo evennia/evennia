@@ -17,6 +17,8 @@ Guidelines:
 """
 
 import sys
+import glob
+
 try:
     from django.utils.unittest import TestCase
 except ImportError:
@@ -28,6 +30,7 @@ except ImportError:
 
 from django.conf import settings
 from django.test.simple import DjangoTestSuiteRunner
+from src.utils.utils import mod_import
 
 
 class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
@@ -62,4 +65,12 @@ def suite():
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(commandtests))
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(locktests))
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(utiltests))
+
+    for path in glob.glob("../src/tests/test_*.py"):
+        testmod = mod_import(path)
+        tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(testmod))
+
+    #from src.tests import test_commands_cmdhandler
+    #tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_commands_cmdhandler))
+
     return tsuite
