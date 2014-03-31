@@ -506,12 +506,13 @@ class CmdPerm(MuxCommand):
         tstring = ""
         if 'del' in switches:
             # delete the given permission(s) from object.
-            obj.permissions.remove(self.rhslist)
-            if obj.permissions.get(self.rhslist):
-                cstring += "\nPermissions(s) %s could not be removed from %s." % (", ".join(self.rhslist), obj.name)
-            else:
-                cstring += "\nPermission(s) %s removed from %s (if they existed)." % (", ".join(self.rhslist), obj.name)
-                tstring += "\n%s revokes the permission(s) %s from you." % (caller.name, ", ".join(self.rhslist))
+            for perm in self.rhslist:
+                obj.permissions.remove(perm)
+                if obj.permissions.get(perm):
+                    cstring += "\nPermissions %s could not be removed from %s." % (perm, obj.name)
+                else:
+                    cstring += "\nPermission %s removed from %s (if they existed)." % (perm, obj.name)
+                    tstring += "\n%s revokes the permission(s) %s from you." % (caller.name, perm)
         else:
             # add a new permission
             permissions = obj.permissions.all()

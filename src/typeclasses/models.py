@@ -558,17 +558,17 @@ class TagHandler(object):
         ret = []
         category = category.strip().lower() if category is not None else None
         searchkey = ["%s-%s" % (key.strip().lower(), category) if key is not None else None for key in make_iter(key)]
-        ret = [val for val in (self._cache.get(searchkey) for keystr in key) if val]
+        ret = [val for val in (self._cache.get(keystr) for keystr in searchkey) if val]
         ret = [to_str(tag.db_data) for tag in ret] if return_tagobj else ret
         return ret[0] if len(ret) == 1 else ret
 
     def remove(self, key, category=None):
         "Remove a tag from the handler based ond key and category."
-        for tag in make_iter(tag):
-            if not (tag or tag.strip()):  # we don't allow empty tags
+        for key in make_iter(key):
+            if not (key or key.strip()):  # we don't allow empty tags
                 continue
-            tagstr = tag.strip().lower() if tag is not None else None
-            category = category.strip().lower() if tag is not None else None
+            tagstr = key.strip().lower()
+            category = category.strip().lower() if category is not None else None
 
             # This does not delete the tag object itself. Maybe it should do
             # that when no objects reference the tag anymore (how to check)?
