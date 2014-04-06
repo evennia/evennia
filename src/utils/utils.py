@@ -788,7 +788,7 @@ def variable_from_module(module, variable=None, default=None):
     """
     Retrieve a variable or list of variables from a module. The variable(s)
     must be defined globally in the module. If no variable is given (or a
-    list entry is None), a random variable is extracted from the module.
+    list entry is None), all global variables are extracted from the module.
 
     If module cannot be imported or given variable not found, default
     is returned.
@@ -798,7 +798,7 @@ def variable_from_module(module, variable=None, default=None):
       variable (string or iterable) - single variable name or iterable of
                                       variable names to extract
       default (string) - default value to use if a variable fails
-                         to be extracted.
+                         to be extracted. Ignored if variable is not given
     Returns:
       a single value or a list of values depending on the type of
         'variable' argument. Errors in lists are replaced by the
@@ -807,18 +807,20 @@ def variable_from_module(module, variable=None, default=None):
 
     if not module:
         return default
+
     mod = mod_import(module)
 
-    result = []
-    for var in make_iter(variable):
-        if var:
-            # try to pick a named variable
-            result.append(mod.__dict__.get(var, default))
-        else:
-            # random selection
-            mvars = [val for key, val in mod.__dict__.items()
-                            if not (key.startswith("_") or ismodule(val))]
-            result.append((mvars and random.choice(mvars)) or default)
+    if variable:
+        result = []
+        for var in make_iter(variable):
+            if var:
+                # try to pick a named variable
+                result.append(mod.__dict__.get(var, default))
+    else:
+        # get all
+        result = [val for key, val in mod.__dict__.items()
+                         if not (key.startswith("_") or ismodule(val))]
+
     if len(result) == 1:
         return result[0]
     return result
@@ -833,9 +835,16 @@ def string_from_module(module, variable=None, default=None):
     if isinstance(val, basestring):
         return val
     elif is_iter(val):
-        return [(isinstance(v, basestring) and v or default) for v in val]
+        result = [v for v in val if isinstance(v, basestring)]
+        return result if result else default
     return default
 
+def random_string_from_module(module):
+    """
+    Returns a random global string from a module
+    """
+    string = random.choice(string_from_module(module))
+    return string
 
 def init_new_player(player):
     """
