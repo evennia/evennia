@@ -94,11 +94,13 @@ class CmdSetObjAlias(MuxCommand):
 
     Usage:
       @alias <obj> [= [alias[,alias,alias,...]]]
+      @alias <obj> =
 
     Assigns aliases to an object so it can be referenced by more
     than one name. Assign empty to remove all aliases from object.
-    Observe that this is not the same thing as aliases
-    created with the 'alias' command! Aliases set with @alias are
+
+    Observe that this is not the same thing as personal aliases
+    created with the 'nick' command! Aliases set with @alias are
     changing the object in question, making those aliases usable
     by everyone.
     """
@@ -141,7 +143,7 @@ class CmdSetObjAlias(MuxCommand):
             old_aliases = obj.aliases.all()
             if old_aliases:
                 caller.msg("Cleared aliases from %s: %s" % (obj.key, ", ".join(old_aliases)))
-                obj.dbobj.db_aliases.clear()
+                obj.dbobj.aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
             return
