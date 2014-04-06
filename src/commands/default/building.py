@@ -1898,8 +1898,7 @@ class CmdFind(MuxCommand):
             nresults = results.count()
             if not nresults:
                 # no matches on the keys. Try aliases instead.
-                results = ObjectDB.objects.filter(db_tags__db_key__iexact=searchstring, db_tags__db_category__iexact="object_alias")
-                #results = ObjectDB.db_aliases.filter(db_key=searchstring)
+                results = ObjectDB.objects.filter(db_tags__db_key__iexact=searchstring, db_tags__db_tagtype__iexact="alias")
                 if "room" in switches:
                     results = results.filter(db_location__isnull=True)
                 if "exit" in switches:
