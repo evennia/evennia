@@ -161,6 +161,7 @@ class ScriptDB(TypedObject):
         # saving the field
         _GA(self, "save")(update_fields=[fname])
     obj = property(__get_obj, __set_obj)
+    object = property(__get_obj, __set_obj)
 
 
     def at_typeclass_error(self):

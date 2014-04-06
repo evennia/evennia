@@ -18,23 +18,21 @@ Install is simple:
 
 To your settings file, add/edit the line:
 
-CMDSET_UNLOGGEDIN = "contrib.email_login.UnloggedInCmdSet"
+CMDSET_UNLOGGEDIN = "contrib.email-login.UnloggedinCmdSet"
 
 That's it. Reload the server and try to log in to see it.
 
-The initial login "graphic" is taken from strings in the module given
-by settings.CONNECTION_SCREEN_MODULE. You will want to copy the
-template file in game/gamesrc/conf/examples up one level and re-point
-the settings file to this custom module. you can then edit the string
-in that module (at least comment out the default string that mentions
-commands that are not available) and add something more suitable for
-the initial splash screen.
+The initial login "graphic" will still not mention email addresses
+after this change. The login splash screen is taken from strings in
+the module given by settings.CONNECTION_SCREEN_MODULE. You will want
+to copy the template file in game/gamesrc/conf/examples up one level
+and re-point the settings file to this custom module. The "MUX_SCREEN"
+example in that file is the recommended one to use with this module.
 
 """
 import re
 import traceback
 from django.conf import settings
-from django.contrib.auth.models import User
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
 from src.server.models import ServerConfig
@@ -49,10 +47,11 @@ from src.commands.cmdhandler import CMD_LOGINSTART
 __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
            "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
 
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 CONNECTION_SCREEN = ""
 try:
-    CONNECTION_SCREEN = ansi.parse_ansi(utils.string_from_module(CONNECTION_SCREEN_MODULE))
+    CONNECTION_SCREEN = ansi.parse_ansi(utils.random_string_from_module(CONNECTION_SCREEN_MODULE))
 except Exception:
     pass
 if not CONNECTION_SCREEN:
@@ -100,7 +99,7 @@ class CmdUnconnectedConnect(MuxCommand):
             session.msg(string)
             return
         # We have at least one result, so we can check the password.
-        if not player.user.check_password(password):
+        if not player.check_password(password):
             session.msg("Incorrect password.")
             return
 
@@ -117,16 +116,7 @@ class CmdUnconnectedConnect(MuxCommand):
             return
 
         # actually do the login. This will call all hooks.
-        session.session_login(player)
-
-        # we are logged in. Look around.
-        character = player.character
-        if character:
-            character.execute_cmd("look")
-        else:
-            # we have no character yet; use player's look, if it exists
-            player.execute_cmd("look")
-
+        session.sessionhandler.login(session, player)
 
 class CmdUnconnectedCreate(MuxCommand):
     """
@@ -192,7 +182,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
 
         # Run sanity and security checks
 
-        if PlayerDB.objects.get_player_from_name(playername) or User.objects.filter(username=playername):
+        if PlayerDB.objects.filter(username=playername):
             # player already exists
             session.msg("Sorry, there is already a player with the name '%s'." % playername)
             return
@@ -216,21 +206,17 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
             try:
-                new_character = create.create_player(playername,
-                                                     email,
-                                                     password,
-                                                     permissions=permissions,
-                                                     character_typeclass=typeclass,
-                                                     character_location=default_home,
-                                                     character_home=default_home)
-            except Exception:
-                session.msg("There was an error creating the default Character/Player:\n%s\n If this problem persists, contact an admin.")
+                new_player = create.create_player(playername, email, password,
+                                                     permissions=permissions)
+
+            except Exception, e:
+                session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
+                logger.log_trace()
                 return
-            new_player = new_character.player
 
             # This needs to be called so the engine knows this player is
-            # logging in for the first time.
-            # (so it knows to call the right hooks during login later)
+            # logging in for the first time. (so it knows to call the right
+            # hooks during login later)
             utils.init_new_player(new_player)
 
             # join the new player to the public channel
@@ -241,27 +227,40 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                     string = "New player '%s' could not connect to public channel!" % new_player.key
                     logger.log_errmsg(string)
 
-            # allow only the character itself and the player to puppet
-            # this character (and Immortals).
-            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                    (new_character.id, new_player.id))
+            if MULTISESSION_MODE < 2:
+                # if we only allow one character, create one with the same name as Player
+                # (in mode 2, the character must be created manually once logging in)
+                new_character = create.create_object(typeclass, key=playername,
+                                          location=default_home, home=default_home,
+                                          permissions=permissions)
+                # set playable character list
+                new_player.db._playable_characters.append(new_character)
 
-            # set a default description
-            new_character.db.desc = "This is a Player."
+                # allow only the character itself and the player to puppet this character (and Immortals).
+                new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                                        (new_character.id, new_player.id))
+
+                # If no description is set, set a default description
+                if not new_character.db.desc:
+                    new_character.db.desc = "This is a Player."
+                # We need to set this to have @ic auto-connect to this character
+                new_player.db._last_puppet = new_character
 
             # tell the caller everything went well.
-            string = "A new account '%s' was created with the email address %s. Welcome!"
-            string += "\n\nYou can now log with the command 'connect %s <your password>'."
-            session.msg(string % (playername, email, email))
+            string = "A new account '%s' was created. Welcome!"
+            if " " in playername:
+                string += "\n\nYou can now log in with the command 'connect %s <your password>'."
+            else:
+                string += "\n\nYou can now log with the command 'connect %s <your password>'."
+            session.msg(string % (playername, email))
 
         except Exception:
-            # We are in the middle between logged in and -not, so we have to
-            # handle tracebacks ourselves at this point. If we don't, we won't
-            # see any errors at all.
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             session.msg(string % (traceback.format_exc()))
             logger.log_errmsg(traceback.format_exc())
-
 
 class CmdUnconnectedQuit(MuxCommand):
     """
