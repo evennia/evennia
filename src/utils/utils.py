@@ -843,7 +843,9 @@ def random_string_from_module(module):
     """
     Returns a random global string from a module
     """
-    string = random.choice(string_from_module(module))
+    string = string_from_module(module)
+    if is_iter(string):
+        string = random.choice(string)
     return string
 
 def init_new_player(player):
