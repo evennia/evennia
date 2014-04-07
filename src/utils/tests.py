@@ -110,3 +110,12 @@ class ANSIStringTestCase(TestCase):
         ANSI codes.
         """
         self.assertEqual(len(ANSIString('{gTest{n')), 4)
+
+    def test_capitalize(self):
+        """
+        Make sure that capitalization works. This is the simplest of the
+        _transform functions.
+        """
+        target = ANSIString('{gtest{n')
+        result = u'\x1b[1m\x1b[32mTest\x1b[0m'
+        self.checker(target.capitalize(), result, u'Test')

@@ -405,11 +405,13 @@ def _transform(func_name):
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
         to_string = []
+        char_counter = 0
         for index in range(0, len(self._raw_string)):
             if index in self._code_indexes:
                 to_string.append(self._raw_string[index])
             elif index in self._char_indexes:
-                to_string.append(replacement_string[index])
+                to_string.append(replacement_string[char_counter])
+                char_counter += 1
         return ANSIString(''.join(to_string), decoded=True)
     return wrapped
 
