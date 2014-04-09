@@ -128,9 +128,11 @@ class ScriptDB(TypedObject):
         the db_player or db_obj field, using the same obj
         property name
         """
-        if self.db_player:
-            return _GA(self, "db_player")
-        return _GA(self, "db_obj")
+        obj = _GA(self, "db_player")
+        if not obj:
+            obj = _GA(self, "db_obj")
+        if obj:
+            return obj.typeclass
 
     def __set_obj(self, value):
         """
