@@ -43,6 +43,7 @@ class CmdUnconnectedConnect(MuxCommand):
     key = "connect"
     aliases = ["conn", "con", "co"]
     locks = "cmd:all()"  # not really needed
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         """
@@ -116,6 +117,7 @@ class CmdUnconnectedCreate(MuxCommand):
     key = "create"
     aliases = ["cre", "cr"]
     locks = "cmd:all()"
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         "Do checks and create account"
